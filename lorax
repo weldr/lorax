@@ -1,0 +1,97 @@
+#!/usr/bin/env python -tt
+#
+# lorax
+# Install image and tree support data generation tool.
+#
+# Copyright (C) 2008  Red Hat, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Author(s): David Cantrell <dcantrell@redhat.com>
+#
+
+import getopt
+import os
+import pylorax
+import sys
+
+def usage(prog):
+    print "Usage: %s required_arguments... [optional_arguments...] repo\n" % (prog,)
+    print "Required arguments:"
+    print "    -v, --version STRING       Version identifier."
+    print "    -p, --product STRING       Product name."
+    print "    -r, --release STRING       Release information or comment.\n"
+    print "    -o, --output PATHSPEC      Where to write output files."
+    print "Optional arguments:"
+    print "    -d, --debug                Enable debugging messages."
+    print "    -t, --variant STRING       Variant name."
+    print "    -b, --bugurl URL           Bug reporting URL for the product."
+    print "    -u, --updates PATHSPEC     Path to find updated RPMS."
+    print "    -m, --mirrorlist REPO      Mirror list repo.\n"
+    print "A 'repo' specification is a valid yum repository path.\n"
+    print "See the man page lorax(8) for more information."
+
+if __name__ == "__main__":
+    prog = os.path.basename(sys.argv[0])
+    opts, args, mirrorlist, extrarepos = [], [], [], []
+    version, product, release, output, repo = None, None, None, None, None
+    debug = False
+    variant, updates = '', ''
+    bugurl = 'your distribution provided bug reporting tool.'
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "v:p:r:o:dt:b:u:m:V",
+                                   ["version=", "product=", "release=",
+                                    "output=", "debug", "variant=",
+                                    "bugurl=", "updates=", "mirrorlist="])
+    except getopt.GetoptError:
+        usage(prog)
+        sys.exit(1)
+
+    for o, a in opts:
+        if o in ('-v', '--version'):
+            version = a
+        elif o in ('-p', '--product'):
+            product = a
+        elif o in ('-r', '--release'):
+            release = a
+        elif o in ('-o', '--output'):
+            output = a
+        elif o in ('-d', '--debug'):
+            debug = True
+        elif o in ('-t', '--variant'):
+            variant = a
+        elif o in ('-b', '--bugurl'):
+            bugurl = a
+        elif o in ('-u', '--updates'):
+            updates = a
+        elif o in ('-m', '--mirrorlist'):
+            mirrorlist.append(a)
+        elif o in ('-V'):
+            pylorax.show_version(prog)
+            sys.exit(0)
+
+    if version is None or product is None or release is None or output is None:
+        print "ERROR: Missing a required argument."
+        sys.exit(1)
+
+    if len(args) == 0:
+        print "ERROR: Missing repo to use for image generation."
+        sys.exit(1)
+
+    repo = args[0]
+
+    if len(args) > 1:
+        for extra in args[1:]:
+            extrarepos.append(extra)
