@@ -1,0 +1,6 @@
+dmidecode
+efibootmgr
+grub
+memtest86+
+pcmciautils
+syslinux
