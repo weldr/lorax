@@ -22,9 +22,10 @@
 
 version = (0, 1)
 
-__all__ = ['discinfo']
+__all__ = ['discinfo', 'treeinfo']
 
 import discinfo
+import treeinfo
 
 def show_version(prog):
     """show_version(prog)
