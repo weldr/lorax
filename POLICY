@@ -1,0 +1,37 @@
+Policies for initrd.img and install.img image generation.
+
+lorax takes a different approach than the previous buildinstall set of scripts
+for generating the boot and install images and tree data files.  First, the
+main ideas:
+
+    * Configuration files control the list of packages to make images with.
+
+    * Rather than explicitly listing the files to keep in the images (i.e.,
+      we used to have KEEPFILE variables in upd-instroot), we now take what
+      the packages lay down and do a minimal tree scrubbing (remove docs,
+      for example).  This is customizable through configuration files
+      because we will always have exceptions.
+
+    * The main root tree generated from the package set is broken in to
+      /usr for the install.img and everything else for the initrd.img.
+      This is configurable through configuration files since we will
+      always have exceptions.
+
+    * Static data such as files we need to place in /etc in the images or
+      other control files are stored in /usr/share/lorax and copied in to
+      the image staging tree.
+
+The approach of taking what the packages give us is a decision to make
+maintenance of the image building tools easier.  Whatever the packages lay
+down should be sufficient for the installation images and we shouldn't
+have to have our own list of files to keep and library gathering routines.
+Let the packaging tools figure that out.
+
+The whole tool is written in Python with a driver program ("lorax"), but the
+actual logic for the program is in the pylorax module.  The idea behind this
+is that tools such as pungi can potentially import pylorax directly and not
+have to run the command line tool to do image generation work.  That is,
+pungi can use lorax programatically.
+
+This tool is still in the early stages of development (Sep 2008) and patches
+and comments are welcome.
