@@ -23,8 +23,9 @@
 
 import getopt
 import os
-import pylorax
 import sys
+
+import pylorax
 
 def usage(prog):
     print "Usage: %s required_arguments... [optional_arguments...] repo\n" % (prog,)
@@ -90,8 +91,36 @@ if __name__ == "__main__":
         print "ERROR: Missing repo to use for image generation."
         sys.exit(1)
 
-    repo = args[0]
+    # collect all repos specified on the command line.  the first repo is
+    # designated the main repo (I guess)
+    repo, extrarepos = pylorax.collectRepos(args)
 
-    if len(args) > 1:
-        for extra in args[1:]:
-            extrarepos.append(extra)
+    # create directories that we will be using for image generation
+    buildinstdir, treedir, cachedir = pylorax.initializeDirs(output)
+
+    # write out yum.conf used for image generation
+    yumconf = pylorax.writeYumConf(cachedir=cachedir, repo=repo, extrarepos=extrarepos, mirrorlist=mirrorlist)
+    if yumconf is None:
+        sys.stderr.write("Error generating temporary yum.conf file.\n")
+        sys.exit(1)
+
+    print "I am the Lorax.  I speak for the trees..."
+
+    
+
+
+    # upd-instroot
+
+    # write .treeinfo file
+    if not pylorax.treeinfo.write(family=product, variant=variant, version=version, arch=buildarch, outdir=output):
+        sys.stderr.write("Error writing %s/.treeinfo file.\n" % (output,)
+
+    # mk-images
+
+    # write .discinfo file
+    if not pylorax.discinfo.write(release=release, arch=buildarch, outdir=output):
+        sys.stderr.write("Error writing %s/.discinfo file.\n" % (output,)
+
+    # clean up
+    trash = [yumconf, treedir, buildinstdir]
+    pylorax.cleanup(trash)
