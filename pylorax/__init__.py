@@ -22,7 +22,18 @@
 
 version = (0, 1)
 
+__all__ = ['discinfo']
+
+import discinfo
+
 def show_version(prog):
+    """show_version(prog)
+
+    Display program name (prog) and version number.  If prog is an empty
+    string or None, use the value 'pylorax'.
+
+    """
+
     if prog is None or prog == '':
         prog = 'pylorax'
 
