@@ -85,7 +85,7 @@ def initializeDirs(output):
     tmpdir = tempfile.gettempdir()
     buildinstdir = tempfile.mkdtemp('XXXXXX', 'buildinstall.tree.', tmpdir)
     treedir = tempfile.mkdtemp('XXXXXX', 'treedir.', tmpdir)
-    cachedir = tempfile.mkdtemp('XXXXXX', 'yumcache.' tmpdir)
+    cachedir = tempfile.mkdtemp('XXXXXX', 'yumcache.', tmpdir)
 
     return buildinstdir, treedir, cachedir
 
@@ -123,8 +123,8 @@ def writeYumConf(cachedir=None, repo=None, extrarepos=[], mirrorlist=[]):
     if extrarepos != []:
         n = 1
         for extra in extrarepos:
-            f.write("[anaconda-extrarepo-%d]\n" % (n,)
-            f.write("name=anaconda extra repo %d\n" % (n,)
+            f.write("[anaconda-extrarepo-%d]\n" % (n,))
+            f.write("name=anaconda extra repo %d\n" % (n,))
             f.write("baseurl=%s\n" % (extra,))
             f.write("enabled=1\n")
             n += 1
@@ -132,16 +132,16 @@ def writeYumConf(cachedir=None, repo=None, extrarepos=[], mirrorlist=[]):
     if mirrorlist != []:
         n = 1
         for mirror in mirrorlist:
-            f.write("[anaconda-mirrorlistrepo-%d]\n" % (n,)
-            f.write("name=anaconda mirrorlist repo %d\n" % (n,)
+            f.write("[anaconda-mirrorlistrepo-%d]\n" % (n,))
+            f.write("name=anaconda mirrorlist repo %d\n" % (n,))
             f.write("mirrorlist=%s\n" % (extra,))
-            f.write("enabled=1\n") 
+            f.write("enabled=1\n")
             n += 1
 
     f.close()
     return yumconf
 
-def cleanup(trash=[])
+def cleanup(trash=[]):
     """cleanup(trash)
 
     Given a list of things to remove, cleanup() will remove them if it can.

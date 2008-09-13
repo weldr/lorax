@@ -113,13 +113,13 @@ if __name__ == "__main__":
 
     # write .treeinfo file
     if not pylorax.treeinfo.write(family=product, variant=variant, version=version, arch=buildarch, outdir=output):
-        sys.stderr.write("Error writing %s/.treeinfo file.\n" % (output,)
+        sys.stderr.write("Error writing %s/.treeinfo file.\n" % (output,))
 
     # mk-images
 
     # write .discinfo file
     if not pylorax.discinfo.write(release=release, arch=buildarch, outdir=output):
-        sys.stderr.write("Error writing %s/.discinfo file.\n" % (output,)
+        sys.stderr.write("Error writing %s/.discinfo file.\n" % (output,))
 
     # clean up
     trash = [yumconf, treedir, buildinstdir]
