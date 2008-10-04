@@ -106,7 +106,7 @@ def writeYumConf(cachedir=None, repo=None, extrarepos=[], mirrorlist=[]):
         return None
 
     tmpdir = tempfile.gettempdir()
-    (f, yumconf) = tempfile.mkstemp('XXXXXX', 'yum.conf', tmpdir)
+    (f, yumconf) = tempfile.mkstemp(prefix='yum.conf', dir=tmpdir)
 
     f.write("[main]\n")
     f.write("cachedir=%s\n" % (cachedir,))
@@ -140,6 +140,48 @@ def writeYumConf(cachedir=None, repo=None, extrarepos=[], mirrorlist=[]):
 
     f.close()
     return yumconf
+
+def getBuildArch(yumconf=None):
+    """getBuildArch(yumconf=None)
+
+    Query the configured yum repositories to determine our build architecture,
+    which is the architecture of the anaconda package in the repositories.
+
+    The required argument is yumconf, which is the path to the yum configuration
+    file to use.
+
+    This function is based on a subset of what repoquery(1) does.
+
+    """
+
+    uname_arch = os.uname()[4]
+
+    if yumconf == '' or yumconf is None or not os.path.isfile(yumconf):
+        return uname_arch
+
+    repoq = yum.YumBase()
+    repoq.doConfigSetup()
+
+    try:
+        repoq.doRepoSetup()
+    except yum.Errors.RepoError, e:
+        sys.stderr.write("ERROR: could not query yum repository for build arch, defaulting to %s\n" % (uname_arch,))
+        return uname_arch
+
+    repoq.doSackSetup(rpmUtils.arch.getArchList())
+    repoq.doTsSetup()
+
+    ret_arch = None
+    for pkg in repoq.pkgSack.simplePkgList():
+        (n, a, e, v, r) = pkg
+        if n == 'anaconda':
+            ret_arch = a
+            break
+
+    if ret_arch is None:
+        ret_arch = uname_arch
+
+    return ret_arch
 
 def cleanup(trash=[]):
     """cleanup(trash)
