@@ -28,20 +28,20 @@ import sys
 import pylorax
 
 def usage(prog):
-    print "Usage: %s required_arguments... [optional_arguments...] repo\n" % (prog,)
-    print "Required arguments:"
-    print "    -v, --version STRING       Version identifier."
-    print "    -p, --product STRING       Product name."
-    print "    -r, --release STRING       Release information or comment.\n"
-    print "    -o, --output PATHSPEC      Where to write output files."
-    print "Optional arguments:"
-    print "    -d, --debug                Enable debugging messages."
-    print "    -t, --variant STRING       Variant name."
-    print "    -b, --bugurl URL           Bug reporting URL for the product."
-    print "    -u, --updates PATHSPEC     Path to find updated RPMS."
-    print "    -m, --mirrorlist REPO      Mirror list repo.\n"
-    print "A 'repo' specification is a valid yum repository path.\n"
-    print "See the man page lorax(8) for more information."
+    print("Usage: %s -v VERSION -p PRODUCT -r RELEASE -o PATH REPO\n" % (prog,))
+    print("Required arguments:")
+    print("    -v, --version=STRING       Version identifier.")
+    print("    -p, --product=STRING       Product name.")
+    print("    -r, --release=STRING       Release information or comment.\n")
+    print("    -o, --output=PATHSPEC      Where to write output files.")
+    print("Optional arguments:")
+    print("    -d, --debug                Enable debugging messages.")
+    print("    -t, --variant=STRING       Variant name.")
+    print("    -b, --bugurl=URL           Bug reporting URL for the product.")
+    print("    -u, --updates=PATHSPEC     Path to find updated RPMS.")
+    print("    -m, --mirrorlist=REPO      Mirror list repo, may be listed multiple times.\n")
+    print("A 'REPO' specification is a valid yum repository path.\n")
+    print("See the man page lorax(8) for more information.")
 
 if __name__ == "__main__":
     prog = os.path.basename(sys.argv[0])
@@ -84,11 +84,11 @@ if __name__ == "__main__":
             sys.exit(0)
 
     if version is None or product is None or release is None or output is None:
-        print "ERROR: Missing a required argument."
+        sys.stderr.write("ERROR: Missing a required argument.\n")
         sys.exit(1)
 
     if len(args) == 0:
-        print "ERROR: Missing repo to use for image generation."
+        sys.stderr.write("ERROR: Missing repo to use for image generation.\n")
         sys.exit(1)
 
     # collect all repos specified on the command line.  the first repo is
@@ -104,18 +104,17 @@ if __name__ == "__main__":
         sys.stderr.write("Error generating temporary yum.conf file.\n")
         sys.exit(1)
 
-    print "I am the Lorax.  I speak for the trees..."
-
-    
-
+    buildarch = pylorax.getBuildArch()
 
     # upd-instroot
+    # XXX
 
     # write .treeinfo file
     if not pylorax.treeinfo.write(family=product, variant=variant, version=version, arch=buildarch, outdir=output):
         sys.stderr.write("Error writing %s/.treeinfo file.\n" % (output,))
 
     # mk-images
+    # XXX
 
     # write .discinfo file
     if not pylorax.discinfo.write(release=release, arch=buildarch, outdir=output):
