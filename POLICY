@@ -10,7 +10,10 @@ main ideas:
       we used to have KEEPFILE variables in upd-instroot), we now take what
       the packages lay down and do a minimal tree scrubbing (remove docs,
       for example).  This is customizable through configuration files
-      because we will always have exceptions.
+      because we will always have exceptions.  But the policy in lorax is
+      opposite of the buildinstall policy:  take everything that RPMS lay
+      down, remove what we don't want--rather than removing everything
+      that is not explicitly listed in KEEPFILE variables.
 
     * The main root tree generated from the package set is broken in to
       /usr for the install.img and everything else for the initrd.img.
