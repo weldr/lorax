@@ -1,6 +1,3 @@
-echo "Building images..."
-$UPD_INSTROOT $DEBUGSTR $NOGRSTR --arch $BUILDARCH $UPDATES --imgdir $TREEDIR/install $yumconf
-
 # FIXME: need to update mk-images to take the yumconf
 echo "Making images..."
 $MK_IMAGES $DEBUGSTR $NOGRSTR --imgdir $TREEDIR/install --arch $BUILDARCH --product "$PRODUCTSTR" --version $VERSION --bugurl "$BUGURL" --output $OUTPUT $yumconf
