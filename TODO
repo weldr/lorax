@@ -4,6 +4,4 @@
 
 - Need a Makefile of some sort
 
-- Allow a confdir override for lorax on the command line
-
 - Hook lorax up to pungi

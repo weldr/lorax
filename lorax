@@ -39,7 +39,8 @@ def usage(prog):
     print("    -t, --variant=STRING       Variant name.")
     print("    -b, --bugurl=URL           Bug reporting URL for the product.")
     print("    -u, --updates=PATHSPEC     Path to find updated RPMS.")
-    print("    -m, --mirrorlist=REPO      Mirror list repo, may be listed multiple times.\n")
+    print("    -m, --mirrorlist=REPO      Mirror list repo, may be listed multiple times.")
+    print("    -c, --confdir=PATHSPEC     Path to config files (default: /etc/lorax).\n")
     print("A 'REPO' specification is a valid yum repository path.\n")
     print("See the man page lorax(8) for more information.")
 
@@ -52,10 +53,11 @@ if __name__ == "__main__":
     bugurl = 'your distribution provided bug reporting tool.'
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "v:p:r:o:dt:b:u:m:V",
+        opts, args = getopt.getopt(sys.argv[1:], "v:p:r:o:dt:b:u:m:c:V",
                                    ["version=", "product=", "release=",
                                     "output=", "debug", "variant=",
-                                    "bugurl=", "updates=", "mirrorlist="])
+                                    "bugurl=", "updates=", "mirrorlist=",
+                                    "confdir="])
     except getopt.GetoptError:
         usage(prog)
         sys.exit(1)
@@ -79,6 +81,11 @@ if __name__ == "__main__":
             updates = a
         elif o in ('-m', '--mirrorlist'):
             mirrorlist.append(a)
+        elif o in ('-c', '--confdir'):
+            if os.path.isdir(a):
+                pylorax.conf['confdir'] = a
+            else:
+                sys.stderr.write("ERROR: %s is not a directory.\n" % (a,))
         elif o in ('-V'):
             pylorax.show_version(prog)
             sys.exit(0)
