@@ -20,6 +20,7 @@
 # Author(s): David Cantrell <dcantrell@redhat.com>
 #
 
+import os
 import sys
 import pylorax
 
