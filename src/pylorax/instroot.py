@@ -118,7 +118,7 @@ def installPackages(yumconf=None, destdir=None, packages=None):
     if yumconf is None or destdir is None or packages is None or packages == []:
         return False
 
-    arglist = ['-c', yumconf, '-v']
+    arglist = ['-c', yumconf]
     arglist.append("--installroot=%s" % (destdir,))
     arglist += ['install', '-y'] + packages
 
