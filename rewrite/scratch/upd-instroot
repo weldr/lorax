@@ -1,0 +1,266 @@
+. $(dirname $0)/buildinstall.functions
+
+
+# ..........this is the pylorax.instroot.installPackages() function in lorax
+expandPackageSet() {
+    if [ -n "$UPDATES" ]; then
+	(cd $UPDATES; find) | (cd $UPDATES ; /bin/cpio --quiet -pmdu $YUMDIR)
+    fi
+
+    # figure out the theme to keep
+    if [ -f $YUMDIR/etc/gtk-2.0/gtkrc ]; then
+	gtktheme=$(grep "gtk-theme-name" $YUMDIR/etc/gtk-2.0/gtkrc | awk {'print $3;'} | sed -e 's/"//g')
+	echo "usr/share/themes/$gtktheme" >> $KEEPFILES
+	# find gtk engine needed
+	for engine in `grep engine $YUMDIR/usr/share/themes/$gtktheme/gtk-2.0/gtkrc | awk {'print $2;'} | sed -e 's/"//g' | sort -u` ; do
+	    echo "usr/$LIBDIR/gtk-2.0/*/engines/*$engine*" >> $KEEPFILES
+	done
+	
+	theme=$(grep "gtk-icon-theme-name" $YUMDIR/etc/gtk-2.0/gtkrc | awk {'print $3;'} | sed -e 's/"//g')
+	while [ -n "$theme" ]; do 
+	    echo "usr/share/icons/$theme" >> $KEEPFILES
+	    theme=$(grep Inherits $YUMDIR/usr/share/icons/$theme/index.theme | cut -d = -f 2)
+	done
+    fi
+
+    echo `date` "Installing files"
+    pushd $YUMDIR >/dev/null
+    cat $KEEPFILES | while read spec ; do
+      #Pull off path
+      path=`echo "$spec" | sed 's,\([^[*\?]*\)/.*,\1,'`
+      for filespec in `find ./$path -path "./$spec" 2> /dev/null` ; do
+	if [ ! -e $filespec ]; then
+	    continue
+	elif [ ! -d $filespec ]; then
+	    instFile $filespec $PKGDEST
+	else
+	    for i in `find $filespec -type f 2> /dev/null` ; do instFile $i $PKGDEST ; done
+	    for i in `find $filespec -type l 2> /dev/null` ; do instFile $i $PKGDEST ; done
+	    for d in `find $filespec -type d 2> /dev/null` ; do instDir $d $PKGDEST ; done
+	fi
+      done
+    done
+    popd >/dev/null
+}
+
+
+
+
+
+
+rm -rf $DEST; mkdir -p $DEST/usr/sbin $DEST/var/lib $DEST/boot
+ln -s /tmp $DEST/var/lib/xkb
+
+echo `date` "Expanding packages..."
+YUMDIR=${TMPDIR:-/tmp}/yumdir.$$
+mkdir -p $YUMDIR/var/log
+mkdir -p $YUMDIR/var/lib/yum
+
+expandPackageSet $yumconf $YUMDIR "$RPMS" $DEST $KEEPFILE
+echo `date` "Done Expanding packages..."
+
+# Dogtail will check this
+echo "Creating customized GConf2 settings for root"
+mkdir -p $DEST/.gconf/desktop/gnome/interface
+touch $DEST/.gconf/desktop/%gconf.xml
+touch $DEST/.gconf/desktop/gnome/%gconf.xml
+cat > $DEST/.gconf/desktop/gnome/interface/%gconf.xml <<EOF
+<?xml version="1.0"?>
+<gconf>
+        <entry name="accessibility" mtime="1176200664" type="bool" value="true">
+        </entry>
+</gconf>
+EOF
+
+rm -rf $YUMDIR
+
+chown -R root:root $DEST
+chmod -R a+rX-w $DEST
+
+# Remove locales unused during the install
+cat $DEST/usr/lib/anaconda/lang-table* | awk '
+{ gsub("-", "", $4);
+  print $4;
+  print gensub(/\..*$/,"","",$4);
+  print gensub(/_.*$/,"","",$4);
+  if (split ($4, a, ".") > 1) {
+    print gensub(/\..*$/,tolower("." a[2]),"",$4);
+  };
+  print $2;
+}
+' | sed -e 's/latn/Latn/g' | LC_ALL=C sort -u > $DEST/locales
+for p in lib share; do (
+cd $DEST/usr/$p/locale && {
+ls | grep -v locale.alias | grep -v locale-archive | LC_ALL=C sort > $DEST/locales.list
+LC_ALL=C comm -13 $DEST/locales $DEST/locales.list | xargs rm -rf
+}
+); done
+rm -f $DEST/locales $DEST/locales.list
+
+# fixup joe links
+if [ -d "$DESTDIR"/etc/joe ]; then
+    ln -fs jpicorc $DEST/etc/joe/picorc
+    ln -fs jpicorc $DEST/etc/joe/jnanorc
+    ln -fs jpicorc $DEST/etc/joe/nanorc
+    ln -fs jmacsrc $DEST/etc/joe/emacsrc
+    ln -fs jmacs $DEST/usr/bin/emacs
+    ln -fs jpico $DEST/usr/bin/pico
+    ln -fs jpico $DEST/usr/bin/nano
+fi
+
+# fix up some links for man page related stuff
+for file in nroff groff iconv geqn gtbl gpic grefer ; do
+    ln -fs /mnt/sysimage/usr/bin/$file $DEST/usr/bin/$file
+done
+
+# create selinux config
+if [ -e $DEST/etc/selinux/targeted ]; then
+  cat > $DEST/etc/selinux/config <<EOF
+SELINUX=permissive
+SELINUXTYPE=targeted
+EOF
+fi
+
+echo "Creating libuser.conf"
+cat > $DEST/etc/libuser.conf <<EOF
+[defaults]
+skeleton = /mnt/sysimage/etc/skel
+mailspooldir = /mnt/sysimage/var/mail
+crypt_style = md5
+modules = files shadow
+create_modules = files shadow
+[files]
+directory = /mnt/sysimage/etc
+[shadow]
+directory = /mnt/sysimage/etc
+EOF
+
+sed -i 's|\(installforallkernels\) = 0|\1 = 1|' $DEST/etc/yum/pluginconf.d/fedorakmod.conf
+
+#
+# Manual pages in rescue: We dont have man pages in the image, so we point everything (The pages
+# and the man scripts to the /mnt/sysimage.  We want the man command to depend only on the
+# man.conf file, so we don't use the $MANPATH env variable.  The executables stay unchanged as
+# they will be soft links to /mnt/sysimage.
+#
+echo "Fixing up /etc/man.config to point into /mnt/sysimage"
+#
+# Lets avoid the lines with MANPATH_MAP for now
+#
+sed -i "s,^MANPATH[^_MAP][ \t]*,&/mnt/sysimage," $DEST/etc/man.config
+
+#
+# Lets change the lines with MANPATH_MAP.  Don't know how much of a difference this will make.
+#
+sed -i "s,^MANPATH_MAP[ \t]*[a-zA-Z0-9/]*[ \t]*,&/mnt/sysimage," $DEST/etc/man.config
+
+echo "Scrubbing tree..." "$DEST"
+mkdir -p $DEST/lib
+mkdir -p $DEST/firmware
+ln -snf /modules $DEST/lib/modules
+ln -snf /firmware $DEST/lib/firmware
+cp $DEST/usr/lib/anaconda/raidstart-stub $DEST/usr/bin/raidstart
+cp $DEST/usr/lib/anaconda/raidstop-stub $DEST/usr/bin/raidstop
+cp $DEST/usr/lib/anaconda/losetup-stub $DEST/usr/bin/losetup
+cp $DEST/usr/lib/anaconda/list-harddrives-stub $DEST/usr/bin/list-harddrives
+cp $DEST/usr/lib/anaconda/loadkeys-stub $DEST/usr/bin/loadkeys
+cp $DEST/usr/lib/anaconda/mknod-stub $DEST/usr/bin/mknod
+cp $DEST/usr/lib/anaconda/syslogd-stub $DEST/usr/bin/syslogd
+mv $DEST/usr/sbin/anaconda $DEST/usr/bin/anaconda
+mv $DEST/usr/lib/anaconda-runtime/lib* $DEST/usr/$LIBDIR 2>/dev/null
+
+mv $DEST/etc/yum.repos.d $DEST/etc/anaconda.repos.d
+
+rm -f $DEST/usr/$LIBDIR/libunicode-lite*
+
+find $DEST -type d | xargs chmod 755
+
+if [ -f $DEST/bin/bash ]; then
+    rm -f $DEST/bin/ash
+    ln -s bash $DEST/bin/sh
+else
+    ln -sf busybox $DEST/bin/sh
+fi
+
+[ -d $DEST/bin ] || die "ERROR: directory missing: $DEST/bin"
+[ -d $DEST/sbin ] || die "ERROR: directory missing: $DEST/sbin"
+(cd $DEST/bin; find) | (cd $DEST/bin; /bin/cpio --quiet -pdmu $DEST/usr/bin)
+(cd $DEST/sbin; find) | (cd $DEST/sbin; /bin/cpio --quiet -pdmu $DEST/usr/sbin)
+rm -rf $DEST/bin
+rm -rf $DEST/sbin
+
+# Fix relative links like /usr/bin/udevinfo -> ../../sbin/udevadm
+for brokenlink in $(find $DEST/usr/{bin,sbin} -follow -lname '*') ; do
+    target="$(readlink $brokenlink)"
+    for pathbit in bin sbin; do
+        # if it starts with "../../sbin/", remove that
+        newtarget="${target##../../$pathbit/}"
+        # if we removed something, replace it with the proper path
+        if [ "$newtarget" != "$target" ]; then
+            # make it ../sbin/ instead
+            ln -sf "../$pathbit/$newtarget" "$brokenlink"
+        fi
+    done
+done
+
+# copy bootloader files for sparc
+if [ $ARCH = sparc ]; then
+    mkdir -p $DEST/usr/lib/anaconda-runtime/boot
+    [ -d $DEST/boot ] || die "ERROR: directory missing: $DEST/boot"
+    (cd $DEST/boot; find -name "*.b") | (cd $DEST/boot; /bin/cpio --quiet -pdmu $DEST/usr/lib/anaconda-runtime/boot)
+fi
+
+# copy bootloader file for ppc
+if [ $ARCH = ppc -o $ARCH = ppc64 ]; then
+    mkdir -p $DEST/usr/lib/anaconda-runtime/boot
+    cp -af $DEST/boot/efika.forth $DEST/usr/lib/anaconda-runtime/boot
+fi
+
+# copy bootloader file for alpha
+if [ $ARCH = alpha ]; then
+    mkdir -p $DEST/usr/lib/anaconda-runtime/boot
+    cp -af $DEST/boot/bootlx $DEST/usr/lib/anaconda-runtime/boot
+fi
+
+# copy bootloader files for ia64
+if [ $ARCH = ia64 ]; then
+    mkdir -p $DEST/usr/lib/anaconda-runtime/boot
+    cp -af $DEST/boot/efi/EFI/redhat//* $DEST/usr/lib/anaconda-runtime/boot
+fi
+
+# copy bootloader files for i386/x86_64
+if [ $ARCH = i386 -o $ARCH = x86_64 ]; then
+    mkdir -p $DEST/usr/lib/anaconda-runtime/boot
+    cp -af $DEST/boot/memtest* $DEST/usr/lib/anaconda-runtime/boot
+fi
+
+rm -rf $DEST/boot $DEST/home $DEST/root $DEST/tmp
+
+find $DEST -name "*.a" | grep -v kernel-wrapper/wrapper.a | xargs rm -rf
+find $DEST -name "lib*.la" |grep -v "usr/$LIBDIR/gtk-2.0" | xargs rm -rf
+
+# nuke some python stuff we don't need
+for d in idle distutils bsddb lib-old hotshot doctest.py pydoc.py site-packages/japanese site-packages/japanese.pth ; do
+    rm -rf $DEST/$d
+done
+
+$DEST/usr/lib/anaconda-runtime/scrubtree $DEST
+
+echo "Creating debug dir"
+mkdir -p $DEST/usr/lib/debug
+mkdir -p $DEST/usr/src/debug
+
+find $DEST -name "*.py" | while read fn; do
+    rm -f ${fn}o
+    rm -f ${fn}c
+    ln -sf /dev/null ${fn}c
+done
+
+# some python stuff we don't need for install image
+rm -rf $DEST/usr/$LIBDIR/python?.?/site-packages/distutils/
+rm -rf $DEST/usr/$LIBDIR/python?.?/site-packages/lib-dynload/japanese
+rm -rf $DEST/usr/$LIBDIR/python?.?/site-packages/encodings/
+rm -rf $DEST/usr/$LIBDIR/python?.?/site-packages/compiler/
+rm -rf $DEST/usr/$LIBDIR/python?.?/site-packages/email/test/
+rm -rf $DEST/usr/$LIBDIR/python?.?/site-packages/curses/
+rm -rf $DEST/usr/$LIBDIR/python?.?/site-packages/pydoc.py

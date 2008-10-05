@@ -1,0 +1,20 @@
+     scripts/buildinstall
+     scripts/buildinstall.functions
+DONE scripts/makestamp.py
+DONE scripts/maketreeinfo.py
+     scripts/mk-images
+     scripts/mk-images.alpha
+     scripts/mk-images.efi
+     scripts/mk-images.ia64
+     scripts/mk-images.ppc
+     scripts/mk-images.s390
+     scripts/mk-images.x86
+     scripts/scrubtree
+     scripts/upd-instroot
+
+     utils/trimpciids
+     utils/mk-s390-cdboot.c
+     utils/filtermoddeps
+     utils/geninitrdsz.c
+     utils/genmodinfo
+     utils/modlist
