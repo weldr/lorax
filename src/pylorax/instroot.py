@@ -96,7 +96,7 @@ def createInstRoot(yumconf=None, arch=None, treedir=None, updates=None):
     return True
 
 # Call yummain to install the list of packages to destdir
-def installPackages(yumconf=yumconf, destdir=destdir, packages=packages):
+def installPackages(yumconf=None, destdir=None, packages=None):
     """installPackages(yumconf=yumconf, destdir=destdir, packages=packages)
 
     Call yummain to install the list of packages.  All parameters are
@@ -110,6 +110,9 @@ def installPackages(yumconf=yumconf, destdir=destdir, packages=packages):
     This function returns True on success, False on failre.
 
     """
+
+    if yumconf is None or destdir is None or packages is None or packages == []:
+        return False
 
     arglist = ['-c', yumconf, '-y']
     arglist.append("--installroot=%s" % (destdir,))
