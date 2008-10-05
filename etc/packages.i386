@@ -3,6 +3,7 @@
 dmidecode
 efibootmgr
 glibc.i386
+gpart
 grub
 memtest86+
 openssl.i386
