@@ -9,7 +9,7 @@ setup(name='lorax',
       license='GPLv2+',
       package_dir = {'': 'src'},
       packages = ['pylorax'],
-      scripts = ['src/bin/lorax.py'],
+      scripts = ['src/bin/lorax'],
       data_files = [('/usr/share/lorax', glob.glob('share/*')),
                     ('/etc/lorax', glob.glob('etc/*'))]
      )
