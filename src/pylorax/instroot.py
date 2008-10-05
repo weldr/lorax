@@ -118,9 +118,17 @@ def installPackages(yumconf=None, destdir=None, packages=None):
     if yumconf is None or destdir is None or packages is None or packages == []:
         return False
 
+    # build the list of arguments to pass to yum
     arglist = ['-c', yumconf]
     arglist.append("--installroot=%s" % (destdir,))
     arglist += ['install', '-y'] + packages
+
+    # do some prep work on the destdir before calling yum
+    os.makedirs(os.path.join(destdir, 'var', 'lib'))
+    os.makedirs(os.path.join(destdir, 'tmp'))
+    os.makedirs(os.path.join(destdir, 'var', 'log'))
+    os.makedirs(os.path.join(destdir, 'var', 'lib', 'yum'))
+    os.symlink(os.path.join(os.path.sep, 'tmp'), os.path.join(destdir, 'var', 'lib', 'xkb'))
 
     # XXX: sort through yum errcodes and return False for actual bad things
     # we care about
