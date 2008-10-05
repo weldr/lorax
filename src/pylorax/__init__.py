@@ -37,6 +37,7 @@ import instroot
 
 conf = {}
 conf['confdir'] = '/etc/lorax'
+conf['tmpdir'] = tempfile.gettempdir()
 
 def show_version(prog):
     """show_version(prog)
@@ -89,10 +90,10 @@ def initializeDirs(output):
     if not os.path.isdir(output):
         os.makedirs(output, mode=0755)
 
-    tmpdir = tempfile.gettempdir()
-    buildinstdir = tempfile.mkdtemp('XXXXXX', 'buildinstall.tree.', tmpdir)
-    treedir = tempfile.mkdtemp('XXXXXX', 'treedir.', tmpdir)
-    cachedir = tempfile.mkdtemp('XXXXXX', 'yumcache.', tmpdir)
+    conf['tmpdir'] = tempfile.mkdtemp('XXXXXX', 'lorax.tmp.', conf['tmpdir'])
+    buildinstdir = tempfile.mkdtemp('XXXXXX', 'buildinstall.tree.', conf['tmpdir'])
+    treedir = tempfile.mkdtemp('XXXXXX', 'treedir.', conf['tmpdir'])
+    cachedir = tempfile.mkdtemp('XXXXXX', 'yumcache.', conf['tmpdir'])
 
     return buildinstdir, treedir, cachedir
 
