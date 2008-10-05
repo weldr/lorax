@@ -113,7 +113,8 @@ def writeYumConf(cachedir=None, repo=None, extrarepos=[], mirrorlist=[]):
         return None
 
     tmpdir = tempfile.gettempdir()
-    (f, yumconf) = tempfile.mkstemp(prefix='yum.conf', dir=tmpdir)
+    (fd, yumconf) = tempfile.mkstemp(prefix='yum.conf', dir=tmpdir)
+    f = os.fdopen(fd, 'w')
 
     f.write("[main]\n")
     f.write("cachedir=%s\n" % (cachedir,))
@@ -146,6 +147,7 @@ def writeYumConf(cachedir=None, repo=None, extrarepos=[], mirrorlist=[]):
             n += 1
 
     f.close()
+    fd.close()
     return yumconf
 
 def getBuildArch(yumconf=None):
