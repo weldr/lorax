@@ -102,6 +102,10 @@ if __name__ == "__main__":
         sys.stderr.write("ERROR: Missing repo to use for image generation.\n")
         sys.exit(1)
 
+    print("\n+=======================================================+")
+    print("| Setting up work directories and configuration data... |")
+    print("+=======================================================+\n")
+
     # collect all repos specified on the command line.  the first repo is
     # designated the main repo (I guess)
     repo, extrarepos = pylorax.collectRepos(args)
@@ -117,10 +121,18 @@ if __name__ == "__main__":
 
     buildarch = pylorax.getBuildArch()
 
+    print("\n+================================================+")
+    print("| Creating instroot tree to build images from... |")
+    print("+================================================+\n")
+
     # upd-instroot
     if not pylorax.instroot.createInstRoot(yumconf=yumconf, arch=buildarch, treedir=treedir, updates=updates):
         sys.stderr.write("ERROR: Could not create inst root.\n")
         sys.exit(1)
+
+    print("\n+=======================================+")
+    print("| Writing meta data to instroot tree... |")
+    print("+=======================================+\n")
 
     # write .treeinfo file
     if not pylorax.treeinfo.write(family=product, variant=variant, version=version, arch=buildarch, outdir=output):
