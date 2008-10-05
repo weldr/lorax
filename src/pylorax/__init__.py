@@ -201,13 +201,14 @@ def cleanup(trash=[]):
 
     """
 
-    if trash is []:
-        return
+    if trash != []:
+        for item in trash:
+            if os.path.isdir(item):
+               shutil.rmtree(item, ignore_errors=True)
+            else:
+               os.unlink(item)
 
-    for item in trash:
-        if os.path.isdir(item):
-           shutil.rmtree(item, ignore_errors=True)
-        else:
-           os.unlink(item)
+    if os.path.isdir(conf['tmpdir']):
+        shutil.rmtree(conf['tmpdir'], ignore_errors=True)
 
     return
