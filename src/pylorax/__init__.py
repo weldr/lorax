@@ -113,7 +113,7 @@ def writeYumConf(cachedir=None, repo=None, extrarepos=[], mirrorlist=[]):
     if cachedir is None or repo is None:
         return None
 
-    tmpdir = tempfile.gettempdir()
+    tmpdir = conf['tmpdir']
     (fd, yumconf) = tempfile.mkstemp(prefix='yum.conf', dir=tmpdir)
     f = os.fdopen(fd, 'w')
 
