@@ -147,7 +147,6 @@ def writeYumConf(cachedir=None, repo=None, extrarepos=[], mirrorlist=[]):
             n += 1
 
     f.close()
-    fd.close()
     return yumconf
 
 def getBuildArch(yumconf=None):
