@@ -72,20 +72,23 @@ def createInstRoot(yumconf=None, arch=None, treedir=None, updates=None):
         if os.path.isfile(pfile):
             f = open(pfile, 'r')
             for line in f.readlines():
+                line = line.strip()
+
                 if line.startswith('#') or line == '':
                     continue
 
                 if line.startswith('-'):
                     try:
-                        packages.remove(line[1:].strip())
+                        packages.remove(line[1:])
                     except KeyError:
                         pass
                 else:
-                    packages.add(line.strip())
+                    packages.add(line)
 
             f.close()
 
-    packages = list(packages).sort()
+    packages = list(packages)
+    packages.sort()
 
     # install the packages to the instroot
     if not installPackages(yumconf=yumconf, destdir=destdir, packages=packages):
@@ -115,14 +118,8 @@ def installPackages(yumconf=None, destdir=None, packages=None):
     if yumconf is None or destdir is None or packages is None or packages == []:
         return False
 
-    arglist = ['-c', yumconf, '-y']
+    arglist = ['-c', yumconf, '-v']
     arglist.append("--installroot=%s" % (destdir,))
-    arglist.append('install')
-
-    pkgs = ''
-    for package in packages:
-        pkgs += ' ' + package
-
-    arglist.append(pkgs.strip())
+    arglist += ['install', '-y'] + packages
 
     return yummain.user_main(arglist, exit_code=False)
