@@ -101,13 +101,15 @@ if __name__ == "__main__":
     # write out yum.conf used for image generation
     yumconf = pylorax.writeYumConf(cachedir=cachedir, repo=repo, extrarepos=extrarepos, mirrorlist=mirrorlist)
     if yumconf is None:
-        sys.stderr.write("Error generating temporary yum.conf file.\n")
+        sys.stderr.write("ERROR: Could not generate temporary yum.conf file.\n")
         sys.exit(1)
 
     buildarch = pylorax.getBuildArch()
 
     # upd-instroot
-    # XXX
+    if not pylorax.instroot.createInstRoot(yumconf=yumconf, arch=buildarch, treedir=treedir, updates=updates):
+        sys.stderr.write("ERROR: Could not create inst root.\n")
+        sys.exit(1)
 
     # write .treeinfo file
     if not pylorax.treeinfo.write(family=product, variant=variant, version=version, arch=buildarch, outdir=output):
