@@ -58,17 +58,17 @@ def createInstRoot(yumconf=None, arch=None, treedir=None, updates=None):
         libdir = 'lib'
 
     # the directory where the instroot will be created
-    destdir = treedir + '/install'
+    destdir = os.path.join(treedir, 'install')
     os.makedirs(destdir)
 
     # build a list of packages to install
     packages = set()
 
     packages_files = []
-    packages_files.append(pylorax.conf['confdir'] + '/packages')
-    packages_files.append(pylorax.conf['confdir'] + '/' + arch + '/packages')
+    packages_files.append(os.path.join(pylorax.conf['confdir'], 'packages'))
+    packages_files.append(os.path.join(pylorax.conf['confdir'], arch, 'packages'))
 
-    for pfile in packages_file:
+    for pfile in packages_files:
         if os.path.isfile(pfile):
             f = open(pfile, 'r')
             for line in f.readlines():
