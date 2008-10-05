@@ -40,7 +40,8 @@ def usage(prog):
     print("    -b, --bugurl=URL           Bug reporting URL for the product.")
     print("    -u, --updates=PATHSPEC     Path to find updated RPMS.")
     print("    -m, --mirrorlist=REPO      Mirror list repo, may be listed multiple times.")
-    print("    -c, --confdir=PATHSPEC     Path to config files (default: /etc/lorax).\n")
+    print("    -c, --confdir=PATHSPEC     Path to config files (default: /etc/lorax).")
+    print("    -C, --cleanup              Cleanup on exit.\n")
     print("A 'REPO' specification is a valid yum repository path.\n")
     print("See the man page lorax(8) for more information.")
 
@@ -49,15 +50,16 @@ if __name__ == "__main__":
     opts, args, mirrorlist, extrarepos = [], [], [], []
     version, product, release, output, repo = None, None, None, None, None
     debug = False
+    cleanup = False
     variant, updates = '', ''
     bugurl = 'your distribution provided bug reporting tool.'
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "v:p:r:o:dt:b:u:m:c:V",
+        opts, args = getopt.getopt(sys.argv[1:], "v:p:r:o:dt:b:u:m:c:CV",
                                    ["version=", "product=", "release=",
                                     "output=", "debug", "variant=",
                                     "bugurl=", "updates=", "mirrorlist=",
-                                    "confdir="])
+                                    "confdir=", "cleanup"])
     except getopt.GetoptError:
         usage(prog)
         sys.exit(1)
@@ -86,6 +88,8 @@ if __name__ == "__main__":
                 pylorax.conf['confdir'] = a
             else:
                 sys.stderr.write("ERROR: %s is not a directory.\n" % (a,))
+        elif o in ('-C', '--cleanup'):
+            cleanup = True
         elif o in ('-V'):
             pylorax.show_version(prog)
             sys.exit(0)
@@ -130,4 +134,5 @@ if __name__ == "__main__":
         sys.stderr.write("Error writing %s/.discinfo file.\n" % (output,))
 
     # clean up
-    pylorax.cleanup()
+    if cleanup:
+        pylorax.cleanup()
