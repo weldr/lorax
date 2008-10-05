@@ -7,16 +7,17 @@ for comp in glob.glob(os.path.join(os.getcwd(), 'etc', '*')):
     if os.path.isfile(comp):
         main_etc_files.append(comp)
 
-etc_data_files = [(os.path.join('etc', 'lorax'), main_etc_files)]
+etc_data_files = [(os.path.join(os.path.sep, 'etc', 'lorax'),
+                   main_etc_files)]
 
 for comp in glob.glob(os.path.join(os.getcwd(), 'etc', '*')):
     if os.path.isdir(comp):
         sub_files = glob.glob(os.path.join(comp, '*'))
-        etc_path = os.path.join('etc', 'lorax', os.path.basename(comp))
+        etc_path = os.path.join(os.path.sep, 'etc', 'lorax', os.path.basename(comp))
         etc_data_files.append((etc_path, sub_files))
 
 data_files = [(os.path.join('usr', 'share', 'lorax'),
-               glob.glob(os.path.join('share', '*')))] + etc_data_files
+               glob.glob(os.path.join(os.path.sep, 'share', '*')))] + etc_data_files
 
 setup(name='lorax',
       version='0.1',
