@@ -22,14 +22,21 @@
 
 version = (0, 1)
 
-__all__ = ['discinfo', 'treeinfo']
+__all__ = ['discinfo', 'treeinfo', 'instroot']
 
 import os
 import shutil
 import tempfile
 
+import yum
+import rpmUtils
+
 import discinfo
 import treeinfo
+import instroot
+
+conf = {}
+conf['confdir'] = '/etc/lorax'
 
 def show_version(prog):
     """show_version(prog)
