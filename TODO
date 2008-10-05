@@ -1,7 +1,4 @@
 - Finish rewriting the code in rewrite/
-
 - Write a man page for lorax
-
-- Need a Makefile of some sort
-
 - Hook lorax up to pungi
+- Support a verbose output mode
