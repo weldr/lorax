@@ -122,4 +122,7 @@ def installPackages(yumconf=None, destdir=None, packages=None):
     arglist.append("--installroot=%s" % (destdir,))
     arglist += ['install', '-y'] + packages
 
-    return yummain.user_main(arglist, exit_code=False)
+    # XXX: sort through yum errcodes and return False for actual bad things
+    # we care about
+    errcode = yummain.user_main(arglist, exit_code=False)
+    return True
