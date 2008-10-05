@@ -38,6 +38,7 @@ import instroot
 conf = {}
 conf['confdir'] = '/etc/lorax'
 conf['tmpdir'] = tempfile.gettempdir()
+conf['datadir'] = '/usr/share/lorax'
 
 def show_version(prog):
     """show_version(prog)
