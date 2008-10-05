@@ -124,16 +124,16 @@ def writeYumConf(cachedir=None, repo=None, extrarepos=[], mirrorlist=[]):
     f.write("plugins=0\n")
     f.write("reposdir=\n")
     f.write("tsflags=nodocs\n\n")
-    f.write("[anacondarepo]\n")
-    f.write("name=anaconda repo\n")
+    f.write("[loraxrepo]\n")
+    f.write("name=lorax repo\n")
     f.write("baseurl=%s\n" % (repo,))
     f.write("enabled=1\n\n")
 
     if extrarepos != []:
         n = 1
         for extra in extrarepos:
-            f.write("[anaconda-extrarepo-%d]\n" % (n,))
-            f.write("name=anaconda extra repo %d\n" % (n,))
+            f.write("[lorax-extrarepo-%d]\n" % (n,))
+            f.write("name=lorax extra repo %d\n" % (n,))
             f.write("baseurl=%s\n" % (extra,))
             f.write("enabled=1\n")
             n += 1
@@ -141,8 +141,8 @@ def writeYumConf(cachedir=None, repo=None, extrarepos=[], mirrorlist=[]):
     if mirrorlist != []:
         n = 1
         for mirror in mirrorlist:
-            f.write("[anaconda-mirrorlistrepo-%d]\n" % (n,))
-            f.write("name=anaconda mirrorlist repo %d\n" % (n,))
+            f.write("[lorax-mirrorlistrepo-%d]\n" % (n,))
+            f.write("name=lorax mirrorlist repo %d\n" % (n,))
             f.write("mirrorlist=%s\n" % (extra,))
             f.write("enabled=1\n")
             n += 1
