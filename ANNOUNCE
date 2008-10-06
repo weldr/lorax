@@ -1,0 +1,107 @@
+Announcing lorax-0.1
+
+"I am the Lorax, I speak for the trees."
+
+(and images)
+
+
+WHAT IS IT
+----------
+
+lorax is a replacement for the buildinstall maze of scripts and tools we
+have in anaconda.  It is written in Python in the hopes that it will be
+easier to hook in to programs like pungi.
+
+It also moves the tools that generate installation images in to a separate
+project from anaconda itself.
+
+
+WHAT DOES IT REPLACE?
+---------------------
+
+All of these things from the anaconda source tree:
+
+     scripts/buildinstall
+     scripts/buildinstall.functions
+     scripts/makestamp.py
+     scripts/maketreeinfo.py
+     scripts/mk-images
+     scripts/mk-images.alpha
+     scripts/mk-images.efi
+     scripts/mk-images.ia64
+     scripts/mk-images.ppc
+     scripts/mk-images.s390
+     scripts/mk-images.x86
+     scripts/scrubtree
+     scripts/upd-instroot
+
+     utils/trimpciids
+     utils/mk-s390-cdboot.c
+     utils/filtermoddeps
+     utils/geninitrdsz.c
+     utils/genmodinfo
+     utils/modlist
+
+
+WHY REWRITE BUILDINSTALL
+------------------------
+
+The buildinstall scripts were magic and maintaining them was sort of an art
+form.  The entire collection of tools used in a buildinstall run are written
+in bash, Perl, Python, and C.  Maintenance nightmare.
+
+The way packages were specified for inclusion in the instroot as well as
+what files were to be kept or removed were specified in the upd-instroot
+script.  Again, difficult maintenance.
+
+Lorax is intended to mostly be a drop-in replacement for buildinstall.  The
+frontend program accepts the same command line arguments as buildinstall,
+but all of the work is done through the pylorax Python module rather than
+separate scripts or programs.
+
+
+MAJOR CHANGES
+-------------
+
+Aside from offering a standalone tool that replaces the buildinstall script
+collection and being written in Python, lorax introduces some policy changes
+for how install images are generated.
+
+(a) Keep everything by default, remove listed items.
+
+In the buildinstall scripts, we have the KEEPFILE set of variables that
+define what files (by wildcard or explicit names) we want to keep in a
+particular image.  The standard policy for buildinstall is to unpack a set
+of packages (listed in PACKAGES variables) and then remove everything not
+explicitly listed in a KEEPFILE variable.  This aspect causes a lot of
+maintenance headaches.
+
+The lorax approach is to trust yum and package maintainers to give us what
+we want.  We define a set of packages we want for the image using
+configuration files in /etc/lorax.  Using yum, the packages are installed to
+the staging root tree.  Then tree scrubbing takes place, which is
+customizable by the user.  So, the default policy of lorax is to keep
+everything a package gives us and only remove things explicitly listed for
+the scrub operation.
+
+(b) Maintain image building tools as a separate project.
+
+If release engineering needs to regenerate trees for a nightly build because
+a problem was encountered during image building, that requires a new
+anaconda build to show up.  Lorax allows customization through configuration
+files and in cases where bugs are discovered in it, a new release can be
+made independent of anaconda.
+
+Lorax can (and should) be maintained jointly by releng and the anaconda team.
+
+(c) Logic is in the pylorax module.
+
+Pungi may ultimately import the pylorax module to generate images rather
+than running the lorax command line tool.  Better integration in to Pungi
+is a goal of lorax.
+
+
+And there you have it.  Lorax.
+
+-- 
+David Cantrell <dcantrell@redhat.com>
