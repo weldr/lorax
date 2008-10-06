@@ -67,8 +67,11 @@ def collectRepos(args):
     repolist = []
     for repospec in args:
         if repospec.startswith('/'):
-            repolist.append("file://%s" % (repospec,))
+            repo = "file://%s" % (repospec,)
+            print("Adding local repo:\n     %s" % (repo,))
+            repolist.append(repo)
         elif repospec.startswith('http://') or repospec.startswith('ftp://'):
+            print("Adding remote repo:\n     %s" % (repospec,))
             repolist.append(repospec)
 
     repo = repolist[0]
@@ -76,6 +79,7 @@ def collectRepos(args):
 
     if len(repolist) > 1:
         for extra in repolist[1:]:
+            print("Adding extra repo:\n    %s" % (extra,))
             extrarepos.append(extra)
 
     return repo, extrarepos
@@ -95,6 +99,12 @@ def initializeDirs(output):
     buildinstdir = tempfile.mkdtemp('XXXXXX', 'buildinstall.tree.', conf['tmpdir'])
     treedir = tempfile.mkdtemp('XXXXXX', 'treedir.', conf['tmpdir'])
     cachedir = tempfile.mkdtemp('XXXXXX', 'yumcache.', conf['tmpdir'])
+
+    print("Working directories:")
+    print("    tmpdir = %s" % (conf['tmpdir'],)
+    print("    buildinstdir = %s" % (buildinstdir,))
+    print("    treedir = %s" % (treedir,))
+    print("    cachedir = %s" % (cachedir,))
 
     return buildinstdir, treedir, cachedir
 
@@ -149,6 +159,8 @@ def writeYumConf(cachedir=None, repo=None, extrarepos=[], mirrorlist=[]):
             n += 1
 
     f.close()
+    print("Wrote lorax yum configuration to %s" % (yumconf,))
+
     return yumconf
 
 def getBuildArch(yumconf=None):
@@ -190,6 +202,8 @@ def getBuildArch(yumconf=None):
 
     if ret_arch is None:
         ret_arch = uname_arch
+
+    print("Building images for %s" % (ret_arch,))
 
     return ret_arch
 
