@@ -230,7 +230,7 @@ def scrubInstRoot(destdir=None):
         for theme in os.listdir(theme_path):
             if theme != gtk_theme_name:
                 theme = os.path.join(theme_path, theme)
-                shutil.rmtree(theme, ignore_error=True)
+                shutil.rmtree(theme, ignore_errors=True)
 
     icon_path = os.path.join(destdir, 'usr', 'share', 'icons')
     if os.path.isdir(icon_path):
