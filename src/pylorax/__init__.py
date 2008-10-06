@@ -101,7 +101,7 @@ def initializeDirs(output):
     cachedir = tempfile.mkdtemp('XXXXXX', 'yumcache.', conf['tmpdir'])
 
     print("Working directories:")
-    print("    tmpdir = %s" % (conf['tmpdir'],)
+    print("    tmpdir = %s" % (conf['tmpdir'],))
     print("    buildinstdir = %s" % (buildinstdir,))
     print("    treedir = %s" % (treedir,))
     print("    cachedir = %s" % (cachedir,))
