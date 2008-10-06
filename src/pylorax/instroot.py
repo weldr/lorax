@@ -96,7 +96,7 @@ def createInstRoot(yumconf=None, arch=None, treedir=None, updates=None):
         sys.stderr.write("ERROR: Could not install packages.\n")
         sys.exit(1)
 
-    if not scrubInstRoot(destdir=destdir):
+    if not scrubInstRoot(destdir=destdir, libdir=libdir):
         sys.stderr.write("ERROR: Could not scrub instroot.\n")
         sys.exit(1)
 
@@ -138,13 +138,14 @@ def installPackages(yumconf=None, destdir=None, packages=None):
     return True
 
 # Scrub the instroot tree (remove files we don't want, modify settings, etc)
-def scrubInstRoot(destdir=None):
-    """scrubInstRoot(destdir=None)
+def scrubInstRoot(destdir=None, libdir='lib'):
+    """scrubInstRoot(destdir=None, libdir='lib')
 
     Clean up the newly created instroot and make the tree more suitable to
     run the installer.
 
-    destdir is the path to the instroot and is the only required argument.
+    destdir is the path to the instroot.  libdir is the subdirectory in
+    /usr for libraries (either lib or lib64).
 
     """
 
