@@ -1,4 +1,6 @@
 - Finish rewriting the code in rewrite/
 - Write a man page for lorax
-- Hook lorax up to pungi
+- Hook lorax up to pungi (provide Jesse with a patch)
 - Support a verbose output mode
+- Make sure we are root when executed
+- If we have to be root, should lorax be in /usr/sbin ?
