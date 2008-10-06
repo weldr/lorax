@@ -68,10 +68,10 @@ def collectRepos(args):
     for repospec in args:
         if repospec.startswith('/'):
             repo = "file://%s" % (repospec,)
-            print("Adding local repo:\n     %s" % (repo,))
+            print("Adding local repo:\n    %s" % (repo,))
             repolist.append(repo)
         elif repospec.startswith('http://') or repospec.startswith('ftp://'):
-            print("Adding remote repo:\n     %s" % (repospec,))
+            print("Adding remote repo:\n    %s" % (repospec,))
             repolist.append(repospec)
 
     repo = repolist[0]
@@ -79,7 +79,7 @@ def collectRepos(args):
 
     if len(repolist) > 1:
         for extra in repolist[1:]:
-            print("Adding extra repo:\n    %s" % (extra,))
+            print("Adding extra repo:\n   %s" % (extra,))
             extrarepos.append(extra)
 
     return repo, extrarepos
