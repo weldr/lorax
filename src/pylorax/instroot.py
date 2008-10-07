@@ -152,6 +152,8 @@ def scrubInstRoot(destdir=None, libdir='lib'):
     if destdir is None or not os.path.isdir(destdir):
         return False
 
+    print
+
     # drop custom configuration files in to the instroot
     dogtailconf = os.path.join(pylorax.conf['datadir'], 'dogtail-%conf.xml')
     if os.path.isfile(dogtailconf):
@@ -161,6 +163,7 @@ def scrubInstRoot(destdir=None, libdir='lib'):
         f = open(os.path.join(destdir, '.gconf', 'desktop', 'gnome', '%gconf.xml'), 'w')
         f.close()
         dest = os.path.join(destdir, '.gconf', 'desktop', 'gnome', 'interface', '%gconf.xml')
+        print "Installing %s..." % (os.path.join(os.path.sep, '.gconf', 'desktop', 'gnome', 'interface', '%gconf.xml'),)
         shutil.copy(dogtailconf, dest)
 
     # create selinux config
@@ -168,12 +171,14 @@ def scrubInstRoot(destdir=None, libdir='lib'):
         src = os.path.join(pylorax.conf['datadir'], 'selinux-config')
         if os.path.isfile(src):
             dest = os.path.join(destdir, 'etc', 'selinux', 'config')
+            print "Installing %s..." % (os.path.join(os.path.sep, 'etc', 'selinux', 'config'),)
             shutil.copy(src, dest)
 
     # create libuser.conf
     src = os.path.join(pylorax.conf['datadir'], 'libuser.conf')
     dest = os.path.join(destdir, 'etc', 'libuser.conf')
     if os.path.isfile(src):
+        print "Installing %s..." % (os.path.join(os.path.sep, 'etc', 'libuser.conf'),)
         shutil.copy(src, dest)
 
     # figure out the gtk+ theme to keep
@@ -183,6 +188,7 @@ def scrubInstRoot(destdir=None, libdir='lib'):
     gtk_engine = None
 
     if os.path.isfile(gtkrc):
+        print "\nReading %s..." % (os.path.join(os.path.sep, 'etc', 'gtk-2.0', 'gtkrc'),)
         f = open(gtkrc, 'r')
         lines = f.readlines()
         f.close()
@@ -191,6 +197,7 @@ def scrubInstRoot(destdir=None, libdir='lib'):
             line = line.strip()
             if line.startswith('gtk-theme-name'):
                 gtk_theme_name = line[line.find('=') + 1:].replace('"', '').strip()
+                print "    gtk-theme-name: %s" % (gtk_theme_name,)
 
                 # find the engine for this theme
                 gtkrc = os.path.join(destdir, 'usr', 'share', 'themes', gtk_theme_name, 'gtk-2.0', 'gtkrc')
@@ -204,15 +211,17 @@ def scrubInstRoot(destdir=None, libdir='lib'):
 
                         if engine_line.find('engine') != -1:
                             gtk_engine = engine_line[engine_line.find('"') + 1:].replace('"', '')
+                            print "    gtk-engine: %s" % (gtk_engine,)
                             break
             if line.startswith('gtk-icon-theme-name'):
                 icon_theme = line[line.find('=') + 1:].replace('"', '').strip()
                 gtk_icon_themes.append(icon_theme)
 
                 # bring in all inherited themes
-                while icon_theme != '':
+                while True:
                     icon_theme_index = os.path.join(destdir, 'usr', 'share', 'icons', icon_theme, 'index.theme')
                     if os.path.isfile(icon_theme_index):
+                        inherits = False
                         f = open(icon_theme_index, 'r')
                         icon_lines = f.readlines()
                         f.close()
@@ -220,11 +229,16 @@ def scrubInstRoot(destdir=None, libdir='lib'):
                         for icon_line in icon_lines:
                             icon_line = icon_line.strip()
                             if icon_line.startswith('Inherits='):
-                                icon_theme = line[line.find('=') + 1:].replace('"', '')
+                                inherits = True
+                                icon_theme = icon_line[icon_line.find('=') + 1:].replace('"', '')
+                                print "    gtk-icon-theme-name: %s" % (icon_theme,)
                                 gtk_icon_themes.append(icon_theme)
                                 break
+
+                        if not inherits:
+                            break
                     else:
-                        icon_theme = ''
+                        break
 
     theme_path = os.path.join(destdir, 'usr', 'share', 'themes')
     if os.path.isdir(theme_path):
