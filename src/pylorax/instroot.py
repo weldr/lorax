@@ -213,8 +213,9 @@ def scrubInstRoot(destdir=None, libdir='lib'):
                             gtk_engine = engine_line[engine_line.find('"') + 1:].replace('"', '')
                             print "    gtk-engine: %s" % (gtk_engine,)
                             break
-            if line.startswith('gtk-icon-theme-name'):
+            elif line.startswith('gtk-icon-theme-name'):
                 icon_theme = line[line.find('=') + 1:].replace('"', '').strip()
+                print "    gtk-icon-theme-name: %s" % (icon_theme,)
                 gtk_icon_themes.append(icon_theme)
 
                 # bring in all inherited themes
@@ -231,7 +232,7 @@ def scrubInstRoot(destdir=None, libdir='lib'):
                             if icon_line.startswith('Inherits='):
                                 inherits = True
                                 icon_theme = icon_line[icon_line.find('=') + 1:].replace('"', '')
-                                print "    gtk-icon-theme-name: %s" % (icon_theme,)
+                                print "    inherits gtk-icon-theme-name: %s" % (icon_theme,)
                                 gtk_icon_themes.append(icon_theme)
                                 break
 
