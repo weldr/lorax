@@ -4,3 +4,4 @@
 - Support a verbose output mode
 - Make sure we are root when executed
 - If we have to be root, should lorax be in /usr/sbin ?
+- Use OptionParser instead of getopt (?)
