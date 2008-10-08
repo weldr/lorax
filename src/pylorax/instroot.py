@@ -138,18 +138,19 @@ def installPackages(yumconf=None, destdir=None, packages=None):
     return True
 
 # Scrub the instroot tree (remove files we don't want, modify settings, etc)
-def scrubInstRoot(destdir=None, libdir='lib'):
-    """scrubInstRoot(destdir=None, libdir='lib')
+def scrubInstRoot(destdir=None, libdir='lib', arch=None):
+    """scrubInstRoot(destdir=None, libdir='lib', arch=None)
 
     Clean up the newly created instroot and make the tree more suitable to
     run the installer.
 
     destdir is the path to the instroot.  libdir is the subdirectory in
-    /usr for libraries (either lib or lib64).
+    /usr for libraries (either lib or lib64).  arch is the architecture
+    the image is for (e.g., i386, x86_64, ppc, s390x, alpha, sparc).
 
     """
 
-    if destdir is None or not os.path.isdir(destdir):
+    if destdir is None or not os.path.isdir(destdir) or arch is None:
         return False
 
     print
@@ -267,5 +268,106 @@ def scrubInstRoot(destdir=None, libdir='lib'):
                     if engine.find(gtk_engine) == -1:
                         tmp_engine = os.path.join(new_path, engine)
                         os.unlink(tmp_engine)
+
+    # clean out unused locales
+    langtable = os.path.join(destdir, 'usr', 'lib', 'anaconda', 'lang-table')
+    localepath = os.path.join(destdir, 'usr', 'share', 'locale')
+    if os.path.isfile(langtable):
+        locales = set()
+        all_locales = set()
+
+        f = open(langtable, 'r')
+        lines = f.readlines()
+        f.close()
+
+        print "Keeping locales used during installation..."
+        for line in lines:
+            line = line.strip()
+
+            if line == '' or line.startswith('#'):
+                continue
+
+            fields = line.split('\t')
+
+            if os.path.isdir(os.path.join(localepath, fields[1])):
+                locales.add(fields[1])
+
+            locale = fields[3].split('.')[0]
+            if os.path.isdir(os.path.join(localepath, locale)):
+                print "    %s" % (locale,)
+                locales.add(locale)
+
+        for locale in os.listdir(os.path.join(destdir, 'usr', 'share', 'locale')):
+            all_locales.add(locale)
+
+        print "Removing unused locales..."
+        locales_to_remove = list(all_locales.difference(locales))
+        for locale in locales_to_remove:
+            rmpath = os.path.join(destdir, 'usr', 'share', 'locale', locale)
+            print "    %s" % (locale,)
+            shutil.rmtree(rmpath, ignore_errors=True)
+
+    # fix up some links for man page related stuff
+    for file in nroff groff iconv geqn gtbl gpic grefer ; do
+        src = os.path.join('mnt', 'sysimage', 'usr', 'bin', file)
+        dest = os.path.join(destdir, 'usr', 'bin', file)
+        os.symlink(src, dest)
+
+    # install anaconda stub programs as instroot programs
+    for subdir in ['lib', 'firmware']:
+        subdir = os.path.join(destdir, subdir)
+        if not os.path.isdir(subdir):
+            os.makedirs(subdir)
+
+    for subdir in ['modules', 'firmware']:
+        src = os.path.join(os.path.sep, subdir)
+        dst = os.path.join(destdir, 'lib', subdir)
+        shutil.rmtree(dst, ignore_errors=True)
+        os.symlink(src, dst)
+
+    for prog in ['raidstart', 'raidstop', 'losetup', 'list-harddrives', 'loadkeys', 'mknod', 'sysklogd']:
+        stub = "%s-stub" % (prog,)
+        src = os.path.join(destdir, 'usr', 'lib', 'anaconda', stub)
+        dst = os.path.join(destdir, 'usr', 'bin', prog)
+        if os.path.isfile(src) and not os.path.isfile(dst):
+            shutil.copy2(src, dst)
+
+    # copy in boot loader files
+    bootpath = os.path.join(destdir, 'usr', 'lib', 'anaconda-runtime', 'boot')
+    os.makedirs(bootpath)
+    if arch == 'i386' or arch == 'x86_64':
+        for bootfile in os.listdir(os.path.join(destdir, 'boot')):
+            if bootfile.startswith('memtest'):
+                src = os.path.join(destdir, 'boot', bootfile)
+                dst = os.path.join(bootpath, bootfile)
+                shutil.copy2(src, dst)
+    elif arch.startswith('sparc'):
+        for bootfile in os.listdir(os.path.join(destdir, 'boot')):
+            if bootfile.endswith('.b'):
+                src = os.path.join(destdir, 'boot', bootfile)
+                dst = os.path.join(bootpath, bootfile)
+                shutil.copy2(src, dst)
+    elif arch.startswith('ppc'):
+        src = os.path.join(destdir, 'boot', 'efika.forth')
+        dst = os.path.join(bootpath, 'efika.forth')
+        shutil.copy2(src, dst)
+    elif arch == 'alpha':
+        src = os.path.join(destdir, 'boot', 'bootlx')
+        dst = os.path.join(bootpath, 'bootlx')
+        shutil.copy2(src, dst)
+    elif arch == 'ia64':
+        src = os.path.join(destdir, 'boot', 'efi', 'EFI', 'redhat')
+        shutil.rmtree(bootpath, ignore_errors=True)
+        shutil.copytree(src, bootpath)
+
+    # remove things we do not want in the instroot
+    for subdir in ['boot', 'home', 'root', 'tmp']:
+        shutil.rmtree(os.path.join(destdir, subdir), ignore_errors=True)
+
+    for subdir in ['doc', 'info']:
+        shutil.rmtree(os.path.join(destdir, 'usr', 'share', subdir), ignore_errors=True)
+
+    for libname in glob.glob(os.path.join(destdir, 'usr', libdir), 'libunicode-lite*'):
+        shutil.rmtree(libname, ignore_errors=True)
 
     return True
