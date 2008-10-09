@@ -310,8 +310,9 @@ def scrubInstRoot(destdir=None, libdir='lib', arch=None):
     # fix up some links for man page related stuff
     for file in ['nroff', 'groff', 'iconv', 'geqn', 'gtbl', 'gpic', 'grefer']:
         src = os.path.join('mnt', 'sysimage', 'usr', 'bin', file)
-        dest = os.path.join(destdir, 'usr', 'bin', file)
-        os.symlink(src, dest)
+        dst = os.path.join(destdir, 'usr', 'bin', file)
+        if not os.path.isfile(dst):
+            os.symlink(src, dst)
 
     # install anaconda stub programs as instroot programs
     for subdir in ['lib', 'firmware']:
