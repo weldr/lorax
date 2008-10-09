@@ -20,6 +20,7 @@
 # Author(s): David Cantrell <dcantrell@redhat.com>
 #
 
+import glob
 import os
 import shutil
 import sys
