@@ -308,7 +308,7 @@ def scrubInstRoot(destdir=None, libdir='lib', arch=None):
             shutil.rmtree(rmpath, ignore_errors=True)
 
     # fix up some links for man page related stuff
-    for file in nroff groff iconv geqn gtbl gpic grefer ; do
+    for file in ['nroff', 'groff', 'iconv', 'geqn', 'gtbl', 'gpic', 'grefer']:
         src = os.path.join('mnt', 'sysimage', 'usr', 'bin', file)
         dest = os.path.join(destdir, 'usr', 'bin', file)
         os.symlink(src, dest)
