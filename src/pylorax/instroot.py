@@ -335,7 +335,9 @@ def scrubInstRoot(destdir=None, libdir='lib', arch=None):
 
     # copy in boot loader files
     bootpath = os.path.join(destdir, 'usr', 'lib', 'anaconda-runtime', 'boot')
-    os.makedirs(bootpath)
+    if not os.path.isdir(bootpath):
+        os.makedirs(bootpath)
+
     if arch == 'i386' or arch == 'x86_64':
         for bootfile in os.listdir(os.path.join(destdir, 'boot')):
             if bootfile.startswith('memtest'):
