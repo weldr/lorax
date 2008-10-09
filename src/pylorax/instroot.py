@@ -96,7 +96,7 @@ def createInstRoot(yumconf=None, arch=None, treedir=None, updates=None):
         sys.stderr.write("ERROR: Could not install packages.\n")
         sys.exit(1)
 
-    if not scrubInstRoot(destdir=destdir, libdir=libdir):
+    if not scrubInstRoot(destdir=destdir, libdir=libdir, arch=arch):
         sys.stderr.write("ERROR: Could not scrub instroot.\n")
         sys.exit(1)
 
@@ -127,6 +127,8 @@ def installPackages(yumconf=None, destdir=None, packages=None):
     arglist += ['install', '-y'] + packages
 
     # do some prep work on the destdir before calling yum
+    os.makedirs(os.path.join(destdir, 'usr', 'lib', 'debug'))
+    os.makedirs(os.path.join(destdir, 'usr', 'src', 'debug'))
     os.makedirs(os.path.join(destdir, 'tmp'))
     os.makedirs(os.path.join(destdir, 'var', 'log'))
     os.makedirs(os.path.join(destdir, 'var', 'lib'))
@@ -359,6 +361,13 @@ def scrubInstRoot(destdir=None, libdir='lib', arch=None):
         src = os.path.join(destdir, 'boot', 'efi', 'EFI', 'redhat')
         shutil.rmtree(bootpath, ignore_errors=True)
         shutil.copytree(src, bootpath)
+
+    # move the yum repos configuration directory
+    src = os.path.join(destdir, 'etc', 'yum.repos.d')
+    dst = os.path.join(destdir, 'etc', 'anaconda.repos.d')
+    if os.path.isdir(src):
+        shutil.rmtree(dst, ignore_errors=True)
+        shutil.move(src, dst)
 
     # remove things we do not want in the instroot
     for subdir in ['boot', 'home', 'root', 'tmp']:
