@@ -296,7 +296,6 @@ def scrubInstRoot(destdir=None, libdir='lib', arch=None):
 
             locale = fields[3].split('.')[0]
             if os.path.isdir(os.path.join(localepath, locale)):
-                print "    %s" % (locale,)
                 locales.add(locale)
 
         for locale in os.listdir(os.path.join(destdir, 'usr', 'share', 'locale')):
@@ -306,7 +305,6 @@ def scrubInstRoot(destdir=None, libdir='lib', arch=None):
         locales_to_remove = list(all_locales.difference(locales))
         for locale in locales_to_remove:
             rmpath = os.path.join(destdir, 'usr', 'share', 'locale', locale)
-            print "    %s" % (locale,)
             shutil.rmtree(rmpath, ignore_errors=True)
 
     # fix up some links for man page related stuff
