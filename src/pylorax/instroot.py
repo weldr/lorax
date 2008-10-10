@@ -68,17 +68,25 @@ class InstRoot:
 
         # the directory where the instroot will be created
         self.destdir = os.path.join(self.treedir, 'install')
+
+    def run(self):
+        """run()
+
+        Generate the instroot tree and prepare it for building images.
+
+        """
+
         if not os.path.isdir(self.destdir):
             os.makedirs(self.destdir)
 
         # build a list of packages to install
-        self.packages = self._getPackageList()
+        self.packages = self.__getPackageList()
 
         # install the packages to the instroot
-        self._installPackages()
+        self.__installPackages()
 
         # scrub instroot
-        self._scrubInstRoot()
+        self.__scrubInstRoot()
 
     def __getPackageList(self):
         packages = set()
