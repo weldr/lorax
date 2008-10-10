@@ -48,7 +48,7 @@ def usage(prog):
 if __name__ == "__main__":
     prog = os.path.basename(sys.argv[0])
     opts, args, mirrorlist, extrarepos = [], [], [], []
-    version, product, release, output, repo = None, None, None, None, None
+    confdir, version, product, release, output, repo = None, None, None, None, None, None
     debug = False
     cleanup = False
     variant, updates = '', ''
@@ -85,7 +85,7 @@ if __name__ == "__main__":
             mirrorlist.append(a)
         elif o in ('-c', '--confdir'):
             if os.path.isdir(a):
-                pylorax.conf['confdir'] = a
+                confdir = a
             else:
                 sys.stderr.write("ERROR: %s is not a directory.\n" % (a,))
         elif o in ('-C', '--cleanup'):
@@ -103,6 +103,10 @@ if __name__ == "__main__":
         sys.exit(1)
 
     lorax = pylorax.Lorax(repos=args, output=output, mirrorlist=mirrorlist)
+
+    if confdir is not None:
+        lorax.conf['confdir'] = confdir
+
     lorax.run()
 
     if cleanup:
