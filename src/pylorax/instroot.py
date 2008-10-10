@@ -80,7 +80,7 @@ class InstRoot:
         # scrub instroot
         self._scrubInstRoot()
 
-    def _getPackageList(self):
+    def __getPackageList(self):
         packages = set()
 
         packages_files = []
@@ -112,7 +112,7 @@ class InstRoot:
         return packages
 
     # Call yummain to install the list of packages to destdir
-    def _installPackages(self):
+    def __installPackages(self):
         # build the list of arguments to pass to yum
         arglist = ['-c', self.yumconf]
         arglist.append("--installroot=%s" % (self.destdir,))
@@ -131,7 +131,7 @@ class InstRoot:
         errcode = yummain.user_main(arglist, exit_code=False)
 
     # Scrub the instroot tree (remove files we don't want, modify settings, etc)
-    def _scrubInstRoot(self):
+    def __scrubInstRoot(self):
         print
 
         # drop custom configuration files in to the instroot

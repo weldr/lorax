@@ -145,7 +145,7 @@ class Lorax:
 
         return ret_arch
 
-    def _collectRepos(self, repos):
+    def __collectRepos(self, repos):
         """_collectRepos(repos)
 
         Get the main repo (the first one) and then build a list of all remaining
@@ -176,7 +176,7 @@ class Lorax:
 
         return repo, extrarepos
 
-    def _initializeDirs(self):
+    def __initializeDirs(self):
         """_initializeDirs()
 
         Create directories used for image generation.
@@ -199,7 +199,7 @@ class Lorax:
 
         return buildinstdir, treedir, cachedir
 
-    def _writeYumConf(self):
+    def __writeYumConf(self):
         """_writeYumConf()
 
         Generate a temporary yum.conf file for image generation.  Returns the path
