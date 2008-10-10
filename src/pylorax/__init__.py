@@ -40,190 +40,207 @@ conf['confdir'] = '/etc/lorax'
 conf['tmpdir'] = tempfile.gettempdir()
 conf['datadir'] = '/usr/share/lorax'
 
-def show_version(prog):
-    """show_version(prog)
+class Lorax:
+    def __init__(self, repos=[], output=None, mirrorlist=[], updates=None):
+        print("\n+=======================================================+")
+        print("| Setting up work directories and configuration data... |")
+        print("+=======================================================+\n")
 
-    Display program name (prog) and version number.  If prog is an empty
-    string or None, use the value 'pylorax'.
+        if repos != []:
+            self.repo, self.extrarepos = self._collectRepos(repos)
+        else:
+            self.repo = None
+            self.extrarepos = []
 
-    """
+        self.output = output
+        self.mirrorlist = mirrorlist
+        self.updates = updates
+        self.buildinstdir, self.treedir, self.cachedir = self._initializeDirs()
+        self.yumconf = self._writeYumConf()
+        self.buildarch = self.getBuildArch()
 
-    if prog is None or prog == '':
-        prog = 'pylorax'
+    def run(self):
+        """run()
 
-    print "%s version %d.%d" % (prog, version[0], version[1],)
+        Generate install images.
 
-def collectRepos(args):
-    """collectRepos(args)
+        """
 
-    Get the main repo (the first one) and then build a list of all remaining
-    repos in the list.  Sanitize each repo URL for proper yum syntax.
+        print("\n+================================================+")
+        print("| Creating instroot tree to build images from... |")
+        print("+================================================+\n")
 
-    """
+        self.instroot = pylorax.instroot.InstRoot(yumconf=self.yumconf, arch=self.buildarch, treedir=self.treedir, updates=self.updates)
 
-    if args is None or args == []:
-        return '', []
+    def showVersion(self, driver=None):
+        """showVersion(driver)
 
-    repolist = []
-    for repospec in args:
-        if repospec.startswith('/'):
-            repo = "file://%s" % (repospec,)
-            print("Adding local repo:\n    %s" % (repo,))
-            repolist.append(repo)
-        elif repospec.startswith('http://') or repospec.startswith('ftp://'):
-            print("Adding remote repo:\n    %s" % (repospec,))
-            repolist.append(repospec)
+        Display program name (driver) and version number.  If prog is an empty
+        string or None, use the value 'pylorax'.
 
-    repo = repolist[0]
-    extrarepos = []
+        """
 
-    if len(repolist) > 1:
-        for extra in repolist[1:]:
-            print("Adding extra repo:\n   %s" % (extra,))
-            extrarepos.append(extra)
+        if prog is None or prog == '':
+            prog = 'pylorax'
 
-    return repo, extrarepos
+        print "%s version %d.%d" % (prog, version[0], version[1],)
 
-def initializeDirs(output):
-    """initializeDirs(output)
+    def cleanup(self, trash=[]):
+        """cleanup(trash)
 
-    Create directories used for image generation.  The only required
-    parameter is the main output directory specified by the user.
+        Given a list of things to remove, cleanup() will remove them if it can.
+        Never fails, just tries to remove things and returns regardless of
+        failures removing things.
 
-    """
+        """
 
-    if not os.path.isdir(output):
-        os.makedirs(output, mode=0755)
+        if trash != []:
+            for item in trash:
+                if os.path.isdir(item):
+                   shutil.rmtree(item, ignore_errors=True)
+                else:
+                   os.unlink(item)
 
-    conf['tmpdir'] = tempfile.mkdtemp('XXXXXX', 'lorax.tmp.', conf['tmpdir'])
-    buildinstdir = tempfile.mkdtemp('XXXXXX', 'buildinstall.tree.', conf['tmpdir'])
-    treedir = tempfile.mkdtemp('XXXXXX', 'treedir.', conf['tmpdir'])
-    cachedir = tempfile.mkdtemp('XXXXXX', 'yumcache.', conf['tmpdir'])
+        if os.path.isdir(conf['tmpdir']):
+            shutil.rmtree(conf['tmpdir'], ignore_errors=True)
 
-    print("Working directories:")
-    print("    tmpdir = %s" % (conf['tmpdir'],))
-    print("    buildinstdir = %s" % (buildinstdir,))
-    print("    treedir = %s" % (treedir,))
-    print("    cachedir = %s" % (cachedir,))
+    def getBuildArch(self):
+        """getBuildArch()
 
-    return buildinstdir, treedir, cachedir
+        Query the configured yum repositories to determine our build architecture,
+        which is the architecture of the anaconda package in the repositories.
 
-def writeYumConf(cachedir=None, repo=None, extrarepos=[], mirrorlist=[]):
-    """writeYumConf(cachedir=None, repo=None, [extrarepos=[], mirrorlist=[]])
+        This function is based on a subset of what repoquery(1) does.
 
-    Generate a temporary yum.conf file for image generation.  The required
-    parameters are the cachedir that yum should use and the main repo to use.
+        """
 
-    Optional parameters are a list of extra repositories to add to the
-    yum.conf file.  The mirrorlist parameter is a list of yum mirrorlists
-    that should be added to the yum.conf file.
+        uname_arch = os.uname()[4]
 
-    Returns the path to the temporary yum.conf file on success, None of failure.
-    """
+        if self.yumconf == '' or self.yumconf is None or not os.path.isfile(self.yumconf):
+            return uname_arch
 
-    if cachedir is None or repo is None:
-        return None
+        repoq = yum.YumBase()
+        repoq.doConfigSetup()
 
-    tmpdir = conf['tmpdir']
-    (fd, yumconf) = tempfile.mkstemp(prefix='yum.conf', dir=tmpdir)
-    f = os.fdopen(fd, 'w')
+        try:
+            repoq.doRepoSetup()
+        except yum.Errors.RepoError, e:
+            sys.stderr.write("ERROR: could not query yum repository for build arch, defaulting to %s\n" % (uname_arch,))
+            return uname_arch
 
-    f.write("[main]\n")
-    f.write("cachedir=%s\n" % (cachedir,))
-    f.write("keepcache=0\n")
-    f.write("gpgcheck=0\n")
-    f.write("plugins=0\n")
-    f.write("reposdir=\n")
-    f.write("tsflags=nodocs\n\n")
-    f.write("[loraxrepo]\n")
-    f.write("name=lorax repo\n")
-    f.write("baseurl=%s\n" % (repo,))
-    f.write("enabled=1\n\n")
+        repoq.doSackSetup(rpmUtils.arch.getArchList())
+        repoq.doTsSetup()
 
-    if extrarepos != []:
-        n = 1
-        for extra in extrarepos:
-            f.write("[lorax-extrarepo-%d]\n" % (n,))
-            f.write("name=lorax extra repo %d\n" % (n,))
-            f.write("baseurl=%s\n" % (extra,))
-            f.write("enabled=1\n")
-            n += 1
+        ret_arch = None
+        for pkg in repoq.pkgSack.simplePkgList():
+            (n, a, e, v, r) = pkg
+            if n == 'anaconda':
+                ret_arch = a
+                break
 
-    if mirrorlist != []:
-        n = 1
-        for mirror in mirrorlist:
-            f.write("[lorax-mirrorlistrepo-%d]\n" % (n,))
-            f.write("name=lorax mirrorlist repo %d\n" % (n,))
-            f.write("mirrorlist=%s\n" % (extra,))
-            f.write("enabled=1\n")
-            n += 1
+        if ret_arch is None:
+            ret_arch = uname_arch
 
-    f.close()
-    print("Wrote lorax yum configuration to %s" % (yumconf,))
+        print("Building images for %s" % (ret_arch,))
 
-    return yumconf
+        return ret_arch
 
-def getBuildArch(yumconf=None):
-    """getBuildArch(yumconf=None)
+    def _collectRepos(self, repos):
+        """_collectRepos(repos)
 
-    Query the configured yum repositories to determine our build architecture,
-    which is the architecture of the anaconda package in the repositories.
+        Get the main repo (the first one) and then build a list of all remaining
+        repos in the list.  Sanitize each repo URL for proper yum syntax.
 
-    The required argument is yumconf, which is the path to the yum configuration
-    file to use.
+        """
 
-    This function is based on a subset of what repoquery(1) does.
+        if repos is None or repos == []:
+            return '', []
 
-    """
+        repolist = []
+        for repospec in repos:
+            if repospec.startswith('/'):
+                repo = "file://%s" % (repospec,)
+                print("Adding local repo:\n    %s" % (repo,))
+                repolist.append(repo)
+            elif repospec.startswith('http://') or repospec.startswith('ftp://'):
+                print("Adding remote repo:\n    %s" % (repospec,))
+                repolist.append(repospec)
 
-    uname_arch = os.uname()[4]
+        repo = repolist[0]
+        extrarepos = []
 
-    if yumconf == '' or yumconf is None or not os.path.isfile(yumconf):
-        return uname_arch
+        if len(repolist) > 1:
+            for extra in repolist[1:]:
+                print("Adding extra repo:\n   %s" % (extra,))
+                extrarepos.append(extra)
 
-    repoq = yum.YumBase()
-    repoq.doConfigSetup()
+        return repo, extrarepos
 
-    try:
-        repoq.doRepoSetup()
-    except yum.Errors.RepoError, e:
-        sys.stderr.write("ERROR: could not query yum repository for build arch, defaulting to %s\n" % (uname_arch,))
-        return uname_arch
+    def initializeDirs(self):
+        """_initializeDirs()
 
-    repoq.doSackSetup(rpmUtils.arch.getArchList())
-    repoq.doTsSetup()
+        Create directories used for image generation.
 
-    ret_arch = None
-    for pkg in repoq.pkgSack.simplePkgList():
-        (n, a, e, v, r) = pkg
-        if n == 'anaconda':
-            ret_arch = a
-            break
+        """
 
-    if ret_arch is None:
-        ret_arch = uname_arch
+        if not os.path.isdir(self.output):
+            os.makedirs(self.output, mode=0755)
 
-    print("Building images for %s" % (ret_arch,))
+        conf['tmpdir'] = tempfile.mkdtemp('XXXXXX', 'lorax.tmp.', conf['tmpdir'])
+        buildinstdir = tempfile.mkdtemp('XXXXXX', 'buildinstall.tree.', conf['tmpdir'])
+        treedir = tempfile.mkdtemp('XXXXXX', 'treedir.', conf['tmpdir'])
+        cachedir = tempfile.mkdtemp('XXXXXX', 'yumcache.', conf['tmpdir'])
 
-    return ret_arch
+        print("Working directories:")
+        print("    tmpdir = %s" % (conf['tmpdir'],))
+        print("    buildinstdir = %s" % (buildinstdir,))
+        print("    treedir = %s" % (treedir,))
+        print("    cachedir = %s" % (cachedir,))
 
-def cleanup(trash=[]):
-    """cleanup(trash)
+        return buildinstdir, treedir, cachedir
 
-    Given a list of things to remove, cleanup() will remove them if it can.
-    Never fails, just tries to remove things and returns regardless of
-    failures removing things.
+    def _writeYumConf():
+        """_writeYumConf()
 
-    """
+        Generate a temporary yum.conf file for image generation.  Returns the path
+        to the temporary yum.conf file on success, None of failure.
+        """
 
-    if trash != []:
-        for item in trash:
-            if os.path.isdir(item):
-               shutil.rmtree(item, ignore_errors=True)
-            else:
-               os.unlink(item)
+        tmpdir = conf['tmpdir']
+        (fd, yumconf) = tempfile.mkstemp(prefix='yum.conf', dir=tmpdir)
+        f = os.fdopen(fd, 'w')
 
-    if os.path.isdir(conf['tmpdir']):
-        shutil.rmtree(conf['tmpdir'], ignore_errors=True)
+        f.write("[main]\n")
+        f.write("cachedir=%s\n" % (self.cachedir,))
+        f.write("keepcache=0\n")
+        f.write("gpgcheck=0\n")
+        f.write("plugins=0\n")
+        f.write("reposdir=\n")
+        f.write("tsflags=nodocs\n\n")
+        f.write("[loraxrepo]\n")
+        f.write("name=lorax repo\n")
+        f.write("baseurl=%s\n" % (self.repo,))
+        f.write("enabled=1\n\n")
 
-    return
+        if self.extrarepos != []:
+            n = 1
+            for extra in self.extrarepos:
+                f.write("[lorax-extrarepo-%d]\n" % (n,))
+                f.write("name=lorax extra repo %d\n" % (n,))
+                f.write("baseurl=%s\n" % (extra,))
+                f.write("enabled=1\n")
+                n += 1
+
+        if self.mirrorlist != []:
+            n = 1
+            for mirror in self.mirrorlist:
+                f.write("[lorax-mirrorlistrepo-%d]\n" % (n,))
+                f.write("name=lorax mirrorlist repo %d\n" % (n,))
+                f.write("mirrorlist=%s\n" % (mirror,))
+                f.write("enabled=1\n")
+                n += 1
+
+        f.close()
+        print("Wrote lorax yum configuration to %s" % (yumconf,))
+
+        return yumconf

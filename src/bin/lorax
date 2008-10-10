@@ -102,49 +102,25 @@ if __name__ == "__main__":
         sys.stderr.write("ERROR: Missing repo to use for image generation.\n")
         sys.exit(1)
 
-    print("\n+=======================================================+")
-    print("| Setting up work directories and configuration data... |")
-    print("+=======================================================+\n")
+    lorax = pylorax.Lorax(repos=args, output=output, mirrorlist=mirrorlist)
+    lorax.run()
 
-    # collect all repos specified on the command line.  the first repo is
-    # designated the main repo (I guess)
-    repo, extrarepos = pylorax.collectRepos(args)
-
-    # create directories that we will be using for image generation
-    buildinstdir, treedir, cachedir = pylorax.initializeDirs(output)
-
-    # write out yum.conf used for image generation
-    yumconf = pylorax.writeYumConf(cachedir=cachedir, repo=repo, extrarepos=extrarepos, mirrorlist=mirrorlist)
-    if yumconf is None:
-        sys.stderr.write("ERROR: Could not generate temporary yum.conf file.\n")
-        sys.exit(1)
-
-    buildarch = pylorax.getBuildArch()
-
-    print("\n+================================================+")
-    print("| Creating instroot tree to build images from... |")
-    print("+================================================+\n")
-
-    # upd-instroot
-    if not pylorax.instroot.createInstRoot(yumconf=yumconf, arch=buildarch, treedir=treedir, updates=updates):
-        sys.stderr.write("ERROR: Could not create inst root.\n")
-        sys.exit(1)
-
-    print("\n+=======================================+")
-    print("| Writing meta data to instroot tree... |")
-    print("+=======================================+\n")
-
-    # write .treeinfo file
-    if not pylorax.treeinfo.write(family=product, variant=variant, version=version, arch=buildarch, outdir=output):
-        sys.stderr.write("Error writing %s/.treeinfo file.\n" % (output,))
-
-    # mk-images
-    # XXX
-
-    # write .discinfo file
-    if not pylorax.discinfo.write(release=release, arch=buildarch, outdir=output):
-        sys.stderr.write("Error writing %s/.discinfo file.\n" % (output,))
-
-    # clean up
     if cleanup:
-        pylorax.cleanup()
+        lorax.cleanup()
+
+
+
+#    print("\n+=======================================+")
+#    print("| Writing meta data to instroot tree... |")
+#    print("+=======================================+\n")
+#
+#    # write .treeinfo file
+#    if not pylorax.treeinfo.write(family=product, variant=variant, version=version, arch=buildarch, outdir=output):
+#        sys.stderr.write("Error writing %s/.treeinfo file.\n" % (output,))
+#
+#    # mk-images
+#    # XXX
+#
+#    # write .discinfo file
+#    if not pylorax.discinfo.write(release=release, arch=buildarch, outdir=output):
+#        sys.stderr.write("Error writing %s/.discinfo file.\n" % (output,))
