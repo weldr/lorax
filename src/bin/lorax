@@ -25,7 +25,7 @@ import getopt
 import os
 import sys
 
-import pylorax
+from pylorax import Lorax
 
 def usage(prog):
     print("Usage: %s -v VERSION -p PRODUCT -r RELEASE -o PATH REPO\n" % (prog,))
@@ -91,7 +91,8 @@ if __name__ == "__main__":
         elif o in ('-C', '--cleanup'):
             cleanup = True
         elif o in ('-V'):
-            pylorax.show_version(prog)
+            # XXX: need to fix this
+            #pylorax.show_version(prog)
             sys.exit(0)
 
     if version is None or product is None or release is None or output is None:
@@ -102,7 +103,7 @@ if __name__ == "__main__":
         sys.stderr.write("ERROR: Missing repo to use for image generation.\n")
         sys.exit(1)
 
-    lorax = pylorax.Lorax(repos=args, output=output, mirrorlist=mirrorlist)
+    lorax = Lorax(repos=args, output=output, mirrorlist=mirrorlist)
 
     if confdir is not None:
         lorax.conf['confdir'] = confdir
