@@ -199,7 +199,7 @@ class Lorax:
 
         return buildinstdir, treedir, cachedir
 
-    def _writeYumConf():
+    def _writeYumConf(self):
         """_writeYumConf()
 
         Generate a temporary yum.conf file for image generation.  Returns the path
