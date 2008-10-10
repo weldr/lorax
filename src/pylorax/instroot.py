@@ -24,13 +24,12 @@ import glob
 import os
 import shutil
 import sys
-import pylorax
 
 sys.path.insert(0, '/usr/share/yum-cli')
 import yummain
 
 class InstRoot:
-    """InstRoot(yumconf=None, arch=None, treedir=None, [updates=None])
+    """InstRoot(conf=None, yumconf=None, arch=None, treedir=None, [updates=None])
 
     Create a instroot tree for the specified architecture.  The list of
     packages to install are specified in the /etc/lorax/packages and
@@ -50,7 +49,8 @@ class InstRoot:
     """
 
     # Create inst root from which stage 1 and stage 2 images are built.
-    def __init__(self, yumconf=None, arch=None, treedir=None, updates=None):
+    def __init__(self, conf=None, yumconf=None, arch=None, treedir=None, updates=None):
+        self.conf = conf
         self.yumconf = yumconf
         self.arch = arch
         self.treedir = treedir
@@ -84,8 +84,8 @@ class InstRoot:
         packages = set()
 
         packages_files = []
-        packages_files.append(os.path.join(pylorax.conf['confdir'], 'packages'))
-        packages_files.append(os.path.join(pylorax.conf['confdir'], self.arch, 'packages'))
+        packages_files.append(os.path.join(self.conf['confdir'], 'packages'))
+        packages_files.append(os.path.join(self.conf['confdir'], self.arch, 'packages'))
 
         for pfile in packages_files:
             if os.path.isfile(pfile):
@@ -135,7 +135,7 @@ class InstRoot:
         print
 
         # drop custom configuration files in to the instroot
-        dogtailconf = os.path.join(pylorax.conf['datadir'], 'dogtail-%conf.xml')
+        dogtailconf = os.path.join(self.conf['datadir'], 'dogtail-%conf.xml')
         if os.path.isfile(dogtailconf):
             os.makedirs(os.path.join(destdir, '.gconf', 'desktop', 'gnome', 'interface'))
             f = open(os.path.join(destdir, '.gconf', 'desktop', '%gconf.xml'), 'w')
@@ -148,14 +148,14 @@ class InstRoot:
 
         # create selinux config
         if os.path.isfile(os.path.join(destdir, 'etc', 'selinux', 'targeted')):
-            src = os.path.join(pylorax.conf['datadir'], 'selinux-config')
+            src = os.path.join(self.conf['datadir'], 'selinux-config')
             if os.path.isfile(src):
                 dest = os.path.join(destdir, 'etc', 'selinux', 'config')
                 print "Installing %s..." % (os.path.join(os.path.sep, 'etc', 'selinux', 'config'),)
                 shutil.copy(src, dest)
 
         # create libuser.conf
-        src = os.path.join(pylorax.conf['datadir'], 'libuser.conf')
+        src = os.path.join(self.conf['datadir'], 'libuser.conf')
         dest = os.path.join(destdir, 'etc', 'libuser.conf')
         if os.path.isfile(src):
             print "Installing %s..." % (os.path.join(os.path.sep, 'etc', 'libuser.conf'),)
