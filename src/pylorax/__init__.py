@@ -41,12 +41,7 @@ class Lorax:
         self.conf['tmpdir'] = tempfile.gettempdir()
         self.conf['datadir'] = '/usr/share/lorax'
 
-        if repos != []:
-            self.repo, self.extrarepos = self.__collectRepos(repos)
-        else:
-            self.repo = None
-            self.extrarepos = []
-
+        self.repos = repos
         self.output = output
         self.mirrorlist = mirrorlist
         self.updates = updates
@@ -61,6 +56,12 @@ class Lorax:
         print("\n+=======================================================+")
         print("| Setting up work directories and configuration data... |")
         print("+=======================================================+\n")
+
+        if repos != []:
+            self.repo, self.extrarepos = self.__collectRepos(repos)
+        else:
+            self.repo = None
+            self.extrarepos = []
 
         self.buildinstdir, self.treedir, self.cachedir = self.__initializeDirs()
         self.yumconf = self.__writeYumConf()
