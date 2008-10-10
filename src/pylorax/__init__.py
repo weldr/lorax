@@ -42,7 +42,7 @@ class Lorax:
         self.conf['datadir'] = '/usr/share/lorax'
 
         if repos != []:
-            self.repo, self.extrarepos = self._collectRepos(repos)
+            self.repo, self.extrarepos = self.__collectRepos(repos)
         else:
             self.repo = None
             self.extrarepos = []
@@ -62,14 +62,18 @@ class Lorax:
         print("| Setting up work directories and configuration data... |")
         print("+=======================================================+\n")
 
-        self.buildinstdir, self.treedir, self.cachedir = self._initializeDirs()
-        self.yumconf = self._writeYumConf()
+        self.buildinstdir, self.treedir, self.cachedir = self.__initializeDirs()
+        self.yumconf = self.__writeYumConf()
 
         print("\n+================================================+")
         print("| Creating instroot tree to build images from... |")
         print("+================================================+\n")
 
-        self.instroot = InstRoot(conf=self.conf, yumconf=self.yumconf, arch=self.getBuildArch(), treedir=self.treedir, updates=self.updates)
+        self.instroot = InstRoot(conf=self.conf,
+                                 yumconf=self.yumconf,
+                                 arch=self.getBuildArch(),
+                                 treedir=self.treedir,
+                                 updates=self.updates)
 
     def showVersion(self, driver=None):
         """showVersion(driver)
