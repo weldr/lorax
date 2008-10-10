@@ -22,8 +22,6 @@
 
 version = (0, 1)
 
-__all__ = ['discinfo', 'treeinfo', 'instroot']
-
 import os
 import shutil
 import tempfile
@@ -33,15 +31,16 @@ import rpmUtils
 
 import discinfo
 import treeinfo
-import instroot
 
-conf = {}
-conf['confdir'] = '/etc/lorax'
-conf['tmpdir'] = tempfile.gettempdir()
-conf['datadir'] = '/usr/share/lorax'
+from instroot import InstRoot
 
 class Lorax:
     def __init__(self, repos=[], output=None, mirrorlist=[], updates=None):
+        self.conf = {}
+        self.conf['confdir'] = '/etc/lorax'
+        self.conf['tmpdir'] = tempfile.gettempdir()
+        self.conf['datadir'] = '/usr/share/lorax'
+
         print("\n+=======================================================+")
         print("| Setting up work directories and configuration data... |")
         print("+=======================================================+\n")
@@ -70,7 +69,7 @@ class Lorax:
         print("| Creating instroot tree to build images from... |")
         print("+================================================+\n")
 
-        self.instroot = pylorax.instroot.InstRoot(yumconf=self.yumconf, arch=self.buildarch, treedir=self.treedir, updates=self.updates)
+        self.instroot = InstRoot(conf=self.conf, yumconf=self.yumconf, arch=self.buildarch, treedir=self.treedir, updates=self.updates)
 
     def showVersion(self, driver=None):
         """showVersion(driver)
@@ -117,6 +116,7 @@ class Lorax:
         uname_arch = os.uname()[4]
 
         if self.yumconf == '' or self.yumconf is None or not os.path.isfile(self.yumconf):
+            print "RETURN HERE"
             return uname_arch
 
         repoq = yum.YumBase()
