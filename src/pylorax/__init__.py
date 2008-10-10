@@ -74,6 +74,7 @@ class Lorax:
                                  arch=self.getBuildArch(),
                                  treedir=self.treedir,
                                  updates=self.updates)
+        self.instroot.run()
 
     def showVersion(self, driver=None):
         """showVersion(driver)
