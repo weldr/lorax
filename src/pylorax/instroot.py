@@ -155,22 +155,22 @@ class InstRoot:
             shutil.copy(dogtailconf, dest)
 
         # create selinux config
-        if os.path.isfile(os.path.join(destdir, 'etc', 'selinux', 'targeted')):
+        if os.path.isfile(os.path.join(self.destdir, 'etc', 'selinux', 'targeted')):
             src = os.path.join(self.conf['datadir'], 'selinux-config')
             if os.path.isfile(src):
-                dest = os.path.join(destdir, 'etc', 'selinux', 'config')
+                dest = os.path.join(self.destdir, 'etc', 'selinux', 'config')
                 print "Installing %s..." % (os.path.join(os.path.sep, 'etc', 'selinux', 'config'),)
                 shutil.copy(src, dest)
 
         # create libuser.conf
         src = os.path.join(self.conf['datadir'], 'libuser.conf')
-        dest = os.path.join(destdir, 'etc', 'libuser.conf')
+        dest = os.path.join(self.destdir, 'etc', 'libuser.conf')
         if os.path.isfile(src):
             print "Installing %s..." % (os.path.join(os.path.sep, 'etc', 'libuser.conf'),)
             shutil.copy(src, dest)
 
         # figure out the gtk+ theme to keep
-        gtkrc = os.path.join(destdir, 'etc', 'gtk-2.0', 'gtkrc')
+        gtkrc = os.path.join(self.destdir, 'etc', 'gtk-2.0', 'gtkrc')
         gtk_theme_name = None
         gtk_icon_themes = []
         gtk_engine = None
@@ -188,7 +188,7 @@ class InstRoot:
                     print "    gtk-theme-name: %s" % (gtk_theme_name,)
 
                     # find the engine for this theme
-                    gtkrc = os.path.join(destdir, 'usr', 'share', 'themes', gtk_theme_name, 'gtk-2.0', 'gtkrc')
+                    gtkrc = os.path.join(self.destdir, 'usr', 'share', 'themes', gtk_theme_name, 'gtk-2.0', 'gtkrc')
                     if os.path.isfile(gtkrc):
                         f = open(gtkrc, 'r')
                         engine_lines = f.readlines()
@@ -208,7 +208,7 @@ class InstRoot:
 
                     # bring in all inherited themes
                     while True:
-                        icon_theme_index = os.path.join(destdir, 'usr', 'share', 'icons', icon_theme, 'index.theme')
+                        icon_theme_index = os.path.join(self.destdir, 'usr', 'share', 'icons', icon_theme, 'index.theme')
                         if os.path.isfile(icon_theme_index):
                             inherits = False
                             f = open(icon_theme_index, 'r')
@@ -229,14 +229,14 @@ class InstRoot:
                         else:
                             break
 
-        theme_path = os.path.join(destdir, 'usr', 'share', 'themes')
+        theme_path = os.path.join(self.estdir, 'usr', 'share', 'themes')
         if os.path.isdir(theme_path):
             for theme in os.listdir(theme_path):
                 if theme != gtk_theme_name:
                     theme = os.path.join(theme_path, theme)
                     shutil.rmtree(theme, ignore_errors=True)
 
-        icon_path = os.path.join(destdir, 'usr', 'share', 'icons')
+        icon_path = os.path.join(self.destdir, 'usr', 'share', 'icons')
         if os.path.isdir(icon_path):
             for icon in os.listdir(icon_path):
                 try:
@@ -246,7 +246,7 @@ class InstRoot:
                     icon = os.path.join(icon_path, icon)
                     shutil.rmtree(icon, ignore_errors=True)
 
-        tmp_path = os.path.join(destdir, 'usr', libdir, 'gtk-2.0')
+        tmp_path = os.path.join(self.destdir, 'usr', libdir, 'gtk-2.0')
         if os.path.isdir(tmp_path):
             for subdir in os.listdir(tmp_path):
                 new_path = os.path.join(tmp_path, subdir, 'engines')
@@ -257,8 +257,8 @@ class InstRoot:
                             os.unlink(tmp_engine)
 
         # clean out unused locales
-        langtable = os.path.join(destdir, 'usr', 'lib', 'anaconda', 'lang-table')
-        localepath = os.path.join(destdir, 'usr', 'share', 'locale')
+        langtable = os.path.join(self.destdir, 'usr', 'lib', 'anaconda', 'lang-table')
+        localepath = os.path.join(self.destdir, 'usr', 'share', 'locale')
         if os.path.isfile(langtable):
             locales = set()
             all_locales = set()
@@ -283,84 +283,84 @@ class InstRoot:
                 if os.path.isdir(os.path.join(localepath, locale)):
                     locales.add(locale)
 
-            for locale in os.listdir(os.path.join(destdir, 'usr', 'share', 'locale')):
+            for locale in os.listdir(os.path.join(self.destdir, 'usr', 'share', 'locale')):
                 all_locales.add(locale)
 
             print "Removing unused locales..."
             locales_to_remove = list(all_locales.difference(locales))
             for locale in locales_to_remove:
-                rmpath = os.path.join(destdir, 'usr', 'share', 'locale', locale)
+                rmpath = os.path.join(self.destdir, 'usr', 'share', 'locale', locale)
                 shutil.rmtree(rmpath, ignore_errors=True)
 
         # fix up some links for man page related stuff
         for file in ['nroff', 'groff', 'iconv', 'geqn', 'gtbl', 'gpic', 'grefer']:
             src = os.path.join('mnt', 'sysimage', 'usr', 'bin', file)
-            dst = os.path.join(destdir, 'usr', 'bin', file)
+            dst = os.path.join(self.destdir, 'usr', 'bin', file)
             if not os.path.isfile(dst):
                 os.symlink(src, dst)
 
         # install anaconda stub programs as instroot programs
         for subdir in ['lib', 'firmware']:
-            subdir = os.path.join(destdir, subdir)
+            subdir = os.path.join(self.destdir, subdir)
             if not os.path.isdir(subdir):
                 os.makedirs(subdir)
 
         for subdir in ['modules', 'firmware']:
             src = os.path.join(os.path.sep, subdir)
-            dst = os.path.join(destdir, 'lib', subdir)
+            dst = os.path.join(self.destdir, 'lib', subdir)
             shutil.rmtree(dst, ignore_errors=True)
             os.symlink(src, dst)
 
         for prog in ['raidstart', 'raidstop', 'losetup', 'list-harddrives', 'loadkeys', 'mknod', 'sysklogd']:
             stub = "%s-stub" % (prog,)
-            src = os.path.join(destdir, 'usr', 'lib', 'anaconda', stub)
-            dst = os.path.join(destdir, 'usr', 'bin', prog)
+            src = os.path.join(self.destdir, 'usr', 'lib', 'anaconda', stub)
+            dst = os.path.join(self.destdir, 'usr', 'bin', prog)
             if os.path.isfile(src) and not os.path.isfile(dst):
                 shutil.copy2(src, dst)
 
         # copy in boot loader files
-        bootpath = os.path.join(destdir, 'usr', 'lib', 'anaconda-runtime', 'boot')
+        bootpath = os.path.join(self.destdir, 'usr', 'lib', 'anaconda-runtime', 'boot')
         if not os.path.isdir(bootpath):
             os.makedirs(bootpath)
 
         if arch == 'i386' or arch == 'x86_64':
-            for bootfile in os.listdir(os.path.join(destdir, 'boot')):
+            for bootfile in os.listdir(os.path.join(self.destdir, 'boot')):
                 if bootfile.startswith('memtest'):
-                    src = os.path.join(destdir, 'boot', bootfile)
+                    src = os.path.join(self.destdir, 'boot', bootfile)
                     dst = os.path.join(bootpath, bootfile)
                     shutil.copy2(src, dst)
         elif arch.startswith('sparc'):
-            for bootfile in os.listdir(os.path.join(destdir, 'boot')):
+            for bootfile in os.listdir(os.path.join(self.destdir, 'boot')):
                 if bootfile.endswith('.b'):
-                    src = os.path.join(destdir, 'boot', bootfile)
+                    src = os.path.join(self.destdir, 'boot', bootfile)
                     dst = os.path.join(bootpath, bootfile)
                     shutil.copy2(src, dst)
         elif arch.startswith('ppc'):
-            src = os.path.join(destdir, 'boot', 'efika.forth')
+            src = os.path.join(self.destdir, 'boot', 'efika.forth')
             dst = os.path.join(bootpath, 'efika.forth')
             shutil.copy2(src, dst)
         elif arch == 'alpha':
-            src = os.path.join(destdir, 'boot', 'bootlx')
+            src = os.path.join(self.destdir, 'boot', 'bootlx')
             dst = os.path.join(bootpath, 'bootlx')
             shutil.copy2(src, dst)
         elif arch == 'ia64':
-            src = os.path.join(destdir, 'boot', 'efi', 'EFI', 'redhat')
+            src = os.path.join(self.destdir, 'boot', 'efi', 'EFI', 'redhat')
             shutil.rmtree(bootpath, ignore_errors=True)
             shutil.copytree(src, bootpath)
 
         # move the yum repos configuration directory
-        src = os.path.join(destdir, 'etc', 'yum.repos.d')
-        dst = os.path.join(destdir, 'etc', 'anaconda.repos.d')
+        src = os.path.join(self.destdir, 'etc', 'yum.repos.d')
+        dst = os.path.join(self.destdir, 'etc', 'anaconda.repos.d')
         if os.path.isdir(src):
             shutil.rmtree(dst, ignore_errors=True)
             shutil.move(src, dst)
 
         # remove things we do not want in the instroot
         for subdir in ['boot', 'home', 'root', 'tmp']:
-            shutil.rmtree(os.path.join(destdir, subdir), ignore_errors=True)
+            shutil.rmtree(os.path.join(self.destdir, subdir), ignore_errors=True)
 
         for subdir in ['doc', 'info']:
-            shutil.rmtree(os.path.join(destdir, 'usr', 'share', subdir), ignore_errors=True)
+            shutil.rmtree(os.path.join(self.destdir, 'usr', 'share', subdir), ignore_errors=True)
 
-        for libname in glob.glob(os.path.join(destdir, 'usr', libdir), 'libunicode-lite*'):
+        for libname in glob.glob(os.path.join(self.destdir, 'usr', libdir), 'libunicode-lite*'):
             shutil.rmtree(libname, ignore_errors=True)
