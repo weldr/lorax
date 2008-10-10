@@ -1,7 +1,10 @@
 - Finish rewriting the code in rewrite/
 - Write a man page for lorax
 - Hook lorax up to pungi (provide Jesse with a patch)
-- Support a verbose output mode
+- Support a verbose output mode (and disabling it)
 - Make sure we are root when executed
 - If we have to be root, should lorax be in /usr/sbin ?
 - Use OptionParser instead of getopt (?)
+- Create a Lorax class that can be used directly by pungi
+- Move conf hash table to something more object-like
+- Merge treeinfo and discinfo stuff in to InstRoot class
