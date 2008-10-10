@@ -41,10 +41,6 @@ class Lorax:
         self.conf['tmpdir'] = tempfile.gettempdir()
         self.conf['datadir'] = '/usr/share/lorax'
 
-        print("\n+=======================================================+")
-        print("| Setting up work directories and configuration data... |")
-        print("+=======================================================+\n")
-
         if repos != []:
             self.repo, self.extrarepos = self._collectRepos(repos)
         else:
@@ -54,9 +50,6 @@ class Lorax:
         self.output = output
         self.mirrorlist = mirrorlist
         self.updates = updates
-        self.buildinstdir, self.treedir, self.cachedir = self._initializeDirs()
-        self.yumconf = self._writeYumConf()
-        self.buildarch = self.getBuildArch()
 
     def run(self):
         """run()
@@ -65,11 +58,18 @@ class Lorax:
 
         """
 
+        print("\n+=======================================================+")
+        print("| Setting up work directories and configuration data... |")
+        print("+=======================================================+\n")
+
+        self.buildinstdir, self.treedir, self.cachedir = self._initializeDirs()
+        self.yumconf = self._writeYumConf()
+
         print("\n+================================================+")
         print("| Creating instroot tree to build images from... |")
         print("+================================================+\n")
 
-        self.instroot = InstRoot(conf=self.conf, yumconf=self.yumconf, arch=self.buildarch, treedir=self.treedir, updates=self.updates)
+        self.instroot = InstRoot(conf=self.conf, yumconf=self.yumconf, arch=self.getBuildArch(), treedir=self.treedir, updates=self.updates)
 
     def showVersion(self, driver=None):
         """showVersion(driver)
@@ -100,8 +100,8 @@ class Lorax:
                 else:
                    os.unlink(item)
 
-        if os.path.isdir(conf['tmpdir']):
-            shutil.rmtree(conf['tmpdir'], ignore_errors=True)
+        if os.path.isdir(self.conf['tmpdir']):
+            shutil.rmtree(self.conf['tmpdir'], ignore_errors=True)
 
     def getBuildArch(self):
         """getBuildArch()
@@ -186,13 +186,13 @@ class Lorax:
         if not os.path.isdir(self.output):
             os.makedirs(self.output, mode=0755)
 
-        conf['tmpdir'] = tempfile.mkdtemp('XXXXXX', 'lorax.tmp.', conf['tmpdir'])
-        buildinstdir = tempfile.mkdtemp('XXXXXX', 'buildinstall.tree.', conf['tmpdir'])
-        treedir = tempfile.mkdtemp('XXXXXX', 'treedir.', conf['tmpdir'])
-        cachedir = tempfile.mkdtemp('XXXXXX', 'yumcache.', conf['tmpdir'])
+        self.conf['tmpdir'] = tempfile.mkdtemp('XXXXXX', 'lorax.tmp.', self.conf['tmpdir'])
+        buildinstdir = tempfile.mkdtemp('XXXXXX', 'buildinstall.tree.', self.conf['tmpdir'])
+        treedir = tempfile.mkdtemp('XXXXXX', 'treedir.', self.conf['tmpdir'])
+        cachedir = tempfile.mkdtemp('XXXXXX', 'yumcache.', self.conf['tmpdir'])
 
         print("Working directories:")
-        print("    tmpdir = %s" % (conf['tmpdir'],))
+        print("    tmpdir = %s" % (self.conf['tmpdir'],))
         print("    buildinstdir = %s" % (buildinstdir,))
         print("    treedir = %s" % (treedir,))
         print("    cachedir = %s" % (cachedir,))
@@ -206,7 +206,7 @@ class Lorax:
         to the temporary yum.conf file on success, None of failure.
         """
 
-        tmpdir = conf['tmpdir']
+        tmpdir = self.conf['tmpdir']
         (fd, yumconf) = tempfile.mkstemp(prefix='yum.conf', dir=tmpdir)
         f = os.fdopen(fd, 'w')
 
