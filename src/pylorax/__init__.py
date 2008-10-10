@@ -176,7 +176,7 @@ class Lorax:
 
         return repo, extrarepos
 
-    def initializeDirs(self):
+    def _initializeDirs(self):
         """_initializeDirs()
 
         Create directories used for image generation.
