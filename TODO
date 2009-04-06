@@ -1,4 +1,6 @@
 - Finish rewriting the code in rewrite/
+- Have pylorax extend YumBase rather than invoking yum independently, we want
+  to be able to take in a YumBase object from other things, such as pungi
 - Write a man page for lorax
 - Hook lorax up to pungi (provide Jesse with a patch)
 - Support a verbose output mode (and disabling it)
