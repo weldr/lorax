@@ -1,9 +1,9 @@
-#!/usr/bin/python -tt
+#!/usr/bin/env python
 #
 # lorax
 # Install image and tree support data generation tool.
 #
-# Copyright (C) 2008  Red Hat, Inc.
+# Copyright (C) 2008, 2009  Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,113 +19,80 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 # Author(s): David Cantrell <dcantrell@redhat.com>
+#            Martin Gracik <mgracik@redhat.com>
 #
 
-import getopt
-import os
 import sys
+import os
+from optparse import OptionParser, OptionGroup
 
-from pylorax import Lorax
+import pylorax
 
-def usage(prog):
-    print("Usage: %s -v VERSION -p PRODUCT -r RELEASE -o PATH REPO\n" % (prog,))
-    print("Required arguments:")
-    print("    -v, --version=STRING       Version identifier.")
-    print("    -p, --product=STRING       Product name.")
-    print("    -r, --release=STRING       Release information or comment.\n")
-    print("    -o, --output=PATHSPEC      Where to write output files.")
-    print("Optional arguments:")
-    print("    -d, --debug                Enable debugging messages.")
-    print("    -t, --variant=STRING       Variant name.")
-    print("    -b, --bugurl=URL           Bug reporting URL for the product.")
-    print("    -u, --updates=PATHSPEC     Path to find updated RPMS.")
-    print("    -m, --mirrorlist=REPO      Mirror list repo, may be listed multiple times.")
-    print("    -c, --confdir=PATHSPEC     Path to config files (default: /etc/lorax).")
-    print("    -C, --cleanup              Cleanup on exit.\n")
-    print("A 'REPO' specification is a valid yum repository path.\n")
-    print("See the man page lorax(8) for more information.")
 
-if __name__ == "__main__":
-    prog = os.path.basename(sys.argv[0])
-    opts, args, mirrorlist, extrarepos = [], [], [], []
-    confdir, version, product, release, output, repo = None, None, None, None, None, None
-    debug = False
-    cleanup = False
-    variant, updates = '', ''
-    bugurl = 'your distribution provided bug reporting tool.'
+if __name__ == '__main__':
+    version = '%s 0.1' % (os.path.basename(sys.argv[0]),)
+    usage = '%prog -p PRODUCT -v VERSION -r RELEASE -o OUTPUT REPOSITORY'
 
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], "v:p:r:o:dt:b:u:m:c:CV",
-                                   ["version=", "product=", "release=",
-                                    "output=", "debug", "variant=",
-                                    "bugurl=", "updates=", "mirrorlist=",
-                                    "confdir=", "cleanup"])
-    except getopt.GetoptError:
-        usage(prog)
-        sys.exit(1)
+    parser = OptionParser(usage=usage)
 
-    for o, a in opts:
-        if o in ('-v', '--version'):
-            version = a
-        elif o in ('-p', '--product'):
-            product = a
-        elif o in ('-r', '--release'):
-            release = a
-        elif o in ('-o', '--output'):
-            output = a
-        elif o in ('-d', '--debug'):
-            debug = True
-        elif o in ('-t', '--variant'):
-            variant = a
-        elif o in ('-b', '--bugurl'):
-            bugurl = a
-        elif o in ('-u', '--updates'):
-            updates = a
-        elif o in ('-m', '--mirrorlist'):
-            mirrorlist.append(a)
-        elif o in ('-c', '--confdir'):
-            if os.path.isdir(a):
-                confdir = a
-            else:
-                sys.stderr.write("ERROR: %s is not a directory.\n" % (a,))
-        elif o in ('-C', '--cleanup'):
-            cleanup = True
-        elif o in ('-V'):
-            # XXX: need to fix this
-            #pylorax.show_version(prog)
-            sys.exit(0)
+    def check_dir(option, opt_str, value, parser):
+        if os.path.isdir(value):
+            setattr(parser.values, option.dest, value)
+        else:
+            parser.error('%s is not a directory' % (value,))
 
-    if version is None or product is None or release is None or output is None:
-        sys.stderr.write("ERROR: Missing a required argument.\n")
-        sys.exit(1)
+    # XXX "options" should not be required
+    # required
+    group = OptionGroup(parser, 'Required')
+    group.add_option('-p', '--product', help='Product name.',
+                      metavar='STRING')
+    group.add_option('-v', '--version', help='Version identifier.',
+                      metavar='STRING')
+    group.add_option('-r', '--release', help='Release information or comment.',
+                      metavar='STRING')
+    group.add_option('-o', '--output', help='Destination directory.',
+                      metavar='PATHSPEC')
+    parser.add_option_group(group)
 
-    if len(args) == 0:
-        sys.stderr.write("ERROR: Missing repo to use for image generation.\n")
-        sys.exit(1)
+    # XXX are all of these used?
+    # optional
+    group = OptionGroup(parser, 'Optional')
+    group.add_option('-d', '--debug', help='Enable debugging messages.',
+                     action='store_true', default=False)
+    group.add_option('-t', '--variant', help='Variant name.',
+                     metavar='STRING')
+    group.add_option('-b', '--bugurl', help='Bug reporting URL for the product.',
+                     metavar='URL', default='your distribution provided bug reporting tool.')
+    group.add_option('-u', '--updates', help='Path to find updated RPMS.',
+                     metavar='PATHSPEC')
+    group.add_option('-m', '--mirrorlist', help='Mirror list repository, may be listed multiple times.',
+                     metavar='REPOSITORY', action='append', default=[])
+    group.add_option('-c', '--confdir', help='Path to config files (default: /etc/lorax).',
+                     metavar='PATHSPEC', action='callback', callback=check_dir,
+                     type='string', default='/etc/lorax')
+    group.add_option('-C', '--cleanup', help='Cleanup on exit.',
+                     action='store_true', default=False)
+    group.add_option('-V', help='Print version and exit.',
+                     action='store_true', default=False, dest='printver')
+    parser.add_option_group(group)
 
-    lorax = Lorax(repos=args, output=output, mirrorlist=mirrorlist)
+    # additional information
+    group = OptionGroup(parser, 'Additional information',
+                        'A "REPOSITORY" specification is a valid yum repository path.\n'
+                        'See the man page lorax(8) for more information.')
+    parser.add_option_group(group)
 
-    if confdir is not None:
-        lorax.conf['confdir'] = confdir
+    (opts, args) = parser.parse_args()
 
+    if opts.printver:
+        print(version)
+        sys.exit(0)
+
+    if not opts.product or not opts.version or not opts.release or not opts.output:
+        parser.error('Missing a required argument.')
+
+    if not args:
+        parser.error('Missing repository to use for image generation.')
+
+    lorax = pylorax.Lorax(repos=args, options=opts)
     lorax.run()
-
-    if cleanup:
-        lorax.cleanup()
-
-
-
-#    print("\n+=======================================+")
-#    print("| Writing meta data to instroot tree... |")
-#    print("+=======================================+\n")
-#
-#    # write .treeinfo file
-#    if not pylorax.treeinfo.write(family=product, variant=variant, version=version, arch=buildarch, outdir=output):
-#        sys.stderr.write("Error writing %s/.treeinfo file.\n" % (output,))
-#
-#    # mk-images
-#    # XXX
-#
-#    # write .discinfo file
-#    if not pylorax.discinfo.write(release=release, arch=buildarch, outdir=output):
-#        sys.stderr.write("Error writing %s/.discinfo file.\n" % (output,))
