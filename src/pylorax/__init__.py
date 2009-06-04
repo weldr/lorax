@@ -1,25 +1,4 @@
-#
-# pylorax
-# Install image and tree support data generation tool -- Python module.
-#
-# Copyright (C) 2008, 2009  Red Hat, Inc.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-# Author(s): David Cantrell <dcantrell@redhat.com>
-#            Martin Gracik <mgracik@redhat.com>
-#
+# __init__.py
 
 import sys
 import os
@@ -27,209 +6,211 @@ import shutil
 import tempfile
 import time
 import ConfigParser
+import re
 
-import yum
-import rpmUtils
+from config import Container
+import utils.rpmutil as rpmutil
 
-import instroot
 import images
 
+from exceptions import LoraxError
 
-class Lorax:
-    def __init__(self, repos, options):
-        self.repos = repos
 
-        # required
-        self.product = options.product
-        self.version = options.version
-        self.release = options.release
-        self.output = options.output
+class Config(Container):
+    def __init__(self):
+        config = ('confdir', 'datadir', 'tempdir', 'debug', 'cleanup')
 
-        # optional
-        self.debug = options.debug
-        self.variant = options.variant
-        self.bugurl = options.bugurl
-        self.updates = options.updates
-        self.mirrorlist = options.mirrorlist
-        self.confdir = options.confdir
-        self.cleanup = options.cleanup
+        # options
+        required = ('product', 'version', 'release', 'outdir', 'repos')
+        optional = ('variant', 'bugurl', 'updates', 'mirrorlist')
 
-        self.conf = {}
-        if not self.confdir:
-            self.confdir = '/etc/lorax'
-        self.conf['confdir'] = self.confdir
-        self.conf['datadir'] = '/usr/share/lorax'
-        self.conf['tmpdir'] = tempfile.gettempdir()
+        Container.__init__(self, config + required + optional)
+
+        # set defaults
+        self.set(confdir='/etc/lorax',
+                 datadir='/usr/share/lorax',
+                 tempdir=tempfile.mkdtemp(prefix='lorax.tmp.', dir=tempfile.gettempdir()),
+                 debug=False,
+                 cleanup=False)
+
+        self.set(product='',
+                 version='',
+                 release='',
+                 outdir='',
+                 repos=[])
+
+        self.set(variant='',
+                 bugurl='',
+                 updates='',
+                 mirrorlist=[])
+
+
+class Lorax(object):
+    def __init__(self, config):
+        assert isinstance(config, Config) == True
+        self.conf = config
+
+        # check if we have all required options
+        if not self.conf.repos:
+            raise LoraxError, 'missing repos'
+        if not self.conf.outdir:
+            raise LoraxError, 'missing outdir'
+        if not self.conf.product:
+            raise LoraxError, 'missing product'
+        if not self.conf.version:
+            raise LoraxError, 'missing version'
+        if not self.conf.release:
+            raise LoraxError, 'missing release'
+
+        self.yum = None
 
     def run(self):
-        """run()
-
-        Generate install images.
-        """
-
         print('Collecting repos...')
-        self.repo, self.extrarepos = self.__collectRepos()
+        self.collectRepos()
 
-        if not self.repo:
-            sys.stderr.write('No valid repository.\n')
+        # check if we have at least one valid repository
+        if not self.conf.repo:
+            sys.stderr.write('ERROR: no valid repository\n')
             sys.exit(1)
 
         print('Initializing directories...')
-        self.buildinstdir, self.treedir, self.cachedir = self.__initializeDirs()
+        self.initDirs()
 
-        print('Writing yum configuration...')
-        self.yumconf = self.__writeYumConf()
+        print('Initializing yum...')
+        self.initYum()
 
-        print('Getting the build architecture...')
-        self.buildarch = self.__getBuildArch()
-
-        print('Creating install root tree...')
-        self.makeInstRoot()
+        print('Setting build architecture...')
+        self.setBuildArch()
 
         print('Writing .treeinfo...')
-        self.__writeTreeInfo()
+        self.writeTreeInfo()
 
         print('Writing .discinfo...')
-        self.__writeDiscInfo()
+        self.writeDiscInfo()
 
-        print('Creating images...')
+        print('Preparing the install tree...')
+        self.prepareInstRoot()
+
+        print('Creating the images...')
         self.makeImages()
 
-        if self.cleanup:
+        if self.conf.cleanup:
             print('Cleaning up...')
             self.cleanUp()
 
-    def __collectRepos(self):
-        """_collectRepos()
-
-        Get the main repo (the first one) and then build a list of all remaining
-        repos in the list.  Sanitize each repo URL for proper yum syntax.
-        """
-
+    def collectRepos(self):
         repolist = []
-        for repospec in self.repos:
+        for repospec in self.conf.repos:
             if repospec.startswith('/'):
-                repo = 'file://%s' % (repospec,)
-                print('Adding local repo:\n    %s' % (repo,))
+                repo = 'file://%s' % repospec
+                print('Adding local repo: %s' % repo)
                 repolist.append(repo)
             elif repospec.startswith('http://') or repospec.startswith('ftp://'):
-                print('Adding remote repo:\n    %s' % (repospec,))
+                print('Adding remote repo: %s' % repospec)
                 repolist.append(repospec)
 
         if not repolist:
-            return None, []
+            repo, extrarepos = None, []
         else:
-            return repolist[0], repolist[1:]
+            repo, extrarepos = repolist[0], repolist[1:]
 
-    def __initializeDirs(self):
-        """_initializeDirs()
+        self.conf.addAttr(['repo', 'extrarepos'])
+        self.conf.set(repo=repo, extrarepos=extrarepos)
 
-        Create directories used for image generation.
-        """
+        # remove repos attribute, to get a traceback, if we use it later 
+        self.conf.delAttr('repos')
 
-        if not os.path.isdir(self.output):
-            os.makedirs(self.output, mode=0755)
+    def initDirs(self):
+        if not os.path.isdir(self.conf.outdir):
+            os.makedirs(self.conf.outdir, mode=0755)
 
-        self.conf['tmpdir'] = tempfile.mkdtemp('XXXXXX', 'lorax.tmp.', self.conf['tmpdir'])
-        buildinstdir = tempfile.mkdtemp('XXXXXX', 'buildinstall.tree.', self.conf['tmpdir'])
-        treedir = tempfile.mkdtemp('XXXXXX', 'treedir.', self.conf['tmpdir'])
-        cachedir = tempfile.mkdtemp('XXXXXX', 'yumcache.', self.conf['tmpdir'])
+        treedir = os.path.join(self.conf.tempdir, 'treedir', 'install')
+        cachedir = os.path.join(self.conf.tempdir, 'yumcache')
 
         print('Working directories:')
-        print('    tmpdir = %s' % (self.conf['tmpdir'],))
-        print('    buildinstdir = %s' % (buildinstdir,))
-        print('    treedir = %s' % (treedir,))
-        print('    cachedir = %s' % (cachedir,))
+        print('    tempdir = %s' % self.conf.tempdir)
+        print('    treedir = %s' % treedir)
+        print('    cachedir = %s' % cachedir)
 
-        return buildinstdir, treedir, cachedir
+        self.conf.addAttr(['treedir', 'cachedir'])
+        self.conf.set(treedir=treedir, cachedir=cachedir)
 
-    def __writeYumConf(self):
-        """_writeYumConf()
-
-        Generate a temporary yum.conf file for image generation.  Returns the path
-        to the temporary yum.conf file on success, None of failure.
-        """
-
-        (fd, yumconf) = tempfile.mkstemp(prefix='yum.conf', dir=self.conf['tmpdir'])
-        f = os.fdopen(fd, 'w')
-
-        f.write('[main]\n')
-        f.write('cachedir=%s\n' % (self.cachedir,))
-        f.write('keepcache=0\n')
-        f.write('gpgcheck=0\n')
-        f.write('plugins=0\n')
-        f.write('reposdir=\n')
-        f.write('tsflags=nodocs\n\n')
-
-        f.write('[loraxrepo]\n')
-        f.write('name=lorax repo\n')
-        f.write('baseurl=%s\n' % (self.repo,))
-        f.write('enabled=1\n\n')
-
-        for n, extra in enumerate(self.extrarepos, start=1):
-            f.write('[lorax-extrarepo-%d]\n' % (n,))
-            f.write('name=lorax extra repo %d\n' % (n,))
-            f.write('baseurl=%s\n' % (extra,))
-            f.write('enabled=1\n')
-
-        for n, mirror in enumerate(self.mirrorlist, start=1):
-            f.write('[lorax-mirrorlistrepo-%d]\n' % (n,))
-            f.write('name=lorax mirrorlist repo %d\n' % (n,))
-            f.write('mirrorlist=%s\n' % (mirror,))
-            f.write('enabled=1\n')
-
-        f.close()
-        print('Wrote lorax yum configuration to %s' % (yumconf,))
-
-        return yumconf
-
-    def __getBuildArch(self):
-        """_getBuildArch()
-
-        Query the configured yum repositories to determine our build architecture,
-        which is the architecture of the anaconda package in the repositories.
-
-        This function is based on a subset of what repoquery(1) does.
-        """
-
-        uname_arch = os.uname()[4]
-
-        if not self.yumconf or not os.path.isfile(self.yumconf):
-            sys.stderr.write('ERROR: yum.conf does not exist, defaulting to %s\n' % (uname_arch,))
-            return uname_arch
-
-        repoq = yum.YumBase()
-        repoq.doConfigSetup(self.yumconf)
-
+    def initYum(self):
+        yumconf = os.path.join(self.conf.tempdir, 'yum.conf')
+        
         try:
-            repoq.doRepoSetup()
-        except yum.Errors.RepoError:
-            sys.stderr.write('ERROR: cannot query yum repo, defaulting to %s\n' % (uname_arch,))
-            return uname_arch
+            f = open(yumconf, 'w')
+        except IOError:
+            sys.stderr.write('ERROR: Unable to write yum.conf file\n')
+            sys.exit(1)
+        else:
+            f.write('[main]\n')
+            f.write('cachedir=%s\n' % self.conf.cachedir)
+            f.write('keepcache=0\n')
+            f.write('gpgcheck=0\n')
+            f.write('plugins=0\n')
+            f.write('reposdir=\n')
+            f.write('tsflags=nodocs\n\n')
 
-        repoq.doSackSetup(rpmUtils.arch.getArchList())
-        repoq.doTsSetup()
+            f.write('[loraxrepo]\n')
+            f.write('name=lorax repo\n')
+            f.write('baseurl=%s\n' % self.conf.repo)
+            f.write('enabled=1\n\n')
 
-        ret_arch = None
-        for pkg in repoq.pkgSack.simplePkgList():
-            (n, a, e, v, r) = pkg
-            if n == 'anaconda':
-                ret_arch = a
-                break
+            for n, extra in enumerate(self.conf.extrarepos, start=1):
+                f.write('[lorax-extrarepo-%d]\n' % n)
+                f.write('name=lorax extra repo %d\n' % n)
+                f.write('baseurl=%s\n' % extra)
+                f.write('enabled=1\n')
 
-        if not ret_arch:
-            ret_arch = uname_arch
+            for n, mirror in enumerate(self.conf.mirrorlist, start=1):
+                f.write('[lorax-mirrorlistrepo-%d]\n' % n)
+                f.write('name=lorax mirrorlist repo %d\n' % n)
+                f.write('mirrorlist=%s\n' % mirror)
+                f.write('enabled=1\n')
 
-        return ret_arch
+            f.close()
 
-    def __writeTreeInfo(self, discnum=1, totaldiscs=1, packagedir=''):
-        outfile = os.path.join(self.output, '.treeinfo')
+        self.conf.addAttr('yumconf')
+        self.conf.set(yumconf=yumconf)
 
+        self.yum = rpmutil.Yum(yumconf=self.conf.yumconf, installroot=self.conf.treedir)
+
+        # remove not needed options
+        self.conf.delAttr(['repo', 'extrarepos', 'mirrorlist'])
+
+    def setBuildArch(self):
+        unamearch = os.uname()[4]
+
+        self.conf.addAttr('buildarch')
+        self.conf.set(buildarch=unamearch)
+
+        anaconda = self.yum.find('anaconda')
+        try:
+            self.conf.set(buildarch=anaconda[0].arch)
+        except:
+            pass
+
+        # set the libdir
+        self.conf.addAttr('libdir')
+        self.conf.set(libdir='lib')
+        # on 64-bit systems, make sure we use lib64 as the lib directory
+        if self.conf.buildarch.endswith('64') or self.conf.buildarch == 's390x':
+            self.conf.set(libdir='lib64')
+
+    def writeTreeInfo(self, discnum=1, totaldiscs=1, packagedir=''):
+        outfile = os.path.join(self.conf.outdir, '.treeinfo')
+
+        # don't print anything instead of None if variant is not specified
+        variant = ''
+        if self.conf.variant:
+            variant = self.conf.variant
+            
         data = { 'timestamp': time.time(),
-                 'family': self.product,
-                 'version': self.version,
-                 'arch': self.buildarch,
-                 'variant': self.variant,
+                 'family': self.conf.product,
+                 'version': self.conf.version,
+                 'arch': self.conf.buildarch,
+                 'variant': variant,
                  'discnum': str(discnum),
                  'totaldiscs': str(totaldiscs),
                  'packagedir': packagedir }
@@ -241,6 +222,17 @@ class Lorax:
         for key, value in data.items():
             c.set(section, key, value)
 
+        section = 'images-%s' % self.conf.buildarch
+        c.add_section(section)
+        c.set(section, 'kernel', 'images/pxeboot/vmlinuz')
+        c.set(section, 'initrd', 'images/pxeboot/initrd.img')
+
+        # XXX actually create the boot iso somewhere, and set up this attribute
+        self.conf.addAttr('bootiso')
+        
+        if self.conf.bootiso:
+            c.set(section, 'boot.iso', 'images/%s' % self.conf.bootiso)
+
         try:
             f = open(outfile, 'w')
         except IOError:
@@ -250,47 +242,43 @@ class Lorax:
             f.close()
             return True
     
-    def __writeDiscInfo(self, discnum=0):
-        outfile = os.path.join(self.output, '.discinfo')
+    def writeDiscInfo(self, discnum=0):
+        outfile = os.path.join(self.conf.outdir, '.discinfo')
 
         try:
             f = open(outfile, 'w')
         except IOError:
             return False
         else:
-            f.write('%f\n' % (time.time(),))
-            f.write('%s\n' % (self.release,))
-            f.write('%s\n' % (self.buildarch,))
-            f.write('%d\n' % (discnum,))
+            f.write('%f\n' % time.time())
+            f.write('%s\n' % self.conf.release)
+            f.write('%s\n' % self.conf.buildarch)
+            f.write('%d\n' % discnum)
             f.close()
             return True
 
-    def makeInstRoot(self):
-        root = instroot.InstRoot(conf=self.conf,
-                                 yumconf=self.yumconf,
-                                 arch=self.buildarch,
-                                 treedir=self.treedir,
-                                 updates=self.updates)
-        root.run()
+    def prepareInstRoot(self):
+        # XXX why do we need this?
+        os.symlink(os.path.join(os.path.sep, 'tmp'),
+                   os.path.join(self.conf.treedir, 'var', 'lib', 'xkb'))
 
-    # TODO
     def makeImages(self):
-        pass
+        i = images.Images(self.conf, self.yum)
+        i.run()
+
+    # XXX figure out where to put this
+    #def copyUpdates(self):
+    #    if self.conf.updates and os.path.isdir(self.conf.updates):
+    #        cp(os.path.join(self.conf.updates, '*'), self.conf.treedir)
+    #    self.conf.delAttr('updates')
 
     def cleanUp(self, trash=[]):
-        """cleanup([trash])
-
-        Given a list of things to remove, cleanUp() will remove them if it can.
-        Never fails, just tries to remove things and returns regardless of
-        failures removing things.
-        """
-
         for item in trash:
             if os.path.isdir(item):
                shutil.rmtree(item, ignore_errors=True)
             else:
                os.unlink(item)
 
-        if os.path.isdir(self.conf['tmpdir']):
-            shutil.rmtree(self.conf['tmpdir'], ignore_errors=True)
-
+        # remove the whole lorax tempdir
+        if os.path.isdir(self.conf.tempdir):
+            shutil.rmtree(self.conf.tempdir, ignore_errors=True)

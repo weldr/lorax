@@ -1,0 +1,9 @@
+# initrd template file
+#
+# supported variables: @initrd@
+#                      @instroot@
+
+:copy
+    # comment
+    @instroot@/bin/bash to @initrd@/bin
+    @instroot@/bin/mount to @initrd@/bin

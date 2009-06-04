@@ -30,17 +30,18 @@ import fnmatch
 import re
 import fileinput
 import subprocess
-
 import pwd
 import grp
+import tempfile
 
-from fileutils import cp, mv
+from fileutils import cp, mv, touch
+from yumutils import extract_rpm
 
-sys.path.insert(0, '/usr/share/yum-cli')
-import yummain
+import utils
+
 
 class InstRoot:
-    """InstRoot(conf, yumconf, arch, treedir, [updates=None])
+    """InstRoot(config, options, yum)
 
     Create a instroot tree for the specified architecture.  The list of
     packages to install are specified in the /etc/lorax/packages and
@@ -58,20 +59,12 @@ class InstRoot:
     returned or the program is aborted immediately.
     """
 
-    def __init__(self, conf, yumconf, arch, treedir, updates=None):
-        self.conf = conf
-        self.yumconf = yumconf
-        self.arch = arch
-        self.treedir = treedir
-        self.updates = updates
+    def __init__(self, config, options, yum):
+        self.conf = config
+        self.opts = options
+        self.yum = yum
 
-        self.libdir = 'lib'
-        # on 64-bit systems, make sure we use lib64 as the lib directory
-        if self.arch.endswith('64') or self.arch == 's390x':
-            self.libdir = 'lib64'
-
-        # the directory where the instroot will be created
-        self.destdir = os.path.join(self.treedir, 'install')
+        self.destdir = self.conf.treedir
 
     def run(self):
         """run()
@@ -79,24 +72,21 @@ class InstRoot:
         Generate the instroot tree and prepare it for building images.
         """
 
-        if not os.path.isdir(self.destdir):
-            os.makedirs(self.destdir)
-
-        # build a list of packages to install
         self.packages = self.__getPackageList()
-
-        # install the packages to the instroot
         self.__installPackages()
 
-        # scrub instroot
-        self.__scrubInstRoot()
+        if not self.__installKernel():
+            sys.exit(1)
+
+        # XXX
+        #self.__scrubInstRoot()
 
     def __getPackageList(self):
         packages = set()
 
         packages_files = []
-        packages_files.append(os.path.join(self.conf['confdir'], 'packages'))
-        packages_files.append(os.path.join(self.conf['confdir'], self.arch, 'packages'))
+        packages_files.append(os.path.join(self.conf.confdir, 'packages'))
+        packages_files.append(os.path.join(self.conf.confdir, self.opts.buildarch, 'packages'))
 
         for pfile in packages_files:
             if os.path.isfile(pfile):
@@ -120,29 +110,98 @@ class InstRoot:
         return packages
 
     def __installPackages(self):
-        # build the list of arguments to pass to yum
-        arglist = ['-c', self.yumconf]
-        arglist.append("--installroot=%s" % (self.destdir,))
-        arglist.extend(['install', '-y'])
-        arglist.extend(self.packages)
-
+        # XXX i don't think this is needed
         # do some prep work on the destdir before calling yum
-        os.makedirs(os.path.join(self.destdir, 'boot'))
-        os.makedirs(os.path.join(self.destdir, 'usr', 'sbin'))
-        os.makedirs(os.path.join(self.destdir, 'usr', 'lib', 'debug'))
-        os.makedirs(os.path.join(self.destdir, 'usr', 'src', 'debug'))
-        os.makedirs(os.path.join(self.destdir, 'tmp'))
-        os.makedirs(os.path.join(self.destdir, 'var', 'log'))
-        os.makedirs(os.path.join(self.destdir, 'var', 'lib'))
-        os.makedirs(os.path.join(self.destdir, 'var', 'lib', 'yum'))
+        #os.makedirs(os.path.join(self.destdir, 'boot'))
+        #os.makedirs(os.path.join(self.destdir, 'usr', 'sbin'))
+        #os.makedirs(os.path.join(self.destdir, 'usr', 'lib', 'debug'))
+        #os.makedirs(os.path.join(self.destdir, 'usr', 'src', 'debug'))
+        #os.makedirs(os.path.join(self.destdir, 'tmp'))
+        #os.makedirs(os.path.join(self.destdir, 'var', 'log'))
+        #os.makedirs(os.path.join(self.destdir, 'var', 'lib', 'yum'))
+
+        # XXX maybe only this...
+        #os.makedirs(os.path.join(self.destdir, 'var', 'lib'))
         os.symlink(os.path.join(os.path.sep, 'tmp'), os.path.join(self.destdir, 'var', 'lib', 'xkb'))
 
-        # XXX sort through yum errcodes and return False for actual bad things we care about
-        errcode = yummain.user_main(arglist, exit_code=False)
+        self.yum.install(self.packages)
 
-        # copy updates to destdir
-        if self.updates and os.path.isdir(self.updates):
-            cp(os.path.join(self.updates, '*'), self.destdir)
+        # copy updates to treedir
+        if self.opts.updates and os.path.isdir(self.opts.updates):
+            cp(os.path.join(self.opts.updates, '*'), self.destdir)
+
+    # XXX
+    def __installKernel(self):
+        arches = [self.opts.buildarch]
+        efiarch = []
+        kerneltags = ['kernel']
+        kernelxen = []
+
+        if self.opts.buildarch == 'ppc':
+            arches = ['ppc64', 'ppc']
+        elif self.opts.buildarch == 'i386':
+            arches = ['i586']
+            efiarch = ['ia32']
+            kerneltags = ['kernel', 'kernel-PAE']
+            kernelxen = ['kernel-PAE']
+        elif self.opts.buildarch == 'x86_64':
+            efiarch = ['x64']
+        elif self.opts.buildarch == 'ia64':
+            efiarch = ['ia64']
+
+        kpackages = self.yum.find(kerneltags)
+
+        if not kpackages:
+            sys.stderr.write('ERROR: Unable to find any kernel package\n')
+            return False
+
+        # create the modinfo file
+        (fd, modinfo) = tempfile.mkstemp(prefix='modinfo-%s.' % self.opts.buildarch,
+                                         dir=self.conf.tempdir)
+        self.conf.addAttr('modinfo')
+        self.conf.set(modinfo=modinfo)
+
+        for kernel in kpackages:
+            fn = self.yum.download(kernel)
+            kernelroot = os.path.join(self.conf.kernelbase, kernel.arch)
+            extract_rpm(fn, kernelroot)
+            os.unlink(fn)
+
+            # get vmlinuz and version
+            dir = os.path.join(kernelroot, 'boot')
+            if self.opts.buildarch == 'ia64':
+                dir = os.path.join(dir, 'efi', 'EFI', 'redhat')
+
+            vmlinuz = None
+            for file in os.listdir(dir):
+                if file.startswith('vmlinuz'):
+                    vmlinuz = file
+                    prefix, sep, version = file.partition('-')
+
+            if not vmlinuz:
+                sys.stderr.write('ERROR: vmlinuz file not found\n')
+                return False
+
+            modules_dir = os.path.join(kernelroot, 'lib', 'modules', version)
+            if not os.path.isdir(modules_dir):
+                sys.stderr.write('ERROR: modules directory not found\n')
+                return False
+
+            allmods = []
+            for file in os.listdir(modules_dir):
+                if file.endswith('.ko'):
+                    allmods.append(os.path.join(modules_dir, file))
+
+            # install firmware
+            fpackages = self.yum.find('*firmware*')
+            for firmware in fpackages:
+                fn = self.yum.download(firmware)
+                extract_rpm(fn, kernelroot)
+                os.unlink(fn)
+
+            utils.genmodinfo(modules_dir, self.conf.modinfo)
+
+        return True
 
     def __scrubInstRoot(self):
         self.__createConfigFiles()
@@ -155,35 +214,34 @@ class InstRoot:
         self.__configureKmod()
         self.__moveAnacondaFiles()
         self.__setShellLinks()
-        self.__moveBins()
+        #self.__moveBins()
         self.__removeUnwanted()
         self.__changeDestDirPermissions()
         self.__createLDConfig()
         self.__setBusyboxLinks()
         self.__strip()
-        self.__fixBrokenLinks()
+        #self.__fixBrokenLinks()
 
     def __createConfigFiles(self):
         # create %gconf.xml
-        dogtailconf = os.path.join(self.conf['datadir'], 'dogtail-%gconf.xml')
+        dogtailconf = os.path.join(self.conf.datadir, 'dogtail-%gconf.xml')
         if os.path.isfile(dogtailconf):
             os.makedirs(os.path.join(self.destdir, '.gconf', 'desktop', 'gnome', 'interface'))
-            f = open(os.path.join(self.destdir, '.gconf', 'desktop', '%gconf.xml'), 'w')
-            f.close()
-            f = open(os.path.join(self.destdir, '.gconf', 'desktop', 'gnome', '%gconf.xml'), 'w')
-            f.close()
+            touch(os.path.join(self.destdir, '.gconf', 'desktop', '%gconf.xml'))
+            touch(os.path.join(self.destdir, '.gconf', 'desktop', 'gnome', '%gconf.xml'))
+            
             dst = os.path.join(self.destdir, '.gconf', 'desktop', 'gnome', 'interface', '%gconf.xml')
             cp(dogtailconf, dst)
 
         # create selinux config
         if os.path.isfile(os.path.join(self.destdir, 'etc', 'selinux', 'targeted')):
-            selinuxconf = os.path.join(self.conf['datadir'], 'selinux-config')
+            selinuxconf = os.path.join(self.conf.datadir, 'selinux-config')
             if os.path.isfile(selinuxconf):
                 dst = os.path.join(self.destdir, 'etc', 'selinux', 'config')
                 cp(selinuxconf, dst)
 
         # create libuser.conf
-        libuserconf = os.path.join(self.conf['datadir'], 'libuser.conf')
+        libuserconf = os.path.join(self.conf.datadir, 'libuser.conf')
         if os.path.isfile(libuserconf):
             dst = os.path.join(self.destdir, 'etc', 'libuser.conf')
             cp(libuserconf, dst)
@@ -265,7 +323,7 @@ class InstRoot:
                 shutil.rmtree(icon, ignore_errors=True)
 
         # remove engines we don't need
-        tmp_path = os.path.join(self.destdir, 'usr', self.libdir, 'gtk-2.0')
+        tmp_path = os.path.join(self.destdir, 'usr', self.opts.libdir, 'gtk-2.0')
         if os.path.isdir(tmp_path):
             fnames = map(lambda fname: os.path.join(tmp_path, fname, 'engines'), os.listdir(tmp_path))
             dnames = filter(lambda fname: os.path.isdir(fname), fnames)
@@ -358,27 +416,27 @@ class InstRoot:
         if not os.path.isdir(bootpath):
             os.makedirs(bootpath)
 
-        if self.arch == 'i386' or self.arch == 'x86_64':
+        if self.opts.buildarch == 'i386' or self.opts.buildarch == 'x86_64':
             for bootfile in os.listdir(os.path.join(self.destdir, 'boot')):
                 if bootfile.startswith('memtest'):
                     src = os.path.join(self.destdir, 'boot', bootfile)
                     dst = os.path.join(bootpath, bootfile)
                     cp(src, dst)
-        elif self.arch.startswith('sparc'):
+        elif self.opts.buildarch.startswith('sparc'):
             for bootfile in os.listdir(os.path.join(self.destdir, 'boot')):
                 if bootfile.endswith('.b'):
                     src = os.path.join(self.destdir, 'boot', bootfile)
                     dst = os.path.join(bootpath, bootfile)
                     cp(src, dst)
-        elif self.arch.startswith('ppc'):
+        elif self.opts.buildarch.startswith('ppc'):
             src = os.path.join(self.destdir, 'boot', 'efika.forth')
             dst = os.path.join(bootpath, 'efika.forth')
             cp(src, dst)
-        elif self.arch == 'alpha':
+        elif self.opts.buildarch == 'alpha':
             src = os.path.join(self.destdir, 'boot', 'bootlx')
             dst = os.path.join(bootpath, 'bootlx')
             cp(src, dst)
-        elif self.arch == 'ia64':
+        elif self.opts.buildarch == 'ia64':
             src = os.path.join(self.destdir, 'boot', 'efi', 'EFI', 'redhat')
             shutil.rmtree(bootpath, ignore_errors=True)
             cp(src, bootpath)
@@ -435,6 +493,7 @@ class InstRoot:
             os.symlink(busybox, sh)
 
     def __moveBins(self):
+        # XXX why do we want to move everything to /usr when in mk-images we copy it back?
         bin = os.path.join(self.destdir, 'bin')
         sbin = os.path.join(self.destdir, 'sbin')
 
@@ -518,49 +577,47 @@ class InstRoot:
 
     def __createLDConfig(self):
         ldsoconf = os.path.join(self.destdir, 'etc', 'ld.so.conf')
-        f = open(ldsoconf, 'w')
-        f.close()
+        touch(ldsoconf)
 
         proc_dir = os.path.join(self.destdir, 'proc')
         if not os.path.isdir(proc_dir):
             os.makedirs(proc_dir)
 
-        # XXX isn't there a better way?
-        os.system('mount -t proc proc %s' % (proc_dir,))
+        os.system('mount -t proc proc %s' % proc_dir)
 
         f = open(ldsoconf, 'w')
-        x11_libdir = os.path.join(self.destdir, 'usr', 'X11R6', self.libdir)
+
+        x11_libdir = os.path.join(self.destdir, 'usr', 'X11R6', self.opts.libdir)
         if os.path.exists(x11_libdir):
-            f.write('/usr/X11R6/%s\n' % (self.libdir,))
-        f.write('/usr/kerberos/%s\n' % (self.libdir,))
+            f.write('/usr/X11R6/%s\n' % self.opts.libdir)
+
+        f.write('/usr/kerberos/%s\n' % self.opts.libdir)
 
         cwd = os.getcwd()
         os.chdir(self.destdir)
-        # XXX can't exit from os.chroot() :(
-        os.system('/usr/sbin/chroot %s /usr/sbin/ldconfig' % (self.destdir,))
+        os.system('/usr/sbin/chroot %s /sbin/ldconfig' % self.destdir)
         os.chdir(cwd)
 
-        if self.arch not in ('s390', 's390x'):
-            os.unlink(os.path.join(self.destdir, 'usr', 'sbin', 'ldconfig'))
+        if self.opts.buildarch not in ('s390', 's390x'):
+            os.unlink(os.path.join(self.destdir, 'sbin', 'ldconfig'))
         
         os.unlink(os.path.join(self.destdir, 'etc', 'ld.so.conf'))
 
-        # XXX isn't there a better way?
-        os.system('umount %s' % (proc_dir,))
+        os.system('umount %s' % proc_dir)
 
     def __setBusyboxLinks(self):
-        src = os.path.join(self.destdir, 'usr', 'sbin', 'busybox.anaconda')
-        dst = os.path.join(self.destdir, 'usr', 'bin', 'busybox')
+        src = os.path.join(self.destdir, 'sbin', 'busybox.anaconda')
+        dst = os.path.join(self.destdir, 'bin', 'busybox')
         mv(src, dst)
 
         cwd = os.getcwd()
-        os.chdir(os.path.join(self.destdir, 'usr', 'bin'))
+        os.chdir(os.path.join(self.destdir, 'bin'))
 
         busybox_process = subprocess.Popen(['./busybox'], stdout=subprocess.PIPE)
         busybox_process.wait()
 
         if busybox_process.returncode:
-            raise LoraxError, 'cannot run busybox'
+            raise Error, 'busybox error'
         
         busybox_output = busybox_process.stdout.readlines()
         busybox_output = map(lambda line: line.strip(), busybox_output)
@@ -641,3 +698,10 @@ class InstRoot:
                     newtarget = re.sub(r'^\.\./\.\./%s/\(.*\)' % dir, r'\.\./%s/\1' % dir, target)
                     if newtarget != target:
                         os.symlink(newtarget, link)
+
+    def __makeAdditionalDirs(self):
+        os.makedirs(os.path.join(self.destdir, 'modules'))
+        os.makedirs(os.path.join(self.destdir, 'tmp'))
+        for dir in ('a', 'b', 'd', 'l', 's', 'v', 'x'):
+            os.makedirs(os.path.join(self.destdir, 'etc', 'terminfo', dir))
+        os.makedirs(os.path.join(self.destdir, 'var', 'lock', 'rpm'))

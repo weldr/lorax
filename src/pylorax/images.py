@@ -1,102 +1,140 @@
-#
-# pylorax images module
-# Install image and tree support data generation tool -- Python module
-#
+# pylorax/images.py
 
-import datetime
+import sys
+import os
+
+from utils.fileutil import cp, mv, rm, touch, replace
+
+import initrd
 
 
-class Images():
+class Images(object):
+    def __init__(self, config, yum):
+        self.conf = config
+        self.yum = yum
 
-    def __init__(self, conf, yumconf, arch, imgdir, product, version, bugurl, output, noiso=False):
-        self.conf = conf
-        self.yumconf = yumconf
+        # XXX don't see this used anywhere... maybe in some other script, have to check...
+        #syslinux = os.path.join(self.conf.treedir, 'usr', 'lib', 'syslinux', 'syslinux-nomtools')
+        #if not os.path.isfile(syslinux):
+        #    print('WARNING: %s does not exist' % syslinux)
+        #    syslinux = os.path.join(self.conf.treedir, 'usr', 'bin', 'syslinux')
+        #    if not os.path.isfile(syslinux):
+        #        print('ERROR: %s does not exist' % syslinux)
+        #        sys.exit(1)
 
-        self.arch = arch
-        self.imgdir = imgdir
-        self.product = product
-        self.version = version
-        self.bugurl = bugurl
+    def run(self):
+        self.prepareBootTree()
 
-        self.output = output
-        self.noiso = noiso
+    def __makeinitrd(self, dst, size=8192, loader='loader'):
+        i = initrd.InitRD(self.conf, self.yum)
+        i.prepare()
+        i.processActions()
+        i.create(dst)
+        i.cleanUp()
 
-        now = datetime.datetime.now()
-        self.imageuuid = now.strftime('%Y%m%d%H%M') + '.' + os.uname()[4]
+    def prepareBootTree(self):
+        # install needed packages
+        self.yum.addPackages(['anaconda', 'anaconda-runtime', 'kernel', 'syslinux', 'memtest'])
+        self.yum.install()
 
-        self.initrdmods = self.__getModulesList()
+        # create the destination directories
+        self.imgdir = os.path.join(self.conf.outdir, 'images')
+        if os.path.exists(self.imgdir):
+            rm(self.imgdir)
+        self.pxedir = os.path.join(self.imgdir, 'pxeboot')
+        os.makedirs(self.imgdir)
+        os.makedirs(self.pxedir)
 
-        if self.arch == 'sparc64':
-            self.basearch = 'sparc'
-        else:
-            self.basearch = self.arch
+        # write the images/README
+        f = open(os.path.join(self.imgdir, 'README'), 'w')
+        f.write('This directory contains image files that can be used to create media\n'
+                'capable of starting the %s installation process.\n\n' % self.conf.product)
+        f.write('The boot.iso file is an ISO 9660 image of a bootable CD-ROM. It is useful\n'
+                'in cases where the CD-ROM installation method is not desired, but the\n'
+                'CD-ROM\'s boot speed would be an advantage.\n\n')
+        f.write('To use this image file, burn the file onto CD-R (or CD-RW) media as you\n'
+                'normally would.\n')
+        f.close()
 
-        self.libdir = 'lib'
-        if self.arch == 'x86_64' or self.arch =='s390x':
-            self.libdir = 'lib64'
+        # write the images/pxeboot/README
+        f = open(os.path.join(self.pxedir, 'README'), 'w')
+        f.write('The files in this directory are useful for booting a machine via PXE.\n\n')
+        f.write('The following files are available:\n')
+        f.write('vmlinuz - the kernel used for the installer\n')
+        f.write('initrd.img - an initrd with support for all install methods and\n')
+        f.write('             drivers supported for installation of %s\n' % self.conf.product)
+        f.close()
 
-        # explicit block size setting for some arches
-        # FIXME we compose ppc64-ish trees as ppc, so we have to set the "wrong" block size
-        # XXX i don't get this :)
-        self.crambs = []
-        if self.arch == 'sparc64':
-            self.crambs = ['--blocksize', '8192']
-        elif self.arch == 'sparc':
-            self.crambs = ['--blocksize', '4096']
+        # set up some dir variables for further use
+        anacondadir = os.path.join(self.conf.treedir, 'usr', 'lib', 'anaconda-runtime')
+        bootdiskdir = os.path.join(anacondadir, 'boot')
+        syslinuxdir = os.path.join(self.conf.treedir, 'usr', 'lib', 'syslinux')
 
-        self.__setUpDirectories()
+        isolinuxbin = os.path.join(syslinuxdir, 'isolinux.bin')
+        if os.path.isfile(isolinuxbin):
+            print('Creating the isolinux directory...')
+            self.isodir = os.path.join(self.conf.outdir, 'isolinux')
+            if os.path.exists(self.isodir):
+                rm(self.isodir)
+            os.makedirs(self.isodir)
+            
+            # copy the isolinux.bin to isolinux dir
+            cp(isolinuxbin, self.isodir)
+            
+            # copy the syslinux.cfg to isolinux/isolinux.cfg
+            isolinuxcfg = os.path.join(self.isodir, 'isolinux.cfg')
+            cp(os.path.join(bootdiskdir, 'syslinux.cfg'), isolinuxcfg)
 
-    def __getModulesList(self):
-        modules = set()
+            # set the product and version in isolinux.cfg
+            replace(isolinuxcfg, r'@PRODUCT@', self.conf.product)
+            replace(isolinuxcfg, r'@VERSION@', self.conf.version)
+            
+            # copy the grub.conf to isolinux dir
+            cp(os.path.join(bootdiskdir, 'grub.conf'), self.isodir)
 
-        modules_files = []
-        modules_files.append(os.path.join(self.conf['confdir'], 'modules'))
-        modules_files.append(os.path.join(self.conf['confdir'], self.arch, 'modules'))
+            # create the initrd in isolinux dir
+            initrd = os.path.join(self.isodir, 'initrd.img')
+            self.__makeinitrd(initrd)
+        
+            # copy the vmlinuz to isolinux dir
+            vmlinuz = os.path.join(self.conf.treedir, 'boot', 'vmlinuz-*')
+            cp(vmlinuz, os.path.join(self.isodir, 'vmlinuz'))
 
-        for pfile in modules_files:
-            if os.path.isfile(pfile):
-                f = open(pfile, 'r')
-                for line in f.readlines():
-                    line = line.strip()
+            # copy the splash files to isolinux dir
+            vesasplash = os.path.join(anacondadir, 'syslinux-vesa-splash.jpg')
+            if os.path.isfile(vesasplash):
+                cp(vesasplash, os.path.join(self.isodir, 'splash.jpg'))
+                vesamenu = os.path.join(syslinuxdir, 'vesamenu.c32')
+                cp(vesamenu, self.isodir)
+                replace(isolinuxcfg, r'default linux', r'default vesamenu.c32')
+                replace(isolinuxcfg, r'prompt 1', r'#prompt 1')
+            else:
+                splashtools = os.path.join(anacondadir, 'splashtools.sh')
+                splashlss = os.path.join(bootdiskdir, 'splash.lss')
+                if os.path.isfile(splashtools):
+                    os.system('%s %s %s' % (splashtools,
+                                            os.path.join(bootdiskdir, 'syslinux-splash.jpg'),
+                                            splashlss))
+                if os.path.isfile(splashlss):
+                    cp(splashlss, self.isodir)
 
-                    if not line or line.startswith('#'):
-                        continue
+            # copy the .msg files to isolinux dir
+            for file in os.listdir(bootdiskdir):
+                if file.endswith('.msg'):
+                    cp(os.path.join(bootdiskdir, file), self.isodir)
+                    replace(os.path.join(self.isodir, file), r'@VERSION@', self.conf.version)
 
-                    if line.startswith('-'):
-                        modules.discard(line[1:])
-                    else:
-                        modules.add(line)
-
+            # if present, copy the memtest to isolinux dir
+            # XXX search for it in bootdiskdir or treedir/install/boot ?
+            #cp(os.path.join(bootdiskdir, 'memtest*'), os.path.join(self.isodir, 'memtest'))
+            cp(os.path.join(self.conf.treedir, 'boot', 'memtest*'),
+                            os.path.join(self.isodir, 'memtest'))
+            if os.path.isfile(os.path.join(self.isodir, 'memtest')):
+                f = open(isolinuxcfg, 'a')
+                f.write('label memtest86\n')
+                f.write('  menu label ^Memory test\n')
+                f.write('  kernel memtest\n')
+                f.write('  append -\n')
                 f.close()
-
-        modules = list(modules)
-        modules.sort()
-
-        return modules
-
-    def __setUpDirectories(self):
-        imagepath = os.path.join(self.output, 'images')
-        fullmodpath = tempfile.mkdtemp('XXXXXX', 'instimagemods.', self.conf['tmpdir'])
-        finalfullmodpath = os.path.join(self.output, 'modules')
-        
-        kernelbase = tempfile.mkdtemp('XXXXXX', 'updboot.kernel.', self.conf['tmpdir'])
-        kernelname = 'vmlinuz'
-
-        kerneldir = '/boot'
-        if self.arch == 'ia64':
-            kerneldir = os.path.join(kerneldir, 'efi', 'EFI', 'redhat')
-
-        for dir in [imagepath, fullmodpath, finalfullmodpath, kernelbase]:
-            if os.path.isdir(dir):
-                shutil.rmtree(dir)
-                os.makedirs(dir)
-
-        self.imagepath = imagepath
-        self.fullmodpath = fullmodpath
-        self.finalfullmodpath = finalfullmodpath
-        
-        self.kernelbase = kernelbase
-        self.kernelname = kernelname
-        self.kerneldir = kerneldir
-
-
+        else:
+            print('No isolinux binary found, skipping isolinux creation')

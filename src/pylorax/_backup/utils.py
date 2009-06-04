@@ -9,11 +9,7 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('pylorax')
 
 
-def genmodinfo(path=None):
-    if not path:
-        release = os.uname()[2]
-        path = os.path.join('/lib/modules', release)
-
+def genmodinfo(path, output):
     mods = {}
     for root, dirs, files in os.walk(path):
         for file in files:
@@ -56,13 +52,14 @@ def genmodinfo(path=None):
                         modinfo = '%s\n\t%s\n\t"%s"\n' % (modname, modtype, desc)
                         list[modtype][modname] = modinfo
 
-    # XXX i don't think we want to print it out now
-    print 'Version 0'
+    f = open(output, 'a')
+    f.write('Version 0\n')
     for type in list:
         modlist = list[type].keys()
         modlist.sort()
         for m in modlist:
-            print list[type][m]
+            f.write('%s\n' %list[type][m])
+    f.close()
 
 
 # XXX is the input a path to a file?
