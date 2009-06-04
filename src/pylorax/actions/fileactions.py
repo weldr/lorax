@@ -15,14 +15,6 @@ COMMANDS = { 'copy': 'Copy',
              'replace': 'Replace' }
 
 
-def getFileName(string):
-    m = re.match(r'@instroot@(?P<file>.*)', string)
-    if m:
-        return m.group('file')
-    else:
-        return None
-
-
 class Copy(LoraxAction):
 
     REGEX = r'^(?P<src>.*?)\sto\s(?P<dst>.*?)(\smode\s(?P<mode>.*?))?$'
@@ -33,11 +25,11 @@ class Copy(LoraxAction):
         self._attrs['dst'] = kwargs.get('dst')
         self._attrs['mode'] = kwargs.get('mode')
 
-        file = getFileName(self._attrs['src'])
-        if file:
-            self._attrs['install'] = file
-
     def execute(self, verbose=False):
+        dst_dir = os.path.dirname(self.dst)
+        if not os.path.isdir(dst_dir):
+            os.makedirs(dst_dir)
+
         cp(src=self.src, dst=self.dst, mode=self.mode, verbose=verbose)
         self._attrs['success'] = True
 
@@ -58,7 +50,7 @@ class Copy(LoraxAction):
 
     @property
     def install(self):
-        return self._attrs.get('install')
+        return self._attrs.get('src')
 
 
 class Move(Copy):

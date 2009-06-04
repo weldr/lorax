@@ -1,9 +1,9 @@
 # pylorax/config.py
 
 import sys
+import re
 
 from base import seq
-import re
 
 from exceptions import TemplateError
 
@@ -77,7 +77,7 @@ class Template(object):
     def __init__(self):
         self._actions = []
 
-    def parse(self, filename, supported_actions):
+    def parse(self, filename, supported_actions, vars):
         try:
             f = open(filename, 'r')
         except IOError:
@@ -94,6 +94,9 @@ class Template(object):
 
             if not line or line.startswith('#'):
                 continue
+
+            for var, value in vars.items():
+                line = re.sub(r'(.*)%s(.*)' % var, '\g<1>%s\g<2>' % value, line)
 
             if in_action and not line.startswith(':'):
                 # create the action object
@@ -117,7 +120,7 @@ class Template(object):
                 else:
                     in_action = True
                     continue
-        
+
         return True
 
     @property

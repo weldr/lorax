@@ -72,12 +72,6 @@ class Yum(object):
         pl = self.yb.doPackageLists(patterns=seq(patterns))
         return pl.installed, pl.available
 
-    def isInstalled(self, pattern):
-        print('searching for package matching %s' % pattern)
-        pl = self.yb.doPackageLists(pkgnarrow='installed', patterns=[pattern])
-        print('found %s' % pl.installed)
-        return pl.installed
-
     def download(self, packages):
         for package in seq(packages):
             print('Downloading package %s...' % package)
@@ -87,13 +81,7 @@ class Yum(object):
         return os.path.join(self.installroot, os.path.basename(fn))
 
     def addPackages(self, patterns):
-        # FIXME don't add packages already installed
         for pattern in seq(patterns):
-            installed = self.isInstalled(pattern)
-            if installed:
-                print 'Package %s already installed' % installed
-                return
-
             print('Adding package matching %s...' % pattern)
             try:
                 self.yb.install(name=pattern)
@@ -110,6 +98,9 @@ class Yum(object):
         cb = yum.callbacks.ProcessTransBaseCallback()
         rpmcb = Callback()
         self.yb.processTransaction(callback=cb, rpmDisplay=rpmcb)
+
+        self.yb.closeRpmDB()
+        self.yb.close()
 
 
 def extract_rpm(rpmfile, destdir):

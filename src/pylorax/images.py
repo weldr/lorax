@@ -25,16 +25,13 @@ class Images(object):
     def run(self):
         self.prepareBootTree()
 
-    def __makeinitrd(self, dst, size=8192, loader='loader'):
-        i = initrd.InitRD(self.conf, self.yum)
-        i.prepare()
-        i.processActions()
-        i.create(dst)
-        i.cleanUp()
-
     def prepareBootTree(self):
+        i = initrd.InitRD(self.conf, self.yum)
+        pkgs = i.getPkgs()
+
         # install needed packages
         self.yum.addPackages(['anaconda', 'anaconda-runtime', 'kernel', 'syslinux', 'memtest'])
+        self.yum.addPackages(pkgs)
         self.yum.install()
 
         # create the destination directories
@@ -77,10 +74,10 @@ class Images(object):
             if os.path.exists(self.isodir):
                 rm(self.isodir)
             os.makedirs(self.isodir)
-            
+
             # copy the isolinux.bin to isolinux dir
             cp(isolinuxbin, self.isodir)
-            
+
             # copy the syslinux.cfg to isolinux/isolinux.cfg
             isolinuxcfg = os.path.join(self.isodir, 'isolinux.cfg')
             cp(os.path.join(bootdiskdir, 'syslinux.cfg'), isolinuxcfg)
@@ -88,14 +85,16 @@ class Images(object):
             # set the product and version in isolinux.cfg
             replace(isolinuxcfg, r'@PRODUCT@', self.conf.product)
             replace(isolinuxcfg, r'@VERSION@', self.conf.version)
-            
+
             # copy the grub.conf to isolinux dir
             cp(os.path.join(bootdiskdir, 'grub.conf'), self.isodir)
 
             # create the initrd in isolinux dir
-            initrd = os.path.join(self.isodir, 'initrd.img')
-            self.__makeinitrd(initrd)
-        
+            i.getDeps()
+            i.processActions()
+            i.create(os.path.join(self.isodir, 'initrd.img'))
+            i.cleanUp()
+
             # copy the vmlinuz to isolinux dir
             vmlinuz = os.path.join(self.conf.treedir, 'boot', 'vmlinuz-*')
             cp(vmlinuz, os.path.join(self.isodir, 'vmlinuz'))

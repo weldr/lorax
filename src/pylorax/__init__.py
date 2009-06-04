@@ -125,19 +125,24 @@ class Lorax(object):
             os.makedirs(self.conf.outdir, mode=0755)
 
         treedir = os.path.join(self.conf.tempdir, 'treedir', 'install')
+        os.makedirs(treedir)
         cachedir = os.path.join(self.conf.tempdir, 'yumcache')
+        os.makedirs(cachedir)
+        initrddir = os.path.join(self.conf.tempdir, 'initrd')
+        os.makedirs(initrddir)
 
         print('Working directories:')
         print('    tempdir = %s' % self.conf.tempdir)
         print('    treedir = %s' % treedir)
         print('    cachedir = %s' % cachedir)
+        print('    initrddir = %s' % initrddir)
 
-        self.conf.addAttr(['treedir', 'cachedir'])
-        self.conf.set(treedir=treedir, cachedir=cachedir)
+        self.conf.addAttr(['treedir', 'cachedir', 'initrddir'])
+        self.conf.set(treedir=treedir, cachedir=cachedir, initrddir=initrddir)
 
     def initYum(self):
         yumconf = os.path.join(self.conf.tempdir, 'yum.conf')
-        
+
         try:
             f = open(yumconf, 'w')
         except IOError:
