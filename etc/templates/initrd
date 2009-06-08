@@ -1,9 +1,81 @@
-# initrd template file
-#
-# supported variables: @initrd@
-#                      @instroot@
+# initrd template
+
+:makedir
+    @initrd@/modules
+    @initrd@/sbin
+    @initrd@/dev
+    @initrd@/etc
+    @initrd@/etc/udev/rules.d
+    @initrd@/lib/udev/rules.d
+    @initrd@/proc
+    @initrd@/selinux
+    @initrd@/sys
+    @initrd@/etc/terminfo/{a,b,d,l,s,v,x}
+    @initrd@/tmp
+    @initrd@/usr/libexec
+    @initrd@/usr/@libdir@/NetworkManager
+    @initrd@/usr/share/dbus-1/system-services
+    @initrd@/var/cache/hald
+    @initrd@/var/lib/dbus
+    @initrd@/var/lib/dhclient
+    @initrd@/var/lock/rpm
+    @initrd@/var/run
+    @initrd@/var/run/dbus
+    @initrd@/var/run/hald
+    @initrd@/var/run/NetworkManager
+    @initrd@/etc/dbus-1/system.d
+    @initrd@/etc/modprobe.d
+    @initrd@/etc/NetworkManager/dispatcher.d
+    @initrd@/@libdir@/dbus-1
+    @initrd@/etc/sysconfig/network-scripts
+    @initrd@/usr/share/PolicyKit/policy
+    @initrd@/etc/PolicyKit
+    @initrd@/var/lib/misc
+    @initrd@/etc/hal/fdi
+    @initrd@/usr/share/hal/fdi
+    @initrd@/usr/share/hwdata
+    @initrd@/etc/rc.d/init.d
+    @initrd@/usr/sbin
+    @initrd@/var/run/wpa_supplicant
+
+:edit
+    @initrd@/etc/arch text "@buildarch@"
+
 
 :copy
-    # comment
-    @instroot@/bin/bash to @initrd@/bin
-    @instroot@/bin/mount to @initrd@/bin
+    @instroot@/etc/passwd to @initrd@/etc
+    @instroot@/etc/group to @initrd@/etc
+    @instroot@/etc/nsswitch.conf to @initrd@/etc
+
+# mount/umount
+:copy
+    @instroot@/bin/mount to @initrd@/sbin/mount
+    @instroot@/bin/umount to @initrd@/sbin/umount
+    @instroot@/usr/sbin/mount.nfs to @initrd@/sbin/mount.nfs
+:link
+    @initrd@/sbin/umount.nfs to @initrd@/sbin/mount.nfs
+
+# udev
+:copy
+    @instroot@/sbin/udevd to @initrd@/sbin
+    @instroot@/sbin/udevadm to @initrd@/sbin
+:link
+    @initrd@/sbin/udevinfo to @initrd@/sbin/udevadm
+    @initrd@/sbin/udevsettle to @initrd@/sbin/udevadm
+
+# bash
+:copy
+    @instroot@/bin/bash to @initrd@/sbin/bash
+:link
+    @initrd@/sbin/sh to @initrd@/sbin/bash
+:copy
+    @instroot@/sbin/consoletype to @initrd@/sbin/consoletype
+    @instroot@/usr/bin/logger to @initrd@/sbin/logger
+
+:copy
+    @instroot@/etc/rc.d/init.d/functions to @initrd@/etc/rc.d/init.d
+    @instroot@/etc/sysconfig/network-scripts/network-functions* @initrd@/etc/sysconfig/network-scripts
+
+:link
+    @initrd@/etc/init.d to /etc/rc.d/init.d
+

@@ -26,7 +26,12 @@ class InitRD(object):
                                              'initrd'))
 
         vars = { '@instroot@': self.conf.treedir,
-                 '@initrd@': self.conf.initrddir }
+                 '@initrd@': self.conf.initrddir,
+                 '@libdir@': self.conf.libdir,
+                 '@buildarch@': self.conf.buildarch,
+                 '@confdir@' : self.conf.confdir,
+                 '@datadir@': self.conf.datadir }
+
         self.template = Template()
         for file in initrd_templates:
             if os.path.isfile(file):

@@ -1,4 +1,4 @@
-# __init__.py
+# pylorax/__init__.py
 
 import sys
 import os

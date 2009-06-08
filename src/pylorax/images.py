@@ -30,7 +30,7 @@ class Images(object):
         pkgs = i.getPkgs()
 
         # install needed packages
-        self.yum.addPackages(['anaconda', 'anaconda-runtime', 'kernel', 'syslinux', 'memtest'])
+        self.yum.addPackages(['anaconda', 'anaconda-runtime', 'kernel', 'syslinux'])
         self.yum.addPackages(pkgs)
         self.yum.install()
 

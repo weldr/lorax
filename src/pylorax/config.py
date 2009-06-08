@@ -87,6 +87,12 @@ class Template(object):
             lines = f.readlines()
             f.close()
 
+        # check vars
+        for lineno, line in enumerate(lines, start=1):
+            for var in re.findall(r'@.*?@', line)
+                if var not in vars:
+                    raise TemplateError, 'unknown variable "%s" on line %d' % (var, lineno)
+
         active_action = ''
         in_action = False
         for lineno, line in enumerate(lines, start=1):

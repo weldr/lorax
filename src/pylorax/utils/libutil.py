@@ -1,4 +1,4 @@
-import sys
+# pylorax/utils/libutil.py
 
 import os
 import commands
@@ -6,7 +6,7 @@ import re
 
 
 class LDD(object):
-    def __init__(self, libroot='/'):
+    def __init__(self, libroot='/lib'):
         f = open('/usr/bin/ldd', 'r')
         for line in f.readlines():
             line = line.strip()
@@ -15,7 +15,14 @@ class LDD(object):
                 break
         f.close()
 
-        self._ldd = '%s --list --library-path %s' % (ld_linux, libroot)
+        if libroot.endswith('/') and libroot != '/':
+            libroot = libroot[:-1]
+
+        libpaths = [libroot]
+        if libroot.endswith('64'):
+            libpaths.append(libroot[:-2])
+
+        self._ldd = 'LD_LIBRARY_PATH="%s" %s --list' % (':'.join(libpaths), ld_linux)
         self._deps = set()
 
     def getDeps(self, filename):
@@ -46,12 +53,3 @@ class LDD(object):
     @property
     def deps(self):
         return self._deps
-
-
-if __name__ == '__main__':
-    ldd = LDD(libroot=sys.argv[2])
-    ldd.getDeps(sys.argv[1])
-    ldd.getLinks()
-
-    for dep in ldd.deps:
-        print dep
