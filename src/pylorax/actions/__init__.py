@@ -1,14 +1,10 @@
 # pylorax/actions/__init__.py
 
-import logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger('pylorax.actions')
-
 import sys
 import os
 
 
-def getActions():
+def getActions(verbose=False):
     actions = {}
     root, actions_dir = os.path.split(os.path.dirname(__file__))
 
@@ -21,17 +17,20 @@ def getActions():
             modules.add(os.path.join(actions_dir, basename).replace('/', '.'))
 
     for module in modules:
-        logger.debug('loading actions from module %s' % module)
+        if verbose:
+            print("Loading actions from module '%s'" % module)
         imported = __import__(module, globals(), locals(), [module], -1)
 
         try:
             commands = getattr(imported, 'COMMANDS')
         except AttributeError:
-            logger.debug('no actions found')
+            if verbose:
+                print("No actions found")
             continue
         else:
             for command, classname in commands.items():
-                logger.debug('loaded: %s' % classname)
+                if verbose:
+                    print("Loaded: %s" % classname)
                 actions[command] = getattr(imported, classname)
 
     sys.path.pop(0)

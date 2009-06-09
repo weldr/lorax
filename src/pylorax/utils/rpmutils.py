@@ -1,4 +1,4 @@
-# pylorax/utils/rpmutil.py
+# pylorax/utils/rpmutils.py
 
 import sys
 import os
@@ -6,6 +6,7 @@ import stat
 import yum
 import urlgrabber
 import shutil
+import commands
 
 import yum.callbacks
 import yum.rpmtrans
@@ -13,7 +14,23 @@ import yum.rpmtrans
 from rpmUtils.miscutils import rpm2cpio
 from cpioarchive import CpioArchive
 
-from pylorax.base import seq, getConsoleSize
+
+def seq(arg):
+    if type(arg) not in (type([]), type(())):
+        return [arg]
+    else:
+        return arg
+
+
+def getConsoleSize():
+    err, output = commands.getstatusoutput('stty size')
+    if not err:
+        height, width = output.split()
+    else:
+        # set defaults
+        height, width = 24, 80
+    
+    return int(height), int(width)
 
 
 class Callback(yum.rpmtrans.SimpleCliCallBack):
@@ -74,7 +91,7 @@ class Yum(object):
 
     def download(self, packages):
         for package in seq(packages):
-            print('Downloading package %s...' % package)
+            print('Downloading package %s' % package)
             fn = urlgrabber.urlgrab(package.remote_url)
             shutil.copy(fn, self.installroot)
 
@@ -82,7 +99,7 @@ class Yum(object):
 
     def addPackages(self, patterns):
         for pattern in seq(patterns):
-            print('Adding package matching %s...' % pattern)
+            print('Adding package matching %s' % pattern)
             try:
                 self.yb.install(name=pattern)
             except yum.Errors.InstallError:
@@ -103,7 +120,7 @@ class Yum(object):
         self.yb.close()
 
 
-def extract_rpm(rpmfile, destdir):
+def extractRPM(rpmfile, destdir):
     if not os.path.isdir(destdir):
         os.makedirs(destdir)
 
@@ -125,7 +142,7 @@ def extract_rpm(rpmfile, destdir):
             if not os.path.isdir(path):
                 os.makedirs(path)
         else:
-            print('Extracting %s...' % entry.name)
+            print('Extracting %s' % entry.name)
             dir = os.path.dirname(path)
             if not os.path.isdir(dir):
                 os.makedirs(dir)

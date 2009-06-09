@@ -65,14 +65,13 @@ class LoraxAction(object):
         """Returns a pattern that needs to be installed, prior to calling the execute method."""
         return None
 
+    @property
     def getDeps(self):
         # FIXME hmmm, how can i do this more generic?
         return None
 
 
-# +-----------------+
-# | builtin actions |
-# +-----------------+
+##### builtin actions
 
 class Copy(LoraxAction):
 
@@ -85,10 +84,6 @@ class Copy(LoraxAction):
         self._attrs['mode'] = kwargs.get('mode')
 
     def execute(self, verbose=False):
-        dst_dir = os.path.dirname(self.dst)
-        if not os.path.isdir(dst_dir):
-            os.makedirs(dst_dir)
-
         cp(src=self.src, dst=self.dst, mode=self.mode, verbose=verbose)
         self._attrs['success'] = True
 
@@ -129,7 +124,7 @@ class Link(LoraxAction):
         self._attrs['target'] = kwargs.get('target')
 
     def execute(self, verbose=False):
-        os.symlink(self.name, self.target)
+        os.symlink(self.target, self.name)
         self._attrs['success'] = True
 
     @property
@@ -230,7 +225,10 @@ class MakeDir(LoraxAction):
 
     def execute(self, verbose=False):
         if not os.path.isdir(self.dir):
-            os.makedirs(path=self.dir, mode=self.mode)
+            if self.mode:
+                os.makedirs(self.dir, mode=int(self.mode))
+            else:
+                os.makedirs(self.dir)
         self._attrs['success'] = True
 
     @property

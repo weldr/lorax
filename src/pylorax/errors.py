@@ -1,4 +1,4 @@
-# pylorax/exceptions.py
+# pylorax/errors.py
 
 class LoraxError(Exception):
     pass

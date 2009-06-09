@@ -2,16 +2,94 @@
 
 import sys
 import os
+import commands
+import re
 
-from utils.fileutil import cp, mv, rm, touch, replace
+import actions
+import actions.base
+from config import Template
 
-import initrd
+from utils.fileutils import cp, mv, rm, touch, edit, replace
+from utils.ldd import LDD
+
+
+class InitRD(object):
+    def __init__(self, config, yum):
+        self.conf = config
+        self.yum = yum
+
+        # get supported actions
+        supported_actions = actions.getActions()
+
+        initrd_templates = []
+        initrd_templates.append(os.path.join(self.conf.confdir, 'templates', 'initrd'))
+        initrd_templates.append(os.path.join(self.conf.confdir, 'templates', self.conf.buildarch,
+                                             'initrd'))
+
+        vars = { 'instroot': self.conf.treedir,
+                 'initrd': self.conf.initrddir,
+                 'libdir': self.conf.libdir,
+                 'buildarch': self.conf.buildarch,
+                 'confdir' : self.conf.confdir,
+                 'datadir': self.conf.datadir }
+
+        self.template = Template()
+        for filename in initrd_templates:
+            if os.path.isfile(filename):
+                self.template.parse(filename, supported_actions, vars)
+
+        self._actions = []
+
+    def getPackages(self):
+        packages = []
+        for action in filter(lambda action: action.install, self.template.actions):
+            m = re.match(r'%s(.*)' % self.conf.treedir, action.install)
+            if m:
+                packages.append(m.group(1))
+
+        return packages
+
+    def getDeps(self):
+        ldd = LDD(libroot=os.path.join(self.conf.treedir, self.conf.libdir))
+        for action in filter(lambda action: hasattr(action, 'getDeps'), self.template.actions):
+            ldd.getDeps(action.getDeps)
+
+        # resolve symlinks
+        ldd.getLinks()
+
+        # add dependencies to actions
+        for dep in ldd.deps:
+            kwargs = {}
+            kwargs['src'] = dep
+            kwargs['dst'] = re.sub(r'%s(?P<file>.*)' % self.conf.treedir,
+                                   '%s\g<file>' % self.conf.initrddir,
+                                   dep)
+
+            new_action = actions.base.Copy(**kwargs)
+            self._actions.append(new_action)
+
+    def processActions(self):
+        # create the initrd temporary directory if it does not exist
+        if not os.path.isdir(self.conf.initrddir):
+            os.makedirs(self.conf.initrddir)
+
+        for action in self.template.actions + self._actions:
+            action.execute()
+
+    def create(self, dst):
+        err, output = commands.getstatusoutput('find %s | cpio --quiet -c -o | gzip -9 > %s' %
+                                               (self.conf.initrddir, dst))
+
+    def cleanUp(self):
+        rm(self.conf.initrddir)
 
 
 class Images(object):
     def __init__(self, config, yum):
         self.conf = config
         self.yum = yum
+
+        self.initrd = InitRD(self.conf, self.yum)
 
         # XXX don't see this used anywhere... maybe in some other script, have to check...
         #syslinux = os.path.join(self.conf.treedir, 'usr', 'lib', 'syslinux', 'syslinux-nomtools')
@@ -23,45 +101,95 @@ class Images(object):
         #        sys.exit(1)
 
     def run(self):
-        self.prepareBootTree()
+        bold = ('\033[1m', '\033[0m')
 
-    def prepareBootTree(self):
-        i = initrd.InitRD(self.conf, self.yum)
-        pkgs = i.getPkgs()
+        print('%sInstalling needed packages%s' % bold)
+        self.installPackages()
 
-        # install needed packages
+        print('%sCopying updates%s' % bold)
+        self.copyUpdates()
+
+        print('%sInitializing output directory%s' % bold)
+        self.initOutputDirs()
+
+        print('%sPopulating the isolinux directory%s' % bold)
+        self.populateIsolinuxDir()
+
+        # XXX a lot of other stuff needs to be done here
+        pass
+
+        print('%sDONE%s' % bold)
+
+    def installPackages(self):
+        # required packages
         self.yum.addPackages(['anaconda', 'anaconda-runtime', 'kernel', 'syslinux'])
-        self.yum.addPackages(pkgs)
+
+        # optional packages from confdir
+        packages_files = []
+        packages_files.append(os.path.join(self.conf.confdir, 'packages', 'packages'))
+        packages_files.append(os.path.join(self.conf.confdir, 'packages', self.conf.buildarch,
+                                           'packages'))
+
+        packages = set()
+        for pfile in packages_files:
+            if os.path.isfile(pfile):
+                f = open(pfile, 'r')
+                for line in f.readlines():
+                    line = line.strip()
+
+                    if not line or line.startswith('#'):
+                        continue
+
+                    if line.startswith('-'):
+                        packages.discard(line[1:])
+                    else:
+                        packages.add(line)
+
+                f.close()
+
+        self.yum.addPackages(list(packages))
+
+        # packages required for initrd image
+        packages = self.initrd.getPackages()
+        self.yum.addPackages(packages)
+
+        # install all packages
         self.yum.install()
 
+    def copyUpdates(self):
+        if self.conf.updates and os.path.isdir(self.conf.updates):
+            cp(os.path.join(self.conf.updates, '*'), self.conf.treedir)
+        self.conf.delAttr('updates')
+
+    def initOutputDirs(self):
         # create the destination directories
         self.imgdir = os.path.join(self.conf.outdir, 'images')
         if os.path.exists(self.imgdir):
             rm(self.imgdir)
-        self.pxedir = os.path.join(self.imgdir, 'pxeboot')
         os.makedirs(self.imgdir)
+
+        self.pxedir = os.path.join(self.imgdir, 'pxeboot')
         os.makedirs(self.pxedir)
 
         # write the images/README
-        f = open(os.path.join(self.imgdir, 'README'), 'w')
-        f.write('This directory contains image files that can be used to create media\n'
-                'capable of starting the %s installation process.\n\n' % self.conf.product)
-        f.write('The boot.iso file is an ISO 9660 image of a bootable CD-ROM. It is useful\n'
-                'in cases where the CD-ROM installation method is not desired, but the\n'
-                'CD-ROM\'s boot speed would be an advantage.\n\n')
-        f.write('To use this image file, burn the file onto CD-R (or CD-RW) media as you\n'
-                'normally would.\n')
-        f.close()
+        src = os.path.join(self.conf.datadir, 'images', 'README')
+        dst = os.path.join(self.imgdir, 'README')
+        cp(src, dst)
+        replace(dst, r'@PRODUCT@', self.conf.product)
 
         # write the images/pxeboot/README
-        f = open(os.path.join(self.pxedir, 'README'), 'w')
-        f.write('The files in this directory are useful for booting a machine via PXE.\n\n')
-        f.write('The following files are available:\n')
-        f.write('vmlinuz - the kernel used for the installer\n')
-        f.write('initrd.img - an initrd with support for all install methods and\n')
-        f.write('             drivers supported for installation of %s\n' % self.conf.product)
-        f.close()
+        src = os.path.join(self.conf.datadir, 'images', 'pxeboot', 'README')
+        dst = os.path.join(self.pxedir, 'README')
+        cp(src, dst)
+        replace(dst, r'@PRODUCT@', self.conf.product)
 
+        # create the isolinux directory
+        self.isodir = os.path.join(self.conf.outdir, 'isolinux')
+        if os.path.exists(self.isodir):
+            rm(self.isodir)
+        os.makedirs(self.isodir)
+
+    def populateIsolinuxDir(self):
         # set up some dir variables for further use
         anacondadir = os.path.join(self.conf.treedir, 'usr', 'lib', 'anaconda-runtime')
         bootdiskdir = os.path.join(anacondadir, 'boot')
@@ -69,13 +197,7 @@ class Images(object):
 
         isolinuxbin = os.path.join(syslinuxdir, 'isolinux.bin')
         if os.path.isfile(isolinuxbin):
-            print('Creating the isolinux directory...')
-            self.isodir = os.path.join(self.conf.outdir, 'isolinux')
-            if os.path.exists(self.isodir):
-                rm(self.isodir)
-            os.makedirs(self.isodir)
-
-            # copy the isolinux.bin to isolinux dir
+            # copy the isolinux.bin
             cp(isolinuxbin, self.isodir)
 
             # copy the syslinux.cfg to isolinux/isolinux.cfg
@@ -86,20 +208,22 @@ class Images(object):
             replace(isolinuxcfg, r'@PRODUCT@', self.conf.product)
             replace(isolinuxcfg, r'@VERSION@', self.conf.version)
 
-            # copy the grub.conf to isolinux dir
+            # copy the grub.conf
             cp(os.path.join(bootdiskdir, 'grub.conf'), self.isodir)
 
-            # create the initrd in isolinux dir
-            i.getDeps()
-            i.processActions()
-            i.create(os.path.join(self.isodir, 'initrd.img'))
-            i.cleanUp()
+            # XXX do we want this here?
+            # create the initrd.img
+            print('Creating the initrd.img')
+            self.initrd.getDeps()
+            self.initrd.processActions()
+            self.initrd.create(os.path.join(self.isodir, 'initrd.img'))
+            #self.initrd.cleanUp()
 
-            # copy the vmlinuz to isolinux dir
+            # copy the vmlinuz
             vmlinuz = os.path.join(self.conf.treedir, 'boot', 'vmlinuz-*')
             cp(vmlinuz, os.path.join(self.isodir, 'vmlinuz'))
 
-            # copy the splash files to isolinux dir
+            # copy the splash files
             vesasplash = os.path.join(anacondadir, 'syslinux-vesa-splash.jpg')
             if os.path.isfile(vesasplash):
                 cp(vesasplash, os.path.join(self.isodir, 'splash.jpg'))
@@ -111,29 +235,27 @@ class Images(object):
                 splashtools = os.path.join(anacondadir, 'splashtools.sh')
                 splashlss = os.path.join(bootdiskdir, 'splash.lss')
                 if os.path.isfile(splashtools):
-                    os.system('%s %s %s' % (splashtools,
-                                            os.path.join(bootdiskdir, 'syslinux-splash.jpg'),
-                                            splashlss))
+                    cmd = '%s %s %s' % (splashtools,
+                                        os.path.join(bootdiskdir, 'syslinux-splash.jpg'),
+                                        splashlss)
+                    os.system(cmd)
                 if os.path.isfile(splashlss):
                     cp(splashlss, self.isodir)
 
-            # copy the .msg files to isolinux dir
+            # copy the .msg files
             for file in os.listdir(bootdiskdir):
                 if file.endswith('.msg'):
                     cp(os.path.join(bootdiskdir, file), self.isodir)
                     replace(os.path.join(self.isodir, file), r'@VERSION@', self.conf.version)
 
-            # if present, copy the memtest to isolinux dir
-            # XXX search for it in bootdiskdir or treedir/install/boot ?
-            #cp(os.path.join(bootdiskdir, 'memtest*'), os.path.join(self.isodir, 'memtest'))
+            # if present, copy the memtest
             cp(os.path.join(self.conf.treedir, 'boot', 'memtest*'),
-                            os.path.join(self.isodir, 'memtest'))
+               os.path.join(self.isodir, 'memtest'))
             if os.path.isfile(os.path.join(self.isodir, 'memtest')):
-                f = open(isolinuxcfg, 'a')
-                f.write('label memtest86\n')
-                f.write('  menu label ^Memory test\n')
-                f.write('  kernel memtest\n')
-                f.write('  append -\n')
-                f.close()
+                text = "label memtest86\n"
+                text = text + "  menu label ^Memory test\n"
+                text = text + "  kernel memtest\n"
+                text = text + "  append -\n"
+                edit(isolinuxcfg, text, append=True)
         else:
-            print('No isolinux binary found, skipping isolinux creation')
+            sys.stderr.write('No isolinux binary found, skipping isolinux creation\n')
