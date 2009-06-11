@@ -2,8 +2,11 @@
 
 import os
 import re
+import pwd
+import grp
+import glob
 
-from pylorax.utils.fileutils import cp, mv, touch, edit, replace
+from pylorax.utils.fileutils import cp, mv, rm, touch, edit, replace
 
 
 # command:action mapping
@@ -11,11 +14,15 @@ from pylorax.utils.fileutils import cp, mv, touch, edit, replace
 # if you want your new action to be supported, you have to include it in this mapping
 COMMANDS = { 'copy': 'Copy',
              'move': 'Move',
+             'remove': 'Remove',
              'link': 'Link',
              'touch': 'Touch',
              'edit': 'Edit',
              'replace': 'Replace',
-             'makedir': 'MakeDir' }
+             'makedir': 'MakeDir',
+             'chmod': 'Chmod',
+             'chown': 'Chown',
+             'genkey': 'GenerateSSHKey' }
 
 
 class LoraxAction(object):
@@ -75,13 +82,19 @@ class LoraxAction(object):
 
 class Copy(LoraxAction):
 
-    REGEX = r'^(?P<src>.*?)\sto\s(?P<dst>.*?)(\smode\s(?P<mode>.*?))?$'
+    REGEX = r'^(?P<src>.*?)\sto\s(?P<dst>.*?)(\smode\s(?P<mode>[0-9]*?))?(\s(?P<install>install))?$'
 
     def __init__(self, **kwargs):
         LoraxAction.__init__(self)
         self._attrs['src'] = kwargs.get('src')
         self._attrs['dst'] = kwargs.get('dst')
         self._attrs['mode'] = kwargs.get('mode')
+
+        install = kwargs.get('install', False)
+        if install:
+            self._attrs['install'] = True
+        else:
+            self._attrs['install'] = False
 
     def execute(self, verbose=False):
         cp(src=self.src, dst=self.dst, mode=self.mode, verbose=verbose)
@@ -101,7 +114,10 @@ class Copy(LoraxAction):
 
     @property
     def install(self):
-        return self._attrs['src']
+        if self._attrs['install']:
+            return self._attrs['src']
+        else:
+            return None
 
     @property
     def getDeps(self):
@@ -112,6 +128,24 @@ class Move(Copy):
     def execute(self, verbose=False):
         mv(src=self.src, dst=self.dst, mode=self.mode, verbose=verbose)
         self._attrs['success'] = True
+
+
+class Remove(LoraxAction):
+    
+    REGEX = r'^(?P<filename>.*?)$'
+
+    def __init__(self, **kwargs):
+        LoraxAction.__init__(self)
+        self._attrs['filename'] = kwargs.get('filename')
+
+    def execute(self, verbose=False):
+        for f in glob.iglob(self.filename):
+            rm(f)
+        self._attrs['success'] = True
+
+    @property
+    def filename(self):
+        return self._attrs['filename']
 
 
 class Link(LoraxAction):
@@ -159,7 +193,7 @@ class Touch(LoraxAction):
 
 class Edit(Touch):
 
-    REGEX = r'^(?P<filename>.*?)\stext\s"(?P<text>.*?)"((?P<append>\sappend?))?$'
+    REGEX = r'^(?P<filename>.*?)\stext\s"(?P<text>.*?)"(\s(?P<append>append))?$'
 
     def __init__(self, **kwargs):
         Touch.__init__(self, **kwargs)
@@ -238,3 +272,82 @@ class MakeDir(LoraxAction):
     @property
     def mode(self):
         return self._attrs['mode']
+
+
+class Chmod(LoraxAction):
+
+    REGEX = r'^(?P<filename>.*?)\smode\s(?P<mode>[0-9]*?)$'
+
+    def __init__(self, **kwargs):
+        LoraxAction.__init__(self)
+        self._attrs['filename'] = kwargs.get('filename')
+        self._attrs['mode'] = kwargs.get('mode')
+
+    def execute(self, verbose=False):
+        os.chmod(self.filename, int(self.mode))
+        self._attrs['success'] = True
+
+    @property
+    def filename(self):
+        return self._attrs['filename']
+
+    @property
+    def mode(self):
+        return self._attrs['mode']
+
+
+class Chown(LoraxAction):
+
+    REGEX = r'^(?P<filename>.*?)\suser\s(?P<user>.*?)\sgroup\s(?P<group>.*?)$'
+
+    def __init__(self, **kwargs):
+        LoraxAction.__init__(self)
+        self._attrs['filename'] = kwargs.get('filename')
+        self._attrs['user'] = kwargs.get('user')
+        self._attrs['group'] = kwargs.get('group')
+
+    def execute(self, verbose=False):
+        uid = pwd.getpwnam(self.user)[2]
+        gid = grp.getgrnam(self.group)[2]
+        os.chown(self.filename, uid, gid)
+        self._attrs['success'] = True
+
+    @property
+    def filename(self):
+        return self._attrs['filename']
+
+    @property
+    def user(self):
+        return self._attrs['user']
+
+    @property
+    def group(self):
+        return self._attrs['group']
+
+
+class GenerateSSHKey(LoraxAction):
+
+    REGEX = r'^(?P<file>.*?)\stype\s(?P<type>.*?)$'
+
+    def __init__(self, **kwargs):
+        LoraxAction.__init__(self)
+        self._attrs['file'] = kwargs.get('file')
+        self._attrs['type'] = kwargs.get('type')
+
+    def execute(self, verbose=False):
+        cmd = "/usr/bin/ssh-keygen -q -t %s -f %s -C '' -N ''" % (self.type, self.file)
+        err, output = commands.getstatusoutput(cmd)
+        
+        if not err:
+            os.chmod(self.file, 0600)
+            os.chmod(self.file + '.pub', 0644)
+
+        self._attrs['success'] = True
+
+    @property
+    def file(self):
+        return self._attrs['file']
+
+    @property
+    def type(self):
+        return self._attrs['type']

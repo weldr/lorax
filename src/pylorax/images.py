@@ -4,6 +4,7 @@ import sys
 import os
 import commands
 import re
+import datetime
 
 import actions
 import actions.base
@@ -21,11 +22,6 @@ class InitRD(object):
         # get supported actions
         supported_actions = actions.getActions()
 
-        initrd_templates = []
-        initrd_templates.append(os.path.join(self.conf.confdir, 'templates', 'initrd'))
-        initrd_templates.append(os.path.join(self.conf.confdir, 'templates', self.conf.buildarch,
-                                             'initrd'))
-
         vars = { 'instroot': self.conf.treedir,
                  'initrd': self.conf.initrddir,
                  'libdir': self.conf.libdir,
@@ -33,10 +29,11 @@ class InitRD(object):
                  'confdir' : self.conf.confdir,
                  'datadir': self.conf.datadir }
 
+        initrd_template = (os.path.join(self.conf.confdir, 'templates',
+                                        'initrd.%s' % self.conf.buildarch))
         self.template = Template()
-        for filename in initrd_templates:
-            if os.path.isfile(filename):
-                self.template.parse(filename, supported_actions, vars)
+        self.template.preparse(initrd_template)
+        self.template.parse(supported_actions, vars)
 
         self._actions = []
 
@@ -50,7 +47,15 @@ class InitRD(object):
         return packages
 
     def getDeps(self):
-        ldd = LDD(libroot=os.path.join(self.conf.treedir, self.conf.libdir))
+        libroots = []
+        libroots.append(os.path.join(self.conf.treedir, self.conf.libdir))
+        libroots.append(os.path.join(self.conf.treedir, 'usr', self.conf.libdir))
+        # on 64 bit systems, add also normal lib directories
+        if self.conf.libdir.endswith('64'):
+            libroots.append(os.path.join(self.conf.treedir, self.conf.libdir[:-2]))
+            libroots.append(os.path.join(self.conf.treedir, 'usr', self.conf.libdir[:-2]))
+
+        ldd = LDD(libroots)
         for action in filter(lambda action: hasattr(action, 'getDeps'), self.template.actions):
             ldd.getDeps(action.getDeps)
 
@@ -69,14 +74,22 @@ class InitRD(object):
             self._actions.append(new_action)
 
     def processActions(self):
-        # create the initrd temporary directory if it does not exist
-        if not os.path.isdir(self.conf.initrddir):
-            os.makedirs(self.conf.initrddir)
+        if os.path.isdir(self.conf.initrddir):
+            rm(self.conf.initrddir)
+        os.makedirs(self.conf.initrddir)
 
         for action in self.template.actions + self._actions:
             action.execute()
 
     def create(self, dst):
+        # create the productfile
+        text = '%s\n' % self.conf.imageuuid
+        text = text + '%s\n' % self.conf.product
+        text = text + '%s\n' % self.conf.version
+        text = text + '%s\n' % self.conf.bugurl
+        edit(os.path.join(self.conf.initrddir, '.buildstamp'), text)
+
+        # create the initrd
         err, output = commands.getstatusoutput('find %s | cpio --quiet -c -o | gzip -9 > %s' %
                                                (self.conf.initrddir, dst))
 
@@ -88,6 +101,13 @@ class Images(object):
     def __init__(self, config, yum):
         self.conf = config
         self.yum = yum
+
+        # make imageuuid
+        now = datetime.datetime.now()
+        arch = os.uname()[4]    # XXX system arch, or build arch?
+        imageuuid = '%s.%s' % (now.strftime('%Y%m%d%H%M'), arch)
+        self.conf.addAttr('imageuuid')
+        self.conf.set(imageuuid=imageuuid)
 
         self.initrd = InitRD(self.conf, self.yum)
 

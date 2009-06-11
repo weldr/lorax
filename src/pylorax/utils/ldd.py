@@ -6,7 +6,7 @@ import re
 
 
 class LDD(object):
-    def __init__(self, libroot='/lib'):
+    def __init__(self, libroots=['/lib', '/usr/lib']):
         f = open('/usr/bin/ldd', 'r')
         for line in f.readlines():
             line = line.strip()
@@ -15,14 +15,7 @@ class LDD(object):
                 break
         f.close()
 
-        if libroot.endswith('/') and libroot != '/':
-            libroot = libroot[:-1]
-
-        libpaths = [libroot]
-        if libroot.endswith('64'):
-            libpaths.append(libroot[:-2])
-
-        self._ldd = 'LD_LIBRARY_PATH="%s" %s --list' % (':'.join(libpaths), ld_linux)
+        self._ldd = 'LD_LIBRARY_PATH="%s" %s --list' % (':'.join(libroots), ld_linux)
         self._deps = set()
 
     def getDeps(self, filename):

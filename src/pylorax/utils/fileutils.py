@@ -16,7 +16,7 @@ def cp(src, dst, mode=None, verbose=False):
             errors.append('unable to copy "%s" to "%s"' % (name, dst))
         else:
             if mode:
-                os.chmod(dst, mode)
+                os.chmod(dst, int(mode))
 
     return errors
 
@@ -28,7 +28,7 @@ def mv(src, dst, mode=None, verbose=False):
             errors.append('unable to move "%s" to "%s"' % (name, dst))
         else:
             if mode:
-                os.chmod(dst, mode)
+                os.chmod(dst, int(mode))
 
     return errors
 

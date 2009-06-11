@@ -1,0 +1,12 @@
+# initrd template
+
+#include includes/initrd/initrd.common
+
+# loader
+copy @instroot@/usr/lib/anaconda-runtime/loader/init to @initrd@/sbin/init
+link @initrd@/sbin/reboot to init
+link @initrd@/sbin/halt to init
+link @initrd@/sbin/poweroff to init
+
+# screenfont
+copy @instroot@/usr/lib/anaconda-runtime/screenfont-@buildarch@.gz to @initrd@/etc/screenfont.gz

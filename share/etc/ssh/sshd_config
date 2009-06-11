@@ -1,0 +1,17 @@
+Port 22
+HostKey /etc/ssh/ssh_host_key
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_dsa_key
+PermitRootLogin yes
+IgnoreRhosts yes
+StrictModes yes
+X11Forwarding yes
+X11DisplayOffset 10
+PrintMotd yes
+XAuthLocation /sbin/xauth
+KeepAlive yes
+SyslogFacility AUTHPRIV
+RSAAuthentication yes
+PasswordAuthentication yes
+PermitEmptyPasswords yes
+PermitUserEnvironment yes

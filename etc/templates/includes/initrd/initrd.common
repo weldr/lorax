@@ -1,0 +1,175 @@
+# initrd template
+
+# create required directories
+makedir @initrd@/modules
+makedir @initrd@/sbin
+makedir @initrd@/dev
+makedir @initrd@/etc
+makedir @initrd@/etc/udev/rules.d
+makedir @initrd@/lib/udev/rules.d
+makedir @initrd@/proc
+makedir @initrd@/selinux
+makedir @initrd@/sys
+makedir @initrd@/etc/terminfo/a
+makedir @initrd@/etc/terminfo/d
+makedir @initrd@/etc/terminfo/l
+makedir @initrd@/etc/terminfo/s
+makedir @initrd@/etc/terminfo/v
+makedir @initrd@/etc/terminfo/x
+makedir @initrd@/etc/terminfo/g
+makedir @initrd@/tmp
+makedir @initrd@/usr/libexec
+makedir @initrd@/usr/@libdir@/NetworkManager
+makedir @initrd@/usr/share/dbus-1/system-services
+makedir @initrd@/var/cache/hald
+makedir @initrd@/var/lib/dbus
+makedir @initrd@/var/lib/dhclient
+makedir @initrd@/var/lock/rpm
+makedir @initrd@/var/run
+makedir @initrd@/var/run/dbus
+makedir @initrd@/var/run/hald
+makedir @initrd@/var/run/NetworkManager
+makedir @initrd@/etc/dbus-1/system.d
+makedir @initrd@/etc/modprobe.d
+makedir @initrd@/etc/NetworkManager/dispatcher.d
+makedir @initrd@/@libdir@/dbus-1
+makedir @initrd@/etc/sysconfig/network-scripts
+makedir @initrd@/usr/share/PolicyKit/policy
+makedir @initrd@/etc/PolicyKit
+makedir @initrd@/var/lib/misc
+makedir @initrd@/etc/hal/fdi
+makedir @initrd@/usr/share/hal/fdi
+makedir @initrd@/usr/share/hwdata
+makedir @initrd@/etc/rc.d/init.d
+makedir @initrd@/usr/sbin
+makedir @initrd@/var/run/wpa_supplicant
+
+# set the buildarch
+edit @initrd@/etc/arch text "@buildarch@"
+
+# copy etc stuff
+copy @instroot@/etc/passwd to @initrd@/etc mode 0644
+copy @instroot@/etc/group to @initrd@/etc mode 0644
+copy @instroot@/etc/nsswitch.conf to @initrd@/etc mode 0644
+
+# copy mount/umount
+copy @instroot@/bin/mount to @initrd@/sbin
+copy @instroot@/bin/umount to @initrd@/sbin
+copy @instroot@/sbin/mount.nfs to @initrd@/sbin
+link @initrd@/sbin/umount.nfs to mount.nfs
+
+# copy udev
+copy @instroot@/sbin/udevd to @initrd@/sbin
+copy @instroot@/sbin/udevadm to @initrd@/sbin
+link @initrd@/sbin/udevinfo to udevadm
+link @initrd@/sbin/udevsettle to udevadm
+
+# udev rules
+copy @instroot@/etc/udev/udev.conf to @initrd@/etc/udev mode 0644
+copy @instroot@/lib/udev/* to @initrd@/lib/udev mode 0644
+remove @initrd@/lib/udev/rules.d/*persistent*
+remove @initrd@/lib/udev/rules.d/*generator*
+copy @instroot@/etc/udev/rules.d/*.rules to @initrd@/etc/udev/rules.d mode 0644
+
+# copy bash
+copy @instroot@/bin/bash to @initrd@/sbin
+link @initrd@/sbin/sh to bash
+copy @instroot@/sbin/consoletype to @initrd@/sbin
+copy @instroot@/usr/bin/logger to @initrd@/sbin
+
+copy @instroot@/etc/rc.d/init.d/functions to @initrd@/etc/rc.d/init.d
+copy @instroot@/etc/sysconfig/network-scripts/network-functions* to @initrd@/etc/sysconfig/network-scripts
+
+link @initrd@/etc/init.d to /etc/rc.d/init.d
+
+# dhcp and dhcpv6 client daemons and support programs
+copy @instroot@/sbin/dhclient to @initrd@/sbin
+copy @instroot@/sbin/dhcp6c to @initrd@/sbin
+touch @initrd@/etc/resolv.conf
+
+# hwdata
+copy @instroot@/usr/share/hwdata/pci.ids to @initrd@/usr/share/hwdata
+copy @instroot@/usr/share/hwdata/usb.ids to @initrd@/usr/share/hwdata
+
+# hal
+copy @instroot@/usr/sbin/hald to @initrd@/sbin
+copy @instroot@/usr/libexec/hald-runner to @initrd@/usr/libexec
+copy @instroot@/usr/libexec/hald-generate-fdi-cache to @initrd@/usr/libexec
+copy @instroot@/usr/libexec/hal*storage* to @initrd@/usr/libexec
+touch @initrd@/var/run/hald.acl-list
+copy @instroot@/usr/share/hal/fdi/* to @initrd@/usr/share/hal/fdi
+copy @instroot@/etc/hal/fdi/* to @initrd@/etc/hal/fdi
+copy @instroot@/etc/dbus-1/system.d/hal.conf to @initrd@/etc/dbus-1/system.d
+
+# policykit
+copy @instroot@/etc/PolicyKit/PolicyKit.conf to @initrd@/etc/PolicyKit
+copy @instroot@/usr/share/dbus-1/system-services/org.freedesktop.PolicyKit.service to @initrd@/usr/share/dbus-1/system-services
+copy @instroot@/usr/share/PolicyKit/policy/org.freedesktop.policykit.policy to @initrd@/usr/share/PolicyKit/policy
+copy @instroot@/var/lib/misc/PolicyKit.reload to @initrd@/var/lib/misc
+
+# dbus
+copy @instroot@/bin/dbus-uuidgen to @initrd@/sbin
+copy @instroot@/bin/dbus-daemon to @initrd@/sbin
+copy @instroot@/etc/dbus-1/system.conf to @initrd@/etc/dbus-1
+copy @instroot@/@libdir@/dbus-1/dbus-daemon-launch-helper to @initrd@/@libdir@/dbus-1
+chown @initrd@/@libdir@/dbus-1/dbus-daemon-launch-helper user root group dbus
+chmod @initrd@/@libdir@/dbus-1/dbus-daemon-launch-helper mode 04750
+
+# wpa_supplicant
+copy @instroot@/usr/sbin/wpa_passphrase to @initrd@/usr/sbin
+copy @instroot@/usr/sbin/wpa_supplicant to @initrd@/usr/sbin
+copy @instroot@/etc/dbus-1/system.d/wpa_supplicant.conf to @initrd@/etc/dbus-1/system.d
+copy @instroot@/etc/wpa_supplicant/wpa_supplicant.conf to @initrd@/etc/wpa_supplicant
+copy @instroot@/usr/share/dbus-1/system-services/fi.epitest.hostap.WPASupplicant.service to @initrd@/usr/share/dbus-1/system-services
+
+# networkmanager
+copy @instroot@/usr/sbin/NetworkManager to @initrd@/usr/sbin
+copy @instroot@/usr/sbin/nm-system-settings to @initrd@/usr/sbin
+copy @instroot@/etc/dbus-1/system.d/nm-*.conf to @initrd@/etc/dbus-1/system.d
+copy @instroot@/etc/dbus-1/system.d/NetworkManager.conf to @initrd@/etc/dbus-1/system.d
+copy @instroot@/etc/NetworkManager/nm-system-settings.conf to @initrd@/etc/NetworkManager
+copy @instroot@/usr/@libdir@/NetworkManager/libnm-settings-plugin-ifcfg-fedora.so to @initrd@/usr/@libdir@/NetworkManager
+copy @instroot@/usr/libexec/nm-* to @initrd@/usr/libexec
+copy @instroot@/usr/share/dbus-1/system-services/org.freedesktop.NetworkManagerSystemSettings.service to @initrd@/usr/share/dbus-1/system-services
+copy @instroot@/usr/share/dbus-1/system-services/org.freedesktop.nm_dispatcher.service to @initrd@/usr/share/dbus-1/system-services
+
+# modprobe
+copy @instroot@/sbin/modprobe to @initrd@/sbin
+copy @instroot@/sbin/insmod to @initrd@/sbin
+copy @instroot@/sbin/rmmod to @initrd@/sbin
+
+# profile
+edit @initrd@/.profile text "PATH=/bin:/usr/bin:/usr/sbin:/mnt/sysimage/sbin:/mnt/sysimage/usr/sbin:/mnt/sysimage/bin:/mnt/sysimage/usr/bin\nexport PATH"
+
+# terminfos
+copy @instroot@/usr/share/terminfo/a/ansi to @initrd@/etc/terminfo/a mode 0644
+copy @instroot@/usr/share/terminfo/d/dumb to @initrd@/etc/terminfo/d mode 0644
+copy @instroot@/usr/share/terminfo/l/linux to @initrd@/etc/terminfo/l mode 0644
+copy @instroot@/usr/share/terminfo/s/screen to @initrd@/etc/terminfo/s mode 0644
+copy @instroot@/usr/share/terminfo/v/vt100 to @initrd@/etc/terminfo/v mode 0644
+copy @instroot@/usr/share/terminfo/v/vt100-nav to @initrd@/etc/terminfo/v mode 0644
+copy @instroot@/usr/share/terminfo/v/vt102 to @initrd@/etc/terminfo/v mode 0644
+copy @instroot@/usr/share/terminfo/x/xterm to @initrd@/etc/terminfo/x mode 0644
+copy @instroot@/usr/share/terminfo/x/xterm-color to @initrd@/etc/terminfo/x mode 0644
+copy @instroot@/usr/share/terminfo/g/gnome to @initrd@/etc/terminfo/g mode 0644
+
+# misc
+link @initrd@/init to /sbin/init
+link @initrd@/etc/mtab to /proc/mounts
+link @initrd@/bin to sbin
+link @initrd@/var/lib/xkb to ../../tmp
+
+# loader
+copy @instroot@/usr/lib/anaconda-runtime/loader/loader to @initrd@/sbin
+copy @instroot@/usr/lib/anaconda-runtime/loader/loader.tr to @initrd@/etc mode 0644
+
+# indirect dependencies
+copy @instroot@/@libdir@/libfreebl3.so to @initrd@/@libdir@
+copy @instroot@/@libdir@/libsoftokn3.so to @initrd@/@libdir@
+copy @instroot@/usr/@libdir@/libsqlite3.so.0 to @initrd@/usr/@libdir@
+copy @instroot@/@libdir@/libnss_dns.so.2 to @initrd@/@libdir@
+copy @instroot@/@libdir@/libnss_files.so.2 to @initrd@/@libdir@
+copy @instroot@/@libdir@/libgcc_s.so.1 to @initrd@/@libdir@
+
+# langtable
+copy @instroot@/usr/lib/anaconda/lang-table to @initrd@/etc

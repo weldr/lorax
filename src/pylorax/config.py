@@ -1,6 +1,7 @@
 # pylorax/config.py
 
 import sys
+import os
 import re
 from errors import TemplateError
 
@@ -77,7 +78,10 @@ class Template(object):
     def __init__(self):
         self._actions = []
 
-    def parse(self, filename, supported_actions, variables):
+        self.lines = []
+        self.included_files = []
+
+    def preparse(self, filename):
         try:
             f = open(filename, 'r')
         except IOError as why:
@@ -87,6 +91,36 @@ class Template(object):
             lines = f.readlines()
             f.close()
 
+        self.included_files.append(filename)
+        
+        for line in lines:
+            line = line.strip()
+            
+            if line.startswith('#include'):
+                file_to_include = line.split()[1]
+                path = os.path.join(os.path.dirname(filename), file_to_include)
+                if path not in self.included_files:
+                    self.preparse(path)
+            else:
+                self.lines.append(line)
+
+    def parse(self, supported_actions, variables):
+        lines = self.lines
+
+        # append next line if line ends with '\'
+        temp = []
+        for line in lines:
+            line = line.strip()
+            if line.endswith('\\'):
+                line = line[:-1]
+                line = line.rstrip()
+                line = line + ' '
+            else:
+                line = line + '\n'
+            temp.append(line)
+        temp = ''.join(temp)
+        lines = temp.splitlines()
+
         # check template variables
         for lineno, line in enumerate(lines, start=1):
             for var in filter(lambda var: var not in variables, re.findall(r'@(.*?)@', line)):
@@ -94,8 +128,6 @@ class Template(object):
 
         # parse the template
         for lineno, line in enumerate(lines, start=1):
-            line = line.strip()
-
             line, sep, comment = line.partition('#')
             if not line:
                 continue
