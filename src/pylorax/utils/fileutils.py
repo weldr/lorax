@@ -33,14 +33,15 @@ def mv(src, dst, mode=None, verbose=False):
     return errors
 
 def rm(target, verbose=False):
-    if os.path.isdir(target):
-        if verbose:
-            print('removing directory "%s"' % target)
-        shutil.rmtree(target, ignore_errors=True)
-    else:
-        if verbose:
-            print('removing file "%s"' % target)
-        os.unlink(target)
+    for name in glob.iglob(target):
+        if os.path.isdir(name):
+            if verbose:
+                print('removing directory "%s"' % name)
+            shutil.rmtree(name, ignore_errors=True)
+        else:
+            if verbose:
+                print('removing file "%s"' % name)
+            os.unlink(name)
 
     return True
 

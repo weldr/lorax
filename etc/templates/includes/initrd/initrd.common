@@ -2,6 +2,9 @@
 
 # create required directories
 makedir @initrd@/modules
+makedir @initrd@/firmware
+makedir @initrd@/lib/modules
+makedir @initrd@/lib/firmware
 makedir @initrd@/sbin
 makedir @initrd@/dev
 makedir @initrd@/etc

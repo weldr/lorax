@@ -5,6 +5,7 @@ import os
 import commands
 import re
 import datetime
+import fnmatch
 
 import actions
 import actions.base
@@ -12,6 +13,7 @@ from config import Template
 
 from utils.fileutils import cp, mv, rm, touch, edit, replace
 from utils.ldd import LDD
+from utils.genmodinfo import genmodinfo
 
 
 class InitRD(object):
@@ -81,6 +83,106 @@ class InitRD(object):
         for action in self.template.actions + self._actions:
             action.execute()
 
+    def getModules(self):
+        modlist = os.path.join(self.conf.treedir, 'usr', 'lib', 'anaconda-runtime', 'modlist')
+        modinfo = os.path.join(self.conf.tempdir, 'modinfo')
+        genmodinfo(os.path.join(self.conf.treedir, 'lib', 'modules', self.conf.kernelver), modinfo)
+
+        modfiles = []
+        modfiles.append(os.path.join(self.conf.confdir, 'modules', 'modules'))
+        modfiles.append(os.path.join(self.conf.confdir, 'modules', self.conf.buildarch, 'modules'))
+
+        modules = set()
+        for file in modfiles:
+            if os.path.isfile(file):
+                f = open(file, 'r')
+                lines = f.readlines()
+                f.close()
+
+                for line in lines:
+                    line = line.strip()
+                    line, sep, comment = line.partition('#')
+                    if line.startswith('-'):
+                        modules.discard(line[1:])
+                    elif line.startswith('='):
+                        cmd = '%s --modinfo-file %s %s' % (modlist, modinfo, line[1:])
+                        output = commands.getoutput(cmd)
+                        for module in output.splitlines():
+                            modules.add(module)
+                    else:
+                        modules.add(line)
+
+        # resolve deps
+        depfile = os.path.join(self.conf.treedir, 'lib', 'modules', self.conf.kernelver, 'modules.dep')
+        f = open(depfile, 'r')
+        lines = f.readlines()
+        f.close()
+
+        changed = True
+        while changed:
+            for line in lines:
+                changed = False
+                line = line.strip()
+                m = re.match(r'^.*/(?P<name>.*)\.ko:(?P<deps>.*)$', line)
+                modname = m.group('name')
+                if modname in modules:
+                    for dep in m.group('deps').split():
+                        m = re.match(r'^.*/(?P<name>.*)\.ko$', dep)
+                        if m.group('name') not in modules:
+                            changed = True
+                            print('Adding module dependency %s' % m.group('name'))
+                            modules.add(m.group('name'))
+
+        srcdir = os.path.join(self.conf.treedir, 'lib', 'modules')
+        dstdir = os.path.join(self.conf.initrddir, 'lib', 'modules')
+        cp(os.path.join(srcdir, '*'), dstdir)
+
+        for root, dirs, files in os.walk(dstdir):
+            for file in files:
+                name, ext = os.path.splitext(file)
+                if ext == '.ko' and name not in modules:
+                    print('Removing %s module' % name)
+                    rm(os.path.join(root, file))
+
+        # copy firmware
+        srcdir = os.path.join(self.conf.treedir, 'lib', 'firmware')
+        dstdir = os.path.join(self.conf.initrddir, 'lib', 'firmware')
+        
+        fw = ( ('ipw2100', 'ipw2100*'),
+               ('ipw2200', 'ipw2200*'),
+               ('iwl3945', 'iwlwifi-3945*'),
+               ('iwl4965', 'iwlwifi-4965*'),
+               ('atmel', 'atmel_*.bin'),
+               ('zd1211rw', 'zd1211'),
+               ('qla2xxx', 'ql*') )
+
+        for module, file in fw:
+            if module in modules:
+                print('Copying %s firmware' % module)
+                cp(os.path.join(srcdir, file), dstdir)
+
+        # create modinfo
+        dst = os.path.join(self.conf.initrddir, 'lib', 'modules', 'module-info')
+        cmd = '%s --modinfo-file %s --ignore-missing --modinfo %s > %s' % \
+              (modlist, modinfo, ' '.join(list(modules)), dst)
+        commands.getoutput(cmd)
+
+        # compress modules
+        cmd = 'find -H %s -type f -name *.ko -exec gzip -9 {} \\;' % \
+              os.path.join(self.conf.initrddir, 'lib', 'modules')
+        commands.getoutput(cmd)
+
+        # run depmod
+        cmd = '/sbin/depmod -a -F %s -b %s %s' % \
+              (os.path.join(self.conf.treedir, 'boot', 'System.map-%s' % self.conf.kernelver),
+               self.conf.initrddir, self.conf.kernelver)
+        commands.getoutput(cmd)
+
+        # remove leftovers
+        rm(os.path.join(self.conf.initrddir, 'lib', 'modules', self.conf.kernelver, 'modules.*map'))
+        rm(os.path.join(self.conf.initrddir, 'lib', 'modules', self.conf.kernelver, 'source'))
+        rm(os.path.join(self.conf.initrddir, 'lib', 'modules', self.conf.kernelver, 'build'))
+
     def create(self, dst):
         # create the productfile
         text = '%s\n' % self.conf.imageuuid
@@ -88,6 +190,9 @@ class InitRD(object):
         text = text + '%s\n' % self.conf.version
         text = text + '%s\n' % self.conf.bugurl
         edit(os.path.join(self.conf.initrddir, '.buildstamp'), text)
+
+        # get modules
+        self.getModules()
 
         # create the initrd
         err, output = commands.getstatusoutput('find %s | cpio --quiet -c -o | gzip -9 > %s' %
@@ -142,7 +247,7 @@ class Images(object):
 
     def installPackages(self):
         # required packages
-        self.yum.addPackages(['anaconda', 'anaconda-runtime', 'kernel', 'syslinux'])
+        self.yum.addPackages(['anaconda', 'anaconda-runtime', 'kernel', '*firmware*', 'syslinux'])
 
         # optional packages from confdir
         packages_files = []
@@ -231,6 +336,15 @@ class Images(object):
             # copy the grub.conf
             cp(os.path.join(bootdiskdir, 'grub.conf'), self.isodir)
 
+            # copy the vmlinuz
+            self.conf.addAttr('kernelver')
+            for file in os.listdir(os.path.join(self.conf.treedir, 'boot')):
+                if fnmatch.fnmatch(file, 'vmlinuz-*'):
+                    vmlinuz = os.path.join(self.conf.treedir, 'boot', file)
+                    m = re.match(r'.*vmlinuz-(?P<ver>.*)', vmlinuz)
+                    self.conf.set(kernelver=m.group('ver'))
+                    cp(vmlinuz, os.path.join(self.isodir, 'vmlinuz'))
+            
             # XXX do we want this here?
             # create the initrd.img
             print('Creating the initrd.img')
@@ -238,10 +352,6 @@ class Images(object):
             self.initrd.processActions()
             self.initrd.create(os.path.join(self.isodir, 'initrd.img'))
             #self.initrd.cleanUp()
-
-            # copy the vmlinuz
-            vmlinuz = os.path.join(self.conf.treedir, 'boot', 'vmlinuz-*')
-            cp(vmlinuz, os.path.join(self.isodir, 'vmlinuz'))
 
             # copy the splash files
             vesasplash = os.path.join(anacondadir, 'syslinux-vesa-splash.jpg')
