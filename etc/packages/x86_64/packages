@@ -1,7 +1,0 @@
-dmidecode
-efibootmgr
-gpart
-grub
-memtest86+
-pcmciautils
-syslinux

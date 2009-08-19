@@ -35,59 +35,6 @@ def filtermoddeps(input):
     
     return lines
 
-
-# XXX what are the inputs for this thing?
-def trimpciids(pciids, *paths):
-    vendors = []
-    devices = []
-
-    for file in paths:
-        try:
-            f = open(file, 'r')
-        except IOError:
-            logger.error('cannot open file %s', file)
-            continue
-        else:
-            pcitable = f.readlines()
-            f.close()
-
-        for line in pcitable:
-            if line.startswith('alias pci:'):
-                vend = '0x%s' % line[15:19]
-                dev = '0x%s' % line[24:28]
-            elif line.startswith('alias pcivideo:'):
-                vend = '0x%s' % line[20:24]
-                dev = '0x%s' % line[29:33]
-            else:
-                continue
-
-        vend = vend.upper()
-        dev = dev.upper()
-        if vend not in vendors:
-            vendors.append(vend)
-        if (vend, dev) not in devices:
-            devices.append((vend, dev))
-
-    current_vend = 0
-    for line in pciids:
-        if line.startswith('#') or line.startswith('\t\t') or line == '\n':
-            continue
-
-        # XXX print or return?
-        if not line.startswith('\t'):
-            current_vend = '0x%s' % line.split()[0]
-            current_vend = current_vend.upper()
-            if current_vend in vendors:
-                print line,
-            continue
-
-        # XXX print or return?
-        dev = '0x%s' % line.split()[0]
-        dev = dev.upper()
-        if (current_vend, dev) in devices:
-            print line,
-
-
 # XXX what is this whole thing for?
 def geninitrdsz(size, filename):
     size = socket.htonl(size)

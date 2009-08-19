@@ -1,5 +1,3 @@
-# pylorax/utils/rpmutils.py
-
 import sys
 import os
 import stat
@@ -39,7 +37,7 @@ class Callback(yum.rpmtrans.SimpleCliCallBack):
         self.height, self.width = getConsoleSize()
 
     def event(self, package, action, te_current, te_total, ts_current, ts_total):
-        # XXX crazy output stuff
+        # XXX crazy output format stuff
         progress = float(te_current) / float(te_total)
 
         percentage = int(progress * 100)
@@ -62,7 +60,7 @@ class Callback(yum.rpmtrans.SimpleCliCallBack):
         msg = total_progress_str + action_str + package_progress_str
 
         sys.stdout.write(msg)
-        sys.stdout.write('\b' * len(msg))
+        sys.stdout.write('\r')
 
         if percentage == 100:
             sys.stdout.write('\n')
@@ -91,7 +89,7 @@ class Yum(object):
 
     def download(self, packages):
         for package in seq(packages):
-            print('Downloading package %s' % package)
+            print("Downloading package %s" % package)
             fn = urlgrabber.urlgrab(package.remote_url)
             shutil.copy(fn, self.installroot)
 
@@ -99,14 +97,14 @@ class Yum(object):
 
     def addPackages(self, patterns):
         for pattern in seq(patterns):
-            print('Adding package matching %s' % pattern)
+            print("Adding package matching %s" % pattern)
             try:
                 self.yb.install(name=pattern)
             except yum.Errors.InstallError:
                 try:
                     self.yb.install(pattern=pattern)
                 except yum.Errors.InstallError:
-                    sys.stderr.write('ERROR: No package matching %s available\n' % pattern)
+                    sys.stderr.write("ERROR: No package matching %s available\n" % pattern)
 
     def install(self):
         self.yb.resolveDeps()
@@ -142,7 +140,7 @@ def extractRPM(rpmfile, destdir):
             if not os.path.isdir(path):
                 os.makedirs(path)
         else:
-            print('Extracting %s' % entry.name)
+            print("Extracting %s" % entry.name)
             dir = os.path.dirname(path)
             if not os.path.isdir(dir):
                 os.makedirs(dir)
@@ -150,7 +148,7 @@ def extractRPM(rpmfile, destdir):
             try:
                 f = open(path, 'w')
             except IOError:
-                sys.stderr.write('ERROR: Unable to extract file %s\n' % path)
+                sys.stderr.write("ERROR: Unable to extract file %s\n" % path)
             else:
                 f.write(entry.read())
                 f.close()

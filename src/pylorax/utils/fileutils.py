@@ -1,5 +1,3 @@
-# pylorax/utils/fileutil.py
-
 import sys
 import os
 import shutil
@@ -13,7 +11,7 @@ def cp(src, dst, mode=None, verbose=False):
     for name in glob.iglob(src):
         rc = __copy(name, dst, verbose=verbose)
         if not rc:
-            errors.append('unable to copy "%s" to "%s"' % (name, dst))
+            errors.append("unable to copy '%s' to '%s'" % (name, dst))
         else:
             if mode:
                 os.chmod(dst, int(mode))
@@ -25,7 +23,7 @@ def mv(src, dst, mode=None, verbose=False):
     for name in glob.iglob(src):
         rc = __copy(name, dst, verbose=verbose, remove=True)
         if not rc:
-            errors.append('unable to move "%s" to "%s"' % (name, dst))
+            errors.append("unable to move '%s' to '%s'" % (name, dst))
         else:
             if mode:
                 os.chmod(dst, int(mode))
@@ -34,20 +32,24 @@ def mv(src, dst, mode=None, verbose=False):
 
 def rm(target, verbose=False):
     for name in glob.iglob(target):
-        if os.path.isdir(name):
-            if verbose:
-                print('removing directory "%s"' % name)
-            shutil.rmtree(name, ignore_errors=True)
-        else:
-            if verbose:
-                print('removing file "%s"' % name)
+        if os.path.islink(name):
             os.unlink(name)
+        else:
+            if os.path.isdir(name):
+                if verbose:
+                    print("removing directory '%s'" % name)
+                shutil.rmtree(name, ignore_errors=True)
+            else:
+                if verbose:
+                    print("removing file '%s'" % name)
+                os.unlink(name)
 
     return True
 
+
 def __copy(src, dst, verbose=False, remove=False):
     if not os.path.exists(src):
-        sys.stderr.write('cannot stat "%s": No such file or directory\n' % src)
+        sys.stderr.write("cannot stat '%s': No such file or directory\n" % src)
         return False
 
     if os.path.isdir(dst):
@@ -56,7 +58,7 @@ def __copy(src, dst, verbose=False, remove=False):
 
     if os.path.isdir(src):
         if os.path.isfile(dst):
-            sys.stderr.write('omitting directory "%s"\n' % src)
+            sys.stderr.write("omitting directory '%s'\n" % src)
             return False
 
         if not os.path.isdir(dst):
@@ -67,20 +69,24 @@ def __copy(src, dst, verbose=False, remove=False):
             __copy(name, dst, verbose=verbose, remove=remove)
     else:
         if os.path.isdir(dst):
-            sys.stderr.write('cannot overwrite directory "%s" with non-directory\n' % dst)
+            sys.stderr.write("cannot overwrite directory '%s' with non-directory\n" % dst)
             return False
 
         try:
             if verbose:
-                print('copying "%s" to "%s"' % (src, dst))
+                print("copying '%s' to '%s'" % (src, dst))
+            
+            if os.path.exists(dst):
+                os.unlink(dst)
+
             shutil.copy2(src, dst)
         except (shutil.Error, IOError) as why:
-            sys.stderr.write('cannot copy "%s" to "%s": %s\n' % (src, dst, why))
+            sys.stderr.write("cannot copy '%s' to '%s': %s\n" % (src, dst, why))
             return False
         else:
             if remove:
                 if verbose:
-                    print('removing "%s"' % src)
+                    print("removing '%s'" % src)
                 os.unlink(src)
     
     return True
@@ -89,13 +95,13 @@ def __copy(src, dst, verbose=False, remove=False):
 def touch(filename, verbose=False):
     if os.path.exists(filename):
         if verbose:
-            print('touching file "%s"' % filename)
+            print("touching file '%s'" % filename)
         os.utime(filename, None)
         return True
 
     try:
         if verbose:
-            print('creating file "%s"' % filename)
+            print("creating file '%s'" % filename)
         f = open(filename, 'w')
     except IOError:
         return False
@@ -110,7 +116,7 @@ def edit(filename, text, append=False, verbose=False):
 
     try:
         if verbose:
-            print('editing file "%s"' % filename)
+            print("editing file '%s'" % filename)
         f = open(filename, mode)
     except IOError:
         return False
@@ -121,7 +127,7 @@ def edit(filename, text, append=False, verbose=False):
 
 def replace(filename, find, replace, verbose=False):
     if verbose:
-        print('replacing "%s" for "%s" in file "%s"' % (find, replace, filename))
+        print("replacing '%s' for '%s' in file '%s'" % (find, replace, filename))
     fin = fileinput.input(filename, inplace=1)
     for line in fin:
         line = re.sub(find, replace, line)

@@ -1,5 +1,3 @@
-# pylorax/errors.py
-
 class LoraxError(Exception):
     pass
 

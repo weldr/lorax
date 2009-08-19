@@ -3,7 +3,9 @@
 # create required directories
 makedir @initrd@/modules
 makedir @initrd@/firmware
-makedir @initrd@/lib/modules
+makedir @initrd@/lib
+link @initrd@/modules to @initrd@/lib/modules
+link @initrd@/firmware to @initrd@/lib/firmware
 makedir @initrd@/lib/firmware
 makedir @initrd@/sbin
 makedir @initrd@/dev
@@ -54,18 +56,19 @@ edit @initrd@/etc/arch text "@buildarch@"
 copy @instroot@/etc/passwd to @initrd@/etc mode 0644
 copy @instroot@/etc/group to @initrd@/etc mode 0644
 copy @instroot@/etc/nsswitch.conf to @initrd@/etc mode 0644
+copy @instroot@/etc/hosts to @initrd@/etc/ mode 0644
 
 # copy mount/umount
 copy @instroot@/bin/mount to @initrd@/sbin
 copy @instroot@/bin/umount to @initrd@/sbin
-copy @instroot@/sbin/mount.nfs to @initrd@/sbin
-link @initrd@/sbin/umount.nfs to mount.nfs
+copy @instroot@/sbin/mount.* to @initrd@/sbin
+copy @instroot@/sbin/umount.* to @initrd@/sbin
 
 # copy udev
 copy @instroot@/sbin/udevd to @initrd@/sbin
 copy @instroot@/sbin/udevadm to @initrd@/sbin
-link @initrd@/sbin/udevinfo to udevadm
-link @initrd@/sbin/udevsettle to udevadm
+copy @instroot@/sbin/udevinfo to @initrd@/sbin
+copy @instroot@/sbin/udevsettle to @initrd@/sbin
 
 # udev rules
 copy @instroot@/etc/udev/udev.conf to @initrd@/etc/udev mode 0644
@@ -87,7 +90,15 @@ link @initrd@/etc/init.d to /etc/rc.d/init.d
 
 # dhcp and dhcpv6 client daemons and support programs
 copy @instroot@/sbin/dhclient to @initrd@/sbin
+copy @instroot@/sbin/dhclient-script to @initrd@/sbin
 copy @instroot@/sbin/dhcp6c to @initrd@/sbin
+copy @instroot@/sbin/arping to @initrd@/sbin
+copy @instroot@/sbin/ifconfig to @initrd@/sbin
+copy @instroot@/sbin/ip to @initrd@/sbin
+copy @instroot@/bin/ipcalc to @initrd@/sbin
+copy @instroot@/bin/hostname to @initrd@/sbin
+copy @instroot@/sbin/ethtool to @initrd@/sbin
+copy @instroot@/sbin/route to @initrd@/sbin
 touch @initrd@/etc/resolv.conf
 
 # hwdata
@@ -157,6 +168,20 @@ copy @instroot@/usr/share/terminfo/x/xterm-color to @initrd@/etc/terminfo/x mode
 copy @instroot@/usr/share/terminfo/g/gnome to @initrd@/etc/terminfo/g mode 0644
 
 # misc
+copy @instroot@/bin/awk to @initrd@/sbin
+copy @instroot@/bin/gawk to @initrd@/sbin
+copy @instroot@/bin/egrep to @initrd@/sbin
+copy @instroot@/bin/fgrep to @initrd@/sbin
+copy @instroot@/bin/grep to @initrd@/sbin
+copy @instroot@/bin/kill to @initrd@/sbin
+copy @instroot@/bin/ln to @initrd@/sbin
+copy @instroot@/bin/readlink to @initrd@/sbin
+copy @instroot@/bin/rm to @initrd@/sbin
+copy @instroot@/bin/rmdir to @initrd@/sbin
+copy @instroot@/bin/sed to @initrd@/sbin
+copy @instroot@/bin/sleep to @initrd@/sbin
+copy @instroot@/bin/touch to @initrd@/sbin
+
 link @initrd@/init to /sbin/init
 link @initrd@/etc/mtab to /proc/mounts
 link @initrd@/bin to sbin

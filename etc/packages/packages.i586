@@ -1,0 +1,11 @@
+-glibc
+-openssl
+glibc.i586
+openssl.i586
+pcmciautils
+grub
+dmidecode
+efibootmgr
+gpart
+syslinux
+memtest86+

@@ -10,3 +10,6 @@ link @initrd@/sbin/poweroff to init
 
 # screenfont
 copy @instroot@/usr/lib/anaconda-runtime/screenfont-@buildarch@.gz to @initrd@/etc/screenfont.gz
+
+# keymaps
+copy @instroot@/keymaps to @initrd@/etc/keymaps.gz
