@@ -112,6 +112,9 @@ class Lorax(object):
         print("%sCreating the install.img%s" % bold)
         self.create_installimg()
 
+        print("%sCreating the boot.iso%s" % bold)
+        self.create_bootiso()
+
         if self.conf.cleanup:
             print("%sCleaning up%s" % bold)
             self.clean_up()
@@ -231,6 +234,17 @@ class Lorax(object):
         # on 64-bit systems, make sure we use lib64 as the lib directory
         if self.conf.buildarch.endswith('64') or self.conf.buildarch == 's390x':
             self.conf.set(libdir='lib64')
+
+        # set efiarch
+        self.conf.addAttr('efiarch')
+        self.conf.set(efiarch='')
+
+        if self.conf.buildarch == 'i386':
+            self.conf.set(efiarch='ia32')
+        elif self.conf.buildarch == 'x86_64':
+            self.conf.set(efiarch='x64')
+        elif self.conf.buildarch == 'ia64':
+            self.conf.set(efiarch='ia64')
 
     def write_treeinfo(self, discnum=1, totaldiscs=1, packagedir=''):
         outfile = os.path.join(self.conf.outdir, '.treeinfo')
@@ -702,6 +716,12 @@ class Lorax(object):
         self.conf.addAttr(['imagesdir', 'pxebootdir', 'isolinuxdir'])
         self.conf.set(imagesdir=imagesdir, pxebootdir=pxebootdir, isolinuxdir=isolinuxdir)
 
+        # create the temporary EFI tree dir
+        efitreedir = os.path.join(self.conf.tempdir, 'EFI', 'BOOT')
+        os.makedirs(efitreedir)
+        self.conf.addAttr('efitreedir')
+        self.conf.set(efitreedir=efitreedir)
+
         # write the images/README
         src = os.path.join(self.conf.datadir, 'images', 'README')
         dst = os.path.join(self.conf.imagesdir, 'README')
@@ -729,13 +749,11 @@ class Lorax(object):
         # set up some dir variables for further use
         anacondadir = os.path.join(self.conf.treedir, 'usr', 'lib', 'anaconda-runtime')
         bootdiskdir = os.path.join(anacondadir, 'boot')
+        self.conf.addAttr('bootdiskdir')
+        self.conf.set(bootdiskdir=bootdiskdir)
         syslinuxdir = os.path.join(self.conf.treedir, 'usr', 'lib', 'syslinux')
         isolinuxbin = os.path.join(syslinuxdir, 'isolinux.bin')
 
-        if not os.path.isfile(isolinuxbin):
-            sys.stderr.write('ERROR: %s does not exist\n' % isolinuxbin)
-            sys.exit(1)
-       
         if os.path.exists(isolinuxbin):
             # copy the isolinux.bin
             cp(isolinuxbin, self.conf.isolinuxdir)
@@ -789,7 +807,106 @@ class Lorax(object):
                 text = text + "  append -\n"
                 edit(isolinuxcfg, text, append=True)
         else:
-            sys.stderr.write('No isolinux binaries found\n')
+            sys.stderr.write('ERROR: %s does not exist\n' % isolinuxbin)
+            sys.exit(1)
+
+        # copy conf files to EFI tree dir
+        cp(os.path.join(bootdiskdir, '*.conf'), efitreedir)
+
+    def create_efi(self, kernelfile=None, initrd=None, kernelpath=None, initrdpath=None):
+        rm(os.path.join(self.conf.efitreedir, '*'))
+
+        # copy conf files to EFI tree dir
+        cp(os.path.join(self.conf.bootdiskdir, '*.conf'), self.conf.efitreedir)
+
+        # copy files to efi tree dir
+        if kernelfile and initrd:
+            cp(kernelfile, os.path.join(self.conf.efitreedir, 'vmlinuz'))
+            cp(initrd, self.conf.efitreedir)
+            efikernelpath = os.path.join(os.sep, 'EFI', 'BOOT', 'vmlinuz')
+            efiinitrdpath = os.path.join(os.sep, 'EFI', 'BOOT', 'initrd.img')
+        else:
+            efikernelpath = kernelpath
+            efiinitrdpath = initrdpath
+
+        splashpath = os.path.join(os.sep, 'EFI', 'BOOT', 'splash.xpm.gz')
+
+        grubconf = os.path.join(self.conf.efitreedir, 'grub.conf')
+        replace(grubconf, '@PRODUCT@', self.conf.product)
+        replace(grubconf, '@VERSION@', self.conf.version)
+        replace(grubconf, '@KERNELPATH@', efikernelpath)
+        replace(grubconf, '@INITRDPATH@', efiinitrdpath)
+        replace(grubconf, '@SPLASHPATH@', splashpath)
+
+        src = os.path.join(self.conf.treedir, 'boot', 'efi', 'EFI', 'redhat', 'grub.efi')
+        cp(src, self.conf.efitreedir)
+
+        # the first generation mactel machines get the bootloader name wrong
+        if self.conf.efiarch in ('ia32'):
+            src = os.path.join(self.conf.efitreedir, 'grub.efi')
+            dst = os.path.join(self.conf.efitreedir, 'BOOT.efi')
+            cp(src, dst)
+
+            src = os.path.join(self.conf.efitreedir, 'grub.conf')
+            dst = os.path.join(self.conf.efitreedir, 'BOOT.conf')
+            cp(src, dst)
+
+        efiarch = self.conf.efiarch
+        if efiarch == 'x64':
+            efiarch = 'X64'
+        elif efiarch == 'ia32':
+            efiarch = 'IA32'
+        
+        src = os.path.join(self.conf.efitreedir, 'grub.efi')
+        dst = os.path.join(self.conf.efitreedir, 'BOOT%s.efi' % efiarch)
+        mv(src, dst)
+
+        src = os.path.join(self.conf.efitreedir, 'grub.conf')
+        dst = os.path.join(self.conf.efitreedir, 'BOOT%s.conf' % efiarch)
+        mv(src, dst)
+
+        # copy splash
+        src = os.path.join(self.conf.treedir, 'boot', 'grub', 'splash.xpm.gz')
+        dst = os.path.join(self.conf.efitreedir, 'splash.xpm.gz')
+        cp(src, dst)
+
+        # calculate the size of the dosfs
+        cmd = 'du -kcs %s | tail -n1 | awk \'{print $1}\'' % self.conf.efitreedir
+        size = int(commands.getoutput(cmd)) + 100
+        print('Size of the efiboot.img is %d' % size)
+
+        efiimage = os.path.join(self.conf.outdir, 'images', 'efiboot.img')
+        cmd = 'mkdosfs -n ANACONDA -C %s %s > /dev/null' % (efiimage, size)
+        print cmd
+        out = commands.getoutput(cmd)
+        print(out)
+
+        tempdir = os.path.join(self.conf.tempdir, 'efiimage')
+        if not os.path.isdir(tempdir):
+            os.makedirs(tempdir)
+        cmd = 'mount -o loop,shortname=winnt,umask=0777 -t vfat %s %s' % \
+              (efiimage, tempdir)
+        print cmd
+        out = commands.getoutput(cmd)
+        print(out)
+
+        src = os.path.join(self.conf.efitreedir, '*')
+        cp(src, tempdir)
+
+        cmd = 'umount %s' % tempdir
+        print(cmd)
+        out = commands.getoutput(cmd)
+        print(out)
+
+        # copy efi to cd
+        if not kernelfile and not initrd:
+            dst = os.path.join(self.conf.outdir, 'EFI', 'BOOT')
+            if os.path.exists(dst):
+                rm(dst)
+            os.makedirs(dst)
+            cp(os.path.join(self.conf.efitreedir, '*.conf'), dst)
+
+        return efiimage
 
     def create_initrd(self):
         # get installed kernel file
@@ -822,7 +939,64 @@ class Lorax(object):
         initrd.create(os.path.join(self.conf.isolinuxdir, 'initrd.img'))
         initrd.clean_up()
 
+        # copy the initrd.img
         cp(os.path.join(self.conf.isolinuxdir, 'initrd.img'), self.conf.pxebootdir)
+
+        # create efiimage
+        efiimage = self.create_efi(kernelfile=kernelfile,
+                                   initrd=os.path.join(self.conf.isolinuxdir, 'initrd.img'))
+
+        # create efi bootdisk
+        # XXX now this is not nice, can it be done some other way?
+        cmd = 'ls -l %s | awk \'{print $5}\'' % efiimage
+        partsize = int(commands.getoutput(cmd))
+        disksize = 17408 + partsize + 17408
+        disksize = disksize + (disksize % 512)
+        print partsize
+        print disksize
+
+        efidiskimg = os.path.join(self.conf.imagesdir, 'efidisk.img')
+        touch(efidiskimg)
+
+        cmd = 'dd if=/dev/zero of=%s count=1 bs=%s' % (efidiskimg, disksize)
+        print(cmd)
+        out = commands.getoutput(cmd)
+        print(out)
+
+        cmd = 'losetup -v -f %s | awk \'{print $4}\'' % efidiskimg
+        print(cmd)
+        loop = commands.getoutput(cmd)
+        print(loop)
+
+        cmd = 'dmsetup create efiboot --table "0 %s linear %s 0"' % (disksize / 512, loop)
+        print(cmd)
+        out = commands.getoutput(cmd)
+        print(out)
+
+        cmd = 'parted --script /dev/mapper/efiboot mklabel gpt unit b mkpart \'"EFI System Partition"\' fat32 17408 %s set 1 boot on' % (partsize + 17408)
+        print(cmd)
+        out = commands.getoutput(cmd)
+        print(out)
+
+        cmd = 'dd if=%s of=/dev/mapper/efibootp1' % efiimage
+        print(cmd)
+        out = commands.getoutput(cmd)
+        print(out)
+
+        cmd = 'dmsetup remove /dev/mapper/efibootp1'
+        out = commands.getoutput(cmd)
+        cmd = 'dmsetup remove /dev/mapper/efiboot'
+        out = commands.getoutput(cmd)
+
+        cmd = 'losetup -d %s' % loop
+        out = commands.getoutput(cmd)
+
+        # remove efiimage
+        rm(efiimage)
+
+        # create new efiimage
+        efiimage = self.create_efi(kernelpath='/images/pxeboot/vmlinuz',
+                                   initrdpath='/images/pxeboot/initrd.img')
 
         # XEN
         if self.conf.buildarch in ('i386',):
@@ -879,6 +1053,29 @@ class Lorax(object):
         text = '\n[stage2]\n'
         text += 'mainimage = %s/install.img\n' % self.conf.imagesdir
         edit(os.path.join(self.conf.outdir, '.treeinfo'), append=True, text=text)
+
+    def create_bootiso(self):
+        efiboot = os.path.join(self.conf.imagesdir, 'efiboot.img')
+        efiargs = ''
+        efigraft = ''
+        if os.path.exists(efiboot):
+            print('Found efiboot.img, making an EFI-capable boot.iso')
+            efiargs = '-eltorito-alt-boot -e images/efiboot.img -no-emul-boot'
+            efigraft = 'EFI/BOOT=%s' % os.path.join(self.conf.outdir, 'EFI', 'BOOT')
+        else:
+            print('No efiboot.img found, making BIOS-only boot.iso')
+
+        biosargs = '-b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table'
+        mkisocmd = 'mkisofs -v -o %s %s %s -R -J -V %s -T -graft-points isolinux=%s images=%s %s' % (os.path.join(self.conf.imagesdir, 'boot.iso'), biosargs, efiargs, self.conf.product, self.conf.isolinuxdir, self.conf.imagesdir, efigraft)
+
+        out = commands.getoutput(mkisocmd)
+        print(out)
+
+        hybrid = os.path.join(os.sep, 'usr', 'bin', 'isohybrid')
+        if os.path.exists(hybrid):
+            cmd = '%s %s' % (hybrid, os.path.join(self.conf.imagesdir, 'boot.iso'))
+            out = commands.getoutput(cmd)
+            print(out)
 
     def clean_up(self, trash=[]):
         for item in trash:
