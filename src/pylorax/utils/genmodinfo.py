@@ -2,10 +2,6 @@ import sys
 import os
 import commands
 
-import logging
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger('pylorax')
-
 
 def genmodinfo(path, output):
     mods = {}
@@ -24,7 +20,7 @@ def genmodinfo(path, output):
                 filename = os.path.join(path, 'modules.%s' % file)
                 f = open(filename, 'r')
             except IOError:
-                logger.error('cannot open file %s', filename)
+                sys.stderr.write('cannot open file %s\n', filename)
                 continue
             else:
                 lines = f.readlines()
@@ -35,14 +31,11 @@ def genmodinfo(path, output):
                 if line in mods:
                     modname, ext = os.path.splitext(line)
                     if modname in blacklist:
-                        logger.info('skipping %s', modname)
                         continue
 
                     outtext = commands.getoutput('modinfo -F description %s' % mods[line])
                     desc = outtext.split('\n')[0]
                     desc = desc.strip()
-
-                    # XXX why we need to do this?
                     desc = desc[:65]
 
                     if not desc:

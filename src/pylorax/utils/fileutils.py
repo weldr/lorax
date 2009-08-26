@@ -55,6 +55,21 @@ def __copy(src, dst, verbose=False, remove=False):
     if os.path.isdir(dst):
         basename = os.path.basename(src)
         dst = os.path.join(dst, basename)
+    
+    if os.path.islink(src):
+        print('Got link %s' % src)
+        target = os.readlink(src)
+
+        if os.path.exists(dst):
+            os.unlink(dst)
+        os.symlink(target, dst)
+
+        if remove:
+            if verbose:
+                print("removing '%s'" % src)
+            os.unlink(src)
+
+        return True
 
     if os.path.isdir(src):
         if os.path.isfile(dst):

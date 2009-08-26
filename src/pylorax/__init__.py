@@ -110,10 +110,10 @@ class Lorax(object):
         self.create_initrd()
 
         print("%sCreating the install.img%s" % bold)
-        self.create_installimg()
+        #self.create_installimg()
 
         print("%sCreating the boot.iso%s" % bold)
-        self.create_bootiso()
+        #self.create_bootiso()
 
         if self.conf.cleanup:
             print("%sCleaning up%s" % bold)
@@ -202,8 +202,12 @@ class Lorax(object):
         self.conf.addAttr('yumconf')
         self.conf.set(yumconf=yumconf)
 
+        # create the yum err file path
+        err_file = os.path.join(self.conf.tempdir, 'yum.errors')
+
         # create the Yum object
-        self.yum = Yum(yumconf=self.conf.yumconf, installroot=self.conf.treedir)
+        self.yum = Yum(yumconf=self.conf.yumconf, installroot=self.conf.treedir,
+                       err_file=err_file)
 
         # remove not needed attributes
         self.conf.delAttr(['repo', 'extrarepos', 'mirrorlist', 'cachedir'])
@@ -873,30 +877,23 @@ class Lorax(object):
         # calculate the size of the dosfs
         cmd = 'du -kcs %s | tail -n1 | awk \'{print $1}\'' % self.conf.efitreedir
         size = int(commands.getoutput(cmd)) + 100
-        print('Size of the efiboot.img is %d' % size)
 
         efiimage = os.path.join(self.conf.outdir, 'images', 'efiboot.img')
         cmd = 'mkdosfs -n ANACONDA -C %s %s > /dev/null' % (efiimage, size)
-        print cmd
         out = commands.getoutput(cmd)
-        print(out)
 
         tempdir = os.path.join(self.conf.tempdir, 'efiimage')
         if not os.path.isdir(tempdir):
             os.makedirs(tempdir)
         cmd = 'mount -o loop,shortname=winnt,umask=0777 -t vfat %s %s' % \
               (efiimage, tempdir)
-        print cmd
         out = commands.getoutput(cmd)
-        print(out)
 
         src = os.path.join(self.conf.efitreedir, '*')
         cp(src, tempdir)
 
         cmd = 'umount %s' % tempdir
-        print(cmd)
         out = commands.getoutput(cmd)
-        print(out)
 
         # copy efi to cd
         if not kernelfile and not initrd:
@@ -952,36 +949,24 @@ class Lorax(object):
         partsize = int(commands.getoutput(cmd))
         disksize = 17408 + partsize + 17408
         disksize = disksize + (disksize % 512)
-        print partsize
-        print disksize
 
         efidiskimg = os.path.join(self.conf.imagesdir, 'efidisk.img')
         touch(efidiskimg)
 
         cmd = 'dd if=/dev/zero of=%s count=1 bs=%s' % (efidiskimg, disksize)
-        print(cmd)
         out = commands.getoutput(cmd)
-        print(out)
 
         cmd = 'losetup -v -f %s | awk \'{print $4}\'' % efidiskimg
-        print(cmd)
         loop = commands.getoutput(cmd)
-        print(loop)
 
         cmd = 'dmsetup create efiboot --table "0 %s linear %s 0"' % (disksize / 512, loop)
-        print(cmd)
         out = commands.getoutput(cmd)
-        print(out)
 
         cmd = 'parted --script /dev/mapper/efiboot mklabel gpt unit b mkpart \'"EFI System Partition"\' fat32 17408 %s set 1 boot on' % (partsize + 17408)
-        print(cmd)
         out = commands.getoutput(cmd)
-        print(out)
 
         cmd = 'dd if=%s of=/dev/mapper/efibootp1' % efiimage
-        print(cmd)
         out = commands.getoutput(cmd)
-        print(out)
 
         cmd = 'dmsetup remove /dev/mapper/efibootp1'
         out = commands.getoutput(cmd)
@@ -1000,6 +985,7 @@ class Lorax(object):
 
         # XEN
         if self.conf.buildarch in ('i386',):
+            print('Installing the XEN kernel')
             self.yum.addPackages('kernel-PAE')
             self.yum.install()
             
@@ -1069,13 +1055,11 @@ class Lorax(object):
         mkisocmd = 'mkisofs -v -o %s %s %s -R -J -V %s -T -graft-points isolinux=%s images=%s %s' % (os.path.join(self.conf.imagesdir, 'boot.iso'), biosargs, efiargs, self.conf.product, self.conf.isolinuxdir, self.conf.imagesdir, efigraft)
 
         out = commands.getoutput(mkisocmd)
-        print(out)
 
         hybrid = os.path.join(os.sep, 'usr', 'bin', 'isohybrid')
         if os.path.exists(hybrid):
             cmd = '%s %s' % (hybrid, os.path.join(self.conf.imagesdir, 'boot.iso'))
             out = commands.getoutput(cmd)
-            print(out)
 
     def clean_up(self, trash=[]):
         for item in trash:

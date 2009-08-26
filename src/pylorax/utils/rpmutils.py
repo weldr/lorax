@@ -69,7 +69,7 @@ class Callback(yum.rpmtrans.SimpleCliCallBack):
 
 
 class Yum(object):
-    def __init__(self, yumconf='/etc/yum/yum.conf', installroot='/'):
+    def __init__(self, yumconf='/etc/yum/yum.conf', installroot='/', err_file='/dev/null'):
         self.yb = yum.YumBase()
 
         self.yumconf = os.path.abspath(yumconf)
@@ -112,7 +112,20 @@ class Yum(object):
 
         cb = yum.callbacks.ProcessTransBaseCallback()
         rpmcb = Callback()
+
+        # XXX ugly error output hack
+        # we redirect the error output from rpm to err_file,
+        # so it does not show up in our "nice" output :)
+        # we should put the errors to some file,
+        # which we can parse later for serious errors
+        standard_err = os.dup(2)
+        my_err = open(err_file, 'w')
+        os.dup2(my_err.fileno(), 2)
+        # now process the transactions without errors showing up
         self.yb.processTransaction(callback=cb, rpmDisplay=rpmcb)
+        # and put the standard error output back
+        os.dup2(standard_err, 2)
+        my_err.close()
 
         self.yb.closeRpmDB()
         self.yb.close()

@@ -160,7 +160,6 @@ class InitRD(object):
                         m = re.match(r'^.*/(?P<name>.*)\.ko$', dep)
                         if m.group('name') not in modules:
                             changed = True
-                            print('Adding module dependency %s' % m.group('name'))
                             modules.add(m.group('name'))
 
         srcdir = os.path.join(self.conf.treedir, 'lib', 'modules', self.kernelver)
