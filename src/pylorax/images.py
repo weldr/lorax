@@ -22,6 +22,7 @@
 
 import sys
 import os
+import shutil
 import commands
 import re
 import fnmatch
@@ -94,15 +95,16 @@ class InitRD(object):
             ldd.getDeps(action.getDeps)
 
         # resolve symlinks
-        ldd.getLinks()
+        # XXX we don't need this, because cp function gets the symlinks
+        #ldd.getLinks()
 
         # add dependencies to actions
         for dep in ldd.deps:
             kwargs = {}
-            kwargs['src'] = dep
-            kwargs['dst'] = re.sub(r'%s(?P<file>.*)' % self.conf.treedir,
-                                   '%s\g<file>' % self.conf.initrddir,
-                                   dep)
+            kwargs['src_tree'] = self.conf.treedir
+            kwargs['src_path'] = dep.replace(self.conf.treedir, '')
+            kwargs['dst_tree'] = self.conf.initrddir
+            kwargs['dst_path'] = dep.replace(self.conf.treedir, '')
 
             new_action = actions.base.Copy(**kwargs)
             self._actions.append(new_action)
@@ -116,15 +118,18 @@ class InitRD(object):
                                 'keymaps-override-%s' % self.conf.buildarch)
         if os.path.exists(override):
             print('Found keymap override, using it')
-            cp(override, os.path.join(self.conf.treedir, 'keymaps'))
+            shutil.copy2(override, os.path.join(self.conf.treedir, 'keymaps.gz'))
         else:
             cmd = '%s %s %s %s' % \
                   (os.path.join(self.conf.treedir, 'usr', 'lib', 'anaconda-runtime', 'getkeymaps'),
-                   self.conf.buildarch, os.path.join(self.conf.treedir, 'keymaps'), self.conf.treedir)
+                   self.conf.buildarch, os.path.join(self.conf.treedir, 'keymaps.gz'), self.conf.treedir)
             rc = commands.getstatus(cmd)
             if rc != 0:
                 sys.stderr.write('Unable to create keymaps and thus can\'t create initrd\n')
                 sys.exit(1)
+
+        shutil.copy2(os.path.join(self.conf.treedir, 'keymaps.gz'),
+                     os.path.join(self.conf.initrddir, 'etc'))
 
     def create_locales(self):
         os.makedirs(os.path.join(self.conf.initrddir, 'usr', 'lib', 'locale'))
@@ -186,7 +191,12 @@ class InitRD(object):
 
         srcdir = os.path.join(self.conf.treedir, 'lib', 'modules', self.kernelver)
         dstdir = os.path.join(self.conf.initrddir, 'lib', 'modules')
-        cp(os.path.join(srcdir, '*'), dstdir)
+        
+        cp(src_root=self.conf.treedir,
+           src_path=os.path.join('lib', 'modules', self.kernelver),
+           dst_root=self.conf.initrddir,
+           dst_path=os.path.join('lib', 'modules'),
+           ignore_errors=True)
 
         for root, dirs, files in os.walk(dstdir):
             for file in files:
@@ -203,7 +213,7 @@ class InitRD(object):
 
                             if not os.path.exists(dir):
                                 os.makedirs(dir)
-                            cp(os.path.join(self.conf.treedir, 'lib', 'firmware', fw), dst)
+                            shutil.copy2(os.path.join(self.conf.treedir, 'lib', 'firmware', fw), dst)
 
         # copy firmware
         srcdir = os.path.join(self.conf.treedir, 'lib', 'firmware')
@@ -220,7 +230,10 @@ class InitRD(object):
         for module, file in fw:
             if module in modules:
                 print('Copying firmware %s' % module)
-                cp(os.path.join(srcdir, file), dstdir)
+                cp(src_root=self.conf.treedir,
+                   src_path=os.path.join('lib', 'firmware', file),
+                   dst_root=self.conf.initrddir,
+                   dst_path=os.path.join('lib', 'firmware'))
 
         # create modinfo
         dst = os.path.join(self.conf.initrddir, 'lib', 'modules', 'module-info')
@@ -321,10 +334,26 @@ class InitRD(object):
 
         output.close()
 
+    def get_missing_links(self):
+        missing_files = []
+
+        for root, dnames, fnames in os.walk(self.conf.initrddir):
+            for fname in fnames:
+                file = os.path.join(root, fname)
+                if os.path.islink(file) and not os.path.exists(file):
+                    # broken link
+                    target = os.readlink(file)
+                    missing = os.path.join(os.path.dirname(file), target)
+                    missing = os.path.normpath(missing)
+                    
+                    missing_files.append(missing)
+
+        print 'Missing files:', missing_files
+
     def create(self, dst):
         # copy the productfile
-        cp(os.path.join(self.conf.treedir, '.buildstamp'),
-           os.path.join(self.conf.initrddir, '.buildstamp'))
+        shutil.copy2(os.path.join(self.conf.treedir, '.buildstamp'),
+                     os.path.join(self.conf.initrddir, '.buildstamp'))
 
         print('Getting dependencies')
         self.get_deps()
@@ -336,11 +365,15 @@ class InitRD(object):
         self.create_locales()
         print('Getting modules')
         self.get_modules()
+        print('Getting missing links')
+        self.get_missing_links()
 
         # create the initrd
         print('Creating the %s' % dst)
-        err, output = commands.getstatusoutput('find %s | cpio --quiet -c -o | gzip -9 > %s' %
-                                               (self.conf.initrddir, dst))
+        cwd = os.getcwd()
+        os.chdir(self.conf.initrddir)
+        out = commands.getoutput('find . | cpio --quiet -c -o | gzip -9 > %s' % dst)
+        os.chdir(cwd)
 
     def clean_up(self):
         rm(self.conf.initrddir)
@@ -352,13 +385,19 @@ class Install(object):
 
     def scrub(self):
         # move bin to usr/bin
-        cp(os.path.join(self.conf.treedir, 'bin', '*'),
-           os.path.join(self.conf.treedir, 'usr', 'bin'))
+        cp(src_root=self.conf.treedir,
+           src_path=os.path.join('bin', '*'),
+           dst_root=self.conf.treedir,
+           dst_path=os.path.join('usr', 'bin'))
+        
         rm(os.path.join(self.conf.treedir, 'bin'))
 
         # move sbin to /usr/sbin
-        cp(os.path.join(self.conf.treedir, 'sbin', '*'),
-           os.path.join(self.conf.treedir, 'usr', 'sbin'))
+        cp(src_root=self.conf.treedir,
+           src_path=os.path.join('sbin', '*'),
+           dst_root=self.conf.treedir,
+           dst_path=os.path.join('usr', 'sbin'))
+        
         rm(os.path.join(self.conf.treedir, 'sbin'))
 
         # remove dirs from root

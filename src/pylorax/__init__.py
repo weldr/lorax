@@ -26,6 +26,7 @@ import os
 import stat
 import commands
 import shutil
+import glob
 import tempfile
 import time
 import datetime
@@ -370,8 +371,10 @@ class Lorax(object):
 
         # copy updates
         if self.conf.updates and os.path.isdir(self.conf.updates):
-            cp(os.path.join(self.conf.updates, '*'), self.conf.treedir)
+            cp(src_root=self.conf.updates, src_path='*',
+               dst_root=self.conf.treedir, dst_path='')
         self.conf.delAttr('updates')
+
 
         # XXX here comes a lot of crazy tree modification stuff, beware! XXX
 
@@ -380,7 +383,7 @@ class Lorax(object):
         if os.path.isfile(dogtailconf):
             dst = os.path.join(self.conf.treedir, '.gconf', 'desktop', 'gnome', 'interface')
             os.makedirs(dst)
-            cp(dogtailconf, dst)
+            shutil.copy2(dogtailconf, dst)
 
             touch(os.path.join(self.conf.treedir, '.gconf', 'desktop', '%gconf.xml'))
             touch(os.path.join(self.conf.treedir, '.gconf', 'desktop', 'gnome', '%gconf.xml'))
@@ -405,17 +408,18 @@ class Lorax(object):
                      'syslogd'):
             src = os.path.join(self.conf.treedir, 'usr', 'lib', 'anaconda', file + '-stub')
             dst = os.path.join(self.conf.treedir, 'usr', 'bin', file)
-            cp(src, dst)
+            shutil.copy2(src, dst)
 
         # move anaconda executable
         src = os.path.join(self.conf.treedir, 'usr', 'sbin', 'anaconda')
         dst = os.path.join(self.conf.treedir, 'usr', 'bin', 'anaconda')
-        mv(src, dst)
+        shutil.move(src, dst)
 
         # move anaconda libraries
         src = os.path.join(self.conf.treedir, 'usr', 'lib', 'anaconda-runtime', 'lib*')
         dst = os.path.join(self.conf.treedir, 'usr', self.conf.libdir)
-        mv(src, dst)
+        for name in glob.iglob(src):
+            shutil.move(name, dst)
 
         # change tree permissions
         root_uid = pwd.getpwnam('root')[2]
@@ -603,12 +607,12 @@ class Lorax(object):
         if os.path.exists(os.path.join(self.conf.treedir, 'etc', 'selinux', 'targeted')):
             src = os.path.join(self.conf.datadir, 'selinux', 'config')
             dst = os.path.join(self.conf.treedir, 'etc', 'selinux', 'config')
-            cp(src, dst)
+            shutil.copy2(src, dst)
 
         # create libuser.conf
         src = os.path.join(self.conf.datadir, 'libuser', 'libuser.conf')
         dst = os.path.join(self.conf.treedir, 'etc', 'libuser.conf')
-        cp(src, dst)
+        shutil.copy2(src, dst)
 
         # configure fedorakmod
         fedorakmodconf = os.path.join(self.conf.treedir, 'etc', 'yum', 'pluginconf.d',
@@ -626,7 +630,7 @@ class Lorax(object):
         # move yum repos
         src = os.path.join(self.conf.treedir, 'etc', 'yum.repos.d')
         dst = os.path.join(self.conf.treedir, 'etc', 'anaconda.repos.d')
-        mv(src, dst)
+        shutil.move(src, dst)
 
         # remove libunicode-lite
         rm(os.path.join(self.conf.treedir, 'usr', self.conf.libdir, 'libunicode-lite*'))
@@ -652,22 +656,22 @@ class Lorax(object):
                 if file.startswith('memtest'):
                     src = os.path.join(self.conf.treedir, 'boot', file)
                     dst = os.path.join(bootpath, file)
-                    cp(src, dst)
+                    shutil.copy2(src, dst)
         elif self.conf.buildarch in ('sparc',):
             for file in os.listdir(os.path.join(self.conf.treedir, 'boot')):
                 if file.endswith('.b'):
                     src = os.path.join(self.conf.treedir, 'boot', file)
                     dst = os.path.join(bootpath, file)
-                    cp(src, dst)
+                    shutil.copy2(src, dst)
         elif self.conf.buildarch in ('ppc', 'ppc64'):
             src = os.path.join(self.conf.treedir, 'boot', 'efika.forth')
-            cp(src, bootpath)
+            shutil.copy2(src, bootpath)
         elif self.conf.buildarch in ('alpha',):
             src = os.path.join(self.conf.treedir, 'boot', 'bootlx')
-            cp(src, bootpath)
+            shutil.copy2(src, bootpath)
         elif self.conf.buildarch in ('ia64',):
             src = os.path.join(self.conf.treedir, 'boot', 'efi', 'EFI', 'redhat', '*')
-            cp(src, bootpath)
+            shutil.copy2(src, bootpath)
 
         # remove not needed directories
         # XXX i need this for kernel
@@ -752,13 +756,13 @@ class Lorax(object):
         # write the images/README
         src = os.path.join(self.conf.datadir, 'images', 'README')
         dst = os.path.join(self.conf.imagesdir, 'README')
-        cp(src, dst)
+        shutil.copy2(src, dst)
         replace(dst, r'@PRODUCT@', self.conf.product)
 
         # write the images/pxeboot/README
         src = os.path.join(self.conf.datadir, 'images', 'pxeboot', 'README')
         dst = os.path.join(self.conf.pxebootdir, 'README')
-        cp(src, dst)
+        shutil.copy2(src, dst)
         replace(dst, r'@PRODUCT@', self.conf.product)
 
 
@@ -783,11 +787,11 @@ class Lorax(object):
 
         if os.path.exists(isolinuxbin):
             # copy the isolinux.bin
-            cp(isolinuxbin, self.conf.isolinuxdir)
+            shutil.copy2(isolinuxbin, self.conf.isolinuxdir)
 
             # copy the syslinux.cfg to isolinux/isolinux.cfg
             isolinuxcfg = os.path.join(self.conf.isolinuxdir, 'isolinux.cfg')
-            cp(os.path.join(bootdiskdir, 'syslinux.cfg'), isolinuxcfg)
+            shutil.copy2(os.path.join(bootdiskdir, 'syslinux.cfg'), isolinuxcfg)
 
             # set the product and version in isolinux.cfg
             replace(isolinuxcfg, r'@PRODUCT@', self.conf.product)
@@ -797,14 +801,14 @@ class Lorax(object):
             replace(isolinuxcfg, r'initrd=initrd.img', 'initrd=initrd.img stage2=hd:LABEL=%s' % self.conf.product)
 
             # copy the grub.conf
-            cp(os.path.join(bootdiskdir, 'grub.conf'), self.conf.isolinuxdir)
+            shutil.copy2(os.path.join(bootdiskdir, 'grub.conf'), self.conf.isolinuxdir)
 
             # copy the splash files
             vesasplash = os.path.join(anacondadir, 'syslinux-vesa-splash.jpg')
             if os.path.isfile(vesasplash):
-                cp(vesasplash, os.path.join(self.conf.isolinuxdir, 'splash.jpg'))
+                shutil.copy2(vesasplash, os.path.join(self.conf.isolinuxdir, 'splash.jpg'))
                 vesamenu = os.path.join(syslinuxdir, 'vesamenu.c32')
-                cp(vesamenu, self.conf.isolinuxdir)
+                shutil.copy2(vesamenu, self.conf.isolinuxdir)
                 replace(isolinuxcfg, r'default linux', r'default vesamenu.c32')
                 replace(isolinuxcfg, r'prompt 1', r'#prompt 1')
             else:
@@ -816,40 +820,41 @@ class Lorax(object):
                                         splashlss)
                     os.system(cmd)
                 if os.path.isfile(splashlss):
-                    cp(splashlss, self.conf.isolinuxdir)
+                    shutil.copy2(splashlss, self.conf.isolinuxdir)
 
             # copy the .msg files
             for file in os.listdir(bootdiskdir):
                 if file.endswith('.msg'):
-                    cp(os.path.join(bootdiskdir, file), self.conf.isolinuxdir)
+                    shutil.copy2(os.path.join(bootdiskdir, file), self.conf.isolinuxdir)
                     replace(os.path.join(self.conf.isolinuxdir, file), r'@VERSION@', self.conf.version)
 
             # if present, copy the memtest
-            cp(os.path.join(self.conf.treedir, 'boot', 'memtest*'),
-                os.path.join(self.conf.isolinuxdir, 'memtest'))
-            if os.path.isfile(os.path.join(self.conf.isolinuxdir, 'memtest')):
-                text = "label memtest86\n"
-                text = text + "  menu label ^Memory test\n"
-                text = text + "  kernel memtest\n"
-                text = text + "  append -\n"
-                edit(isolinuxcfg, text, append=True)
+            for fname in os.listdir(os.path.join(self.conf.treedir, 'boot')):
+                if fname.startswith('memtest'):
+                    src = os.path.join(self.conf.treedir, 'boot', fname)
+                    dst = os.path.join(self.conf.isolinuxdir, 'memtest')
+                    shutil.copy2(src, dst)
+
+                    text = "label memtest86\n"
+                    text = text + "  menu label ^Memory test\n"
+                    text = text + "  kernel memtest\n"
+                    text = text + "  append -\n"
+                    edit(isolinuxcfg, text, append=True)
         else:
             sys.stderr.write('ERROR: %s does not exist\n' % isolinuxbin)
             sys.exit(1)
-
-        # copy conf files to EFI tree dir
-        cp(os.path.join(bootdiskdir, '*.conf'), efitreedir)
 
     def create_efi(self, kernelfile=None, initrd=None, kernelpath=None, initrdpath=None):
         rm(os.path.join(self.conf.efitreedir, '*'))
 
         # copy conf files to EFI tree dir
-        cp(os.path.join(self.conf.bootdiskdir, '*.conf'), self.conf.efitreedir)
+        cp(src_root=self.conf.bootdiskdir, src_path='*.conf',
+           dst_root=self.conf.efitreedir, dst_path='')
 
         # copy files to efi tree dir
         if kernelfile and initrd:
-            cp(kernelfile, os.path.join(self.conf.efitreedir, 'vmlinuz'))
-            cp(initrd, self.conf.efitreedir)
+            shutil.copy2(kernelfile, os.path.join(self.conf.efitreedir, 'vmlinuz'))
+            shutil.copy2(initrd, self.conf.efitreedir)
             efikernelpath = os.path.join(os.sep, 'EFI', 'BOOT', 'vmlinuz')
             efiinitrdpath = os.path.join(os.sep, 'EFI', 'BOOT', 'initrd.img')
         else:
@@ -866,17 +871,17 @@ class Lorax(object):
         replace(grubconf, '@SPLASHPATH@', splashpath)
 
         src = os.path.join(self.conf.treedir, 'boot', 'efi', 'EFI', 'redhat', 'grub.efi')
-        cp(src, self.conf.efitreedir)
+        shutil.copy2(src, self.conf.efitreedir)
 
         # the first generation mactel machines get the bootloader name wrong
         if self.conf.efiarch in ('ia32'):
             src = os.path.join(self.conf.efitreedir, 'grub.efi')
             dst = os.path.join(self.conf.efitreedir, 'BOOT.efi')
-            cp(src, dst)
+            shutil.copy2(src, dst)
 
             src = os.path.join(self.conf.efitreedir, 'grub.conf')
             dst = os.path.join(self.conf.efitreedir, 'BOOT.conf')
-            cp(src, dst)
+            shutil.copy2(src, dst)
 
         efiarch = self.conf.efiarch
         if efiarch == 'x64':
@@ -886,16 +891,16 @@ class Lorax(object):
         
         src = os.path.join(self.conf.efitreedir, 'grub.efi')
         dst = os.path.join(self.conf.efitreedir, 'BOOT%s.efi' % efiarch)
-        mv(src, dst)
+        shutil.move(src, dst)
 
         src = os.path.join(self.conf.efitreedir, 'grub.conf')
         dst = os.path.join(self.conf.efitreedir, 'BOOT%s.conf' % efiarch)
-        mv(src, dst)
+        shutil.move(src, dst)
 
         # copy splash
         src = os.path.join(self.conf.treedir, 'boot', 'grub', 'splash.xpm.gz')
         dst = os.path.join(self.conf.efitreedir, 'splash.xpm.gz')
-        cp(src, dst)
+        shutil.copy2(src, dst)
 
         # calculate the size of the dosfs
         cmd = 'du -kcs %s | tail -n1 | awk \'{print $1}\'' % self.conf.efitreedir
@@ -912,8 +917,8 @@ class Lorax(object):
               (efiimage, tempdir)
         out = commands.getoutput(cmd)
 
-        src = os.path.join(self.conf.efitreedir, '*')
-        cp(src, tempdir)
+        cp(src_root=self.conf.efitreedir, src_path='*',
+           dst_root=tempdir, dst_path='')
 
         cmd = 'umount %s' % tempdir
         out = commands.getoutput(cmd)
@@ -924,7 +929,9 @@ class Lorax(object):
             if os.path.exists(dst):
                 rm(dst)
             os.makedirs(dst)
-            cp(os.path.join(self.conf.efitreedir, '*.conf'), dst)
+
+            for name in glob.iglob(os.path.join(self.conf.efitreedir, '*.conf')):
+                shutil.copy2(name, dst)
 
         return efiimage
 
@@ -952,15 +959,15 @@ class Lorax(object):
         self.yum.install()
 
         # copy the kernel file
-        cp(kernelfile, os.path.join(self.conf.isolinuxdir, 'vmlinuz'))
-        cp(kernelfile, os.path.join(self.conf.pxebootdir, 'vmlinuz'))
+        shutil.copy2(kernelfile, os.path.join(self.conf.isolinuxdir, 'vmlinuz'))
+        shutil.copy2(kernelfile, os.path.join(self.conf.pxebootdir, 'vmlinuz'))
 
         # create the initrd.img
         initrd.create(os.path.join(self.conf.isolinuxdir, 'initrd.img'))
         initrd.clean_up()
 
         # copy the initrd.img
-        cp(os.path.join(self.conf.isolinuxdir, 'initrd.img'), self.conf.pxebootdir)
+        shutil.copy2(os.path.join(self.conf.isolinuxdir, 'initrd.img'), self.conf.pxebootdir)
 
         # create efiimage
         efiimage = self.create_efi(kernelfile=kernelfile,
@@ -1023,7 +1030,7 @@ class Lorax(object):
 
             initrd = images.InitRD(self.conf, self.yum, xenkernel)
 
-            cp(xenkernel, os.path.join(self.conf.pxebootdir, 'vmlinuz-PAE'))
+            shutil.copy2(xenkernel, os.path.join(self.conf.pxebootdir, 'vmlinuz-PAE'))
 
             initrd.create(os.path.join(self.conf.pxebootdir, 'initrd-PAE.img'))
             #initrd.clean_up()

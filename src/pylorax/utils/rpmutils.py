@@ -96,6 +96,7 @@ class Yum(object):
 
         self.yumconf = os.path.abspath(yumconf)
         self.installroot = os.path.abspath(installroot)
+        self.err_file = err_file
 
         self.yb.preconf.fn = self.yumconf
         self.yb.preconf.root = self.installroot
@@ -141,7 +142,7 @@ class Yum(object):
         # we should put the errors to some file,
         # which we can parse later for serious errors
         standard_err = os.dup(2)
-        my_err = open(err_file, 'w')
+        my_err = open(self.err_file, 'a')
         os.dup2(my_err.fileno(), 2)
         # now process the transactions without errors showing up
         self.yb.processTransaction(callback=cb, rpmDisplay=rpmcb)

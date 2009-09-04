@@ -26,7 +26,7 @@ import pwd
 import grp
 import glob
 
-from pylorax.utils.fileutils import cp, mv, rm, touch, edit, replace
+from pylorax.utils.fileutils import cp, mv, rm, touch, edit, replace, chmod
 
 
 # command:action mapping
@@ -94,7 +94,6 @@ class LoraxAction(object):
 
     @property
     def getDeps(self):
-        # FIXME hmmm, how can i do this more generic?
         return None
 
 
@@ -102,13 +101,14 @@ class LoraxAction(object):
 
 class Copy(LoraxAction):
 
-    REGEX = r'^(?P<src>.*?)\sto\s(?P<dst>.*?)(\smode\s(?P<mode>[0-9]*?))?(\s(?P<install>install))?$'
+    REGEX = r'^(?P<src_root>.*?)\s(?P<src_path>.*?)\sto\s(?P<dst_root>.*?)\s(?P<dst_path>.*?)(\s(?P<install>install))?$'
 
     def __init__(self, **kwargs):
         LoraxAction.__init__(self)
-        self._attrs['src'] = kwargs.get('src')
-        self._attrs['dst'] = kwargs.get('dst')
-        self._attrs['mode'] = kwargs.get('mode')
+        self._attrs['src_root'] = kwargs.get('src_root')
+        self._attrs['src_path'] = kwargs.get('src_path')
+        self._attrs['dst_root'] = kwargs.get('dst_root')
+        self._attrs['dst_path'] = kwargs.get('dst_path')
 
         install = kwargs.get('install', False)
         if install:
@@ -117,16 +117,36 @@ class Copy(LoraxAction):
             self._attrs['install'] = False
 
     def execute(self, verbose=False):
-        cp(src=self.src, dst=self.dst, mode=self.mode, verbose=verbose)
+        cp(src_root=self.src_root, src_path=self.src_path,
+           dst_root=self.dst_root, dst_path=self.dst_path,
+           ignore_errors=True, verbose=verbose)
         self._attrs['success'] = True
 
     @property
     def src(self):
-        return self._attrs['src']
+        path = os.path.join(self._attrs['src_root'], self._attrs['src_path'])
+        return os.path.normpath(path)
+
+    @property
+    def src_root(self):
+        return self._attrs['src_root']
+
+    @property
+    def src_path(self):
+        return self._attrs['src_path']
 
     @property
     def dst(self):
-        return self._attrs['dst']
+        path = os.path.join(self._attrs['dst_root'], self._attrs['dst_path'])
+        return os.path.normpath(path)
+
+    @property
+    def dst_root(self):
+        return self._attrs['dst_root']
+
+    @property
+    def dst_path(self):
+        return self._attrs['dst_path']
 
     @property
     def mode(self):
@@ -146,7 +166,9 @@ class Copy(LoraxAction):
 
 class Move(Copy):
     def execute(self, verbose=False):
-        mv(src=self.src, dst=self.dst, mode=self.mode, verbose=verbose)
+        mv(src_root=self.src_root, src_path=self.src_path,
+           dst_root=self.dst_root, dst_path=self.dst_path,
+           ignore_errors=True, verbose=verbose)
         self._attrs['success'] = True
 
 
@@ -304,7 +326,7 @@ class Chmod(LoraxAction):
         self._attrs['mode'] = kwargs.get('mode')
 
     def execute(self, verbose=False):
-        os.chmod(self.filename, int(self.mode))
+        chmod(self.filename, self.mode)
         self._attrs['success'] = True
 
     @property

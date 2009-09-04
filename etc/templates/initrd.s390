@@ -9,36 +9,36 @@ makedir @initrd@/etc/security
 makedir @initrd@/@libdir@/security
 
 # copy some files
-copy @instroot@/usr/bin/xauth to @initrd@/sbin
-copy @instroot@/usr/sbin/cmsfs* to @initrd@/sbin
+copy @instroot@ usr/bin/xauth to @initrd@ sbin
+copy @instroot@ usr/sbin/cmsfs* to @initrd@ sbin
 
-copy @instroot@/@libdir@/libpam_misc.so.0.* to @initrd@/@libdir@/libpam_misc.so.0
-copy @instroot@/@libdir@/libwrap*.so* to @initrd@/@libdir@
+copy @instroot@ @libdir@/libpam_misc.so.0.* to @initrd@ @libdir@/libpam_misc.so.0
+copy @instroot@ @libdir@/libwrap*.so* to @initrd@ @libdir@
 
 link @initrd@/var/state/xkb to /tmp
 
 # loader
-copy @instroot@/usr/lib/anaconda-runtime/loader/shutdown to @initrd@/sbin
-copy @instroot@/usr/lib/anaconda-runtime/loader/linuxrc.s390 to @initrd@/sbin/init
-copy @instroot@/usr/lib/anaconda-runtime/loader/lsznet.raw to @initrd@/sbin/lsznet
-copy @instroot@/usr/lib/anaconda-runtime/loader/controlunits.sh @initrd@/sbin/controlunits
-copy @instroot@/usr/sbin/dasdfmt to @initrd@/sbin
+copy @instroot@ usr/lib/anaconda-runtime/loader/shutdown to @initrd@ sbin
+copy @instroot@ usr/lib/anaconda-runtime/loader/linuxrc.s390 to @initrd@ sbin/init
+copy @instroot@ usr/lib/anaconda-runtime/loader/lsznet.raw to @initrd@ sbin/lsznet
+copy @instroot@ usr/lib/anaconda-runtime/loader/controlunits.sh @initrd@ sbin/controlunits
+copy @instroot@ usr/sbin/dasdfmt to @initrd@ sbin
 
 # setup shell environment
 edit @initrd@/etc/protocols text "tcp\t6\tTCP\n"
 
-copy @instroot@/@libdir@/security/pam_limits.so to @initrd@/@libdir@/security
-copy @instroot@/@libdir@/security/pam_env.so to @initrd@/@libdir@/security
-copy @instroot@/@libdir@/security/pam_unix.so to @initrd@/@libdir@/security
-copy @instroot@/@libdir@/security/pam_deny.so to @initrd@/@libdir@/security
+copy @instroot@ @libdir@/security/pam_limits.so to @initrd@ @libdir@/security
+copy @instroot@ @libdir@/security/pam_env.so to @initrd@ @libdir@/security
+copy @instroot@ @libdir@/security/pam_unix.so to @initrd@ @libdir@/security
+copy @instroot@ @libdir@/security/pam_deny.so to @initrd@ @libdir@/security
 
-copy @instroot@/etc/pam.d/other to @initrd@/etc/pam.d
-copy @datadir@/pam.d/login to @initrd@/etc/pam.d/login
-copy @datadir@/pam.d/login to @initrd@/etc/pam.d/sshd
-copy @datadir@/pam.d/login to @initrd@/etc/pam.d/remote
+copy @instroot@ etc/pam.d/other to @initrd@ etc/pam.d
+copy @datadir@ pam.d/login to @initrd@ etc/pam.d/login
+copy @datadir@ pam.d/login to @initrd@ etc/pam.d/sshd
+copy @datadir@ pam.d/login to @initrd@ etc/pam.d/remote
 
-copy @instroot@/etc/security/limits.conf to @initrd@/etc/security
-copy @Instroot@/etc/security/pam_env.conf to @initrd@/etc/security
+copy @instroot@ etc/security/limits.conf to @initrd@ etc/security
+copy @Instroot@ etc/security/pam_env.conf to @initrd@ etc/security
 
 # generate keys
 makedir @initrd@/etc/ssh mode 0700
@@ -46,8 +46,9 @@ genkey @initrd@/etc/ssh/ssh_host_key type rsa1
 genkey @initrd@/etc/ssh/ssh_host_rsa_key type rsa
 genkey @initrd@/etc/ssh/ssh_host_dsa_key type dsa
 
-copy @datadir@/sshd/sshd_config to @initrd@/etc/ssh/sshd_config mode 0600
+copy @datadir@ sshd/sshd_config to @initrd@ etc/ssh/sshd_config
+chmod @initrd@/etc/ssh/sshd_config mode 0600
 
 # copy in the binaries
-copy @instroot@/bin/login to @initrd@/sbin/login
-copy @instroot@/usr/sbin/sshd to @initrd@/sbin/sshd
+copy @instroot@ bin/login to @initrd@ sbin/login
+copy @instroot@ usr/sbin/sshd to @initrd@ sbin/sshd
