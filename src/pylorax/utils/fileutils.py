@@ -64,7 +64,7 @@ def touch(filename, verbose=False):
     
     return True
 
-def cp(src_path, dst_path, src_root='/', dst_root='/', ignore_errors=False, verbose=True):
+def cp(src_path, dst_path, src_root='/', dst_root='/', nolinks=False, ignore_errors=False, verbose=True):
     filecopy = Copy(ignore_errors, verbose)
 
     src = os.path.join(src_root, src_path)
@@ -74,11 +74,11 @@ def cp(src_path, dst_path, src_root='/', dst_root='/', ignore_errors=False, verb
         if src_path[0] != '/' and fname[0] == '/':
             fname = fname[1:]
 
-        filecopy.copy(fname, dst_path, src_root, dst_root)
+        filecopy.copy(fname, dst_path, src_root, dst_root, nolinks)
 
     return filecopy.errors
 
-def mv(src_path, dst_path, src_root='/', dst_root='/', ignore_errors=False, verbose=True):
+def mv(src_path, dst_path, src_root='/', dst_root='/', nolinks=False, ignore_errors=False, verbose=True):
     errors = cp(src_path, dst_path, src_root, dst_root, ignore_errors, verbose)
 
     # if everything was copied, remove the source
@@ -144,7 +144,7 @@ class Copy(object):
 
         self.errors = []
 
-    def copy(self, src_path, dst_path, src_root='/', dst_root='/'):
+    def copy(self, src_path, dst_path, src_root='/', dst_root='/', nolinks=False):
         # normalize the source and destination paths
         src, dst = normalize(src_root, src_path, dst_root, dst_path)
 
@@ -195,7 +195,10 @@ class Copy(object):
 
             if os.path.islink(src):
 
-                self.__copy_link(src_path, dst_path, src_root, dst_root, src, dst)
+                if nolinks:
+                    self.__copy_file(os.path.realpath(src), dst)
+                else:
+                    self.__copy_link(src_path, dst_path, src_root, dst_root, src, dst)
 
             else:
 
@@ -209,7 +212,22 @@ class Copy(object):
  
             if os.path.islink(src):
 
-                self.__copy_link(src_path, dst_path, src_root, dst_root, src, new_dst)
+                if nolinks:
+                    real_src = os.path.realpath(src)
+                    
+                    if not os.path.exists(new_dst):
+                        os.makedirs(new_dst)
+
+                    for fname in os.listdir(real_src):
+                        fname = os.path.join(real_src, fname)
+                        
+                        if os.path.isfile(fname):
+                            self.__copy_file(fname, new_dst)
+                        else:
+                            dst = os.path.join(new_dst, os.path.basename(fname))
+                            shutil.copytree(fname, dst, symlinks=False)
+                else:
+                    self.__copy_link(src_path, dst_path, src_root, dst_root, src, new_dst)
 
             else:
 

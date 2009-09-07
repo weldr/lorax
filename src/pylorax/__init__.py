@@ -458,9 +458,11 @@ class Lorax(object):
         os.chdir(cwd)
 
         if self.conf.buildarch not in ('s390', 's390x'):
+            # XXX this is not in usr
             rm(os.path.join(self.conf.treedir, 'usr', 'sbin', 'ldconfig'))
         
-        rm(os.path.join(self.conf.treedir, 'etc', 'ld.so.conf'))
+        # XXX why are we removing this?
+        #rm(os.path.join(self.conf.treedir, 'etc', 'ld.so.conf'))
         os.system('umount %s' % procdir)
 
     def scrub_treedir(self):

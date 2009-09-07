@@ -3,8 +3,8 @@
 # create required directories
 makedir @initrd@/lib/modules
 makedir @initrd@/lib/firmware
-link @initrd@/modules to @initrd@/lib/modules
-link @initrd@/firmware to @initrd@/lib/firmware
+link @initrd@/modules to lib/modules
+link @initrd@/firmware to lib/firmware
 makedir @initrd@/sbin
 makedir @initrd@/dev
 makedir @initrd@/etc
@@ -168,16 +168,16 @@ copy @instroot@ sbin/rmmod to @initrd@ sbin
 edit @initrd@/.profile text "PATH=/bin:/usr/bin:/usr/sbin:/mnt/sysimage/sbin:/mnt/sysimage/usr/sbin:/mnt/sysimage/bin:/mnt/sysimage/usr/bin\nexport PATH"
 
 # terminfos
-copy @instroot@ usr/share/terminfo/a/ansi to @initrd@ etc/terminfo/a
-copy @instroot@ usr/share/terminfo/d/dumb to @initrd@ etc/terminfo/d
-copy @instroot@ usr/share/terminfo/l/linux to @initrd@ etc/terminfo/l
-copy @instroot@ usr/share/terminfo/s/screen to @initrd@ etc/terminfo/s
-copy @instroot@ usr/share/terminfo/v/vt100 to @initrd@ etc/terminfo/v
-copy @instroot@ usr/share/terminfo/v/vt100-nav to @initrd@ etc/terminfo/v
-copy @instroot@ usr/share/terminfo/v/vt102 to @initrd@ etc/terminfo/v
-copy @instroot@ usr/share/terminfo/x/xterm to @initrd@ etc/terminfo/x
-copy @instroot@ usr/share/terminfo/x/xterm-color to @initrd@ etc/terminfo/x
-copy @instroot@ usr/share/terminfo/g/gnome to @initrd@ etc/terminfo/g
+copy @instroot@ usr/share/terminfo/a/ansi to @initrd@ etc/terminfo/a nolinks
+copy @instroot@ usr/share/terminfo/d/dumb to @initrd@ etc/terminfo/d nolinks
+copy @instroot@ usr/share/terminfo/l/linux to @initrd@ etc/terminfo/l nolinks
+copy @instroot@ usr/share/terminfo/s/screen to @initrd@ etc/terminfo/s nolinks
+copy @instroot@ usr/share/terminfo/v/vt100 to @initrd@ etc/terminfo/v nolinks
+copy @instroot@ usr/share/terminfo/v/vt100-nav to @initrd@ etc/terminfo/v nolinks
+copy @instroot@ usr/share/terminfo/v/vt102 to @initrd@ etc/terminfo/v nolinks
+copy @instroot@ usr/share/terminfo/x/xterm to @initrd@ etc/terminfo/x nolinks
+copy @instroot@ usr/share/terminfo/x/xterm-color to @initrd@ etc/terminfo/x nolinks
+copy @instroot@ usr/share/terminfo/g/gnome to @initrd@ etc/terminfo/g nolinks
 chmod @initrd@/etc/terminfo/*/* mode 0644
 
 # misc

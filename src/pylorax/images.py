@@ -297,8 +297,10 @@ class InitRD(object):
                 devices.add((vend, dev))
 
         # create pci.ids
+        # XXX this file is NOT in the original initrd image...
         src = os.path.join(self.conf.treedir, 'usr', 'share', 'hwdata', 'pci.ids')
-        dst = os.path.join(self.conf.initrddir, 'pci.ids')
+        #dst = os.path.join(self.conf.initrddir, 'pci.ids')
+        dst = os.path.join(self.conf.treedir, 'pci.ids')
 
         input = open(src, 'r')
         pcitable = input.readlines()

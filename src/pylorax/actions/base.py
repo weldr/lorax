@@ -101,7 +101,7 @@ class LoraxAction(object):
 
 class Copy(LoraxAction):
 
-    REGEX = r'^(?P<src_root>.*?)\s(?P<src_path>.*?)\sto\s(?P<dst_root>.*?)\s(?P<dst_path>.*?)(\s(?P<install>install))?$'
+    REGEX = r'^(?P<src_root>.*?)\s(?P<src_path>.*?)\sto\s(?P<dst_root>.*?)\s(?P<dst_path>.*?)(\s(?P<install>install))?(\s(?P<nolinks>nolinks))?$'
 
     def __init__(self, **kwargs):
         LoraxAction.__init__(self)
@@ -116,10 +116,16 @@ class Copy(LoraxAction):
         else:
             self._attrs['install'] = False
 
+        nolinks = kwargs.get('nolinks', False)
+        if nolinks:
+            self._attrs['nolinks'] = True
+        else:
+            self._attrs['nolinks'] = False
+
     def execute(self, verbose=False):
         cp(src_root=self.src_root, src_path=self.src_path,
            dst_root=self.dst_root, dst_path=self.dst_path,
-           ignore_errors=True, verbose=verbose)
+           nolinks=self.nolinks, ignore_errors=True, verbose=verbose)
         self._attrs['success'] = True
 
     @property
@@ -163,12 +169,16 @@ class Copy(LoraxAction):
     def getDeps(self):
         return self._attrs['src']
 
+    @property
+    def nolinks(self):
+        return self._attrs['nolinks']
+
 
 class Move(Copy):
     def execute(self, verbose=False):
         mv(src_root=self.src_root, src_path=self.src_path,
            dst_root=self.dst_root, dst_path=self.dst_path,
-           ignore_errors=True, verbose=verbose)
+           nolinks=self.nolinks, ignore_errors=True, verbose=verbose)
         self._attrs['success'] = True
 
 
