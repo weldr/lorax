@@ -141,6 +141,8 @@ class InitRD(object):
         modinfo = os.path.join(self.conf.tempdir, 'modinfo')
         genmodinfo(os.path.join(self.conf.treedir, 'lib', 'modules', self.kernelver), modinfo)
 
+        moddir = os.path.join(self.conf.treedir, 'lib', 'modules', self.kernelver)
+
         modfiles = []
         modfiles.append(os.path.join(self.conf.confdir, 'modules', 'modules'))
         modfiles.append(os.path.join(self.conf.confdir, 'modules', self.conf.buildarch, 'modules'))
@@ -163,9 +165,27 @@ class InitRD(object):
                     if line.startswith('-'):
                         modules.discard(line[1:])
                     elif line.startswith('='):
-                        cmd = '%s --modinfo-file %s %s' % (modlist, modinfo, line[1:])
-                        output = commands.getoutput(cmd)
-                        for module in output.splitlines():
+                        group = line[1:]
+                        
+                        if group in  ('scsi', 'ata'):
+                            path = os.path.join(moddir, 'modules.block')
+                        elif group == 'net':
+                            path = os.path.join(moddir, 'modules.networking')
+                        else:
+                            path = os.path.join(moddir, 'modules.%s' % group)
+
+                        modules_to_add = []
+                        if os.path.isfile(path):
+                            f = open(path, 'r')
+                            for module in f.readlines():
+                                module = module.strip()
+                                module = module.replace('.ko', '')
+                                modules_to_add.append(module)
+                            f.close()
+
+                        # XXX do we really need to filter only ata or ahci if group == ata?
+
+                        for module in modules_to_add:
                             modules.add(module)
                     else:
                         modules.add(line)
@@ -207,14 +227,22 @@ class InitRD(object):
                         rm(os.path.join(root, file))
                     else:
                         # copy the required firmware
-                        output = commands.getoutput('modinfo -F firmware %s' % os.path.join(root, name + ext))
+                        module = os.path.join(root, file)
+                        output = commands.getoutput('modinfo -F firmware %s' % module)
+                        output = output.strip()
+
                         for fw in output.split():
+                            print "copying firmware '%s'" % fw
+
                             dst = os.path.join(self.conf.initrddir, 'lib', 'firmware', fw)
                             dir = os.path.dirname(dst)
-
                             if not os.path.exists(dir):
                                 os.makedirs(dir)
-                            shutil.copy2(os.path.join(self.conf.treedir, 'lib', 'firmware', fw), dst)
+
+                            cp(src_root = self.conf.treedir,
+                               src_path = os.path.join('lib', 'firmware', fw),
+                               dst_root = self.conf.initrddir,
+                               dst_path = os.path.join('lib', 'firmware', fw))
 
         # copy firmware
         srcdir = os.path.join(self.conf.treedir, 'lib', 'firmware')
