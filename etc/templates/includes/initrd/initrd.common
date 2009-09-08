@@ -1,10 +1,11 @@
 # initrd template
 
 # create required directories
-makedir @initrd@/lib/modules
-makedir @initrd@/lib/firmware
-link @initrd@/modules to lib/modules
-link @initrd@/firmware to lib/firmware
+makedir @initrd@/lib
+makedir @initrd@/modules
+makedir @initrd@/firmware
+link @initrd@/lib/modules to ../modules
+link @initrd@/lib/firmware to ../firmware
 makedir @initrd@/sbin
 makedir @initrd@/dev
 makedir @initrd@/etc
@@ -72,15 +73,15 @@ copy @instroot@ sbin/umount.* to @initrd@ sbin
 # copy udev
 copy @instroot@ sbin/udevd to @initrd@ sbin
 copy @instroot@ sbin/udevadm to @initrd@ sbin
-copy @instroot@ sbin/udevinfo to @initrd@ sbin
-copy @instroot@ sbin/udevsettle to @initrd@ sbin
+link @initrd@/sbin/udevinfo to udevadm
+link @initrd@/sbin/udevsettle to udevadm
 
 # udev rules
 copy @instroot@ etc/udev/udev.conf to @initrd@ etc/udev
 chmod @initrd@/etc/udev/udev.conf mode 0644
 
 copy @instroot@ lib/udev/* to @initrd@ lib/udev
-chmod @initrd@/lib/udev/* mode 0644
+#chmod @initrd@/lib/udev/* mode 0644
 
 remove @initrd@/lib/udev/rules.d/*persistent*
 remove @initrd@/lib/udev/rules.d/*generator*
@@ -206,12 +207,16 @@ copy @instroot@ usr/lib/anaconda-runtime/loader/loader.tr to @initrd@ etc
 chmod @initrd/etc/loader.tr mode 0644
 
 # indirect dependencies
-copy @instroot@ @libdir@/libfreebl3.so to @initrd@ @libdir@
-copy @instroot@ @libdir@/libsoftokn3.so to @initrd@ @libdir@
-copy @instroot@ usr/@libdir@/libsqlite3.so.0 to @initrd@ usr/@libdir@
+copy @instroot@ @libdir@/ld-linux.so.2 to @initrd@ @libdir@
+#copy @instroot@ @libdir@/libcom_err.so.2 to @initrd@ @libdir@
+#copy @instroot@ @libdir@/libdbus-glib-1.so.2 to @initrd@ @libdir@
+#copy @instroot@ @libdir@/libfreebl3.so to @initrd@ @libdir@
+copy @instroot@ @libdir@/libgcc_s.so.1 to @initrd@ @libdir@
 copy @instroot@ @libdir@/libnss_dns.so.2 to @initrd@ @libdir@
 copy @instroot@ @libdir@/libnss_files.so.2 to @initrd@ @libdir@
-copy @instroot@ @libdir@/libgcc_s.so.1 to @initrd@ @libdir@
+copy @instroot@ @libdir@/libsoftokn3.so to @initrd@ @libdir@
+
+copy @instroot@ usr/@libdir@/libsqlite3.so.0 to @initrd@ usr/@libdir@
 
 # langtable
 copy @instroot@ usr/lib/anaconda/lang-table to @initrd@ etc

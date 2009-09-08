@@ -167,7 +167,7 @@ class Copy(LoraxAction):
 
     @property
     def getDeps(self):
-        return self._attrs['src']
+        return self.src
 
     @property
     def nolinks(self):

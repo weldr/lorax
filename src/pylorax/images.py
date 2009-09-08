@@ -101,10 +101,11 @@ class InitRD(object):
         # add dependencies to actions
         for dep in ldd.deps:
             kwargs = {}
-            kwargs['src_tree'] = self.conf.treedir
-            kwargs['src_path'] = dep.replace(self.conf.treedir, '')
-            kwargs['dst_tree'] = self.conf.initrddir
-            kwargs['dst_path'] = dep.replace(self.conf.treedir, '')
+            kwargs['src_root'] = self.conf.treedir
+            kwargs['src_path'] = dep.replace(self.conf.treedir + os.sep, '', 1)
+            kwargs['dst_root'] = self.conf.initrddir
+            kwargs['dst_path'] = dep.replace(self.conf.treedir + os.sep, '', 1)
+            kwargs['dst_path'] = os.path.dirname(kwargs['dst_path'])
 
             new_action = actions.base.Copy(**kwargs)
             self._actions.append(new_action)

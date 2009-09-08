@@ -64,7 +64,7 @@ def touch(filename, verbose=False):
     
     return True
 
-def cp(src_path, dst_path, src_root='/', dst_root='/', nolinks=False, ignore_errors=False, verbose=True):
+def cp(src_path, dst_path, src_root='/', dst_root='/', nolinks=False, ignore_errors=False, verbose=False):
     filecopy = Copy(ignore_errors, verbose)
 
     src = os.path.join(src_root, src_path)
@@ -78,7 +78,7 @@ def cp(src_path, dst_path, src_root='/', dst_root='/', nolinks=False, ignore_err
 
     return filecopy.errors
 
-def mv(src_path, dst_path, src_root='/', dst_root='/', nolinks=False, ignore_errors=False, verbose=True):
+def mv(src_path, dst_path, src_root='/', dst_root='/', nolinks=False, ignore_errors=False, verbose=False):
     errors = cp(src_path, dst_path, src_root, dst_root, ignore_errors, verbose)
 
     # if everything was copied, remove the source
@@ -136,7 +136,7 @@ class CopyError(Exception):
     pass
 
 class Copy(object):
-    def __init__(self, ignore_errors=False, verbose=True):
+    def __init__(self, ignore_errors=False, verbose=False):
         self.Error = CopyError
 
         self.ignore_errors = ignore_errors
