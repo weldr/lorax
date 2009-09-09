@@ -134,13 +134,12 @@ class Yum(object):
         self.yb.buildTransaction()
 
         cb = yum.callbacks.ProcessTransBaseCallback()
+        #cb = yum.callbacks.ProcessTransNoOutputCallback()
         rpmcb = Callback()
 
         # XXX ugly error output hack
         # we redirect the error output from rpm to err_file,
         # so it does not show up in our "nice" output :)
-        # we should put the errors to some file,
-        # which we can parse later for serious errors
         standard_err = os.dup(2)
         my_err = open(self.err_file, 'a')
         os.dup2(my_err.fileno(), 2)

@@ -95,7 +95,7 @@ class Lorax(object):
     def run(self):
         bold = ('\033[1m', '\033[0m')
 
-        print("%sCollecting repos%s" % bold)
+        print("%s:: Collecting repos%s" % bold)
         self.collect_repos()
 
         # check if we have at least one valid repository
@@ -103,44 +103,44 @@ class Lorax(object):
             sys.stderr.write("ERROR: No valid repository\n")
             sys.exit(1)
 
-        print("%sInitializing temporary directories%s" % bold)
+        print("%s:: Initializing temporary directories%s" % bold)
         self.init_dirs()
 
-        print("%sInitializing yum%s" % bold)
+        print("%s:: Initializing yum%s" % bold)
         self.init_yum()
 
-        print("%sSetting build architecture%s" % bold)
+        print("%s:: Setting build architecture%s" % bold)
         self.set_buildarch()
 
-        print("%sWriting .treeinfo%s" % bold)
+        print("%s:: Writing .treeinfo%s" % bold)
         self.write_treeinfo()
 
-        print("%sWriting .discinfo%s" % bold)
+        print("%s:: Writing .discinfo%s" % bold)
         self.write_discinfo()
 
-        print("%sPreparing the install tree%s" % bold)
+        print("%s:: Preparing the install tree%s" % bold)
         self.prepare_treedir()
 
-        print("%sScrubbing the install tree%s" % bold)
+        print("%s:: Scrubbing the install tree%s" % bold)
         self.scrub_treedir()
 
-        print("%sWriting .buildstamp%s" % bold)
+        print("%s:: Writing .buildstamp%s" % bold)
         self.write_buildstamp()
 
-        print("%sInitializing output directories%s" % bold)
+        print("%s:: Initializing output directories%s" % bold)
         self.init_outputdirs()
 
-        print("%sCreating the initrd.img%s" % bold)
+        print("%s:: Creating the initrd image%s" % bold)
         self.create_initrd()
 
-        print("%sCreating the install.img%s" % bold)
-        #self.create_installimg()
+        print("%s:: Creating the install image%s" % bold)
+        self.create_installimg()
 
-        print("%sCreating the boot.iso%s" % bold)
-        #self.create_bootiso()
+        print("%s:: Creating the boot image%s" % bold)
+        self.create_bootiso()
 
         if self.conf.cleanup:
-            print("%sCleaning up%s" % bold)
+            print("%s::Cleaning up%s" % bold)
             self.clean_up()
 
     def collect_repos(self):
@@ -173,22 +173,25 @@ class Lorax(object):
 
         treedir = os.path.join(self.conf.tempdir, 'treedir', 'install')
         os.makedirs(treedir)
-        cachedir = os.path.join(self.conf.tempdir, 'yumcache')
-        os.makedirs(cachedir)
         initrddir = os.path.join(self.conf.tempdir, 'initrddir')
         os.makedirs(initrddir)
+        efitreedir = os.path.join(self.conf.tempdir, 'EFI', 'BOOT')
+        os.makedirs(efitreedir)
 
         print("Working directories:")
         print("    tempdir = %s" % self.conf.tempdir)
         print("    treedir = %s" % treedir)
-        print("    cachedir = %s" % cachedir)
         print("    initrddir = %s" % initrddir)
+        print("    efitreedir = %s" % efitreedir)
 
-        self.conf.addAttr(['treedir', 'cachedir', 'initrddir'])
-        self.conf.set(treedir=treedir, cachedir=cachedir, initrddir=initrddir)
+        self.conf.addAttr(['treedir', 'initrddir', 'efitreedir'])
+        self.conf.set(treedir=treedir, initrddir=initrddir, efitreedir=efitreedir)
 
     def init_yum(self):
         yumconf = os.path.join(self.conf.tempdir, 'yum.conf')
+
+        cachedir = os.path.join(self.conf.tempdir, 'yumcache')
+        os.makedirs(cachedir)
 
         try:
             f = open(yumconf, 'w')
@@ -197,7 +200,7 @@ class Lorax(object):
             sys.exit(1)
         else:
             f.write('[main]\n')
-            f.write('cachedir=%s\n' % self.conf.cachedir)
+            f.write('cachedir=%s\n' % cachedir)
             f.write('keepcache=0\n')
             f.write('gpgcheck=0\n')
             f.write('plugins=0\n')
@@ -234,7 +237,7 @@ class Lorax(object):
                        err_file=err_file)
 
         # remove not needed attributes
-        self.conf.delAttr(['repo', 'extrarepos', 'mirrorlist', 'cachedir'])
+        self.conf.delAttr(['repo', 'extrarepos', 'mirrorlist'])
 
     def set_buildarch(self):
         unamearch = os.uname()[4]
@@ -330,8 +333,8 @@ class Lorax(object):
 
     def prepare_treedir(self):
         # required packages
-        self.yum.addPackages(['anaconda', 'anaconda-runtime', 'kernel', '*firmware*', 'syslinux',
-                              '/etc/gtk-2.0/gtkrc'])
+        self.yum.addPackages(['anaconda', 'anaconda-runtime', 'kernel', '*firmware*',
+                              'syslinux', '/etc/gtk-2.0/gtkrc'])
 
         # get packages from confdir
         packages_files = []
@@ -748,12 +751,6 @@ class Lorax(object):
 
         self.conf.addAttr(['imagesdir', 'pxebootdir', 'isolinuxdir'])
         self.conf.set(imagesdir=imagesdir, pxebootdir=pxebootdir, isolinuxdir=isolinuxdir)
-
-        # create the temporary EFI tree dir
-        efitreedir = os.path.join(self.conf.tempdir, 'EFI', 'BOOT')
-        os.makedirs(efitreedir)
-        self.conf.addAttr('efitreedir')
-        self.conf.set(efitreedir=efitreedir)
 
         # write the images/README
         src = os.path.join(self.conf.datadir, 'images', 'README')

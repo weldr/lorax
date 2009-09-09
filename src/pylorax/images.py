@@ -232,8 +232,6 @@ class InitRD(object):
                         output = output.strip()
 
                         for fw in output.split():
-                            print "copying firmware '%s'" % fw
-
                             dst = os.path.join(self.conf.initrddir, 'lib', 'firmware', fw)
                             dir = os.path.dirname(dst)
                             if not os.path.exists(dir):
@@ -258,7 +256,6 @@ class InitRD(object):
 
         for module, file in fw:
             if module in modules:
-                print('Copying firmware %s' % module)
                 cp(src_root=self.conf.treedir,
                    src_path=os.path.join('lib', 'firmware', file),
                    dst_root=self.conf.initrddir,
@@ -396,8 +393,8 @@ class InitRD(object):
         self.create_locales()
         print('Getting modules')
         self.get_modules()
-        print('Getting missing links')
-        self.get_missing_links()
+        #print('Getting missing links')
+        #self.get_missing_links()
 
         # create the initrd
         print('Creating the %s' % dst)
@@ -419,7 +416,8 @@ class Install(object):
         cp(src_root=self.conf.treedir,
            src_path=os.path.join('bin', '*'),
            dst_root=self.conf.treedir,
-           dst_path=os.path.join('usr', 'bin'))
+           dst_path=os.path.join('usr', 'bin'),
+           ignore_errors=True)
         
         rm(os.path.join(self.conf.treedir, 'bin'))
 
@@ -427,7 +425,8 @@ class Install(object):
         cp(src_root=self.conf.treedir,
            src_path=os.path.join('sbin', '*'),
            dst_root=self.conf.treedir,
-           dst_path=os.path.join('usr', 'sbin'))
+           dst_path=os.path.join('usr', 'sbin'),
+           ignore_errors=True)
         
         rm(os.path.join(self.conf.treedir, 'sbin'))
 
