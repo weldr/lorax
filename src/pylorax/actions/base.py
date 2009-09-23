@@ -26,7 +26,7 @@ import pwd
 import grp
 import glob
 
-from pylorax.utils.fileutils import cp, mv, rm, touch, edit, replace, chmod
+from pylorax.utils.fileutils import copy, move, remove, touch, edit, replace, chmod
 
 
 # command:action mapping
@@ -123,9 +123,9 @@ class Copy(LoraxAction):
             self._attrs['nolinks'] = False
 
     def execute(self, verbose=False):
-        cp(src_root=self.src_root, src_path=self.src_path,
-           dst_root=self.dst_root, dst_path=self.dst_path,
-           nolinks=self.nolinks, ignore_errors=True, verbose=verbose)
+        copy(src_root=self.src_root, src_path=self.src_path,
+                dst_root=self.dst_root, dst_path=self.dst_path,
+                nolinks=self.nolinks, ignore_errors=False, verbose=verbose)
         self._attrs['success'] = True
 
     @property
@@ -176,9 +176,9 @@ class Copy(LoraxAction):
 
 class Move(Copy):
     def execute(self, verbose=False):
-        mv(src_root=self.src_root, src_path=self.src_path,
-           dst_root=self.dst_root, dst_path=self.dst_path,
-           nolinks=self.nolinks, ignore_errors=True, verbose=verbose)
+        move(src_root=self.src_root, src_path=self.src_path,
+                dst_root=self.dst_root, dst_path=self.dst_path,
+                nolinks=self.nolinks, ignore_errors=False, verbose=verbose)
         self._attrs['success'] = True
 
 
@@ -191,8 +191,7 @@ class Remove(LoraxAction):
         self._attrs['filename'] = kwargs.get('filename')
 
     def execute(self, verbose=False):
-        for f in glob.iglob(self.filename):
-            rm(f)
+        remove(self.filename, verbose=verbose)
         self._attrs['success'] = True
 
     @property

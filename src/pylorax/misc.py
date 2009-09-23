@@ -1,8 +1,8 @@
-#!/bin/bash
 #
-# filtermoddeps
+# misc.py
+# miscellaneous functions
 #
-# Copyright (C) 2007  Red Hat, Inc.  All rights reserved.
+# Copyright (C) 2009  Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,9 +17,25 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+# Red Hat Author(s):  Martin Gracik <mgracik@redhat.com>
+#
 
-perl -e 'while (<>) { if (/\\\n/) { chop; s/\\$//; print;} else { print $_; } }' | grep ':.*ko' | sed -e '
-s/\.ko//g
-s,/[^: 	]*/,,g
-s/[ 	][ 	]*/ /g'
+import commands
 
+
+def seq(arg):
+    if type(arg) not in (type([]), type(())):
+        return [arg]
+    else:
+        return arg
+
+def get_console_size():
+    err, output = commands.getstatusoutput("stty size")
+    if not err:
+        height, width = output.split()
+        height, width = int(height), int(width)
+    else:
+        # set defaults
+        height, width = 24, 80
+    
+    return height, width

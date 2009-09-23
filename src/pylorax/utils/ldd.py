@@ -21,48 +21,68 @@
 #
 
 import os
-import commands
 import re
+import commands
 
 
 class LDD(object):
-    def __init__(self, libroots=['/lib', '/usr/lib']):
-        f = open('/usr/bin/ldd', 'r')
+
+    def __init__(self, libroots=["/lib", "/usr/lib"]):
+        f = open("/usr/bin/ldd", "r")
         for line in f.readlines():
             line = line.strip()
-            if line.startswith('RTLDLIST='):
-                rtldlist, sep, ld_linux = line.partition('=')
+            if line.startswith("RTLDLIST="):
+                rtldlist, sep, ld_linux = line.partition("=")
                 break
         f.close()
 
-        self._ldd = 'LD_LIBRARY_PATH="%s" %s --list' % (':'.join(libroots), ld_linux)
+        self._lddcmd = "LD_LIBRARY_PATH=%s %s --list" % (":".join(libroots),
+                ld_linux)
+        
+        pattern = r"^([a-zA-Z0-9.]*\s=>\s)(?P<lib>[a-zA-Z0-9./-]*)\s\(0x[0-9a-f]*\)$"
+        self.pattern = re.compile(pattern)
+
         self._deps = set()
 
-    def getDeps(self, filename):
-        rc, output = commands.getstatusoutput('%s %s' % (self._ldd, filename))
+        self._errors = []
 
-        if rc:
+    def is_elf(self, filename):
+        cmd = "file --brief %s" % (filename)
+        err, out = commands.getstatusoutput(cmd)
+        if err:
+            return False
+
+        if not out.split()[0] == "ELF":
+            return False
+
+        return True
+
+    def getDeps(self, filename):
+        # skip no elf files
+        if not self.is_elf(filename):
             return
 
-        lines = output.splitlines()
+        cmd = "%s %s" % (self._lddcmd, filename)
+        err, out = commands.getstatusoutput(cmd)
+        if err:
+            self._errors.append((filename, out))
+            return
+
+        lines = out.splitlines()
         for line in lines:
             line = line.strip()
 
-            m = re.match(r'^[a-zA-Z0-9.]*\s=>\s(?P<lib>[a-zA-Z0-9./]*)\s\(0x[0-9a-f]*\)$', line)
+            m = self.pattern.match(line)
             if m:
-                lib = m.group('lib')
+                lib = m.group("lib")
                 if lib not in self._deps:
                     self._deps.add(lib)
                     self.getDeps(lib)
 
-    def getLinks(self):
-        targets = set()
-        for lib in self._deps:
-            if os.path.islink(lib):
-                targets.add(os.path.realpath(lib))
-
-        self._deps.update(targets)
-
     @property
     def deps(self):
         return self._deps
+
+    @property
+    def errors(self):
+        return self._errors

@@ -1,6 +1,6 @@
 # initrd template
 
-#include includes/initrd/initrd.common
+#include includes/initrd.common
 
 # loader
 copy @instroot@ usr/lib/anaconda-runtime/loader/init to @initrd@ sbin/init

@@ -32,17 +32,17 @@ def getActions(verbose=False):
 
     modules = set()
     for filename in os.listdir(os.path.join(root, actions_dir)):
-        if filename.endswith('.py') and filename != '__init__.py':
+        if filename.endswith(".py") and filename != "__init__.py":
             basename, extension = os.path.splitext(filename)
-            modules.add(os.path.join(actions_dir, basename).replace('/', '.'))
+            modules.add(os.path.join(actions_dir, basename).replace("/", "."))
 
     for module in modules:
         if verbose:
-            print("Loading actions from module '%s'" % module)
+            print("Loading actions from module '%s'" % (module,))
         imported = __import__(module, globals(), locals(), [module], -1)
 
         try:
-            commands = getattr(imported, 'COMMANDS')
+            commands = getattr(imported, "COMMANDS")
         except AttributeError:
             if verbose:
                 print("No actions found")

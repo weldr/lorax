@@ -30,9 +30,9 @@ from optparse import OptionParser, OptionGroup
 import pylorax
 
 
-if __name__ == '__main__':
-    version = '%s 0.1' % os.path.basename(sys.argv[0])
-    usage = '%prog -p PRODUCT -v VERSION -r RELEASE -o OUTPUTDIR REPOSITORY'
+if __name__ == "__main__":
+    version = "%s 0.1" % (os.path.basename(sys.argv[0]),)
+    usage = "%prog -p PRODUCT -v VERSION -r RELEASE -o OUTPUTDIR REPOSITORY"
 
     parser = OptionParser(usage=usage)
 
@@ -40,49 +40,50 @@ if __name__ == '__main__':
         if os.path.isdir(value):
             setattr(parser.values, option.dest, value)
         else:
-            parser.error('%s is not a directory' % value)
+            parser.error("'%s' is not a directory" % (value,))
 
 
     # required
     # XXX "options" should not be required
-    group = OptionGroup(parser, 'Required')
-    group.add_option('-p', '--product', help='Product name',
-                      metavar='STRING')
-    group.add_option('-v', '--version', help='Version identifier',
-                      metavar='STRING')
-    group.add_option('-r', '--release', help='Release information or comment',
-                      metavar='STRING')
-    group.add_option('-o', '--output', help='Destination directory',
-                      metavar='PATHSPEC')
+    group = OptionGroup(parser, "Required")
+    group.add_option("-p", "--product", help="Product name",
+                      metavar="STRING")
+    group.add_option("-v", "--version", help="Version identifier",
+                      metavar="STRING")
+    group.add_option("-r", "--release", help="Release information or comment",
+                      metavar="STRING")
+    group.add_option("-o", "--output", help="Destination directory",
+                      metavar="PATHSPEC")
     parser.add_option_group(group)
 
     # optional
     # XXX are all of these used?
-    group = OptionGroup(parser, 'Optional')
-    group.add_option('-d', '--debug', help='Enable debugging messages',
-                     action='store_true', default=False)
-    group.add_option('-t', '--variant', help='Variant name',
-                     metavar='STRING')
-    group.add_option('-b', '--bugurl', help='Bug reporting URL for the product',
-                     metavar='URL', default='your distribution provided bug reporting tool.')
-    group.add_option('-u', '--updates', help='Directory containing updates',
-                     metavar='PATHSPEC')
-    group.add_option('-m', '--mirrorlist',
-                     help='Mirror list repository (may be listed multiple times)',
-                     metavar='REPOSITORY', action='append', default=[])
-    group.add_option('-c', '--confdir', help='Path to config files (default: /etc/lorax).',
-                     metavar='PATHSPEC', action='callback', callback=check_dir,
-                     type='string', default='/etc/lorax')
-    group.add_option('-C', '--cleanup', help='Cleanup on exit',
-                     action='store_true', default=False)
-    group.add_option('-V', help='Print version and exit',
-                     action='store_true', default=False, dest='printver')
+    group = OptionGroup(parser, "Optional")
+    group.add_option("-d", "--debug", help="Enable debugging messages",
+                     action="store_true", default=False)
+    group.add_option("-t", "--variant", help="Variant name",
+                     metavar="STRING")
+    group.add_option("-b", "--bugurl", help="Bug reporting URL for the product",
+                     metavar="URL",
+                     default="your distribution provided bug reporting tool")
+    group.add_option("-u", "--updates", help="Directory containing updates",
+                     metavar="PATHSPEC")
+    group.add_option("-m", "--mirrorlist",
+                     help="Mirror list repository (may be listed multiple times)",
+                     metavar="REPOSITORY", action="append", default=[])
+    group.add_option("-c", "--confdir", help="Path to config files (default: /etc/lorax)",
+                     metavar="PATHSPEC", action="callback", callback=check_dir,
+                     type="string", default="/etc/lorax")
+    group.add_option("-C", "--cleanup", help="Clean up on exit",
+                     action="store_true", default=False)
+    group.add_option("-V", help="Print version and exit",
+                     action="store_true", default=False, dest="printver")
     parser.add_option_group(group)
 
     # additional information
-    group = OptionGroup(parser, 'Additional information',
-                        'A "REPOSITORY" specification is a valid yum repository path.\n'
-                        'See the man page lorax(8) for more information.')
+    group = OptionGroup(parser, "Additional information",
+                        "A 'REPOSITORY' specification is a valid yum repository path.\n"
+                        "See the man page lorax(8) for more information.")
     parser.add_option_group(group)
 
     (opts, args) = parser.parse_args()
@@ -92,10 +93,10 @@ if __name__ == '__main__':
         sys.exit(0)
 
     if not opts.product or not opts.version or not opts.release or not opts.output:
-        parser.error('Missing required argument')
+        parser.error("Missing required argument")
 
     if not args:
-        parser.error('Missing repository')
+        parser.error("Missing repository")
 
     config = pylorax.Config()
     config.set(confdir=opts.confdir,

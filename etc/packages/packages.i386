@@ -1,7 +1,3 @@
--glibc
--openssl
-glibc.i386
-openssl.i386
 pcmciautils
 grub
 dmidecode

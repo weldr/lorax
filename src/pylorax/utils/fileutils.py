@@ -37,25 +37,25 @@ def normalize(src_root, src_path, dst_root, dst_path):
     return src, dst
 
 
-def rm(target, verbose=False):
+def remove(target, verbose=False):
     for fname in glob.iglob(target):
         if verbose:
-            print "removing '%s'" % fname
+            print "removing '%s'" % (fname,)
 
-        if os.path.isdir(fname):
-            shutil.rmtree(fname, ignore_errors=True)
-        else:
+        if os.path.islink(fname) or os.path.isfile(fname):
             os.unlink(fname)
+        else:
+            shutil.rmtree(fname, ignore_errors=True)
 
 def touch(filename, verbose=False):
     if verbose:
-        print "touching '%s'" % filename
+        print "touching '%s'" % (filename,)
 
     if os.path.exists(filename):
         os.utime(filename, None)
     else:
         try:
-            f = open(filename, 'w')
+            f = open(filename, "w")
         except IOError as why:
             print >> sys.stderr, "cannot create '%s': %s" % (filename, why)
             return False
@@ -64,49 +64,56 @@ def touch(filename, verbose=False):
     
     return True
 
-def cp(src_path, dst_path, src_root='/', dst_root='/', nolinks=False, ignore_errors=False, verbose=False):
+def copy(src_path, dst_path, src_root="/", dst_root="/",
+        nolinks=False, ignore_errors=False, verbose=False):
+
     filecopy = Copy(ignore_errors, verbose)
 
     src = os.path.join(src_root, src_path)
     for fname in glob.iglob(src):
-        fname = fname.replace(src_root, '', 1)
+        fname = fname.replace(src_root, "", 1)
         
-        if src_path[0] != '/' and fname[0] == '/':
+        if src_path[0] != "/" and fname[0] == "/":
             fname = fname[1:]
 
         filecopy.copy(fname, dst_path, src_root, dst_root, nolinks)
 
     return filecopy.errors
 
-def mv(src_path, dst_path, src_root='/', dst_root='/', nolinks=False, ignore_errors=False, verbose=False):
-    errors = cp(src_path, dst_path, src_root, dst_root, ignore_errors, verbose)
+def move(src_path, dst_path, src_root="/", dst_root="/",
+        nolinks=False, ignore_errors=False, verbose=False):
 
-    # if everything was copied, remove the source
+    errors = copy(src_path, dst_path, src_root, dst_root,
+            nolinks, ignore_errors, verbose)
+
+    # if everything was copied ok, remove the source
     if not errors:
         src, dst = normalize(src_root, src_path, dst_root, dst_path)
-        rm(src, verbose)
+        remove(src, verbose)
 
     return errors
 
 def chmod(target, mode, recursive=False, verbose=False):
+    mode = int(mode)
+
     for fname in glob.iglob(target):
         if verbose:
-            print "changing permissions on '%s'" % fname
+            print "changing permissions on '%s'" % (fname,)
 
-        os.chmod(fname, int(mode))
+        os.chmod(fname, mode)
 
         if recursive and os.path.isdir(fname):
             for nested in os.listdir(fname):
                 nested = os.path.join(fname, nested)
-                chmod(nested, mode)
+                chmod(nested, mode, recursive, verbose)
 
 def edit(filename, text, append=False, verbose=False):
-    mode = 'w'
+    mode = "w"
     if append:
-        mode = 'a'
+        mode = "a"
 
     if verbose:
-        print "editing '%s'" % filename
+        print "editing '%s'" % (filename,)
 
     try:
         f = open(filename, mode)
@@ -144,13 +151,13 @@ class Copy(object):
 
         self.errors = []
 
-    def copy(self, src_path, dst_path, src_root='/', dst_root='/', nolinks=False):
+    def copy(self, src_path, dst_path, src_root="/", dst_root="/", nolinks=False):
         # normalize the source and destination paths
         src, dst = normalize(src_root, src_path, dst_root, dst_path)
 
         # check if the source exists
         if not os.path.exists(src):
-            err_msg = "cannot stat '%s': No such file or directory" % src
+            err_msg = "cannot stat '%s': No such file or directory" % (src,)
             if not self.ignore_errors:
                 raise self.Error, err_msg
             else:
@@ -171,7 +178,7 @@ class Copy(object):
                 # overwrite file
                 try:
                     if self.verbose:
-                        print "overwriting '%s'" % dst
+                        print "overwriting '%s'" % (dst,)
                     os.unlink(dst)
                 except OSError as why:
                     err_msg = "cannot overwrite file '%s': %s" % (dst, why)
@@ -185,7 +192,8 @@ class Copy(object):
             elif os.path.isdir(dst):
 
                 # do not overwrite directory with a file
-                err_msg = "cannot overwrite directory '%s' with non-directory" % dst
+                err_msg = "cannot overwrite directory '%s' with non-directory" \
+                        % (dst,)
                 if not self.ignore_errors:
                     raise self.Error, err_msg
                 else:
@@ -198,7 +206,8 @@ class Copy(object):
                 if nolinks:
                     self.__copy_file(os.path.realpath(src), dst)
                 else:
-                    self.__copy_link(src_path, dst_path, src_root, dst_root, src, dst)
+                    self.__copy_link(src_path, dst_path, src_root, dst_root,
+                            src, dst)
 
             else:
 
@@ -227,7 +236,8 @@ class Copy(object):
                             dst = os.path.join(new_dst, os.path.basename(fname))
                             shutil.copytree(fname, dst, symlinks=False)
                 else:
-                    self.__copy_link(src_path, dst_path, src_root, dst_root, src, new_dst)
+                    self.__copy_link(src_path, dst_path, src_root, dst_root,
+                            src, new_dst)
 
             else:
 
@@ -236,7 +246,8 @@ class Copy(object):
                     os.makedirs(new_dst)
 
                 if os.path.isfile(new_dst):
-                    err_msg = "cannot overwrite file '%s' with a directory" % new_dst
+                    err_msg = "cannot overwrite file '%s' with a directory" \
+                            % (new_dst,)
                     if not self.ignore_errors:
                         raise self.Error, err_msg
                     else:

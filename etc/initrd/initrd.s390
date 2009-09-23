@@ -1,6 +1,6 @@
 # initrd template
 
-#include includes/initrd/initrd.common
+#include includes/initrd.common
 
 # create required directories
 makedir @initrd@/var/empty/sshd mode 0111
