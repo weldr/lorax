@@ -754,16 +754,3 @@ class EFI(object):
         # copy the efi image to the output directory
         dst = os.path.join(self.conf.imagesdir, "efiboot.img")
         shutil.copy2(efiimage, dst)
-
-
-class Install(object):
-
-    def __init__(self, config):
-        self.conf = config
-
-    def scrub(self):
-        # XXX all the install tree modification stuff goes here
-        pass
-
-    def run(self):
-        self.scrub()

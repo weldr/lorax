@@ -1,31 +1,66 @@
-#
-# images.py
-# lorax images manipulation
-#
-# Copyright (C) 2009  Red Hat, Inc.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-# Red Hat Author(s):  Martin Gracik <mgracik@redhat.com>
-#
-
+import stat
+import commands
+import pwd
+import grp
 
 class Install(object):
-    def __init__(self, config):
-        self.conf = config
 
     def scrub(self):
+        # change tree permissions
+        root_uid = pwd.getpwnam('root')[2]
+        root_gid = grp.getgrnam('root')[2]
+
+        for root, files, dirs in os.walk(self.conf.treedir):
+            os.chown(root, root_uid, root_gid)
+            os.chmod(root, 0755)
+
+            for file in files:
+                path = os.path.join(root, file)
+                os.chown(path, root_uid, root_gid)
+                
+                mode = os.stat(path).st_mode
+                if (mode & stat.S_IXUSR) or (mode & stat.S_IXGRP) or (mode & stat.S_IXOTH):
+                    os.chmod(path, 0555)
+                else:
+                    os.chmod(path, 0444)
+
+        # create ld.so.conf
+        ldsoconf = os.path.join(self.conf.treedir, 'etc', 'ld.so.conf')
+        touch(ldsoconf)
+
+        procdir = os.path.join(self.conf.treedir, 'proc')
+        if not os.path.isdir(procdir):
+            os.makedirs(procdir)
+        os.system('mount -t proc proc %s' % procdir)
+
+        f = open(ldsoconf, 'w')
+        f.write('/usr/kerberos/%s\n' % self.conf.libdir)
+        f.close()
+
+        cwd = os.getcwd()
+        os.chdir(self.conf.treedir)
+        os.system('/usr/sbin/chroot %s /sbin/ldconfig' % self.conf.treedir)
+        os.chdir(cwd)
+
+        if self.conf.buildarch not in ('s390', 's390x'):
+            # XXX this is not in usr
+            rm(os.path.join(self.conf.treedir, 'usr', 'sbin', 'ldconfig'))
+        
+        # XXX why are we removing this?
+        #rm(os.path.join(self.conf.treedir, 'etc', 'ld.so.conf'))
+        os.system('umount %s' % procdir)
+
+        # make bash link
+        # XXX already exists
+        #if os.path.isfile(os.path.join(self.conf.treedir, 'bin', 'bash')):
+        #    rm(os.path.join(self.conf.treedir, 'bin', 'ash'))
+        #    os.symlink('bash', os.path.join(self.conf.treedir, 'bin', 'sh'))
+
+        # make awk link
+        # XXX already exists
+        #if os.path.isfile(os.path.join(self.conf.treedir, 'bin', 'gawk')):
+        #    os.symlink('awk', os.path.join(self.conf.treedir, 'bin', 'gawk'))
+
         # move bin to usr/bin
         cp(src_root=self.conf.treedir,
            src_path=os.path.join('bin', '*'),

@@ -97,22 +97,22 @@ class Output(object):
     def newline(self):
         self.output.write("\n")
 
-    def banner(self, s, indent_level=0):
+    def banner(self, s):
         self.writeline(s, color=C_GREEN, type=BOLD)
 
-    def header(self, s, indent_level=0):
+    def header(self, s):
         self.writeline(s, type=BOLD)
 
-    def info(self, s, indent_level=0):
+    def info(self, s):
         self.writeline(s)
 
-    def error(self, s, indent_level=0):
+    def error(self, s):
         self.writeline(s, color=C_RED, type=BOLD)
 
-    def warning(self, s, indent_level=0):
+    def warning(self, s):
         self.writeline(s, color=C_RED)
 
-    def debug(self, s, indent_level=0):
+    def debug(self, s):
         if self.verbose:
             self.writeline(s)
 

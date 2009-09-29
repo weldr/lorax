@@ -461,11 +461,10 @@ class Lorax(object):
         return True
 
     def create_install_image(self, type="squashfs"):
-        # scrub the install tree
-        install = images.Install(self.conf)
-        install.run()
-
         installimg = os.path.join(self.conf.imagesdir, "install.img")
+
+        if os.path.exists(installimg):
+            os.unlink(installimg)
 
         if type == "squashfs":
             cmd = "mksquashfs %s %s -all-root -no-fragments -no-progress" \
@@ -474,8 +473,7 @@ class Lorax(object):
             err, output = commands.getstatusoutput(cmd)
             if err:
                 self.se.info(output)
-                # XXX this gives an error on read only filesystem
-                #return False
+                return False
 
         elif type == "cramfs":
             if self.conf.buildarch == "sparc64":
@@ -505,6 +503,11 @@ class Lorax(object):
         return True
 
     def create_boot_iso(self):
+        bootiso = os.path.join(self.conf.imagesdir, "boot.iso")
+
+        if os.path.exists(bootiso):
+            os.unlink(bootiso)
+
         efiboot = os.path.join(self.conf.imagesdir, "efiboot.img")
 
         if os.path.exists(efiboot):
@@ -520,9 +523,9 @@ class Lorax(object):
         biosargs = "-b isolinux/isolinux.bin -c isolinux/boot.cat" \
                 " -no-emul-boot -boot-load-size 4 -boot-info-table"
         mkisocmd = "mkisofs -v -o %s %s %s -R -J -V %s -T -graft-points" \
-                " isolinux=%s images=%s %s" % (os.path.join(self.conf.imagesdir,
-                    "boot.iso"), biosargs, efiargs, self.conf.product,
-                    self.conf.isolinuxdir, self.conf.imagesdir, efigraft)
+                " isolinux=%s images=%s %s" % (bootiso, biosargs, efiargs,
+                self.conf.product, self.conf.isolinuxdir, self.conf.imagesdir,
+                efigraft)
         self.so.debug(mkisocmd)
         err, out = commands.getstatusoutput(mkisocmd)
         if err:
@@ -616,6 +619,10 @@ class Lorax(object):
             initrd.run()
 
         self.so.header(":: Creating the install image")
+        
+        self.so.info("Scrubbing the install tree")
+        tree.scrub()
+        
         ok = self.create_install_image()
         if not ok:
             self.se.error("Unable to create the install image")
