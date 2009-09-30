@@ -492,6 +492,11 @@ class InitRD(object):
         self.so.info("Creating locales")
         self.create_locales()
 
+        f = getattr(self, "run_%s" % (self.conf.buildarch,), None)
+        if f:
+            f()
+
+    def run_i386(self):
         initrd_filename = "initrd.img"
         kernel_filename = "vmlinuz"
 
@@ -525,6 +530,68 @@ class InitRD(object):
                     initrd=os.path.join(self.conf.pxebootdir, initrd_filename),
                     kernelpath="/images/pxeboot/vmlinuz",
                     initrdpath="/images/pxeboot/initrd.img")
+
+    def run_x86_64(self):
+        self.run_i386()
+
+    def run_s390(self):
+        initrd_filename = "initrd.img"
+        kernel_filename = "kernel.img"
+
+        self.so.info("Compressing the image file '%s'" % (initrd_filename,))
+        self.create(os.path.join(self.conf.imagesdir, initrd_filename))
+
+        cmd = "ls -l %s | awk '{print $5}'" % \
+                (os.path.join(self.conf.imagesdir, initrd_filename),)
+        self.so.debug(cmd)
+        err, size = commands.getstatusoutput(cmd)
+        if err:
+            self.se.debug(size)
+
+        geninitrdsz = os.path.join(self.conf.treedir, "usr", "lib",
+                "anaconda-runtime", "geninitrdsz")
+
+        cmd = "%s %s %s" % (geninitrdsz, size,
+                os.path.join(self.conf.imagesdir, "initrd.size"))
+        self.so.debug(cmd)
+        err, output = commands.getstatusoutput(cmd)
+        if err:
+            self.se.debug(output)
+
+        # copy the kernel file
+        shutil.copy2(self.conf.kernelfile,
+                os.path.join(self.conf.imagesdir, kernel_filename))
+
+        for filename in ("redhat.exec", "generic.prm"):
+            shutil.copy2(os.path.join(self.conf.bootdiskdir, filename),
+                    self.conf.imagesdir)
+        shutil.copy2(os.path.join(self.conf.bootdiskdir, filename),
+                self.conf.outdir)
+
+        mks390cdboot = os.path.join(self.conf.treedir, "usr", "lib",
+                "anaconda-runtime", "mk-s390-cdboot")
+
+        cmd = "%s -i %s -r %s -p %s -o %s" % (mks390cdboot,
+                os.path.join(self.conf.imagesdir, kernel_filename),
+                os.path.join(self.conf.imagesdir, initrd_filename),
+                os.path.join(self.conf.imagesdir, "generic.prm"),
+                os.path.join(self.conf.imagesdir, "cdboot.img"))
+        err, output = commands.getstatusoutput(cmd)
+        if err:
+            self.se.debug(output)
+
+        text = "[images-%s" % (self.conf.buildarch,)
+        text += "kernel = images/kernel.img"
+        text += "initrd = images/initrd.img"
+        text += "initrd.size = images/initrd.size"
+        text += "generic.prm = images/generic.prm"
+        text += "generic.ins = generic.ins"
+        text += "cdboot.img = images/cdboot.img"
+        edit(os.path.join(self.conf.outdir, ".treeinfo"),
+                append=True, text=text)
+
+    def run_s390x(self):
+        self.run_s390()
 
 
 class EFI(object):

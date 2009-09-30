@@ -1,0 +1,15 @@
+zfcp
+tape390
+dasd_diag_mod
+dasd_eckd_mod
+dasd_fba_mod
+dasd_mod
+ctc
+netiucv
+smsgiucv
+lcs
+qdio
+qeth
+ccwgroup
+crypto_api
+xfrm_nalgo
