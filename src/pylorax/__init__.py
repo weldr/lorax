@@ -405,7 +405,7 @@ class Lorax(object):
 
             # set up the label for finding stage2 with a hybrid iso
             replace(isolinuxcfg, r"initrd=initrd.img",
-                    "initrd=initrd.img stage2=hd:LABEL=%s" % (self.conf.product,))
+                    'initrd=initrd.img stage2=hd:LABEL="%s"' % (self.conf.product,))
 
             # copy the grub.conf
             shutil.copy2(os.path.join(bootdiskdir, "grub.conf"),
