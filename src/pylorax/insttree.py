@@ -46,6 +46,10 @@ class InstallTree(object):
         if self.conf.buildarch == "i386":
             required.append("kernel-PAE")
 
+        # add the jensen kernel package
+        if self.conf.buildarch == "alpha":
+            required.append("kernel-jensen")
+
         # get additional packages from the configuration files
         packages_files = []
         packages_files.append(os.path.join(self.conf.confdir, "packages",

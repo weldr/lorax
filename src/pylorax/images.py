@@ -339,8 +339,10 @@ class InitRD(object):
         remove(os.path.join(dst_moddir, "modules.*map"))
 
     def trim_pci_ids(self):
+        # FIXME remove this function, just copy the original pci.ids file
+
         kernelver = self.conf.kernelver
-        # XXX is this needed? does it save so much space?
+
         vendors = set()
         devices = set()
 
@@ -592,6 +594,48 @@ class InitRD(object):
 
     def run_s390x(self):
         self.run_s390()
+
+    def run_alpha(self):
+        kerneldir = os.path.join(self.conf.outdir, "kernels")
+        if not os.path.isdir(kerneldir):
+            os.makedirs(kerneldir)
+
+        # XXX check for the jensen kernel file, how can we differentiate it?
+        # i don't know the filename...
+        if self.conf.kernelfile.endswith("jensen"):
+            copy(self.conf.kernelfile,
+                    os.path.join(kerneldir, "vmlinux.j"))
+        else:
+            copy(self.conf.kernelfile,
+                    os.path.join(kerneldir, "vmlinux.gz"))
+
+            os.makedirs(os.path.join(self.conf.outdir, "boot"))
+            copy(os.path.join(self.conf.bootdiskdir, "bootlx"),
+                    os.path.join(self.conf.outdir, "boot"))
+
+            os.makedirs(os.path.join(self.conf.outdir, "etc"))
+            abootconf = os.path.join(self.conf.outdir, "etc", "aboot.conf")
+            touch(abootconf)
+            
+            text = "0:/kernels/vmlinux.gz initrd=/images/initrd.img\n"
+            text += "1:/kernels/vmlinux.gz initrd=/images/initrd.img "
+            text += "console=ttyS0\n"
+            text += "2:/kernels/vmlinux.gz initrd=/images/initrd.img text\n"
+            text += "3:/kernels/vmlinux.gz initrd=/images/initrd.img rescue\n"
+            edit(abootconf, text=text)
+
+            initrd_filename = "initrd.img"
+            self.so.info("Compressing the image file '%s'" % (initrd_filename,))
+            self.create(os.path.join(self.conf.imagesdir, initrd_filename))
+
+    def run_ia64(self):
+        raise NotImplementedError
+
+    def run_ppc(self):
+        raise NotImplementedError
+
+    def run_ppc64(self):
+        self.run_ppc()
 
 
 class EFI(object):
