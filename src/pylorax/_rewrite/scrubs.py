@@ -84,20 +84,6 @@ class Install(object):
         for dir in dirs:
             rm(os.path.join(self.conf.treedir, 'usr', 'share', 'themes', dir))
 
-        # remove dirs from etc
-        dirs = ('ConsoleKit', 'X11', 'alternatives', 'asterisk', 'avahi', 'blkid', 'bonobo-activation', 'chkconfig.d', 'cron.*', 'default', 'depmod.d',
-                'dirmngr', 'dnsmasq.d', 'event.d', 'firmware', 'firstaidkit', 'gconf', 'gcrypt', 'gnome-vfs*', 'gnupg', 'gtk', 'hotplug', 'init.d',
-                'iproute2', 'iscsi', 'kernel', 'ld.so.conf.d', 'logrotate.d', 'lvm', 'makedev.d', 'modprobe.d', 'netplug*', 'ntp', 'openldap', 'opt',
-                'pam.d', 'pki', 'pm', 'popt.d', 'ppp', 'prelink.conf.d', 'profile.d', 'rc[0-6].d', 'rwtab.d', 'samba', 'sasl2', 'security', 'setuptool.d',
-                'skel', 'ssh', 'statetab.d', 'terminfo', 'xdg', 'xinetd.d', 'yum.repos.d')
-        for dir in dirs:
-            rm(os.path.join(self.conf.treedir, 'etc', dir))
-
-        # remove dirs from lib
-        dirs = ('i686', 'kbd', 'rtkaio', 'security', 'tls', 'xtables')
-        for dir in dirs:
-            rm(os.path.join(self.conf.treedir, 'lib', dir))
-
         # remove dirs from usr/libexec
         dirs = ('awk', 'gcc', 'getconf', 'openssh', 'plymouth')
         for dir in dirs:
@@ -138,7 +124,3 @@ class Install(object):
         # remove dirs from usr/lib/python2.5/site-packages
         dirs = ('firmware_addon_dell', 'firmwaretools')
         map(lambda dir: rm(os.path.join(self.conf.treedir, 'usr', 'lib', 'python2.5', 'site-packages', dir)), dirs)
-
-        # remove dirs from etc/rc.d
-        dirs = ('rc?.d', 'rc', 'rc.local', 'rc.sysinit')
-        map(lambda dir: rm(os.path.join(self.conf.treedir, 'etc', 'rc.d', dir)), dirs)
