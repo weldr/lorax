@@ -471,10 +471,6 @@ class InstallTree(object):
             remove(os.path.join(self.conf.treedir, "usr", self.conf.libdir,
                     "python?.?", fname))
 
-    def remove_unnecessary_directories(self):
-        for dir in ["boot", "home", "root", "tmp"]:
-            remove(os.path.join(self.conf.treedir, dir))
-
     def move_bins(self):
         # move bin to usr/bin
         move(src_root=self.conf.treedir,
@@ -549,7 +545,6 @@ class InstallTree(object):
         self.remove_locales()
         self.remove_unnecessary_files()
         self.remove_python_stuff()
-        #self.remove_unnecessary_directories()
 
         self.move_bins()
 
