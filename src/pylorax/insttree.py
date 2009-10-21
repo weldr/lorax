@@ -470,6 +470,21 @@ class InstallTree(object):
         for dir in ["boot", "home", "root", "tmp"]:
             remove(os.path.join(self.conf.treedir, dir))
 
+    def move_bins(self):
+        # move bin to usr/bin
+        move(src_root=self.conf.treedir,
+                src_path=os.path.join("bin", "*"),
+                dst_root=self.conf.treedir,
+                dst_path=os.path.join("usr", "bin"))
+        remove(os.path.join(self.conf.treedir, "bin"))
+
+        # move sbin to /usr/sbin
+        copy(src_root=self.conf.treedir,
+                src_path=os.path.join("sbin", "*"),
+                dst_root=self.conf.treedir,
+                dst_path=os.path.join("usr", "sbin"))
+        remove(os.path.join(self.conf.treedir, "sbin"))
+
     def scrub(self):
         self.copy_stubs()
         self.create_dogtail_conf()
@@ -493,3 +508,5 @@ class InstallTree(object):
         self.remove_python_stuff()
 
         self.remove_unnecessary_directories()
+
+        self.move_bins()

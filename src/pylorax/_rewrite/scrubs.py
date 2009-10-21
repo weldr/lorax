@@ -61,24 +61,6 @@ class Install(object):
         #if os.path.isfile(os.path.join(self.conf.treedir, 'bin', 'gawk')):
         #    os.symlink('awk', os.path.join(self.conf.treedir, 'bin', 'gawk'))
 
-        # move bin to usr/bin
-        cp(src_root=self.conf.treedir,
-           src_path=os.path.join('bin', '*'),
-           dst_root=self.conf.treedir,
-           dst_path=os.path.join('usr', 'bin'),
-           ignore_errors=True)
-        
-        rm(os.path.join(self.conf.treedir, 'bin'))
-
-        # move sbin to /usr/sbin
-        cp(src_root=self.conf.treedir,
-           src_path=os.path.join('sbin', '*'),
-           dst_root=self.conf.treedir,
-           dst_path=os.path.join('usr', 'sbin'),
-           ignore_errors=True)
-        
-        rm(os.path.join(self.conf.treedir, 'sbin'))
-
         # remove dirs from root
         dirs = ('boot', 'dev', 'home', 'media', 'mnt', 'opt', 'root', 'selinux', 'srv', 'sys', 'tmp', 'keymaps')
         for dir in dirs:
