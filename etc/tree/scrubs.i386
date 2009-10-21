@@ -1,0 +1,5 @@
+# remove unnecessary directories from root
+remove @instroot@/boot
+remove @instroot@/home
+remove @instroot@/root
+remove @instroot@/tmp

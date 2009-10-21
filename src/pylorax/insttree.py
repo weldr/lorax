@@ -28,6 +28,10 @@ import re
 
 from utils.fileutils import copy, move, remove, replace, touch
 
+import actions
+import actions.base
+from template import Template
+
 
 class InstallTree(object):
 
@@ -505,6 +509,25 @@ class InstallTree(object):
                 os.unlink(link)
                 os.symlink(newtarget, link)
 
+    def process_scrubs_from_template(self):
+        # get supported actions
+        supported_actions = actions.getActions(verbose=self.conf.debug)
+
+        # variables supported in templates
+        vars = { "instroot": self.conf.treedir }
+
+        # parse the template file
+        scrubs = os.path.join(self.conf.confdir, "tree",
+                "scrubs.%s" % (self.conf.buildarch,))
+
+        if os.path.exists(scrubs):
+            self.template = Template()
+            self.template.preparse(scrubs)
+            self.template.parse(supported_actions, vars)
+
+            for action in self.template.actions:
+                action.execute()
+
     def scrub(self):
         self.copy_stubs()
         self.create_dogtail_conf()
@@ -526,7 +549,8 @@ class InstallTree(object):
         self.remove_locales()
         self.remove_unnecessary_files()
         self.remove_python_stuff()
-
-        self.remove_unnecessary_directories()
+        #self.remove_unnecessary_directories()
 
         self.move_bins()
+
+        self.process_scrubs_from_template()
