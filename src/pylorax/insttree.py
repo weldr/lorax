@@ -24,6 +24,7 @@ import os
 import glob
 import fnmatch
 import shutil
+import re
 
 from utils.fileutils import copy, move, remove, replace, touch
 
@@ -484,6 +485,25 @@ class InstallTree(object):
                 dst_root=self.conf.treedir,
                 dst_path=os.path.join("usr", "sbin"))
         remove(os.path.join(self.conf.treedir, "sbin"))
+
+        # fix broken links
+        brokenlinks = []
+        for dir in ("bin", "sbin"):
+            dir = os.path.join(self.conf.treedir, "usr", dir)
+            for root, dnames, fnames in os.walk(dir):
+                for fname in fnames:
+                    fname = os.path.join(root, fname)
+                    if os.path.islink(fname) and not os.path.exists(fname):
+                        brokenlinks.append(fname)
+
+        for link in brokenlinks:
+            target = os.readlink(link)
+            newtarget = re.sub(r"^\.\./\.\./(bin|sbin)/(.*)$", "../\g<1>/\g<2>",
+                    target)
+
+            if newtarget != target:
+                os.unlink(link)
+                os.symlink(newtarget, link)
 
     def scrub(self):
         self.copy_stubs()

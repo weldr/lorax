@@ -161,25 +161,3 @@ class Install(object):
         # remove dirs from etc/rc.d
         dirs = ('rc?.d', 'rc', 'rc.local', 'rc.sysinit')
         map(lambda dir: rm(os.path.join(self.conf.treedir, 'etc', 'rc.d', dir)), dirs)
-
-    def fix_links(self):
-        print("Fixing broken links")
-        for dir in ('bin', 'sbin'):
-            dir = os.path.join(self.conf.treedir, 'usr', dir)
-
-            brokenlinks = []
-            for root, dnames, fnames in os.walk(dir):
-                for fname in fnames:
-                    fname = os.path.join(root, fname)
-                    if os.path.islink(fname):
-                        target = os.readlink(fname)
-                        if not os.path.exists(fname):
-                            brokenlinks.append(fname)
-
-            for link in brokenlinks:
-                target = os.readlink(link)
-                for dir in ('bin', 'sbin'):
-                    newtarget = re.sub(r'^\.\./\.\./%s/(.*)' % dir, '../%s/\g<1>' % dir, target)
-                    if newtarget != target:
-                        os.unlink(link)
-                        os.symlink(newtarget, link)
