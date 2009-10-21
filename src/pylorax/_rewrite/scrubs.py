@@ -61,25 +61,6 @@ class Install(object):
         #if os.path.isfile(os.path.join(self.conf.treedir, 'bin', 'gawk')):
         #    os.symlink('awk', os.path.join(self.conf.treedir, 'bin', 'gawk'))
 
-        # remove dirs from root
-        dirs = ('boot', 'dev', 'home', 'media', 'mnt', 'opt', 'root', 'selinux', 'srv', 'sys', 'tmp', 'keymaps')
-        for dir in dirs:
-            rm(os.path.join(self.conf.treedir, dir))
-
-        # remove dirs from usr
-        dirs = ('etc', 'games', 'include', 'kerberos', 'local', 'tmp')
-        for dir in dirs:
-            rm(os.path.join(self.conf.treedir, 'usr', dir))
-
-        # remove dirs from var
-        dirs = ('db', 'empty', 'games', 'local', 'lock', 'log', 'mail', 'nis', 'opt', 'preserve', 'spool', 'tmp', 'yp')
-        for dir in dirs:
-            rm(os.path.join(self.conf.treedir, 'var', dir))
-
-        # remove modules and firmware
-        rm(os.path.join(self.conf.treedir, 'lib', 'modules'))
-        rm(os.path.join(self.conf.treedir, 'lib', 'firmware'))
-
         # remove dirs from usr/lib
         dirs = ('ConsoleKit', 'X11', 'alsa-lib', 'asterisk', 'avahi', 'booty', 'db4.5*', 'enchant', 'games', 'gio', 'gnome-keyring', 'gnome-vfs-2.0',
                 'krb5', 'libglade', 'libxslt-plugins', 'lua', 'notification-daemon*', 'nss', 'openssl', 'orbit-2.0', 'perl5', 'pkgconfig', 'plymouth',

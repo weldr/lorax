@@ -1,5 +1,39 @@
-# remove unnecessary directories from root
+# remove unnecessary directories from /
 remove @instroot@/boot
+remove @instroot@/dev
 remove @instroot@/home
+remove @instroot@/media
+remove @instroot@/mnt
+remove @instroot@/opt
 remove @instroot@/root
+remove @instroot@/selinux
+remove @instroot@/srv
+remove @instroot@/sys
 remove @instroot@/tmp
+
+# remove directories from /usr
+remove @instroot@/usr/etc
+remove @instroot@/usr/games
+remove @instroot@/usr/include
+remove @instroot@/usr/kerberos
+remove @instroot@/usr/local
+remove @instroot@/usr/tmp
+
+# remove modules and firmware directories
+remove @instroot@/lib/modules
+remove @instroot@/lib/firmware
+
+# remove directories from /var
+remove @instroot@/var/db
+remove @instroot@/var/empty
+remove @instroot@/var/games
+remove @instroot@/var/local
+remove @instroot@/var/lock
+remove @instroot@/var/log
+remove @instroot@/var/mail
+remove @instroot@/var/nis
+remove @instroot@/var/opt
+remove @instroot@/var/preserve
+remove @instroot@/var/spool
+remove @instroot@/var/tmp
+remove @instroot@/var/yp
