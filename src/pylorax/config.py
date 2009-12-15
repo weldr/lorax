@@ -1,90 +1,191 @@
 #
 # config.py
-# lorax configuration
-#
-# Copyright (C) 2009  Red Hat, Inc.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-# Red Hat Author(s):  Martin Gracik <mgracik@redhat.com>
 #
 
-from misc import seq
+import os
+
+import singleton
+import output
 
 
-class Container(object):
+class LoraxConfig(singleton.Singleton):
 
-    def __init__(self, attrs=None):
-        self.__dict__["__internal"] = {}
-        self.__dict__["__internal"]["attrs"] = set()
+    def __init__(self):
+        self.confdir = "/etc/lorax"
+        self.datadir = "/usr/share/lorax"
 
-        if attrs:
-            self.addAttr(attrs)
-
-    def __str__(self):
-        return str(self.__makeDict())
-
-    def __iter__(self):
-        return iter(self.__makeDict())
-
-    def __getitem__(self, attr):
-        self.__checkInternal(attr)
-
-        if attr not in self.__dict__:
-            raise AttributeError, "object has no attribute '%s'" % attr
-
-        return self.__dict__[attr]
+        self.colors = True
+        self.encoding = "utf-8"
+        self.debug = False
+        self.cleanup = False
 
     def __setattr__(self, attr, value):
-        raise AttributeError, "you can't do that, use addAttr() and/or set() instead"
+        output.Terminal.get().debug("[%s = %s]" % (attr, value))
+        singleton.Singleton.__setattr__(self, attr, value)
 
-    def __delattr__(self, attr):
-        raise AttributeError, "you can't do that, use delAttr() instead"
 
-    def addAttr(self, attrs):
-        for attr in filter(lambda attr: attr not in self.__dict__, seq(attrs)):
-            self.__checkInternal(attr)
+class LoraxPaths(singleton.Singleton):
 
-            self.__dict__[attr] = None
-            self.__dict__["__internal"]["attrs"].add(attr)
+    def __init__(self):
+        self.datadir = LoraxConfig.get().datadir
+        self.installtree = LoraxConfig.get().installtree
 
-    def delAttr(self, attrs):
-        for attr in filter(lambda attr: attr in self.__dict__, seq(attrs)):
-            self.__checkInternal(attr)
+    @property
+    def ANACONDA_PACKAGE(self): return "anaconda"
 
-            del self.__dict__[attr]
-            self.__dict__["__internal"]["attrs"].discard(attr)
+    @property
+    def INITRD_DATADIR(self):
+        return os.path.join(self.datadir, "initrd")
 
-    def set(self, **kwargs):
-        unknown = set()
-        for attr, value in kwargs.items():
-            self.__checkInternal(attr)
+    @property
+    def INSTALLTREE_DATADIR(self):
+        return os.path.join(self.datadir, "installtree")
 
-            if attr in self.__dict__:
-                self.__dict__[attr] = value
-            else:
-                unknown.add(attr)
+    @property
+    def OUTPUTDIR_DATADIR(self):
+        return os.path.join(self.datadir, "outputdir")
 
-        return unknown
+    @property
+    def BOOTDIR(self):
+        return os.path.join(self.installtree, "boot")
 
-    def __makeDict(self):
-        d = {}
-        for attr in self.__dict__["__internal"]["attrs"]:
-            d[attr] = self.__dict__[attr]
+    @property
+    def BOOTDIR_IA64(self):
+        return os.path.join(self.BOOTDIR, "efi", "EFI", "redhat")
 
-        return d
+    @property
+    def ANACONDA_RUNTIME(self):
+        return os.path.join(self.installtree, "usr", "lib", "anaconda-runtime")
 
-    def __checkInternal(self, attr):
-        if attr.startswith("__"):
-            raise AttributeError, "do not mess with internal objects"
+    @property
+    def ANACONDA_BOOT(self):
+        return os.path.join(self.ANACONDA_RUNTIME, "boot")
+
+    @property
+    def SYSLINUXDIR(self):
+        return os.path.join(self.installtree, "usr", "lib", "syslinux")
+
+    @property
+    def ISOLINUXBIN(self):
+        return os.path.join(self.SYSLINUXDIR, "isolinux.bin")
+
+    @property
+    def SYSLINUXCFG(self):
+        return os.path.join(self.ANACONDA_BOOT, "syslinux.cfg")
+
+    @property
+    def GRUBCONF(self):
+        return os.path.join(self.ANACONDA_BOOT, "grub.conf")
+
+    @property
+    def GRUBEFI(self):
+        return os.path.join(self.BOOTDIR, "efi", "EFI", "redhat", "grub.efi")
+
+    @property
+    def VESASPLASH(self):
+        return os.path.join(self.ANACONDA_RUNTIME, "syslinux-vesa-splash.jpg")
+
+    @property
+    def VESAMENU(self):
+        return os.path.join(self.SYSLINUXDIR, "vesamenu.c32")
+
+    @property
+    def SPLASHTOOLS(self):
+        return os.path.join(self.ANACONDA_RUNTIME, "splashtools.sh")
+
+    @property
+    def SPLASHLSS(self):
+        return os.path.join(self.ANACONDA_BOOT, "splash.lss")
+
+    @property
+    def SYSLINUXSPLASH(self):
+        return os.path.join(self.ANACONDA_BOOT, "syslinux-splash.jpg")
+
+    @property
+    def SPLASHXPM(self):
+        return os.path.join(self.BOOTDIR, "grub", "splash.xpm.gz")
+
+    @property
+    def MODULES_DIR(self):
+        return os.path.join(self.installtree, "lib", "modules",
+                            LoraxConfig.get().kernelver)
+
+    @property
+    def MODULES_DEP(self):
+        return os.path.join(self.MODULES_DIR, "modules.dep")
+
+    @property
+    def MODINFO(self): return "/sbin/modinfo"
+
+    @property
+    def MODLIST(self):
+        return os.path.join(self.ANACONDA_RUNTIME, "modlist")
+
+    @property
+    def DEPMOD(self): return "/sbin/depmod"
+
+    @property
+    def GETKEYMAPS(self):
+        return os.path.join(self.ANACONDA_RUNTIME, "getkeymaps")
+
+    @property
+    def LOCALEDEF(self): return "/usr/bin/localedef"
+
+    @property
+    def GENINITRDSZ(self):
+        return os.path.join(self.ANACONDA_RUNTIME, "geninitrdsz")
+
+    @property
+    def REDHAT_EXEC(self):
+        return os.path.join(self.ANACONDA_BOOT, "redhat.exec")
+
+    @property
+    def GENERIC_PRM(self):
+        return os.path.join(self.ANACONDA_BOOT, "generic.prm")
+
+    @property
+    def MKS390CD(self):
+        return os.path.join(self.ANACONDA_RUNTIME, "mk-s390-cdboot")
+
+    @property
+    def MKSQUASHFS(self): return "/sbin/mksquashfs"
+
+    @property
+    def MKCRAMFS(self): return "/sbin/mkfs.cramfs"
+
+    @property
+    def MKISOFS(self): return "/usr/bin/mkisofs"
+
+    @property
+    def MKDOSFS(self): return "/sbin/mkdosfs"
+
+    @property
+    def ISOHYBRID(self): return "/usr/bin/isohybrid"
+
+    @property
+    def SYSTEM_MAP(self):
+        return os.path.join(self.BOOTDIR,
+                            "System.map-%s" % LoraxConfig.get().kernelver)
+
+    @property
+    def KEYMAPS_OVERRIDE(self):
+        return os.path.join(self.ANACONDA_RUNTIME,
+                            "keymaps-override-%s" % LoraxConfig.get().arch)
+
+    @property
+    def LANGTABLE(self):
+        return os.path.join(self.installtree, "usr", "lib", "anaconda",
+                            "lang-table")
+
+    @property
+    def LOCALEPATH(self):
+        return os.path.join(self.installtree, "usr", "share", "locale")
+
+    @property
+    def MANCONFIG(self):
+        return os.path.join(self.installtree, "etc", "man.config")
+
+    @property
+    def FEDORAKMODCONF(self):
+        return os.path.join(self.installtree, "etc", "yum", "pluginconf.d",
+                            "fedorakmod.conf")

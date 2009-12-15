@@ -1,0 +1,242 @@
+## create required directories
+makedirs ${initrd}/lib
+makedirs ${initrd}/modules
+makedirs ${initrd}/firmware
+symlink name ${initrd}/lib/modules target ../modules
+symlink name ${initrd}/lib/firmware target ../firmware
+
+makedirs ${initrd}/sbin
+makedirs ${initrd}/dev
+makedirs ${initrd}/etc
+makedirs ${initrd}/etc/udev/rules.d
+makedirs ${initrd}/lib/udev/rules.d
+makedirs ${initrd}/proc
+makedirs ${initrd}/selinux
+makedirs ${initrd}/sys
+makedirs ${initrd}/etc/terminfo/{a,d,l,s,v,x,g}
+makedirs ${initrd}/tmp
+makedirs ${initrd}/usr/libexec
+makedirs ${initrd}/usr/${libdir}/NetworkManager
+makedirs ${initrd}/usr/share/dbus-1/system-services
+makedirs ${initrd}/var/cache/hald
+makedirs ${initrd}/var/lib/dbus
+makedirs ${initrd}/var/lib/dhclient
+makedirs ${initrd}/var/lock/rpm
+makedirs ${initrd}/var/run
+makedirs ${initrd}/var/run/dbus
+makedirs ${initrd}/var/run/hald
+makedirs ${initrd}/var/run/NetworkManager
+makedirs ${initrd}/etc/dbus-1/system.d
+makedirs ${initrd}/etc/modprobe.d
+makedirs ${initrd}/etc/NetworkManager/dispatcher.d
+makedirs ${initrd}/${libdir}/dbus-1
+makedirs ${initrd}/etc/sysconfig/network-scripts
+makedirs ${initrd}/usr/share/PolicyKit/policy
+makedirs ${initrd}/etc/PolicyKit
+makedirs ${initrd}/var/lib/misc
+makedirs ${initrd}/etc/hal/fdi
+makedirs ${initrd}/usr/share/hal/fdi
+makedirs ${initrd}/usr/share/hwdata
+makedirs ${initrd}/etc/rc.d/init.d
+makedirs ${initrd}/usr/sbin
+makedirs ${initrd}/var/run/wpa_supplicant
+
+## set the buildarch
+edit ${initrd}/etc/arch text "${arch}"
+
+## copy etc stuff
+copy ${instroot} etc/passwd to ${initrd} etc
+chmod ${initrd}/etc/passwd mode 0644
+
+copy ${instroot} etc/group to ${initrd} etc
+chmod ${initrd}/etc/group mode 0644
+
+copy ${instroot} etc/nsswitch.conf to ${initrd} etc
+chmod ${initrd}/etc/nsswitch.conf mode 0644
+
+copy ${instroot} etc/hosts to ${initrd} etc
+chmod ${initrd}/etc/hosts mode 0644
+
+## copy mount/umount
+copy ${instroot} bin/mount to ${initrd} sbin
+copy ${instroot} bin/umount to ${initrd} sbin
+copy ${instroot} sbin/mount.* to ${initrd} sbin
+copy ${instroot} sbin/umount.* to ${initrd} sbin
+
+## copy udev
+copy ${instroot} sbin/udevd to ${initrd} sbin
+copy ${instroot} sbin/udevadm to ${initrd} sbin
+symlink name ${initrd}/sbin/udevinfo target udevadm
+symlink name ${initrd}/sbin/udevsettle target udevadm
+
+## udev rules
+copy ${instroot} etc/udev/udev.conf to ${initrd} etc/udev
+chmod ${initrd}/etc/udev/udev.conf mode 0644
+
+copy ${instroot} lib/udev/* to ${initrd} lib/udev
+##chmod ${initrd}/lib/udev/* mode 0644
+
+remove ${initrd}/lib/udev/rules.d/*persistent*
+remove ${initrd}/lib/udev/rules.d/*generator*
+
+copy ${instroot} etc/udev/rules.d/*.rules to ${initrd} etc/udev/rules.d
+chmod ${initrd}/etc/udev/rules.d/*.rules mode 0644
+
+## copy bash
+copy ${instroot} bin/bash to ${initrd} sbin
+symlink name ${initrd}/sbin/sh target bash
+
+copy ${instroot} sbin/consoletype to ${initrd} sbin
+copy ${instroot} usr/bin/logger to ${initrd} sbin
+
+copy ${instroot} etc/rc.d/init.d/functions to ${initrd} etc/rc.d/init.d
+copy ${instroot} etc/sysconfig/network-scripts/network-functions* to \
+    ${initrd} etc/sysconfig/network-scripts
+
+symlink name ${initrd}/etc/init.d target /etc/rc.d/init.d
+
+## dhcp and dhcpv6 client daemons and support programs
+copy ${instroot} sbin/dhclient to ${initrd} sbin
+copy ${instroot} sbin/dhclient-script to ${initrd} sbin
+copy ${instroot} sbin/dhcp6c to ${initrd} sbin
+copy ${instroot} sbin/arping to ${initrd} sbin
+copy ${instroot} sbin/ifconfig to ${initrd} sbin
+copy ${instroot} sbin/ip to ${initrd} sbin
+copy ${instroot} bin/ipcalc to ${initrd} sbin
+copy ${instroot} bin/hostname to ${initrd} sbin
+copy ${instroot} sbin/ethtool to ${initrd} sbin
+copy ${instroot} sbin/route to ${initrd} sbin
+touch ${initrd}/etc/resolv.conf
+
+## hwdata
+copy ${instroot} usr/share/hwdata/pci.ids to ${initrd} usr/share/hwdata
+copy ${instroot} usr/share/hwdata/usb.ids to ${initrd} usr/share/hwdata
+
+## hal
+copy ${instroot} usr/sbin/hald to ${initrd} sbin
+copy ${instroot} usr/libexec/hald-runner to ${initrd} usr/libexec
+copy ${instroot} usr/libexec/hald-generate-fdi-cache to ${initrd} usr/libexec
+copy ${instroot} usr/libexec/hal*storage* to ${initrd} usr/libexec
+touch ${initrd}/var/run/hald.acl-list
+copy ${instroot} usr/share/hal/fdi/* to ${initrd} usr/share/hal/fdi
+copy ${instroot} etc/hal/fdi/* to ${initrd} etc/hal/fdi
+copy ${instroot} etc/dbus-1/system.d/hal.conf to ${initrd} etc/dbus-1/system.d
+
+## policykit
+copy ${instroot} etc/PolicyKit/PolicyKit.conf to ${initrd} etc/PolicyKit
+copy ${instroot} \
+    usr/share/dbus-1/system-services/org.freedesktop.PolicyKit.service to \
+    ${initrd} usr/share/dbus-1/system-services
+
+copy ${instroot} usr/share/PolicyKit/policy/org.freedesktop.policykit.policy \
+    to ${initrd} usr/share/PolicyKit/policy
+
+copy ${instroot} var/lib/misc/PolicyKit.reload to ${initrd} var/lib/misc
+
+## dbus
+copy ${instroot} bin/dbus-uuidgen to ${initrd} sbin
+copy ${instroot} bin/dbus-daemon to ${initrd} sbin
+copy ${instroot} etc/dbus-1/system.conf to ${initrd} etc/dbus-1
+copy ${instroot} ${libdir}/dbus-1/dbus-daemon-launch-helper to \
+    ${initrd} ${libdir}/dbus-1
+
+chown ${initrd}/${libdir}/dbus-1/dbus-daemon-launch-helper user root group dbus
+chmod ${initrd}/${libdir}/dbus-1/dbus-daemon-launch-helper mode 04750
+
+## wpa_supplicant
+copy ${instroot} usr/sbin/wpa_passphrase to ${initrd} usr/sbin
+copy ${instroot} usr/sbin/wpa_supplicant to ${initrd} usr/sbin
+copy ${instroot} etc/dbus-1/system.d/wpa_supplicant.conf to \
+    ${initrd} etc/dbus-1/system.d
+
+copy ${instroot} etc/wpa_supplicant/wpa_supplicant.conf to \
+    ${initrd} etc/wpa_supplicant
+
+copy ${instroot} \
+    usr/share/dbus-1/system-services/fi.epitest.hostap.WPASupplicant.service \
+    to ${initrd} usr/share/dbus-1/system-services
+
+## networkmanager
+copy ${instroot} usr/sbin/NetworkManager to ${initrd} usr/sbin
+copy ${instroot} usr/sbin/nm-system-settings to ${initrd} usr/sbin
+copy ${instroot} etc/dbus-1/system.d/nm-*.conf to ${initrd} etc/dbus-1/system.d
+copy ${instroot} etc/dbus-1/system.d/NetworkManager.conf to \
+    ${initrd} etc/dbus-1/system.d
+copy ${instroot} etc/NetworkManager/nm-system-settings.conf to \
+    ${initrd} etc/NetworkManager
+copy ${instroot} \
+    usr/${libdir}/NetworkManager/libnm-settings-plugin-ifcfg-fedora.so to \
+    ${initrd} usr/${libdir}/NetworkManager
+copy ${instroot} usr/libexec/nm-* to ${initrd} usr/libexec
+copy ${instroot} usr/share/dbus-1/system-services/org.freedesktop.NetworkManagerSystemSettings.service to ${initrd} usr/share/dbus-1/system-services
+copy ${instroot} usr/share/dbus-1/system-services/org.freedesktop.nm_dispatcher.service to ${initrd} usr/share/dbus-1/system-services
+
+## modprobe
+copy ${instroot} sbin/modprobe to ${initrd} sbin
+copy ${instroot} sbin/insmod to ${initrd} sbin
+copy ${instroot} sbin/rmmod to ${initrd} sbin
+
+## profile
+edit ${initrd}/.profile text "PATH=/bin:/usr/bin:/usr/sbin:/mnt/sysimage/sbin:/mnt/sysimage/usr/sbin:/mnt/sysimage/bin:/mnt/sysimage/usr/bin\nexport PATH"
+
+## terminfos
+copy ${instroot} usr/share/terminfo/a/ansi to ${initrd} etc/terminfo/a \
+    nosymlinks
+copy ${instroot} usr/share/terminfo/d/dumb to ${initrd} etc/terminfo/d \
+    nosymlinks
+copy ${instroot} usr/share/terminfo/l/linux to ${initrd} etc/terminfo/l \
+    nosymlinks
+copy ${instroot} usr/share/terminfo/s/screen to ${initrd} etc/terminfo/s \
+    nosymlinks
+copy ${instroot} usr/share/terminfo/v/vt100 to ${initrd} etc/terminfo/v \
+    nosymlinks
+copy ${instroot} usr/share/terminfo/v/vt100-nav to ${initrd} etc/terminfo/v \
+    nosymlinks
+copy ${instroot} usr/share/terminfo/v/vt102 to ${initrd} etc/terminfo/v \
+    nosymlinks
+copy ${instroot} usr/share/terminfo/x/xterm to ${initrd} etc/terminfo/x \
+    nosymlinks
+copy ${instroot} usr/share/terminfo/x/xterm-color to ${initrd} etc/terminfo/x \
+    nosymlinks
+copy ${instroot} usr/share/terminfo/g/gnome to ${initrd} etc/terminfo/g \
+    nosymlinks
+chmod ${initrd}/etc/terminfo/*/* mode 0644
+
+## misc
+copy ${instroot} bin/awk to ${initrd} sbin
+copy ${instroot} bin/gawk to ${initrd} sbin
+copy ${instroot} bin/egrep to ${initrd} sbin
+copy ${instroot} bin/fgrep to ${initrd} sbin
+copy ${instroot} bin/grep to ${initrd} sbin
+copy ${instroot} bin/kill to ${initrd} sbin
+copy ${instroot} bin/ln to ${initrd} sbin
+copy ${instroot} bin/readlink to ${initrd} sbin
+copy ${instroot} bin/rm to ${initrd} sbin
+copy ${instroot} bin/rmdir to ${initrd} sbin
+copy ${instroot} bin/sed to ${initrd} sbin
+copy ${instroot} bin/sleep to ${initrd} sbin
+copy ${instroot} bin/touch to ${initrd} sbin
+
+symlink name ${initrd}/init target /sbin/init
+symlink name ${initrd}/etc/mtab target /proc/mounts
+symlink name ${initrd}/bin target sbin
+symlink name ${initrd}/var/lib/xkb target ../../tmp
+
+## loader
+copy ${instroot} usr/lib/anaconda-runtime/loader/loader to ${initrd} sbin
+copy ${instroot} usr/lib/anaconda-runtime/loader/loader.tr to ${initrd} etc
+chmod ${initrd}/etc/loader.tr mode 0644
+
+## indirect dependencies
+##copy ${instroot} ${libdir}/ld-linux.so.2 to ${initrd} ${libdir}
+copy ${instroot} ${libdir}/libcom_err.so.2 to ${initrd} ${libdir}
+copy ${instroot} ${libdir}/libdbus-glib-1.so.2 to ${initrd} ${libdir}
+copy ${instroot} ${libdir}/libfreebl3.so to ${initrd} ${libdir}
+copy ${instroot} ${libdir}/libgcc_s.so.1 to ${initrd} ${libdir}
+copy ${instroot} ${libdir}/libnss_dns.so.2 to ${initrd} ${libdir}
+copy ${instroot} ${libdir}/libnss_files.so.2 to ${initrd} ${libdir}
+copy ${instroot} ${libdir}/libsoftokn3.so to ${initrd} ${libdir}
+copy ${instroot} usr/${libdir}/libsqlite3.so.0 to ${initrd} usr/${libdir}
+
+## langtable
+copy ${instroot} usr/lib/anaconda/lang-table to ${initrd} etc

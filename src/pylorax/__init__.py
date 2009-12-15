@@ -1,639 +1,595 @@
 #
 # __init__.py
-# lorax main class
 #
-# Copyright (C) 2009  Red Hat, Inc.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-# Red Hat Author(s):  Martin Gracik <mgracik@redhat.com>
-#                     David Cantrell <dcantrell@redhat.com>
-#
+
+__VERSION__ = "0.1"
 
 import sys
 import os
-import tempfile
-import re
-import shutil
 import ConfigParser
+import re
+import glob
 import time
 import datetime
+import shutil
 import commands
 
-from config import Container
-from utils.yumwrapper import Yum
-from utils.fileutils import copy, edit, replace
+import yum
+import yum.callbacks
+import yum.rpmtrans
 
+import config
 import output
-import insttree
-import images
+import ramdisk
+import efi
+import install
+import lcs
 
 
-class Config(Container):
+ARCHS64         = ( "x86_64",
+                    "s390x",
+                    "sparc64" )
 
-    def __init__(self):
-        config = ("confdir", "datadir", "tempdir", "debug", "cleanup")
+BASEARCH_MAP    = { "i386" : "i386",
+                    "i586" : "i386",
+                    "sparc64" : "sparc" }
 
-        # options
-        required = ("product", "version", "release", "outdir", "repos")
-        optional = ("variant", "bugurl", "updates", "mirrorlist")
+EFIARCH_MAP     = { "i386" : "IA32",
+                    "x86_64" : "X64",
+                    "ia64" : "IA64" }
 
-        Container.__init__(self, config + required + optional)
-
-        # set defaults
-        self.set(confdir="/etc/lorax",
-            datadir="/usr/share/lorax",
-            tempdir=tempfile.mkdtemp(prefix="lorax.tmp.",
-                    dir=tempfile.gettempdir()),
-            debug=False,
-            cleanup=False)
-
-        self.set(product="",
-            version="",
-            release="",
-            outdir="",
-            repos=[])
-
-        self.set(variant="",
-            bugurl="",
-            updates="",
-            mirrorlist=[])
+LIB32 = "lib"
+LIB64 = "lib64"
 
 
 class LoraxError(Exception):
     pass
 
+
 class Lorax(object):
 
-    def __init__(self, config):
-        assert isinstance(config, Config) == True
-        self.conf = config
+    SETTINGS   = ( "colors",
+                   "encoding",
+                   "debug",
+                   "cleanup" )
 
-        # check if we have all required options
-        if not self.conf.repos:
-            raise LoraxError, "missing required parameter 'repos'"
-        if not self.conf.outdir:
-            raise LoraxError, "missing required parameter 'outdir'"
-        if not self.conf.product:
-            raise LoraxError, "missing required parameter 'product'"
-        if not self.conf.version:
-            raise LoraxError, "missing required parameter 'version'"
-        if not self.conf.release:
-            raise LoraxError, "missing required parameter 'release'"
+    REQ_PARAMS = ( "product",
+                   "version",
+                   "release",
+                   "outputdir",
+                   "tempdir",
+                   "installtree" )
 
-        self.yum = None
+    OPT_PARAMS = ( "variant",
+                   "bugurl",
+                   "updates" )
 
-        # initialize the output objects
-        self.so, self.se = output.initialize(verbose=self.conf.debug)
+    def __init__(self, yb, *args, **kwargs):
+        # check if we have root privileges
+        if not os.geteuid() == 0:
+            raise LoraxError("no root privileges")
 
-    def collect_repositories(self):
-        repolist = []
+        # check the yumbase object
+        if not isinstance(yb, yum.YumBase):
+            raise LoraxError("not an yumbase object")
 
-        for repospec in self.conf.repos:
-            if repospec.startswith("/"):
-                repo = "file://%s" % (repospec,)
-                self.so.info("Adding local repo: %s" % (repo,))
-                repolist.append(repo)
-            elif repospec.startswith("http://") or repospec.startswith("ftp://"):
-                self.so.info("Adding remote repo: %s" % (repospec,))
-                repolist.append(repospec)
-            else:
-                self.se.warning("Invalid repo path: %s" % (repospec,))
+        # create the yum object
+        self.yum = YumHelper(yb)
 
-        if not repolist:
-            return False
-        else:
-            mainrepo, extrarepos = repolist[0], repolist[1:]
+        # get the config object
+        self.conf = config.LoraxConfig.get()
 
-            self.conf.addAttr(["mainrepo", "extrarepos"])
-            self.conf.set(mainrepo=mainrepo, extrarepos=extrarepos)
-       
-            # remove not needed attributes from config 
-            self.conf.delAttr("repos")
+        # get the settings first
+        for key in self.SETTINGS:
+            value = kwargs.get(key, None)
+            if value is not None:
+                setattr(self.conf, key, value)
 
-        return True
+        # set up the output
+        self.output = output.Terminal.get()
 
-    def initialize_directories(self):
-        # create the temporary directories
-        treedir = os.path.join(self.conf.tempdir, "treedir", "install")
-        os.makedirs(treedir)
+        output_level = output.INFO
+        if self.conf.debug:
+            output_level = output.DEBUG
 
-        self.so.info("Working directories:")
-        
-        self.so.indent()
-        self.so.info("tempdir = %s" % (self.conf.tempdir,))
-        self.so.info("treedir = %s" % (treedir,))
-        self.so.unindent()
+        self.output.basic_config(colors=self.conf.colors,
+                                 encoding=self.conf.encoding,
+                                 level=output_level)
 
-        self.conf.addAttr("treedir")
-        self.conf.set(treedir=treedir)
+        # check and set up the required parameters
+        for key in self.REQ_PARAMS:
+            value = kwargs.get(key, None)
 
-        # create the destination directories
-        if not os.path.isdir(self.conf.outdir):
-            os.makedirs(self.conf.outdir, mode=0755)
+            if value is None:
+                raise LoraxError("missing required parameter '%s'" % key)
 
-        imagesdir = os.path.join(self.conf.outdir, "images")
-        if not os.path.isdir(imagesdir):
-            os.makedirs(imagesdir)
+            setattr(self.conf, key, value)
 
-        pxebootdir = os.path.join(imagesdir, "pxeboot")
-        if not os.path.isdir(pxebootdir):
-            os.makedirs(pxebootdir)
+        # set up the optional parameters
+        for key in self.OPT_PARAMS:
+            setattr(self.conf, key, kwargs.get(key, ""))
 
-        efibootdir = os.path.join(self.conf.outdir, "EFI", "BOOT")
-        if not os.path.isdir(efibootdir):
-            os.makedirs(efibootdir)
+        # check if the required directories exist
+        if os.path.isdir(self.conf.outputdir):
+            raise LoraxError("output directory '%s' already exist" % \
+                             self.conf.outputdir)
 
-        # create the isolinux directory
-        isolinuxdir = os.path.join(self.conf.outdir, "isolinux")
-        if not os.path.isdir(isolinuxdir):
-            os.makedirs(isolinuxdir)
+        if not os.path.isdir(self.conf.tempdir):
+            raise LoraxError("temporary directory '%s' does not exist" % \
+                             self.conf.tempdir)
 
-        self.so.info("Destination directories:")
+        if not os.path.isdir(self.conf.installtree):
+            raise LoraxError("install tree directory '%s' does not exist" % \
+                             self.conf.installtree)
 
-        self.so.indent()
-        self.so.info("outdir = %s" % (self.conf.outdir,))
-        self.so.info("imagesdir = %s" % (imagesdir,))
-        self.so.info("pxebootdir = %s" % (pxebootdir,))
-        self.so.info("efibootdir = %s" % (efibootdir,))
-        self.so.info("isolinuxdir = %s" % (isolinuxdir,))
-        self.so.unindent()
+        # get the paths
+        self.paths = config.LoraxPaths.get()
 
-        self.conf.addAttr(["imagesdir", "pxebootdir",
-                "efibootdir", "isolinuxdir"])
-        self.conf.set(imagesdir=imagesdir, pxebootdir=pxebootdir,
-                efibootdir=efibootdir, isolinuxdir=isolinuxdir)
-
-    def initialize_yum(self):
-        yumconf = os.path.join(self.conf.tempdir, "yum.conf")
-
-        # create the yum cache directory
-        cachedir = os.path.join(self.conf.tempdir, "yumcache")
-        os.makedirs(cachedir)
-
-        c = ConfigParser.ConfigParser()
-
-        # main section
-        section = "main"
-        data = { "cachedir": cachedir,
-                 "keepcache": 0,
-                 "gpgcheck": 0,
-                 "plugins": 0,
-                 "reposdir": "",
-                 "tsflags": "nodocs" }
-        c.add_section(section)
-        [c.set(section, key, value) for key, value in data.items()]
-
-        # main repo
-        section = "lorax-repo"
-        data = { "name": "lorax repo",
-                 "baseurl": self.conf.mainrepo,
-                 "enabled": 1 }
-        c.add_section(section)
-        [c.set(section, key, value) for key, value in data.items()]
-
-        # extra repos
-        for n, extra in enumerate(self.conf.extrarepos, start=1):
-            section = "lorax-extrarepo-%d" % (n,)
-            data = { "name": "lorax extra repo %d" % (n,),
-                     "baseurl": extra,
-                     "enabled": 1 }
-            c.add_section(section)
-            [c.set(section, key, value) for key, value in data.items()]
-
-        # mirrorlist repos
-        for n, mirror in enumerate(self.conf.mirrorlist, start=1):
-            section = "lorax-mirrorlistrepo-%d" % (n,)
-            data = { "name": "lorax mirrorlist repo %d" % (n,),
-                     "mirrorlist": mirror,
-                     "enabled": 1 }
-            c.add_section(section)
-            [c.set(section, key, value) for key, value in data.items()]
-
-        try:
-            f = open(yumconf, "w")
-        except IOError as why:
-            self.se.error("Unable to write yum.conf file: %s" % (why,))
-            return False
-        else:
-            c.write(f)
-            f.close()
-
-        self.conf.addAttr("yumconf")
-        self.conf.set(yumconf=yumconf)
-
-        # remove not needed attributes from config
-        self.conf.delAttr(["mainrepo", "extrarepos", "mirrorlist"])
-
-        # create the Yum object
-        self.yum = Yum(yumconf=self.conf.yumconf, installroot=self.conf.treedir,
-                errfile=os.path.join(self.conf.tempdir, "yum.errors"))
-
-        return True
-
-    def set_architecture(self):
-        # get the system architecture
-        unamearch = os.uname()[4]
-
-        self.conf.addAttr("buildarch")
-        self.conf.set(buildarch=unamearch)
-
-        # get the anaconda package architecture
-        installed, available = self.yum.find("anaconda")
-        try:
-            self.conf.set(buildarch=available[0].arch)
-        except:
-            pass
-
-        # set basearch
-        self.conf.addAttr("basearch")
-        self.conf.set(basearch=self.conf.buildarch)
-
-        if re.match(r"i.86", self.conf.basearch):
-            self.conf.set(basearch="i386")
-        elif self.conf.basearch == "sparc64":
-            self.conf.set(basearch="sparc")
+    def run(self):
+        # set the target architecture
+        self.output.info(":: setting the build architecture")
+        self.conf.arch = self.get_arch()
+        self.conf.basearch = BASEARCH_MAP.get(self.conf.arch, self.conf.arch)
+        self.conf.efiarch = EFIARCH_MAP.get(self.conf.arch, "")
 
         # set the libdir
-        self.conf.addAttr("libdir")
-        self.conf.set(libdir="lib")
+        self.conf.libdir = LIB32
+        if self.conf.arch in ARCHS64:
+            self.conf.libdir = LIB64
 
-        # on 64-bit systems, make sure we use lib64 as the lib directory
-        if self.conf.buildarch.endswith("64") or self.conf.buildarch == "s390x":
-            self.conf.set(libdir="lib64")
+        # read the config files
+        self.output.info(":: reading the configuration files")
+        packages, modules, initrd_template, scrubs_template = self.get_config()
 
-        # set efiarch
-        self.conf.addAttr("efiarch")
-        self.conf.set(efiarch="")
+        # add the branding
+        packages.add("%s-logos" % self.conf.product.lower())
+        packages.add("%s-release" % self.conf.product.lower())
 
-        if self.conf.buildarch == "i386":
-            self.conf.set(efiarch="ia32")
-        elif self.conf.buildarch == "x86_64":
-            self.conf.set(efiarch="x64")
-        elif self.conf.buildarch == "ia64":
-            self.conf.set(efiarch="ia64")
+        self.conf.packages = packages
+        self.conf.modules = modules
+        self.conf.initrd_template = initrd_template
+        self.conf.scrubs_template = scrubs_template
+
+        # install packages into the install tree
+        self.output.info(":: installing required packages")
+        for name in packages:
+            if not self.yum.install(name):
+                self.output.warning("no package %s found" % \
+                                    self.output.format(name, type=output.BOLD))
+
+        self.yum.process_transaction()
+
+        # copy the updates
+        if self.conf.updates and os.path.isdir(self.conf.updates):
+            self.output.info(":: copying updates")
+            utils.scopy(src_root=self.conf.updates, src_path="*",
+                        dst_root=self.conf.installtree, dst_path="")
+
+        # get the anaconda runtime directory
+        if os.path.isdir(self.paths.ANACONDA_RUNTIME):
+            self.conf.anaconda_runtime = self.paths.ANACONDA_RUNTIME
+            self.conf.anaconda_boot = self.paths.ANACONDA_BOOT
+        else:
+            self.output.critical("no anaconda runtime directory found")
+            sys.exit(1)
+
+        # get list of the installed kernel files
+        kerneldir = self.paths.BOOTDIR
+        if self.conf.arch == "ia64":
+            kerneldir = self.paths.BOOTDIR_IA64
+
+        kernelfiles = glob.glob(os.path.join(kerneldir, "vmlinuz-*"))
+
+        if not kernelfiles:
+            self.output.critical("no kernel image found")
+            sys.exit(1)
+
+        # create treeinfo, discinfo, and buildstamp
+        self.conf.treeinfo = self.write_treeinfo()
+        self.conf.discinfo = self.write_discinfo()
+        self.conf.buildstamp = self.write_buildstamp()
+
+        # prepare the output directory
+        self.output.info(":: preparing the output directory")
+        ok = self.prepare_output_directory()
+
+        if not ok:
+            self.output.critical("unable to prepare the output directory")
+            sys.exit(1)
+
+        for kernelfile in kernelfiles:
+            kfilename = os.path.basename(kernelfile)
+            m = re.match(r"vmlinuz-(?P<ver>.*)", kfilename)
+            if m:
+                self.conf.kernelfile = kernelfile
+                self.conf.kernelver = m.group("ver")
+            else:
+                continue
+
+            self.output.info(":: creating initrd for '%s'" % kfilename)
+
+            # create a temporary directory for the ramdisk tree
+            self.conf.ramdisktree = os.path.join(self.conf.tempdir,
+                                                 "ramdisk-%s" % \
+                                                 self.conf.kernelver)
+
+            utils.makedirs(self.conf.ramdisktree)
+
+            initrd = ramdisk.Ramdisk()
+            kernel_path, initrd_path = initrd.create()
+
+            # copy the kernel and initrd images to the pxeboot directory
+            shutil.copy2(kernel_path, self.conf.pxebootdir)
+            shutil.copy2(initrd_path, self.conf.pxebootdir)
+
+            # if this is a PAE kernel, skip the EFI part
+            if kernel_path.endswith("PAE"):
+                continue
+
+            # copy the kernel and initrd images to the isolinux directory
+            shutil.copy2(kernel_path, self.conf.isolinuxdir)
+            shutil.copy2(initrd_path, self.conf.isolinuxdir)
+
+            # create the efi images
+            self.output.info(":: creating efi images for '%s'" % kfilename)
+
+            efiimages = efi.EFI()
+            eb, ed = efiimages.create(kernel=kernel_path,
+                                      initrd=initrd_path,
+                                      kernelpath="/images/pxeboot/vmlinuz",
+                                      initrdpath="/images/pxeboot/initrd.img")
+
+            self.conf.efiboot = eb
+            self.conf.efidisk = ed
+
+            # copy the efi images to the images directory
+            shutil.copy2(self.conf.efiboot, self.conf.imagesdir)
+            shutil.copy2(self.conf.efidisk, self.conf.imagesdir)
+
+        # create the install image
+        self.output.info(":: creating the install image")
+        i = install.InstallImage()
+        installimg = i.create()
+
+        if installimg is None:
+            self.output.critical("unable to create install image")
+            sys.exit(1)
+
+        shutil.copy2(installimg, self.conf.imagesdir)
+
+        # create the boot iso
+        self.output.info(":: creating the boot iso")
+        bootiso = self.create_boot_iso()
+
+        if bootiso is None:
+            self.output.critical("unable to create boot iso")
+            sys.exit(1)
+
+        shutil.copy2(bootiso, self.conf.imagesdir)
+
+        # copy the treeinfo and discinfo to the output directory
+        shutil.copy2(self.conf.treeinfo, self.conf.outputdir)
+        shutil.copy2(self.conf.discinfo, self.conf.outputdir)
+
+        # cleanup
+        self.cleanup()
+
+    def get_arch(self):
+        # get the architecture of the anaconda package
+        installed, available = self.yum.search(self.paths.ANACONDA_PACKAGE)
+        try:
+            arch = available[0].arch
+        except:
+            # fallback to the system architecture
+            arch = os.uname()[4]
+
+        return arch
+
+    def get_config(self):
+        generic = os.path.join(self.conf.confdir, "config.noarch")
+        specific = os.path.join(self.conf.confdir,
+                                "config.%s" % self.conf.arch)
+
+        packages, modules = set(), set()
+        initrd_template, scrubs_template = None, None
+
+        for f in (generic, specific):
+            if not os.path.isfile(f):
+                continue
+
+            c = ConfigParser.ConfigParser()
+            c.read(f)
+
+            if c.has_option("lorax", "packages"):
+                list = c.get("lorax", "packages").split()
+                for name in list:
+                    if name.startswith("-"):
+                        packages.discard(name)
+                    else:
+                        packages.add(name)
+
+            if c.has_option("lorax", "modules"):
+                list = c.get("lorax", "modules").split()
+                for name in list:
+                    if name.startswith("-"):
+                        modules.discard(name)
+                    else:
+                        modules.add(name)
+
+            if c.has_option("lorax", "initrd_template"):
+                initrd_template = c.get("lorax", "initrd_template")
+                initrd_template = os.path.join(self.conf.confdir,
+                                               initrd_template)
+
+            if c.has_option("lorax", "scrubs_template"):
+                scrubs_template = c.get("lorax", "scrubs_template")
+                scrubs_template = os.path.join(self.conf.confdir,
+                                               scrubs_template)
+
+        return packages, modules, initrd_template, scrubs_template
 
     def write_treeinfo(self, discnum=1, totaldiscs=1, packagedir=""):
-        outfile = os.path.join(self.conf.outdir, ".treeinfo")
+        outfile = os.path.join(self.conf.tempdir, ".treeinfo")
 
-        # don't print anything instead of None, if variant is not specified
-        variant = ""
-        if self.conf.variant is not None:
-            variant = self.conf.variant
-           
+        variant = self.conf.variant
+        if variant is None:
+            variant = ""
+
         c = ConfigParser.ConfigParser()
 
-        # general section
         section = "general"
-        data = { "timestamp": time.time(),
-                 "family": self.conf.product,
-                 "version": self.conf.version,
-                 "arch": self.conf.basearch,
-                 "variant": variant,
-                 "discnum": discnum,
-                 "totaldiscs": totaldiscs,
-                 "packagedir": packagedir }
-        c.add_section(section)
-        [c.set(section, key, value) for key, value in data.items()]
+        data = { "timestamp" : time.time(),
+                 "family" : self.conf.product,
+                 "version" : self.conf.version,
+                 "arch" : self.conf.basearch,
+                 "variant" : variant,
+                 "discnum" : discnum,
+                 "totaldiscs" : totaldiscs,
+                 "packagedir" : packagedir }
 
-        # images section
-        section = "images-%s" % (self.conf.basearch,)
-        data = { "kernel": "images/pxeboot/vmlinuz",
-                 "initrd": "images/pxeboot/initrd.img",
-                 "boot.iso": "images/boot.iso" }
         c.add_section(section)
-        [c.set(section, key, value) for key, value in data.items()]
+        map(lambda (key, value): c.set(section, key, value), data.items())
 
-        try:
-            f = open(outfile, "w")
-        except IOError as why:
-            self.se.error("Unable to write .treeinfo file: %s" % (why,))
-            return False
-        else:
+        section = "images-%s" % self.conf.basearch
+        data = { "kernel" : "images/pxeboot/vmlinuz",
+                 "initrd" : "images/pxeboot/initrd.img",
+                 "boot.iso" : "images/boot.iso" }
+
+        c.add_section(section)
+        map(lambda (key, value): c.set(section, key, value), data.items())
+
+        with open(outfile, "w") as f:
             c.write(f)
-            f.close()
-        
-        return True
+
+        return outfile
 
     def write_discinfo(self, discnum="ALL"):
-        outfile = os.path.join(self.conf.outdir, ".discinfo")
+        outfile = os.path.join(self.conf.tempdir, ".discinfo")
 
-        try:
-            f = open(outfile, "w")
-        except IOError as why:
-            self.se.error("Unable to write .discinfo file: %s" % (why,))
-            return False
-        else:
-            f.write("%f\n" % (time.time(),))
-            f.write("%s\n" % (self.conf.release,))
-            f.write("%s\n" % (self.conf.basearch,))
-            f.write("%s\n" % (discnum,))
-            f.close()
-        
-        return True
+        with open(outfile, "w") as f:
+            f.write("%f\n" % time.time())
+            f.write("%s\n" % self.conf.release)
+            f.write("%s\n" % self.conf.basearch)
+            f.write("%s\n" % discnum)
+
+        return outfile
 
     def write_buildstamp(self):
-        outfile = os.path.join(self.conf.treedir, ".buildstamp")
+        outfile = os.path.join(self.conf.tempdir, ".buildstamp")
 
-        # make image uuid
         now = datetime.datetime.now()
-        uuid = "%s.%s" % (now.strftime("%Y%m%d%H%M"), self.conf.buildarch)
+        uuid = "%s.%s" % (now.strftime("%Y%m%d%H%M"), self.conf.arch)
 
-        try:
-            f = open(outfile, "w")
-        except IOError as why:
-            self.se.error("Unable to write .buildstamp file: %s" % (why,))
-            return False
-        else:
-            f.write("%s\n" % (uuid,))
-            f.write("%s\n" % (self.conf.product,))
-            f.write("%s\n" % (self.conf.version,))
-            f.write("%s\n" % (self.conf.bugurl,))
-            f.close()
+        with open(outfile, "w") as f:
+            f.write("%s\n" % uuid)
+            f.write("%s\n" % self.conf.product)
+            f.write("%s\n" % self.conf.version)
+            f.write("%s\n" % self.conf.bugurl)
 
-        self.conf.addAttr("buildstamp")
-        self.conf.set(buildstamp=outfile)
-
-        return True
+        return outfile
 
     def prepare_output_directory(self):
-        # write the images/README
-        src = os.path.join(self.conf.datadir, "images", "README")
-        dst = os.path.join(self.conf.imagesdir, "README")
+        # create the output directory
+        os.mkdir(self.conf.outputdir)
+
+        # create the images directory
+        imagesdir = os.path.join(self.conf.outputdir, "images")
+        utils.mkdir(imagesdir)
+        self.conf.imagesdir = imagesdir
+
+        # write the images/README file
+        src = os.path.join(self.paths.OUTPUTDIR_DATADIR, "images", "README")
+        dst = os.path.join(imagesdir, "README")
         shutil.copy2(src, dst)
-        replace(dst, r"@PRODUCT@", self.conf.product)
+        utils.replace(dst, r"@PRODUCT@", self.conf.product)
 
-        # write the images/pxeboot/README
-        src = os.path.join(self.conf.datadir, "images", "pxeboot", "README")
-        dst = os.path.join(self.conf.pxebootdir, "README")
+        # create the pxeboot directory
+        pxebootdir = os.path.join(imagesdir, "pxeboot")
+        utils.mkdir(pxebootdir)
+        self.conf.pxebootdir = pxebootdir
+
+        # write the images/pxeboot/README file
+        src = os.path.join(self.paths.OUTPUTDIR_DATADIR, "images", "pxeboot",
+                           "README")
+        dst = os.path.join(pxebootdir, "README")
         shutil.copy2(src, dst)
-        replace(dst, r"@PRODUCT@", self.conf.product)
+        utils.replace(dst, r"@PRODUCT@", self.conf.product)
 
-        # set up some dir variables for further use
-        anacondadir = os.path.join(self.conf.treedir,
-                "usr", "lib", "anaconda-runtime")
-        
-        bootdiskdir = os.path.join(anacondadir, "boot")
-        self.conf.addAttr("bootdiskdir")
-        self.conf.set(bootdiskdir=bootdiskdir)
+        # create the efiboot directory
+        efibootdir = os.path.join(self.conf.outputdir, "EFI", "BOOT")
+        utils.makedirs(efibootdir)
+        self.conf.efibootdir = efibootdir
 
-        syslinuxdir = os.path.join(self.conf.treedir, "usr", "lib", "syslinux")
-        isolinuxbin = os.path.join(syslinuxdir, "isolinux.bin")
+        # create the isolinux directory
+        isolinuxdir = os.path.join(self.conf.outputdir, "isolinux")
+        utils.mkdir(isolinuxdir)
+        self.conf.isolinuxdir = isolinuxdir
 
-        if os.path.isfile(isolinuxbin):
-            # copy the isolinux.bin
-            shutil.copy2(isolinuxbin, self.conf.isolinuxdir)
+        syslinuxdir = self.paths.SYSLINUXDIR
+        isolinuxbin = self.paths.ISOLINUXBIN
 
-            # copy the syslinux.cfg to isolinux/isolinux.cfg
-            isolinuxcfg = os.path.join(self.conf.isolinuxdir, "isolinux.cfg")
-            shutil.copy2(os.path.join(bootdiskdir, "syslinux.cfg"), isolinuxcfg)
+        if not os.path.isfile(isolinuxbin):
+            self.output.error("no isolinux binary found")
+            return False
 
-            # set the product and version in isolinux.cfg
-            replace(isolinuxcfg, r"@PRODUCT@", self.conf.product)
-            replace(isolinuxcfg, r"@VERSION@", self.conf.version)
+        # copy the isolinux.bin
+        shutil.copy2(isolinuxbin, isolinuxdir)
 
-            # set up the label for finding stage2 with a hybrid iso
-            replace(isolinuxcfg, r"initrd=initrd.img",
-                    'initrd=initrd.img stage2=hd:LABEL="%s"' % (self.conf.product,))
+        # copy the syslinux.cfg to isolinux/isolinux.cfg
+        isolinuxcfg = os.path.join(isolinuxdir, "isolinux.cfg")
+        shutil.copy2(self.paths.SYSLINUXCFG, isolinuxcfg)
 
-            # copy the grub.conf
-            shutil.copy2(os.path.join(bootdiskdir, "grub.conf"),
-                    self.conf.isolinuxdir)
+        # set the product and version in isolinux.cfg
+        utils.replace(isolinuxcfg, r"@PRODUCT@", self.conf.product)
+        utils.replace(isolinuxcfg, r"@VERSION@", self.conf.version)
 
-            # copy the splash files
-            vesasplash = os.path.join(anacondadir, "syslinux-vesa-splash.jpg")
-            if os.path.isfile(vesasplash):
-                shutil.copy2(vesasplash,
-                        os.path.join(self.conf.isolinuxdir, "splash.jpg"))
+        # set up the label for finding stage2 with a hybrid iso
+        utils.replace(isolinuxcfg, r"initrd=initrd.img",
+                      'initrd=initrd.img stage2=hd:LABEL="%s"' % \
+                      self.conf.product)
 
-                vesamenu = os.path.join(syslinuxdir, "vesamenu.c32")
-                shutil.copy2(vesamenu, self.conf.isolinuxdir)
+        # copy the grub.conf
+        dst = os.path.join(isolinuxdir, "grub.conf")
+        shutil.copy2(self.paths.GRUBCONF, dst)
 
-                replace(isolinuxcfg, r"default linux", r"default vesamenu.c32")
-                replace(isolinuxcfg, r"prompt 1", r"#prompt 1")
-            else:
-                splashtools = os.path.join(anacondadir, "splashtools.sh")
-                splashlss = os.path.join(bootdiskdir, "splash.lss")
+        utils.replace(dst, "@PRODUCT@", self.conf.product)
+        utils.replace(dst, "@VERSION@", self.conf.version)
 
-                if os.path.isfile(splashtools):
-                    cmd = "%s %s %s" % (splashtools,
-                            os.path.join(bootdiskdir, "syslinux-splash.jpg"),
-                            splashlss)
-                    out = commands.getoutput(cmd)
+        # copy the splash files
+        if os.path.isfile(self.paths.VESASPLASH):
+            shutil.copy2(self.paths.VESASPLASH,
+                         os.path.join(isolinuxdir, "splash.jpg"))
 
-                if os.path.isfile(splashlss):
-                    shutil.copy2(splashlss, self.conf.isolinuxdir)
+            shutil.copy2(self.paths.VESAMENU, isolinuxdir)
 
-            # copy the .msg files
-            for file in os.listdir(bootdiskdir):
-                if file.endswith(".msg"):
-                    shutil.copy2(os.path.join(bootdiskdir, file),
-                            self.conf.isolinuxdir)
-                    replace(os.path.join(self.conf.isolinuxdir, file),
-                            r"@VERSION@", self.conf.version)
+            utils.replace(isolinuxcfg, r"default linux", "default vesamenu.c32")
+            utils.replace(isolinuxcfg, r"prompt 1", "#prompt 1")
 
-            # if present, copy the memtest
-            for fname in os.listdir(os.path.join(self.conf.treedir, "boot")):
-                if fname.startswith("memtest"):
-                    src = os.path.join(self.conf.treedir, "boot", fname)
-                    dst = os.path.join(self.conf.isolinuxdir, "memtest")
-                    shutil.copy2(src, dst)
-
-                    text = "label memtest86\n"
-                    text = text + "  menu label ^Memory test\n"
-                    text = text + "  kernel memtest\n"
-                    text = text + "  append -\n"
-                    edit(isolinuxcfg, text, append=True)
         else:
-            return False
-        
-        return True
+            if os.path.isfile(self.paths.SPLASHTOOLS):
+                cmd = "%s %s %s" % (self.paths.SPLASHTOOLS,
+                                    self.paths.SYSLINUXSPLASH,
+                                    self.paths.SPLASHLSS)
+                err, output = commands.getstatusoutput(cmd)
+                if err:
+                    self.output.warning(output)
 
-    def create_install_image(self, type="squashfs"):
-        installimg = os.path.join(self.conf.imagesdir, "install.img")
+            if os.path.isfile(self.paths.SPLASHLSS):
+                shutil.copy2(self.paths.SPLASHLSS, isolinuxdir)
 
-        if os.path.exists(installimg):
-            os.unlink(installimg)
+        # copy the .msg files
+        msgfiles = os.path.join(self.conf.anaconda_boot, "*.msg")
+        for fname in glob.glob(msgfiles):
+            shutil.copy2(fname, isolinuxdir)
+            utils.replace(os.path.join(isolinuxdir, os.path.basename(fname)),
+                          r"@VERSION@", self.conf.version)
 
-        if type == "squashfs":
-            cmd = "mksquashfs %s %s -all-root -no-fragments -no-progress" \
-                    % (self.conf.treedir, installimg)
-            self.so.debug(cmd)
-            err, output = commands.getstatusoutput(cmd)
-            if err:
-                self.se.info(output)
-                return False
+        # copy the memtest
+        memtest = os.path.join(self.paths.BOOTDIR, "memtest*")
+        for fname in glob.glob(memtest):
+            shutil.copy2(fname, os.path.join(isolinuxdir, "memtest"))
 
-        elif type == "cramfs":
-            if self.conf.buildarch == "sparc64":
-                crambs = "--blocksize 8192"
-            elif self.conf.buildarch == "sparc":
-                crambs = "--blocksize 4096"
-            else:
-                crambs = ""
+            text = """label memtest86
+  menu label ^Memory test
+  kernel memtest
+  append -
 
-            cmd = "mkfs.cramfs %s %s %s" % (crambs, self.conf.treedir,
-                    installimg)
-            self.so.debug(cmd)
-            err, output = commands.getstatusoutput(cmd)
-            if err:
-                self.se.info(output)
-                return False
+"""
 
-        elif type == "ext2":
-            # TODO
-            return False
-
-        # append stage2 to .treeinfo file
-        text = "\n[stage2]\n"
-        text += "mainimage = %s\n" % (installimg,)
-        edit(os.path.join(self.conf.outdir, ".treeinfo"), append=True, text=text)
+            utils.edit(isolinuxcfg, append=True, text=text)
+            break
 
         return True
 
     def create_boot_iso(self):
-        bootiso = os.path.join(self.conf.imagesdir, "boot.iso")
+        bootiso = os.path.join(self.conf.tempdir, "boot.iso")
 
         if os.path.exists(bootiso):
             os.unlink(bootiso)
 
-        efiboot = os.path.join(self.conf.imagesdir, "efiboot.img")
-
-        if os.path.exists(efiboot):
-            self.so.info("Found efiboot.img, making an EFI-capable boot.iso")
+        if os.path.exists(self.conf.efiboot):
+            self.output.info(":: creating efi capable boot iso")
             efiargs = "-eltorito-alt-boot -e images/efiboot.img -no-emul-boot"
-            efigraft = "EFI/BOOT=%s" % (os.path.join(self.conf.outdir,
-                    "EFI", "BOOT"),)
+            efigraft = "EFI/BOOT=%s" % self.conf.efibootdir
         else:
-            self.so.info("No efiboot.img found, making BIOS-only boot.iso")
             efiargs = ""
             efigraft = ""
 
         biosargs = "-b isolinux/isolinux.bin -c isolinux/boot.cat" \
-                " -no-emul-boot -boot-load-size 4 -boot-info-table"
-        mkisocmd = "mkisofs -v -o %s %s %s -R -J -V %s -T -graft-points" \
-                " isolinux=%s images=%s %s" % (bootiso, biosargs, efiargs,
-                self.conf.product, self.conf.isolinuxdir, self.conf.imagesdir,
-                efigraft)
-        self.so.debug(mkisocmd)
-        err, out = commands.getstatusoutput(mkisocmd)
-        if err:
-            self.se.info(out)
-            return False
+                   " -no-emul-boot -boot-load-size 4 -boot-info-table"
 
-        hybrid = os.path.join("/", "usr", "bin", "isohybrid")
-        if os.path.exists(hybrid):
-            cmd = "%s %s" % (hybrid, os.path.join(self.conf.imagesdir, "boot.iso"))
-            self.so.debug(cmd)
-            err, out = commands.getstatusoutput(cmd)
+        cmd = "%s -v -o %s %s %s -R -J -V %s -T -graft-points" \
+              " isolinux=%s images=%s %s" % (self.paths.MKISOFS, bootiso,
+                                             biosargs, efiargs,
+                                             self.conf.product,
+                                             self.conf.isolinuxdir,
+                                             self.conf.imagesdir, efigraft)
+
+        err, output = commands.getstatusoutput(cmd)
+        if err:
+            self.output.error(output)
+            return None
+
+        if os.path.isfile(self.paths.ISOHYBRID):
+            cmd = "%s %s" % (self.paths.ISOHYBRID, bootiso)
+            err, output = commands.getstatusoutput(cmd)
             if err:
-                self.se.info(out)
-                # XXX is this a problem?
-                # should we return false, or just go on?
+                self.output.warning(output)
+
+        return bootiso
+
+    def cleanup(self):
+        if self.conf.cleanup:
+            shutil.rmtree(self.conf.tempdir)
+
+
+class YumHelper(object):
+
+    def __init__(self, yb):
+        self.yb = yb
+
+    def install(self, pattern):
+        try:
+            self.yb.install(name=pattern)
+        except yum.Errors.InstallError:
+            try:
+                self.yb.install(pattern=pattern)
+            except yum.Errors.InstallError:
+                return False
 
         return True
 
-    def clean_up(self):
-        if os.path.isdir(self.conf.tempdir):
-            shutil.rmtree(self.conf.tempdir, ignore_errors=True)
+    def process_transaction(self):
+        self.yb.resolveDeps()
+        self.yb.buildTransaction()
 
-    def run(self):
-        self.so.header(":: Collecting repositories")
-        ok = self.collect_repositories()
-        if not ok:
-            # we have no valid repository to work with
-            self.se.error("No valid repository")
-            sys.exit(1)
+        cb = yum.callbacks.ProcessTransBaseCallback()
+        rpmcb = RpmCallback()
 
-        self.so.header(":: Initializing directories")
-        self.initialize_directories()
+        self.yb.processTransaction(callback=cb, rpmDisplay=rpmcb)
 
-        self.so.header(":: Initializing yum")
-        ok = self.initialize_yum()
-        if not ok:
-            # the yum object could not be initialized
-            self.se.error("Unable to initialize the yum object")
-            sys.exit(1)
+        self.yb.closeRpmDB()
+        self.yb.close()
 
-        self.so.header(":: Setting the architecture")
-        self.set_architecture()
+    def search(self, pattern):
+        pl = self.yb.doPackageLists(patterns=[pattern])
+        return pl.installed, pl.available
 
-        self.so.header(":: Writing the .treeinfo file")
-        ok = self.write_treeinfo()
-        if not ok:
-            # XXX is this a problem?
-            pass
 
-        self.so.header(":: Writing the .discinfo file")
-        ok = self.write_discinfo()
-        if not ok:
-            # XXX is this a problem?
-            pass
+class RpmCallback(yum.rpmtrans.SimpleCliCallBack):
 
-        self.so.header(":: Writing the .buildstamp file")
-        ok = self.write_buildstamp()
-        if not ok:
-            # XXX is this a problem?
-            pass
+    def __init__(self):
+        yum.rpmtrans.SimpleCliCallBack.__init__(self)
+        self.output = output.Terminal.get()
 
-        self.so.header(":: Preparing the install tree")
-        tree = insttree.InstallTree(self.conf, self.yum, (self.so, self.se))
-        kernelfiles = tree.run()
+    def event(self, package, action, te_current, te_total,
+            ts_current, ts_total):
 
-        if not kernelfiles:
-            self.se.error("No kernel image found")
-            sys.exit(1)
+        msg = "(%3d/%3d) [%3d%%] %s %s\r" % (ts_current, ts_total,
+                float(te_current) / float(te_total) * 100,
+                self.action[action],
+                self.output.format("%s" % package, type=output.BOLD))
 
-        self.so.header(":: Preparing the output directory")
-        ok = self.prepare_output_directory()
-        if not ok:
-            # XXX there's no isolinux.bin, i guess this is a problem...
-            self.se.error("Unable to prepare the output directory")
-            sys.exit(1)
-
-        self.conf.addAttr(["kernelfile", "kernelver"])
-        for kernelfile in kernelfiles:
-            # get the kernel version
-            m = re.match(r".*vmlinuz-(.*)", kernelfile)
-            if m:
-                kernelver = m.group(1)
-                self.conf.set(kernelfile=kernelfile, kernelver=kernelver)
-            else:
-                self.se.warning("Invalid kernel filename '%s'" % (kernelfile,))
-                continue
-
-            self.so.header(":: Creating the initrd image for kernel '%s'" \
-                    % (os.path.basename(kernelfile),))
-            initrd = images.InitRD(self.conf, self.yum, (self.so, self.se))
-            initrd.run()
-
-        self.so.header(":: Creating the install image")
-        
-        self.so.info("Scrubbing the install tree")
-        tree.scrub()
-        
-        ok = self.create_install_image()
-        if not ok:
-            self.se.error("Unable to create the install image")
-            sys.exit(1)
-
-        self.so.header(":: Creating the boot iso")
-        ok = self.create_boot_iso()
-        if not ok:
-            self.se.error("Unable to create the boot iso")
-            sys.exit(1)
-
-        if self.conf.cleanup:
-            self.so.header(":: Cleaning up")
-            self.clean_up()
+        self.output.write(msg)
+        if te_current == te_total:
+            self.output.write("\n")

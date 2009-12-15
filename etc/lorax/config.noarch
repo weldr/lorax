@@ -1,0 +1,23 @@
+[lorax]
+
+packages:
+    anaconda kernel *firmware* joe gnome-icon-theme fedora-icon-theme
+    xorg-x11-server-Xorg firstaidkit bzip2 busybox selinux-policy-targeted
+    python-imaging hal specspo xorg-x11-fonts-misc xorg-x11-drivers rhpxl
+    ntfs-3g ntfsprogs xfsprogs xfsdump reiserfs-utils gfs2-utils jfsutils
+    nfs-utils btrfs-progs mesa-dri-drivers dogtail rsh rsync prelink
+    smartmontools iscsi-initiator-utils samba-client mtr gtk-nodoka-engine
+    ftp openssh-clients gtk+ gdk-pixbuf madan-fonts lklug-fonts
+    xorg-x11-fonts-ethiopic un-core-fonts-dotum man yum-fedorakmod
+    /etc/gtk-2.0/gtkrc
+
+modules:
+    sunrpc lockd floppy cramfs loop edd pcspkr squashfs
+    ipv6 virtio_pci ohci-hcd uhci-hcd ehci-hcd usbhid mousedev usb-storage
+    sd_mod sr_mod ub appletouch ohci1394 sbp2 fw-ohci fw-sbp2 firewire-sbp2
+    firewire-ohci mmc-block sdhci sdhci-pci ide-cd ide-cd_mod sr_mod sg st
+    sd_mod scsi_mod iscsi_tcp iscsi_ibft fat msdos vfat ext2 ext3 ext4 reiserfs
+    jfs xfs gfs2 cifs nfs fuse btrfs dm-mod dm-zero dm-snapshot dm-mirror
+    dm-multipath dm-round-robin dm-crypt raid0 raid1 raid5 raid6 raid456 raid10
+    linear sha256_generic cbc xts lrw aes_generic crypto_blkcipher crc32c ecb
+    arc4 yenta_socket i82365 tcic pcmcia =scsi =net =drm

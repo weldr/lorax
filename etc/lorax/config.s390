@@ -1,0 +1,11 @@
+[lorax]
+
+packages: s390utils binutils libgcc tcp_wrappers sed net-tools openssh
+    openssh-server coreutils login initscripts portmap pam mount modutils
+    s390utils-cmsfs strace xorg-x11-xauth xorg-x11-libs
+
+modules: zfcp tape390 dasd_diag_mod dasd_eckd_mod dasd_fba_mod dasd_mod
+    ctc netiucv smsgiucv lcs qdio qeth ccwgroup crypto_api xfrm_nalgo
+
+initrd_template=templates/initrd/initrd.s390
+scrubs_template=templates/scrubs/scrubs.s390

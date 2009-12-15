@@ -1,0 +1,51 @@
+<%include file="includes/initrd" />
+
+## create required directories
+makedirs ${initrd}/var/empty/sshd mode 0111
+makedirs ${initrd}/etc/security
+makedirs ${initrd}/${libdir}/security
+
+## copy some files
+copy ${instroot} usr/bin/xauth to ${initrd} sbin
+copy ${instroot} usr/sbin/cmsfs* to ${initrd} sbin
+
+copy ${instroot} ${libdir}/libpam_misc.so.0.* to ${initrd} ${libdir}/libpam_misc.so.0
+copy ${instroot} ${libdir}/libwrap*.so* to ${initrd} ${libdir}
+
+symlink name ${initrd}/var/state/xkb target /tmp
+
+## loader
+copy ${instroot} usr/lib/anaconda-runtime/loader/shutdown to ${initrd} sbin
+copy ${instroot} usr/lib/anaconda-runtime/loader/linuxrc.s390 to \
+    ${initrd} sbin/init
+copy ${instroot} usr/lib/anaconda-runtime/loader/lsznet.raw to \
+    ${initrd} sbin/lsznet
+copy ${instroot} usr/lib/anaconda-runtime/loader/controlunits.sh to \
+    ${initrd} sbin/controlunits
+copy ${instroot} usr/sbin/dasdfmt to ${initrd} sbin
+
+## setup shell environment
+edit ${initrd}/etc/protocols text "tcp\t6\tTCP\n"
+
+copy ${instroot} ${libdir}/security/pam_limits.so to \
+    ${initrd} ${libdir}/security
+copy ${instroot} ${libdir}/security/pam_env.so to ${initrd} ${libdir}/security
+copy ${instroot} ${libdir}/security/pam_unix.so to ${initrd} ${libdir}/security
+copy ${instroot} ${libdir}/security/pam_deny.so to ${initrd} ${libdir}/security
+
+copy ${instroot} etc/pam.d/other to ${initrd} etc/pam.d
+
+copy ${instroot} etc/security/limits.conf to ${initrd} etc/security
+copy ${instroot} etc/security/pam_env.conf to ${initrd} etc/security
+
+## generate ssh keys
+makedirs ${initrd}/etc/ssh mode 0700
+gensshkey ${initrd}/etc/ssh/ssh_host_key type rsa1
+gensshkey ${initrd}/etc/ssh/ssh_host_rsa_key type rsa
+gensshkey ${initrd}/etc/ssh/ssh_host_dsa_key type dsa
+
+chmod ${initrd}/etc/ssh/sshd_config mode 0600
+
+## copy in the binaries
+copy ${instroot} bin/login to ${initrd} sbin/login
+copy ${instroot} usr/sbin/sshd to ${initrd} sbin/sshd

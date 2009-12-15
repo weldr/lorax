@@ -1,0 +1,11 @@
+<%include file="includes/initrd" />
+
+## loader
+copy ${instroot} usr/lib/anaconda-runtime/loader/init to ${initrd} sbin/init
+symlink name ${initrd}/sbin/reboot target init
+symlink name ${initrd}/sbin/halt target init
+symlink name ${initrd}/sbin/poweroff target init
+
+## screenfont
+copy ${instroot} usr/lib/anaconda-runtime/screenfont-${arch}.gz to \
+    ${initrd} etc/screenfont.gz
