@@ -63,7 +63,7 @@ class LoraxPaths(singleton.Singleton):
 
     @property
     def SYSLINUXDIR(self):
-        return os.path.join(self.installtree, "usr", "lib", "syslinux")
+        return os.path.join(self.installtree, "usr", "share", "syslinux")
 
     @property
     def ISOLINUXBIN(self):

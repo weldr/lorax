@@ -30,11 +30,13 @@ ARCHS64         = ( "x86_64",
                     "s390x",
                     "sparc64" )
 
-BASEARCH_MAP    = { "i386" : "i386",
-                    "i586" : "i386",
+BASEARCH_MAP    = { "i586" : "i386",
+                    "i686" : "i386",
                     "sparc64" : "sparc" }
 
 EFIARCH_MAP     = { "i386" : "IA32",
+                    "i586" : "IA32",
+                    "i686" : "IA32",
                     "x86_64" : "X64",
                     "ia64" : "IA64" }
 
@@ -515,15 +517,23 @@ class Lorax(object):
             efiargs = ""
             efigraft = ""
 
-        biosargs = "-b isolinux/isolinux.bin -c isolinux/boot.cat" \
-                   " -no-emul-boot -boot-load-size 4 -boot-info-table"
+        #biosargs = "-b isolinux/isolinux.bin -c isolinux/boot.cat" \
+        #           " -no-emul-boot -boot-load-size 4 -boot-info-table"
 
-        cmd = "%s -v -o %s %s %s -R -J -V %s -T -graft-points" \
-              " isolinux=%s images=%s %s" % (self.paths.MKISOFS, bootiso,
-                                             biosargs, efiargs,
-                                             self.conf.product,
-                                             self.conf.isolinuxdir,
-                                             self.conf.imagesdir, efigraft)
+        #cmd = "%s -v -o %s %s %s -R -J -V %s -T -graft-points" \
+        #      " isolinux=%s images=%s %s" % (self.paths.MKISOFS, bootiso,
+        #                                     biosargs, efiargs,
+        #                                     self.conf.product,
+        #                                     self.conf.isolinuxdir,
+        #                                     self.conf.imagesdir, efigraft)
+
+        cmd = "%s -U -A %s -V %s -volset %s -J -joliet-long -r -v -T -o %s" \
+              " -b isolinux/isolinux.bin -c isolinux/boot.cat" \
+              " -no-emul-boot -boot-load-size 4 -boot-info-table" \
+              " %s -graft-points isolinux=%s images=%s %s" \
+              % (self.paths.MKISOFS, self.conf.product, self.conf.product,
+                 self.conf.product, bootiso, efiargs,
+                 self.conf.isolinuxdir, self.conf.imagesdir, efigraft)
 
         err, output = commands.getstatusoutput(cmd)
         if err:

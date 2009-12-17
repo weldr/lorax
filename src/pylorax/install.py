@@ -60,8 +60,10 @@ class InstallImage(object):
             shutil.copy2(src, dst)
 
     def configure_fedorakmod(self):
-        utils.replace(self.paths.FEDORAKMODCONF,
-                      r"installforallkernels = 0", r"installforallkernels = 1")
+        if os.path.isfile(self.paths.FEDORAKMODCONF):
+            utils.replace(self.paths.FEDORAKMODCONF,
+                          r"installforallkernels = 0",
+                          r"installforallkernels = 1")
 
     # XXX why do we need this?
     def copy_bootloaders(self):

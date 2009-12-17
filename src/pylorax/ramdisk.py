@@ -345,7 +345,7 @@ class Ramdisk(object):
     def create(self):
         self.prepare()
 
-        f = getattr(self, "create_%s" % self.conf.arch, None)
+        f = getattr(self, "create_%s" % self.conf.basearch, None)
         if f:
             return f()
 

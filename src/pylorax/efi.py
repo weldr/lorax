@@ -107,8 +107,11 @@ class EFI(object):
             return None
 
         # copy the files to the efiboot image
+        dstdir = os.path.join(efibootdir, "EFI", "BOOT")
+        utils.makedirs(dstdir)
+
         utils.scopy(src_root=efitreedir, src_path="*",
-                    dst_root=efibootdir, dst_path="")
+                    dst_root=dstdir, dst_path="")
 
         # unmount the efiboot image
         cmd = "umount %s" % efibootdir
