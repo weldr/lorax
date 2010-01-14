@@ -240,8 +240,10 @@ class Lorax(object):
             kernel_path, initrd_path = initrd.create()
 
             # copy the kernel and initrd images to the pxeboot directory
-            shutil.copy2(kernel_path, self.conf.pxebootdir)
-            shutil.copy2(initrd_path, self.conf.pxebootdir)
+            if kernel_path is not None:
+                shutil.copy2(kernel_path, self.conf.pxebootdir)
+            if kernel_path is not None:
+                shutil.copy2(initrd_path, self.conf.pxebootdir)
 
             # if this is a PAE kernel, skip the EFI part
             if kernel_path.endswith("PAE"):
@@ -279,8 +281,12 @@ class Lorax(object):
         shutil.copy2(installimg, self.conf.imagesdir)
 
         # create the boot iso
-        self.output.info(":: creating the boot iso")
-        bootiso = self.create_boot_iso()
+        if self.conf.arch in ("i386", "i586", "i686", "x86_64"):
+            self.output.info(":: creating the boot iso")
+            bootiso = self.create_boot_iso_x86()
+        elif self.conf.arch in ("ppc", "ppc64"):
+            self.output.info(":: creating the boot iso")
+            bootiso = self.create_boot_iso_ppc()
 
         if bootiso is None:
             self.output.critical("unable to create boot iso")
@@ -473,9 +479,6 @@ class Lorax(object):
         dst = os.path.join(isolinuxdir, "grub.conf")
         shutil.copy2(self.paths.GRUBCONF, dst)
 
-        utils.replace(dst, "@PRODUCT@", self.conf.product)
-        utils.replace(dst, "@VERSION@", self.conf.version)
-
         # copy the splash files
         if os.path.isfile(self.paths.VESASPLASH):
             shutil.copy2(self.paths.VESASPLASH,
@@ -522,7 +525,7 @@ class Lorax(object):
 
         return True
 
-    def create_boot_iso(self):
+    def create_boot_iso_x86(self):
         bootiso = os.path.join(self.conf.tempdir, "boot.iso")
 
         if os.path.exists(bootiso):
@@ -564,6 +567,99 @@ class Lorax(object):
             err, output = commands.getstatusoutput(cmd)
             if err:
                 self.output.warning(output)
+
+        return bootiso
+
+    def create_boot_iso_ppc(self):
+        bootiso = os.path.join(self.conf.tempdir, "boot.iso")
+
+        if os.path.exists(bootiso):
+            os.unlink(bootiso)
+
+        etcdir = os.path.join(self.conf.outputdir, "etc")
+        ppcdir = os.path.join(self.conf.outputdir, "ppc")
+        macdir = os.path.join(ppcdir, "mac")
+        chrpdir = os.path.join(ppcdir, "chrp")
+
+        utils.makedirs(etcdir)
+        utils.makedirs(chrpdir)
+
+        shutil.copy2(self.paths.BOOTINFO, ppcdir)
+        shutil.copy2(self.paths.EFIKA_FORTH, ppcdir)
+
+        if os.path.isdir(macdir):
+            shutil.copy2(self.paths.OFBOOT, macdir)
+            shutil.copy2(self.paths.YABOOT, macdir)
+
+        if os.path.isdir(chrpdir):
+            shutil.copy2(self.paths.YABOOT, chrpdir)
+            cmd = "%s %s" % (self.paths.ADD_NOTE,
+                             os.path.join(chrpdir, "yaboot"))
+
+        # IBM firmware can't handle boot scripts properly,
+        # so for biarch installs we use a yaboot.conf,
+        # which asks the user to select 32-bit or 64-bit kernel
+        yaboot32 = os.path.join(ppcdir, "ppc32", "yaboot.conf")
+        yaboot64 = os.path.join(ppcdir, "ppc64", "yaboot.conf")
+        if os.path.isfile(yaboot32) and os.path.isfile(yaboot64):
+            # both kernels exist, copy the biarch yaboot.conf into place
+            yaboot = os.path.join(etcdir, "yaboot.conf")
+            shutil.copy2(self.paths.BIARCH_YABOOT, yaboot)
+            utils.replace(yaboot, "%BITS%", "32")
+            utils.replace(yaboot, "%PRODUCT%", self.conf.product)
+            utils.replace(yaboot, "%VERSION%", self.conf.version)
+        else:
+            if os.path.isfile(yaboot32):
+                shutil.copy2(yaboot32, etcdir)
+            if os.path.isfile(yaboot64):
+                shutil.copy2(yaboot64, etcdir)
+
+        isopath = os.path.join(self.conf.outputdir, "isopath")
+        utils.mkdir(isopath)
+
+        utils.scopy(ppcdir, isopath)
+        utils.scopy(etcdir, isopath)
+
+        netbootdir = os.path.join(self.conf.outputdir, "images", "netboot")
+        if os.path.isdir(netbootdir):
+            imagesdir = os.path.join(isopath, "images")
+            utils.mkdir(imagesdir)
+
+            utils.scopy(netbootdir, imagesdir)
+            utils.remove(os.path.join(imagesdir, "ppc64.img"))
+
+        ppc32img = os.path.join(netbootdir, "ppc32.img")
+        if os.path.isfile(pcp32img):
+            prepboot = "-prep-boot images/netboot/ppc32.img"
+
+        isomacdir = os.path.join(isopath, "ppc", "mac")
+        if os.path.isdir(isomacdir):
+            macboot = "-hfs-volid %s -hfs-bless %s" % (self.conf.version,
+                                                       isomacdir)
+
+        installimg = os.path.join(self.conf.imagesdir, "install.img")
+        cmd = '%s -o %s -chrp-boot -U %s -part -hfs -T -r -l -J -A "%s %s"' \
+              ' -sysid PPC -V "PBOOT" -volset %s -volset-size 1' \
+              ' -volset-seqno 1 %s -map %s/mapping -magic %s/magic' \
+              ' -no-desktop' \
+              ' -allow-multidot -graft-points %s images/install.img=%s' % \
+              (self.paths.MKISOFS, bootiso, prepboot, self.conf.product,
+               self.conf.version, self.conf.version, macboot,
+               self.paths.ANACONDA_BOOT, self.paths.ANACONDA_BOOT,
+               isopath, installimg)
+
+        err, output = commands.getstatusoutput(cmd)
+        if err:
+            self.output.warning(output)
+            return None
+
+        cmd = "%s %s" % (self.paths.IMPLANTISO, bootiso)
+        err, output = commands.getstatusoutput(cmd)
+        if err:
+            self.output.warning(output)
+            return None
+
+        utils.remove(isopath)
 
         return bootiso
 

@@ -139,10 +139,11 @@ class EFI(object):
             self.output.warning(output)
             pass
 
-        # copy the conf files to the output directory
+        # copy the conf files and splash.xpm.gz to the output directory
         if not kernel and not initrd:
             utils.scopy(src_root=efitreedir, src_path="*.conf",
                         dst_root=self.conf.efibootdir, dst_path="")
+            shutil.copy2(self.paths.SPLASHXPM, self.conf.efibootdir)
 
         return efiboot
 

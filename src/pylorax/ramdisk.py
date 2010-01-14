@@ -394,7 +394,7 @@ initrd = images/pxeboot/initrd-PAE.img
     def create_x86_64(self):
         return self.create_i386()
 
-    def run_s390(self):
+    def create_s390(self):
         initrd_filename = os.path.join(self.conf.tempdir, "initrd.img")
         self.compress(initrd_filename)
 
@@ -414,7 +414,7 @@ initrd = images/pxeboot/initrd-PAE.img
             shutil.copy2(filename, self.conf.outputdir)
 
         cmd = "%s -i %s -r %s -p %s -o %s" % (
-              MKS390CD, kernel_filename, initrd_filename,
+              self.paths.MKS390CD, kernel_filename, initrd_filename,
               self.paths.GENERIC_PRM,
               os.path.join(self.conf.imagesdir, "cdboot.img"))
 
@@ -436,18 +436,85 @@ cdboot.img = images/cdboot.img
 
         return kernel_filename, initrd_filename
 
-    def run_s390x(self):
-        return self.run_s390()
+    def create_s390x(self):
+        return self.create_s390()
 
     # XXX this should be removed
-    def run_alpha(self):
+    def create_alpha(self):
         raise NotImplementedError
 
-    def run_ia64(self):
+    def create_ia64(self):
         raise NotImplementedError
 
-    def run_ppc(self):
-        raise NotImplementedError
+    def create_ppc(self):
+        if self.conf.arch == "ppc":
+            bits = "32"
+        elif self.conf.arch == "ppc64":
+            bits = "64"
 
-    def run_ppc64(self):
-        raise NotImplementedError
+        ppc_dir = os.path.join(self.conf.outputdir, "ppc", "ppc%s" % bits)
+        utils.makedirs(ppc_dir)
+
+        if self.conf.arch == "ppc":
+            mac_dir = os.path.join(self.conf.outputdir, "ppc", "mac")
+            utils.makedirs(mac_dir)
+
+        initrd_filename = os.path.join(ppc_dir, "ramdisk.image.gz")
+        self.compress(initrd_filename)
+
+        kernel_filename = os.path.join(ppc_dir, "vmlinuz")
+        shutil.copy2(self.conf.kernelfile, kernel_filename)
+
+        yaboot_src = os.path.join(self.paths.ANACONDA_BOOT, "yaboot.conf.in")
+        yaboot_dst = os.path.join(ppc_dir, "yaboot.conf")
+        shutil.copy2(yaboot_src, yaboot_dst)
+
+        utils.replace(yaboot_dst, "%BITS%", bits)
+        utils.replace(yaboot_dst, "%PRODUCT%", self.conf.product)
+        utils.replace(yaboot_dst, "%VERSION%", self.conf.version)
+
+        text = """[images-%s]
+kernel = ppc/ppc%s/vmlinuz
+initrd = ppc/ppc%s/ramdisk.image.gz
+
+""" % (self.conf.arch, bits, bits)
+
+        utils.edit(self.conf.treeinfo, append=True, text=text)
+
+        netboot_dir = os.path.join(self.conf.imagesdir, "netboot")
+        utils.makedirs(netboot_dir)
+
+        ppc_img = os.path.join(netboot_dir, "ppc%s.img" % bits)
+
+        if os.path.exists(self.paths.MKZIMAGE) and \
+           os.path.exists(self.paths.ZIMAGE_STUB):
+            shutil.copy2(self.paths.ZIMAGE_LDS, ppc_dir)
+
+            cmd = "%s %s no no %s %s %s" % \
+                  (self.paths.MKZIMAGE, kernel_filename, initrd_filename,
+                   self.paths.ZIMAGE_STUB, ppc_img)
+            err, output = commands.getstatusoutput(cmd)
+            if err:
+                self.output.warning(output)
+
+            utils.remove(os.path.join(ppc_dir, "zImage.lds"))
+
+        elif os.path.exists(self.paths.WRAPPER) and \
+             os.path.exists(self.paths.WRAPPER_A):
+            cmd = "%s -o %s -i %s -D %s %s" % \
+                  (self.paths.WRAPPER, ppc_img, initrd_filename,
+                   self.paths.WRAPPER_A_DIR, kernel_filename)
+            err, output = commands.getstatusoutput(cmd)
+            if err:
+                self.output.warning(output)
+
+        if os.path.exists(ppc_img):
+            text = "zimage = images/netboot/ppc%s.img" % bits
+            utils.edit(self.conf.treeinfo, append=True, text=text)
+        else:
+            utils.remove(netboot_dir)
+
+        return None, None
+
+    def create_ppc64(self):
+        return create_ppc()

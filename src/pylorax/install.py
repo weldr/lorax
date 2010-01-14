@@ -161,109 +161,110 @@ class InstallImage(object):
 
     # XXX this saves 2 MB
     def remove_gtk_stuff(self):
-        # figure out the gtk+ theme to keep
-        gtkrc = os.path.join(self.conf.installtree, "etc", "gtk-2.0", "gtkrc")
-
-        gtk_theme_name = None
-        gtk_engine = None
-        gtk_icon_themes = []
-
-        if os.path.isfile(gtkrc):
-            f = open(gtkrc, "r")
-            lines = f.readlines()
-            f.close()
-
-            for line in lines:
-                line = line.strip()
-                if line.startswith("gtk-theme-name"):
-                    gtk_theme_name = line[line.find("=") + 1:]
-                    gtk_theme_name = gtk_theme_name.replace('"', "").strip()
-
-                    # find the engine for this theme
-                    gtkrc = os.path.join(self.conf.installtree, "usr", "share",
-                            "themes", gtk_theme_name, "gtk-2.0", "gtkrc")
-                    if os.path.isfile(gtkrc):
-                        f = open(gtkrc, "r")
-                        engine_lines = f.readlines()
-                        f.close()
-
-                        for engine_l in engine_lines:
-                            engine_l = engine_l.strip()
-                            if engine_l.find("engine") != -1:
-                                gtk_engine = engine_l[engine_l.find('"') + 1:]
-                                gtk_engine = gtk_engine.replace('"', "").strip()
-                                break
-
-                elif line.startswith("gtk-icon-theme-name"):
-                    icon_theme = line[line.find("=") + 1:]
-                    icon_theme = icon_theme.replace('"', "").strip()
-                    gtk_icon_themes.append(icon_theme)
-
-                    # bring in all inherited themes
-                    while True:
-                        icon_theme_index = os.path.join(self.conf.installtree,
-                                "usr", "share", "icons", icon_theme,
-                                "index.theme")
-
-                        if os.path.isfile(icon_theme_index):
-                            inherits = False
-                            f = open(icon_theme_index, "r")
-                            icon_lines = f.readlines()
-                            f.close()
-
-                            for icon_l in icon_lines:
-                                icon_l = icon_l.strip()
-                                if icon_l.startswith("Inherits="):
-                                    inherits = True
-                                    icon_theme = icon_l[icon_l.find("=") + 1:]
-                                    icon_theme = \
-                                        icon_theme.replace('"', "").strip()
-
-                                    gtk_icon_themes.append(icon_theme)
-                                    break
-
-                            if not inherits:
-                                break
-                        else:
-                            break
-
-            # remove themes we don't need
-            theme_path = os.path.join(self.conf.installtree, "usr", "share",
-                                      "themes")
-
-            if os.path.isdir(theme_path):
-                for theme in filter(lambda theme: theme != gtk_theme_name,
-                                    os.listdir(theme_path)):
-
-                    theme = os.path.join(theme_path, theme)
-                    shutil.rmtree(theme, ignore_errors=True)
-
-            # remove icons we don't need
-            icon_path = os.path.join(self.conf.installtree, "usr", "share",
-                                     "icons")
-
-            if os.path.isdir(icon_path):
-                for icon in filter(lambda icon: icon not in gtk_icon_themes,
-                        os.listdir(icon_path)):
-
-                    icon = os.path.join(icon_path, icon)
-                    shutil.rmtree(icon, ignore_errors=True)
-
-            # remove engines we don't need
-            tmp_path = os.path.join(self.conf.installtree, "usr",
-                                    self.conf.libdir, "gtk-2.0")
-
-            if os.path.isdir(tmp_path):
-                fnames = map(lambda fname: os.path.join(tmp_path, fname,
-                    "engines"), os.listdir(tmp_path))
-
-                dnames = filter(lambda fname: os.path.isdir(fname), fnames)
-                for dir in dnames:
-                    engines = filter(lambda e: e.find(gtk_engine) == -1,
-                                     os.listdir(dir))
-                    for engine in engines:
-                        engine = os.path.join(dir, engine)
-                        os.unlink(engine)
+        pass
+#        # figure out the gtk+ theme to keep
+#        gtkrc = os.path.join(self.conf.installtree, "etc", "gtk-2.0", "gtkrc")
+#
+#        gtk_theme_name = None
+#        gtk_engine = None
+#        gtk_icon_themes = []
+#
+#        if os.path.isfile(gtkrc):
+#            f = open(gtkrc, "r")
+#            lines = f.readlines()
+#            f.close()
+#
+#            for line in lines:
+#                line = line.strip()
+#                if line.startswith("gtk-theme-name"):
+#                    gtk_theme_name = line[line.find("=") + 1:]
+#                    gtk_theme_name = gtk_theme_name.replace('"', "").strip()
+#
+#                    # find the engine for this theme
+#                    gtkrc = os.path.join(self.conf.installtree, "usr", "share",
+#                            "themes", gtk_theme_name, "gtk-2.0", "gtkrc")
+#                    if os.path.isfile(gtkrc):
+#                        f = open(gtkrc, "r")
+#                        engine_lines = f.readlines()
+#                        f.close()
+#
+#                        for engine_l in engine_lines:
+#                            engine_l = engine_l.strip()
+#                            if engine_l.find("engine") != -1:
+#                                gtk_engine = engine_l[engine_l.find('"') + 1:]
+#                                gtk_engine = gtk_engine.replace('"', "").strip()
+#                                break
+#
+#                elif line.startswith("gtk-icon-theme-name"):
+#                    icon_theme = line[line.find("=") + 1:]
+#                    icon_theme = icon_theme.replace('"', "").strip()
+#                    gtk_icon_themes.append(icon_theme)
+#
+#                    # bring in all inherited themes
+#                    while True:
+#                        icon_theme_index = os.path.join(self.conf.installtree,
+#                                "usr", "share", "icons", icon_theme,
+#                                "index.theme")
+#
+#                        if os.path.isfile(icon_theme_index):
+#                            inherits = False
+#                            f = open(icon_theme_index, "r")
+#                            icon_lines = f.readlines()
+#                            f.close()
+#
+#                            for icon_l in icon_lines:
+#                                icon_l = icon_l.strip()
+#                                if icon_l.startswith("Inherits="):
+#                                    inherits = True
+#                                    icon_theme = icon_l[icon_l.find("=") + 1:]
+#                                    icon_theme = \
+#                                        icon_theme.replace('"', "").strip()
+#
+#                                    gtk_icon_themes.append(icon_theme)
+#                                    break
+#
+#                            if not inherits:
+#                                break
+#                        else:
+#                            break
+#
+#            # remove themes we don't need
+#            theme_path = os.path.join(self.conf.installtree, "usr", "share",
+#                                      "themes")
+#
+#            if os.path.isdir(theme_path):
+#                for theme in filter(lambda theme: theme != gtk_theme_name,
+#                                    os.listdir(theme_path)):
+#
+#                    theme = os.path.join(theme_path, theme)
+#                    shutil.rmtree(theme, ignore_errors=True)
+#
+#            # remove icons we don't need
+#            icon_path = os.path.join(self.conf.installtree, "usr", "share",
+#                                     "icons")
+#
+#            if os.path.isdir(icon_path):
+#                for icon in filter(lambda icon: icon not in gtk_icon_themes,
+#                        os.listdir(icon_path)):
+#
+#                    icon = os.path.join(icon_path, icon)
+#                    shutil.rmtree(icon, ignore_errors=True)
+#
+#            # remove engines we don't need
+#            tmp_path = os.path.join(self.conf.installtree, "usr",
+#                                    self.conf.libdir, "gtk-2.0")
+#
+#            if os.path.isdir(tmp_path):
+#                fnames = map(lambda fname: os.path.join(tmp_path, fname,
+#                    "engines"), os.listdir(tmp_path))
+#
+#                dnames = filter(lambda fname: os.path.isdir(fname), fnames)
+#                for dir in dnames:
+#                    engines = filter(lambda e: e.find(gtk_engine) == -1,
+#                                     os.listdir(dir))
+#                    for engine in engines:
+#                        engine = os.path.join(dir, engine)
+#                        os.unlink(engine)
 
     # XXX this saves 5 MB
     def remove_locales(self):

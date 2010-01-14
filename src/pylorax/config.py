@@ -207,3 +207,57 @@ class LoraxPaths(singleton.Singleton):
     def FEDORAKMODCONF(self):
         return os.path.join(self.installtree, "etc", "yum", "pluginconf.d",
                             "fedorakmod.conf")
+
+    @property
+    def MKZIMAGE(self):
+        return os.path.join(self.installtree, "usr", "bin", "mkzimage")
+
+    @property
+    def ZIMAGE_STUB(self):
+        return os.path.join(self.installtree, "usr", "share", "ppc64-utils",
+                            "zImage.stub")
+
+    @property
+    def ZIMAGE_LDS(self):
+        return os.path.join(self.installtree, "usr", "share", "ppc64-utils",
+                            "zImage.lds")
+
+    @property
+    def WRAPPER(self):
+        return os.path.join(self.installtree, "usr", "sbin", "wrapper")
+
+    @property
+    def WRAPPER_A_DIR(self):
+        return os.path.join(self.installtree, "usr", "lib", "kernel-wrapper")
+
+    @property
+    def WRAPPER_A(self):
+        return os.path.join(self.WRAPPER_A_DIR, "wrapper.a")
+
+    @property
+    def BOOTINFO(self):
+        return os.path.join(self.ANACONDA_BOOT, "bootinfo.txt")
+
+    @property
+    def EFIKA_FORTH(self):
+        return os.path.join(self.ANACONDA_BOOT, "efika.forth")
+
+    @property
+    def OFBOOT(self):
+        return os.path.join(self.ANACONDA_BOOT, "ofboot.b")
+
+    @property
+    def YABOOT(self):
+        return os.path.join(self.installtree, "usr", "lib", "yaboot", "yaboot")
+
+    @property
+    def ADD_NOTE(self):
+        return os.path.join(self.installtree, "usr", "lib", "yaboot", "addnote")
+
+    @property
+    def BIARCH_YABOOT(self):
+        return os.path.join(self.ANACONDA_BOOT, "yaboot.conf.3264")
+
+    @property
+    def IMPLANTISO(self):
+        return "/usr/bin/implantisomd5"
