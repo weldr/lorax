@@ -9,7 +9,7 @@ packages:
     smartmontools iscsi-initiator-utils samba-client mtr gtk-nodoka-engine
     ftp openssh-clients gtk+ gdk-pixbuf madan-fonts lklug-fonts
     xorg-x11-fonts-ethiopic un-core-fonts-dotum man yum-fedorakmod
-    /etc/gtk-2.0/gtkrc
+    /etc/gtk-2.0/gtkrc NetworkManager-gnome wget
 
 modules:
     sunrpc lockd floppy cramfs loop edd pcspkr squashfs

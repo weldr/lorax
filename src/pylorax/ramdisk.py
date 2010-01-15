@@ -81,6 +81,7 @@ class Ramdisk(object):
 
     def process_actions(self):
         for action in self.actions:
+            self.output.debug(str(action))
             action.execute()
 
     def create_modinfo(self, moddir, target):
@@ -232,7 +233,8 @@ class Ramdisk(object):
                             utils.scopy(src_root=self.conf.installtree,
                                         src_path=path,
                                         dst_root=self.conf.ramdisktree,
-                                        dst_path=path)
+                                        dst_path=path,
+                                        ignore_errors=True)
 
         # copy additional firmware
         fw = [ ("ipw2100", "ipw2100*"),

@@ -7,5 +7,5 @@ symlink name ${initrd}/sbin/halt target init
 symlink name ${initrd}/sbin/poweroff target init
 
 ## screenfont
-copy ${instroot} usr/lib/anaconda-runtime/screenfont-${arch}.gz to \
+copy ${instroot} usr/lib/anaconda-runtime/screenfont-${basearch}.gz to \
     ${initrd} etc/screenfont.gz

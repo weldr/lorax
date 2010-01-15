@@ -40,7 +40,8 @@ def expand_path(path, globs=True):
             l.extend(expand_path(m.group("prefix") + f + m.group("suffix"),
                                  globs=globs))
     else:
-        if globs:
+        # XXX are there any other chars in globs?
+        if globs and (path.find("*") != -1 or path.find("?") != -1):
             l.extend(glob.glob(path))
         else:
             l.append(path)

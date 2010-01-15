@@ -20,8 +20,8 @@ remove ${instroot}/usr/local
 remove ${instroot}/usr/tmp
 
 ## remove modules and firmware directories
-remove ${instroot}/lib/modules
-remove ${instroot}/lib/firmware
+##remove ${instroot}/lib/modules
+##remove ${instroot}/lib/firmware
 
 ## remove directories from /var
 remove ${instroot}/var/db
@@ -50,7 +50,7 @@ remove ${instroot}/lib/xtables
 remove ${instroot}/etc/ConsoleKit
 remove ${instroot}/etc/X11
 remove ${instroot}/etc/alternatives
-remove ${instroot}/etc/asterisk
+##remove ${instroot}/etc/asterisk
 remove ${instroot}/etc/avahi
 remove ${instroot}/etc/blkid
 remove ${instroot}/etc/bonobo*
@@ -68,7 +68,7 @@ remove ${instroot}/etc/gcrypt
 remove ${instroot}/etc/gnome-vfs*
 remove ${instroot}/etc/gnupg
 remove ${instroot}/etc/gtk
-remove ${instroot}/etc/hotplug
+##remove ${instroot}/etc/hotplug
 remove ${instroot}/etc/init.d
 remove ${instroot}/etc/iproute2
 remove ${instroot}/etc/iscsi

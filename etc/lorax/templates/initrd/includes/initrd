@@ -31,8 +31,7 @@ makedirs ${initrd}/etc/modprobe.d
 makedirs ${initrd}/etc/NetworkManager/dispatcher.d
 makedirs ${initrd}/${libdir}/dbus-1
 makedirs ${initrd}/etc/sysconfig/network-scripts
-makedirs ${initrd}/usr/share/PolicyKit/policy
-makedirs ${initrd}/etc/PolicyKit
+makedirs ${initrd}/usr/share/polkit-1/actions
 makedirs ${initrd}/var/lib/misc
 makedirs ${initrd}/etc/hal/fdi
 makedirs ${initrd}/usr/share/hal/fdi
@@ -98,7 +97,6 @@ symlink name ${initrd}/etc/init.d target /etc/rc.d/init.d
 ## dhcp and dhcpv6 client daemons and support programs
 copy ${instroot} sbin/dhclient to ${initrd} sbin
 copy ${instroot} sbin/dhclient-script to ${initrd} sbin
-copy ${instroot} sbin/dhcp6c to ${initrd} sbin
 copy ${instroot} sbin/arping to ${initrd} sbin
 copy ${instroot} sbin/ifconfig to ${initrd} sbin
 copy ${instroot} sbin/ip to ${initrd} sbin
@@ -123,15 +121,13 @@ copy ${instroot} etc/hal/fdi/* to ${initrd} etc/hal/fdi
 copy ${instroot} etc/dbus-1/system.d/hal.conf to ${initrd} etc/dbus-1/system.d
 
 ## policykit
-copy ${instroot} etc/PolicyKit/PolicyKit.conf to ${initrd} etc/PolicyKit
+copy ${instroot} etc/polkit-1 to ${initrd} etc
 copy ${instroot} \
-    usr/share/dbus-1/system-services/org.freedesktop.PolicyKit.service to \
+    usr/share/dbus-1/system-services/org.freedesktop.PolicyKit1.service to \
     ${initrd} usr/share/dbus-1/system-services
 
-copy ${instroot} usr/share/PolicyKit/policy/org.freedesktop.policykit.policy \
-    to ${initrd} usr/share/PolicyKit/policy
-
-copy ${instroot} var/lib/misc/PolicyKit.reload to ${initrd} var/lib/misc
+copy ${instroot} usr/share/polkit-1/actions/org.freedesktop.policykit.policy \
+    to ${initrd} usr/share/polkit-1/actions
 
 ## dbus
 copy ${instroot} bin/dbus-uuidgen to ${initrd} sbin
@@ -158,17 +154,16 @@ copy ${instroot} \
 
 ## networkmanager
 copy ${instroot} usr/sbin/NetworkManager to ${initrd} usr/sbin
-copy ${instroot} usr/sbin/nm-system-settings to ${initrd} usr/sbin
 copy ${instroot} etc/dbus-1/system.d/nm-*.conf to ${initrd} etc/dbus-1/system.d
 copy ${instroot} etc/dbus-1/system.d/NetworkManager.conf to \
     ${initrd} etc/dbus-1/system.d
 copy ${instroot} etc/NetworkManager/nm-system-settings.conf to \
     ${initrd} etc/NetworkManager
 copy ${instroot} \
-    usr/${libdir}/NetworkManager/libnm-settings-plugin-ifcfg-fedora.so to \
+    usr/${libdir}/NetworkManager/libnm-settings-plugin-ifcfg-rh.so to \
     ${initrd} usr/${libdir}/NetworkManager
 copy ${instroot} usr/libexec/nm-* to ${initrd} usr/libexec
-copy ${instroot} usr/share/dbus-1/system-services/org.freedesktop.NetworkManagerSystemSettings.service to ${initrd} usr/share/dbus-1/system-services
+##copy ${instroot} usr/share/dbus-1/system-services/org.freedesktop.NetworkManagerSystemSettings.service to ${initrd} usr/share/dbus-1/system-services
 copy ${instroot} usr/share/dbus-1/system-services/org.freedesktop.nm_dispatcher.service to ${initrd} usr/share/dbus-1/system-services
 
 ## modprobe
@@ -210,7 +205,7 @@ copy ${instroot} bin/fgrep to ${initrd} sbin
 copy ${instroot} bin/grep to ${initrd} sbin
 copy ${instroot} bin/kill to ${initrd} sbin
 copy ${instroot} bin/ln to ${initrd} sbin
-copy ${instroot} bin/readlink to ${initrd} sbin
+copy ${instroot} usr/bin/readlink to ${initrd} sbin
 copy ${instroot} bin/rm to ${initrd} sbin
 copy ${instroot} bin/rmdir to ${initrd} sbin
 copy ${instroot} bin/sed to ${initrd} sbin
@@ -228,15 +223,24 @@ copy ${instroot} usr/lib/anaconda-runtime/loader/loader.tr to ${initrd} etc
 chmod ${initrd}/etc/loader.tr mode 0644
 
 ## indirect dependencies
-##copy ${instroot} ${libdir}/ld-linux.so.2 to ${initrd} ${libdir}
+copy ${instroot} ${libdir}/ld-linux.so.2 to ${initrd} ${libdir}
 copy ${instroot} ${libdir}/libcom_err.so.2 to ${initrd} ${libdir}
-copy ${instroot} ${libdir}/libdbus-glib-1.so.2 to ${initrd} ${libdir}
-copy ${instroot} ${libdir}/libfreebl3.so to ${initrd} ${libdir}
+##copy ${instroot} ${libdir}/libdbus-glib-1.so.2 to ${initrd} ${libdir}
+##copy ${instroot} ${libdir}/libfreebl3.so to ${initrd} ${libdir}
 copy ${instroot} ${libdir}/libgcc_s.so.1 to ${initrd} ${libdir}
 copy ${instroot} ${libdir}/libnss_dns.so.2 to ${initrd} ${libdir}
 copy ${instroot} ${libdir}/libnss_files.so.2 to ${initrd} ${libdir}
-copy ${instroot} ${libdir}/libsoftokn3.so to ${initrd} ${libdir}
+##copy ${instroot} ${libdir}/libsoftokn3.so to ${initrd} ${libdir}
 copy ${instroot} usr/${libdir}/libsqlite3.so.0 to ${initrd} usr/${libdir}
 
 ## langtable
 copy ${instroot} usr/lib/anaconda/lang-table to ${initrd} etc
+
+
+## missing files
+copy ${instroot} usr/sbin/dmidecode to ${initrd} bin
+copy ${instroot} sbin/load_policy to ${initrd} bin
+copy ${instroot} sbin/mdadm to ${initrd} bin
+copy ${instroot} sbin/mdmon to ${initrd} bin
+copy ${instroot} bin/mkdir to ${initrd} bin
+copy ${instroot} usr/bin/wget to ${initrd} bin

@@ -1,0 +1,7 @@
+[lorax]
+
+packages:
+    pcmciautils pdisk yaboot hfsutils fbset ppc64-utils
+
+initrd_template=templates/initrd/initrd.i386
+scrubs_template=templates/scrubs/scrubs.i386
