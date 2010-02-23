@@ -1,3 +1,0 @@
-SELINUX=permissive
-SELINUXTYPE=targeted
-

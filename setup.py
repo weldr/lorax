@@ -1,32 +1,26 @@
+#! /usr/bin/env python
+
 from distutils.core import setup
-import glob
-import os
+from glob import glob
 
-main_etc_files = []
-for comp in glob.glob(os.path.join(os.getcwd(), 'etc', '*')):
-    if os.path.isfile(comp):
-        main_etc_files.append(comp)
 
-etc_data_files = [(os.path.join(os.path.sep, 'etc', 'lorax'),
-                   main_etc_files)]
+data_files = [("/etc/lorax", glob("etc/config.*")),
+              ("/etc/lorax", ["etc/ignore_errors"]),
+              ("/etc/lorax/templates", glob("etc/templates/*"))
+              ]
 
-for comp in glob.glob(os.path.join(os.getcwd(), 'etc', '*')):
-    if os.path.isdir(comp):
-        sub_files = glob.glob(os.path.join(comp, '*'))
-        etc_path = os.path.join(os.path.sep, 'etc', 'lorax', os.path.basename(comp))
-        etc_data_files.append((etc_path, sub_files))
 
-data_files = [(os.path.join(os.path.sep, 'usr', 'share', 'lorax'),
-               glob.glob(os.path.join('share', '*')))] + etc_data_files
-
-setup(name='lorax',
-      version='0.1',
-      description='Boot image build tool',
-      author='David Cantrell',
-      author_email='dcantrell@redhat.com',
-      license='GPLv2+',
-      package_dir = {'': 'src'},
-      packages = ['pylorax'],
-      scripts = [os.path.join('src', 'bin', 'lorax')],
-      data_files = data_files
-     )
+setup(name="lorax",
+      version="0.1",
+      description="Lorax",
+      long_description="",
+      author="Martin Gracik",
+      author_email="mgracik@redhat.com",
+      url="http://",
+      download_url="http://",
+      license="GPLv2+",
+      packages=["pylorax"],
+      package_dir={"" : "src"},
+      scripts=["src/bin/lorax"],
+      data_files=data_files
+      )

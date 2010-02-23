@@ -1,6 +1,5 @@
 #
-# singleton.py
-# singleton base class
+# decorators.py
 #
 # Copyright (C) 2009  Red Hat, Inc.
 #
@@ -20,13 +19,12 @@
 # Red Hat Author(s):  Martin Gracik <mgracik@redhat.com>
 #
 
-class Singleton(object):
+def singleton(cls):
+    instances = {}
 
-    __instance = None
+    def get_instance():
+        if cls not in instances:
+            instances[cls] = cls()
+        return instances[cls]
 
-    @classmethod
-    def get(cls):
-        if cls.__instance is None:
-            cls.__instance = cls()
-
-        return cls.__instance
+    return get_instance

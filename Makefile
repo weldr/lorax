@@ -1,14 +1,11 @@
-# Makefile for lorax
+PYTHON ?= /usr/bin/env python
 
-PYTHON  ?= /usr/bin/python
-DESTDIR ?= /
 
 all:
 	$(PYTHON) setup.py build
 
 install:
-	$(PYTHON) setup.py install --root $(DESTDIR)
+	$(PYTHON) setup.py install
 
 clean:
 	-rm -rf build
-	-git clean -d -x -f

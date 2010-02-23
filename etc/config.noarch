@@ -1,15 +1,8 @@
 [lorax]
 
 packages:
-    anaconda kernel *firmware* joe gnome-icon-theme fedora-icon-theme
-    xorg-x11-server-Xorg firstaidkit bzip2 busybox selinux-policy-targeted
-    python-imaging hal specspo xorg-x11-fonts-misc xorg-x11-drivers rhpxl
-    ntfs-3g ntfsprogs xfsprogs xfsdump reiserfs-utils gfs2-utils jfsutils
-    nfs-utils btrfs-progs mesa-dri-drivers dogtail rsh rsync prelink
-    smartmontools iscsi-initiator-utils samba-client mtr gtk-nodoka-engine
-    ftp openssh-clients gtk+ gdk-pixbuf madan-fonts lklug-fonts
-    xorg-x11-fonts-ethiopic un-core-fonts-dotum man yum-fedorakmod
-    /etc/gtk-2.0/gtkrc NetworkManager-gnome wget
+    anaconda kernel *firmware* man hal wget samba-client gfs2-utils nfs-utils
+    ntfs-3g
 
 modules:
     sunrpc lockd floppy cramfs loop edd pcspkr squashfs
@@ -21,3 +14,6 @@ modules:
     dm-multipath dm-round-robin dm-crypt raid0 raid1 raid5 raid6 raid456 raid10
     linear sha256_generic cbc xts lrw aes_generic crypto_blkcipher crc32c ecb
     arc4 yenta_socket i82365 tcic pcmcia =scsi =net =drm
+
+initrd_template = templates/initrd.ltmpl
+install_template = templates/install.ltmpl

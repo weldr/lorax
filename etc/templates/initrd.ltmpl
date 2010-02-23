@@ -1,0 +1,214 @@
+## create modules and firmware symlinks
+symlink "lib/modules" "modules"
+symlink "lib/firmware" "firmware"
+
+## create required directories
+makedirs "sbin"
+symlink "sbin" "bin"
+makedirs "dev"
+makedirs "etc"
+makedirs "lib"
+makedirs "proc"
+makedirs "selinux"
+makedirs "sys"
+makedirs "tmp"
+makedirs "usr"
+makedirs "var"
+
+## copy etc stuff
+copy "etc/passwd"
+copy "etc/group"
+copy "etc/hosts"
+copy "etc/nsswitch.conf"
+
+## copy mount/umount files
+copy "bin/mount"
+copy "bin/umount"
+copy "sbin/mount.*"
+copy "sbin/umount.*"
+
+## copy udev stuff
+copy "sbin/udevd"
+copy "sbin/udevadm"
+symlink "udevadm" "sbin/udevinfo"
+symlink "udevadm" "sbin/udevsettle"
+
+## copy udev conf and rules
+copy "etc/udev/udev.conf"
+copy "lib/udev/*"
+remove "lib/udev/rules.d/*persistent*"
+remove "lib/udev/rules.d/*generator*"
+copy "etc/udev/rules.d/*.rules"
+
+## copy bash
+copy "bin/bash"
+symlink "bash" "bin/sh"
+
+## other
+copy "sbin/consoletype"
+copy "usr/bin/logger" "bin"
+
+## copy init functions
+copy "etc/rc.d/init.d/functions"
+copy "etc/sysconfig/network-scripts/network-functions*"
+
+## create init.d symlink
+symlink "/etc/rc.d/init.d" "etc/init.d"
+
+## dhcp client daemons and support programs
+copy "sbin/dhclient"
+copy "sbin/dhclient-script"
+copy "sbin/arping"
+copy "sbin/ifconfig"
+copy "sbin/ip"
+copy "bin/ipcalc"
+copy "bin/hostname"
+copy "sbin/ethtool"
+copy "sbin/route"
+touch "etc/resolv.conf"
+
+## hwdata
+copy "usr/share/hwdata/pci.ids"
+copy "usr/share/hwdata/usb.ids"
+
+## hal
+copy "usr/sbin/hald" "sbin"
+copy "usr/libexec/hald-runner"
+copy "usr/libexec/hald-generate-fdi-cache"
+copy "usr/libexec/hal*storage*"
+makedirs "var/run"
+touch "var/run/hald.acl-list"
+copy "usr/share/hal/fdi/*"
+copy "etc/hal/fdi/*"
+copy "etc/dbus-1/system.d/hal.conf"
+
+## policykit
+copy "etc/polkit-1"
+copy "usr/share/dbus-1/system-services/org.freedesktop.PolicyKit1.service"
+copy "usr/share/polkit-1/actions/org.freedesktop.policykit.policy"
+
+## dbus
+copy "bin/dbus-uuidgen"
+copy "bin/dbus-daemon"
+copy "etc/dbus-1/system.conf"
+copy "${libdir}/dbus-1/dbus-daemon-launch-helper"
+
+## wpa_supplicant
+copy "usr/sbin/wpa_passphrase"
+copy "usr/sbin/wpa_supplicant"
+copy "etc/dbus-1/system.d/wpa_supplicant.conf"
+copy "etc/wpa_supplicant/wpa_supplicant.conf"
+copy "usr/share/dbus-1/system-services/fi.epitest.hostap.WPASupplicant.service"
+
+## networkmanager
+copy "usr/sbin/NetworkManager"
+copy "etc/dbus-1/system.d/nm-*.conf"
+copy "etc/dbus-1/system.d/NetworkManager.conf"
+copy "etc/NetworkManager/nm-system-settings.conf"
+copy "usr/${libdir}/NetworkManager/libnm-settings-plugin-ifcfg-rh.so"
+copy "usr/libexec/nm-*"
+copy "usr/share/dbus-1/system-services/org.freedesktop.nm_dispatcher.service"
+
+## modprobe
+copy "sbin/modprobe"
+copy "sbin/insmod"
+copy "sbin/rmmod"
+
+## terminfos
+copy "usr/share/terminfo/a/ansi"
+copy "usr/share/terminfo/d/dumb"
+copy "usr/share/terminfo/l/linux"
+copy "usr/share/terminfo/s/screen"
+copy "usr/share/terminfo/v/vt100"
+copy "usr/share/terminfo/v/vt100-nav"
+copy "usr/share/terminfo/v/vt102"
+copy "usr/share/terminfo/x/xterm"
+copy "usr/share/terminfo/x/xterm-color"
+copy "usr/share/terminfo/g/gnome"
+
+## misc
+copy "bin/awk"
+copy "bin/egrep"
+copy "bin/fgrep"
+copy "bin/grep"
+copy "bin/kill"
+copy "bin/ln"
+copy "usr/bin/readlink" "bin"
+copy "bin/rm"
+copy "bin/rmdir"
+copy "bin/sed"
+copy "bin/sleep"
+copy "bin/touch"
+copy "usr/sbin/dmidecode" "sbin"
+copy "sbin/load_policy"
+copy "sbin/mdadm"
+copy "sbin/mdmon"
+copy "bin/mkdir"
+copy "usr/bin/wget" "bin"
+
+## misc symlinks
+symlink "/sbin/init" "init"
+symlink "/proc/mounts" "etc/mtab"
+makedirs "var/lib"
+symlink "../../tmp" "var/lib/xkb"
+
+## loader
+copy "usr/lib/anaconda-runtime/loader/loader" "sbin"
+copy "usr/lib/anaconda-runtime/loader/loader.tr" "etc"
+
+## indirect dependencies
+copy "${libdir}/ld-linux.so.2"
+copy "${libdir}/libcom_err.so.2"
+copy "${libdir}/libgcc_s.so.1"
+copy "${libdir}/libnss_dns.so.2"
+copy "${libdir}/libnss_files.so.2"
+copy "usr/${libdir}/libsqlite3.so.0"
+
+## langtable
+copy "usr/lib/anaconda/lang-table" "etc"
+
+## arch bits
+edit "etc/arch" "${buildarch}"
+
+
+## architecture specific code
+% if basearch in ("i386",):
+    copy "usr/lib/anaconda-runtime/loader/init" "sbin"
+    symlink "init" "sbin/reboot"
+    symlink "init" "sbin/halt"
+    symlink "init" "sbin/poweroff"
+
+    ## screenfont
+    copy "usr/lib/anaconda-runtime/screenfont-${basearch}.gz" "etc"
+    rename "etc/screenfont-${basearch}.gz" "etc/screenfont.gz"
+% endif
+
+% if basearch in ("s390", "s390x"):
+    makedirs "etc/ssh"
+    makedirs "etc/security"
+    makedirs "${libdir}/security"
+    makedirs "var/empty/sshd"
+    symlink "../../tmp" "var/state/xkb"
+
+    copy "${libdir}/libpam_misc.so*"
+    copy "${libdir}/libwrap*.so*"
+
+    copy "usr/lib/anaconda-runtime/loader/shutdown" "sbin"
+    copy "usr/lib/anaconda-runtime/loader/linuxrc.s390" "sbin"
+    rename "sbin/linuxrc.s390" "sbin/init"
+    copy "usr/lib/anaconda-runtime/loader/lsznet.raw" "sbin"
+    rename "sbin/lsznet.raw" "sbin/lsznet"
+    copy "usr/lib/anaconda-runtime/loader/controlunits.sh" "sbin"
+    rename "sbin/controlunits.sh" "sbin/controlunits"
+
+    copy "${libdir}/security/pam*.so"
+    copy "etc/pam.d/other"
+    copy "etc/security/limits.conf"
+    copy "etc/security/pam_env.conf"
+
+    copy "bin/login"
+    copy "usr/sbin/dasdfmt"
+    copy "usr/sbin/sshd"
+    copy "usr/bin/xauth"
+    copy "usr/sbin/cmsfs*"
+% endif

@@ -1,6 +1,5 @@
 #
-# utils.py
-# file utilities
+# sysutils.py
 #
 # Copyright (C) 2009  Red Hat, Inc.
 #
@@ -20,6 +19,10 @@
 # Red Hat Author(s):  Martin Gracik <mgracik@redhat.com>
 #
 
+__all__ = ["mkdir_", "makedirs_", "remove_", "symlink_", "touch_",
+           "chown_", "chmod_", "replace_", "scopy_", "dcopy_"]
+
+
 import sys
 import os
 import shutil
@@ -31,103 +34,52 @@ import grp
 import commands
 
 
-def expand_path(path, globs=True):
-    l = []
-
-    m = re.match(r"(?P<prefix>.*){(?P<expand>.*?)}(?P<suffix>.*)", path)
-    if m:
-        for f in re.split(r"\s*,\s*", m.group("expand")):
-            l.extend(expand_path(m.group("prefix") + f + m.group("suffix"),
-                                 globs=globs))
-    else:
-        # XXX are there any other chars in globs?
-        if globs and (path.find("*") != -1 or path.find("?") != -1):
-            l.extend(glob.glob(path))
-        else:
-            l.append(path)
-
-    return l
+class SysUtilsError(Exception):
+    pass
 
 
-def remove(file):
-    for fname in expand_path(file):
+class SmartCopyError(SysUtilsError):
+    pass
+
+
+class LinkerError(SysUtilsError):
+    pass
+
+
+def mkdir_(dir):
+    if not os.path.isdir(dir):
+        os.mkdir(dir)
+
+
+def makedirs_(dir):
+    if not os.path.isdir(dir):
+        os.makedirs(dir)
+
+
+def remove_(path):
+    for fname in glob.iglob(path):
         if os.path.islink(fname) or os.path.isfile(fname):
             os.unlink(fname)
         else:
             shutil.rmtree(fname)
 
 
-def __copy(src_path, dst_path, src_root="/", dst_root="/", symlinks=True,
-           ignore_errors=False, deps=False):
-
-    # ensure that roots end with "/"
-    if not src_root.endswith("/"):
-        src_root = src_root + "/"
-    if not dst_root.endswith("/"):
-        dst_root = dst_root + "/"
-
-    smartcopy = SmartCopy(src_root, dst_root, symlinks, ignore_errors)
-
-    src = os.path.join(src_root, src_path)
-    for fname in expand_path(src):
-        fname = fname.replace(src_root, "", 1)
-        smartcopy.copy(fname, dst_path)
-
-    if deps:
-        smartcopy.get_deps()
-
-    smartcopy.process()
-
-
-def scopy(src_path, dst_path, src_root="/", dst_root="/", symlinks=True,
-          ignore_errors=False):
-
-    __copy(src_path, dst_path, src_root, dst_root, symlinks,
-           ignore_errors, deps=False)
-
-
-def dcopy(src_path, dst_path, src_root="/", dst_root="/", symlinks=True,
-          ignore_errors=False):
-
-    __copy(src_path, dst_path, src_root, dst_root, symlinks,
-           ignore_errors, deps=True)
-
-
-def symlink(link_target, link_name):
-    if os.path.islink(link_name) or os.path.isfile(link_name):
+def symlink_(link_target, link_name, force=True):
+    if force and (os.path.islink(link_name) or os.path.isfile(link_name)):
         os.unlink(link_name)
 
     os.symlink(link_target, link_name)
 
 
-def touch(file):
-    if os.path.exists(file):
-        os.utime(file, None)
+def touch_(fname):
+    if os.path.exists(fname):
+        os.utime(fname, None)
     else:
-        with open(file, "w") as f:
+        with open(fname, "w") as f:
             pass
 
 
-def mkdir(dir, mode=None):
-    if mode is None:
-        mode = 0755
-
-    for d in expand_path(dir, globs=False):
-        if not os.path.isdir(d):
-            os.mkdir(d, mode)
-
-
-def makedirs(dir, mode=None):
-    if mode is None:
-        mode = 0755
-
-    for d in expand_path(dir, globs=False):
-        if not os.path.isdir(d):
-            os.makedirs(d, mode)
-
-
-def chown(file, user=None, group=None, recursive=False):
-    # if uid or gid is set to -1, it will not be changed
+def chown_(path, user=None, group=None, recursive=False):
     uid = gid = -1
 
     if user is not None:
@@ -135,56 +87,88 @@ def chown(file, user=None, group=None, recursive=False):
     if group is not None:
         gid = grp.getgrnam(group)[2]
 
-    for fname in expand_path(file):
+    for fname in glob.iglob(path):
         os.chown(fname, uid, gid)
 
         if recursive and os.path.isdir(fname):
             for nested in os.listdir(fname):
                 nested = os.path.join(fname, nested)
-                chown(nested, user, group, recursive)
+                chown_(nested, user, group, recursive)
 
 
-def chmod(file, mode, recursive=False):
-    for fname in expand_path(file):
+def chmod_(path, mode, recursive=False):
+    for fname in glob.iglob(path):
         os.chmod(fname, mode)
 
         if recursive and os.path.isdir(fname):
             for nested in os.listdir(fname):
                 nested = os.path.join(fname, nested)
-                chmod(nested, mode, recursive)
+                chmod_(nested, mode, recursive)
 
 
-def edit(file, text, append=False):
-    mode = "w"
-    if append:
-        mode = "a"
-
-    with open(file, mode) as f:
-        f.write(text)
-
-
-def replace(file, find, replace):
-    fin = fileinput.input(file, inplace=1)
+def replace_(fname, find, replace):
+    fin = fileinput.input(fname, inplace=1)
+    pattern = re.compile(find)
 
     for line in fin:
-        line = re.sub(find, replace, line)
+        line = pattern.sub(replace, line)
         sys.stdout.write(line)
 
     fin.close()
 
 
-class SmartCopyError(Exception):
-    pass
+def scopy_(src_path, dst_path, src_root="/", dst_root="/", symlinks=True,
+           ignore_errors=False):
+
+    __copy(src_path, dst_path, src_root, dst_root,
+           symlinks, deps=False, ignore_errors=ignore_errors)
 
 
+def dcopy_(src_path, dst_path, src_root="/", dst_root="/", symlinks=True,
+           ignore_errors=False):
+
+    __copy(src_path, dst_path, src_root, dst_root,
+           symlinks, deps=True, ignore_errors=ignore_errors)
+
+
+def __copy(src_path, dst_path, src_root="/", dst_root="/",
+           symlinks=True, deps=False, ignore_errors=False):
+
+    if not src_root.endswith("/"):
+        src_root += "/"
+    if not dst_root.endswith("/"):
+        dst_root += "/"
+
+    smartcopy = SmartCopy(src_root, dst_root, symlinks, deps, ignore_errors)
+
+    src = os.path.join(src_root, src_path)
+    pattern = re.compile(r"(\*|\?|\[.*?\])")
+    if pattern.search(src):
+        fnames = glob.glob(src)
+    else:
+        fnames = [src]
+
+    if not fnames and not ignore_errors:
+        err_msg = "cannot stat '{0}': No such file or directory"
+        raise SysUtilsError(err_msg.format(src))
+
+    for fname in fnames:
+        fname = fname.replace(src_root, "", 1)
+        smartcopy.copy(fname, dst_path)
+
+    smartcopy.process()
+
+
+# XXX
 class SmartCopy(object):
 
-    def __init__(self, src_root="/", dst_root="/", symlinks=True,
+    def __init__(self, src_root="/", dst_root="/", symlinks=True, deps=False,
                  ignore_errors=False):
 
         self.src_root = src_root
         self.dst_root = dst_root
         self.symlinks = symlinks
+        self.deps = deps
         self.ignore_errors = ignore_errors
 
         self.linker = Linker(src_root)
@@ -201,14 +185,15 @@ class SmartCopy(object):
         src = os.path.normpath(os.path.join(self.src_root, src_path))
         dst = os.path.normpath(os.path.join(self.dst_root, dst_path))
 
-        # check if the source exists
+        # check if the source path exists
         if not os.path.exists(src):
-            err_msg = "cannot stat '%s': No such file or directory" % src
+            err_msg = "cannot stat '{0}': No such file or directory"
+            err_msg = err_msg.format(src)
             if not self.ignore_errors:
                 raise SmartCopyError(err_msg)
             else:
                 self.errors.append(err_msg)
-                return  # EXIT
+                return
 
         if os.path.isfile(src):
             self.__copy_file(src_path, dst_path, src, dst)
@@ -217,32 +202,23 @@ class SmartCopy(object):
 
     def __copy_file(self, src_path, dst_path, src, dst):
         # if destination is an existing directory,
-        # append the source filename to the destination path
+        # append the source filename to the destination
         if os.path.isdir(dst):
             dst = os.path.join(dst, os.path.basename(src))
 
             # check if the new destination is still an existing directory
             if os.path.isdir(dst):
-
-                # do not overwrite a directory with a file
-                err_msg = "cannot overwrite directory '%s' " \
-                          "with non-directory" % dst
+                err_msg = "cannot overwrite directory '{0}' with non-directory"
+                err_msg = err_msg.format(dst)
                 if not self.ignore_errors:
                     raise SmartCopyError(err_msg)
                 else:
                     self.errors.append(err_msg)
-                    return  # EXIT
+                    return
 
         if os.path.islink(src):
-
-            if not self.symlinks:
-                real_src = os.path.realpath(src)
-                self.copyfiles.add((real_src, dst))
-            else:
-                self.__copy_link(src_path, dst_path, src, dst)
-
+            self.__copy_link(src_path, dst_path, src, dst)
         else:
-
             self.copyfiles.add((src, dst))
 
     def __copy_dir(self, src_path, dst_path, src, dst):
@@ -250,60 +226,47 @@ class SmartCopy(object):
             dirname = os.path.basename(src)
             new_dst = os.path.join(dst, dirname)
 
-            # remove the trailing "/",
-            # to make sure, that we don't try to create "dir" and "dir/"
+            # remove the trailing "/"
             if new_dst.endswith("/"):
                 new_dst = new_dst[:-1]
 
             if os.path.islink(src):
-
-                if not self.symlinks:
-                    real_src = os.path.realpath(src)
-
-                    if not os.path.exists(new_dst) and \
-                       new_dst not in self.makedirs:
-                        self.makedirs.append(new_dst)
-
-                    for fname in os.listdir(real_src):
-                        fname = os.path.join(real_src, fname)
-                        self.copy(fname, new_dst)
-
-                else:
-                    self.__copy_link(src_path, dst_path, src, new_dst)
-
+                self.__copy_link(src_path, dst_path, src, new_dst, dir=True)
             else:
-
-                # create the destination directory, if it does not exist
-                if not os.path.exists(new_dst) and \
-                   new_dst not in self.makedirs:
+                # create the destination directory
+                if not os.path.isdir(new_dst) and new_dst not in self.makedirs:
                     self.makedirs.append(new_dst)
-
                 elif os.path.isfile(new_dst):
-                    err_msg = "cannot overwrite file '%s' with a directory" \
-                              % new_dst
+                    err_msg = "cannot overwrite file '{0}' with directory"
+                    err_msg = err_msg.format(new_dst)
                     if not self.ignore_errors:
                         raise SmartCopyError(err_msg)
                     else:
                         self.errors.append(err_msg)
-                        return  # EXIT
+                        return
 
                 new_dst_path = os.path.join(dst_path, dirname)
 
                 try:
                     fnames = os.listdir(src)
                 except OSError as why:
-                    err_msg = "cannot list directory '%s': %s'" % (src, why)
+                    err_msg = "cannot list directory '{0}': {1}'"
+                    err_msg = err_msg.format(src, why)
                     if not self.ignore_errors:
                         raise SmartCopyError(err_msg)
                     else:
                         self.errors.append(err_msg)
-                        return  # EXIT
+                        return
 
                 for fname in fnames:
                     fname = os.path.join(src_path, fname)
                     self.copy(fname, new_dst_path)
 
-    def __copy_link(self, src_path, dst_path, src, dst):
+    def __copy_link(self, src_path, dst_path, src, dst, dir=False):
+        if not self.symlinks:
+            # TODO
+            raise NotImplementedError
+
         # read the link target
         link_target = os.readlink(src)
 
@@ -320,10 +283,9 @@ class SmartCopy(object):
         if target_dst_dir.endswith("/"):
             target_dst_dir = target_dst_dir[:-1]
 
-        # create the destination directory, if it doesn't exist
+        # create the destination directory
         target_dst = os.path.join(self.dst_root, target_dst_dir)
-        if not os.path.exists(target_dst) and \
-           target_dst not in self.makedirs:
+        if not os.path.isdir(target_dst) and target_dst not in self.makedirs:
             self.makedirs.append(target_dst)
 
         # copy the target along with the link
@@ -332,7 +294,7 @@ class SmartCopy(object):
         # create the symlink named dst, pointing to link_target
         self.links.add((link_target, dst))
 
-    def get_deps(self):
+    def __get_deps(self):
         deps = set()
 
         for src, dst in self.copyfiles:
@@ -345,78 +307,84 @@ class SmartCopy(object):
 
             # create the destination directory
             dst_dir = os.path.join(self.dst_root, dst_path)
-            if not os.path.exists(dst_dir) and \
-               dst_dir not in self.makedirs:
+            if not os.path.isdir(dst_dir) and dst_dir not in self.makedirs:
                 self.makedirs.append(dst_dir)
 
             self.copy(src_path, dst_path)
 
     def process(self):
-        # create required directories
-        map(mkdir, self.makedirs)
+        if self.deps:
+            self.__get_deps()
 
-        # copy all the files
+        # create required directories
+        map(makedirs_, self.makedirs)
 
         # remove the dst, if it is a link to src
         for src, dst in self.copyfiles:
             if os.path.realpath(dst) == src:
                 os.unlink(dst)
 
+        # copy all the files
         map(lambda (src, dst): shutil.copy2(src, dst), self.copyfiles)
 
         # create symlinks
-        map(lambda (target, name): symlink(target, name), self.links)
+        map(lambda (target, name): symlink_(target, name), self.links)
 
 
-class LinkerError(Exception):
-    pass
-
-
+# XXX
 class Linker(object):
 
-    LIBDIRS = ( "lib64",
-                "usr/lib64",
-                "lib",
-                "usr/lib" )
+    LIBDIRS = ("lib64",
+               "usr/lib64",
+               "lib",
+               "usr/lib")
+
+    LDDBIN = "/usr/bin/ldd"
+    FILEBIN = "/usr/bin/file"
 
     def __init__(self, root="/"):
         libdirs = map(lambda path: os.path.join(root, path), self.LIBDIRS)
         libdirs = ":".join(libdirs)
 
         ld_linux = None
+        pattern = re.compile(r"^RTLDLIST=(?P<ld_linux>.*)$")
 
-        with open("/usr/bin/ldd", "r") as f:
+        with open(self.LDDBIN, "r") as f:
             for line in f:
-                m = re.match(r"^RTLDLIST=(?P<ld_linux>.*)$", line.strip())
+                m = pattern.match(line.strip())
                 if m:
                     ld_linux = m.group("ld_linux")
                     break
 
         if ld_linux is None:
-            raise LinkerError("unable to find the ld_linux executable")
+            raise LinkerError("cannot find the ld_linux executable")
 
-        self.lddcmd = "LD_LIBRARY_PATH=%s %s --list" % (libdirs, ld_linux)
-        self.pattern = re.compile(r"^[a-zA-Z0-9.-_/]*\s=>\s" \
-                                  r"(?P<lib>[a-zA-Z0-9.-_/]*)" \
-                                  r"\s\(0x[0-9a-f]*\)$")
+        self.lddcmd = "LD_LIBRARY_PATH={0} {1} --list"
+        self.lddcmd = self.lddcmd.format(libdirs, ld_linux)
 
-    def is_elf(self, file):
-        err, output = commands.getstatusoutput("file --brief %s" % file)
+        self.pattern = re.compile(r"^[-._/a-zA-Z0-9]+\s=>\s"
+                                  r"(?P<lib>[-._/a-zA-Z0-9]+)"
+                                  r"\s\(0x[0-9a-f]+\)$")
+
+    def is_elf(self, fname):
+        cmd = "{0} --brief {1}".format(self.FILEBIN, fname)
+        err, stdout = commands.getstatusoutput(cmd)
         if err:
-            raise LinkerError("error getting the file type")
+            raise LinkerError(stdout)
 
-        if not output.startswith("ELF"):
+        if not stdout.count("ELF"):
             return False
 
         return True
 
-    def get_deps(self, file):
-        err, output = commands.getstatusoutput("%s %s" % (self.lddcmd, file))
+    def get_deps(self, fname):
+        cmd = "{0} {1}".format(self.lddcmd, fname)
+        err, stdout = commands.getstatusoutput(cmd)
         if err:
-            raise LinkerError("error getting the file dependencies")
+            raise LinkerError(stdout)
 
         deps = set()
-        for line in output.splitlines():
+        for line in stdout.splitlines():
             m = self.pattern.match(line.strip())
             if m:
                 deps.add(m.group("lib"))

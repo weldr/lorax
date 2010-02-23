@@ -1,8 +1,0 @@
-[lorax]
-
-packages:
-    grub gpart syslinux memtest86+ efibootmgr dmidecode pcmciautils
-    kernel-PAE
-
-initrd_template=templates/initrd/initrd.i386
-scrubs_template=templates/scrubs/scrubs.i386

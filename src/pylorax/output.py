@@ -1,6 +1,5 @@
 #
 # output.py
-# output control
 #
 # Copyright (C) 2009  Red Hat, Inc.
 #
@@ -21,100 +20,127 @@
 #
 
 import sys
-import singleton
+import re
+
+from decorators import singleton
 
 
-### color codes
-C_DEFAULT       = "\x1b[39m"
-C_RESET         = "\x1b[0m"
+# color codes
+C_DEFAULT = "\x1b[39m"
+C_RESET = "\x1b[0m"
 
-C_BLACK         = "\x1b[0;30m"
-C_WHITE         = "\x1b[1;37m"
-C_RED           = "\x1b[0;31m"
-C_GREEN         = "\x1b[0;32m"
-C_BLUE          = "\x1b[0;34m"
-C_LIGHTRED      = "\x1b[1;31m"
-C_LIGHTGREEN    = "\x1b[1;32m"
-C_LIGHTBLUE     = "\x1b[1;34m"
+C_BLACK = "\x1b[0;30m"
+C_WHITE = "\x1b[1;37m"
+C_RED = "\x1b[0;31m"
+C_GREEN = "\x1b[0;32m"
+C_BLUE = "\x1b[0;34m"
+C_LIGHTRED = "\x1b[1;31m"
+C_LIGHTGREEN = "\x1b[1;32m"
+C_LIGHTBLUE = "\x1b[1;34m"
 
-C_BOLD          = "\x1b[1m"
-C_UNDERLINE     = "\x1b[4m"
-
-### font types
-BOLD            = 0b01
-UNDERLINE       = 0b10
-
-### output levels
-CRITICAL        = 50
-ERROR           = 40
-WARNING         = 30
-INFO            = 20
-DEBUG           = 10
-NOTSET          = 0
+C_BOLD = "\x1b[1m"
+C_UNDERLINE = "\x1b[4m"
 
 
-class Terminal(singleton.Singleton):
+# format tags
+TAGS = [(re.compile(r"<b>"), C_BOLD),
+        (re.compile(r"<u>"), C_UNDERLINE),
+        (re.compile(r"<red>"), C_RED),
+        (re.compile(r"<green>"), C_GREEN),
+        (re.compile(r"<blue>"), C_BLUE),
+        (re.compile(r"</(b|u|red|green|blue)>"), C_RESET)]
+
+
+# output levels
+CRITICAL = 50
+ERROR = 40
+WARNING = 30
+INFO = 20
+DEBUG = 10
+NOTSET = 0
+
+
+@singleton
+class LoraxOutput(object):
 
     def __init__(self):
-        self.__colors           = True
-        self.__encoding         = "utf-8"
-        self.__output_level     = INFO
-        self.__indent_level     = 0
+        self._colors = True
+        self._encoding = "utf-8"
+        self._output_level = INFO
+        self._indent_level = 0
 
-    def basic_config(self, colors=None, encoding=None, level=None):
+        self._ignore_errors = set()
+
+    def basic_config(self, colors=None, encoding=None, output_level=None):
         if colors is not None:
-            self.__colors = colors
+            self._colors = colors
 
         if encoding is not None:
-            self.__encoding = encoding
+            self._encoding = encoding
 
-        if level is not None:
-            self.__output_level = level
+        if output_level is not None:
+            self._output_level = output_level
+
+    @property
+    def ignore(self):
+        return self._ignore_errors
+
+    @ignore.setter
+    def ignore(self, errors):
+        self._ignore_errors = errors
 
     def indent(self):
-        self.__indent_level += 1
+        self._indent_level += 1
 
     def unindent(self):
-        if self.__indent_level > 0:
-            self.__indent_level -= 1
+        if self._indent_level > 0:
+            self._indent_level -= 1
 
-    def write(self, s, color=C_RESET, type=None, file=sys.stdout):
-        s = self.format(s, color=color, type=type)
+    def write(self, s, file=sys.stdout):
+        if self._colors:
+            s = self.__format(s)
+        else:
+            s = self.__raw(s)
+
         file.write(s)
         file.flush()
 
-    def format(self, s, color=C_RESET, type=None):
-        s = s.encode(self.__encoding)
-
-        if self.__colors:
-            if type is not None and (type & BOLD):
-                s = "%s%s" % (C_BOLD, s)
-            if type is not None and (type & UNDERLINE):
-                s = "%s%s" % (C_UNDERLINE, s)
-            s = "%s%s%s" % (color, s, C_RESET)
-
-        return s
-
-    def writeline(self, s, color=C_RESET, type=None, file=sys.stdout):
-        s = "%s%s" % ("    " * self.__indent_level, s)
-        self.write(s + "\n", color=color, type=type, file=file)
+    def writeline(self, s, file=sys.stdout):
+        s = "{0}{1}\n".format("    " * self._indent_level, s)
+        self.write(s, file=file)
 
     def critical(self, s, file=sys.stdout):
-        if self.__output_level <= CRITICAL:
-            self.writeline("** critical: %s" % s, file=file)
+        s = "** critical: {0}".format(s)
+        if (self._output_level <= CRITICAL and
+            self.__raw(s) not in self.ignore):
+            self.writeline(s, file=file)
 
     def error(self, s, file=sys.stdout):
-        if self.__output_level <= ERROR:
-            self.writeline("** error: %s" % s, file=file)
+        s = "** error: {0}".format(s)
+        if (self._output_level <= ERROR and
+            self.__raw(s) not in self.ignore):
+            self.writeline(s, file=file)
 
     def warning(self, s, file=sys.stdout):
-        if self.__output_level <= WARNING:
-            self.writeline("** warning: %s" % s, file=file)
+        s = "** warning: {0}".format(s)
+        if (self._output_level <= WARNING and
+            self.__raw(s) not in self.ignore):
+            self.writeline(s, file=file)
 
     def info(self, s, file=sys.stdout):
-        if self.__output_level <= INFO:
+        if self._output_level <= INFO:
             self.writeline(s, file=file)
 
     def debug(self, s, file=sys.stdout):
-        if self.__output_level <= DEBUG:
+        if self._output_level <= DEBUG:
             self.writeline(s, file=file)
+
+    def __raw(self, s):
+        for tag, ccode in TAGS:
+            s = tag.sub("", s)
+        return s
+
+    def __format(self, s):
+        for tag, ccode in TAGS:
+            s = tag.sub(ccode, s)
+        return s

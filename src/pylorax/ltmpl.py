@@ -1,5 +1,5 @@
 #
-# config.py
+# ltmpl.py
 #
 # Copyright (C) 2009  Red Hat, Inc.
 #
@@ -19,24 +19,21 @@
 # Red Hat Author(s):  Martin Gracik <mgracik@redhat.com>
 #
 
-from decorators import singleton
-import output
+from mako.template import Template as MakoTemplate
+from mako.lookup import TemplateLookup as MakoTemplateLookup
 
 
-@singleton
-class LoraxConfig(object):
+class Template(object):
 
-    def __init__(self):
-        # output settings
-        self.colors = True
-        self.encoding = "utf-8"
-        self.debug = False
+    def parse(self, template_file, variables):
+        # we have to set the template lookup directories to ["/"],
+        # otherwise the file includes will not work properly
+        lookup = MakoTemplateLookup(directories=["/"])
+        template = MakoTemplate(filename=template_file, lookup=lookup)
+        s = template.render(**variables)
 
-        self.confdir = "/etc/lorax"
-        self.datadir = "/usr/share/lorax"
-
-        self.ignore_errors = "/etc/lorax/ignore_errors"
-
-    def __setattr__(self, attr, value):
-        output.LoraxOutput().debug("[set {0}={1}]".format(attr, value))
-        object.__setattr__(self, attr, value)
+        # enumerate, strip and remove empty lines
+        lines = enumerate(s.splitlines(), start=1)
+        lines = map(lambda (n, line): (n, line.strip()), lines)
+        lines = filter(lambda (n, line): line, lines)
+        return lines
