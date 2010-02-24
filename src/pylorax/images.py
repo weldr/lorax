@@ -669,7 +669,8 @@ class Install(BaseImageClass):
         for stub in map(lambda s: "{0}-stub".format(s), stubs):
             src = os.path.join(self.srctree, "usr/lib/anaconda", stub)
             dst = os.path.join(self.srctree, "usr/bin", stub)
-            shutil.copy2(src, dst)
+            if os.path.isfile(src):
+                shutil.copy2(src, dst)
 
     def copy_bootloaders(self):
         srcdir = os.path.join(self.srctree, self.const.BOOTDIR)
