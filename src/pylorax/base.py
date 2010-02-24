@@ -79,8 +79,8 @@ class BaseImageClass(BaseLoraxClass):
             func = getattr(self, func, None)
 
             if not func:
-                err = "{0}:{1}: invalid command: {2}"
-                err = err.format(template_file, lineno, line)
+                err = "invalid command: {0}"
+                err = err.format(line)
                 self.perror(err)
             else:
                 try:
@@ -88,8 +88,8 @@ class BaseImageClass(BaseLoraxClass):
                     self.pdebug(msg)
                     func(*args)
                 except TypeError:
-                    err = "{0}:{1}: invalid command syntax: {2}"
-                    err = err.format(template_file, lineno, line)
+                    err = "invalid command syntax: {0}"
+                    err = err.format(line)
                     self.perror(err)
 
     def makedirs(self, *dirs):
