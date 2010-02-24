@@ -78,7 +78,6 @@ class Lorax(BaseLoraxClass):
                                                 updatesdir=updatesdir)
 
         # create the output directory
-        assert not os.path.isdir(outputdir), "output directory exists"
         self.outputdir = outputdir
         makedirs_(self.outputdir)
 
