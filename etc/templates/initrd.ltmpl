@@ -7,12 +7,10 @@ makedirs "sbin"
 symlink "sbin" "bin"
 makedirs "dev"
 makedirs "etc"
-makedirs "lib"
 makedirs "proc"
 makedirs "selinux"
 makedirs "sys"
 makedirs "tmp"
-makedirs "usr"
 makedirs "var"
 
 ## copy etc stuff
@@ -31,14 +29,13 @@ copy "sbin/umount.*"
 copy "sbin/udevd"
 copy "sbin/udevadm"
 symlink "udevadm" "sbin/udevinfo"
-symlink "udevadm" "sbin/udevsettle"
 
 ## copy udev conf and rules
 copy "etc/udev/udev.conf"
+copy "etc/udev/rules.d/*.rules"
 copy "lib/udev/*"
 remove "lib/udev/rules.d/*persistent*"
 remove "lib/udev/rules.d/*generator*"
-copy "etc/udev/rules.d/*.rules"
 
 ## copy bash
 copy "bin/bash"
@@ -76,11 +73,11 @@ copy "usr/sbin/hald" "sbin"
 copy "usr/libexec/hald-runner"
 copy "usr/libexec/hald-generate-fdi-cache"
 copy "usr/libexec/hal*storage*"
-makedirs "var/run"
-touch "var/run/hald.acl-list"
 copy "usr/share/hal/fdi/*"
 copy "etc/hal/fdi/*"
 copy "etc/dbus-1/system.d/hal.conf"
+makedirs "var/run"
+touch "var/run/hald.acl-list"
 
 ## policykit
 copy "etc/polkit-1"
@@ -102,10 +99,10 @@ copy "usr/share/dbus-1/system-services/fi.epitest.hostap.WPASupplicant.service"
 
 ## networkmanager
 copy "usr/sbin/NetworkManager"
-copy "etc/dbus-1/system.d/nm-*.conf"
-copy "etc/dbus-1/system.d/NetworkManager.conf"
 copy "etc/NetworkManager/nm-system-settings.conf"
-copy "usr/${libdir}/NetworkManager/libnm-settings-plugin-ifcfg-rh.so"
+copy "etc/dbus-1/system.d/NetworkManager.conf"
+copy "etc/dbus-1/system.d/nm-*.conf"
+copy "usr/${libdir}/NetworkManager/libnm-*"
 copy "usr/libexec/nm-*"
 copy "usr/share/dbus-1/system-services/org.freedesktop.nm_dispatcher.service"
 
@@ -128,9 +125,9 @@ copy "usr/share/terminfo/g/gnome"
 
 ## misc
 copy "bin/awk"
+copy "bin/grep"
 copy "bin/egrep"
 copy "bin/fgrep"
-copy "bin/grep"
 copy "bin/kill"
 copy "bin/ln"
 copy "usr/bin/readlink" "bin"
