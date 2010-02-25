@@ -115,8 +115,9 @@ export PS1 PATH
         with open(profile, "w") as f:
             f.write(text)
 
-        # create the lib directory
+        # create the lib directories
         os.mkdir(os.path.join(self.dsttree, self.conf.libdir))
+        os.mkdir(os.path.join(self.dsttree, "usr", self.conf.libdir))
 
     # XXX
     def get_kernel_modules(self, kernel, modset):
