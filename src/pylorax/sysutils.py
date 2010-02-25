@@ -347,7 +347,7 @@ class Linker(object):
         libdirs = ":".join(libdirs)
 
         ld_linux = None
-        pattern = re.compile(r"^RTLDLIST=(?P<ld_linux>.*)$")
+        pattern = re.compile(r'^RTLDLIST="?(?P<ld_linux>.*?)"?$')
 
         with open(self.LDDBIN, "r") as f:
             for line in f:
