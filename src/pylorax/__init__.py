@@ -174,45 +174,84 @@ class Lorax(BaseLoraxClass):
         initrd = images.InitRD(self.installtree, modules, initrd_template,
                                self.workdir)
 
+        # get all kernels and initrds
+        kernel_normal, kernel_pae, kernel_xen = [], [], []
         for kernel, initrd in initrd.create():
+            if kernel.is_pae:
+                kernel_pae.append((kernel, initrd))
+            elif kernel.is_xen:
+                kernel_xen.append((kernel, initrd))
+            else:
+                kernel_normal.append((kernel, initrd))
+
+        # if we have a normal kernel, set it as the main kernel
+        kernels = []
+        try:
+            kernels.append(kernel_normal.pop(0))
+        except IndexError:
+            pass
+
+        # add pae and xen kernels to the list of kernels
+        kernels.extend(kernel_pae)
+        kernels.extend(kernel_xen)
+
+        # check if we have at least one kernel
+        if not kernels:
+            self.pcritical("no kernel images found")
+            sys.exit(1)
+
+        # main kernel
+        kernel, initrd = kernels.pop(0)
+        kernelfile = "vmlinuz"
+        initrdfile = "initrd.img"
+
+        # add images section to treeinfo
+        section = "images-{0}".format(self.conf.basearch)
+        data = {"kernel": "images/pxeboot/{0}".format(kernelfile),
+                "initrd": "images/pxeboot/{0}".format(initrdfile)}
+        self.treeinfo_add_section(self.conf.treeinfo, section, data)
+
+        # copy the kernel and initrd image to the isolinux directory
+        kdst = os.path.join(self.conf.isodir, kernelfile)
+        idst = os.path.join(self.conf.isodir, initrdfile)
+        shutil.copy2(kernel.path, kdst)
+        shutil.copy2(initrd, idst)
+
+        # copy the kernel and initrd image to the pxe directory
+        kdst = os.path.join(self.conf.pxedir, kernelfile)
+        idst = os.path.join(self.conf.pxedir, initrdfile)
+        shutil.copy2(kernel.path, kdst)
+        shutil.copy2(initrd, idst)
+
+        # create the efi images
+        if self.installtree.do_efi:
+            efi = images.EFI(self.installtree, kernel, initrd,
+                             self.product, self.version, self.workdir)
+
+            efiboot, efidisk = efi.create()
+
+            # copy the efi images to the images directory
+            shutil.copy2(efiboot, self.conf.imgdir)
+            shutil.copy2(efidisk, self.conf.imgdir)
+
+        # other kernels
+        for kernel, initrd in kernels:
             if kernel.is_pae:
                 kernelfile = "vmlinuz-PAE"
                 initrdfile = "initrd-PAE.img"
-
-                # add images section to treeinfo
+                # XXX add images section to treeinfo
                 section = "images-xen"
-                data = {"kernel": "images/pxeboot/vmlinuz-PAE",
-                        "initrd": "images/pxeboot/initrd-PAE.img"}
+                data = {"kernel": "images/pxeboot/{0}".format(kernelfile),
+                        "initrd": "images/pxeboot/{0}".format(initrdfile)}
                 self.treeinfo_add_section(self.conf.treeinfo, section, data)
             elif kernel.is_xen:
                 kernelfile = "vmlinuz-xen"
                 initrdfile = "initrd-xen.img"
-            else:
-                kernelfile = "vmlinuz"
-                initrdfile = "initrd.img"
-
-                # add images section to treeinfo
-                section = "images-{0}".format(self.conf.basearch)
-                data = {"kernel": "images/pxeboot/vmlinuz",
-                        "initrd": "images/pxeboot/initrd.img"}
+                # XXX add images section to treeinfo
+                section = "images-xen"
+                data = {"kernel": "images/pxeboot/{0}".format(kernelfile),
+                        "initrd": "images/pxeboot/{0}".format(initrdfile)}
                 self.treeinfo_add_section(self.conf.treeinfo, section, data)
-
-                # copy the kernel and initrd image to the isolinux directory
-                kdst = os.path.join(self.conf.isodir, kernelfile)
-                idst = os.path.join(self.conf.isodir, initrdfile)
-                shutil.copy2(kernel.path, kdst)
-                shutil.copy2(initrd, idst)
-
-                # create the efi images
-                if self.installtree.do_efi:
-                    efi = images.EFI(self.installtree, kernel, initrd,
-                                     self.product, self.version, self.workdir)
-
-                    efiboot, efidisk = efi.create()
-
-                    # copy the efi images to the images directory
-                    shutil.copy2(efiboot, self.conf.imgdir)
-                    shutil.copy2(efidisk, self.conf.imgdir)
 
             # copy the kernel and initrd image to the pxe directory
             kdst = os.path.join(self.conf.pxedir, kernelfile)
