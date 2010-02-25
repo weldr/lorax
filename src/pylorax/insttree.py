@@ -39,7 +39,7 @@ class InstallTree(BaseLoraxClass):
         self.rootdir = rootdir
         self.updatesdir = updatesdir
 
-        self.kpattern = re.compile(r"vmlinuz-(?P<ver>[-.0-9a-z]+?"
+        self.kpattern = re.compile(r"vmlinuz-(?P<ver>[-._0-9a-z]+?"
                                    r"(?P<pae>(PAE)?)(?P<xen>(xen)?))$")
 
     def install_packages(self, packages):
