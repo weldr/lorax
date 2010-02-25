@@ -356,11 +356,14 @@ class Linker(object):
                     ld_linux = m.group("ld_linux")
                     break
 
-        if ld_linux is None:
+        if ld_linux:
+            ld_linux = filter(os.path.isfile, ld_linux.split())
+
+        if not ld_linux:
             raise LinkerError("cannot find the ld_linux executable")
 
         self.lddcmd = "LD_LIBRARY_PATH={0} {1} --list"
-        self.lddcmd = self.lddcmd.format(libdirs, ld_linux)
+        self.lddcmd = self.lddcmd.format(libdirs, ld_linux[0])
 
         self.pattern = re.compile(r"^[-._/a-zA-Z0-9]+\s=>\s"
                                   r"(?P<lib>[-._/a-zA-Z0-9]+)"
