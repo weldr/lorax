@@ -211,6 +211,13 @@ class Lorax(BaseLoraxClass):
                 "initrd": "images/pxeboot/{0}".format(initrdfile)}
         self.treeinfo_add_section(self.conf.treeinfo, section, data)
 
+        if self.conf.basearch == "i386":
+            # add the xen section for x86
+            section = "images-xen"
+            data = {"kernel": "images/pxeboot/{0}".format(kernelfile),
+                    "initrd": "images/pxeboot/{0}".format(initrdfile)}
+            self.treeinfo_add_section(self.conf.treeinfo, section, data)
+
         # copy the kernel and initrd image to the isolinux directory
         kdst = os.path.join(self.conf.isodir, kernelfile)
         idst = os.path.join(self.conf.isodir, initrdfile)
