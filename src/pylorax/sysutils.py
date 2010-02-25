@@ -325,10 +325,20 @@ class SmartCopy(object):
                 os.unlink(dst)
 
         # copy all the files
-        map(lambda (src, dst): shutil.copy2(src, dst), self.copyfiles)
+        try:
+            map(lambda (src, dst): shutil.copy2(src, dst), self.copyfiles)
+        except shutil.Error as why:
+            err_msg = "error copying file {0} -> {1}: {2}"
+            err_msg = err_msg.format(src, dst, why)
+            raise SmartCopyError(err_msg)
 
         # create symlinks
-        map(lambda (target, name): symlink_(target, name), self.links)
+        try:
+            map(lambda (target, name): symlink_(target, name), self.links)
+        except OSError as why:
+            err_msg = "error creating symlink {0} -> {1}: {2}"
+            err_msg = err_msg.format(name, target, why)
+            raise SmartCopyError(err_msg)
 
 
 # XXX
