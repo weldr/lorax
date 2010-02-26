@@ -101,10 +101,6 @@ def get_yum_base_object(installroot, repositories, mirrorlists=[],
 
     yb.preconf.fn = yumconf
     yb.preconf.root = installroot
-    yb._getConfig()
-
-    yb._getRpmDB()
-    yb._getRepos()
-    yb._getSacks()
+    #yb.repos.setCacheDir(cachedir)
 
     return yb
