@@ -281,6 +281,10 @@ class Lorax(BaseLoraxClass):
         self.treeinfo_add_section(self.conf.treeinfo, section, data)
 
         # move the install image to the images directory
+        dst = os.path.join(self.conf.imgdir, os.path.basename(installimg))
+        if os.path.isfile(dst):
+            os.unlink(dst)
+
         shutil.move(installimg, self.conf.imgdir)
 
         # create the boot iso image
