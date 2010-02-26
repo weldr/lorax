@@ -297,6 +297,10 @@ class Lorax(BaseLoraxClass):
         self.treeinfo_add_section(self.conf.treeinfo, section, data)
 
         # move the boot iso to the images directory
+        dst = os.path.join(self.conf.imgdir, os.path.basename(bootiso))
+        if os.path.isfile(dst):
+            os.unlink(dst)
+
         shutil.move(bootiso, self.conf.imgdir)
 
         # copy the treeinfo and discinfo to the output directory
