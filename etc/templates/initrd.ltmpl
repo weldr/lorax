@@ -153,8 +153,14 @@ symlink "../../tmp" "var/lib/xkb"
 copy "usr/lib/anaconda-runtime/loader/loader" "sbin"
 copy "usr/lib/anaconda-runtime/loader/loader.tr" "etc"
 
+## ld-linux
+% if basearch in ("i386",):
+    copy "${libdir}/ld-linux.so.2"
+% elif basearch in ("x86_64",):
+    copy "${libdir}/ld-linux-x86-64.so.2"
+% endif
+
 ## indirect dependencies
-copy "${libdir}/ld-linux.so.2"
 copy "${libdir}/libcom_err.so.2"
 copy "${libdir}/libgcc_s.so.1"
 copy "${libdir}/libnss_dns.so.2"
@@ -169,7 +175,7 @@ edit "etc/arch" "${buildarch}"
 
 
 ## architecture specific code
-% if basearch in ("i386",):
+% if basearch in ("i386", "x86_64"):
     copy "usr/lib/anaconda-runtime/loader/init" "sbin"
     symlink "init" "sbin/reboot"
     symlink "init" "sbin/halt"
