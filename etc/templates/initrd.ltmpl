@@ -175,6 +175,7 @@ edit "etc/arch" "${buildarch}"
 
 ## rsyslogd
 copy "sbin/rsyslogd"
+copy "${libdir}/rsyslog/*"
 
 
 ## architecture specific code
