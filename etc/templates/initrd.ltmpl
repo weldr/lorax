@@ -173,6 +173,9 @@ copy "usr/lib/anaconda/lang-table" "etc"
 ## arch bits
 edit "etc/arch" "${buildarch}"
 
+## rsyslogd
+copy "sbin/rsyslogd"
+
 
 ## architecture specific code
 % if basearch in ("i386", "x86_64"):
