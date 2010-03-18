@@ -2,7 +2,7 @@
 
 packages:
     anaconda kernel *firmware* man hal wget samba-client gfs2-utils nfs-utils
-    ntfs-3g rsyslog
+    ntfs-3g rsyslog ethtool
 
 modules:
     sunrpc lockd floppy cramfs loop edd pcspkr squashfs
