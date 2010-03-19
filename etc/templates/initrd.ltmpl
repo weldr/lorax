@@ -89,6 +89,8 @@ copy "bin/dbus-uuidgen"
 copy "bin/dbus-daemon"
 copy "etc/dbus-1/system.conf"
 copy "${libdir}/dbus-1/dbus-daemon-launch-helper"
+makedirs "var/lib/dbus"
+makedirs "var/run/dbus"
 
 ## wpa_supplicant
 copy "usr/sbin/wpa_passphrase"
