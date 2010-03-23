@@ -34,7 +34,6 @@ symlink "udevadm" "sbin/udevinfo"
 copy "etc/udev/udev.conf"
 copy "etc/udev/rules.d/*.rules"
 copy "lib/udev/*"
-remove "lib/udev/rules.d/*persistent*"
 remove "lib/udev/rules.d/*generator*"
 
 ## copy bash
@@ -177,8 +176,28 @@ edit "etc/arch" "${buildarch}"
 
 ## rsyslogd
 copy "sbin/rsyslogd"
-copy "${libdir}/rsyslog/*"
+copy "usr/${libdir}/rsyslog/*"
 copy "etc/rsyslog.conf"
+
+
+## missing files
+copy "sbin/depmod"
+copy "usr/sbin/sshd"
+copy "usr/bin/ssh-keygen"
+copy "usr/bin/strace"
+
+makedirs "var/empty"
+makedirs "var/empty/sshd"
+makedirs "var/lock"
+makedirs "var/lock/rpm"
+makedirs "var/run/NetworkManager"
+makedirs "var/run/wpa_supplicant"
+makedirs "var/lib/dhclient"
+
+
+## security libraries
+makedirs "${libdir}/security"
+copy "${libdir}/security/*"
 
 
 ## architecture specific code
