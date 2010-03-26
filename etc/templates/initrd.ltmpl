@@ -108,9 +108,11 @@ copy "usr/libexec/nm-*"
 copy "usr/share/dbus-1/system-services/org.freedesktop.nm_dispatcher.service"
 
 ## modprobe
+makedirs "etc/modprobe.d"
 copy "sbin/modprobe"
 copy "sbin/insmod"
 copy "sbin/rmmod"
+copy "sbin/depmod"
 
 ## terminfos
 copy "usr/share/terminfo/a/ansi"
@@ -181,7 +183,6 @@ copy "etc/rsyslog.conf"
 
 
 ## missing files
-copy "sbin/depmod"
 copy "usr/sbin/sshd"
 copy "usr/bin/ssh-keygen"
 copy "usr/bin/strace"

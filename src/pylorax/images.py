@@ -290,18 +290,6 @@ export PS1 PATH
         # remove the source module-info
         #os.unlink(moduleinfo)
 
-        # run depmod
-        systemmap = os.path.join(self.srctree, self.const.BOOTDIR,
-                                 "System.map-{0}".format(kernel.version))
-
-        cmd = "{0.DEPMOD} -a -F {1} -b {2} {3}"
-        cmd = cmd.format(self.cmd, systemmap,
-                         self.srctree, kernel.version)
-
-        err, stdout = commands.getstatusoutput(cmd)
-        if err:
-            self.perror(stdout)
-
         # compress modules
         for root, dirs, files in os.walk(dst_moddir):
             for file in filter(lambda f: f.endswith(".ko"), files):
@@ -313,6 +301,18 @@ export PS1 PATH
                 gzipped.write(data)
                 gzipped.close()
                 os.unlink(path)
+
+        # run depmod
+        systemmap = os.path.join(self.srctree, self.const.BOOTDIR,
+                                 "System.map-{0}".format(kernel.version))
+
+        cmd = "{0.DEPMOD} -a -F {1} -b {2} {3}"
+        cmd = cmd.format(self.cmd, systemmap,
+                         self.srctree, kernel.version)
+
+        err, stdout = commands.getstatusoutput(cmd)
+        if err:
+            self.perror(stdout)
 
     def get_keymaps(self):
         override = "keymaps-override-{0}".format(self.conf.basearch)
