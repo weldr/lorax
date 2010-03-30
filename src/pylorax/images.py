@@ -312,7 +312,7 @@ export PS1 PATH
             self.perror(stdout)
 
         # remove *map files
-        remove_(os.path.join(self.dst_moddir, "*map"))
+        remove_(os.path.join(dst_moddir, "*map"))
 
     def get_keymaps(self):
         override = "keymaps-override-{0}".format(self.conf.basearch)
@@ -569,7 +569,7 @@ class EFI(BaseImageClass):
         cmd = cmd.format(self.cmd, dmdev, disksize / 512, loop)
         err, stdout = commands.getstatusoutput(cmd)
         if err:
-            self.perror(output)
+            self.perror(stdout)
             self.remove_loop_dev(loop)
             os.unlink(efidisk)
             return None
