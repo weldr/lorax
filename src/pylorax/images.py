@@ -311,7 +311,6 @@ export PS1 PATH
                          self.dsttree, kernel.version)
 
         err, stdout = commands.getstatusoutput(cmd)
-        print stdout
         if err:
             self.perror(stdout)
 
