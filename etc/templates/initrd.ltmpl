@@ -62,6 +62,7 @@ copy "bin/hostname"
 copy "sbin/ethtool"
 copy "sbin/route"
 touch "etc/resolv.conf"
+makedirs "etc/dhcp"
 
 ## hwdata
 copy "usr/share/hwdata/pci.ids"
@@ -100,6 +101,7 @@ copy "usr/share/dbus-1/system-services/fi.epitest.hostap.WPASupplicant.service"
 
 ## networkmanager
 copy "usr/sbin/NetworkManager"
+makedirs "etc/NetworkManager/dispatcher.d"
 copy "etc/NetworkManager/nm-system-settings.conf"
 copy "etc/dbus-1/system.d/NetworkManager.conf"
 copy "etc/dbus-1/system.d/nm-*.conf"
@@ -193,6 +195,7 @@ makedirs "var/lock"
 makedirs "var/lock/rpm"
 makedirs "var/run/NetworkManager"
 makedirs "var/run/wpa_supplicant"
+makedirs "var/run/hald"
 makedirs "var/lib/dhclient"
 
 

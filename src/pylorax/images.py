@@ -308,9 +308,10 @@ export PS1 PATH
 
         cmd = "{0.DEPMOD} -a -F {1} -b {2} {3}"
         cmd = cmd.format(self.cmd, systemmap,
-                         self.srctree, kernel.version)
+                         self.dsttree, kernel.version)
 
         err, stdout = commands.getstatusoutput(cmd)
+        print stdout
         if err:
             self.perror(stdout)
 
