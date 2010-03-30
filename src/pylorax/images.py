@@ -268,24 +268,14 @@ export PS1 PATH
                     info = info.format(modname, modtype, desc)
                     modlist[modname] = info
 
-        # write the source module-info
-        moduleinfo = os.path.join(self.workdir, self.const.MODULEINFO)
+        # write the module-info
+        moduleinfo = os.path.join(os.path.dirname(dst_moddir),
+                                  self.const.MODULEINFO)
+
         with open(moduleinfo, "w") as f:
             f.write("Version 0\n")
             for modname in sorted(modlist.keys()):
                 f.write(modlist[modname])
-
-        # create the final module-info
-        dst = os.path.join(os.path.dirname(dst_moddir), self.const.MODULEINFO)
-        modlist = os.path.join(self.srctree, self.const.MODLIST)
-        cmd = "{0} --modinfo-file {1} --ignore-missing --modinfo {2} > {3}"
-        cmd = cmd.format(modlist, moduleinfo, " ".join(list(modules)), dst)
-        err, stdout = commands.getstatusoutput(cmd)
-        if err:
-            self.perror(stdout)
-
-        # remove the source module-info
-        #os.unlink(moduleinfo)
 
         # compress modules
         for root, dirs, files in os.walk(dst_moddir):
