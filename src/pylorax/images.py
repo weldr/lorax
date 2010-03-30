@@ -239,8 +239,6 @@ export PS1 PATH
         for modtype, fname in {"scsi": "modules.block",
                                "eth": "modules.networking"}.items():
 
-            modlist[modtype] = {}
-
             fname = os.path.join(dst_moddir, fname)
             with open(fname, "r") as f:
                 for line in f:
@@ -268,15 +266,14 @@ export PS1 PATH
 
                     info = '{0}\n\t{1}\n\t"{2}"\n'
                     info = info.format(modname, modtype, desc)
-                    modlist[modtype][modname] = info
+                    modlist[modname] = info
 
         # write the source module-info
         moduleinfo = os.path.join(self.workdir, self.const.MODULEINFO)
         with open(moduleinfo, "w") as f:
             f.write("Version 0\n")
-            for modtype, modules in modlist.items():
-                for modname in sorted(modules.keys()):
-                    f.write(modlist[modtype][modname])
+            for modname in sorted(modlist.keys()):
+                f.write(modlist[modname])
 
         # create the final module-info
         dst = os.path.join(os.path.dirname(dst_moddir), self.const.MODULEINFO)
