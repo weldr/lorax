@@ -314,6 +314,9 @@ export PS1 PATH
         if err:
             self.perror(stdout)
 
+        # remove *map files
+        remove_(os.path.join(self.dst_moddir, "*map"))
+
     def get_keymaps(self):
         override = "keymaps-override-{0}".format(self.conf.basearch)
         override = os.path.join(self.srctree, self.const.ANACONDA_RUNTIME,
