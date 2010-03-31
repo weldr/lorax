@@ -3,6 +3,9 @@
 packages:
     anaconda kernel *firmware* man hal wget samba-client gfs2-utils nfs-utils
     ntfs-3g rsyslog ethtool openssh openssh-server strace
+    xorg-x11-server-Xorg xorg-x11-drivers
+    device-mapper device-mapper-libs
+    device-mapper-multipath device-mapper-multipath-libs
 
 modules:
     sunrpc lockd floppy cramfs loop edd pcspkr squashfs
