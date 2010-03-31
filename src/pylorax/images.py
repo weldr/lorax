@@ -705,12 +705,10 @@ class Install(BaseImageClass):
             shutil.move(f, dstdir)
 
     def create_modules_symlinks(self):
-        mkdir_(os.path.join(self.srctree, "modules"))
-        mkdir_(os.path.join(self.srctree, "firmware"))
-        remove_(os.path.join(self.srctree, self.const.MODDIR))
-        remove_(os.path.join(self.srctree, self.const.FWDIR))
-        os.symlink("/modules", os.path.join(self.srctree, self.const.MODDIR))
-        os.symlink("/firmware", os.path.join(self.srctree, self.const.FWDIR))
+        remove_(os.path.join(self.srctree, self.const.MODDIR, "*"))
+        remove_(os.path.join(self.srctree, self.const.FWDIR, "*"))
+        os.symlink(os.path.join(self.srctree, self.const.MODDIR), "/modules")
+        os.symlink(os.path.join(self.srctree, self.const.FWDIR), "/firmware")
 
     def fix_man_pages(self):
         # fix up some links for man page related stuff
