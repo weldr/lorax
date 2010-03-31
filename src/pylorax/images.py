@@ -126,7 +126,11 @@ export PS1 PATH
         dst_moddir = os.path.join(self.dsttree, "modules", kernel.version)
 
         # create the lib/modules symlink
-        os.symlink("/modules", os.path.join(self.dsttree, self.const.MODDIR))
+        libmod = os.path.join(self.dsttree, self.const.MODDIR)
+        libmoddir = os.path.dirname(libmod)
+        if not os.path.isdir(libmoddir):
+            os.makedirs(libmoddir)
+        os.symlink("/modules", libmod)
 
         # copy all modules to the initrd tree
         os.makedirs(os.path.dirname(dst_moddir))
@@ -209,7 +213,11 @@ export PS1 PATH
                             shutil.copy2(src, dst)
 
         # create the lib/firmware symlink
-        os.symlink("/firmware", os.path.join(self.dsttree, self.const.FWDIR))
+        libfw = os.path.join(self.dsttree, self.const.FWDIR)
+        libfwdir = os.path.dirname(libfw)
+        if not os.path.isdir(libfwdir):
+            os.makedirs(libfwdir)
+        os.symlink("/firmware", libfw)
 
         # copy additional firmware
         fw = [("ipw2100", "ipw2100*"),
