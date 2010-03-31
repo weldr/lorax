@@ -31,7 +31,8 @@ def get_yum_base_object(installroot, repositories, mirrorlists=[],
     def sanitize_repo(repo):
         if repo.startswith("/"):
             return "file://{0}".format(repo)
-        elif repo.startswith("http://") or repo.startswith("ftp://"):
+        elif (repo.startswith("http://") or repo.startswith("ftp://")
+              or repo.startswith("file://")):
             return repo
         else:
             return None
