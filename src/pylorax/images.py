@@ -123,7 +123,10 @@ export PS1 PATH
     def get_kernel_modules(self, kernel, modset):
         moddir = os.path.join(self.const.MODDIR, kernel.version)
         src_moddir = os.path.join(self.srctree, moddir)
-        dst_moddir = os.path.join(self.dsttree, moddir)
+        dst_moddir = os.path.join(self.dsttree, "modules", kernel.version)
+
+        # create the lib/modules symlink
+        os.symlink("/modules", os.path.join(self.dsttree, self.const.MODDIR))
 
         # copy all modules to the initrd tree
         os.makedirs(os.path.dirname(dst_moddir))
@@ -192,18 +195,21 @@ export PS1 PATH
                             continue
 
                         for fw in stdout.split():
-                            fw = os.path.join(self.const.FWDIR, fw)
-                            src = os.path.join(self.srctree, fw)
+                            src = os.path.join(self.srctree,
+                                               self.const.FWDIR, fw)
                             if not os.path.exists(src):
                                 msg = "missing firmware {0}".format(fw)
                                 self.pwarning(msg)
                                 continue
 
                             # copy the firmware
-                            dst = os.path.join(self.dsttree, fw)
+                            dst = os.path.join(self.dsttree, "firmware", fw)
                             dir = os.path.dirname(dst)
                             makedirs_(dir)
                             shutil.copy2(src, dst)
+
+        # create the lib/firmware symlink
+        os.symlink("/firmware", os.path.join(self.dsttree, self.const.FWDIR))
 
         # copy additional firmware
         fw = [("ipw2100", "ipw2100*"),
@@ -219,7 +225,7 @@ export PS1 PATH
                 scopy_(src_root=self.srctree,
                        src_path=os.path.join(self.const.FWDIR, fname),
                        dst_root=self.dsttree,
-                       dst_path=self.const.FWDIR)
+                       dst_path="firmware")
 
         # XXX
         # remove empty directories
@@ -705,10 +711,12 @@ class Install(BaseImageClass):
             shutil.move(f, dstdir)
 
     def create_modules_symlinks(self):
-        remove_(os.path.join(self.srctree, self.const.MODDIR, "*"))
-        remove_(os.path.join(self.srctree, self.const.FWDIR, "*"))
-        os.symlink(os.path.join(self.srctree, self.const.MODDIR), "/modules")
-        os.symlink(os.path.join(self.srctree, self.const.FWDIR), "/firmware")
+        mkdir_(os.path.join(self.srctree, "modules"))
+        mkdir_(os.path.join(self.srctree, "firmware"))
+        remove_(os.path.join(self.srctree, self.const.MODDIR))
+        remove_(os.path.join(self.srctree, self.const.FWDIR))
+        os.symlink("/modules", os.path.join(self.srctree, self.const.MODDIR))
+        os.symlink("/firmware", os.path.join(self.srctree, self.const.FWDIR))
 
     def fix_man_pages(self):
         # fix up some links for man page related stuff

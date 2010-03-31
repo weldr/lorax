@@ -1,7 +1,3 @@
-## create modules and firmware symlinks
-symlink "lib/modules" "modules"
-symlink "lib/firmware" "firmware"
-
 ## create required directories
 makedirs "sbin"
 symlink "sbin" "bin"
