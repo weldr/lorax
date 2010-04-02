@@ -2,10 +2,15 @@
 
 packages:
     anaconda kernel *firmware* man hal wget samba-client gfs2-utils nfs-utils
-    ntfs-3g rsyslog ethtool openssh openssh-server strace
-    xorg-x11-server-Xorg xorg-x11-drivers
+    ntfs-3g rsyslog ethtool openssh openssh-server strace udev
+    xorg-x11-server-Xorg xorg-x11-server-utils xorg-x11-drivers
+    xorg-x11-xauth xorg-x11-font-utils xorg-x11-fonts-misc
+    dejavu-sans-fonts dejavu-sans-mono-fonts fontconfig freetype
+    fonts-ISO8859-2
+    gtk2 gtk2-engines gnome-themes metacity
     device-mapper device-mapper-libs
     device-mapper-multipath device-mapper-multipath-libs
+    selinux-policy-targeted
 
 modules:
     sunrpc lockd floppy cramfs loop edd pcspkr squashfs

@@ -2,6 +2,7 @@
 
 from distutils.core import setup
 from glob import glob
+import os
 
 
 data_files = [("/etc/lorax", glob("etc/config.*")),
@@ -9,6 +10,10 @@ data_files = [("/etc/lorax", glob("etc/config.*")),
               ("/etc/lorax/templates", glob("etc/templates/*"))
               ]
 
+for root, dnames, fnames in os.walk("share"):
+    for fname in fnames:
+        data_files.append((root.replace("share", "/usr/share/lorax", 1),
+                           [os.path.join(root, fname)]))
 
 setup(name="lorax",
       version="0.1",

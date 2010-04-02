@@ -130,7 +130,7 @@ export PS1 PATH
         libmoddir = os.path.dirname(libmod)
         if not os.path.isdir(libmoddir):
             os.makedirs(libmoddir)
-        os.symlink("/modules", libmod)
+        os.symlink("../modules", libmod)
 
         # copy all modules to the initrd tree
         os.makedirs(os.path.dirname(dst_moddir))
@@ -217,7 +217,7 @@ export PS1 PATH
         libfwdir = os.path.dirname(libfw)
         if not os.path.isdir(libfwdir):
             os.makedirs(libfwdir)
-        os.symlink("/firmware", libfw)
+        os.symlink("../firmware", libfw)
 
         # copy additional firmware
         fw = [("ipw2100", "ipw2100*"),
@@ -649,6 +649,10 @@ class Install(BaseImageClass):
                      "libdir": self.conf.libdir}
         self.parse_template(self.template_file, variables)
 
+        # copy custom files
+        self.pinfo("copying custom files")
+        self.copy_custom_files()
+
         installimg = os.path.join(self.workdir, "install.img")
         if os.path.isfile(installimg):
             os.unlink(installimg)
@@ -827,6 +831,10 @@ class Install(BaseImageClass):
             if newtarget != target:
                 os.unlink(link)
                 os.symlink(newtarget, link)
+
+    def copy_custom_files(self):
+        scopy_(src_root=self.conf.datadir, src_path="*",
+               dst_root=self.dsttree, dst_path="")
 
 
 class Boot(BaseImageClass):
