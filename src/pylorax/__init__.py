@@ -86,7 +86,7 @@ class Lorax(BaseLoraxClass):
         self.version = version
         self.release = release
 
-        # create the working director
+        # create the working directory
         self.workdir = workdir
         makedirs_(self.workdir)
 
