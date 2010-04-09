@@ -7,10 +7,17 @@ packages:
     xorg-x11-xauth xorg-x11-font-utils xorg-x11-fonts-misc
     dejavu-sans-fonts dejavu-sans-mono-fonts fontconfig freetype
     fonts-ISO8859-2
-    gtk2 gtk2-engines gnome-themes metacity
+    gtk2 gtk2-engines gnome-themes metacity pango cairo echo-icon-theme
     device-mapper device-mapper-libs
     device-mapper-multipath device-mapper-multipath-libs
-    selinux-policy-targeted
+    selinux-policy-targeted fcoe-utils
+    lohit-assamese-fonts lohit-bengali-fonts lohit-gujarati-fonts
+    lohit-hindi-fonts lohit-kashmiri-fonts lohit-kannada-fonts
+    lohit-maithili-fonts lohit-marathi-fonts lohit-oriya-fonts
+    lohit-punjabi-fonts lohit-sindhi-fonts lohit-tamil-fonts lohit-telugu-fonts
+    dmraid dmraid-libs coreutils bzip2 bzip2-libs cpio
+    cracklib cracklib-dicts cracklib-python cryptsetup-luks
+    GConf2
 
 modules:
     sunrpc lockd floppy cramfs loop edd pcspkr squashfs
