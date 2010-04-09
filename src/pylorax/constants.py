@@ -27,9 +27,8 @@ class LoraxConstants(object):
     ROOT_UID = 0
 
     ANACONDA_PACKAGE = "anaconda"
-    ANACONDA_RUNTIME = "usr/lib/anaconda-runtime"
-    ANACONDA_BOOTDIR = "usr/lib/anaconda-runtime/boot"
-    ANACONDA_LOADERDIR = "usr/lib/anaconda-runtime/loader"
+    ANACONDA_RUNTIME = "usr/share/anaconda"
+    ANACONDA_BOOTDIR = "usr/share/anaconda/boot"
 
     BOOTDIR = "boot"
     BOOTDIR_IA64 = "boot/efi/EFI/redhat"
@@ -48,14 +47,13 @@ class LoraxConstants(object):
 
     MODDEPFILE = "modules.dep"
     MODULEINFO = "module-info"
-    MODLIST = "usr/lib/anaconda-runtime/modlist"
 
     LOCALEDIR = "usr/lib/locale"
     LOCALES = "usr/share/locale"
-    LANGTABLE = "usr/lib/anaconda/lang-table"
+    LANGTABLE = "usr/share/anaconda/lang-table"
 
     ISOLINUXBIN = "usr/share/syslinux/isolinux.bin"
-    SYSLINUXCFG = "usr/lib/anaconda-runtime/boot/syslinux.cfg"
+    SYSLINUXCFG = "usr/share/anaconda/boot/syslinux.cfg"
 
     LDSOCONF = "etc/ld.so.conf"
     MANCONF = "etc/man.config"

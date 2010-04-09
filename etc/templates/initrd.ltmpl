@@ -151,8 +151,8 @@ makedirs "var/lib"
 symlink "../../tmp" "var/lib/xkb"
 
 ## loader
-copy "usr/lib/anaconda-runtime/loader/loader" "sbin"
-copy "usr/lib/anaconda-runtime/loader/loader.tr" "etc"
+copy "usr/lib/anaconda/loader" "sbin"
+copy "usr/share/anaconda/loader.tr" "etc"
 
 ## ld-linux
 % if basearch in ("i386",):
@@ -169,7 +169,7 @@ copy "${libdir}/libnss_files.so.2"
 copy "usr/${libdir}/libsqlite3.so.0"
 
 ## langtable
-copy "usr/lib/anaconda/lang-table" "etc"
+copy "usr/share/anaconda/lang-table" "etc"
 
 ## arch bits
 edit "etc/arch" "${buildarch}"
@@ -202,13 +202,13 @@ copy "${libdir}/security/*"
 
 ## architecture specific code
 % if basearch in ("i386", "x86_64"):
-    copy "usr/lib/anaconda-runtime/loader/init" "sbin"
+    copy "usr/lib/anaconda/init" "sbin"
     symlink "init" "sbin/reboot"
     symlink "init" "sbin/halt"
     symlink "init" "sbin/poweroff"
 
     ## screenfont
-    copy "usr/lib/anaconda-runtime/screenfont-${basearch}.gz" "etc"
+    copy "usr/share/anaconda/screenfont-${basearch}.gz" "etc"
     rename "etc/screenfont-${basearch}.gz" "etc/screenfont.gz"
 % endif
 
@@ -222,12 +222,12 @@ copy "${libdir}/security/*"
     copy "${libdir}/libpam_misc.so*"
     copy "${libdir}/libwrap*.so*"
 
-    copy "usr/lib/anaconda-runtime/loader/shutdown" "sbin"
-    copy "usr/lib/anaconda-runtime/loader/linuxrc.s390" "sbin"
+    copy "usr/lib/anaconda/shutdown" "sbin"
+    copy "usr/lib/anaconda/linuxrc.s390" "sbin"
     rename "sbin/linuxrc.s390" "sbin/init"
-    copy "usr/lib/anaconda-runtime/loader/lsznet.raw" "sbin"
+    copy "usr/lib/anaconda/lsznet.raw" "sbin"
     rename "sbin/lsznet.raw" "sbin/lsznet"
-    copy "usr/lib/anaconda-runtime/loader/controlunits.sh" "sbin"
+    copy "usr/lib/anaconda/controlunits.sh" "sbin"
     rename "sbin/controlunits.sh" "sbin/controlunits"
 
     copy "${libdir}/security/pam*.so"
