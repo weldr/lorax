@@ -1,8 +1,10 @@
 [lorax]
 
 packages:
-    anaconda kernel *firmware* man hal wget samba-client gfs2-utils nfs-utils
+    anaconda anaconda-yum-plugins yum yum-metadata-parser
+    kernel *firmware* man hal wget samba-client gfs2-utils nfs-utils
     ntfs-3g rsyslog ethtool openssh openssh-server strace udev
+    dbus dbus-python dbus-x11
     xorg-x11-server-Xorg xorg-x11-server-utils xorg-x11-drivers
     xorg-x11-xauth xorg-x11-font-utils xorg-x11-fonts-misc
     dejavu-sans-fonts dejavu-sans-mono-fonts fontconfig freetype
@@ -11,13 +13,17 @@ packages:
     device-mapper device-mapper-libs
     device-mapper-multipath device-mapper-multipath-libs
     selinux-policy-targeted fcoe-utils
+    libselinux libselinux-python libsemanage libsemanage-python
     lohit-assamese-fonts lohit-bengali-fonts lohit-gujarati-fonts
     lohit-hindi-fonts lohit-kashmiri-fonts lohit-kannada-fonts
     lohit-maithili-fonts lohit-marathi-fonts lohit-oriya-fonts
     lohit-punjabi-fonts lohit-sindhi-fonts lohit-tamil-fonts lohit-telugu-fonts
+    bitmap-fonts-cjk cjkuni-uming-fonts smc-meera-fonts taipeifonts
+    un-core-dotum-fonts urw-fonts vlgothic-fonts lklug-fonts
     dmraid dmraid-libs coreutils bzip2 bzip2-libs cpio
     cracklib cracklib-dicts cracklib-python cryptsetup-luks
-    GConf2
+    GConf2 gnome-python2-gconf gnome-python2-canvas
+    /etc/gtk-2.0/gtkrc ORBit2
 
 modules:
     sunrpc lockd floppy cramfs loop edd pcspkr squashfs
