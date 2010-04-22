@@ -151,7 +151,7 @@ makedirs "var/lib"
 symlink "../../tmp" "var/lib/xkb"
 
 ## loader
-copy "usr/lib/anaconda/loader" "sbin"
+copy "usr/${libdir}/anaconda/loader" "sbin"
 copy "usr/share/anaconda/loader.tr" "etc"
 
 ## ld-linux
@@ -202,7 +202,7 @@ copy "${libdir}/security/*"
 
 ## architecture specific code
 % if basearch in ("i386", "x86_64"):
-    copy "usr/lib/anaconda/init" "sbin"
+    copy "usr/${libdir}/anaconda/init" "sbin"
     symlink "init" "sbin/reboot"
     symlink "init" "sbin/halt"
     symlink "init" "sbin/poweroff"
@@ -222,12 +222,12 @@ copy "${libdir}/security/*"
     copy "${libdir}/libpam_misc.so*"
     copy "${libdir}/libwrap*.so*"
 
-    copy "usr/lib/anaconda/shutdown" "sbin"
-    copy "usr/lib/anaconda/linuxrc.s390" "sbin"
+    copy "usr/${libdir}/anaconda/shutdown" "sbin"
+    copy "usr/${libdir}/anaconda/linuxrc.s390" "sbin"
     rename "sbin/linuxrc.s390" "sbin/init"
-    copy "usr/lib/anaconda/lsznet.raw" "sbin"
+    copy "usr/${libdir}/anaconda/lsznet.raw" "sbin"
     rename "sbin/lsznet.raw" "sbin/lsznet"
-    copy "usr/lib/anaconda/controlunits.sh" "sbin"
+    copy "usr/${libdir}/anaconda/controlunits.sh" "sbin"
     rename "sbin/controlunits.sh" "sbin/controlunits"
 
     copy "${libdir}/security/pam*.so"
