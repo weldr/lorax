@@ -36,7 +36,7 @@ class LoraxConstants(object):
     EFIDIR = "boot/efi/EFI/redhat"
     SPLASH = "boot/grub/splash.xpm.gz"
 
-    VESASPLASH = pjoin(ANACONDA_RUNTIME, "syslinux-vesa-splash.jpg")
+    VESASPLASH = "usr/lib/anaconda-runtime/syslinux-vesa-splash.jpg"
     SYSLINUXSPLASH = pjoin(ANACONDA_BOOTDIR, "syslinux-splash.jpg")
     SPLASHTOOLS = pjoin(ANACONDA_RUNTIME, "splashtools.sh")
     SPLASHLSS = pjoin(ANACONDA_BOOTDIR, "splash.lss")
@@ -56,7 +56,7 @@ class LoraxConstants(object):
     SYSLINUXCFG = "usr/share/anaconda/boot/syslinux.cfg"
 
     LDSOCONF = "etc/ld.so.conf"
-    MANCONF = "etc/man.config"
+    MANCONF = "etc/man_db.conf"
 
 
 class LoraxCommands(dict):
