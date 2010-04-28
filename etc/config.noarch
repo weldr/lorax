@@ -31,6 +31,7 @@ packages:
     parted pyparted dosfstools e2fsprogs e2fsprogs-libs gfs2-utils jfsutils
     nfs-utils ntfs-3g reiserfs-utils xfsprogs samba-client
     tigervnc-server tigervnc-server-module vim-minimal wget
+    kbd ncurses
 
 modules:
     sunrpc lockd floppy cramfs loop edd pcspkr squashfs
