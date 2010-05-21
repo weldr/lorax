@@ -130,7 +130,8 @@ class BaseImageClass(BaseLoraxClass):
         if dstdir:
             makedirs_(os.path.join(self.dsttree, dstdir))
 
-        dcopy_(fname, dstdir, self.srctree, self.dsttree)
+        dcopy_(fname, dstdir, self.srctree, self.dsttree,
+               ignore_errors=not self.conf.pedantic)
 
     def rename(self, fname, target):
         fname = os.path.join(self.dsttree, fname)

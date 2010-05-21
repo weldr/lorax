@@ -806,12 +806,14 @@ class Install(BaseImageClass):
     def move_bins(self):
         # move bin to usr/bin
         scopy_(src_root=self.srctree, src_path="bin/*",
-               dst_root=self.srctree, dst_path="usr/bin")
+               dst_root=self.srctree, dst_path="usr/bin",
+               ignore_errors=not self.conf.pedantic)
         remove_(os.path.join(self.srctree, "bin"))
 
         # move sbin to /usr/sbin
         scopy_(src_root=self.srctree, src_path="sbin/*",
-               dst_root=self.srctree, dst_path="usr/sbin")
+               dst_root=self.srctree, dst_path="usr/sbin",
+               ignore_errors=not self.conf.pedantic)
         remove_(os.path.join(self.srctree, "sbin"))
 
         # fix broken links

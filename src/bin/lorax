@@ -74,6 +74,8 @@ def main(args):
 
     # lorax settings
     settings = OptionGroup(parser, "lorax settings")
+    settings.add_option("--pedantic", help="don't ignore copy errors",
+            action="store_true", default=False)
     settings.add_option("-c", "--cleanup", help="clean up on exit",
             action="store_true", default=False)
 
@@ -122,6 +124,8 @@ def main(args):
     config.colors = opts.colors
     config.encoding = opts.encoding
     config.debug = opts.debug
+
+    config.pedantic = opts.pedantic
 
     # run lorax
     params = {"installtree": installtree,

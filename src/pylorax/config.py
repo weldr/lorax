@@ -30,7 +30,9 @@ class LoraxConfig(object):
         # output settings
         self.colors = True
         self.encoding = "utf-8"
-        self.debug = False
+        self.debug = True
+
+        self.pedantic = False
 
         self.confdir = "/etc/lorax"
         self.datadir = "/usr/share/lorax"
