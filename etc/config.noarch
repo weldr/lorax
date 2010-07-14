@@ -32,6 +32,8 @@ packages:
     nfs-utils ntfs-3g reiserfs-utils xfsprogs samba-client
     tigervnc-server tigervnc-server-module vim-minimal wget
     kbd ncurses
+    notification-daemon
+    gobject-introspection
 
 modules:
     sunrpc lockd floppy cramfs loop edd pcspkr squashfs
