@@ -234,8 +234,8 @@ class SmartCopy(object):
                 self.__copy_link(src_path, dst_path, src, new_dst, dir=True)
             else:
                 # create the destination directory
-                if not os.path.isdir(new_dst) and new_dst not in self.makedirs:
-                    self.makedirs.append(new_dst)
+                if not os.path.isdir(new_dst):
+                    makedirs_(new_dst)
                 elif os.path.isfile(new_dst):
                     err_msg = "cannot overwrite file '{0}' with directory"
                     err_msg = err_msg.format(new_dst)
