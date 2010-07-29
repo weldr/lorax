@@ -48,7 +48,6 @@ class InstallTree(BaseLoraxClass):
                 self.pwarning("no package <b>{0}</b> found".format(name))
 
         self.yum.process_transaction()
-        self.run_ldconfig()
 
     def run_ldconfig(self):
         ldsoconf = os.path.join(self.rootdir, self.const.LDSOCONF)
