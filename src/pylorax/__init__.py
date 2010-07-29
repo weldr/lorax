@@ -145,6 +145,16 @@ class Lorax(BaseLoraxClass):
         # prepare the install tree
         self.pinfo(":: preparing the install tree")
         self.installtree.install_packages(packages=packages)
+
+        # XXX
+        if not os.path.isdir("/tmp/pkglists"):
+            os.makedirs("/tmp/pkglists")
+
+        for pkg in self.installtree.yum.installed_packages:
+            with open("/tmp/pkglists/%s" % pkg.name, "w") as f:
+                for filename in self.installtree.yum.get_file_list(pkg):
+                    f.write("%s\n" % filename)
+
         self.installtree.run_ldconfig()
         self.installtree.copy_updates()
         self.installtree.fix_problems()

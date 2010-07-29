@@ -621,6 +621,7 @@ class Install(BaseImageClass):
     def __init__(self, installtree, template_file, workdir="/tmp"):
         BaseImageClass.__init__(self)
 
+        self.installtree = installtree
         self.srctree = installtree.rootdir
         self.dsttree = installtree.rootdir
         self.template_file = template_file
@@ -632,6 +633,21 @@ class Install(BaseImageClass):
         # copy the .buildstamp
         shutil.copy2(self.conf.buildstamp, self.srctree)
 
+        # parse the template file
+        self.pinfo("parsing the template")
+        variables = {"buildarch": self.conf.buildarch,
+                     "basearch": self.conf.basearch,
+                     "libdir": self.conf.libdir}
+        self.parse_template(self.template_file, variables)
+
+        # XXX remove whole packages
+        for pkg in self.installtree.yum.installed_packages:
+            if pkg.name in self.pkgs_to_remove:
+                self.pinfo("removing not needed package %s" % pkg.name)
+                for fname in pkg.filelist:
+                    self.pdebug("removing file %s%s" % (self.srctree, fname))
+                    remove_("%s%s" % (self.srctree, fname))
+
         self.copy_stubs()
         self.copy_bootloaders()
         self.rename_repos()
@@ -641,13 +657,6 @@ class Install(BaseImageClass):
         self.remove_locales()
         self.remove_unnecessary_files()
         self.move_bins()
-
-        # parse the template file
-        self.pinfo("parsing the template")
-        variables = {"buildarch": self.conf.buildarch,
-                     "basearch": self.conf.basearch,
-                     "libdir": self.conf.libdir}
-        self.parse_template(self.template_file, variables)
 
         # copy custom files
         self.pinfo("copying custom files")

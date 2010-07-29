@@ -68,6 +68,7 @@ class BaseImageClass(BaseLoraxClass):
     def __init__(self):
         BaseLoraxClass.__init__(self)
         self.srctree, self.dsttree = None, None
+        self.pkgs_to_remove = set()
 
     def parse_template(self, template_file, variables={}):
         template = ltmpl.Template()
@@ -101,6 +102,9 @@ class BaseImageClass(BaseLoraxClass):
         for fname in fnames:
             fname = os.path.join(self.dsttree, fname)
             remove_(fname)
+
+    def removepkg(self, pkgname):
+        self.pkgs_to_remove.add(pkgname)
 
     def symlink(self, link_target, link_name):
         link_name = os.path.join(self.dsttree, link_name)
