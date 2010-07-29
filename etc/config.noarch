@@ -2,7 +2,7 @@
 
 packages:
     anaconda anaconda-yum-plugins yum yum-metadata-parser
-    kernel *firmware* man
+    kernel *firmware* man-db
     rsyslog ethtool openssh openssh-server strace
     udev hal dbus dbus-python dbus-x11
     xorg-x11-server-Xorg xorg-x11-server-utils xorg-x11-drivers
