@@ -11,6 +11,7 @@ remove "selinux"
 remove "srv"
 remove "sys"
 remove "tmp"
+remove "cgroup"
 
 remove "usr/share/alsa"
 remove "usr/share/doc"
