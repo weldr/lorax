@@ -610,6 +610,14 @@ class YumHelper(object):
         pl = self.yb.doPackageLists(patterns=[pattern])
         return pl.installed, pl.available
 
+    @property
+    def installed_packages(self):
+        pl = self.yb.doPackageLists()
+        return pl.installed
+
+    def get_file_list(self, package):
+        return package.returnFileEntries()
+
 
 class RpmCallback(yum.rpmtrans.SimpleCliCallBack):
 
