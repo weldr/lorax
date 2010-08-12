@@ -103,8 +103,14 @@ class BaseImageClass(BaseLoraxClass):
             fname = os.path.join(self.dsttree, fname)
             remove_(fname)
 
-    def removepkg(self, pkgname):
-        self.pkgs_to_remove.add(pkgname)
+    def removepkg(self, *args):
+        pkgname = args[0]
+        try:
+            mask = args[1]
+        except IndexError:
+            mask = "*"
+
+        self.pkgs_to_remove.add((pkgname, mask))
 
     def symlink(self, link_target, link_name):
         link_name = os.path.join(self.dsttree, link_name)

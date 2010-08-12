@@ -640,12 +640,20 @@ class Install(BaseImageClass):
                      "libdir": self.conf.libdir}
         self.parse_template(self.template_file, variables)
 
-        # XXX remove whole packages
-        for pkg in self.installtree.yum.installed_packages:
-            if pkg.name in self.pkgs_to_remove:
-                self.pinfo("removing not needed package %s" % pkg.name)
-                for fname in pkg.filelist:
-                    self.pdebug("removing file %s%s" % (self.srctree, fname))
+        # XXX remove packages
+        installed_packages = self.installtree.yum.installed_packages
+        for pkgname, mask in self.pkgs_to_remove:
+            if pkgname not in installed_packages:
+                continue
+
+            self.pinfo("removing files from package %s matching mask %s" \
+                       % (pkgname, mask))
+
+            pkgobj = installed_packages.get(pkgname)
+            for fname in pkgobj.filelist:
+                if fnmatch.fnmatch(fname, mask):
+                    self.pdebug("removing file %s%s" \
+                                % (self.srctree, fname))
                     remove_("%s%s" % (self.srctree, fname))
 
         self.copy_stubs()

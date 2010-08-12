@@ -150,9 +150,9 @@ class Lorax(BaseLoraxClass):
         if not os.path.isdir("/tmp/pkglists"):
             os.makedirs("/tmp/pkglists")
 
-        for pkg in self.installtree.yum.installed_packages:
-            with open("/tmp/pkglists/%s" % pkg.name, "w") as f:
-                for filename in self.installtree.yum.get_file_list(pkg):
+        for pkgobj in self.installtree.yum.installed_packages.values():
+            with open("/tmp/pkglists/%s" % pkgobj.name, "w") as f:
+                for filename in pkgobj.filelist:
                     f.write("%s\n" % filename)
 
         self.installtree.run_ldconfig()
@@ -623,7 +623,12 @@ class YumHelper(object):
     @property
     def installed_packages(self):
         pl = self.yb.doPackageLists()
-        return pl.installed
+
+        d = {}
+        for pkgobj in pl.installed:
+            d[pkgobj.name] = pkgobj
+
+        return d
 
     def get_file_list(self, package):
         return package.returnFileEntries()
