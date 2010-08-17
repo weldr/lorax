@@ -34,6 +34,7 @@ packages:
     kbd ncurses
     notification-daemon
     gobject-introspection
+    syslinux
 
 modules:
     sunrpc lockd floppy cramfs loop edd pcspkr squashfs
