@@ -40,6 +40,20 @@ import images
 from sysutils import *
 
 
+# set up logging to file
+import logging
+LOG_FILENAME = "pylorax.log"
+logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="w")
+
+# add the console handler
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+logging.getLogger("").addHandler(console)
+
+# get the logger
+logger = logging.getLogger("pylorax")
+
+
 #                        basearch   efiarch     64bit
 ARCHMAP = {"i386":      ["i386",    "IA32",     False],
            "i586":      ["i386",    "IA32",     False],
@@ -65,13 +79,17 @@ class Lorax(BaseLoraxClass):
 
         BaseLoraxClass.__init__(self)
 
-        # XXX check if we have root privileges
-        assert os.geteuid() == self.const.ROOT_UID, "no root privileges"
+        # XXX do we have root privileges?
+        if not os.geteuid() == self.const.ROOT_UID:
+            logger.critical("no root privileges")
+            sys.exit(1)
 
-        # XXX check if we have a yumbase object
-        assert isinstance(yb, yum.YumBase), "not an yum base object"
+        # XXX do we have a proper yum base object?
+        if not isinstance(yb, yum.YumBase):
+            logger.critical("no yum base object")
+            sys.exit(1)
 
-        # setup yum and the install tree
+        # set up yum and the install tree
         self.yum = YumHelper(yb)
         self.installtree = insttree.InstallTree(yum=self.yum,
                                                 rootdir=installtree,
@@ -80,21 +98,28 @@ class Lorax(BaseLoraxClass):
         # create the output directory
         self.outputdir = outputdir
         makedirs_(self.outputdir)
+        logger.debug("using output directory {0}".format(self.outputdir))
+
+        # create the working directory
+        self.workdir = workdir
+        makedirs_(self.workdir)
+        logger.debug("using working directory {0}".format(self.workdir))
 
         # required parameters
         self.product = product
         self.version = version
         self.release = release
-
-        # create the working directory
-        self.workdir = workdir
-        makedirs_(self.workdir)
+        logger.debug("set product = {0}".format(self.product))
+        logger.debug("set version = {0}".format(self.version))
+        logger.debug("set release = {0}".format(self.release))
 
         # optional parameters
         self.variant = variant
         self.bugurl = bugurl
+        logger.debug("set variant = {0}".format(self.variant))
+        logger.debug("set bugurl = {0}".format(self.bugurl))
 
-        # setup the output
+        # set up the output
         output_level = output.INFO
         if self.conf.debug:
             output_level = output.DEBUG
@@ -103,6 +128,7 @@ class Lorax(BaseLoraxClass):
                                  encoding=self.conf.encoding,
                                  output_level=output_level)
 
+        # read which output messages to ignore
         ignore_errors = set()
         if os.path.isfile(self.conf.ignore_errors):
             with open(self.conf.ignore_errors, "r") as f:

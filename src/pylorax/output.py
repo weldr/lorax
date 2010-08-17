@@ -48,7 +48,7 @@ TAGS = [(re.compile(r"<b>"), C_BOLD),
         (re.compile(r"<red>"), C_RED),
         (re.compile(r"<green>"), C_GREEN),
         (re.compile(r"<blue>"), C_BLUE),
-        (re.compile(r"</(b|u|red|green|blue)>"), C_RESET)]
+        (re.compile(r"</(b|u|red|green|blue/)>"), C_RESET)]
 
 
 # output levels
@@ -67,9 +67,8 @@ class LoraxOutput(object):
         self._colors = True
         self._encoding = "utf-8"
         self._output_level = INFO
+        self._ignore_msgs = set()
         self._indent_level = 0
-
-        self._ignore_errors = set()
 
     def basic_config(self, colors=None, encoding=None, output_level=None):
         if colors is not None:
@@ -81,13 +80,16 @@ class LoraxOutput(object):
         if output_level is not None:
             self._output_level = output_level
 
+    def ignore_message(self, messages):
+        if type(messages) is str:
+            self._ignore_msgs.add(messages)
+        else:
+            for msg in messages:
+                self.ignore_message(msg)
+
     @property
     def ignore(self):
-        return self._ignore_errors
-
-    @ignore.setter
-    def ignore(self, errors):
-        self._ignore_errors = errors
+        return self._ignore_msgs
 
     def indent(self):
         self._indent_level += 1
@@ -135,12 +137,12 @@ class LoraxOutput(object):
         if self._output_level <= DEBUG:
             self.writeline(s, file=file)
 
-    def __raw(self, s):
-        for tag, ccode in TAGS:
-            s = tag.sub("", s)
-        return s
-
     def __format(self, s):
         for tag, ccode in TAGS:
             s = tag.sub(ccode, s)
+        return s
+
+    def __raw(self, s):
+        for tag, ccode in TAGS:
+            s = tag.sub("", s)
         return s

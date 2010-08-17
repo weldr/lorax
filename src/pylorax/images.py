@@ -493,15 +493,29 @@ class EFI(BaseImageClass):
             os.unlink(efiboot)
 
         # calculate the size of the efi tree directory
+        self.pdebug("calculating the efiboot image size")
         fsoverhead = 100 * 1024
+        self.pdebug("using {0} bytes for fs overhead".format(fsoverhead))
+
         sizeinbytes = fsoverhead
         for root, dirs, files in os.walk(efitree):
             for file in files:
                 filepath = os.path.join(root, file)
-                sizeinbytes += os.path.getsize(filepath)
+                filesize = os.path.getsize(filepath)
+
+                # round to multiplications of 1024
+                filesize = math.ceil(filesize / 1024.0) * 1024
+
+                self.pdebug("adding {0} bytes for file {1}".format(filesize,
+                                                                   filepath))
+
+                sizeinbytes += filesize
+
+        self.pdebug("required size in bytes: {0}".format(sizeinbytes))
 
         # mkdosfs needs the size in blocks of 1024 bytes
         size = int(math.ceil(sizeinbytes / 1024.0))
+        self.pdebug("required size in 1024 byte blocks: {0}".format(size))
 
         cmd = "{0.MKDOSFS} -n ANACONDA -C {1} {2} > /dev/null"
         cmd = cmd.format(self.cmd, efiboot, size)

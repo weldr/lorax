@@ -33,6 +33,9 @@ import pwd
 import grp
 import commands
 
+import logging
+logger = logging.getLogger("sysutils")
+
 
 class SysUtilsError(Exception):
     pass
@@ -326,6 +329,7 @@ class SmartCopy(object):
 
         # copy all the files
         for src, dst in self.copyfiles:
+            logger.debug("copying {0}".format(src))
             try:
                 shutil.copy2(src, dst)
             except shutil.Error as why:
