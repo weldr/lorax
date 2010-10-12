@@ -1,4 +1,0 @@
-[lorax]
-
-packages:
-    kernel-PAE grub memtest86+

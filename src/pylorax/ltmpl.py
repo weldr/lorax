@@ -19,21 +19,27 @@
 # Red Hat Author(s):  Martin Gracik <mgracik@redhat.com>
 #
 
-from mako.template import Template as MakoTemplate
-from mako.lookup import TemplateLookup as MakoTemplateLookup
+import shlex
+
+from mako.template import Template
+from mako.lookup import TemplateLookup
 
 
-class Template(object):
+class LoraxTemplate(object):
 
     def parse(self, template_file, variables):
         # we have to set the template lookup directories to ["/"],
         # otherwise the file includes will not work properly
-        lookup = MakoTemplateLookup(directories=["/"])
-        template = MakoTemplate(filename=template_file, lookup=lookup)
+        lookup = TemplateLookup(directories=["/"])
+        template = Template(filename=template_file, lookup=lookup)
         s = template.render(**variables)
 
-        # enumerate, strip and remove empty lines
-        lines = enumerate(s.splitlines(), start=1)
-        lines = map(lambda (n, line): (n, line.strip()), lines)
-        lines = filter(lambda (n, line): line, lines)
+        # split, strip and remove empty lines
+        lines = s.splitlines()
+        lines = map(lambda line: line.strip(), lines)
+        lines = filter(lambda line: line, lines)
+
+        # split with shlex
+        lines = map(lambda line: shlex.split(line), lines)
+
         return lines

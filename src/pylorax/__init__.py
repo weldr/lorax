@@ -1,7 +1,7 @@
 #
 # __init__.py
 #
-# Copyright (C) 2009  Red Hat, Inc.
+# Copyright (C) 2010  Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,401 +20,1050 @@
 #                     David Cantrell <dcantrell@redhat.com>
 #
 
+# set up logging
+import logging
+logging.basicConfig(level=logging.DEBUG, filename="pylorax.log", filemode="w")
+
+sh = logging.StreamHandler()
+sh.setLevel(logging.INFO)
+logging.getLogger("").addHandler(sh)
+
+logger = logging.getLogger("pylorax")
+
+
 import sys
 import os
 import ConfigParser
+import tempfile
+import shutil
+import gzip
+import shlex
+import fnmatch
+import re
+import itertools
 import glob
 import time
 import datetime
-import shutil
+import itertools
+import subprocess
+import operator
+import math
 
-import yum
-import yum.callbacks
-import yum.rpmtrans
+from collections import namedtuple
 
 from base import BaseLoraxClass
 import output
 
-import insttree
-import images
+import yum
+import yumhelper
+import ltmpl
+
+import constants
 from sysutils import *
 
 
-# set up logging to file
-import logging
-LOG_FILENAME = "pylorax.log"
-logging.basicConfig(level=logging.DEBUG, filename=LOG_FILENAME, filemode="w")
-
-# add the console handler
-console = logging.StreamHandler()
-console.setLevel(logging.INFO)
-logging.getLogger("").addHandler(console)
-
-# get the logger
-logger = logging.getLogger("pylorax")
-
-
-#                        basearch   efiarch     64bit
-ARCHMAP = {"i386":      ["i386",    "IA32",     False],
-           "i586":      ["i386",    "IA32",     False],
-           "i686":      ["i386",    "IA32",     False],
-           "x86_64":    ["x86_64",  "X64",      True],
-           "ppc":       ["ppc",     "",         False],
-           "ppc64":     ["ppc",     "",         True],
-           "s390":      ["s390",    "",         False],
-           "s390x":     ["s390x",   "",         True],
-           "sparc":     ["sparc",   "",         False],
-           "sparc64":   ["sparc",   "",         True],
-           "ia64":      ["ia64",    "IA64",     True]}
+ARCHMAPS = {
+        "i386":     {"base": "i386",    "efi": "IA32",  "is64": False},
+        "i586":     {"base": "i386",    "efi": "IA32",  "is64": False},
+        "i686":     {"base": "i386",    "efi": "IA32",  "is64": False},
+        "x86_64":   {"base": "x86_64",  "efi": "X64",   "is64": True},
+        "ppc":      {"base": "ppc",     "efi": "",      "is64": False},
+        "ppc64":    {"base": "ppc",     "efi": "",      "is64": True},
+        "s390":     {"base": "s390",    "efi": "",      "is64": False},
+        "s390x":    {"base": "s390x",   "efi": "",      "is64": True},
+        "sparc":    {"base": "sparc",   "efi": "",      "is64": False},
+        "sparc64":  {"base": "sparc",   "efi": "",      "is64": True},
+        "ia64":     {"base": "ia64",    "efi": "IA64",  "is64": True}
+        }
 
 LIB32 = "lib"
 LIB64 = "lib64"
 
 
+# kernel types
+K_NORMAL = 0
+K_PAE = 1
+K_XEN = 1
+
+
+# XXX kernel tuple
+Kernel = namedtuple("Kernel", "fname fpath version type")
+
+
 class Lorax(BaseLoraxClass):
 
-    def __init__(self, yb, installtree, outputdir,
-                 product, version, release,
-                 workdir="/tmp", variant="", bugurl="", updatesdir=None):
-
+    def __init__(self):
         BaseLoraxClass.__init__(self)
+        self._configured = False
 
-        # XXX do we have root privileges?
-        if not os.geteuid() == self.const.ROOT_UID:
+    def configure(self, conf_file="/etc/lorax/lorax.conf"):
+        self.conf = ConfigParser.SafeConfigParser()
+
+        # set defaults
+        self.conf.add_section("lorax")
+        self.conf.set("lorax", "debug", "1")
+        self.conf.set("lorax", "sharedir", "/usr/share/lorax")
+
+        self.conf.add_section("output")
+        self.conf.set("output", "colors", "1")
+        self.conf.set("output", "encoding", "utf-8")
+        self.conf.set("output", "ignorelist", "/usr/share/lorax/ignorelist")
+
+        self.conf.add_section("templates")
+        self.conf.set("templates", "stage1", "lorax-s1.ltmpl")
+        self.conf.set("templates", "stage2", "lorax-s2.ltmpl")
+
+        # read the config file
+        if os.path.isfile(conf_file):
+            self.conf.read(conf_file)
+
+        # set up the output
+        debug = self.conf.getboolean("lorax", "debug")
+        output_level = output.DEBUG if debug else output.INFO
+
+        colors = self.conf.getboolean("output", "colors")
+        encoding = self.conf.get("output", "encoding")
+
+        self.output.basic_config(output_level=output_level,
+                                 colors=colors, encoding=encoding)
+
+        ignorelist = self.conf.get("output", "ignorelist")
+        if os.path.isfile(ignorelist):
+            with open(ignorelist, "r") as fobj:
+                for line in fobj:
+                    line = line.strip()
+                    if line and not line.startswith("#"):
+                        self.output.ignore(line)
+
+        self._configured = True
+
+    def run(self, yb, product, version, release, variant="", bugurl="",
+            workdir=None, outputdir=None):
+
+        # XXX
+        assert self._configured
+
+        # do we have root privileges?
+        logger.info("checking for root privileges")
+        if not os.geteuid() == 0:
             logger.critical("no root privileges")
             sys.exit(1)
 
-        # XXX do we have a proper yum base object?
+        # XXX do we have all lorax required commands?
+        self.lcmds = constants.LoraxRequiredCommands()
+        missing = self.lcmds.get_missing()
+        if missing:
+            logger.critical("missing required command: {0}".format(missing))
+            sys.exit(1)
+
+        # do we have a proper yum base object?
+        logger.info("checking yum base object")
         if not isinstance(yb, yum.YumBase):
             logger.critical("no yum base object")
             sys.exit(1)
 
-        # set up yum and the install tree
-        self.yum = YumHelper(yb)
-        self.installtree = insttree.InstallTree(yum=self.yum,
-                                                rootdir=installtree,
-                                                updatesdir=updatesdir)
+        # set up yum helper
+        logger.info("setting up yum helper")
+        self.yum = yumhelper.LoraxYumHelper(yb)
+        logger.debug("using install root: {0}".format(self.yum.installroot))
 
-        # create the output directory
-        self.outputdir = outputdir
-        makedirs_(self.outputdir)
-        logger.debug("using output directory {0}".format(self.outputdir))
+        # set up build architecture
+        logger.info("setting up build architecture")
+        self.buildarch = self.get_buildarch()
+        archmap = ARCHMAPS.get(self.buildarch)
 
-        # create the working directory
-        self.workdir = workdir
-        makedirs_(self.workdir)
-        logger.debug("using working directory {0}".format(self.workdir))
+        # XXX
+        assert archmap is not None
 
-        # required parameters
+        self.basearch = archmap.get("base")
+        self.efiarch = archmap.get("efi")
+        self.libdir = LIB64 if archmap.get("is64") else LIB32
+
+        logger.debug("set buildarch = {0.buildarch}".format(self))
+        logger.debug("set basearch = {0.basearch}".format(self))
+        logger.debug("set efiarch = {0.efiarch}".format(self))
+        logger.debug("set libdir = {0.libdir}".format(self))
+
+        # set up install tree
+        logger.info("setting up install tree")
+        self.installtree = LoraxInstallTree(self.yum, self.basearch)
+
+        # set up required build parameters
+        logger.info("setting up build parameters")
         self.product = product
         self.version = version
         self.release = release
-        logger.debug("set product = {0}".format(self.product))
-        logger.debug("set version = {0}".format(self.version))
-        logger.debug("set release = {0}".format(self.release))
+        logger.debug("set product = {0.product}".format(self))
+        logger.debug("set version = {0.version}".format(self))
+        logger.debug("set release = {0.release}".format(self))
 
-        # optional parameters
+        # set up optional build parameters
         self.variant = variant
         self.bugurl = bugurl
-        logger.debug("set variant = {0}".format(self.variant))
-        logger.debug("set bugurl = {0}".format(self.bugurl))
+        logger.debug("set variant = {0.variant}".format(self))
+        logger.debug("set bugurl = {0.bugurl}".format(self))
 
-        # set up the output
-        output_level = output.INFO
-        if self.conf.debug:
-            output_level = output.DEBUG
+        # XXX set up work directory
+        logger.info("setting up work directory")
+        self.workdir = workdir or tempfile.mkdtemp(prefix="pylorax.work.")
+        if not os.path.isdir(self.workdir):
+            os.makedirs(self.workdir)
+        logger.debug("using work directory {0.workdir}".format(self))
 
-        self.output.basic_config(colors=self.conf.colors,
-                                 encoding=self.conf.encoding,
-                                 output_level=output_level)
+        # parse the template
+        logger.info("parsing the template")
+        stage1 = joinpaths(self.conf.get("lorax", "sharedir"),
+                           self.conf.get("templates", "stage1"))
 
-        # read which output messages to ignore
-        ignore_errors = set()
-        if os.path.isfile(self.conf.ignore_errors):
-            with open(self.conf.ignore_errors, "r") as f:
-                for line in f:
-                    line = line.strip()
-                    if line and not line.startswith("#"):
-                        ignore_errors.add(line)
+        vars = { "basearch": self.basearch,
+                 "libdir" : self.libdir,
+                 "product": self.product.lower() }
 
-        self.output.ignore = ignore_errors
+        template = ltmpl.LoraxTemplate()
+        template = template.parse(stage1, vars)
 
-    def run(self):
-        # check if we have all required commands
-        for cmd in self.cmd.values():
-            if not os.path.isfile(cmd):
-                err = "required command <b>{0}</b> does not exist"
-                self.pwarning(err.format(cmd))
+        # get list of required packages
+        logger.info("getting list of required packages")
+        required = [f[1:] for f in template if f[0] == "install"]
+        required = itertools.chain.from_iterable(required)
 
-        # set the build architecture
-        self.pinfo(":: setting the build architecture")
-        self.conf.buildarch = self.get_buildarch()
-        basearch, efiarch, is64 = ARCHMAP[self.conf.buildarch]
+        # install packages
+        for package in required:
+            self.installtree.yum.install(package)
+        self.installtree.yum.process_transaction()
 
-        self.conf.basearch = basearch
-        self.conf.efiarch = efiarch
+        # write buildstamp
+        self.write_buildstamp(path=self.installtree.root)
 
-        # set the libdir
-        self.conf.libdir = LIB32
-        if is64:
-            self.conf.libdir = LIB64
 
-        # read the configuration files
-        self.pinfo(":: reading the configuration files")
-        c = self.get_config()
-        packages, modules, initrd_template, install_template = c
 
-        # add the branding
-        packages.add("{0}-logos".format(self.product.lower()))
-        packages.add("{0}-release".format(self.product.lower()))
+        # remove locales
+        logger.info("removing locales")
+        self.installtree.remove_locales()
 
-        # prepare the install tree
-        self.pinfo(":: preparing the install tree")
-        self.installtree.install_packages(packages=packages)
+        # create keymaps
+        logger.info("creating keymaps")
+        self.installtree.create_keymaps()
+
+        # create screenfont
+        logger.info("creating screenfont")
+        self.installtree.create_screenfont()
+
+        # move stubs
+        logger.info("moving stubs")
+        self.installtree.move_stubs()
+
+        # cleanup python files
+        logger.info("cleaning up python files")
+        self.installtree.cleanup_python_files()
+
+        # get the list of required modules
+        logger.info("getting list of required modules")
+        modules = [f[1:] for f in template if f[0] == "module"]
+        modules = itertools.chain.from_iterable(modules)
+
+        for kernel in self.installtree.kernels:
+            logger.info("cleaning up kernel modules")
+            self.installtree.cleanup_kernel_modules(modules, kernel)
+
+            logger.info("compressing modules")
+            self.installtree.compress_modules(kernel)
+
+            logger.info("running depmod")
+            self.installtree.run_depmod(kernel)
+
+        # set up output tree
+        logger.info("setting up output tree")
+        self.outputdir = outputdir or tempfile.mkdtemp(prefix="pylorax.out.")
+        if not os.path.isdir(self.outputdir):
+            os.makedirs(self.outputdir)
+        logger.debug("using output directory {0.outputdir}".format(self))
+
+        self.outputtree = LoraxOutputTree(self.outputdir, self.installtree,
+                                          self.product, self.version)
+
+        self.outputtree.prepare()
+        self.outputtree.get_kernels()
+        self.outputtree.get_isolinux()
+        self.outputtree.get_msg_files()
+        self.outputtree.get_grub_conf()
+
+        # write the .discinfo
+        self.write_discinfo(self.outputtree.root)
+
+        ## create the install.img
+        #logger.info("creating install image")
+        #stage2 = joinpaths(self.conf.get("lorax", "sharedir"),
+        #                   self.conf.get("templates", "stage2"))
+        #
+        #vars = { "basearch": self.basearch,
+        #         "product": self.product.lower() }
+        #
+        #template = ltmpl.LoraxTemplate()
+        #template = template.parse(stage2, vars)
+        #
+        ## get list of required paths
+        #logger.info("getting list of required paths")
+        #required = [f[1:] for f in template if f[0] == "move"]
+        #required = itertools.chain.from_iterable(required)
+        #
+        #installimg = self.installtree.create_install_img(required,
+        #                                                 workdir=self.workdir)
+        #
+        #if installimg is None:
+        #    logger.critical("unable to create install image")
+        #    sys.exit(1)
+        #
+        ## copy the install.img to imgdir
+        #shutil.copy2(installimg, self.outputtree.imgdir)
 
         # XXX
-        if not os.path.isdir("/tmp/pkglists"):
-            os.makedirs("/tmp/pkglists")
+        grubefi = joinpaths(self.installtree.root, "boot/efi/EFI/redhat",
+                            "grub.efi")
 
-        for pkgobj in self.installtree.yum.installed_packages.values():
-            with open("/tmp/pkglists/%s" % pkgobj.name, "w") as f:
-                for filename in pkgobj.filelist:
-                    f.write("%s\n" % filename)
+        if os.path.isfile(grubefi):
+            shutil.move(grubefi, self.workdir)
+            grubefi = joinpaths(self.workdir, os.path.basename(grubefi))
+        else:
+            grubefi = None
 
-        self.installtree.run_ldconfig()
-        self.installtree.copy_updates()
-        self.installtree.fix_problems()
+        splash = joinpaths(self.installtree.root, "boot/grub/",
+                           "splash.xpm.gz")
 
-        # check the anaconda runtime directory
-        anarun = os.path.join(self.installtree.rootdir,
-                              self.const.ANACONDA_RUNTIME)
+        shutil.move(splash, self.workdir)
+        splash = joinpaths(self.workdir, os.path.basename(splash))
 
-        if not os.path.isdir(anarun):
-            self.pcritical("no anaconda runtime directory found")
-            sys.exit(1)
-
-        # prepare the output directory
-        self.pinfo(":: preparing the output directory")
-        ok = self.prepare_outputdir()
-        if not ok:
-            self.pcritical("unable to prepare the output directory")
-            sys.exit(1)
-
-        # write the treeinfo, discinfo and buildstamp
-        self.pinfo(":: creating the treeinfo, discinfo and buildstamp")
-        self.conf.treeinfo = self.write_treeinfo()
-        self.conf.discinfo = self.write_discinfo()
-        self.conf.buildstamp = self.write_buildstamp()
-
-        # create the initrd images for all kernels in install tree
-        initrd = images.InitRD(self.installtree, modules, initrd_template,
-                               self.workdir)
-
-        # get all kernels and initrds
-        kernel_normal, kernel_pae, kernel_xen = [], [], []
-        for kernel, initrd in initrd.create():
-            if kernel.is_pae:
-                kernel_pae.append((kernel, initrd))
-            elif kernel.is_xen:
-                kernel_xen.append((kernel, initrd))
-            else:
-                kernel_normal.append((kernel, initrd))
-
-        # if we have a normal kernel, set it as the main kernel
         kernels = []
-        try:
-            kernels.append(kernel_normal.pop(0))
-        except IndexError:
-            pass
+        for kernel in self.installtree.kernels:
+            shutil.move(kernel.fpath, self.workdir)
+            kernels.append(Kernel(kernel.fname,
+                                  joinpaths(self.workdir, kernel.fname),
+                                  kernel.version,
+                                  kernel.type))
 
-        # add pae and xen kernels to the list of kernels
-        kernels.extend(kernel_pae)
-        kernels.extend(kernel_xen)
+        # get list of not required packages
+        logger.info("getting list of not required packages")
+        remove = [f[1:] for f in template if f[0] == "remove"]
 
-        # check if we have at least one kernel
-        if not kernels:
-            self.pcritical("no kernel images found")
+        rdb = {}
+        order = []
+        for item in remove:
+            package = None
+            pattern = None
+
+            if item[0] == "--path":
+                # remove files
+                package = None
+                pattern = item[1]
+            else:
+                # remove package
+                package = item[0]
+
+                try:
+                    pattern = item[1]
+                except IndexError:
+                    pattern = None
+
+            if package not in rdb:
+                rdb[package] = [pattern]
+                order.append(package)
+            elif pattern not in rdb[package]:
+                rdb[package].append(pattern)
+
+        for package in order:
+            pattern_list = rdb[package]
+            logger.debug("{0}\t{1}".format(package, pattern_list))
+            self.installtree.yum.remove(package, pattern_list)
+
+        # compress install tree
+        InitRD = namedtuple("InitRD", "fname fpath")
+        initrd = InitRD("initrd.img", joinpaths(self.workdir, "initrd.img"))
+
+        logger.info("compressing install tree")
+        ok, elapsed = self.installtree.compress(initrd)
+        if not ok:
+            logger.error("error while compressing install tree")
+        else:
+            logger.info("took {0:.2f} seconds".format(elapsed))
+
+        # XXX copy initrd to isolinuxdir and pxebootdir
+        shutil.copy2(initrd.fpath, self.outputtree.isolinuxdir)
+        shutil.copy2(initrd.fpath, self.outputtree.pxebootdir)
+
+        # create efi images
+        efiboot = None
+        if grubefi:
+            kernel = kernels[0]
+
+            # create efiboot image with kernel
+            logger.info("creating efiboot image with kernel")
+            efiboot = self.create_efiboot(kernel, initrd, grubefi, splash,
+                                          include_kernel=True)
+
+            if efiboot is None:
+                logger.critical("unable to create efiboot image")
+                sys.exit(1)
+
+            # create efidisk image
+            logger.info("creating efidisk image")
+            efidisk = self.create_efidisk(efiboot)
+            if efidisk is None:
+                logger.critical("unable to create efidisk image")
+                sys.exit(1)
+
+            # remove efiboot image with kernel
+            os.unlink(efiboot)
+
+            # create efiboot image without kernel
+            logger.info("creating efiboot image without kernel")
+            efiboot = self.create_efiboot(kernel, initrd, grubefi, splash,
+                                          include_kernel=False)
+
+            if efiboot is None:
+                logger.critical("unable to create efiboot image")
+                sys.exit(1)
+
+            # XXX copy efiboot and efidisk to imgdir
+            shutil.copy2(efiboot, self.outputtree.imgdir)
+            shutil.copy2(efidisk, self.outputtree.imgdir)
+
+        # create boot iso
+        logger.info("creating boot iso")
+        bootiso = self.create_bootiso(self.outputtree, efiboot)
+        if bootiso is None:
+            logger.critical("unable to create boot iso")
             sys.exit(1)
 
-        # main kernel
-        kernel, initrd = kernels.pop(0)
-        kernelfile = "vmlinuz"
-        initrdfile = "initrd.img"
-
-        # add images section to treeinfo
-        section = "images-{0}".format(self.conf.basearch)
-        data = {"kernel": "images/pxeboot/{0}".format(kernelfile),
-                "initrd": "images/pxeboot/{0}".format(initrdfile)}
-        self.treeinfo_add_section(self.conf.treeinfo, section, data)
-
-        if self.conf.basearch == "i386":
-            # add the xen section for x86
-            section = "images-xen"
-            data = {"kernel": "images/pxeboot/{0}".format(kernelfile),
-                    "initrd": "images/pxeboot/{0}".format(initrdfile)}
-            self.treeinfo_add_section(self.conf.treeinfo, section, data)
-
-        # copy the kernel and initrd image to the isolinux directory
-        kdst = os.path.join(self.conf.isodir, kernelfile)
-        idst = os.path.join(self.conf.isodir, initrdfile)
-        shutil.copy2(kernel.path, kdst)
-        shutil.copy2(initrd, idst)
-
-        # copy the kernel and initrd image to the pxe directory
-        kdst = os.path.join(self.conf.pxedir, kernelfile)
-        idst = os.path.join(self.conf.pxedir, initrdfile)
-        shutil.copy2(kernel.path, kdst)
-        shutil.copy2(initrd, idst)
-
-        # create the efi images
-        if self.installtree.do_efi:
-            efi = images.EFI(self.installtree, kernel, initrd,
-                             self.product, self.version, self.workdir)
-
-            efiboot, efidisk = efi.create()
-
-            # copy the efi images to the images directory
-            shutil.copy2(efiboot, self.conf.imgdir)
-            shutil.copy2(efidisk, self.conf.imgdir)
-
-        # other kernels
-        for kernel, initrd in kernels:
-            if kernel.is_pae:
-                kernelfile = "vmlinuz-PAE"
-                initrdfile = "initrd-PAE.img"
-                # XXX add images section to treeinfo
-                section = "images-xen"
-                data = {"kernel": "images/pxeboot/{0}".format(kernelfile),
-                        "initrd": "images/pxeboot/{0}".format(initrdfile)}
-                self.treeinfo_add_section(self.conf.treeinfo, section, data)
-            elif kernel.is_xen:
-                kernelfile = "vmlinuz-xen"
-                initrdfile = "initrd-xen.img"
-                # XXX add images section to treeinfo
-                section = "images-xen"
-                data = {"kernel": "images/pxeboot/{0}".format(kernelfile),
-                        "initrd": "images/pxeboot/{0}".format(initrdfile)}
-                self.treeinfo_add_section(self.conf.treeinfo, section, data)
-
-            # copy the kernel and initrd image to the pxe directory
-            kdst = os.path.join(self.conf.pxedir, kernelfile)
-            idst = os.path.join(self.conf.pxedir, initrdfile)
-            shutil.copy2(kernel.path, kdst)
-            shutil.copy2(initrd, idst)
-
-        # create the install image
-        install = images.Install(self.installtree, install_template,
-                                 self.workdir)
-
-        installimg = install.create()
-        if not installimg:
-            self.perror("unable to create the install image")
-            sys.exit(1)
-
-        # add stage2 section to the treeinfo
-        section = "stage2"
-        data = {"mainimage": "images/install.img"}
-        self.treeinfo_add_section(self.conf.treeinfo, section, data)
-
-        # move the install image to the images directory
-        dst = os.path.join(self.conf.imgdir, os.path.basename(installimg))
-        if os.path.isfile(dst):
-            os.unlink(dst)
-
-        shutil.move(installimg, self.conf.imgdir)
-
-        # create the boot iso image
-        boot = images.Boot(self.product, self.workdir)
-        bootiso = boot.create()
-
-        # add boot iso to the images section in treeinfo
-        section = "images-{0}".format(self.conf.basearch)
-        data = {"boot.iso": "images/boot.iso"}
-        self.treeinfo_add_section(self.conf.treeinfo, section, data)
-
-        # move the boot iso to the images directory
-        dst = os.path.join(self.conf.imgdir, os.path.basename(bootiso))
-        if os.path.isfile(dst):
-            os.unlink(dst)
-
-        shutil.move(bootiso, self.conf.imgdir)
-
-        # copy the treeinfo and discinfo to the output directory
-        shutil.copy2(self.conf.treeinfo, self.outputdir)
-        shutil.copy2(self.conf.discinfo, self.outputdir)
-
-        # cleanup
-        self.cleanup()
+        shutil.move(bootiso, self.outputtree.imgdir)
 
     def get_buildarch(self):
-        # get the architecture of the anaconda package
-        installed, available = self.yum.search(self.const.ANACONDA_PACKAGE)
+        # get architecture of the available anaconda package
+        installed, available = self.yum.search("anaconda")
 
-        if installed:
-            anaconda = installed[0]
         if available:
             anaconda = available[0]
-
-        try:
             buildarch = anaconda.arch
-        except:
+        else:
             # fallback to the system architecture
-            self.pwarning("using system architecture")
+            logger.warning("using system architecture")
             buildarch = os.uname()[4]
 
         return buildarch
 
-    def get_config(self):
-        generic = os.path.join(self.conf.confdir, "config.noarch")
-        specific = os.path.join(self.conf.confdir,
-                                "config.{0}".format(self.conf.basearch))
+    def write_buildstamp(self, path):
+        outfile = joinpaths(path, ".buildstamp")
 
-        packages, modules = set(), set()
-        initrd_template, install_template = None, None
+        now = datetime.datetime.now()
+        now = now.strftime("%Y%m%d%H%M")
+        uuid = "{0}.{1.buildarch}".format(now, self)
 
-        for f in (generic, specific):
-            if not os.path.isfile(f):
-                continue
+        with open(outfile, "w") as fobj:
+            fobj.write("{0}\n".format(uuid))
+            fobj.write("{0.product}\n".format(self))
+            fobj.write("{0.version}\n".format(self))
+            fobj.write("{0.bugurl}\n".format(self))
 
-            c = ConfigParser.ConfigParser()
-            c.read(f)
+        return outfile
 
-            if c.has_option("lorax", "packages"):
-                list = c.get("lorax", "packages").split()
-                for name in list:
-                    if name.startswith("-"):
-                        packages.discard(name)
+    def write_discinfo(self, path, discnum="ALL"):
+        outfile = joinpaths(path, ".discinfo")
+
+        with open(outfile, "w") as fobj:
+            fobj.write("{0:f}\n".format(time.time()))
+            fobj.write("{0.release}\n".format(self))
+            fobj.write("{0.basearch}\n".format(self))
+            fobj.write("{0}\n".format(discnum))
+
+        return outfile
+
+    def create_efiboot(self, kernel, initrd, grubefi, splash,
+                       include_kernel=True):
+
+        # create the efi tree directory
+        efitree = tempfile.mkdtemp(prefix="efitree.", dir=self.workdir)
+
+        # copy kernel and initrd files to efi tree directory
+        if include_kernel:
+            shutil.copy2(kernel.fpath, efitree)
+            shutil.copy2(initrd.fpath, efitree)
+            efikernelpath = "/EFI/BOOT/{0}".format(kernel.fname)
+            efiinitrdpath = "/EFI/BOOT/{0}".format(initrd.fname)
+        else:
+            efikernelpath = "/images/pxeboot/{0}".format(kernel.fname)
+            efiinitrdpath = "/images/pxeboot/{0}".format(initrd.fname)
+
+        efisplashpath = "/EFI/BOOT/splash.xpm.gz"
+
+        # copy conf files to efi tree directory
+        src = joinpaths(self.installtree.root, "usr/share/anaconda/boot",
+                        "*.conf")
+
+        for fname in glob.glob(src):
+            shutil.copy2(fname, efitree)
+
+        # edit the grub.conf file
+        grubconf = joinpaths(efitree, "grub.conf")
+        replace(grubconf, "@PRODUCT@", self.product)
+        replace(grubconf, "@VERSION@", self.version)
+        replace(grubconf, "@KERNELPATH@", efikernelpath)
+        replace(grubconf, "@INITRDPATH@", efiinitrdpath)
+        replace(grubconf, "@SPLASHPATH@", efisplashpath)
+
+        if self.efiarch == "IA32":
+            shutil.copy2(grubconf, joinpaths(efitree, "BOOT.conf"))
+
+        dst = joinpaths(efitree, "BOOT{0}.conf".format(self.efiarch))
+        shutil.move(grubconf, dst)
+
+        # copy grub.efi
+        if self.efiarch == "IA32":
+            shutil.copy2(grubefi, joinpaths(efitree, "BOOT.efi"))
+
+        dst = joinpaths(efitree, "BOOT{0}.efi".format(self.efiarch))
+        shutil.copy2(grubefi, dst)
+
+        # copy splash.xpm.gz
+        shutil.copy2(splash, efitree)
+
+        efiboot = joinpaths(self.workdir, "efiboot.img")
+        if os.path.isfile(efiboot):
+            os.unlink(efiboot)
+
+        # XXX calculate the size of the efi tree directory
+        overhead = 512 * 1024
+
+        sizeinbytes = overhead
+        for root, dnames, fnames in os.walk(efitree):
+            for fname in fnames:
+                fpath = joinpaths(root, fname)
+                fsize = os.path.getsize(fpath)
+
+                # round to multiplications of 4096
+                fsize = math.ceil(fsize / 4096.0) * 4096
+                sizeinbytes += fsize
+
+        # mkdosfs needs the size in blocks of 1024 bytes
+        size = int(math.ceil(sizeinbytes / 1024.0))
+
+        cmd = [self.lcmds.MKDOSFS, "-n", "ANACONDA", "-C", efiboot, str(size)]
+        logger.debug(cmd)
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        p.wait()
+
+        # mount the efiboot image
+        efibootdir = tempfile.mkdtemp(prefix="efiboot.", dir=self.workdir)
+
+        cmd = [self.lcmds.MOUNT, "-o", "loop,shortname=winnt,umask=0777",
+               "-t", "vfat", efiboot, efibootdir]
+        logger.debug(cmd)
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        p.wait()
+
+        # copy the files to the efiboot image
+        dst = joinpaths(efibootdir, "EFI/BOOT")
+        os.makedirs(dst)
+
+        for fname in os.listdir(efitree):
+            fpath = joinpaths(efitree, fname)
+            shutil.copy2(fpath, dst)
+
+            if not include_kernel:
+                shutil.copy2(fpath, self.outputtree.efibootdir)
+
+        # unmount the efiboot image
+        cmd = [self.lcmds.UMOUNT, efibootdir]
+        logger.debug(cmd)
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        p.wait()
+
+        # remove the work directories
+        shutil.rmtree(efibootdir)
+        #shutil.rmtree(efitree)
+
+        return efiboot
+
+    def create_efidisk(self, efiboot):
+        efidisk = joinpaths(self.workdir, "efidisk.img")
+        if os.path.isfile(efidisk):
+            os.unlink(efidisk)
+
+        partsize = os.path.getsize(efiboot)
+        disksize = 17408 + partsize + 17408
+        disksize = disksize + (disksize % 512)
+
+        # create efidisk file
+        with open(efidisk, "wb") as fobj:
+            fobj.truncate(disksize)
+
+        # create loop device
+        loopdev = create_loop_dev(efidisk)
+
+        if not loopdev:
+            os.unlink(efidisk)
+            return None
+
+        # create dm device
+        dmdev = create_dm_dev("efiboot", disksize / 512, loopdev)
+
+        if not dmdev:
+            remove_loop_dev(loopdev)
+            os.unlink(efidisk)
+            return None
+
+        # create partition on dm device
+        cmd = [self.lcmds.PARTED, "--script", dmdev, "mklabel", "gpt", "unit",
+               "b", "mkpart", '\"EFI System Partition\"', "fat32", "17408",
+               str(partsize + 17408), "set", "1", "boot", "on"]
+        logger.debug(cmd)
+
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        rc = p.wait()
+
+        if not rc == 0:
+            remove_dm_dev(dmdev)
+            remove_loop_dev(loopdev)
+            os.unlink(efidisk)
+            return None
+
+        with open(efiboot, "rb") as f_from:
+            with open("{0}p1".format(dmdev), "wb") as f_to:
+                efidata = f_from.read(1024)
+                while efidata:
+                    f_to.write(efidata)
+                    efidata = f_from.read(1024)
+
+        remove_dm_dev("{0}p1".format(dmdev))
+        remove_dm_dev(dmdev)
+        remove_loop_dev(loopdev)
+
+        return efidisk
+
+    def create_bootiso(self, outputtree, efiboot=None):
+
+        bootiso = joinpaths(self.workdir, "boot.iso")
+        if os.path.isfile(bootiso):
+            os.unlink(bootiso)
+
+        if efiboot is not None:
+            efiargs = ["-eltorito-alt-boot", "-e", "images/efiboot.img",
+                       "-no-emul-boot"]
+            efigraft = ["EFI/BOOT={0}".format(outputtree.efibootdir)]
+        else:
+            efiargs = []
+            efigraft = []
+
+        cmd = [self.lcmds.MKISOFS, "-o", bootiso,
+               "-b", "isolinux/isolinux.bin", "-c", "isolinux/boot.cat",
+               "-no-emul-boot", "-boot-load-size", "4",
+               "-boot-info-table"] + efiargs + ["-R", "-J", "-V", self.product,
+               "-T", "-graft-points",
+               "isolinux={0}".format(outputtree.isolinuxdir),
+               "images={0}".format(outputtree.imgdir)] + efigraft
+        logger.debug(cmd)
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        rc = p.wait()
+
+        if not rc == 0:
+            return None
+
+        # create hybrid iso
+        cmd = [self.lcmds.ISOHYBRID, bootiso]
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        rc = p.wait()
+
+        return bootiso
+
+
+class LoraxInstallTree(BaseLoraxClass):
+
+    def __init__(self, yum, basearch):
+        BaseLoraxClass.__init__(self)
+        self.yum = yum
+        self.root = self.yum.installroot
+        self.basearch = basearch
+
+        self.lcmds = constants.LoraxRequiredCommands()
+
+    def remove_locales(self):
+        chroot = lambda: os.chroot(self.root)
+
+        # get locales we need to keep
+        langtable = joinpaths(self.root, "usr/share/anaconda/lang-table")
+        with open(langtable, "r") as fobj:
+            langs = fobj.readlines()
+
+        langs = map(lambda l: l.split()[3].replace(".UTF-8", ".utf8"), langs)
+        langs = set(langs)
+
+        # get locales from locale-archive
+        localearch = "/usr/lib/locale/locale-archive"
+
+        cmd = [self.lcmds.LOCALEDEF, "--list-archive", localearch]
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, preexec_fn=chroot)
+        output = p.stdout.read()
+
+        remove = set(output.split()) - langs
+
+        # remove not needed locales
+        cmd = [self.lcmds.LOCALEDEF, "-i", localearch,
+               "--delete-from-archive"] + list(remove)
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, preexec_fn=chroot)
+        p.wait()
+
+        localearch = joinpaths(self.root, localearch)
+        shutil.move(localearch, localearch + ".tmpl")
+
+        p = subprocess.Popen([self.lcmds.BUILD_LOCALE_ARCHIVE],
+                             preexec_fn=chroot)
+        p.wait()
+
+        # remove unneeded locales from /usr/share/locale
+        with open(langtable, "r") as fobj:
+            langs = fobj.readlines()
+
+        langs = map(lambda l: l.split()[1], langs)
+
+        localedir = joinpaths(self.root, "usr/share/locale")
+        for fname in os.listdir(localedir):
+            fpath = joinpaths(localedir, fname)
+            if os.path.isdir(fpath) and fname not in langs:
+                shutil.rmtree(fpath)
+
+        # move the lang-table to etc
+        shutil.move(langtable, joinpaths(self.root, "etc"))
+
+    def create_keymaps(self):
+        keymaps = joinpaths(self.root, "etc/keymaps.gz")
+
+        # look for override
+        override = "keymaps-override-{0.basearch}".format(self)
+        override = joinpaths(self.root, "usr/share/anaconda", override)
+        if os.path.isfile(override):
+            logger.debug("using keymaps override")
+            shutil.move(override, keymaps)
+        else:
+            # create keymaps
+            cmd = [joinpaths(self.root, "usr/share/anaconda", "getkeymaps"),
+                   basearch, keymaps, self.root]
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+            p.wait()
+
+        return True
+
+    def create_screenfont(self):
+        dst = joinpaths(self.root, "etc/screenfont.gz")
+
+        screenfont = "screenfont-{0.basearch}.gz".format(self)
+        screenfont = joinpaths(self.root, "usr/share/anaconda", screenfont)
+        if not os.path.isfile(screenfont):
+            return False
+        else:
+            shutil.move(screenfont, dst)
+
+        return True
+
+    def move_stubs(self):
+        stubs = ("list-harddrives", "loadkeys", "losetup", "mknod",
+                 "raidstart", "raidstop")
+
+        for stub in stubs:
+            src = joinpaths(self.root, "usr/share/anaconda",
+                            "{0}-stub".format(stub))
+            dst = joinpaths(self.root, "usr/bin", stub)
+            if os.path.isfile(src):
+                shutil.move(src, dst)
+
+        # move restart-anaconda
+        src = joinpaths(self.root, "usr/share/anaconda", "restart-anaconda")
+        dst = joinpaths(self.root, "usr/bin")
+        shutil.move(src, dst)
+
+    def cleanup_python_files(self):
+        for root, dnames, fnames in os.walk(self.root):
+            for fname in fnames:
+                if fname.endswith(".py"):
+                    path = joinpaths(root, fname, follow_symlinks=False)
+                    pyo, pyc = path + "o", path + "c"
+                    if os.path.isfile(pyo):
+                        os.unlink(pyo)
+                    if os.path.isfile(pyc):
+                        os.unlink(pyc)
+
+                    os.symlink("/dev/null", pyc)
+
+    def cleanup_kernel_modules(self, keepmodules, kernel):
+        moddir = joinpaths(self.root, "lib/modules", kernel.version)
+        fwdir = joinpaths(self.root, "lib/firmware")
+
+        # expand required modules
+        modules = set()
+        pattern = re.compile(r"\.ko$")
+
+        for name in keepmodules:
+            if name.startswith("="):
+                group = name[1:]
+                if group in ("scsi", "ata"):
+                    p = joinpaths(moddir, "modules.block")
+                elif group == "net":
+                    p = joinpaths(moddir, "modules.networking")
+                else:
+                    p = joinpaths(moddir, "modules.{0}".format(group))
+
+                if os.path.isfile(p):
+                    with open(p, "r") as fobj:
+                        for line in fobj:
+                            module = pattern.sub("", line.strip())
+                            modules.add(module)
+            else:
+                modules.add(name)
+
+        # resolve modules dependencies
+        moddep = joinpaths(moddir, "modules.dep")
+        with open(moddep, "r") as fobj:
+            lines = map(lambda line: line.strip(), fobj.readlines())
+
+        modpattern = re.compile(r"^.*/(?P<name>.*)\.ko:(?P<deps>.*)$")
+        deppattern = re.compile(r"^.*/(?P<name>.*)\.ko$")
+        unresolved = True
+
+        while unresolved:
+            unresolved = False
+            for line in lines:
+                m = modpattern.match(line)
+                modname = m.group("name")
+                if modname in modules:
+                    # add the dependencies
+                    for dep in m.group("deps").split():
+                        m = deppattern.match(dep)
+                        depname = m.group("name")
+                        if depname not in modules:
+                            unresolved = True
+                            modules.add(depname)
+
+        # required firmware
+        firmware = set()
+
+        # remove not needed modules
+        for root, dnames, fnames in os.walk(moddir):
+            for fname in fnames:
+                path = os.path.join(root, fname)
+                name, ext = os.path.splitext(fname)
+
+                if ext == ".ko":
+                    if name not in modules:
+                        os.unlink(path)
+                        logger.debug("removed module {0}".format(path))
                     else:
-                        packages.add(name)
+                        # get the required firmware
+                        cmd = [self.lcmds.MODINFO, "-F", "firmware", path]
+                        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+                        output = p.stdout.read()
+                        firmware |= set(output.split())
 
-            if c.has_option("lorax", "modules"):
-                list = c.get("lorax", "modules").split()
-                for name in list:
-                    if name.startswith("-"):
-                        modules.discard(name)
-                    else:
-                        modules.add(name)
+        # remove not needed firmware
+        firmware = map(lambda fw: joinpaths(fwdir, fw), list(firmware))
+        for root, dnames, fnames in os.walk(fwdir):
+            for fname in fnames:
+                path = joinpaths(root, fname)
+                if path not in firmware:
+                    os.unlink(path)
+                    logger.debug("removed firmware {0}".format(path))
 
-            if c.has_option("lorax", "initrd_template"):
-                initrd_template = c.get("lorax", "initrd_template")
-                initrd_template = os.path.join(self.conf.confdir,
-                                               initrd_template)
+        # get the modules paths
+        modpaths = {}
+        for root, dnames, fnames in os.walk(moddir):
+            for fname in fnames:
+                modpaths[fname] = joinpaths(root, fname)
 
-            if c.has_option("lorax", "install_template"):
-                install_template = c.get("lorax", "install_template")
-                install_template = os.path.join(self.conf.confdir,
-                                                install_template)
+        # create the modules list
+        modlist = {}
+        for modtype, fname in (("scsi", "modules.block"),
+                               ("eth", "modules.networking")):
 
-        return packages, modules, initrd_template, install_template
+            fname = joinpaths(moddir, fname)
+            with open(fname, "r") as fobj:
+                lines = map(lambda l: l.strip(), fobj.readlines())
+                lines = filter(lambda l: l, lines)
 
-    def prepare_outputdir(self):
-        imgdir = os.path.join(self.outputdir, "images")
-        makedirs_(imgdir)
+            for line in lines:
+                modname, ext = os.path.splitext(line)
+                if (line not in modpaths or
+                    modname in ("floppy", "libiscsi", "scsi_mod")):
+                    continue
+
+                cmd = [self.lcmds.MODINFO, "-F", "description", modpaths[line]]
+                p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+                output = p.stdout.read()
+
+                try:
+                    desc = output.splitlines()[0]
+                    desc = desc.strip()[:65]
+                except IndexError:
+                    desc = "{0} driver".format(modname)
+
+                info = '{0}\n\t{1}\n\t"{2}"\n'
+                info = info.format(modname, modtype, desc)
+                modlist[modname] = info
+
+        # write the module-info
+        moduleinfo = joinpaths(os.path.dirname(moddir), "module-info")
+        with open(moduleinfo, "w") as fobj:
+            fobj.write("Version 0\n")
+            for modname in sorted(modlist.keys()):
+                fobj.write(modlist[modname])
+
+        # remove *map files
+        mapfiles = joinpaths(moddir, "*map")
+        for fpath in glob.glob(mapfiles):
+            os.unlink(fpath)
+
+    def compress_modules(self, kernel):
+        moddir = joinpaths(self.root, "lib/modules", kernel.version)
+
+        for root, dnames, fnames in os.walk(moddir):
+            for fname in filter(lambda f: f.endswith(".ko"), fnames):
+                path = os.path.join(root, fname)
+                with open(path, "rb") as fobj:
+                    data = fobj.read()
+
+                gzipped = gzip.open("{0}.gz".format(path), "wb")
+                gzipped.write(data)
+                gzipped.close()
+
+                os.unlink(path)
+
+    def run_depmod(self, kernel):
+        systemmap = "System.map-{0.version}".format(kernel)
+        systemmap = joinpaths(self.root, "boot", systemmap)
+
+        cmd = [self.lcmds.DEPMOD, "-a", "-F", systemmap, "-b", self.root,
+               kernel.version]
+
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+
+    def create_install_img(self, paths, type="squashfs", workdir="/tmp"):
+        tempdir = tempfile.mkdtemp(prefix="install.img.", dir=workdir)
+
+        paths = map(lambda p: glob.iglob(p), paths)
+        paths = itertools.chain.from_iterable(paths)
+
+        for path in paths:
+            fullpath = joinpaths(self.root, path)
+
+            dirname = os.path.dirname(path)
+            targetdir = joinpaths(tempdir, dirname)
+            if not os.path.isdir(targetdir):
+                os.makedirs(targetdir)
+
+            for expanded in glob.iglob(fullpath):
+                if os.path.islink(expanded):
+                    # TODO
+                    pass
+
+                else:
+                    shutil.move(expanded, targetdir)
+
+        installimg = joinpaths(workdir, "install.img")
+
+        if type == "squashfs":
+            cmd = [self.lcmds.MKSQUASHFS, tempdir, installimg,
+                   "-all-root", "-no-fragments", "-no-progress"]
+            logger.debug(cmd)
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+            rc = p.wait()
+            if not rc == 0:
+                return None
+        else:
+            # TODO
+            raise NotImplementedError
+
+        return installimg
+
+    def compress(self, initrd):
+        chdir = lambda: os.chdir(self.root)
+
+        start = time.time()
+
+        find = subprocess.Popen([self.lcmds.FIND, "."], stdout=subprocess.PIPE,
+                                preexec_fn=chdir)
+
+        cpio = subprocess.Popen([self.lcmds.CPIO, "--quiet", "-c", "-o"],
+                                stdin=find.stdout, stdout=subprocess.PIPE,
+                                preexec_fn=chdir)
+
+        gzipped = gzip.open(initrd.fpath, "wb")
+        gzipped.write(cpio.stdout.read())
+        gzipped.close()
+
+        elapsed = time.time() - start
+
+        return True, elapsed
+
+    @property
+    def kernels(self):
+        kerneldir = "boot"
+        if self.basearch == "ia64":
+            kerneldir = "boot/efi/EFI/redhat"
+
+        kerneldir = joinpaths(self.root, kerneldir)
+        kpattern = re.compile(r"vmlinuz-(?P<ver>[-._0-9a-z]+?"
+                              r"(?P<pae>(PAE)?)(?P<xen>(xen)?))$")
+
+        kernels = []
+        for fname in os.listdir(kerneldir):
+            m = kpattern.match(fname)
+            if m:
+                type = K_NORMAL
+                if m.group("pae"):
+                    type = K_PAE
+                elif m.group("xen"):
+                    type = K_XEN
+
+                kernels.append(Kernel(fname,
+                                      joinpaths(kerneldir, fname),
+                                      m.group("ver"),
+                                      type))
+
+        kernels = sorted(kernels, key=operator.attrgetter("type"))
+        return kernels
+
+
+class LoraxOutputTree(BaseLoraxClass):
+
+    def __init__(self, root, installtree, product, version):
+        BaseLoraxClass.__init__(self)
+        self.root = root
+        self.installtree = installtree
+
+        self.product = product
+        self.version = version
+
+    def prepare(self):
+        imgdir = joinpaths(self.root, "images")
+        os.makedirs(imgdir)
+        logger.debug("created directory {0}".format(imgdir))
+
+        pxebootdir = joinpaths(self.root, "images/pxeboot")
+        os.makedirs(pxebootdir)
+        logger.debug("created directory {0}".format(pxebootdir))
+
+        isolinuxdir = joinpaths(self.root, "isolinux")
+        os.makedirs(isolinuxdir)
+        logger.debug("created directory {0}".format(isolinuxdir))
+
+        efibootdir = joinpaths(self.root, "EFI/BOOT")
+        os.makedirs(efibootdir)
+        logger.debug("created directory {0}".format(efibootdir))
+
+        self.imgdir = imgdir
+        self.pxebootdir = pxebootdir
+        self.isolinuxdir = isolinuxdir
+        self.efibootdir = efibootdir
 
         # write the images/README file
         text = """
 This directory contains image files that can be used to create media
-capable of starting the {0} installation process.
+capable of starting the {0.product} installation process.
 
 The boot.iso file is an ISO 9660 image of a bootable CD-ROM. It is useful
 in cases where the CD-ROM installation method is not desired, but the
@@ -424,12 +1073,9 @@ To use this image file, burn the file onto CD-R (or CD-RW) media as you
 normally would.
 """
 
-        text = text.format(self.product)
-        with open(os.path.join(imgdir, "README"), "w") as f:
-            f.write(text)
-
-        pxedir = os.path.join(imgdir, "pxeboot")
-        makedirs_(pxedir)
+        readme = joinpaths(imgdir, "README")
+        with open(readme, "w") as fobj:
+            fobj.write(text.format(self))
 
         # write the images/pxeboot/README file
         text = """
@@ -438,61 +1084,58 @@ The files in this directory are useful for booting a machine via PXE.
 The following files are available:
 vmlinuz - the kernel used for the installer
 initrd.img - an initrd with support for all install methods and
-             drivers supported for installation of {0}
+             drivers supported for installation of {0.product}
 """
 
-        text = text.format(self.product)
-        with open(os.path.join(pxedir, "README"), "w") as f:
-            f.write(text)
+        readme = joinpaths(pxebootdir, "README")
+        with open(readme, "w") as fobj:
+            fobj.write(text.format(self))
 
-        efidir = os.path.join(self.outputdir, "EFI/BOOT")
-        makedirs_(efidir)
+    def get_kernels(self):
+        kernels = self.installtree.kernels[:]
 
-        isodir = os.path.join(self.outputdir, "isolinux")
-        makedirs_(isodir)
+        # get the main kernel
+        self.main_kernel = kernels.pop(0)
 
-        self.conf.imgdir = imgdir
-        self.conf.pxedir = pxedir
-        self.conf.efidir = efidir
-        self.conf.isodir = isodir
+        # copy to isolinuxdir
+        shutil.copy2(self.main_kernel.fpath, self.isolinuxdir)
 
-        isolinuxbin = os.path.join(self.installtree.rootdir,
-                                   self.const.ISOLINUXBIN)
-        syslinuxcfg = os.path.join(self.installtree.rootdir,
-                                   self.const.SYSLINUXCFG)
+        # copy to pxebootdir
+        shutil.copy2(self.main_kernel.fpath, self.pxebootdir)
 
-        if not os.path.isfile(isolinuxbin):
-            self.perror("no isolinux binary found")
-            return False
+        # other kernels
+        for kernel in self.installtree.kernels:
+            shutil.copy2(kernel.fpath, self.pxebootdir)
 
-        # copy the isolinux.bin file
-        shutil.copy2(isolinuxbin, self.conf.isodir)
+    def get_isolinux(self):
+        isolinuxbin = joinpaths(self.installtree.root,
+                                "usr/share/syslinux/isolinux.bin")
+        syslinuxcfg = joinpaths(self.installtree.root,
+                                "usr/share/anaconda/boot/syslinux.cfg")
 
-        # copy the syslinux.cfg
-        isolinuxcfg = os.path.join(self.conf.isodir, "isolinux.cfg")
+        # copy isolinux.bin
+        shutil.copy2(isolinuxbin, self.isolinuxdir)
+
+        # copy syslinux.cfg
+        isolinuxcfg = joinpaths(self.isolinuxdir, "isolinux.cfg")
         shutil.copy2(syslinuxcfg, isolinuxcfg)
 
-        # set the product and version in isolinux.cfg
-        replace_(isolinuxcfg, r"@PRODUCT@", self.product)
-        replace_(isolinuxcfg, r"@VERSION@", self.version)
+        # set product and version in isolinux.cfg
+        replace(isolinuxcfg, r"@PRODUCT@", self.product)
+        replace(isolinuxcfg, r"@VERSION@", self.version)
 
-        # set up the label for finding stage2 with a hybrid iso
-        replace_(isolinuxcfg, r"initrd=initrd.img",
-                 'initrd=initrd.img stage2=hd:LABEL="{0}"'.format(self.product))
+        # set the kernel name in isolinux.cfg
+        replace(isolinuxcfg, r"kernel vmlinuz",
+                "kernel {0}".format(self.main_kernel.fname))
 
-        # copy the .msg files
-        msgfiles = os.path.join(self.const.ANACONDA_BOOTDIR, "*.msg")
-        msgfiles = os.path.join(self.installtree.rootdir, msgfiles)
-        for fname in glob.iglob(msgfiles):
-            shutil.copy2(fname, self.conf.isodir)
-            path = os.path.join(self.conf.isodir, os.path.basename(fname))
-            replace_(path, r"@VERSION@", self.version)
+        # set label for finding stage2 with a hybrid iso
+        replace(isolinuxcfg, r"initrd=initrd.img",
+                'initrd=initrd.img stage2=hd:LABEL="{0.product}"'.format(self))
 
-        # copy the memtest
-        memtest = os.path.join(self.const.BOOTDIR, "memtest*")
-        memtest = os.path.join(self.installtree.rootdir, memtest)
-        for fname in glob.iglob(memtest):
-            shutil.copy2(fname, os.path.join(self.conf.isodir, "memtest"))
+        # copy memtest
+        memtest = joinpaths(self.installtree.root, "boot/memtest*")
+        for fname in glob.glob(memtest):
+            shutil.copy2(fname, joinpaths(self.isolinuxdir, "memtest"))
 
             text = """label memtest86
   menu label ^Memory test
@@ -501,189 +1144,53 @@ initrd.img - an initrd with support for all install methods and
 
 """
 
-            with open(isolinuxcfg, "a") as f:
-                f.write(text)
+            with open(isolinuxcfg, "a") as fobj:
+                fobj.write(text)
 
             break
 
-        # copy the grub.conf
-        grubconf = os.path.join(self.installtree.rootdir,
-                                self.const.ANACONDA_BOOTDIR, "grub.conf")
-        shutil.copy2(grubconf, isodir)
+        # get splash
+        vesasplash = joinpaths(self.installtree.root,
+                               "usr/share/anaconda/syslinux-vesa-splash.jpg")
+        vesamenu = joinpaths(self.installtree.root,
+                             "usr/share/syslinux/vesamenu.c32")
 
-        # copy the splash files
-        vesasplash = os.path.join(self.installtree.rootdir,
-                                  self.const.VESASPLASH)
-        vesamenu = os.path.join(self.installtree.rootdir,
-                                self.const.VESAMENU)
+        splashtolss = joinpaths(self.installtree.root,
+                                "usr/share/anaconda/splashtolss.sh")
 
-        splashtools = os.path.join(self.installtree.rootdir,
-                                   self.const.SPLASHTOOLS)
-        syslinuxsplash = os.path.join(self.installtree.rootdir,
-                                      self.const.SYSLINUXSPLASH)
-        splashlss = os.path.join(self.installtree.rootdir,
-                                 self.const.SPLASHLSS)
+        syslinuxsplash = joinpaths(self.installtree.root,
+                                   "usr/share/anaconda/boot/syslinux-splash.jpg")
+        splashlss = joinpaths(self.installtree.root,
+                              "usr/share/anaconda/boot/splash.lss")
 
         if os.path.isfile(vesasplash):
-            shutil.copy2(vesasplash, os.path.join(isodir, "splash.jpg"))
-            shutil.copy2(vesamenu, isodir)
-            replace_(isolinuxcfg, r"default linux", "default vesamenu.c32")
-            replace_(isolinuxcfg, r"prompt 1", "#prompt 1")
-        else:
-            if os.path.isfile(splashtools):
-                cmd = "{0} {1} {2}".format(splashtools,
-                                           syslinuxsplash,
-                                           splashlss)
-
-                err, stdout = commands.getstatusoutput(cmd)
-                if err:
-                    self.pwarning(stdout)
+            shutil.copy2(vesasplash, joinpaths(self.isolinuxdir, "splash.jpg"))
+            shutil.copy2(vesamenu, self.isolinuxdir)
+            replace(isolinuxcfg, r"default linux", "default vesamenu.c32")
+            replace(isolinuxcfg, r"prompt 1", "#prompt 1")
+        elif os.path.isfile(splashtolss):
+            cmd = [splashtolss, syslinuxsplash, splashlss]
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+            p.wait()
 
             if os.path.isfile(splashlss):
-                shutil.copy2(splashlss, isodir)
+                shutil.copy2(splashlss, self.isolinuxdir)
 
-        return True
+    def get_msg_files(self):
+        msgfiles = joinpaths(self.installtree.root,
+                             "usr/share/anaconda/boot/*.msg")
 
-    def write_treeinfo(self, discnum=1, totaldiscs=1, packagedir=""):
-        outfile = os.path.join(self.workdir, ".treeinfo")
+        for fname in glob.glob(msgfiles):
+            shutil.copy2(fname, self.isolinuxdir)
+            path = joinpaths(self.isolinuxdir, os.path.basename(fname))
+            replace(path, r"@VERSION@", self.version)
 
-        c = ConfigParser.ConfigParser()
+    def get_grub_conf(self):
+        grubconf = joinpaths(self.installtree.root,
+                             "usr/share/anaconda/boot/grub.conf")
 
-        variant = self.variant
-        if variant is None:
-            variant = ""
+        shutil.copy2(grubconf, self.isolinuxdir)
 
-        section = "general"
-        data = {"timestamp": time.time(),
-                "family": self.product,
-                "version": self.version,
-                "variant": variant,
-                "arch": self.conf.basearch,
-                "discnum": discnum,
-                "totaldiscs": totaldiscs,
-                "packagedir": packagedir}
-
-        c.add_section(section)
-        map(lambda (key, value): c.set(section, key, value), data.items())
-
-        with open(outfile, "w") as f:
-            c.write(f)
-
-        return outfile
-
-    def treeinfo_add_section(self, treeinfo, section, data):
-        c = ConfigParser.ConfigParser()
-        c.read(treeinfo)
-
-        if not c.has_section(section):
-            c.add_section(section)
-
-        map(lambda (key, value): c.set(section, key, value), data.items())
-
-        with open(treeinfo, "w") as f:
-            c.write(f)
-
-    def write_discinfo(self, discnum="ALL"):
-        outfile = os.path.join(self.workdir, ".discinfo")
-
-        with open(outfile, "w") as f:
-            f.write("{0:f}\n".format(time.time()))
-            f.write("{0}\n".format(self.release))
-            f.write("{0}\n".format(self.conf.basearch))
-            f.write("{0}\n".format(discnum))
-
-        return outfile
-
-    def write_buildstamp(self):
-        outfile = os.path.join(self.workdir, ".buildstamp")
-
-        now = datetime.datetime.now()
-        uuid = "{0}.{1}"
-        uuid = uuid.format(now.strftime("%Y%m%d%H%M"), self.conf.buildarch)
-
-        with open(outfile, "w") as f:
-            f.write("{0}\n".format(uuid))
-            f.write("{0}\n".format(self.product))
-            f.write("{0}\n".format(self.version))
-            f.write("{0}\n".format(self.bugurl))
-
-        return outfile
-
-    def cleanup(self):
-        # TODO
-        pass
-
-
-class YumHelper(object):
-
-    def __init__(self, yb):
-        self.yb = yb
-
-    def install(self, pattern):
-        try:
-            self.yb.install(name=pattern)
-        except yum.Errors.InstallError:
-            try:
-                self.yb.install(pattern=pattern)
-            except yum.Errors.InstallError:
-                return False
-
-        return True
-
-    def process_transaction(self):
-        self.yb.resolveDeps()
-        self.yb.buildTransaction()
-
-        cb = yum.callbacks.ProcessTransBaseCallback()
-        rpmcb = RpmCallback()
-
-        self.yb.processTransaction(callback=cb, rpmDisplay=rpmcb)
-
-        self.yb.closeRpmDB()
-        self.yb.close()
-
-    def search(self, pattern):
-        pl = self.yb.doPackageLists(patterns=[pattern])
-        return pl.installed, pl.available
-
-    @property
-    def installed_packages(self):
-        pl = self.yb.doPackageLists()
-
-        d = {}
-        for pkgobj in pl.installed:
-            d[pkgobj.name] = pkgobj
-
-        return d
-
-    def get_file_list(self, package):
-        return package.returnFileEntries()
-
-
-class RpmCallback(yum.rpmtrans.SimpleCliCallBack):
-
-    def __init__(self):
-        yum.rpmtrans.SimpleCliCallBack.__init__(self)
-        self.output = output.LoraxOutput()
-
-        self.termwidth = 79
-
-    def event(self, package, action, te_current, te_total,
-              ts_current, ts_total):
-
-        info = "({0:3d}/{1:3d}) [{2:3.0f}%] {3} "
-        info = info.format(ts_current, ts_total,
-                           float(te_current) / float(te_total) * 100,
-                           self.action[action])
-
-        pkg = "{0}".format(package)
-
-        infolen = len(info)
-        pkglen = len(pkg)
-        if (infolen + pkglen) > self.termwidth:
-            pkg = "{0}...".format(pkg[:self.termwidth-infolen-3])
-
-        msg = "{0}<b>{1}</b>\r".format(info, pkg)
-        self.output.write(msg)
-        if te_current == te_total:
-            self.output.write("\n")
+        grubconf = joinpaths(self.isolinuxdir, "grub.conf")
+        replace(grubconf, r"@PRODUCT@", self.product)
+        replace(grubconf, r"@VERSION@", self.version)

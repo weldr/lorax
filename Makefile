@@ -9,3 +9,6 @@ install:
 
 clean:
 	-rm -rf build
+
+test:
+	/usr/bin/lorax -p FEDORA -v RAWHIDE -r 2010 -s /rawrepo /root/rawhide

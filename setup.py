@@ -5,11 +5,10 @@ from glob import glob
 import os
 
 
-data_files = [("/etc/lorax", glob("etc/config.*")),
-              ("/etc/lorax", ["etc/ignore_errors"]),
-              ("/etc/lorax/templates", glob("etc/templates/*"))
-              ]
+# config file
+data_files = [("/etc/lorax", ["etc/lorax.conf"])]
 
+# shared files
 for root, dnames, fnames in os.walk("share"):
     for fname in fnames:
         data_files.append((root.replace("share", "/usr/share/lorax", 1),

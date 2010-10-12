@@ -27,15 +27,15 @@ import sys
 import os
 import tempfile
 from optparse import OptionParser, OptionGroup
+import ConfigParser
 
+import yum
 import pylorax
-import pylorax.config
-from pylorax.yumbase import get_yum_base_object
 
 
 def main(args):
     version = "{0} 0.1".format(os.path.basename(args[0]))
-    usage = "%prog -p PRODUCT -v VERSION -r RELEASE -o OUTPUTDIR REPOSITORY"
+    usage = "%prog -p PRODUCT -v VERSION -r RELEASE -s REPOSITORY OUTPUTDIR"
 
     parser = OptionParser(usage=usage)
 
@@ -47,8 +47,9 @@ def main(args):
             metavar="STRING")
     required.add_option("-r", "--release", help="release information",
             metavar="STRING")
-    required.add_option("-o", "--outputdir", help="output directory",
-            metavar="PATHSPEC")
+    required.add_option("-s", "--source",
+            help="source repository (may be listed multibple times)",
+            metavar="REPOSITORY", action="append", default=[])
 
     # optional arguments
     optional = OptionGroup(parser, "optional arguments")
@@ -60,30 +61,10 @@ def main(args):
     optional.add_option("-b", "--bugurl",
             help="bug reporting URL for the product", metavar="URL",
             default="your distribution provided bug reporting tool")
-    optional.add_option("-u", "--updates",
-            help="directory containing updates", metavar="PATHSPEC")
-
-    # output settings
-    output = OptionGroup(parser, "output settings")
-    output.add_option("--no-colors", help="disable color output",
-            action="store_false", default=True, dest="colors")
-    output.add_option("--encoding", help="set encoding",
-            metavar="STRING", default="utf-8")
-    output.add_option("-d", "--debug", help="enable debugging messages",
-            action="store_true", default=False)
-
-    # lorax settings
-    settings = OptionGroup(parser, "lorax settings")
-    settings.add_option("--pedantic", help="don't ignore copy errors",
-            action="store_true", default=False)
-    settings.add_option("-c", "--cleanup", help="clean up on exit",
-            action="store_true", default=False)
 
     # add the option groups to the parser
     parser.add_option_group(required)
     parser.add_option_group(optional)
-    parser.add_option_group(output)
-    parser.add_option_group(settings)
 
     # add the show version option
     parser.add_option("-V", help="show program's version number and exit",
@@ -91,7 +72,7 @@ def main(args):
 
     # parse the arguments
     opts, args = parser.parse_args()
-    repositories = args
+    outputdir = args[0]
 
     if opts.showver:
         print(version)
@@ -99,7 +80,7 @@ def main(args):
 
     # check for the required arguments
     if not opts.product or not opts.version or not opts.release \
-            or not opts.outputdir or not repositories:
+            or not opts.source or not outputdir:
         parser.error("missing one or more required arguments")
 
     # create the temporary directory for lorax
@@ -111,7 +92,7 @@ def main(args):
     yumtempdir = os.path.join(tempdir, "yum")
     os.mkdir(yumtempdir)
 
-    yb = get_yum_base_object(installtree, repositories, opts.mirrorlist,
+    yb = get_yum_base_object(installtree, opts.source, opts.mirrorlist,
                              yumtempdir)
 
     if yb is None:
@@ -119,27 +100,94 @@ def main(args):
         shutil.rmtree(tempdir)
         sys.exit(1)
 
-    # configure lorax
-    config = pylorax.config.LoraxConfig()
-    config.colors = opts.colors
-    config.encoding = opts.encoding
-    config.debug = opts.debug
-
-    config.pedantic = opts.pedantic
-
     # run lorax
-    params = {"installtree": installtree,
-              "outputdir": opts.outputdir,
-              "product": opts.product,
-              "version": opts.version,
-              "release": opts.release,
-              "workdir": tempdir,
-              "variant": opts.variant,
-              "bugurl": opts.bugurl,
-              "updatesdir": opts.updates}
+    lorax = pylorax.Lorax()
+    lorax.configure()
+    lorax.run(yb, opts.product, opts.version, opts.release,
+              opts.variant, opts.bugurl,
+              workdir=tempdir, outputdir=outputdir)
 
-    lorax = pylorax.Lorax(yb, **params)
-    lorax.run()
+
+def get_yum_base_object(installroot, repositories, mirrorlists=[],
+                        tempdir="/tmp"):
+
+    def sanitize_repo(repo):
+        if repo.startswith("/"):
+            return "file://{0}".format(repo)
+        elif (repo.startswith("http://") or repo.startswith("ftp://")
+              or repo.startswith("file://")):
+            return repo
+        else:
+            return None
+
+    # sanitize the repositories
+    repositories = map(sanitize_repo, repositories)
+    mirrorlists = map(sanitize_repo, mirrorlists)
+
+    # remove invalid repositories
+    repositories = filter(bool, repositories)
+    mirrorlists = filter(bool, mirrorlists)
+
+    #cachedir = os.path.join(tempdir, "yum.cache")
+    #if not os.path.isdir(cachedir):
+    #    os.mkdir(cachedir)
+
+    yumconf = os.path.join(tempdir, "yum.conf")
+    c = ConfigParser.ConfigParser()
+
+    # add the main section
+    section = "main"
+    data = {#"cachedir": cachedir,
+            #"keepcache": 0,
+            "gpgcheck": 0,
+            "plugins": 0,
+            "reposdir": "",
+            "tsflags": "nodocs"}
+
+    c.add_section(section)
+    map(lambda (key, value): c.set(section, key, value), data.items())
+
+    # add the main repository - the first repository from list
+    section = "lorax-repo"
+    data = {"name": "lorax repo",
+            "baseurl": repositories[0],
+            "enabled": 1}
+
+    c.add_section(section)
+    map(lambda (key, value): c.set(section, key, value), data.items())
+
+    # add the extra repositories
+    for n, extra in enumerate(repositories[1:], start=1):
+        section = "lorax-extra-repo-{0:d}".format(n)
+        data = {"name": "lorax extra repo {0:d}".format(n),
+                "baseurl": extra,
+                "enabled": 1}
+
+        c.add_section(section)
+        map(lambda (key, value): c.set(section, key, value), data.items())
+
+    # add the mirrorlists
+    for n, mirror in enumerate(mirrorlists, start=1):
+        section = "lorax-mirrorlist-{0:d}".format(n)
+        data = {"name": "lorax mirrorlist {0:d}".format(n),
+                "mirrorlist": mirror,
+                "enabled": 1 }
+
+        c.add_section(section)
+        map(lambda (key, value): c.set(section, key, value), data.items())
+
+    # write the yum configuration file
+    with open(yumconf, "w") as f:
+        c.write(f)
+
+    # create the yum base object
+    yb = yum.YumBase()
+
+    yb.preconf.fn = yumconf
+    yb.preconf.root = installroot
+    #yb.repos.setCacheDir(cachedir)
+
+    return yb
 
 
 if __name__ == "__main__":

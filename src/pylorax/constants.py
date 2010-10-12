@@ -19,63 +19,44 @@
 # Red Hat Author(s):  Martin Gracik <mgracik@redhat.com>
 #
 
-from os.path import join as pjoin
+import os
+
+from sysutils import joinpaths
 
 
-class LoraxConstants(object):
-
-    ROOT_UID = 0
-
-    ANACONDA_PACKAGE = "anaconda"
-    ANACONDA_RUNTIME = "usr/share/anaconda"
-    ANACONDA_BOOTDIR = "usr/share/anaconda/boot"
-
-    BOOTDIR = "boot"
-    BOOTDIR_IA64 = "boot/efi/EFI/redhat"
-
-    EFIDIR = "boot/efi/EFI/redhat"
-    SPLASH = "boot/grub/splash.xpm.gz"
-
-    VESASPLASH = "usr/lib/anaconda-runtime/syslinux-vesa-splash.jpg"
-    SYSLINUXSPLASH = pjoin(ANACONDA_BOOTDIR, "syslinux-splash.jpg")
-    SPLASHTOOLS = pjoin(ANACONDA_RUNTIME, "splashtools.sh")
-    SPLASHLSS = pjoin(ANACONDA_BOOTDIR, "splash.lss")
-    VESAMENU = "usr/share/syslinux/vesamenu.c32"
-
-    MODDIR = "lib/modules"
-    FWDIR = "lib/firmware"
-
-    MODDEPFILE = "modules.dep"
-    MODULEINFO = "module-info"
-
-    LOCALEDIR = "usr/lib/locale"
-    LOCALES = "usr/share/locale"
-    LANGTABLE = "usr/share/anaconda/lang-table"
-
-    ISOLINUXBIN = "usr/share/syslinux/isolinux.bin"
-    SYSLINUXCFG = "usr/share/anaconda/boot/syslinux.cfg"
-
-    LDSOCONF = "etc/ld.so.conf"
-    MANCONF = "etc/man_db.conf"
-
-
-class LoraxCommands(dict):
+class LoraxRequiredCommands(dict):
 
     def __init__(self):
-        self["MODINFO"] = "/sbin/modinfo"
-        self["DEPMOD"] = "/sbin/depmod"
-        self["LOCALEDEF"] = "/usr/bin/localedef"
-        self["MKDOSFS"] = "/sbin/mkdosfs"
-        self["MKSQUASHFS"] = "/sbin/mksquashfs"
-        self["MKISOFS"] = "/usr/bin/mkisofs"
-        self["ISOHYBRID"] = "/usr/bin/isohybrid"
-        self["LOSETUP"] = "/sbin/losetup"
-        self["DMSETUP"] = "/sbin/dmsetup"
-        self["AWK"] = "/usr/bin/awk"
-        self["MOUNT"] = "/bin/mount"
-        self["UMOUNT"] = "/bin/umount"
-        self["LDCONFIG"] = "/sbin/ldconfig"
-        self["PARTED"] = "/sbin/parted"
+        self.__path = os.environ["PATH"].split(":")
+
+        self["AWK"] = "awk"
+        self["BUILD_LOCALE_ARCHIVE"] = "build-locale-archive"
+        self["CPIO"] = "cpio"
+        self["DEPMOD"] = "depmod"
+        self["DMSETUP"] = "dmsetup"
+        self["FIND"] = "find"
+        self["ISOHYBRID"] = "isohybrid"
+        self["LDCONFIG"] = "ldconfig"
+        self["LOCALEDEF"] = "localedef"
+        self["LOSETUP"] = "losetup"
+        self["MKDOSFS"] = "mkdosfs"
+        self["MKISOFS"] = "mkisofs"
+        self["MKSQUASHFS"] = "mksquashfs"
+        self["MODINFO"] = "modinfo"
+        self["MOUNT"] = "mount"
+        self["PARTED"] = "parted"
+        self["UMOUNT"] = "umount"
 
     def __getattr__(self, attr):
         return self[attr]
+
+    def get_missing(self):
+        missing = []
+        for cmd in self.values():
+            found = [joinpaths(path, cmd) for path in self.__path
+                     if os.path.exists(joinpaths(path, cmd))]
+
+            if not found:
+                missing.append(cmd)
+
+        return missing

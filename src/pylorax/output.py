@@ -22,7 +22,16 @@
 import sys
 import re
 
-from decorators import singleton
+import decorators
+
+
+# output levels
+CRITICAL = 50
+ERROR = 40
+WARNING = 30
+INFO = 20
+DEBUG = 10
+NOTSET = 0
 
 
 # color codes
@@ -48,48 +57,28 @@ TAGS = [(re.compile(r"<b>"), C_BOLD),
         (re.compile(r"<red>"), C_RED),
         (re.compile(r"<green>"), C_GREEN),
         (re.compile(r"<blue>"), C_BLUE),
-        (re.compile(r"</(b|u|red|green|blue/)>"), C_RESET)]
+        (re.compile(r"</(b|u|red|green|blue)>"), C_RESET)]
 
 
-# output levels
-CRITICAL = 50
-ERROR = 40
-WARNING = 30
-INFO = 20
-DEBUG = 10
-NOTSET = 0
-
-
-@singleton
-class LoraxOutput(object):
+@decorators.singleton
+class LinuxTerminalOutput(object):
 
     def __init__(self):
+        self._output_level = INFO
         self._colors = True
         self._encoding = "utf-8"
-        self._output_level = INFO
-        self._ignore_msgs = set()
+        self._ignored_messages = set()
         self._indent_level = 0
 
-    def basic_config(self, colors=None, encoding=None, output_level=None):
-        if colors is not None:
-            self._colors = colors
+        self.width = 79
 
-        if encoding is not None:
-            self._encoding = encoding
+    def basic_config(self, output_level=None, colors=None, encoding=None):
+        self._output_level = output_level or self._output_level
+        self._colors = colors or self._colors
+        self._encoding = encoding or self._encoding
 
-        if output_level is not None:
-            self._output_level = output_level
-
-    def ignore_message(self, messages):
-        if type(messages) is str:
-            self._ignore_msgs.add(messages)
-        else:
-            for msg in messages:
-                self.ignore_message(msg)
-
-    @property
-    def ignore(self):
-        return self._ignore_msgs
+    def ignore(self, message):
+        self._ignored_messages.add(message)
 
     def indent(self):
         self._indent_level += 1
@@ -114,19 +103,19 @@ class LoraxOutput(object):
     def critical(self, s, file=sys.stdout):
         s = "** critical: {0}".format(s)
         if (self._output_level <= CRITICAL and
-            self.__raw(s) not in self.ignore):
+            self.__raw(s) not in self._ignored_messages):
             self.writeline(s, file=file)
 
     def error(self, s, file=sys.stdout):
         s = "** error: {0}".format(s)
         if (self._output_level <= ERROR and
-            self.__raw(s) not in self.ignore):
+            self.__raw(s) not in self._ignored_messages):
             self.writeline(s, file=file)
 
     def warning(self, s, file=sys.stdout):
         s = "** warning: {0}".format(s)
         if (self._output_level <= WARNING and
-            self.__raw(s) not in self.ignore):
+            self.__raw(s) not in self._ignored_messages):
             self.writeline(s, file=file)
 
     def info(self, s, file=sys.stdout):
@@ -146,3 +135,7 @@ class LoraxOutput(object):
         for tag, ccode in TAGS:
             s = tag.sub("", s)
         return s
+
+
+# set up the output type to be used by lorax
+LoraxOutput = LinuxTerminalOutput
