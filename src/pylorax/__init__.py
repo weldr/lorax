@@ -235,8 +235,6 @@ class Lorax(BaseLoraxClass):
         # write buildstamp
         self.write_buildstamp(path=self.installtree.root)
 
-
-
         # remove locales
         logger.info("removing locales")
         self.installtree.remove_locales()
@@ -271,6 +269,27 @@ class Lorax(BaseLoraxClass):
 
             logger.info("running depmod")
             self.installtree.run_depmod(kernel)
+
+        # create gconf
+        self.installtree.create_gconf()
+
+        # move repos
+        self.installtree.move_repos()
+
+        # create depmod conf
+        self.installtree.create_depmod_conf()
+
+        # misc tree modifications
+        self.installtree.misc_tree_modifications()
+
+        # get config files
+        config_dir = joinpaths(self.conf.get("lorax", "sharedir"),
+                               "config_files")
+
+        self.installtree.get_config_files(config_dir)
+
+        # get loader
+        self.installtree.get_loader()
 
         # set up output tree
         logger.info("setting up output tree")
@@ -530,7 +549,7 @@ class Lorax(BaseLoraxClass):
             os.unlink(efiboot)
 
         # XXX calculate the size of the efi tree directory
-        overhead = 512 * 1024
+        overhead = 256 * 1024
 
         sizeinbytes = overhead
         for root, dnames, fnames in os.walk(efitree):
@@ -843,6 +862,15 @@ class LoraxInstallTree(BaseLoraxClass):
         # required firmware
         firmware = set()
 
+        # XXX required firmware
+        firmware.add("atmel_at76c504c-wpa.bin")
+        firmware.add("iwlwifi-3945-1.ucode")
+        firmware.add("iwlwifi-3945.ucode")
+        firmware.add("zd1211/zd1211_uph")
+        firmware.add("zd1211/zd1211_uphm")
+        firmware.add("zd1211/zd1211b_uph")
+        firmware.add("zd1211/zd1211b_uphm")
+
         # remove not needed modules
         for root, dnames, fnames in os.walk(moddir):
             for fname in fnames:
@@ -940,6 +968,87 @@ class LoraxInstallTree(BaseLoraxClass):
                kernel.version]
 
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+
+    def create_gconf(self):
+        gconfdir = joinpaths(self.root, ".gconf/desktop")
+        os.makedirs(gconfdir)
+        touch(joinpaths(gconfdir, "%gconf.xml"))
+
+        gconfdir = joinpaths(gconfdir, "gnome")
+        os.mkdir(gconfdir)
+        touch(joinpaths(gconfdir, "%gconf.xml"))
+
+        gconfdir = joinpaths(gconfdir, "interface")
+        os.mkdir(gconfdir)
+
+        text = """<?xml version="1.0"?>
+<gconf>
+        <entry name="accessibility" mtime="1176200664" type="bool" value="true">
+        </entry>
+</gconf>
+"""
+
+        with open(joinpaths(gconfdir, "%gconf.xml"), "w") as fobj:
+            fobj.write(text)
+
+    def move_repos(self):
+        src = joinpaths(self.root, "etc/yum.repos.d")
+        dst = joinpaths(self.root, "etc/anaconda.repos.d")
+        shutil.move(src, dst)
+
+    def create_depmod_conf(self):
+        text = "search updates built-in\n"
+
+        with open(joinpaths(self.root, "etc/depmod.d/dd.conf"), "w") as fobj:
+            fobj.write(text)
+
+    # XXX
+    def misc_tree_modifications(self):
+        # init symlink
+        target = "/sbin/init"
+        name = joinpaths(self.root, "init")
+        os.symlink(target, name)
+
+        # mtab symlink
+        target = "/proc/mounts"
+        name = joinpaths(self.root, "etc", "mtab")
+        os.symlink(target, name)
+
+        # create resolv.conf
+        touch(joinpaths(self.root, "etc", "resolv.conf"))
+
+    def get_config_files(self, src_dir):
+        # get gconf anaconda.rules
+        src = joinpaths(src_dir, "anaconda.rules")
+        dst = joinpaths(self.root, "etc", "gconf", "gconf.xml.defaults")
+        shutil.copy2(src, dst)
+
+        cmd = [self.lcmds.GCONFTOOL, "--direct",
+               '--config-source="xml:readwrite:{0}"'.format(dst),
+               "--load", dst]
+
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        p.wait()
+
+        # get sshd config
+        src = joinpaths(src_dir, "sshd_config.anaconda")
+        dst = joinpaths(self.root, "etc", "ssh")
+        shutil.copy2(src, dst)
+
+        # get rsyslog config
+        src = joinpaths(src_dir, "rsyslog.conf")
+        dst = joinpaths(self.root, "etc")
+        shutil.copy2(src, dst)
+
+        # get .bash_history
+        src = joinpaths(src_dir, ".bash_history")
+        dst = joinpaths(self.root, "root")
+        shutil.copy2(src, dst)
+
+    def get_loader(self):
+        src = joinpaths(self.root, "usr/share/anaconda", "loader.tr")
+        dst = joinpaths(self.root, "etc")
+        shutil.move(src, dst)
 
     def create_install_img(self, paths, type="squashfs", workdir="/tmp"):
         tempdir = tempfile.mkdtemp(prefix="install.img.", dir=workdir)

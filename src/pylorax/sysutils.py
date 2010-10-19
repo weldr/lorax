@@ -19,7 +19,8 @@
 # Red Hat Author(s):  Martin Gracik <mgracik@redhat.com>
 #
 
-__all__ = ["joinpaths", "replace", "create_loop_dev", "remove_loop_dev",
+__all__ = ["joinpaths", "touch", "replace",
+           "create_loop_dev", "remove_loop_dev",
            "create_dm_dev", "remove_dm_dev"]
 
 
@@ -37,6 +38,11 @@ def joinpaths(*args, **kwargs):
         return os.path.realpath(path)
     else:
         return path
+
+
+def touch(fname):
+    with open(fname, "w") as fobj:
+        pass
 
 
 def replace(fname, find, replace):
