@@ -186,7 +186,8 @@ class Lorax(BaseLoraxClass):
 
         # set up install tree
         logger.info("setting up install tree")
-        self.installtree = LoraxInstallTree(self.yum, self.basearch)
+        self.installtree = LoraxInstallTree(self.yum, self.basearch,
+                                            self.libdir)
 
         # set up required build parameters
         logger.info("setting up build parameters")
@@ -251,9 +252,7 @@ class Lorax(BaseLoraxClass):
         logger.info("moving stubs")
         self.installtree.move_stubs()
 
-        # cleanup python files
-        logger.info("cleaning up python files")
-        self.installtree.cleanup_python_files()
+
 
         # get the list of required modules
         logger.info("getting list of required modules")
@@ -288,8 +287,8 @@ class Lorax(BaseLoraxClass):
 
         self.installtree.get_config_files(config_dir)
 
-        # get loader
-        self.installtree.get_loader()
+        # get anaconda portions
+        self.installtree.get_anaconda_portions()
 
         # set up output tree
         logger.info("setting up output tree")
@@ -393,6 +392,10 @@ class Lorax(BaseLoraxClass):
             pattern_list = rdb[package]
             logger.debug("{0}\t{1}".format(package, pattern_list))
             self.installtree.yum.remove(package, pattern_list)
+
+        # cleanup python files
+        logger.info("cleaning up python files")
+        self.installtree.cleanup_python_files()
 
         # compress install tree
         InitRD = namedtuple("InitRD", "fname fpath")
@@ -695,11 +698,12 @@ class Lorax(BaseLoraxClass):
 
 class LoraxInstallTree(BaseLoraxClass):
 
-    def __init__(self, yum, basearch):
+    def __init__(self, yum, basearch, libdir):
         BaseLoraxClass.__init__(self)
         self.yum = yum
         self.root = self.yum.installroot
         self.basearch = basearch
+        self.libdir = libdir
 
         self.lcmds = constants.LoraxRequiredCommands()
 
@@ -796,6 +800,13 @@ class LoraxInstallTree(BaseLoraxClass):
         src = joinpaths(self.root, "usr/share/anaconda", "restart-anaconda")
         dst = joinpaths(self.root, "usr/bin")
         shutil.move(src, dst)
+
+        # move sitecustomize.py
+        pythonpath = joinpaths(self.root, "usr", self.libdir, "python?.?")
+        for path in glob.glob(pythonpath):
+            src = joinpaths(path, "site-packages/pyanaconda/sitecustomize.py")
+            dst = joinpaths(path, "site-packages")
+            shutil.move(src, dst)
 
     def cleanup_python_files(self):
         for root, dnames, fnames in os.walk(self.root):
@@ -1045,10 +1056,34 @@ class LoraxInstallTree(BaseLoraxClass):
         dst = joinpaths(self.root, "root")
         shutil.copy2(src, dst)
 
-    def get_loader(self):
+        # get .profile
+        src = joinpaths(src_dir, ".profile")
+        dst = joinpaths(self.root, "root")
+        shutil.copy2(src, dst)
+
+        # get libuser.conf
+        src = joinpaths(src_dir, "libuser.conf")
+        dst = joinpaths(self.root, "etc")
+        shutil.copy2(src, dst)
+
+        # get selinux config
+        if os.path.exists(joinpaths(self.root, "etc/selinux/targeted")):
+            src = joinpaths(src_dir, "selinux.config")
+            dst = joinpaths(self.root, "etc/selinux", "config")
+            shutil.copy2(src, dst)
+
+    def get_anaconda_portions(self):
+        src = joinpaths(self.root, "usr", self.libdir, "anaconda", "loader")
+        dst = joinpaths(self.root, "sbin")
+        shutil.copy2(src, dst)
+
         src = joinpaths(self.root, "usr/share/anaconda", "loader.tr")
         dst = joinpaths(self.root, "etc")
         shutil.move(src, dst)
+
+        src = joinpaths(self.root, "usr/libexec/anaconda", "auditd")
+        dst = joinpaths(self.root, "sbin")
+        shutil.copy2(src, dst)
 
     def create_install_img(self, paths, type="squashfs", workdir="/tmp"):
         tempdir = tempfile.mkdtemp(prefix="install.img.", dir=workdir)
@@ -1183,8 +1218,8 @@ normally would.
 """
 
         readme = joinpaths(imgdir, "README")
-        with open(readme, "w") as fobj:
-            fobj.write(text.format(self))
+        #with open(readme, "w") as fobj:
+        #    fobj.write(text.format(self))
 
         # write the images/pxeboot/README file
         text = """
@@ -1197,8 +1232,8 @@ initrd.img - an initrd with support for all install methods and
 """
 
         readme = joinpaths(pxebootdir, "README")
-        with open(readme, "w") as fobj:
-            fobj.write(text.format(self))
+        #with open(readme, "w") as fobj:
+        #    fobj.write(text.format(self))
 
     def get_kernels(self):
         kernels = self.installtree.kernels[:]
@@ -1238,11 +1273,13 @@ initrd.img - an initrd with support for all install methods and
                 "kernel {0}".format(self.main_kernel.fname))
 
         # set label for finding stage2 with a hybrid iso
-        replace(isolinuxcfg, r"initrd=initrd.img",
-                'initrd=initrd.img stage2=hd:LABEL="{0.product}"'.format(self))
+        #replace(isolinuxcfg, r"initrd=initrd.img",
+        #        'initrd=initrd.img stage2=hd:LABEL="{0.product}"'.format(self))
 
         # copy memtest
-        memtest = joinpaths(self.installtree.root, "boot/memtest*")
+        memtest = joinpaths(self.installtree.root,
+                            "boot/memtest*")
+
         for fname in glob.glob(memtest):
             shutil.copy2(fname, joinpaths(self.isolinuxdir, "memtest"))
 
@@ -1259,18 +1296,20 @@ initrd.img - an initrd with support for all install methods and
             break
 
         # get splash
-        vesasplash = joinpaths(self.installtree.root,
-                               "usr/share/anaconda/syslinux-vesa-splash.jpg")
+        vesasplash = joinpaths(self.installtree.root, "usr/share/anaconda",
+                               "boot/syslinux-vesa-splash.jpg")
+
         vesamenu = joinpaths(self.installtree.root,
                              "usr/share/syslinux/vesamenu.c32")
 
         splashtolss = joinpaths(self.installtree.root,
                                 "usr/share/anaconda/splashtolss.sh")
 
-        syslinuxsplash = joinpaths(self.installtree.root,
-                                   "usr/share/anaconda/boot/syslinux-splash.jpg")
-        splashlss = joinpaths(self.installtree.root,
-                              "usr/share/anaconda/boot/splash.lss")
+        syslinuxsplash = joinpaths(self.installtree.root, "usr/share/anaconda",
+                                   "boot/syslinux-splash.jpg")
+
+        splashlss = joinpaths(self.installtree.root, "usr/share/anaconda",
+                              "boot/splash.lss")
 
         if os.path.isfile(vesasplash):
             shutil.copy2(vesasplash, joinpaths(self.isolinuxdir, "splash.jpg"))
@@ -1280,7 +1319,10 @@ initrd.img - an initrd with support for all install methods and
         elif os.path.isfile(splashtolss):
             cmd = [splashtolss, syslinuxsplash, splashlss]
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-            p.wait()
+            rc = p.wait()
+            if not rc == 0:
+                logger.error("failed to create splash.lss")
+                sys.exit(1)
 
             if os.path.isfile(splashlss):
                 shutil.copy2(splashlss, self.isolinuxdir)
