@@ -110,8 +110,7 @@ class Lorax(BaseLoraxClass):
         self.conf.set("output", "ignorelist", "/usr/share/lorax/ignorelist")
 
         self.conf.add_section("templates")
-        self.conf.set("templates", "stage1", "lorax-s1.ltmpl")
-        self.conf.set("templates", "stage2", "lorax-s2.ltmpl")
+        self.conf.set("templates", "ramdisk", "ramdisk.ltmpl")
 
         # read the config file
         if os.path.isfile(conf_file):
@@ -213,15 +212,15 @@ class Lorax(BaseLoraxClass):
 
         # parse the template
         logger.info("parsing the template")
-        stage1 = joinpaths(self.conf.get("lorax", "sharedir"),
-                           self.conf.get("templates", "stage1"))
+        tfile = joinpaths(self.conf.get("lorax", "sharedir"),
+                          self.conf.get("templates", "ramdisk"))
 
         vars = { "basearch": self.basearch,
                  "libdir" : self.libdir,
                  "product": self.product.lower() }
 
         template = ltmpl.LoraxTemplate()
-        template = template.parse(stage1, vars)
+        template = template.parse(tfile, vars)
 
         # get list of required packages
         logger.info("getting list of required packages")
@@ -308,32 +307,6 @@ class Lorax(BaseLoraxClass):
 
         # write the .discinfo
         self.write_discinfo(self.outputtree.root)
-
-        ## create the install.img
-        #logger.info("creating install image")
-        #stage2 = joinpaths(self.conf.get("lorax", "sharedir"),
-        #                   self.conf.get("templates", "stage2"))
-        #
-        #vars = { "basearch": self.basearch,
-        #         "product": self.product.lower() }
-        #
-        #template = ltmpl.LoraxTemplate()
-        #template = template.parse(stage2, vars)
-        #
-        ## get list of required paths
-        #logger.info("getting list of required paths")
-        #required = [f[1:] for f in template if f[0] == "move"]
-        #required = itertools.chain.from_iterable(required)
-        #
-        #installimg = self.installtree.create_install_img(required,
-        #                                                 workdir=self.workdir)
-        #
-        #if installimg is None:
-        #    logger.critical("unable to create install image")
-        #    sys.exit(1)
-        #
-        ## copy the install.img to imgdir
-        #shutil.copy2(installimg, self.outputtree.imgdir)
 
         # XXX
         grubefi = joinpaths(self.installtree.root, "boot/efi/EFI/redhat",
@@ -1085,44 +1058,6 @@ class LoraxInstallTree(BaseLoraxClass):
         dst = joinpaths(self.root, "sbin")
         shutil.copy2(src, dst)
 
-    def create_install_img(self, paths, type="squashfs", workdir="/tmp"):
-        tempdir = tempfile.mkdtemp(prefix="install.img.", dir=workdir)
-
-        paths = map(lambda p: glob.iglob(p), paths)
-        paths = itertools.chain.from_iterable(paths)
-
-        for path in paths:
-            fullpath = joinpaths(self.root, path)
-
-            dirname = os.path.dirname(path)
-            targetdir = joinpaths(tempdir, dirname)
-            if not os.path.isdir(targetdir):
-                os.makedirs(targetdir)
-
-            for expanded in glob.iglob(fullpath):
-                if os.path.islink(expanded):
-                    # TODO
-                    pass
-
-                else:
-                    shutil.move(expanded, targetdir)
-
-        installimg = joinpaths(workdir, "install.img")
-
-        if type == "squashfs":
-            cmd = [self.lcmds.MKSQUASHFS, tempdir, installimg,
-                   "-all-root", "-no-fragments", "-no-progress"]
-            logger.debug(cmd)
-            p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-            rc = p.wait()
-            if not rc == 0:
-                return None
-        else:
-            # TODO
-            raise NotImplementedError
-
-        return installimg
-
     def compress(self, initrd):
         chdir = lambda: os.chdir(self.root)
 
@@ -1204,37 +1139,6 @@ class LoraxOutputTree(BaseLoraxClass):
         self.isolinuxdir = isolinuxdir
         self.efibootdir = efibootdir
 
-        # write the images/README file
-        text = """
-This directory contains image files that can be used to create media
-capable of starting the {0.product} installation process.
-
-The boot.iso file is an ISO 9660 image of a bootable CD-ROM. It is useful
-in cases where the CD-ROM installation method is not desired, but the
-CD-ROM's boot speed would be an advantage.
-
-To use this image file, burn the file onto CD-R (or CD-RW) media as you
-normally would.
-"""
-
-        readme = joinpaths(imgdir, "README")
-        #with open(readme, "w") as fobj:
-        #    fobj.write(text.format(self))
-
-        # write the images/pxeboot/README file
-        text = """
-The files in this directory are useful for booting a machine via PXE.
-
-The following files are available:
-vmlinuz - the kernel used for the installer
-initrd.img - an initrd with support for all install methods and
-             drivers supported for installation of {0.product}
-"""
-
-        readme = joinpaths(pxebootdir, "README")
-        #with open(readme, "w") as fobj:
-        #    fobj.write(text.format(self))
-
     def get_kernels(self):
         kernels = self.installtree.kernels[:]
 
@@ -1271,10 +1175,6 @@ initrd.img - an initrd with support for all install methods and
         # set the kernel name in isolinux.cfg
         replace(isolinuxcfg, r"kernel vmlinuz",
                 "kernel {0}".format(self.main_kernel.fname))
-
-        # set label for finding stage2 with a hybrid iso
-        #replace(isolinuxcfg, r"initrd=initrd.img",
-        #        'initrd=initrd.img stage2=hd:LABEL="{0.product}"'.format(self))
 
         # copy memtest
         memtest = joinpaths(self.installtree.root,
