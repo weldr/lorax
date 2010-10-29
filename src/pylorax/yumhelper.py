@@ -87,7 +87,9 @@ class LoraxYumHelper(object):
                 for pattern in pattern_list:
                     if fnmatch.fnmatch(fname, pattern):
                         fullpath = joinpaths(self.installroot, fname)
-                        if os.path.isfile(fullpath):
+                        if (os.path.islink(fullpath) or
+                            os.path.isfile(fullpath)):
+
                             os.unlink(fullpath)
                             logger.debug("removed {0}".format(fullpath))
                             count += 1
