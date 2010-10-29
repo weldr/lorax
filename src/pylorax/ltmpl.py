@@ -19,10 +19,12 @@
 # Red Hat Author(s):  Martin Gracik <mgracik@redhat.com>
 #
 
+import sys
 import shlex
 
 from mako.template import Template
 from mako.lookup import TemplateLookup
+from mako.exceptions import RichTraceback
 
 
 class LoraxTemplate(object):
@@ -32,7 +34,16 @@ class LoraxTemplate(object):
         # otherwise the file includes will not work properly
         lookup = TemplateLookup(directories=["/"])
         template = Template(filename=template_file, lookup=lookup)
-        s = template.render(**variables)
+
+        try:
+            s = template.render(**variables)
+        except:
+            traceback = RichTraceback()
+            for (filename, lineno, function, line) in traceback.traceback:
+                print "File %s, line %s, in %s" % (filename, lineno, function)
+                print line
+
+            sys.exit(2)
 
         # split, strip and remove empty lines
         lines = s.splitlines()
