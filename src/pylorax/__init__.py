@@ -384,7 +384,7 @@ class Lorax(BaseLoraxClass):
         # copy initrd to pxebootdir
         shutil.copy2(initrd.fpath, self.outputtree.pxebootdir)
 
-        # make initrd hardlink in isolinuxdir
+        # create initrd hard link in isolinuxdir
         source = joinpaths(self.outputtree.pxebootdir, initrd.fname)
         link_name = joinpaths(self.outputtree.isolinuxdir, initrd.fname)
         os.link(source, link_name)
@@ -1149,11 +1149,13 @@ class LoraxOutputTree(BaseLoraxClass):
         # get the main kernel
         self.main_kernel = kernels.pop(0)
 
-        # copy to isolinuxdir
+        # copy kernel to isolinuxdir
         shutil.copy2(self.main_kernel.fpath, self.isolinuxdir)
 
-        # copy to pxebootdir
-        shutil.copy2(self.main_kernel.fpath, self.pxebootdir)
+        # create kernel hard link in pxebootdir
+        source = joinpaths(self.isolinuxdir, self.main_kernel.fname)
+        link_name = joinpaths(self.pxebootdir, self.main_kernel.fname)
+        os.link(source, link_name)
 
         # other kernels
         for kernel in self.installtree.kernels:
