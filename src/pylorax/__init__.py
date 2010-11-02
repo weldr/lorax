@@ -381,9 +381,13 @@ class Lorax(BaseLoraxClass):
         else:
             logger.info("took {0:.2f} seconds".format(elapsed))
 
-        # XXX copy initrd to isolinuxdir and pxebootdir
-        shutil.copy2(initrd.fpath, self.outputtree.isolinuxdir)
+        # copy initrd to pxebootdir
         shutil.copy2(initrd.fpath, self.outputtree.pxebootdir)
+
+        # make initrd hardlink in isolinuxdir
+        source = joinpaths(self.outputtree.pxebootdir, initrd.fname)
+        link_name = joinpaths(self.outputtree.isolinuxdir, initrd.fname)
+        os.link(source, link_name)
 
         # create efi images
         efiboot = None
