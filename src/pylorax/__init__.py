@@ -232,13 +232,13 @@ class Lorax(BaseLoraxClass):
             self.installtree.yum.install(package)
         self.installtree.yum.process_transaction()
 
+        # write buildstamp
+        self.write_buildstamp(path=self.installtree.root)
+
         # XXX save list of installed packages
         with open(joinpaths(self.workdir, "packages"), "w") as fobj:
             for pkgname in self.installtree.yum.installed_packages:
                 fobj.write("{0}\n".format(pkgname))
-
-        # write buildstamp
-        self.write_buildstamp(path=self.installtree.root)
 
         # remove locales
         logger.info("removing locales")
@@ -308,8 +308,11 @@ class Lorax(BaseLoraxClass):
         self.outputtree.get_msg_files()
         self.outputtree.get_grub_conf()
 
-        # write the .discinfo
-        self.write_discinfo(self.outputtree.root)
+        # write .discinfo
+        discinfo = DiscInfo(self.workdir, self.release, self.basearch)
+        discinfo.write()
+
+        shutil.copy2(discinfo.path, self.outputtree.root)
 
         # XXX
         grubefi = joinpaths(self.installtree.root, "boot/efi/EFI/redhat",
@@ -438,6 +441,19 @@ class Lorax(BaseLoraxClass):
 
         shutil.move(bootiso, self.outputtree.imgdir)
 
+        # write .treeinfo
+        treeinfo = TreeInfo(self.workdir, self.product, self.version,
+                            self.variant, self.basearch)
+
+        # add the boot.iso
+        section = "general"
+        data = {"boot.iso": "images/{0}".format(os.path.basename(bootiso))}
+        treeinfo.add_section(section, data)
+
+        treeinfo.write()
+
+        shutil.copy2(treeinfo.path, self.outputtree.root)
+
     def get_buildarch(self):
         # get architecture of the available anaconda package
         installed, available = self.yum.search("anaconda")
@@ -464,17 +480,6 @@ class Lorax(BaseLoraxClass):
             fobj.write("{0.product}\n".format(self))
             fobj.write("{0.version}\n".format(self))
             fobj.write("{0.bugurl}\n".format(self))
-
-        return outfile
-
-    def write_discinfo(self, path, discnum="ALL"):
-        outfile = joinpaths(path, ".discinfo")
-
-        with open(outfile, "w") as fobj:
-            fobj.write("{0:f}\n".format(time.time()))
-            fobj.write("{0.release}\n".format(self))
-            fobj.write("{0.basearch}\n".format(self))
-            fobj.write("{0}\n".format(discnum))
 
         return outfile
 
@@ -1254,3 +1259,53 @@ class LoraxOutputTree(BaseLoraxClass):
         grubconf = joinpaths(self.isolinuxdir, "grub.conf")
         replace(grubconf, r"@PRODUCT@", self.product)
         replace(grubconf, r"@VERSION@", self.version)
+
+
+class TreeInfo(object):
+
+    def __init__(self, workdir, product, version, variant, basearch,
+                 discnum=1, totaldiscs=1, packagedir=""):
+
+        self.path = joinpaths(workdir, ".treeinfo")
+        self.c = ConfigParser.ConfigParser()
+
+        section = "general"
+        data = {"timestamp": time.time(),
+                "family": product,
+                "version": version,
+                "variant": "" or variant,
+                "arch": basearch,
+                "discnum": discnum,
+                "totaldiscs": totaldiscs,
+                "packagedir": packagedir}
+
+        c.add_section(section)
+        map(lambda (key, value): c.set(section, key, value), data.items())
+
+    def add_section(self, section, data):
+        if not self.c.has_section(section):
+            self.c.add_section(section)
+
+        map(lambda (key, value): self.c.set(section, key, value), data.items())
+
+    def write(self):
+        with open(self.path, "w") as fobj:
+            c.write(fobj)
+
+
+class DiscInfo(object):
+
+    def __init__(self, workdir, release, basearch, discnum="ALL"):
+
+        self.path = joinpaths(workdir, ".discinfo")
+
+        self.release = release
+        self.basearch = basearch
+        self.discnum = discnum
+
+    def write(self):
+        with open(self.path, "w") as fobj:
+            fobj.write("{0:f}\n".format(time.time()))
+            fobj.write("{0}\n".format(self.release))
+            fobj.write("{0}\n".format(self.basearch))
+            fobj.write("{0}\n".format(discnum))
