@@ -232,6 +232,11 @@ class Lorax(BaseLoraxClass):
             self.installtree.yum.install(package)
         self.installtree.yum.process_transaction()
 
+        # XXX save list of installed packages
+        with open(joinpaths(self.workdir, "packages"), "w") as fobj:
+            for pkgname in self.installtree.yum.installed_packages:
+                fobj.write("{0}\n".format(pkgname))
+
         # write buildstamp
         self.write_buildstamp(path=self.installtree.root)
 
@@ -250,8 +255,6 @@ class Lorax(BaseLoraxClass):
         # move stubs
         logger.info("moving stubs")
         self.installtree.move_stubs()
-
-
 
         # get the list of required modules
         logger.info("getting list of required modules")
