@@ -168,7 +168,10 @@ class Lorax(BaseLoraxClass):
 
         # set up build architecture
         logger.info("setting up build architecture")
+
         self.buildarch = self.get_buildarch()
+        logger.debug("set buildarch = {0.buildarch}".format(self))
+
         archmap = ARCHMAPS.get(self.buildarch)
 
         # XXX
@@ -177,8 +180,6 @@ class Lorax(BaseLoraxClass):
         self.basearch = archmap.get("base")
         self.efiarch = archmap.get("efi")
         self.libdir = LIB64 if archmap.get("is64") else LIB32
-
-        logger.debug("set buildarch = {0.buildarch}".format(self))
         logger.debug("set basearch = {0.basearch}".format(self))
         logger.debug("set efiarch = {0.efiarch}".format(self))
         logger.debug("set libdir = {0.libdir}".format(self))
