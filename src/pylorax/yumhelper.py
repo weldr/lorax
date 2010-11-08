@@ -192,7 +192,7 @@ class LoraxDownloadCallback(yum.callbacks.DownloadBaseCallback):
 
         infolen, pkglen = len(info), len(pkgname)
         if (infolen + pkglen) > self.output.width:
-            pkgname = "{0}...".format(pkg[:self.output.width-infolen-3])
+            pkgname = "{0}...".format(pkgname[:self.output.width-infolen-3])
 
         msg = "{0}<b>{1}</b>\r".format(info, pkgname)
         self.output.write(msg)
