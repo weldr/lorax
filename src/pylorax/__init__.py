@@ -1063,7 +1063,7 @@ class LoraxInstallTree(BaseLoraxClass):
         shutil.copy2(src, dst)
 
         cmd = [self.lcmds.GCONFTOOL, "--direct",
-               '--config-source="xml:readwrite:{0}"'.format(dstdir),
+               '--config-source=xml:readwrite:{0}'.format(dstdir),
                "--load", dst]
 
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
