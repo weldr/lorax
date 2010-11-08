@@ -480,7 +480,10 @@ class Lorax(BaseLoraxClass):
         installed, available = self.yum.search("anaconda")
 
         if available:
-            anaconda = available[0]
+            anaconda = available.pop(0)
+            # src is not a real arch
+            if anaconda.arch == "src":
+                anaconda = available.pop(0)
             buildarch = anaconda.arch
         else:
             # fallback to the system architecture
