@@ -123,7 +123,9 @@ class LoraxYumHelper(object):
 
         return True
 
-    def process_transaction(self):
+    def process_transaction(self, skip_broken=True):
+        # skip broken
+        self.yb.conf.skip_broken = skip_broken
         self.yb.buildTransaction()
 
         self.yb.repos.setProgressBar(LoraxDownloadCallback())
@@ -171,8 +173,8 @@ class LoraxDownloadCallback(yum.callbacks.DownloadBaseCallback):
             @param ftime: formated string containing remaining or elapsed time
         """
 
-        # XXX
-        msg = "{0}; {1}; {2}; {3}\r".format(name, frac, fread, ftime)
+        msg = "[{0:3.0f}%] ETA: {1:5s} downloading '{2}'\r"
+        msg = msg.format(frac * 100, ftime, name)
 
         self.output.write(msg)
         if frac == 1:
