@@ -22,7 +22,10 @@
 
 # set up logging
 import logging
-logging.basicConfig(level=logging.DEBUG, filename="pylorax.log", filemode="w")
+
+fh = logging.FileHandler(filename="pylorax.log", mode="w")
+fh.setLevel(logging.DEBUG)
+logging.getLogger("").addHandler(fh)
 
 sh = logging.StreamHandler()
 sh.setLevel(logging.INFO)
@@ -684,6 +687,11 @@ class Lorax(BaseLoraxClass):
 
         # create hybrid iso
         cmd = [self.lcmds.ISOHYBRID, bootiso]
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        rc = p.wait()
+
+        # implant iso md5
+        cmd = [self.lcmds.IMPLANTISOMD5, bootiso]
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
         rc = p.wait()
 

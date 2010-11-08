@@ -36,6 +36,7 @@ class LoraxRequiredCommands(dict):
         self["DMSETUP"] = "dmsetup"
         self["FIND"] = "find"
         self["GCONFTOOL"] = "gconftool-2"
+        self["IMPLANTISOMD5"] = "implantisomd5"
         self["ISOHYBRID"] = "isohybrid"
         self["LDCONFIG"] = "ldconfig"
         self["LOCALEDEF"] = "localedef"
