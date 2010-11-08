@@ -27,6 +27,7 @@ import os
 import fnmatch
 import glob
 import shutil
+import re
 
 import yum
 import yum.callbacks
@@ -164,6 +165,9 @@ class LoraxDownloadCallback(yum.callbacks.DownloadBaseCallback):
         yum.callbacks.DownloadBaseCallback.__init__(self)
         self.output = output.LoraxOutput()
 
+        pattern = "\((?P<pkgno>\d+)/(?P<total>\d+)\):\s+(?P<pkgname>.*)"
+        self.pattern = re.compile(pattern)
+
     def updateProgress(self, name, frac, fread, ftime):
         """
             Update the progress bar
@@ -173,9 +177,24 @@ class LoraxDownloadCallback(yum.callbacks.DownloadBaseCallback):
             @param ftime: formated string containing remaining or elapsed time
         """
 
-        msg = "[{0:3.0f}%] ETA: {1:5s} downloading '{2}'\r"
-        msg = msg.format(frac * 100, ftime, name)
+        m = self.pattern.match(name)
 
+        pkgno = 0
+        total = 0
+        pkgname = "error"
+        if m:
+            pkgno = int(m.group("pkgno"))
+            total = int(m.group("total"))
+            pkgname = m.group("pkgname")
+
+        info = "({0:3d}/{1:3d}) [{2:3.0f}%] downloading "
+        info = info.format(pkgno, total, frac * 100)
+
+        infolen, pkglen = len(info), len(pkgname)
+        if (infolen + pkglen) > self.output.width:
+            pkgname = "{0}...".format(pkg[:self.output.width-infolen-3])
+
+        msg = "{0}<b>{1}</b>\r".format(info, pkgname)
         self.output.write(msg)
         if frac == 1:
             self.output.write("\n")
