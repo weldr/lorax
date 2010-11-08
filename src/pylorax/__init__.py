@@ -137,7 +137,7 @@ class Lorax(BaseLoraxClass):
         self._configured = True
 
     def run(self, yb, product, version, release, variant="", bugurl="",
-            workdir=None, outputdir=None):
+            is_beta=False, workdir=None, outputdir=None):
 
         # XXX
         assert self._configured
@@ -200,8 +200,10 @@ class Lorax(BaseLoraxClass):
         # set up optional build parameters
         self.variant = variant
         self.bugurl = bugurl
+        self.is_beta = is_beta
         logger.debug("set variant = {0.variant}".format(self))
         logger.debug("set bugurl = {0.bugurl}".format(self))
+        logger.debug("set is_beta = {0.is_beta}".format(self))
 
         # XXX set up work directory
         logger.info("setting up work directory")
@@ -232,8 +234,12 @@ class Lorax(BaseLoraxClass):
             self.installtree.yum.install(package)
         self.installtree.yum.process_transaction()
 
-        # write buildstamp
-        self.write_buildstamp(path=self.installtree.root)
+        # write .buildstamp
+        buildstamp = BuildStamp(self.workdir, self.product, self.version,
+                                self.bugurl, self.is_beta, self.buildarch)
+
+        buildstamp.write()
+        shutil.copy2(buildstamp.path, self.installtree.root)
 
         # XXX save list of installed packages
         with open(joinpaths(self.workdir, "packages"), "w") as fobj:
@@ -272,12 +278,15 @@ class Lorax(BaseLoraxClass):
             self.installtree.run_depmod(kernel)
 
         # create gconf
+        logger.info("creating gconf files")
         self.installtree.create_gconf()
 
         # move repos
+        logger.info("moving anaconda repos")
         self.installtree.move_repos()
 
         # create depmod conf
+        logger.info("creating depmod.conf")
         self.installtree.create_depmod_conf()
 
         # misc tree modifications
@@ -288,6 +297,7 @@ class Lorax(BaseLoraxClass):
                                "config_files")
 
         self.installtree.get_config_files(config_dir)
+        self.installtree.setup_sshd(config_dir)
 
         # get anaconda portions
         self.installtree.get_anaconda_portions()
@@ -303,7 +313,6 @@ class Lorax(BaseLoraxClass):
                                           self.product, self.version)
 
         self.outputtree.prepare()
-        self.outputtree.get_kernels()
         self.outputtree.get_isolinux()
         self.outputtree.get_msg_files()
         self.outputtree.get_grub_conf()
@@ -330,13 +339,24 @@ class Lorax(BaseLoraxClass):
         shutil.move(splash, self.workdir)
         splash = joinpaths(self.workdir, os.path.basename(splash))
 
+        # move kernels to workdir
         kernels = []
         for kernel in self.installtree.kernels:
-            shutil.move(kernel.fpath, self.workdir)
-            kernels.append(Kernel(kernel.fname,
-                                  joinpaths(self.workdir, kernel.fname),
+            type = ""
+            if kernel.type == K_PAE:
+                type = "-PAE"
+            elif kernel.type == K_XEN:
+                type = "-XEN"
+
+            kname = "vmlinuz{0}".format(type)
+
+            shutil.move(kernel.fpath, joinpaths(self.workdir, kname))
+            kernels.append(Kernel(kname,
+                                  joinpaths(self.workdir, kname),
                                   kernel.version,
                                   kernel.type))
+
+        self.outputtree.get_kernels(kernels[:])
 
         # get list of not required packages
         logger.info("getting list of not required packages")
@@ -468,21 +488,6 @@ class Lorax(BaseLoraxClass):
 
         return buildarch
 
-    def write_buildstamp(self, path):
-        outfile = joinpaths(path, ".buildstamp")
-
-        now = datetime.datetime.now()
-        now = now.strftime("%Y%m%d%H%M")
-        uuid = "{0}.{1.buildarch}".format(now, self)
-
-        with open(outfile, "w") as fobj:
-            fobj.write("{0}\n".format(uuid))
-            fobj.write("{0.product}\n".format(self))
-            fobj.write("{0.version}\n".format(self))
-            fobj.write("{0.bugurl}\n".format(self))
-
-        return outfile
-
     def create_efiboot(self, kernel, initrd, grubefi, splash,
                        include_kernel=True):
 
@@ -537,7 +542,7 @@ class Lorax(BaseLoraxClass):
             os.unlink(efiboot)
 
         # XXX calculate the size of the efi tree directory
-        overhead = 256 * 1024
+        overhead = 512 * 1024
 
         sizeinbytes = overhead
         for root, dnames, fnames in os.walk(efitree):
@@ -936,13 +941,19 @@ class LoraxInstallTree(BaseLoraxClass):
             for modname in sorted(modlist.keys()):
                 fobj.write(modlist[modname])
 
-        # remove *map files
-        mapfiles = joinpaths(moddir, "*map")
-        for fpath in glob.glob(mapfiles):
-            os.unlink(fpath)
+
+
+        # create symlinks in /
+        shutil.move(joinpaths(self.root, "lib/modules"),
+                    joinpaths(self.root, "modules"))
+        shutil.move(joinpaths(self.root, "lib/firmware"),
+                    joinpaths(self.root, "firmware"))
+
+        os.symlink("../modules", joinpaths(self.root, "lib/modules"))
+        os.symlink("../firmware", joinpaths(self.root, "lib/firmware"))
 
     def compress_modules(self, kernel):
-        moddir = joinpaths(self.root, "lib/modules", kernel.version)
+        moddir = joinpaths(self.root, "modules", kernel.version)
 
         for root, dnames, fnames in os.walk(moddir):
             for fname in filter(lambda f: f.endswith(".ko"), fnames):
@@ -964,6 +975,21 @@ class LoraxInstallTree(BaseLoraxClass):
                kernel.version]
 
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        rc = p.wait()
+        if not rc == 0:
+            logger.critical(p.stdout.read())
+            sys.exit(1)
+
+        moddir = joinpaths(self.root, "modules", kernel.version)
+
+        # remove *map files
+        mapfiles = joinpaths(moddir, "*map")
+        for fpath in glob.glob(mapfiles):
+            os.unlink(fpath)
+
+        # remove build and source symlinks
+        for fname in ["build", "source"]:
+            os.unlink(joinpaths(moddir, fname))
 
     def create_gconf(self):
         gconfdir = joinpaths(self.root, ".gconf/desktop")
@@ -1000,10 +1026,25 @@ class LoraxInstallTree(BaseLoraxClass):
 
     # XXX
     def misc_tree_modifications(self):
-        # init symlink
+        # replace init with anaconda init
+        src = joinpaths(self.root, "usr", self.libdir, "anaconda", "init")
+        dst = joinpaths(self.root, "sbin", "init")
+        os.unlink(dst)
+        shutil.copy2(src, dst)
+
+        # init symlinks
         target = "/sbin/init"
         name = joinpaths(self.root, "init")
         os.symlink(target, name)
+
+        for fname in ["halt", "poweroff", "reboot"]:
+            name = joinpaths(self.root, "sbin", fname)
+            os.unlink(name)
+            os.symlink("init", name)
+
+        for fname in ["runlevel", "shutdown", "telinit"]:
+            name = joinpaths(self.root, "sbin", fname)
+            os.unlink(name)
 
         # mtab symlink
         target = "/proc/mounts"
@@ -1016,20 +1057,17 @@ class LoraxInstallTree(BaseLoraxClass):
     def get_config_files(self, src_dir):
         # get gconf anaconda.rules
         src = joinpaths(src_dir, "anaconda.rules")
-        dst = joinpaths(self.root, "etc", "gconf", "gconf.xml.defaults")
+        dst = joinpaths(self.root, "etc", "gconf", "gconf.xml.defaults",
+                        "anaconda.rules")
+        dstdir = os.path.dirname(dst)
         shutil.copy2(src, dst)
 
         cmd = [self.lcmds.GCONFTOOL, "--direct",
-               '--config-source="xml:readwrite:{0}"'.format(dst),
+               '--config-source="xml:readwrite:{0}"'.format(dstdir),
                "--load", dst]
 
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
         p.wait()
-
-        # get sshd config
-        src = joinpaths(src_dir, "sshd_config.anaconda")
-        dst = joinpaths(self.root, "etc", "ssh")
-        shutil.copy2(src, dst)
 
         # get rsyslog config
         src = joinpaths(src_dir, "rsyslog.conf")
@@ -1056,6 +1094,34 @@ class LoraxInstallTree(BaseLoraxClass):
             src = joinpaths(src_dir, "selinux.config")
             dst = joinpaths(self.root, "etc/selinux", "config")
             shutil.copy2(src, dst)
+
+    def setup_sshd(self, src_dir):
+        # get sshd config
+        src = joinpaths(src_dir, "sshd_config.anaconda")
+        dst = joinpaths(self.root, "etc", "ssh")
+        shutil.copy2(src, dst)
+
+        src = joinpaths(src_dir, "pam.sshd")
+        dst = joinpaths(self.root, "etc", "pam.d", "sshd")
+        shutil.copy2(src, dst)
+
+        dst = joinpaths(self.root, "etc", "pam.d", "login")
+        shutil.copy2(src, dst)
+
+        dst = joinpaths(self.root, "etc", "pam.d", "remote")
+        shutil.copy2(src, dst)
+
+        # enable root shell logins and
+        # 'install' account that starts anaconda on login
+        passwd = joinpaths(self.root, "etc", "passwd")
+        with open(passwd, "a") as fobj:
+            fobj.write("sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin\n")
+            fobj.write("install:x:0:0:root:/root:/sbin/loader\n")
+
+        shadow = joinpaths(self.root, "etc", "shadow")
+        with open(shadow, "a") as fobj:
+            fobj.write("root::14438:0:99999:7:::\n")
+            fobj.write("install::14438:0:99999:7:::\n")
 
     def get_anaconda_portions(self):
         src = joinpaths(self.root, "usr", self.libdir, "anaconda", "loader")
@@ -1151,9 +1217,7 @@ class LoraxOutputTree(BaseLoraxClass):
         self.isolinuxdir = isolinuxdir
         self.efibootdir = efibootdir
 
-    def get_kernels(self):
-        kernels = self.installtree.kernels[:]
-
+    def get_kernels(self, kernels):
         # get the main kernel
         self.main_kernel = kernels.pop(0)
 
@@ -1185,10 +1249,6 @@ class LoraxOutputTree(BaseLoraxClass):
         # set product and version in isolinux.cfg
         replace(isolinuxcfg, r"@PRODUCT@", self.product)
         replace(isolinuxcfg, r"@VERSION@", self.version)
-
-        # set the kernel name in isolinux.cfg
-        replace(isolinuxcfg, r"kernel vmlinuz",
-                "kernel {0}".format(self.main_kernel.fname))
 
         # copy memtest
         memtest = joinpaths(self.installtree.root,
@@ -1261,36 +1321,31 @@ class LoraxOutputTree(BaseLoraxClass):
         replace(grubconf, r"@VERSION@", self.version)
 
 
-class TreeInfo(object):
+class BuildStamp(object):
 
-    def __init__(self, workdir, product, version, variant, basearch,
-                 discnum=1, totaldiscs=1, packagedir=""):
+    def __init__(self, workdir, product, version, bugurl, is_beta, buildarch):
 
-        self.path = joinpaths(workdir, ".treeinfo")
+        self.path = joinpaths(workdir, ".buildstamp")
         self.c = ConfigParser.ConfigParser()
 
-        section = "general"
-        data = {"timestamp": time.time(),
-                "family": product,
+        now = datetime.datetime.now()
+        now = now.strftime("%Y%m%d%H%M")
+        uuid = "{0}.{1}".format(now, buildarch)
+
+        section = "main"
+        data = {"product": product,
                 "version": version,
-                "variant": "" or variant,
-                "arch": basearch,
-                "discnum": discnum,
-                "totaldiscs": totaldiscs,
-                "packagedir": packagedir}
+                "bugurl": bugurl,
+                "isbeta": is_beta,
+                "uuid": uuid}
 
-        c.add_section(section)
-        map(lambda (key, value): c.set(section, key, value), data.items())
-
-    def add_section(self, section, data):
-        if not self.c.has_section(section):
-            self.c.add_section(section)
-
+        self.c.add_section(section)
         map(lambda (key, value): self.c.set(section, key, value), data.items())
 
     def write(self):
+        logger.info("writing .buildstamp file")
         with open(self.path, "w") as fobj:
-            c.write(fobj)
+            self.c.write(fobj)
 
 
 class DiscInfo(object):
@@ -1304,8 +1359,42 @@ class DiscInfo(object):
         self.discnum = discnum
 
     def write(self):
+        logger.info("writing .discinfo file")
         with open(self.path, "w") as fobj:
             fobj.write("{0:f}\n".format(time.time()))
             fobj.write("{0}\n".format(self.release))
             fobj.write("{0}\n".format(self.basearch))
-            fobj.write("{0}\n".format(discnum))
+            fobj.write("{0}\n".format(self.discnum))
+
+
+class TreeInfo(object):
+
+    def __init__(self, workdir, product, version, variant, basearch,
+                 discnum=1, totaldiscs=1, packagedir=""):
+
+        self.path = joinpaths(workdir, ".treeinfo")
+        self.c = ConfigParser.ConfigParser()
+
+        section = "general"
+        data = {"timestamp": time.time(),
+                "family": product,
+                "version": version,
+                "variant": variant or "",
+                "arch": basearch,
+                "discnum": discnum,
+                "totaldiscs": totaldiscs,
+                "packagedir": packagedir}
+
+        self.c.add_section(section)
+        map(lambda (key, value): self.c.set(section, key, value), data.items())
+
+    def add_section(self, section, data):
+        if not self.c.has_section(section):
+            self.c.add_section(section)
+
+        map(lambda (key, value): self.c.set(section, key, value), data.items())
+
+    def write(self):
+        logger.info("writing .treeinfo file")
+        with open(self.path, "w") as fobj:
+            self.c.write(fobj)
