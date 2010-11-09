@@ -137,6 +137,10 @@ class Lorax(BaseLoraxClass):
                     if line and not line.startswith("#"):
                         self.output.ignore(line)
 
+        # XXX cron does not have sbin in PATH,
+        # so we have to add it ourselves
+        os.environ["PATH"] = "{0}:/sbin:/usr/sbin".format(os.environ["PATH"])
+
         self._configured = True
 
     def run(self, yb, product, version, release, variant="", bugurl="",
