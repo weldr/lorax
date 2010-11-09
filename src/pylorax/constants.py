@@ -19,6 +19,9 @@
 # Red Hat Author(s):  Martin Gracik <mgracik@redhat.com>
 #
 
+import logging
+logger = logging.getLogger("pylorax")
+
 import os
 
 from sysutils import joinpaths
@@ -28,6 +31,7 @@ class LoraxRequiredCommands(dict):
 
     def __init__(self):
         self.__path = os.environ["PATH"].split(":")
+        logger.debug("PATH: {0}".format(self.__path))
 
         self["AWK"] = "awk"
         self["BUILD_LOCALE_ARCHIVE"] = "build-locale-archive"
