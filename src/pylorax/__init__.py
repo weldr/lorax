@@ -25,7 +25,7 @@ import logging
 
 fh = logging.FileHandler(filename="pylorax.log", mode="w")
 fh.setLevel(logging.DEBUG)
-logging.getLogger("").addHandler(fh)
+logging.getLogger("pylorax").addHandler(fh)
 
 sh = logging.StreamHandler()
 sh.setLevel(logging.INFO)
