@@ -1023,6 +1023,8 @@ class LoraxInstallTree(BaseLoraxClass):
 <gconf>
         <entry name="accessibility" mtime="1176200664" type="bool" value="true">
         </entry>
+        <entry name="at-spi-corba" mtime="1176200664" type="bool" value="false">
+        </entry>
 </gconf>
 """
 
