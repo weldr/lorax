@@ -1073,19 +1073,29 @@ class LoraxInstallTree(BaseLoraxClass):
         touch(joinpaths(self.root, "etc", "resolv.conf"))
 
     def get_config_files(self, src_dir):
-        # get gconf anaconda.rules
-        src = joinpaths(src_dir, "anaconda.rules")
-        dst = joinpaths(self.root, "etc", "gconf", "gconf.xml.defaults",
-                        "anaconda.rules")
-        dstdir = os.path.dirname(dst)
-        shutil.copy2(src, dst)
+        # anaconda needs to change a couple of the default gconf entries
+        gconf = joinpaths(self.root, "etc", "gconf", "gconf.xml.defaults")
 
-        cmd = [self.lcmds.GCONFTOOL, "--direct",
-               '--config-source=xml:readwrite:{0}'.format(dstdir),
-               "--load", dst]
+        # 0 - path, 1 - entry type, 2 - value
+        gconf_settings = \
+        [("/apps/metacity/general/button_layout", "string", ":"),
+         ("/apps/metacity/general/action_right_click_titlebar",
+          "string", "none"),
+         ("/apps/metacity/window_keybindings/close", "string", "disabled"),
+         ("/apps/metacity/global_keybindings/run_command_window_screenshot",
+          "string", "disabled"),
+         ("/apps/metacity/global_keybindings/run_command_screenshot",
+          "string", "disabled"),
+         ("/desktop/gnome/interface/accessibility", "bool", "true"),
+         ("/desktop/gnome/interface/at-spi-corba", "bool", "false")]
 
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-        p.wait()
+        for path, entry_type, value in gconf_settings:
+            cmd = [self.lcmds.GCONFTOOL, "--direct",
+                   "--config-source=xml:readwrite:{0}".format(gconf),
+                   "-s", "-t", entry_type, path, value]
+
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+            p.wait()
 
         # get rsyslog config
         src = joinpaths(src_dir, "rsyslog.conf")
