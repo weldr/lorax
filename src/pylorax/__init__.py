@@ -1258,7 +1258,7 @@ class LoraxOutputTree(BaseLoraxClass):
         os.link(source, link_name)
 
         # other kernels
-        for kernel in self.installtree.kernels:
+        for kernel in kernels:
             shutil.copy2(kernel.fpath, self.pxebootdir)
 
     def get_isolinux(self):
