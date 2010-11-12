@@ -273,7 +273,9 @@ class Lorax(BaseLoraxClass):
         # get the list of required modules
         logger.info("getting list of required modules")
         modules = [f[1:] for f in template if f[0] == "module"]
-        modules = itertools.chain.from_iterable(modules)
+        modules = list(itertools.chain.from_iterable(modules))
+
+        self.installtree.move_modules()
 
         for kernel in self.installtree.kernels:
             logger.info("cleaning up kernel modules")
@@ -827,9 +829,18 @@ class LoraxInstallTree(BaseLoraxClass):
 
                     os.symlink("/dev/null", pyc)
 
+    def move_modules(self):
+        shutil.move(joinpaths(self.root, "lib/modules"),
+                    joinpaths(self.root, "modules"))
+        shutil.move(joinpaths(self.root, "lib/firmware"),
+                    joinpaths(self.root, "firmware"))
+
+        os.symlink("../modules", joinpaths(self.root, "lib/modules"))
+        os.symlink("../firmware", joinpaths(self.root, "lib/firmware"))
+
     def cleanup_kernel_modules(self, keepmodules, kernel):
-        moddir = joinpaths(self.root, "lib/modules", kernel.version)
-        fwdir = joinpaths(self.root, "lib/firmware")
+        moddir = joinpaths(self.root, "modules", kernel.version)
+        fwdir = joinpaths(self.root, "firmware")
 
         # expand required modules
         modules = set()
@@ -956,17 +967,6 @@ class LoraxInstallTree(BaseLoraxClass):
             fobj.write("Version 0\n")
             for modname in sorted(modlist.keys()):
                 fobj.write(modlist[modname])
-
-
-
-        # create symlinks in /
-        shutil.move(joinpaths(self.root, "lib/modules"),
-                    joinpaths(self.root, "modules"))
-        shutil.move(joinpaths(self.root, "lib/firmware"),
-                    joinpaths(self.root, "firmware"))
-
-        os.symlink("../modules", joinpaths(self.root, "lib/modules"))
-        os.symlink("../firmware", joinpaths(self.root, "lib/firmware"))
 
     def compress_modules(self, kernel):
         moddir = joinpaths(self.root, "modules", kernel.version)
