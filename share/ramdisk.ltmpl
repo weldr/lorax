@@ -3,6 +3,12 @@
 ## anaconda package
 install "anaconda"
 
+## kernel
+install "kernel"
+% if basearch == "i386":
+    install "kernel-PAE"
+% endif
+
 ## other required packages
 install "NetworkManager-gnome"
 install "at-spi"
