@@ -1151,6 +1151,9 @@ class LoraxInstallTree(BaseLoraxClass):
             fobj.write("root::14438:0:99999:7:::\n")
             fobj.write("install::14438:0:99999:7:::\n")
 
+        # change permissions
+        chmod_(shadow, 400)
+
     def get_anaconda_portions(self):
         src = joinpaths(self.root, "usr", self.libdir, "anaconda", "loader")
         dst = joinpaths(self.root, "sbin")
