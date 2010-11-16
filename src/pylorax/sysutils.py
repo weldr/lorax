@@ -19,7 +19,7 @@
 # Red Hat Author(s):  Martin Gracik <mgracik@redhat.com>
 #
 
-__all__ = ["joinpaths", "touch", "replace",
+__all__ = ["joinpaths", "touch", "replace", "chown_", "chmod_",
            "create_loop_dev", "remove_loop_dev",
            "create_dm_dev", "remove_dm_dev"]
 
