@@ -28,6 +28,9 @@ import sys
 import os
 import re
 import fileinput
+import pwd
+import grp
+import glob
 import subprocess
 
 
@@ -54,6 +57,33 @@ def replace(fname, find, replace):
         sys.stdout.write(line)
 
     fin.close()
+
+
+def chown_(path, user=None, group=None, recursive=False):
+    uid = gid = -1
+
+    if user is not None:
+        uid = pwd.getpwnam(user)[2]
+    if group is not None:
+        gid = grp.getgrnam(group)[2]
+
+    for fname in glob.iglob(path):
+        os.chown(fname, uid, gid)
+
+        if recursive and os.path.isdir(fname):
+            for nested in os.listdir(fname):
+                nested = joinpaths(fname, nested)
+                chown_(nested, user, group, recursive)
+
+
+def chmod_(path, mode, recursive=False):
+    for fname in glob.iglob(path):
+        os.chmod(fname, mode)
+
+        if recursive and os.path.isdir(fname):
+            for nested in os.listdir(fname):
+                nested = joinpaths(fname, nested)
+                chmod_(nested, mode, recursive)
 
 
 def create_loop_dev(fname):
