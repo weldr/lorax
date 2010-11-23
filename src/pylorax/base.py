@@ -51,6 +51,12 @@ class BaseLoraxClass(object):
 
 class DataHolder(dict):
 
+    def __init__(self, **kwargs):
+        dict.__init__(self)
+
+        for attr, value in kwargs.items():
+            self[attr] = value
+
     def __getattr__(self, attr):
         return self[attr]
 
