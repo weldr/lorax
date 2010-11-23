@@ -42,6 +42,7 @@ import shutil
 import itertools
 import glob
 import math
+import subprocess
 
 from base import BaseLoraxClass, DataHolder
 import output
