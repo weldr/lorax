@@ -400,7 +400,7 @@ class Lorax(BaseLoraxClass):
         # create efi images
         efiboot = None
         if grubefi:
-            kernel = kernels[0]
+            kernel = self.outputtree.kernels[0]
 
             # create efiboot image with kernel
             logger.info("creating efiboot image with kernel")
