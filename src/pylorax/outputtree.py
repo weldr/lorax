@@ -64,20 +64,20 @@ class LoraxOutputTree(BaseLoraxClass):
         self.isolinuxdir = isolinuxdir
         self.efibootdir = efibootdir
 
-    def get_kernels(self, kernels):
+    def get_kernels(self):
         # get the main kernel
-        self.main_kernel = kernels.pop(0)
+        self.main_kernel = self.installtree.kernels[0]
 
-        # copy kernel to isolinuxdir
+        # copy main kernel to isolinuxdir
         shutil.copy2(self.main_kernel.fpath, self.isolinuxdir)
 
-        # create kernel hard link in pxebootdir
+        # create hard link to main kernel in pxebootdir
         source = joinpaths(self.isolinuxdir, self.main_kernel.fname)
         link_name = joinpaths(self.pxebootdir, self.main_kernel.fname)
         os.link(source, link_name)
 
-        # other kernels
-        for kernel in kernels:
+        # copy other kernels to pxebootdir
+        for kernel in self.installtree.kernels[1:]:
             shutil.copy2(kernel.fpath, self.pxebootdir)
 
     def get_isolinux(self):
