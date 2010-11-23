@@ -28,7 +28,7 @@ import shutil
 import glob
 import subprocess
 
-from base import BaseLoraxClass
+from base import BaseLoraxClass, DataHolder
 from sysutils import *
 
 
@@ -65,6 +65,8 @@ class LoraxOutputTree(BaseLoraxClass):
         self.efibootdir = efibootdir
 
     def get_kernels(self):
+        self.kernels = []
+
         for n, kernel in enumerate(self.installtree.kernels):
             suffix = ""
             if kernel.type == K_PAE:
@@ -88,8 +90,10 @@ class LoraxOutputTree(BaseLoraxClass):
                 shutil.copy2(kernel.fpath, dst)
 
             # XXX change the fname and fpath to new values
-            kernel.fname = kname
-            kernel.fpath = dst
+            self.kernels.append(DataHolder(fname=kname,
+                                           fpath=dst,
+                                           version=kernel.version,
+                                           type=kernel.type))
 
     def get_isolinux(self):
         isolinuxbin = joinpaths(self.installtree.root,
