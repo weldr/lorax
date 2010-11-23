@@ -37,12 +37,6 @@ import constants
 from sysutils import *
 
 
-# kernel types
-K_NORMAL = 0
-K_PAE = 1
-K_XEN = 1
-
-
 class LoraxInstallTree(BaseLoraxClass):
 
     def __init__(self, yum, basearch, libdir):
@@ -540,11 +534,11 @@ class LoraxInstallTree(BaseLoraxClass):
         for fname in os.listdir(kerneldir):
             m = kpattern.match(fname)
             if m:
-                type = K_NORMAL
+                type = constants.K_NORMAL
                 if m.group("pae"):
-                    type = K_PAE
+                    type = constants.K_PAE
                 elif m.group("xen"):
-                    type = K_XEN
+                    type = constants.K_XEN
 
                 kernels.append(DataHolder(fname=fname,
                                           fpath=joinpaths(kerneldir, fname),

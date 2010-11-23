@@ -23,7 +23,6 @@ import logging
 logger = logging.getLogger("pylorax")
 
 import os
-
 from sysutils import joinpaths
 
 
@@ -66,3 +65,9 @@ class LoraxRequiredCommands(dict):
                 missing.append(cmd)
 
         return missing
+
+
+# kernel types
+K_NORMAL = 0
+K_PAE = 1
+K_XEN = 1

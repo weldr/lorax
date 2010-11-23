@@ -30,6 +30,7 @@ import subprocess
 
 from base import BaseLoraxClass, DataHolder
 from sysutils import *
+import constants
 
 
 class LoraxOutputTree(BaseLoraxClass):
@@ -69,9 +70,9 @@ class LoraxOutputTree(BaseLoraxClass):
 
         for n, kernel in enumerate(self.installtree.kernels):
             suffix = ""
-            if kernel.type == K_PAE:
+            if kernel.type == constants.K_PAE:
                 suffix = "-PAE"
-            elif kernel.type == K_XEN:
+            elif kernel.type == constants.K_XEN:
                 suffix = "-XEN"
 
             kname = "vmlinuz{0}".format(suffix)

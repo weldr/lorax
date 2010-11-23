@@ -78,10 +78,7 @@ LIB32 = "lib"
 LIB64 = "lib64"
 
 
-# kernel types
-K_NORMAL = 0
-K_PAE = 1
-K_XEN = 1
+
 
 
 class Lorax(BaseLoraxClass):
