@@ -24,32 +24,11 @@ logger = logging.getLogger("pylorax.outputtree")
 
 import sys
 import os
-import ConfigParser
-import tempfile
 import shutil
-import gzip
-import shlex
-import fnmatch
-import re
-import itertools
 import glob
-import time
-import datetime
-import itertools
 import subprocess
-import operator
-import math
-
-from collections import namedtuple
 
 from base import BaseLoraxClass
-import output
-
-import yum
-import yumhelper
-import ltmpl
-
-import constants
 from sysutils import *
 
 
