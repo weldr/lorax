@@ -113,6 +113,7 @@ class LoraxOutputTree(BaseLoraxClass):
         replace(isolinuxcfg, r"@PRODUCT@", self.product)
         replace(isolinuxcfg, r"@VERSION@", self.version)
 
+    def get_memtest(self):
         # copy memtest
         memtest = joinpaths(self.installtree.root,
                             "boot/memtest*")
@@ -132,7 +133,7 @@ class LoraxOutputTree(BaseLoraxClass):
 
             break
 
-        # get splash
+    def get_splash(self):
         vesasplash = joinpaths(self.installtree.root, "usr/share/anaconda",
                                "boot/syslinux-vesa-splash.jpg")
 

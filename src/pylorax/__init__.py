@@ -313,6 +313,8 @@ class Lorax(BaseLoraxClass):
 
         self.outputtree.prepare()
         self.outputtree.get_isolinux()
+        self.outputtree.get_memtest()
+        self.outputtree.get_splash()
         self.outputtree.get_msg_files()
         self.outputtree.get_grub_conf()
 
