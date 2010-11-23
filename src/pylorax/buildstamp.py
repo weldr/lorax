@@ -23,7 +23,7 @@ import logging
 logger = logging.getLogger("pylorax.buildstamp")
 
 import datetime
-from sysutils import *
+from sysutils import joinpaths
 
 
 class BuildStamp(object):
@@ -44,8 +44,8 @@ class BuildStamp(object):
         logger.info("writing .buildstamp file")
         with open(self.path, "w") as fobj:
             fobj.write("[Main]\n")
+            fobj.write("Product={0.product}\n".format(self))
+            fobj.write("Version={0.version}".format(self))
             fobj.write("BugURL={0.bugurl}\n".format(self))
             fobj.write("IsBeta={0.is_beta}\n".format(self))
-            fobj.write("Product={0.product}\n".format(self))
             fobj.write("UUID={0.uuid}\n".format(self))
-            fobj.write("Version={0.version}".format(self))
