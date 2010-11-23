@@ -39,17 +39,8 @@ import os
 import ConfigParser
 import tempfile
 import shutil
-import gzip
-import shlex
-import fnmatch
-import re
 import itertools
 import glob
-import time
-import datetime
-import itertools
-import subprocess
-import operator
 import math
 
 from collections import namedtuple
