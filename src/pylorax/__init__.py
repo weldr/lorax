@@ -340,21 +340,8 @@ class Lorax(BaseLoraxClass):
         shutil.move(splash, self.workdir)
         splash = joinpaths(self.workdir, os.path.basename(splash))
 
-        # move kernels to workdir
-        for kernel in self.installtree.kernels:
-            suffix = ""
-            if kernel.type == K_PAE:
-                suffix = "-PAE"
-            elif kernel.type == K_XEN:
-                suffix = "-XEN"
-
-            kname = "vmlinuz{0}".format(suffix)
-            shutil.move(kernel.fpath, joinpaths(self.workdir, kname))
-            kernel.fname = kname
-            kernel.fpath = joinpaths(self.workdir, kname)
-
         # copy kernels to output directory
-        self.outputtree.get_kernels(self.installtree.kernels[:])
+        self.outputtree.get_kernels()
 
         # get list of not required packages
         logger.info("getting list of not required packages")
