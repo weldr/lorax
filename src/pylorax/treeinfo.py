@@ -24,13 +24,13 @@ logger = logging.getLogger("pylorax.treeinfo")
 
 import ConfigParser
 import time
-from sysutils import *
+from sysutils import joinpaths
 
 
 class TreeInfo(object):
 
     def __init__(self, workdir, product, version, variant, basearch,
-                 discnum=1, totaldiscs=1, packagedir=""):
+                 packagedir=""):
 
         self.path = joinpaths(workdir, ".treeinfo")
         self.c = ConfigParser.ConfigParser()
@@ -41,8 +41,6 @@ class TreeInfo(object):
                 "version": version,
                 "variant": variant or "",
                 "arch": basearch,
-                "discnum": discnum,
-                "totaldiscs": totaldiscs,
                 "packagedir": packagedir}
 
         self.c.add_section(section)
