@@ -32,10 +32,7 @@ import time
 import subprocess
 import operator
 
-from collections import namedtuple
-
-from base import BaseLoraxClass
-
+from base import BaseLoraxClass, DataHolder
 import constants
 from sysutils import *
 
@@ -44,10 +41,6 @@ from sysutils import *
 K_NORMAL = 0
 K_PAE = 1
 K_XEN = 1
-
-
-# XXX kernel tuple
-Kernel = namedtuple("Kernel", "fname fpath version type")
 
 
 class LoraxInstallTree(BaseLoraxClass):
@@ -553,10 +546,10 @@ class LoraxInstallTree(BaseLoraxClass):
                 elif m.group("xen"):
                     type = K_XEN
 
-                kernels.append(Kernel(fname,
-                                      joinpaths(kerneldir, fname),
-                                      m.group("ver"),
-                                      type))
+                kernels.append(DataHolder(fname=fname,
+                                          fpath=joinpaths(kerneldir, fname),
+                                          version=m.group("ver"),
+                                          type=type))
 
         kernels = sorted(kernels, key=operator.attrgetter("type"))
         return kernels

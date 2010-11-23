@@ -43,8 +43,6 @@ import itertools
 import glob
 import math
 
-from collections import namedtuple
-
 from base import BaseLoraxClass
 import output
 
@@ -84,10 +82,6 @@ LIB64 = "lib64"
 K_NORMAL = 0
 K_PAE = 1
 K_XEN = 1
-
-
-# XXX kernel tuple
-Kernel = namedtuple("Kernel", "fname fpath version type")
 
 
 class Lorax(BaseLoraxClass):
@@ -347,23 +341,20 @@ class Lorax(BaseLoraxClass):
         splash = joinpaths(self.workdir, os.path.basename(splash))
 
         # move kernels to workdir
-        kernels = []
         for kernel in self.installtree.kernels:
-            type = ""
+            suffix = ""
             if kernel.type == K_PAE:
-                type = "-PAE"
+                suffix = "-PAE"
             elif kernel.type == K_XEN:
-                type = "-XEN"
+                suffix = "-XEN"
 
-            kname = "vmlinuz{0}".format(type)
-
+            kname = "vmlinuz{0}".format(suffix)
             shutil.move(kernel.fpath, joinpaths(self.workdir, kname))
-            kernels.append(Kernel(kname,
-                                  joinpaths(self.workdir, kname),
-                                  kernel.version,
-                                  kernel.type))
+            kernel.fname = kname
+            kernel.fpath = joinpaths(self.workdir, kname)
 
-        self.outputtree.get_kernels(kernels[:])
+        # copy kernels to output directory
+        self.outputtree.get_kernels(self.installtree.kernels[:])
 
         # get list of not required packages
         logger.info("getting list of not required packages")
