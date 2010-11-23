@@ -47,3 +47,12 @@ class BaseLoraxClass(object):
 
     def pdebug(self, msg, file=sys.stdout):
         self.output.debug(msg, file)
+
+
+class DataHolder(dict):
+
+    def __getattr__(self, attr):
+        return self[attr]
+
+    def __setattr__(self, attr, value):
+        self[attr] = value
