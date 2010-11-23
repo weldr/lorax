@@ -43,7 +43,7 @@ import itertools
 import glob
 import math
 
-from base import BaseLoraxClass
+from base import BaseLoraxClass, DataHolder
 import output
 
 import yum
@@ -395,8 +395,8 @@ class Lorax(BaseLoraxClass):
         self.installtree.cleanup_python_files()
 
         # compress install tree
-        InitRD = namedtuple("InitRD", "fname fpath")
-        initrd = InitRD("initrd.img", joinpaths(self.workdir, "initrd.img"))
+        initrd = DataHolder(fname="initrd.img",
+                            fpath=joinpaths(self.workdir, "initrd.img"))
 
         logger.info("compressing install tree")
         ok, elapsed = self.installtree.compress(initrd)
