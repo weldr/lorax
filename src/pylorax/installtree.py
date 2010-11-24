@@ -420,7 +420,7 @@ class LoraxInstallTree(BaseLoraxClass):
          ("/apps/metacity/global_keybindings/run_command_screenshot",
           "string", "disabled"),
          ("/desktop/gnome/interface/accessibility", "bool", "true"),
-         ("/desktop/gnome/interface/at-spi-corba", "bool", "false")]
+         ("/desktop/gnome/interface/at-spi-corba", "bool", "true")]
 
         for path, entry_type, value in gconf_settings:
             cmd = [self.lcmds.GCONFTOOL, "--direct",
