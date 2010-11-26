@@ -2,6 +2,8 @@ import sys
 import os
 import magic
 import difflib
+import yum
+import operator
 
 
 def main(args):
@@ -9,9 +11,7 @@ def main(args):
         sourcedir, targetdir = args[1], args[2]
     except IndexError:
         print("invalid argument count")
-        print("usage: python {0} sourcetree targettree > output.diff".format(
-              args[0]))
-
+        print("usage: python {0} sourcetree targettree".format(args[0]))
         sys.exit(2)
 
     if sourcedir.endswith("/"):
@@ -19,57 +19,93 @@ def main(args):
     if targetdir.endswith("/"):
         targetdir = targetdir[:-1]
 
-    sourcetree = {}
-    for root, dnames, fnames in os.walk(sourcedir):
-        for fname in fnames:
-            fpath = os.path.join(root, fname)
-            rpath = fpath.replace(sourcedir, "", 1)
-            sourcetree[rpath] = fpath
+    # parse sourcedir and targetdir
+    sourcetree, targettree = {}, {}
+    for tree, dir in [[sourcetree, sourcedir], [targettree, targetdir]]:
+        for root, dnames, fnames in os.walk(dir):
+            for fname in fnames:
+                fpath = os.path.join(root, fname)
+                rpath = fpath.replace(dir, "", 1)
+                tree[rpath] = fpath
 
+    # set up magic
     m = magic.open(magic.MAGIC_NONE)
     m.load()
 
-    for root, dnames, fnames in os.walk(targetdir):
-        for fname in fnames:
-            fpath = os.path.join(root, fname)
-            rpath = fpath.replace(targetdir, "", 1)
+    # get files missing in source
+    sys.stderr.write("getting files missing in source\n")
+    for rpath, fpath in targettree.items():
+        targetfile = fpath
+        try:
+            sourcefile = sourcetree[rpath]
+        except KeyError:
+            sys.stdout.write('Missing: %s\n' % rpath)
+            continue
 
-            sys.stderr.write('processing "%s"\n' % rpath)
+        # skip broken links
+        if os.path.islink(targetfile) and not os.path.exists(targetfile):
+            continue
 
-            targetfile = fpath
-            try:
-                sourcefile = sourcetree[rpath]
-            except KeyError:
-                sys.stdout.write('Missing: %s\n' % rpath)
-                continue
+        # check stat
+        #sourcemode = os.stat(sourcefile).st_mode
+        #targetmode = os.stat(targetfile).st_mode
+        #if sourcemode != targetmode:
+        #    sys.stdout.write('Stat differ: %s\n' % rpath)
 
-            # skip broken links
-            if os.path.islink(targetfile) and not os.path.exists(targetfile):
-                continue
+        # diff only text files
+        ftype = m.file(fpath)
+        if ftype not in ["ASCII text"]:
+            continue
 
-            # check stat
-            #sourcemode = os.stat(sourcefile).st_mode
-            #targetmode = os.stat(targetfile).st_mode
-            #if sourcemode != targetmode:
-            #    sys.stdout.write('Stat differ: %s\n' % rpath)
+        with open(targetfile, "r") as fobj:
+            target = fobj.readlines()
+        with open(sourcefile) as fobj:
+            source = fobj.readlines()
 
-            ftype = m.file(fpath)
+        # do the file diff
+        for line in difflib.unified_diff(source, target,
+                                         fromfile=sourcefile,
+                                         tofile=targetfile):
 
-            # diff only text files
-            if ftype not in ["ASCII text"]:
-                continue
+            sys.stdout.write(line)
 
-            with open(targetfile, "r") as fobj:
-                target = fobj.readlines()
-            with open(sourcefile) as fobj:
-                source = fobj.readlines()
+    # set up yum
+    yb = yum.YumBase()
+    yb.doSackSetup()
 
-            # do a file diff
-            for line in difflib.unified_diff(source, target,
-                                             fromfile=sourcefile,
-                                             tofile=targetfile):
+    # get excessive files in source
+    sys.stderr.write("getting excessive files in source\n")
+    sizedict, pkgdict = {}, {}
+    for rpath, fpath in sourcetree.items():
+        # if file in target, skip it
+        if rpath in targettree:
+            continue
 
-                sys.stdout.write(line)
+        # get file size
+        try:
+            sizeinbytes = os.path.getsize(fpath)
+        except OSError:
+            sizeinbytes = 0
+
+        # set link size to 0
+        islink = os.path.islink(fpath)
+        if islink:
+            sizeinbytes = 0
+
+        pkglist = yb.whatProvides(rpath, None, None)
+        pkglist = set(map(lambda pkgobj: pkgobj.name, pkglist))
+
+        for pkg in pkglist:
+            sizedict[pkg] = sizedict.get(pkg, 0) + sizeinbytes
+            pkgdict[pkg] = pkgdict.get(pkg, []) + \
+                           [(rpath, sizeinbytes, islink)]
+
+    # sort by size
+    for pkg, size in sorted(sizedict.items(), key=operator.itemgetter(1),
+                            reverse=True):
+
+        for item in sorted(pkgdict[pkg]):
+            sys.stdout.write("%s\t%s\n" % (pkg, item))
 
 
 if __name__ == "__main__":
