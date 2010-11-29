@@ -106,12 +106,12 @@ class LoraxOutputTree(BaseLoraxClass):
         shutil.copy2(isolinuxbin, self.isolinuxdir)
 
         # copy syslinux.cfg
-        isolinuxcfg = joinpaths(self.isolinuxdir, "isolinux.cfg")
-        shutil.copy2(syslinuxcfg, isolinuxcfg)
+        self.isolinuxcfg = joinpaths(self.isolinuxdir, "isolinux.cfg")
+        shutil.copy2(syslinuxcfg, self.isolinuxcfg)
 
         # set product and version in isolinux.cfg
-        replace(isolinuxcfg, r"@PRODUCT@", self.product)
-        replace(isolinuxcfg, r"@VERSION@", self.version)
+        replace(self.isolinuxcfg, r"@PRODUCT@", self.product)
+        replace(self.isolinuxcfg, r"@VERSION@", self.version)
 
     def get_memtest(self):
         # copy memtest
@@ -128,7 +128,7 @@ class LoraxOutputTree(BaseLoraxClass):
 
 """
 
-            with open(isolinuxcfg, "a") as fobj:
+            with open(self.isolinuxcfg, "a") as fobj:
                 fobj.write(text)
 
             break
@@ -152,8 +152,8 @@ class LoraxOutputTree(BaseLoraxClass):
         if os.path.isfile(vesasplash):
             shutil.copy2(vesasplash, joinpaths(self.isolinuxdir, "splash.jpg"))
             shutil.copy2(vesamenu, self.isolinuxdir)
-            replace(isolinuxcfg, r"default linux", "default vesamenu.c32")
-            replace(isolinuxcfg, r"prompt 1", "#prompt 1")
+            replace(self.isolinuxcfg, r"default linux", "default vesamenu.c32")
+            replace(self.isolinuxcfg, r"prompt 1", "#prompt 1")
         elif os.path.isfile(splashtolss):
             cmd = [splashtolss, syslinuxsplash, splashlss]
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
