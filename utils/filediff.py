@@ -34,7 +34,9 @@ def main(args):
 
     # get files missing in source
     sys.stderr.write("getting files missing in source\n")
-    for rpath, fpath in targettree.items():
+    for rpath in sorted(targettree.keys()):
+        fpath = targettree[rpath]
+
         targetfile = fpath
         try:
             sourcefile = sourcetree[rpath]
