@@ -132,7 +132,7 @@ class LinuxTerminalOutput(object):
         return s
 
     def __raw(self, s):
-        for tag, ccode in TAGS:
+        for tag, _ in TAGS:
             s = tag.sub("", s)
         return s
 
