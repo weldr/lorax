@@ -44,7 +44,7 @@ def joinpaths(*args, **kwargs):
 
 
 def touch(fname):
-    with open(fname, "w") as fobj:
+    with open(fname, "w") as _:
         pass
 
 
@@ -88,17 +88,17 @@ def chmod_(path, mode, recursive=False):
 
 def create_loop_dev(fname):
     cmd = ["losetup", "-f"]
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    rc = p.wait()
-    if not rc == 0:
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    retcode = proc.wait()
+    if not retcode == 0:
         return None
 
-    loopdev = p.stdout.read().strip()
+    loopdev = proc.stdout.read().strip()
 
     cmd = ["losetup", loopdev, fname]
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    rc = p.wait()
-    if not rc == 0:
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    retcode = proc.wait()
+    if not retcode == 0:
         return None
 
     return loopdev
@@ -106,17 +106,17 @@ def create_loop_dev(fname):
 
 def remove_loop_dev(dev):
     cmd = ["losetup", "-d", dev]
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    rc = p.wait()
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    return proc.wait()
 
 
 def create_dm_dev(name, size, loopdev):
     table = '0 {0} linear {1} 0'.format(size, loopdev)
 
     cmd = ["dmsetup", "create", name, "--table", table]
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    rc = p.wait()
-    if not rc == 0:
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    retcode = proc.wait()
+    if not retcode == 0:
         return None
 
     return joinpaths("/dev/mapper", name)
@@ -124,5 +124,5 @@ def create_dm_dev(name, size, loopdev):
 
 def remove_dm_dev(dev):
     cmd = ["dmsetup", "remove", dev]
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    rc = p.wait()
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    return proc.wait()
