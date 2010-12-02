@@ -63,23 +63,23 @@ class LoraxInstallTree(BaseLoraxClass):
         localearch = "/usr/lib/locale/locale-archive"
 
         cmd = [self.lcmds.LOCALEDEF, "--list-archive", localearch]
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, preexec_fn=chroot)
-        output = p.stdout.read()
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, preexec_fn=chroot)
+        output = proc.stdout.read()
 
         remove = set(output.split()) - langs
 
         # remove not needed locales
         cmd = [self.lcmds.LOCALEDEF, "-i", localearch,
                "--delete-from-archive"] + list(remove)
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, preexec_fn=chroot)
-        p.wait()
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, preexec_fn=chroot)
+        proc.wait()
 
         localearch = joinpaths(self.root, localearch)
         shutil.move(localearch, localearch + ".tmpl")
 
-        p = subprocess.Popen([self.lcmds.BUILD_LOCALE_ARCHIVE],
+        proc = subprocess.Popen([self.lcmds.BUILD_LOCALE_ARCHIVE],
                              preexec_fn=chroot)
-        p.wait()
+        proc.wait()
 
         # remove unneeded locales from /usr/share/locale
         with open(langtable, "r") as fobj:
@@ -108,9 +108,9 @@ class LoraxInstallTree(BaseLoraxClass):
         else:
             # create keymaps
             cmd = [joinpaths(self.root, "usr/share/anaconda", "getkeymaps"),
-                   basearch, keymaps, self.root]
-            p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-            p.wait()
+                   self.basearch, keymaps, self.root]
+            proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+            proc.wait()
 
         return True
 
@@ -150,7 +150,7 @@ class LoraxInstallTree(BaseLoraxClass):
             shutil.move(src, dst)
 
     def cleanup_python_files(self):
-        for root, dnames, fnames in os.walk(self.root):
+        for root, _, fnames in os.walk(self.root):
             for fname in fnames:
                 if fname.endswith(".py"):
                     path = joinpaths(root, fname, follow_symlinks=False)
@@ -183,14 +183,14 @@ class LoraxInstallTree(BaseLoraxClass):
             if name.startswith("="):
                 group = name[1:]
                 if group in ("scsi", "ata"):
-                    p = joinpaths(moddir, "modules.block")
+                    mpath = joinpaths(moddir, "modules.block")
                 elif group == "net":
-                    p = joinpaths(moddir, "modules.networking")
+                    mpath = joinpaths(moddir, "modules.networking")
                 else:
-                    p = joinpaths(moddir, "modules.{0}".format(group))
+                    mpath = joinpaths(moddir, "modules.{0}".format(group))
 
-                if os.path.isfile(p):
-                    with open(p, "r") as fobj:
+                if os.path.isfile(mpath):
+                    with open(mpath, "r") as fobj:
                         for line in fobj:
                             module = pattern.sub("", line.strip())
                             modules.add(module)
@@ -209,21 +209,19 @@ class LoraxInstallTree(BaseLoraxClass):
         while unresolved:
             unresolved = False
             for line in lines:
-                m = modpattern.match(line)
-                modname = m.group("name")
+                match = modpattern.match(line)
+                modname = match.group("name")
                 if modname in modules:
                     # add the dependencies
-                    for dep in m.group("deps").split():
-                        m = deppattern.match(dep)
-                        depname = m.group("name")
+                    for dep in match.group("deps").split():
+                        match = deppattern.match(dep)
+                        depname = match.group("name")
                         if depname not in modules:
                             unresolved = True
                             modules.add(depname)
 
         # required firmware
         firmware = set()
-
-        # XXX required firmware
         firmware.add("atmel_at76c504c-wpa.bin")
         firmware.add("iwlwifi-3945-1.ucode")
         firmware.add("iwlwifi-3945.ucode")
@@ -233,7 +231,7 @@ class LoraxInstallTree(BaseLoraxClass):
         firmware.add("zd1211/zd1211b_uphm")
 
         # remove not needed modules
-        for root, dnames, fnames in os.walk(moddir):
+        for root, _, fnames in os.walk(moddir):
             for fname in fnames:
                 path = os.path.join(root, fname)
                 name, ext = os.path.splitext(fname)
@@ -245,13 +243,13 @@ class LoraxInstallTree(BaseLoraxClass):
                     else:
                         # get the required firmware
                         cmd = [self.lcmds.MODINFO, "-F", "firmware", path]
-                        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-                        output = p.stdout.read()
+                        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+                        output = proc.stdout.read()
                         firmware |= set(output.split())
 
         # remove not needed firmware
         firmware = map(lambda fw: joinpaths(fwdir, fw), list(firmware))
-        for root, dnames, fnames in os.walk(fwdir):
+        for root, _, fnames in os.walk(fwdir):
             for fname in fnames:
                 path = joinpaths(root, fname)
                 if path not in firmware:
@@ -260,7 +258,7 @@ class LoraxInstallTree(BaseLoraxClass):
 
         # get the modules paths
         modpaths = {}
-        for root, dnames, fnames in os.walk(moddir):
+        for root, _, fnames in os.walk(moddir):
             for fname in fnames:
                 modpaths[fname] = joinpaths(root, fname)
 
@@ -281,8 +279,8 @@ class LoraxInstallTree(BaseLoraxClass):
                     continue
 
                 cmd = [self.lcmds.MODINFO, "-F", "description", modpaths[line]]
-                p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-                output = p.stdout.read()
+                proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+                output = proc.stdout.read()
 
                 try:
                     desc = output.splitlines()[0]
@@ -304,7 +302,7 @@ class LoraxInstallTree(BaseLoraxClass):
     def compress_modules(self, kernel):
         moddir = joinpaths(self.root, "modules", kernel.version)
 
-        for root, dnames, fnames in os.walk(moddir):
+        for root, _, fnames in os.walk(moddir):
             for fname in filter(lambda f: f.endswith(".ko"), fnames):
                 path = os.path.join(root, fname)
                 with open(path, "rb") as fobj:
@@ -323,10 +321,10 @@ class LoraxInstallTree(BaseLoraxClass):
         cmd = [self.lcmds.DEPMOD, "-a", "-F", systemmap, "-b", self.root,
                kernel.version]
 
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-        rc = p.wait()
-        if not rc == 0:
-            logger.critical(p.stdout.read())
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        retcode = proc.wait()
+        if not retcode == 0:
+            logger.critical(proc.stdout.read())
             sys.exit(1)
 
         moddir = joinpaths(self.root, "modules", kernel.version)
@@ -375,7 +373,6 @@ class LoraxInstallTree(BaseLoraxClass):
         with open(joinpaths(self.root, "etc/depmod.d/dd.conf"), "w") as fobj:
             fobj.write(text)
 
-    # XXX
     def misc_tree_modifications(self):
         # replace init with anaconda init
         src = joinpaths(self.root, "usr", self.libdir, "anaconda", "init")
@@ -427,8 +424,8 @@ class LoraxInstallTree(BaseLoraxClass):
                    "--config-source=xml:readwrite:{0}".format(gconf),
                    "-s", "-t", entry_type, path, value]
 
-            p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-            p.wait()
+            proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+            proc.wait()
 
         # get rsyslog config
         src = joinpaths(src_dir, "rsyslog.conf")
@@ -476,7 +473,8 @@ class LoraxInstallTree(BaseLoraxClass):
         # 'install' account that starts anaconda on login
         passwd = joinpaths(self.root, "etc", "passwd")
         with open(passwd, "a") as fobj:
-            fobj.write("sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin\n")
+            fobj.write("sshd:x:74:74:Privilege-separated "
+                       "SSH:/var/empty/sshd:/sbin/nologin\n")
             fobj.write("install:x:0:0:root:/root:/sbin/loader\n")
 
         shadow = joinpaths(self.root, "etc", "shadow")
@@ -532,18 +530,18 @@ class LoraxInstallTree(BaseLoraxClass):
 
         kernels = []
         for fname in os.listdir(kerneldir):
-            m = kpattern.match(fname)
-            if m:
-                type = constants.K_NORMAL
-                if m.group("pae"):
-                    type = constants.K_PAE
-                elif m.group("xen"):
-                    type = constants.K_XEN
+            match = kpattern.match(fname)
+            if match:
+                ktype = constants.K_NORMAL
+                if match.group("pae"):
+                    ktype = constants.K_PAE
+                elif match.group("xen"):
+                    ktype = constants.K_XEN
 
                 kernels.append(DataHolder(fname=fname,
                                           fpath=joinpaths(kerneldir, fname),
-                                          version=m.group("ver"),
-                                          type=type))
+                                          version=match.group("ver"),
+                                          ktype=ktype))
 
-        kernels = sorted(kernels, key=operator.attrgetter("type"))
+        kernels = sorted(kernels, key=operator.attrgetter("ktype"))
         return kernels
