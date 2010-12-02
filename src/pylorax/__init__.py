@@ -526,7 +526,7 @@ class Lorax(BaseLoraxClass):
             os.unlink(efiboot)
 
         # calculate the size of the efi tree directory
-        overhead = 512 * 1024
+        overhead = constants.FS_OVERHEAD * 1024
 
         sizeinbytes = overhead
         for root, _, fnames in os.walk(efitree):
