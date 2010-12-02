@@ -126,16 +126,15 @@ class Lorax(BaseLoraxClass):
                     if line and not line.startswith("#"):
                         self.output.ignore(line)
 
-        # XXX cron does not have sbin in PATH,
+        # cron does not have sbin in PATH,
         # so we have to add it ourselves
         os.environ["PATH"] = "{0}:/sbin:/usr/sbin".format(os.environ["PATH"])
 
         self._configured = True
 
-    def run(self, yb, product, version, release, variant="", bugurl="",
+    def run(self, ybo, product, version, release, variant="", bugurl="",
             is_beta=False, workdir=None, outputdir=None):
 
-        # XXX
         assert self._configured
 
         # do we have root privileges?
@@ -144,7 +143,7 @@ class Lorax(BaseLoraxClass):
             logger.critical("no root privileges")
             sys.exit(1)
 
-        # XXX do we have all lorax required commands?
+        # do we have all lorax required commands?
         self.lcmds = constants.LoraxRequiredCommands()
         missing = self.lcmds.get_missing()
         if missing:
@@ -153,13 +152,13 @@ class Lorax(BaseLoraxClass):
 
         # do we have a proper yum base object?
         logger.info("checking yum base object")
-        if not isinstance(yb, yum.YumBase):
+        if not isinstance(ybo, yum.YumBase):
             logger.critical("no yum base object")
             sys.exit(1)
 
         # set up yum helper
         logger.info("setting up yum helper")
-        self.yum = yumhelper.LoraxYumHelper(yb)
+        self.yum = yumhelper.LoraxYumHelper(ybo)
         logger.debug("using install root: {0}".format(self.yum.installroot))
 
         # set up build architecture
@@ -169,8 +168,6 @@ class Lorax(BaseLoraxClass):
         logger.debug("set buildarch = {0.buildarch}".format(self))
 
         archmap = ARCHMAPS.get(self.buildarch)
-
-        # XXX
         assert archmap is not None
 
         self.basearch = archmap.get("base")
@@ -202,7 +199,7 @@ class Lorax(BaseLoraxClass):
         logger.debug("set bugurl = {0.bugurl}".format(self))
         logger.debug("set is_beta = {0.is_beta}".format(self))
 
-        # XXX set up work directory
+        # set up work directory
         logger.info("setting up work directory")
         self.workdir = workdir or tempfile.mkdtemp(prefix="pylorax.work.")
         if not os.path.isdir(self.workdir):
@@ -214,12 +211,12 @@ class Lorax(BaseLoraxClass):
         tfile = joinpaths(self.conf.get("lorax", "sharedir"),
                           self.conf.get("templates", "ramdisk"))
 
-        vars = { "basearch": self.basearch,
+        tvars = { "basearch": self.basearch,
                  "libdir" : self.libdir,
                  "product": self.product.lower() }
 
         template = ltmpl.LoraxTemplate()
-        template = template.parse(tfile, vars)
+        template = template.parse(tfile, tvars)
 
         # get list of required packages
         logger.info("getting list of required packages")
@@ -238,7 +235,7 @@ class Lorax(BaseLoraxClass):
         buildstamp.write()
         shutil.copy2(buildstamp.path, self.installtree.root)
 
-        # XXX save list of installed packages
+        # save list of installed packages
         with open(joinpaths(self.workdir, "packages"), "w") as fobj:
             for pkgname in self.installtree.yum.installed_packages:
                 fobj.write("{0}\n".format(pkgname))
@@ -324,7 +321,6 @@ class Lorax(BaseLoraxClass):
 
         shutil.copy2(discinfo.path, self.outputtree.root)
 
-        # XXX
         grubefi = joinpaths(self.installtree.root, "boot/efi/EFI/redhat",
                             "grub.efi")
 
@@ -386,8 +382,8 @@ class Lorax(BaseLoraxClass):
                             fpath=joinpaths(self.workdir, "initrd.img"))
 
         logger.info("compressing install tree")
-        ok, elapsed = self.installtree.compress(initrd)
-        if not ok:
+        success, elapsed = self.installtree.compress(initrd)
+        if not success:
             logger.error("error while compressing install tree")
         else:
             logger.info("took {0:.2f} seconds".format(elapsed))
@@ -433,7 +429,7 @@ class Lorax(BaseLoraxClass):
                 logger.critical("unable to create efiboot image")
                 sys.exit(1)
 
-            # XXX copy efiboot and efidisk to imgdir
+            # copy efiboot and efidisk to imgdir
             shutil.copy2(efiboot, self.outputtree.imgdir)
             shutil.copy2(efidisk, self.outputtree.imgdir)
 
@@ -461,7 +457,7 @@ class Lorax(BaseLoraxClass):
 
     def get_buildarch(self):
         # get architecture of the available anaconda package
-        installed, available = self.yum.search("anaconda")
+        _, available = self.yum.search("anaconda")
 
         if available:
             anaconda = available.pop(0)
@@ -529,11 +525,11 @@ class Lorax(BaseLoraxClass):
         if os.path.isfile(efiboot):
             os.unlink(efiboot)
 
-        # XXX calculate the size of the efi tree directory
+        # calculate the size of the efi tree directory
         overhead = 512 * 1024
 
         sizeinbytes = overhead
-        for root, dnames, fnames in os.walk(efitree):
+        for root, _, fnames in os.walk(efitree):
             for fname in fnames:
                 fpath = joinpaths(root, fname)
                 fsize = os.path.getsize(fpath)
@@ -547,8 +543,8 @@ class Lorax(BaseLoraxClass):
 
         cmd = [self.lcmds.MKDOSFS, "-n", "ANACONDA", "-C", efiboot, str(size)]
         logger.debug(cmd)
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-        p.wait()
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        proc.wait()
 
         # mount the efiboot image
         efibootdir = tempfile.mkdtemp(prefix="efiboot.", dir=self.workdir)
@@ -556,8 +552,8 @@ class Lorax(BaseLoraxClass):
         cmd = [self.lcmds.MOUNT, "-o", "loop,shortname=winnt,umask=0777",
                "-t", "vfat", efiboot, efibootdir]
         logger.debug(cmd)
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-        p.wait()
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        proc.wait()
 
         # copy the files to the efiboot image
         dst = joinpaths(efibootdir, "EFI/BOOT")
@@ -573,8 +569,8 @@ class Lorax(BaseLoraxClass):
         # unmount the efiboot image
         cmd = [self.lcmds.UMOUNT, efibootdir]
         logger.debug(cmd)
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-        p.wait()
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        proc.wait()
 
         # remove the work directories
         shutil.rmtree(efibootdir)
@@ -616,10 +612,10 @@ class Lorax(BaseLoraxClass):
                str(partsize + 17408), "set", "1", "boot", "on"]
         logger.debug(cmd)
 
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-        rc = p.wait()
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        retcode = proc.wait()
 
-        if not rc == 0:
+        if not retcode == 0:
             remove_dm_dev(dmdev)
             remove_loop_dev(loopdev)
             os.unlink(efidisk)
@@ -639,7 +635,6 @@ class Lorax(BaseLoraxClass):
         return efidisk
 
     def create_bootiso(self, outputtree, efiboot=None):
-
         bootiso = joinpaths(self.workdir, "boot.iso")
         if os.path.isfile(bootiso):
             os.unlink(bootiso)
@@ -660,20 +655,20 @@ class Lorax(BaseLoraxClass):
                "isolinux={0}".format(outputtree.isolinuxdir),
                "images={0}".format(outputtree.imgdir)] + efigraft
         logger.debug(cmd)
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-        rc = p.wait()
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        retcode = proc.wait()
 
-        if not rc == 0:
+        if not retcode == 0:
             return None
 
         # create hybrid iso
         cmd = [self.lcmds.ISOHYBRID, bootiso]
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-        rc = p.wait()
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        retcode = proc.wait()
 
         # implant iso md5
         cmd = [self.lcmds.IMPLANTISOMD5, bootiso]
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-        rc = p.wait()
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        retcode = proc.wait()
 
         return bootiso
