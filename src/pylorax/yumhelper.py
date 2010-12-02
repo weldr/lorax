@@ -39,23 +39,23 @@ from sysutils import joinpaths
 
 class LoraxYumHelper(object):
 
-    def __init__(self, yb):
-        self.yb = yb
+    def __init__(self, ybo):
+        self.ybo = ybo
 
         # create our own installroot, the pungi one may be poluted
-        installroot = joinpaths(self.yb.conf.installroot, "installroot")
+        installroot = joinpaths(self.ybo.conf.installroot, "installroot")
         os.makedirs(installroot)
-        self.yb.conf.installroot = installroot
+        self.ybo.conf.installroot = installroot
 
-        self.installroot = self.yb.conf.installroot
+        self.installroot = self.ybo.conf.installroot
         self.installed_packages = self.get_packages("installed")
 
     def install(self, pattern):
         try:
-            self.yb.install(name=pattern)
+            self.ybo.install(name=pattern)
         except yum.Errors.InstallError:
             try:
-                self.yb.install(pattern=pattern)
+                self.ybo.install(pattern=pattern)
             except yum.Errors.InstallError as e:
                 msg = "cannot install {0}: {1}"
                 logger.error(msg.format(pattern, e))
@@ -71,7 +71,7 @@ class LoraxYumHelper(object):
                 logger.error(msg.format(package))
                 return False
 
-            # XXX match every file if no pattern specified
+            # match every file if no pattern specified
             if None in pattern_list:
                 if len(pattern_list) > 1:
                     msg = "redundant patterns specified, " \
@@ -132,34 +132,34 @@ class LoraxYumHelper(object):
 
     def process_transaction(self, skip_broken=True):
         # skip broken
-        self.yb.conf.skip_broken = skip_broken
-        self.yb.buildTransaction()
+        self.ybo.conf.skip_broken = skip_broken
+        self.ybo.buildTransaction()
 
-        self.yb.repos.setProgressBar(LoraxDownloadCallback())
+        self.ybo.repos.setProgressBar(LoraxDownloadCallback())
 
         try:
-            self.yb.processTransaction(callback=LoraxTransactionCallback(),
+            self.ybo.processTransaction(callback=LoraxTransactionCallback(),
                                        rpmDisplay=LoraxRpmCallback())
         except yum.Errors.YumRPMCheckError as e:
             logger.error("yum transaction error: {0}".format(e))
             sys.exit(1)
 
-        self.yb.closeRpmDB()
+        self.ybo.closeRpmDB()
 
         self.installed_packages = self.get_packages("installed")
 
     def search(self, pattern):
-        pl = self.yb.doPackageLists(patterns=[pattern])
+        pl = self.ybo.doPackageLists(patterns=[pattern])
         return pl.installed, pl.available
 
-    def get_packages(self, type="available"):
-        if type not in ("available", "installed"):
+    def get_packages(self, ptype="available"):
+        if ptype not in ("available", "installed"):
             raise TypeError
 
-        pl = self.yb.doPackageLists(pkgnarrow=type)
+        pl = self.ybo.doPackageLists(pkgnarrow=ptype)
 
         d = {}
-        for pkgobj in getattr(pl, type):
+        for pkgobj in getattr(pl, ptype):
             d[pkgobj.name] = pkgobj
 
         return d
@@ -183,15 +183,15 @@ class LoraxDownloadCallback(yum.callbacks.DownloadBaseCallback):
             @param ftime: formated string containing remaining or elapsed time
         """
 
-        m = self.pattern.match(name)
+        match = self.pattern.match(name)
 
         pkgno = 0
         total = 0
         pkgname = "error"
-        if m:
-            pkgno = int(m.group("pkgno"))
-            total = int(m.group("total"))
-            pkgname = m.group("pkgname")
+        if match:
+            pkgno = int(match.group("pkgno"))
+            total = int(match.group("total"))
+            pkgname = match.group("pkgname")
 
         info = "({0:3d}/{1:3d}) [{2:3.0f}%] downloading "
         info = info.format(pkgno, total, frac * 100)
@@ -212,7 +212,6 @@ class LoraxTransactionCallback(object):
         self.output = output.LoraxOutput()
 
     def event(self, state, data=None):
-        # XXX
         if state == yum.callbacks.PT_DOWNLOAD:
             self.output.write("downloading packages\n")
         elif state == yum.callbacks.PT_DOWNLOAD_PKGS:
