@@ -73,3 +73,5 @@ class LoraxRequiredCommands(dict):
 K_NORMAL = 0
 K_PAE = 1
 K_XEN = 1
+
+FS_OVERHEAD = 512
