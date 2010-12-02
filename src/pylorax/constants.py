@@ -29,6 +29,8 @@ from sysutils import joinpaths
 class LoraxRequiredCommands(dict):
 
     def __init__(self):
+        dict.__init__(self)
+
         self.__path = os.environ["PATH"].split(":")
         logger.debug("PATH: {0}".format(self.__path))
 
