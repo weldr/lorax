@@ -70,9 +70,9 @@ class LoraxOutputTree(BaseLoraxClass):
 
         for n, kernel in enumerate(self.installtree.kernels):
             suffix = ""
-            if kernel.type == constants.K_PAE:
+            if kernel.ktype == constants.K_PAE:
                 suffix = "-PAE"
-            elif kernel.type == constants.K_XEN:
+            elif kernel.ktype == constants.K_XEN:
                 suffix = "-XEN"
 
             kname = "vmlinuz{0}".format(suffix)
@@ -90,11 +90,11 @@ class LoraxOutputTree(BaseLoraxClass):
                 dst = joinpaths(self.pxebootdir, kname)
                 shutil.copy2(kernel.fpath, dst)
 
-            # XXX change the fname and fpath to new values
+            # change the fname and fpath to new values
             self.kernels.append(DataHolder(fname=kname,
                                            fpath=dst,
                                            version=kernel.version,
-                                           type=kernel.type))
+                                           ktype=kernel.ktype))
 
     def get_isolinux(self):
         isolinuxbin = joinpaths(self.installtree.root,
@@ -156,9 +156,9 @@ class LoraxOutputTree(BaseLoraxClass):
             replace(self.isolinuxcfg, r"prompt 1", "#prompt 1")
         elif os.path.isfile(splashtolss):
             cmd = [splashtolss, syslinuxsplash, splashlss]
-            p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-            rc = p.wait()
-            if not rc == 0:
+            proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+            retcode = proc.wait()
+            if not retcode == 0:
                 logger.error("failed to create splash.lss")
                 sys.exit(1)
 
