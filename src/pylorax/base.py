@@ -33,20 +33,20 @@ class BaseLoraxClass(object):
     def __init__(self):
         self.output = output.LoraxOutput()
 
-    def pcritical(self, msg, file=sys.stdout):
-        self.output.critical(msg, file)
+    def pcritical(self, msg, fobj=sys.stdout):
+        self.output.critical(msg, fobj)
 
-    def perror(self, msg, file=sys.stdout):
-        self.output.error(msg, file)
+    def perror(self, msg, fobj=sys.stdout):
+        self.output.error(msg, fobj)
 
-    def pwarning(self, msg, file=sys.stdout):
-        self.output.warning(msg, file)
+    def pwarning(self, msg, fobj=sys.stdout):
+        self.output.warning(msg, fobj)
 
-    def pinfo(self, msg, file=sys.stdout):
-        self.output.info(msg, file)
+    def pinfo(self, msg, fobj=sys.stdout):
+        self.output.info(msg, fobj)
 
-    def pdebug(self, msg, file=sys.stdout):
-        self.output.debug(msg, file)
+    def pdebug(self, msg, fobj=sys.stdout):
+        self.output.debug(msg, fobj)
 
 
 class DataHolder(dict):
