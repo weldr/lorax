@@ -36,7 +36,7 @@ class LoraxTemplate(object):
         template = Template(filename=template_file, lookup=lookup)
 
         try:
-            s = template.render(**variables)
+            textbuf = template.render(**variables)
         except:
             traceback = RichTraceback()
             for (filename, lineno, function, line) in traceback.traceback:
@@ -46,11 +46,11 @@ class LoraxTemplate(object):
             sys.exit(2)
 
         # split, strip and remove empty lines
-        lines = s.splitlines()
+        lines = textbuf.splitlines()
         lines = map(lambda line: line.strip(), lines)
         lines = filter(lambda line: line, lines)
 
         # split with shlex
-        lines = map(lambda line: shlex.split(line), lines)
+        lines = map(shlex.split, lines)
 
         return lines
