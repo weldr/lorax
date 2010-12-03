@@ -72,8 +72,21 @@ def main(args):
             sys.stdout.write(line)
 
     # set up yum
+
+    # XXX HACK
+    # we don't want yum's stuff in the output
+    # so we redirect stdout to /dev/null for a while...
+    stdout = os.dup(1)
+    null = open("/dev/null", "w")
+    os.dup2(null.fileno(), 1)
+
+    # here yum prints out some stuff we really don't care about
     yb = yum.YumBase()
     yb.doSackSetup()
+
+    # give the stdout back
+    os.dup2(stdout, 1)
+    null.close()
 
     # get excessive files in source
     sys.stderr.write("getting excessive files in source\n")
