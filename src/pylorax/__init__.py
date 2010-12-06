@@ -212,8 +212,9 @@ class Lorax(BaseLoraxClass):
                           self.conf.get("templates", "ramdisk"))
 
         tvars = { "basearch": self.basearch,
-                 "libdir" : self.libdir,
-                 "product": self.product.lower() }
+                  "buildarch": self.buildarch,
+                  "libdir" : self.libdir,
+                  "product": self.product.lower() }
 
         template = ltmpl.LoraxTemplate()
         template = template.parse(tfile, tvars)
@@ -235,10 +236,13 @@ class Lorax(BaseLoraxClass):
         buildstamp.write()
         shutil.copy2(buildstamp.path, self.installtree.root)
 
-        # save list of installed packages
-        with open(joinpaths(self.workdir, "packages"), "w") as fobj:
-            for pkgname in self.installtree.yum.installed_packages:
-                fobj.write("{0}\n".format(pkgname))
+        # DEBUG save list of installed packages
+        dname = joinpaths(self.workdir, "pkglists")
+        os.makedirs(dname)
+        for pkgname, pkgobj in self.installtree.yum.installed_packages.items():
+            with open(joinpaths(dname, pkgname), "w") as fobj:
+                for fname in pkgobj.filelist:
+                  fobj.write("{0}\n".format(fname))
 
         # remove locales
         logger.info("removing locales")
