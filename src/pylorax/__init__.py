@@ -177,10 +177,17 @@ class Lorax(BaseLoraxClass):
         logger.debug("set efiarch = {0.efiarch}".format(self))
         logger.debug("set libdir = {0.libdir}".format(self))
 
+        # set up work directory
+        logger.info("setting up work directory")
+        self.workdir = workdir or tempfile.mkdtemp(prefix="pylorax.work.")
+        if not os.path.isdir(self.workdir):
+            os.makedirs(self.workdir)
+        logger.debug("using work directory {0.workdir}".format(self))
+
         # set up install tree
         logger.info("setting up install tree")
         self.installtree = LoraxInstallTree(self.yum, self.basearch,
-                                            self.libdir)
+                                            self.libdir, self.workdir)
 
         # set up required build parameters
         logger.info("setting up build parameters")
@@ -198,13 +205,6 @@ class Lorax(BaseLoraxClass):
         logger.debug("set variant = {0.variant}".format(self))
         logger.debug("set bugurl = {0.bugurl}".format(self))
         logger.debug("set is_beta = {0.is_beta}".format(self))
-
-        # set up work directory
-        logger.info("setting up work directory")
-        self.workdir = workdir or tempfile.mkdtemp(prefix="pylorax.work.")
-        if not os.path.isdir(self.workdir):
-            os.makedirs(self.workdir)
-        logger.debug("using work directory {0.workdir}".format(self))
 
         # parse the template
         logger.info("parsing the template")
@@ -381,29 +381,43 @@ class Lorax(BaseLoraxClass):
         logger.info("cleaning up python files")
         self.installtree.cleanup_python_files()
 
-        # compress install tree
-        initrd = DataHolder(fname="initrd.img",
-                            fpath=joinpaths(self.workdir, "initrd.img"))
+        # compress install tree (create initrd)
+        initrds = []
+        for kernel in self.outputtree.kernels:
+            suffix = ""
+            if kernel.ktype == constants.K_PAE:
+                suffix = "-PAE"
+            elif kernel.ktype == constants.K_XEN:
+                suffix = "-XEN"
 
-        logger.info("compressing install tree")
-        success, elapsed = self.installtree.compress(initrd)
-        if not success:
-            logger.error("error while compressing install tree")
-        else:
-            logger.info("took {0:.2f} seconds".format(elapsed))
+            fname = "initrd{0}.img".format(suffix)
 
-        # copy initrd to pxebootdir
-        shutil.copy2(initrd.fpath, self.outputtree.pxebootdir)
+            initrd = DataHolder(fname=fname,
+                                fpath=joinpaths(self.workdir, fname),
+                                itype=kernel.ktype)
+
+            logger.info("compressing install tree ({0})".format(kernel.version))
+            success, elapsed = self.installtree.compress(initrd, kernel)
+            if not success:
+                logger.error("error while compressing install tree")
+            else:
+                logger.info("took {0:.2f} seconds".format(elapsed))
+
+            # copy initrd to pxebootdir
+            shutil.copy2(initrd.fpath, self.outputtree.pxebootdir)
+
+            initrds.append(initrd)
 
         # create initrd hard link in isolinuxdir
-        source = joinpaths(self.outputtree.pxebootdir, initrd.fname)
-        link_name = joinpaths(self.outputtree.isolinuxdir, initrd.fname)
+        source = joinpaths(self.outputtree.pxebootdir, initrds[0].fname)
+        link_name = joinpaths(self.outputtree.isolinuxdir, initrds[0].fname)
         os.link(source, link_name)
 
         # create efi images
         efiboot = None
         if grubefi:
             kernel = self.outputtree.kernels[0]
+            initrd = initrds[0]
 
             # create efiboot image with kernel
             logger.info("creating efiboot image with kernel")

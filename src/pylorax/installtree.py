@@ -39,12 +39,13 @@ from sysutils import *
 
 class LoraxInstallTree(BaseLoraxClass):
 
-    def __init__(self, yum, basearch, libdir):
+    def __init__(self, yum, basearch, libdir, workdir):
         BaseLoraxClass.__init__(self)
         self.yum = yum
         self.root = self.yum.installroot
         self.basearch = basearch
         self.libdir = libdir
+        self.workdir = workdir
 
         self.lcmds = constants.LoraxRequiredCommands()
 
@@ -338,6 +339,9 @@ class LoraxInstallTree(BaseLoraxClass):
         for fname in ["build", "source"]:
             os.unlink(joinpaths(moddir, fname))
 
+        # move modules out of the tree
+        shutil.move(moddir, self.workdir)
+
     def create_gconf(self):
         gconfdir = joinpaths(self.root, ".gconf/desktop")
         os.makedirs(gconfdir)
@@ -498,10 +502,13 @@ class LoraxInstallTree(BaseLoraxClass):
         dst = joinpaths(self.root, "sbin")
         shutil.copy2(src, dst)
 
-    def compress(self, initrd):
+    def compress(self, initrd, kernel):
         chdir = lambda: os.chdir(self.root)
-
         start = time.time()
+
+        # move corresponding modules to the tree
+        shutil.move(joinpaths(self.workdir, kernel.version),
+                    joinpaths(self.root, "modules"))
 
         find = subprocess.Popen([self.lcmds.FIND, "."], stdout=subprocess.PIPE,
                                 preexec_fn=chdir)
@@ -513,6 +520,10 @@ class LoraxInstallTree(BaseLoraxClass):
         gzipped = gzip.open(initrd.fpath, "wb")
         gzipped.write(cpio.stdout.read())
         gzipped.close()
+
+        # move modules out of the tree again
+        shutil.move(joinpaths(self.root, "modules", kernel.version),
+                    self.workdir)
 
         elapsed = time.time() - start
 
