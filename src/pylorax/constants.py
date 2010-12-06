@@ -72,6 +72,6 @@ class LoraxRequiredCommands(dict):
 # kernel types
 K_NORMAL = 0
 K_PAE = 1
-K_XEN = 1
+K_XEN = 2
 
 FS_OVERHEAD = 512
