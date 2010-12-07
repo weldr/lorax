@@ -79,9 +79,6 @@ LIB32 = "lib"
 LIB64 = "lib64"
 
 
-
-
-
 class Lorax(BaseLoraxClass):
 
     def __init__(self):
@@ -403,15 +400,18 @@ class Lorax(BaseLoraxClass):
             else:
                 logger.info("took {0:.2f} seconds".format(elapsed))
 
-            # copy initrd to pxebootdir
-            shutil.copy2(initrd.fpath, self.outputtree.pxebootdir)
-
             initrds.append(initrd)
 
-        # create initrd hard link in isolinuxdir
-        source = joinpaths(self.outputtree.pxebootdir, initrds[0].fname)
-        link_name = joinpaths(self.outputtree.isolinuxdir, initrds[0].fname)
+        # copy initrds to outputtree
+        shutil.copy2(initrds[0].fpath, self.outputtree.isolinuxdir)
+
+        # create hard link
+        source = joinpaths(self.outputtree.isolinuxdir, initrds[0].fname)
+        link_name = joinpaths(self.outputtree.pxebootdir, initrds[0].fname)
         os.link(source, link_name)
+
+        for initrd in initrds[1:]:
+            shutil.copy2(initrd.fpath, self.outputtree.pxebootdir)
 
         # create efi images
         efiboot = None
