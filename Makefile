@@ -1,4 +1,5 @@
 PYTHON ?= /usr/bin/env python
+DESTDIR ?= /
 
 PKGNAME = lorax
 VERSION = $(shell awk '/Version:/ { print $$2 }' $(PKGNAME).spec)
