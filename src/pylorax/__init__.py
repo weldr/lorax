@@ -415,7 +415,7 @@ class Lorax(BaseLoraxClass):
 
         # create efi images
         efiboot = None
-        if grubefi:
+        if grubefi and self.efiarch not in ("IA32",):
             kernel = self.outputtree.kernels[0]
             initrd = initrds[0]
 
