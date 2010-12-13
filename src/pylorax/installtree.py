@@ -128,7 +128,7 @@ class LoraxInstallTree(BaseLoraxClass):
         return True
 
     def move_stubs(self):
-        stubs = ("list-harddrives", "loadkeys", "losetup", "mknod",
+        stubs = ("list-harddrives", "loadkeys", "mknod",
                  "raidstart", "raidstop")
 
         for stub in stubs:
