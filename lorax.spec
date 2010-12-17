@@ -6,6 +6,10 @@ Summary:        Tool for creating the anaconda install images
 Group:          Applications/System
 License:        GPLv2+
 URL:            http://git.fedorahosted.org/git/?p=lorax.git
+
+# This is a Red Hat maintained package which is specific to
+# our distribution.  Thus the source is only available from
+# within this srpm.
 Source0:        %{name}-%{version}.tar.bz2
 BuildArch:      noarch
 
