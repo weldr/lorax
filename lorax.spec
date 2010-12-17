@@ -50,7 +50,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{python_sitelib}/*.egg-info
 %{_sbindir}/lorax
 %dir %{_sysconfdir}/lorax
-%config %{_sysconfdir}/lorax/lorax.conf
+%config(noreplace) %{_sysconfdir}/lorax/lorax.conf
 %dir %{_datadir}/lorax
 %{_datadir}/lorax/*
 
