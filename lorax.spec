@@ -7,11 +7,25 @@ Group:          Applications/System
 License:        GPLv2+
 URL:            http://git.fedorahosted.org/git/?p=lorax.git
 Source0:        %{name}-%{version}.tar.bz2
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+BuildArch:      noarch
 
 BuildRequires:  python-setuptools
-Requires:       python
+Requires:       python2-devel
 Requires:       python-mako
+Requires:       gawk
+Requires:       glibc-common
+Requires:       cpio
+Requires:       module-init-tools
+Requires:       device-mapper
+Requires:       findutils
+Requires:       GConf2
+Requires:       isomd5sum
+Requires:       syslinux
+Requires:       glibc
+Requires:       util-linux-ng
+Requires:       dosfstools
+Requires:       genisoimage
+Requires:       parted
 
 %description
 Lorax is a tool for creating the anaconda install images.
@@ -19,28 +33,22 @@ Lorax is a tool for creating the anaconda install images.
 %prep
 %setup -q
 
-
 %build
 
 %install
 rm -rf $RPM_BUILD_ROOT
 make DESTDIR=$RPM_BUILD_ROOT install
 
-
-%clean
-rm -rf $RPM_BUILD_ROOT
-
-
 %files
 %defattr(-,root,root,-)
-%doc
+%doc COPYING AUTHORS
 %{python_sitelib}/pylorax
 %{python_sitelib}/*.egg-info
+%{_sbindir}/lorax
 %dir %{_sysconfdir}/lorax
-%{_sysconfdir}/lorax/lorax.conf
+%config %{_sysconfdir}/lorax/lorax.conf
 %dir %{_datadir}/lorax
 %{_datadir}/lorax/*
-
 
 
 %changelog

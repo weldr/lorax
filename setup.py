@@ -14,6 +14,9 @@ for root, dnames, fnames in os.walk("share"):
         data_files.append((root.replace("share", "/usr/share/lorax", 1),
                            [os.path.join(root, fname)]))
 
+# executable
+data_files.append(("/usr/sbin", ["src/sbin/lorax"]))
+
 setup(name="lorax",
       version="0.1",
       description="Lorax",
@@ -25,6 +28,5 @@ setup(name="lorax",
       license="GPLv2+",
       packages=["pylorax"],
       package_dir={"" : "src"},
-      #scripts=["src/bin/lorax"],
       data_files=data_files
       )
