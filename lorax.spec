@@ -10,7 +10,7 @@ URL:            http://git.fedorahosted.org/git/?p=lorax.git
 # This is a Red Hat maintained package which is specific to
 # our distribution.  Thus the source is only available from
 # within this srpm.
-Source0:        %{name}-%{version}.tar.bz2
+Source0:        https://fedorahosted.org/releases/l/o/%{name}/%{name}-%{version}.tar.bz2
 BuildArch:      noarch
 
 BuildRequires:  python-setuptools
