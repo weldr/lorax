@@ -378,6 +378,10 @@ class Lorax(BaseLoraxClass):
         logger.info("cleaning up python files")
         self.installtree.cleanup_python_files()
 
+        # create .treeinfo
+        treeinfo = TreeInfo(self.workdir, self.product, self.version,
+                            self.variant, self.basearch)
+
         # compress install tree (create initrd)
         initrds = []
         for kernel in self.outputtree.kernels:
@@ -401,6 +405,13 @@ class Lorax(BaseLoraxClass):
                 logger.info("took {0:.2f} seconds".format(elapsed))
 
             initrds.append(initrd)
+
+            # add kernel and initrd paths to .treeinfo
+            section = "images{0}".format(suffix or ("-" + self.basearch))
+            data = {"kernel": "images/pxeboot/{0}".format(kernel.fname)}
+            treeinfo.add_section(section, data)
+            data = {"initrd": "images/pxeboot/{0}".format(initrd.fname)}
+            treeinfo.add_section(section, data)
 
         # copy initrds to outputtree
         shutil.copy2(initrds[0].fpath, self.outputtree.isolinuxdir)
@@ -460,12 +471,8 @@ class Lorax(BaseLoraxClass):
 
         shutil.move(bootiso, self.outputtree.imgdir)
 
-        # write .treeinfo
-        treeinfo = TreeInfo(self.workdir, self.product, self.version,
-                            self.variant, self.basearch)
-
         # add the boot.iso
-        section = "general"
+        section = "images-{0}".format(self.basearch)
         data = {"boot.iso": "images/{0}".format(os.path.basename(bootiso))}
         treeinfo.add_section(section, data)
 
