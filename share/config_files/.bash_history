@@ -5,3 +5,4 @@ tail -f /tmp/storage.log
 echo b > /proc/sysrq-trigger
 dmsetup table
 multipath -d
+HOME=/root chroot /mnt/sysimage bash -l -i
