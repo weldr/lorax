@@ -1,6 +1,6 @@
 Name:           lorax
 Version:        0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
@@ -52,7 +52,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
-* Fri Jan 14 2010 Martin Gracik <mgracik@redhat.com> 0.2-1
+* Fri Jan 14 2011 Martin Gracik <mgracik@redhat.com> 0.2-2
 - Fix the gnome themes
 - Add biosdevname package
 - Edit .bash_history file
