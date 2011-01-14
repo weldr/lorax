@@ -1,15 +1,11 @@
 Name:           lorax
-Version:        0.1
+Version:        0.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
 License:        GPLv2+
 URL:            http://git.fedorahosted.org/git/?p=lorax.git
-
-# This is a Red Hat maintained package which is specific to
-# our distribution.  Thus the source is only available from
-# within this srpm.
 Source0:        https://fedorahosted.org/releases/l/o/%{name}/%{name}-%{version}.tar.bz2
 BuildArch:      noarch
 
@@ -56,5 +52,12 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Fri Jan 14 2010 Martin Gracik <mgracik@redhat.com> 0.2-1
+- Fix the gnome themes
+- Add biosdevname package
+- Edit .bash_history file
+- Add the initrd and kernel lines to .treeinfo
+- Don't remove the gamin package from installtree
+
 * Wed Dec 01 2010 Martin Gracik <mgracik@redhat.com> 0.1-1
 - First packaging of the new lorax tool.
