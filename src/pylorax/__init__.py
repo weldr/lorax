@@ -407,7 +407,7 @@ class Lorax(BaseLoraxClass):
             initrds.append(initrd)
 
             # add kernel and initrd paths to .treeinfo
-            section = "images{0}".format(suffix or ("-" + self.basearch))
+            section = "images-{0}".format("xen" if suffix else self.basearch)
             data = {"kernel": "images/pxeboot/{0}".format(kernel.fname)}
             treeinfo.add_section(section, data)
             data = {"initrd": "images/pxeboot/{0}".format(initrd.fname)}
