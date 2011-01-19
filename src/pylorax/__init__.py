@@ -22,16 +22,11 @@
 
 # set up logging
 import logging
-
-fh = logging.FileHandler(filename="pylorax.log", mode="w")
-fh.setLevel(logging.DEBUG)
-logging.getLogger("pylorax").addHandler(fh)
+logger = logging.getLogger("pylorax")
 
 sh = logging.StreamHandler()
 sh.setLevel(logging.INFO)
-logging.getLogger("").addHandler(sh)
-
-logger = logging.getLogger("pylorax")
+logger.addHandler(sh)
 
 
 import sys
@@ -129,10 +124,35 @@ class Lorax(BaseLoraxClass):
 
         self._configured = True
 
+    def init_file_logging(self, logdir, logname="pylorax.log"):
+        fh = logging.FileHandler(filename=joinpaths(logdir, logname), mode="w")
+        fh.setLevel(logging.DEBUG)
+        logger.addHandler(fh)
+
     def run(self, ybo, product, version, release, variant="", bugurl="",
             is_beta=False, workdir=None, outputdir=None):
 
         assert self._configured
+
+        # set up work directory
+        self.workdir = workdir or tempfile.mkdtemp(prefix="pylorax.work.")
+        if not os.path.isdir(self.workdir):
+            os.makedirs(self.workdir)
+
+        # set up log directory
+        logdir = joinpaths(self.workdir, "log")
+        if not os.path.isdir(logdir):
+            os.makedirs(logdir)
+
+        self.init_file_logging(logdir)
+        logger.debug("using work directory {0.workdir}".format(self))
+        logger.debug("using log directory {0}".format(logdir))
+
+        # set up output directory
+        self.outputdir = outputdir or tempfile.mkdtemp(prefix="pylorax.out.")
+        if not os.path.isdir(self.outputdir):
+            os.makedirs(self.outputdir)
+        logger.debug("using output directory {0.outputdir}".format(self))
 
         # do we have root privileges?
         logger.info("checking for root privileges")
@@ -173,13 +193,6 @@ class Lorax(BaseLoraxClass):
         logger.debug("set basearch = {0.basearch}".format(self))
         logger.debug("set efiarch = {0.efiarch}".format(self))
         logger.debug("set libdir = {0.libdir}".format(self))
-
-        # set up work directory
-        logger.info("setting up work directory")
-        self.workdir = workdir or tempfile.mkdtemp(prefix="pylorax.work.")
-        if not os.path.isdir(self.workdir):
-            os.makedirs(self.workdir)
-        logger.debug("using work directory {0.workdir}".format(self))
 
         # set up install tree
         logger.info("setting up install tree")
@@ -300,12 +313,6 @@ class Lorax(BaseLoraxClass):
         self.installtree.get_anaconda_portions()
 
         # set up output tree
-        logger.info("setting up output tree")
-        self.outputdir = outputdir or tempfile.mkdtemp(prefix="pylorax.out.")
-        if not os.path.isdir(self.outputdir):
-            os.makedirs(self.outputdir)
-        logger.debug("using output directory {0.outputdir}".format(self))
-
         self.outputtree = LoraxOutputTree(self.outputdir, self.installtree,
                                           self.product, self.version)
 
