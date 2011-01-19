@@ -482,7 +482,7 @@ class LoraxInstallTree(BaseLoraxClass):
             fobj.write("install:x:0:0:root:/root:/sbin/loader\n")
 
         shadow = joinpaths(self.root, "etc", "shadow")
-        with open(shadow, "a") as fobj:
+        with open(shadow, "w") as fobj:
             fobj.write("root::14438:0:99999:7:::\n")
             fobj.write("install::14438:0:99999:7:::\n")
 
