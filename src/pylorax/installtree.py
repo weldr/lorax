@@ -54,6 +54,10 @@ class LoraxInstallTree(BaseLoraxClass):
 
         # get locales we need to keep
         langtable = joinpaths(self.root, "usr/share/anaconda/lang-table")
+        if not os.path.exists(langtable):
+            logger.critical("could not find anaconda lang-table, exiting")
+            sys.exit(1)
+
         with open(langtable, "r") as fobj:
             langs = fobj.readlines()
 
