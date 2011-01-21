@@ -403,9 +403,9 @@ class LoraxInstallTree(BaseLoraxClass):
             os.unlink(name)
 
         # mtab symlink
-        target = "/proc/mounts"
-        name = joinpaths(self.root, "etc", "mtab")
-        os.symlink(target, name)
+        #target = "/proc/mounts"
+        #name = joinpaths(self.root, "etc", "mtab")
+        #os.symlink(target, name)
 
         # create resolv.conf
         touch(joinpaths(self.root, "etc", "resolv.conf"))
