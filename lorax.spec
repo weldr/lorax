@@ -1,6 +1,6 @@
 Name:           lorax
-Version:        0.2
-Release:        2%{?dist}
+Version:        0.3
+Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
@@ -52,6 +52,14 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Mon Jan 24 2011 Martin Gracik <mgracik@redhat.com> 0.3-1
+- Don't remove libmount package
+- Don't create mtab symlink, already exists
+- Exit with error if we have no lang-table
+- Fix file logging
+- Overwrite the /etc/shadow file
+- Use [images-xen] section for PAE and xen kernels
+
 * Fri Jan 14 2011 Martin Gracik <mgracik@redhat.com> 0.2-2
 - Fix the gnome themes
 - Add biosdevname package
