@@ -229,6 +229,15 @@ class Lorax(BaseLoraxClass):
         template = ltmpl.LoraxTemplate()
         template = template.parse(tfile, tvars)
 
+        # get required directories
+        logger.info("creating tree directories")
+        dirs = [f[1:] for f in template if f[0] == "mkdir"]
+        dirs = itertools.chain.from_iterable(dirs)
+
+        # create directories
+        for d in dirs:
+            os.makedirs(joinpaths(self.installtree.root, d))
+
         # get list of required packages
         logger.info("getting list of required packages")
         required = [f[1:] for f in template if f[0] == "install"]
