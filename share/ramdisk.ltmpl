@@ -195,6 +195,9 @@ install "ql2400-firmware"
 install "ql2500-firmware"
 install "zd1211-firmware"
 
+## required directories
+mkdir "/var/run/dbus"
+
 ## not required packages installed as dependencies
 remove "ConsoleKit-x11"
 remove "alsa-lib"
