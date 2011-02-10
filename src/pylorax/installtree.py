@@ -336,20 +336,8 @@ class LoraxInstallTree(BaseLoraxClass):
 
     def misc_tree_modifications(self):
         if self.basearch in ("s390", "s390x"):
-            # copy shutdown
-            src = joinpaths(self.root, "usr", self.libdir, "anaconda/shutdown")
-            dst = joinpaths(self.root, "sbin", "shutdown")
-            os.unlink(dst)
-            shutil.copy2(src, dst)
-
             # copy linuxrc.s390
             src = joinpaths(self.root, "usr/share/anaconda/linuxrc.s390")
-            dst = joinpaths(self.root, "sbin", "init")
-            os.unlink(dst)
-            shutil.copy2(src, dst)
-        else:
-            # replace init with anaconda init
-            src = joinpaths(self.root, "usr", self.libdir, "anaconda", "init")
             dst = joinpaths(self.root, "sbin", "init")
             os.unlink(dst)
             shutil.copy2(src, dst)
@@ -359,19 +347,13 @@ class LoraxInstallTree(BaseLoraxClass):
         name = joinpaths(self.root, "init")
         os.symlink(target, name)
 
-        for fname in ["halt", "poweroff", "reboot"]:
-            name = joinpaths(self.root, "sbin", fname)
-            os.unlink(name)
-            os.symlink("init", name)
-
-        for fname in ["runlevel", "shutdown", "telinit"]:
-            name = joinpaths(self.root, "sbin", fname)
-            os.unlink(name)
-
         # mtab symlink
         #target = "/proc/mounts"
         #name = joinpaths(self.root, "etc", "mtab")
         #os.symlink(target, name)
+
+        os.unlink(joinpaths(self.root, "etc/systemd/system/default.target"))
+        os.symlink("/lib/systemd/system/anaconda.target", joinpaths(self.root, "etc/systemd/system/default.target"))
 
         # create resolv.conf
         touch(joinpaths(self.root, "etc", "resolv.conf"))
@@ -435,6 +417,11 @@ class LoraxInstallTree(BaseLoraxClass):
             src = joinpaths(src_dir, "selinux.config")
             dst = joinpaths(self.root, "etc/selinux", "config")
             shutil.copy2(src, dst)
+
+        # get sysconfig files
+        src = joinpaths(src_dir, "network")
+        dst = joinpaths(self.root, "etc/sysconfig")
+        shutil.copy2(src, dst)
 
     def setup_sshd(self, src_dir):
         # get sshd config
