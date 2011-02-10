@@ -521,7 +521,7 @@ class LoraxInstallTree(BaseLoraxClass):
         find = subprocess.Popen([self.lcmds.FIND, "."], stdout=subprocess.PIPE,
                                 preexec_fn=chdir)
 
-        cpio = subprocess.Popen([self.lcmds.CPIO, "--quiet", "-c", "-o"],
+        cpio = subprocess.Popen([self.lcmds.CPIO, "--quiet", "-H", "newc", "-o"],
                                 stdin=find.stdout, stdout=subprocess.PIPE,
                                 preexec_fn=chdir)
 
