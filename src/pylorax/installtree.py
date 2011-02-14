@@ -58,34 +58,6 @@ class LoraxInstallTree(BaseLoraxClass):
             logger.critical("could not find anaconda lang-table, exiting")
             sys.exit(1)
 
-        with open(langtable, "r") as fobj:
-            langs = fobj.readlines()
-
-        langs = map(lambda l: l.split()[3].replace(".UTF-8", ".utf8"), langs)
-        langs = set(langs)
-
-        # get locales from locale-archive
-        localearch = "/usr/lib/locale/locale-archive"
-
-        cmd = [self.lcmds.LOCALEDEF, "--list-archive", localearch]
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, preexec_fn=chroot)
-        output = proc.stdout.read()
-
-        remove = set(output.split()) - langs
-
-        # remove not needed locales
-        cmd = [self.lcmds.LOCALEDEF, "-i", localearch,
-               "--delete-from-archive"] + list(remove)
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, preexec_fn=chroot)
-        proc.wait()
-
-        localearch = joinpaths(self.root, localearch)
-        shutil.move(localearch, localearch + ".tmpl")
-
-        proc = subprocess.Popen([self.lcmds.BUILD_LOCALE_ARCHIVE],
-                             preexec_fn=chroot)
-        proc.wait()
-
         # remove unneeded locales from /usr/share/locale
         with open(langtable, "r") as fobj:
             langs = fobj.readlines()

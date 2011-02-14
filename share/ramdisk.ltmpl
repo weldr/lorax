@@ -747,13 +747,15 @@ remove "glibc-common" "/usr/bin/getconf"
 remove "glibc-common" "/usr/bin/getent"
 remove "glibc-common" "/usr/bin/ldd"
 remove "glibc-common" "/usr/bin/locale"
-remove "glibc-common" "/usr/bin/localedef"
 remove "glibc-common" "/usr/bin/rpcgen"
 remove "glibc-common" "/usr/bin/sprof"
 remove "glibc-common" "/usr/bin/tzselect"
 remove "glibc-common" "/usr/libexec/*"
 remove "glibc-common" "/usr/sbin/*"
-remove "glibc-common" "/usr/share/i18n/*"
+
+# remove generated locales anaconda knows how to restore them at runtime
+remove "glibc-common" "/usr/lib/locale/*"
+
 remove "gmp" "/usr/${libdir}/libgmpxx.*"
 remove "gmp" "/usr/${libdir}/libmp.*"
 remove "gnome-bluetooth-libs" "/usr/${libdir}/libgnome-bluetooth*"
