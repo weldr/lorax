@@ -26,6 +26,7 @@ Requires:       util-linux-ng
 Requires:       dosfstools
 Requires:       genisoimage
 Requires:       parted
+Requires:       pyliblzma
 
 %description
 Lorax is a tool for creating the anaconda install images.

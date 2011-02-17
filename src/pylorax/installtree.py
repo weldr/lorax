@@ -26,6 +26,7 @@ import sys
 import os
 import shutil
 import gzip
+import lzma
 import re
 import glob
 import time
@@ -478,7 +479,7 @@ class LoraxInstallTree(BaseLoraxClass):
         dst = joinpaths(self.root, "sbin")
         shutil.copy2(src, dst)
 
-    def compress(self, initrd, kernel):
+    def compress(self, initrd, kernel, type="xz"):
         chdir = lambda: os.chdir(self.root)
         start = time.time()
 
@@ -493,9 +494,15 @@ class LoraxInstallTree(BaseLoraxClass):
                                 stdin=find.stdout, stdout=subprocess.PIPE,
                                 preexec_fn=chdir)
 
-        gzipped = gzip.open(initrd.fpath, "wb")
-        gzipped.write(cpio.stdout.read())
-        gzipped.close()
+        if type == "gzip":
+            compressed = gzip.open(initrd.fpath, "wb")
+        elif type == "xz":
+            compressed = lzma.LZMAFile(initrd.fpath, "w",
+                    options={"format":"xz", "check":"crc32",
+                             "level":9})
+
+        compressed.write(cpio.stdout.read())
+        compressed.close()
 
         # move modules out of the tree again
         shutil.move(joinpaths(self.root, "modules", kernel.version),
