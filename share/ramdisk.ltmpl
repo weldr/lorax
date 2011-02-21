@@ -755,6 +755,8 @@ remove "glibc-common" "/usr/sbin/*"
 
 # remove generated locales anaconda knows how to restore them at runtime
 remove "glibc-common" "/usr/lib/locale/*"
+# locale-archive is not in the glibc-common filelist
+remove --path "/usr/lib/locale/locale-archive"
 
 remove "gmp" "/usr/${libdir}/libgmpxx.*"
 remove "gmp" "/usr/${libdir}/libmp.*"
