@@ -426,6 +426,14 @@ class LoraxInstallTree(BaseLoraxClass):
           "string", "disabled"),
          ("/apps/metacity/global_keybindings/run_command_screenshot",
           "string", "disabled"),
+         ("/apps/metacity/global_keybindings/switch_to_workspace_down",
+          "string", "disabled"),
+         ("/apps/metacity/global_keybindings/switch_to_workspace_left",
+          "string", "disabled"),
+         ("/apps/metacity/global_keybindings/switch_to_workspace_right",
+          "string", "disabled"),
+         ("/apps/metacity/global_keybindings/switch_to_workspace_up",
+          "string", "disabled"),
          ("/desktop/gnome/interface/accessibility", "bool", "true"),
          ("/desktop/gnome/interface/at-spi-corba", "bool", "true")]
 
