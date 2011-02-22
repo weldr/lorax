@@ -506,8 +506,7 @@ class LoraxInstallTree(BaseLoraxClass):
             compressed = gzip.open(initrd.fpath, "wb")
         elif type == "xz":
             compressed = lzma.LZMAFile(initrd.fpath, "w",
-                    options={"format":"xz", "check":"crc32",
-                             "level":9})
+                    options={"format":"xz", "level":9})
 
         compressed.write(cpio.stdout.read())
         compressed.close()
