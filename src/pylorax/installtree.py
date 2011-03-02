@@ -358,6 +358,14 @@ class LoraxInstallTree(BaseLoraxClass):
         # create resolv.conf
         touch(joinpaths(self.root, "etc", "resolv.conf"))
 
+        # create a basic /bin/login script that'll automatically start up
+        # bash as a login shell.  This is needed because we can't pass bash
+        # arguments from the agetty command line, and there's not really a
+        # better way to autologin root.
+        with open(joinpaths(self.root, "bin/login"), "w") as fobj:
+            fobj.write("#!/bin/bash\n")
+            fobj.write("exec -l /bin/bash\n")
+
     def get_config_files(self, src_dir):
         # anaconda needs to change a couple of the default gconf entries
         gconf = joinpaths(self.root, "etc", "gconf", "gconf.xml.defaults")
