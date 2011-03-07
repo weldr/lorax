@@ -32,6 +32,7 @@ import pwd
 import grp
 import glob
 import subprocess
+import shutil
 
 
 def joinpaths(*args, **kwargs):
@@ -126,3 +127,11 @@ def remove_dm_dev(dev):
     cmd = ["dmsetup", "remove", dev]
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     return proc.wait()
+
+
+def cpfile(src, dst):
+    shutil.copy2(src, dst)
+    if os.path.isdir(dst):
+        dst = joinpaths(dst, os.path.basename(src))
+
+    return dst
