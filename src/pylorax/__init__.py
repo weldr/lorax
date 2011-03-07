@@ -54,6 +54,7 @@ from outputtree import LoraxOutputTree
 from buildstamp import BuildStamp
 from treeinfo import TreeInfo
 from discinfo import DiscInfo
+import images
 
 
 ARCHMAPS = {
@@ -325,12 +326,12 @@ class Lorax(BaseLoraxClass):
         self.outputtree = LoraxOutputTree(self.outputdir, self.installtree,
                                           self.product, self.version)
 
-        self.outputtree.prepare()
-        self.outputtree.get_isolinux()
-        self.outputtree.get_memtest()
-        self.outputtree.get_splash()
-        self.outputtree.get_msg_files()
-        self.outputtree.get_grub_conf()
+        #self.outputtree.prepare()
+        #self.outputtree.get_isolinux()
+        #self.outputtree.get_memtest()
+        #self.outputtree.get_splash()
+        #self.outputtree.get_msg_files()
+        #self.outputtree.get_grub_conf()
 
         # write .discinfo
         discinfo = DiscInfo(self.workdir, self.release, self.basearch)
@@ -338,6 +339,7 @@ class Lorax(BaseLoraxClass):
 
         shutil.copy2(discinfo.path, self.outputtree.root)
 
+        # move grubefi to workdir
         grubefi = joinpaths(self.installtree.root, "boot/efi/EFI/redhat",
                             "grub.efi")
 
@@ -347,14 +349,41 @@ class Lorax(BaseLoraxClass):
         else:
             grubefi = None
 
+        # move grub splash to workdir
         splash = joinpaths(self.installtree.root, "boot/grub/",
                            "splash.xpm.gz")
 
-        shutil.move(splash, self.workdir)
-        splash = joinpaths(self.workdir, os.path.basename(splash))
+        if os.path.isfile(splash):
+            shutil.move(splash, self.workdir)
+            splash = joinpaths(self.workdir, os.path.basename(splash))
+        else:
+            splash = None
 
         # copy kernels to output directory
-        self.outputtree.get_kernels()
+        self.outputtree.get_kernels(self.workdir)
+
+        # create .treeinfo
+        treeinfo = TreeInfo(self.workdir, self.product, self.version,
+                            self.variant, self.basearch)
+
+        # get the image class
+        if self.basearch == "ppc":
+            imgclass = images.PPC
+        elif self.basearch in ("i386", "x86_64"):
+            imgclass = images.X86
+        else:
+            raise Exception("not supported arch '{0}'".format(self.basearch))
+
+        i = imgclass(kernellist=self.outputtree.kernels,
+                     installtree=self.installtree,
+                     outputroot=self.outputtree.root,
+                     product=self.product,
+                     version=self.version,
+                     treeinfo=treeinfo,
+                     basearch=self.basearch)
+
+        # backup required files
+        i.backup_required(self.workdir)
 
         # get list of not required packages
         logger.info("getting list of not required packages")
@@ -394,65 +423,56 @@ class Lorax(BaseLoraxClass):
         logger.info("cleaning up python files")
         self.installtree.cleanup_python_files()
 
-        # create .treeinfo
-        treeinfo = TreeInfo(self.workdir, self.product, self.version,
-                            self.variant, self.basearch)
-
         # compress install tree (create initrd)
-        initrds = []
-        for kernel in self.outputtree.kernels:
-            suffix = ""
-            if kernel.ktype == constants.K_PAE:
-                suffix = "-PAE"
-            elif kernel.ktype == constants.K_XEN:
-                suffix = "-XEN"
+        logger.info("creating the initrd")
+        i.create_initrd(self.libdir)
 
-            fname = "initrd{0}.img".format(suffix)
-
-            initrd = DataHolder(fname=fname,
-                                fpath=joinpaths(self.workdir, fname),
-                                itype=kernel.ktype)
-
-            logger.info("compressing install tree ({0})".format(kernel.version))
-            success, elapsed = self.installtree.compress(initrd, kernel)
-            if not success:
-                logger.error("error while compressing install tree")
-            else:
-                logger.info("took {0:.2f} seconds".format(elapsed))
-
-            initrds.append(initrd)
-
-            # add kernel and initrd paths to .treeinfo
-            section = "images-{0}".format("xen" if suffix else self.basearch)
-            data = {"kernel": "images/pxeboot/{0}".format(kernel.fname)}
-            treeinfo.add_section(section, data)
-            data = {"initrd": "images/pxeboot/{0}".format(initrd.fname)}
-            treeinfo.add_section(section, data)
-
-            # we need to have a xen section for x86_64
-            if self.basearch == "x86_64":
-                section = "images-xen"
-                data = {"kernel": "images/pxeboot/{0}".format(kernel.fname)}
-                treeinfo.add_section(section, data)
-                data = {"initrd": "images/pxeboot/{0}".format(initrd.fname)}
-                treeinfo.add_section(section, data)
-
-        # copy initrds to outputtree
-        shutil.copy2(initrds[0].fpath, self.outputtree.isolinuxdir)
-
-        # create hard link
-        source = joinpaths(self.outputtree.isolinuxdir, initrds[0].fname)
-        link_name = joinpaths(self.outputtree.pxebootdir, initrds[0].fname)
-        os.link(source, link_name)
-
-        for initrd in initrds[1:]:
-            shutil.copy2(initrd.fpath, self.outputtree.pxebootdir)
+        #initrds = []
+        #for kernel in self.outputtree.kernels:
+        #    suffix = ""
+        #    if kernel.ktype == constants.K_PAE:
+        #        suffix = "-PAE"
+        #    elif kernel.ktype == constants.K_XEN:
+        #        suffix = "-XEN"
+        #
+        #    fname = "initrd{0}.img".format(suffix)
+        #
+        #    initrd = DataHolder(fname=fname,
+        #                        fpath=joinpaths(self.workdir, fname),
+        #                        itype=kernel.ktype)
+        #
+        #    logger.info("compressing install tree ({0})".format(kernel.version))
+        #    success, elapsed = self.installtree.compress(initrd, kernel)
+        #    if not success:
+        #        logger.error("error while compressing install tree")
+        #    else:
+        #        logger.info("took {0:.2f} seconds".format(elapsed))
+        #
+        #    initrds.append(initrd)
+        #
+        #    # add kernel and initrd paths to .treeinfo
+        #    section = "images-{0}".format("xen" if suffix else self.basearch)
+        #    data = {"kernel": "images/pxeboot/{0}".format(kernel.fname)}
+        #    treeinfo.add_section(section, data)
+        #    data = {"initrd": "images/pxeboot/{0}".format(initrd.fname)}
+        #    treeinfo.add_section(section, data)
+        #
+        ## copy initrds to outputtree
+        #shutil.copy2(initrds[0].fpath, self.outputtree.isolinuxdir)
+        #
+        ## create hard link
+        #source = joinpaths(self.outputtree.isolinuxdir, initrds[0].fname)
+        #link_name = joinpaths(self.outputtree.pxebootdir, initrds[0].fname)
+        #os.link(source, link_name)
+        #
+        #for initrd in initrds[1:]:
+        #    shutil.copy2(initrd.fpath, self.outputtree.pxebootdir)
 
         # create efi images
         efiboot = None
         if grubefi and self.efiarch not in ("IA32",):
-            kernel = self.outputtree.kernels[0]
-            initrd = initrds[0]
+            kernel = i.kernels[0]
+            initrd = i.initrds[0]
 
             # create efiboot image with kernel
             logger.info("creating efiboot image with kernel")
@@ -488,17 +508,19 @@ class Lorax(BaseLoraxClass):
 
         # create boot iso
         logger.info("creating boot iso")
-        bootiso = self.create_bootiso(self.outputtree, efiboot)
-        if bootiso is None:
-            logger.critical("unable to create boot iso")
-            sys.exit(1)
+        i.create_boot(efiboot)
 
-        shutil.move(bootiso, self.outputtree.imgdir)
-
-        # add the boot.iso
-        section = "images-{0}".format(self.basearch)
-        data = {"boot.iso": "images/{0}".format(os.path.basename(bootiso))}
-        treeinfo.add_section(section, data)
+        #bootiso = self.create_bootiso(self.outputtree, efiboot)
+        #if bootiso is None:
+        #    logger.critical("unable to create boot iso")
+        #    sys.exit(1)
+        #
+        #shutil.move(bootiso, self.outputtree.imgdir)
+        #
+        ## add the boot.iso
+        #section = "images-{0}".format(self.basearch)
+        #data = {"boot.iso": "images/{0}".format(os.path.basename(bootiso))}
+        #treeinfo.add_section(section, data)
 
         treeinfo.write()
 
