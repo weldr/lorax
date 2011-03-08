@@ -51,7 +51,6 @@ NETBOOTDIR = "images/netboot"
 
 MKZIMAGE = "usr/bin/mkzimage"
 ZIMAGE_STUB = "usr/share/ppc64-utils/zImage.stub"
-ZIMAGE_LDS = "usr/share/ppc64-utils/zImage.lds"
 WRAPPER = "usr/sbin/wrapper"
 
 ISOPATHDIR = "isopath"
@@ -93,10 +92,6 @@ class PPC(object):
                                "yaboot.conf.in")
 
         self.reqs["yabootconf"] = cpfile(yabootconf, workdir)
-
-        # zImage.lds
-        zimage_lds = joinpaths(self.installtree.root, ZIMAGE_LDS)
-        self.reqs["zimage_lds"] = cpfile(zimage_lds, workdir)
 
         # bootinfo.txt
         bootinfo_txt = joinpaths(self.installtree.root, ANABOOTDIR,
@@ -207,8 +202,11 @@ class PPC(object):
 
             if (os.path.exists(mkzimage) and os.path.exists(zimage_stub)):
                 logger.info("creating the z image")
-                # copy zImage.lds
-                zimage_lds = cpfile(self.reqs["zimage_lds"],
+
+                # XXX copy zImage.lds
+                zimage_lds = joinpaths(self.installtree.root,
+                                   "usr/%s/kernel-wrapper/zImage.lds" % libdir)
+                zimage_lds = cpfile(zimage_lds,
                                     joinpaths(self.outputroot, ppcdir))
 
                 # change current working directory
