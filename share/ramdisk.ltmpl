@@ -10,6 +10,14 @@ install "kernel"
     install "gpart"
 % endif
 
+## x86 specific packages
+% if basearch == "i386" or basearch == "x86_64":
+    install "efibootmgr"
+    install "firstaidkit-plugin-grub"
+    install "grub"
+    install "memtest86+"
+% endif
+
 ## ppc specific packages
 % if basearch == "ppc":
     install "pcmciautils"
@@ -40,12 +48,10 @@ install "dejavu-sans-fonts"
 install "dejavu-sans-mono-fonts"
 install "dogtail"
 install "dump"
-install "efibootmgr"
 install "ethtool"
 install "fedora-gnome-theme"
 install "fedora-icon-theme"
 install "firstaidkit-engine"
-install "firstaidkit-plugin-grub"
 install "firstboot"
 install "ftp"
 install "gdb-gdbserver"
@@ -61,7 +67,6 @@ install "gnome-python2-gconf"
 install "gnome-themes-standard"
 install "gobject-introspection"
 install "groff"
-install "grub"
 install "gtk+"
 install "hdparm"
 install "jfsutils"
@@ -90,7 +95,6 @@ install "lsof"
 install "lvm2-cluster"
 install "madan-fonts"
 install "man-db"
-install "memtest86+"
 install "metacity"
 install "mt-st"
 install "mtr"
