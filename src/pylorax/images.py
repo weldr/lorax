@@ -105,7 +105,7 @@ class PPC(object):
         self.reqs["bootinfo_txt"] = cpfile(bootinfo_txt, workdir)
 
         # efika.forth
-        efika_forth = joinpaths(self.installtree.root, ANABOOTDIR,
+        efika_forth = joinpaths(self.installtree.root, "boot",
                                 "efika.forth")
 
         self.reqs["efika_forth"] = cpfile(efika_forth, workdir)
@@ -370,8 +370,8 @@ class X86(object):
         syslinux_cfg = joinpaths(self.installtree.root, SYSLINUX_CFG)
         self.reqs["syslinux_cfg"] = cpfile(syslinux_cfg, workdir)
 
-        # memtest (XXX not from installroot/boot?)
-        memtest = glob.glob(joinpaths(self.installtree.root, ANABOOTDIR,
+        # memtest
+        memtest = glob.glob(joinpaths(self.installtree.root, "boot",
                                       "memtest*"))
 
         if memtest:
