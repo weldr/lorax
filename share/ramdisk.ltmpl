@@ -10,6 +10,17 @@ install "kernel"
     install "gpart"
 % endif
 
+## ppc specific packages
+% if basearch == "ppc":
+    install "pcmciautils"
+    install "pdisk"
+    install "yaboot"
+    install "hfsutils"
+    install "kernel-bootwrapper"
+    install "fbset"
+    install "ppc64-utils"
+% endif
+
 ## other required packages
 install "NetworkManager-gnome"
 install "at-spi"
