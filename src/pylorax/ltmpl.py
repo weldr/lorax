@@ -50,6 +50,9 @@ class LoraxTemplate(object):
         lines = map(lambda line: line.strip(), lines)
         lines = filter(lambda line: line, lines)
 
+        # mako template now returns unicode strings
+        lines = map(lambda line: line.encode("ascii"), lines)
+
         # split with shlex
         lines = map(shlex.split, lines)
 
