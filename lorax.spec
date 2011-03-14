@@ -1,5 +1,5 @@
 Name:           lorax
-Version:        0.3
+Version:        0.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -53,6 +53,21 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Mon Mar 14 2011 Martin Gracik <mgracik@redhat.com> 0.4-1
+- Add the images-xen section to treeinfo on x86_64
+- Print a message when no arguments given (#684463)
+- Mako template returns unicode strings (#681003)
+- The check option in options causes ValueError
+- Disable all ctrl-alt-arrow metacity shortcuts
+- Remove the locale-archive explicitly
+- Use xz when compressing the initrd
+- Keep the source files for locales and get rid of the binary form
+- Add /sbin to $PATH (for the tty2 terminal)
+- Create /var/run/dbus directory in installtree
+- Add mkdir support to template
+- gpart is present only on i386 arch (#672611)
+- util-linux-ng changed to util-linux
+
 * Mon Jan 24 2011 Martin Gracik <mgracik@redhat.com> 0.3-1
 - Don't remove libmount package
 - Don't create mtab symlink, already exists
