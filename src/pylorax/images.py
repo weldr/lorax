@@ -522,6 +522,14 @@ class X86(object):
                 data = {"boot.iso": joinpaths(IMAGESDIR, "boot.iso")}
                 self.treeinfo.add_section(section, data)
 
+            # create images-xen section on x86_64
+            if self.basearch == "x86_64":
+                section = "images-xen"
+                data = {"kernel": joinpaths(PXEBOOTDIR, kernel.fname)}
+                treeinfo.add_section(section, data)
+                data = {"initrd": joinpaths(PXEBOOTDIR, initrd.fname)}
+                treeinfo.add_section(section, data)
+
     def create_boot(self, efiboot=None):
         # define efiargs and efigraft
         efiargs, efigraft = [], []
