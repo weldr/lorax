@@ -74,7 +74,11 @@ def main(args):
 
     # parse the arguments
     opts, args = parser.parse_args()
-    outputdir = args[0]
+
+    try:
+        outputdir = args[0]
+    except IndexError:
+        parser.error("missing one or more required arguments")
 
     if opts.showver:
         print(version)
