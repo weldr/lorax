@@ -329,10 +329,9 @@ class PPC(object):
                "-sysid", "PPC", "-V", '"PBOOT"',
                "-volset", '"%s"' % self.version, "-volset-size", "1",
                "-volset-seqno", "1"] + macboot + \
-              ["-map", MAPPING, "-magic", MAGIC,
+              ["-map", joinpaths(self.installtree.root, MAPPING),
+               "-magic", joinpaths(self.installtree.root, MAGIC),
                "-no-desktop", "-allow-multidot", "-graft-points", isopathdir]
-
-        logger.debug("running: %s" % cmd)
 
         p = subprocess.Popen(cmd, stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE)
