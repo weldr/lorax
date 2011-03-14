@@ -116,6 +116,10 @@ class LoraxYumHelper(object):
                 fullpattern = joinpaths(self.installroot, pattern)
                 count = 0
                 for fname in glob.glob(fullpattern):
+                    # if there are symlinks, we could already removed the file
+                    if not os.path.exists(fname):
+                        continue
+
                     if os.path.islink(fname) or os.path.isfile(fname):
                         os.unlink(fname)
                     else:
