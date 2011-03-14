@@ -244,7 +244,7 @@ class PPC(object):
                 if (bits == 32):
                     # set up prepboot
                     p = joinpaths(NETBOOTDIR, ppc_img_fname)
-                    prepboot = "-prep-boot {0}".format(p)
+                    prepboot = ["-prep-boot {0}".format(p)]
 
             # remove netboot dir if empty
             try:
@@ -271,7 +271,8 @@ class PPC(object):
 
             # set up macboot
             p = joinpaths(self.outputroot, ISOPATHDIR, MACDIR)
-            macboot = "-hfs-volid {0} -hfs-bless {1}".format(self.version, p)
+            macboot = ["-hfs-volid {0}".format(self.version),
+                       "-hfs-bless {0}".format(p)]
 
         # add note to yaboot
         cmd = [joinpaths(self.installtree.root, "usr/lib/yaboot/addnote"),
@@ -315,19 +316,20 @@ class PPC(object):
                             joinpaths(imagesdir, os.path.basename(NETBOOTDIR)))
 
         # define prepboot and macboot
-        prepboot = "" if "prepboot" not in locals() else locals()["prepboot"]
-        macboot = "" if "macboot" not in locals() else locals()["macboot"]
+        prepboot = [] if "prepboot" not in locals() else locals()["prepboot"]
+        macboot = [] if "macboot" not in locals() else locals()["macboot"]
 
         # create boot image
         boot_fpath = joinpaths(self.outputroot, IMAGESDIR, "boot.iso")
 
         # run mkisofs
-        cmd = [MKISOFS, "-o", boot_fpath, "-chrp-boot", "-U", prepboot,
-               "-part", "-hfs", "-T", "-r", "-l", "-J", "-A",
+        cmd = [MKISOFS, "-o", boot_fpath, "-chrp-boot", "-U"] + prepboot + \
+              ["-part", "-hfs", "-T", "-r", "-l", "-J", "-A",
                '"%s %s"' % (self.product, self.version),
                "-sysid", "PPC", "-V", '"PBOOT"',
                "-volset", '"%s"' % self.version, "-volset-size", "1",
-               "-volset-seqno", "1", macboot, "-map", MAPPING, "-magic", MAGIC,
+               "-volset-seqno", "1"] + macboot + \
+              ["-map", MAPPING, "-magic", MAGIC,
                "-no-desktop", "-allow-multidot", "-graft-points", isopathdir]
 
         logger.debug("running: %s" % cmd)
