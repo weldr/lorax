@@ -429,6 +429,14 @@ class Lorax(BaseLoraxClass):
             data = {"initrd": "images/pxeboot/{0}".format(initrd.fname)}
             treeinfo.add_section(section, data)
 
+            # we need to have a xen section for x86_64
+            if self.basearch == "x86_64":
+                section = "images-xen"
+                data = {"kernel": "images/pxeboot/{0}".format(kernel.fname)}
+                treeinfo.add_section(section, data)
+                data = {"initrd": "images/pxeboot/{0}".format(initrd.fname)}
+                treeinfo.add_section(section, data)
+
         # copy initrds to outputtree
         shutil.copy2(initrds[0].fpath, self.outputtree.isolinuxdir)
 
