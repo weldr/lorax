@@ -264,7 +264,7 @@ class PPC(object):
         yaboot = cpfile(self.reqs["yaboot"],
                         joinpaths(self.outputroot, CHRPDIR))
 
-        if (os.paths.exists(joinpaths(self.outputroot, MACDIR))):
+        if (os.path.exists(joinpaths(self.outputroot, MACDIR))):
             # copy yaboot and ofboot.b to mac dir
             cpfile(yaboot, joinpaths(self.outputroot, MACDIR))
             cpfile(self.reqs["ofboot_b"], joinpaths(self.outputroot, MACDIR))
@@ -300,8 +300,10 @@ class PPC(object):
         os.makedirs(isopathdir)
 
         # copy etc dir and ppc dir to isopath dir
-        shutil.copytree(joinpaths(self.outputroot, ETCDIR), isopathdir)
-        shutil.copytree(joinpaths(self.outputroot, PPCPARENT), isopathdir)
+        shutil.copytree(joinpaths(self.outputroot, ETCDIR),
+                        joinpaths(isopathdir, ETCDIR))
+        shutil.copytree(joinpaths(self.outputroot, PPCPARENT),
+                        joinpaths(isopathdir, PPCPARENT))
 
         if (os.path.exists(joinpaths(self.outputroot, NETBOOTDIR))):
             # create images dir in isopath dir if we have ppc images
@@ -309,7 +311,8 @@ class PPC(object):
             os.makedirs(imagesdir)
 
             # copy netboot dir to images dir
-            shutil.copytree(joinpaths(self.outputroot, NETBOOTDIR), imagesdir)
+            shutil.copytree(joinpaths(self.outputroot, NETBOOTDIR),
+                            joinpaths(imagesdir, os.path.basename(NETBOOTDIR)))
 
         # define prepboot and macboot
         prepboot = "" if "prepboot" not in locals() else locals()["prepboot"]
@@ -321,10 +324,13 @@ class PPC(object):
         # run mkisofs
         cmd = [MKISOFS, "-o", boot_fpath, "-chrp-boot", "-U", prepboot,
                "-part", "-hfs", "-T", "-r", "-l", "-J", "-A",
-               '"%s %s"' % (product, version), "-sysid", "PPC", "-V", '"PBOOT"',
-               "-volset", '"%s"' % version, "-volset-size", "1",
+               '"%s %s"' % (self.product, self.version),
+               "-sysid", "PPC", "-V", '"PBOOT"',
+               "-volset", '"%s"' % self.version, "-volset-size", "1",
                "-volset-seqno", "1", macboot, "-map", MAPPING, "-magic", MAGIC,
                "-no-desktop", "-allow-multidot", "-graft-points", isopathdir]
+
+        logger.debug("running: %s" % cmd)
 
         p = subprocess.Popen(cmd, stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE)
