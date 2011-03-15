@@ -355,11 +355,24 @@ class LoraxInstallTree(BaseLoraxClass):
             fobj.write(text)
 
     def misc_tree_modifications(self):
-        # replace init with anaconda init
-        src = joinpaths(self.root, "usr", self.libdir, "anaconda", "init")
-        dst = joinpaths(self.root, "sbin", "init")
-        os.unlink(dst)
-        shutil.copy2(src, dst)
+        if self.basearch in ("s390", "s390x"):
+            # copy shutdown
+            src = joinpaths(self.root, "usr/libexec/anaconda/shutdown")
+            dst = joinpaths(self.root, "sbin", "init")
+            os.unlink(dst)
+            shutil.copy2(src, dst)
+
+            # copy linuxrc.s390
+            src = joinpaths(self.root, "usr/share/anaconda/linuxrc.s390")
+            dst = joinpaths(self.root, "sbin", "init")
+            os.unlink(dst)
+            shutil.copy2(src, dst)
+        else:
+            # replace init with anaconda init
+            src = joinpaths(self.root, "usr", self.libdir, "anaconda", "init")
+            dst = joinpaths(self.root, "sbin", "init")
+            os.unlink(dst)
+            shutil.copy2(src, dst)
 
         # init symlinks
         target = "/sbin/init"
