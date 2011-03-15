@@ -1,5 +1,5 @@
 Name:           lorax
-Version:        0.3
+Version:        0.3.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -52,6 +52,14 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Tue Mar 15 2011 Martin Gracik <mgracik@redhat.com> 0.3.1-1
+- Add the images-xen section to treeinfo on x86_64
+- Add /sbin to $PATH (for the tty2 terminal)
+- Create /var/run/dbus directory in installtree
+- Add mkdir support to template
+- gpart is present only on i386 arch (#672611)
+- util-linux-ng changed to util-linux
+
 * Mon Jan 24 2011 Martin Gracik <mgracik@redhat.com> 0.3-1
 - Don't remove libmount package
 - Don't create mtab symlink, already exists
