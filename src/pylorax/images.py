@@ -194,6 +194,10 @@ class PPC(object):
             dst = joinpaths(self.outputroot, ppcdir, "yaboot.conf")
             yabootconf = cpfile(self.reqs["yabootconf"], dst)
 
+            replace(yabootconf, r"%BITS%", bits)
+            replace(yabootconf, r"%PRODUCT%", self.product)
+            replace(yabootconf, r"%VERSION%", self.version)
+
             mkzimage = joinpaths(self.installtree.root, MKZIMAGE)
             zimage_stub = joinpaths(self.installtree.root, ZIMAGE_STUB)
             wrapper = joinpaths(self.installtree.root, WRAPPER)
