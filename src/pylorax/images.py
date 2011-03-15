@@ -72,6 +72,9 @@ ISOHYBRID = "isohybrid"
 # s390
 INITRD_ADDRESS = "0x02000000"
 
+# sparc
+SPARCDIR = "boot"
+
 
 class PPC(object):
 
@@ -669,13 +672,119 @@ class S390(object):
         pass
 
 
+class SPARC(object):
+
+    def __init__(self, kernellist, installtree, outputroot, product, version,
+                 treeinfo, basearch):
+
+        self.kernellist = kernellist
+        self.installtree = installtree
+        self.outputroot = outputroot
+        self.product = product
+        self.version = version
+        self.treeinfo = treeinfo
+        self.basearch = basearch
+        self.kernels, self.initrds = [], []
+
+        self.reqs = collections.defaultdict(str)
+
+    def backup_required(self, workdir):
+        pass
+
+    def create_initrd(self, libdir):
+        # create directories
+        os.makedirs(joinpaths(self.outputroot, IMAGESDIR))
+        os.makedirs(joinpaths(self.outputroot, SPARCDIR))
+
+        # copy silo.conf
+        siloconf = cpfile(joinpaths(self.installtree.root, ANABOOTDIR,
+                                    "silo.conf"),
+                          joinpaths(self.outputroot, SPARCDIR))
+
+        # copy boot.msg
+        bootmsg = cpfile(joinpaths(self.installtree.root, ANABOOTDIR,
+                                   "boot.msg"),
+                         joinpaths(self.outputroot, SPARCDIR))
+
+        replace(bootmsg, r"%PRODUCT%", self.product)
+        replace(bootmsg, r"%VERSION%", self.version)
+
+        # copy  *.b to sparc dir
+        for fname in glob.glob(joinpaths(self.installtree.root, ANABOOTDIR,
+                                         "*.b")):
+            cpfile(fname, joinpaths(self.outputroot, SPARCDIR))
+
+        # create images
+        for kernel in self.kernellist:
+            # copy kernel
+            kernel.fname = "vmlinuz"
+            kernel.fpath = cpfile(kernel.fpath,
+                                  joinpaths(self.outputroot, SPARCDIR,
+                                            kernel.fname))
+
+            # create and copy initrd
+            initrd = DataHolder()
+            initrd.fname = "initrd.img"
+            initrd.fpath = joinpaths(self.outputroot, SPARCDIR,  initrd.fname)
+
+            logger.info("compressing the install tree")
+            self.installtree.compress(initrd, kernel)
+
+            # add kernel and initrd to .treeinfo
+            kernel_arch = kernel.version.split(".")[-1]
+            section = "images-{0}".format(kernel_arch)
+            data = {"kernel": joinpaths(SPARCDIR, kernel.fname),
+                    "initrd":joinpaths(SPARCDIR, initrd.fname)}
+            self.treeinfo.add_section(section, data)
+
+    def create_boot(self, efiboot=None):
+        # create isopath dir
+        isopathdir = joinpaths(self.outputroot, ISOPATHDIR)
+        makedirs(isopathdir)
+
+        # copy sparc dir to isopath dir
+        shutil.copytree(joinpaths(self.outputroot, SPARCDIR),
+                        joinpaths(isopathdir, SPARCDIR))
+
+        # create boot.iso
+        bootiso_fpath = joinpaths(self.outputroot, IMAGESDIR, "boot.iso")
+
+        # run mkisofs (XXX what's with the "Fedora" exclude?)
+        cmd = [MKISOFS, "-R", "-J", "-T",
+               "-G", "/%s" % joinpaths(SPARCDIR, "isofs.b"),
+               "-B",  "...",
+               "-s",  "/%s" % joinpaths(SPARCDIR, "silo.conf"),
+               "-r", "-V", '"PBOOT"', "-A",
+               '"%s %s"' % (self.product, self.version),
+               "-x", "Fedora", "-x", "repodata", "-sparc-label",
+               '"%s %s Boot Disc"' % (self.product, self.version),
+               "-o", bootiso_fpath, "-graft-points",
+               "boot=%s" % joinpaths(self.outputroot, SPARCDIR)]
+
+        p = subprocess.Popen(cmd, stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE)
+
+        p.wait()
+
+        # run implantisomd5
+        cmd = [IMPLANTISOMD5, bootiso_fpath]
+        p = subprocess.Popen(cmd, stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE)
+
+        p.wait()
+
+        # remove isopath dir
+        shutil.rmtree(isopathdir)
+
+
 class Factory(object):
 
     DISPATCH_MAP = {"ppc": PPC,
                     "i386": X86,
                     "x86_64": X86,
                     "s390": S390,
-                    "s390x": S390}
+                    "s390x": S390,
+                    "sparc": SPARC}
 
     def __init__(self):
         pass
