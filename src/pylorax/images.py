@@ -69,6 +69,9 @@ SYSLINUX_CFG = "usr/share/anaconda/boot/syslinux.cfg"
 
 ISOHYBRID = "isohybrid"
 
+# s390
+INITRD_ADDRESS = "0x02000000"
+
 
 class PPC(object):
 
@@ -568,3 +571,99 @@ class X86(object):
         p = subprocess.Popen(cmd, stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE)
         p.wait()
+
+
+class S390(object):
+
+    def __init__(self, kernellist, installtree, outputroot, product, version,
+                 treeinfo, basearch):
+
+        self.kernellist = kernellist
+        self.installtree = installtree
+        self.outputroot = outputroot
+        self.product = product
+        self.version = version
+        self.treeinfo = treeinfo
+        self.basearch = basearch
+        self.kernels, self.initrds = [], []
+
+        self.reqs = collections.defaultdict(str)
+
+    def backup_required(self, workdir):
+        pass
+
+    def create_initrd(self, libdir):
+        # create directories
+        os.makedirs(joinpaths(self.outputroot, IMAGESDIR))
+
+        # copy redhat.exec
+        cpfile(joinpaths(self.installtree.root, ANABOOTDIR, "redhat.exec"),
+               joinpaths(self.outputroot, IMAGESDIR))
+
+        # copy generic.prm
+        generic_prm = cpfile(joinpaths(self.installtree.root, ANABOOTDIR,
+                                       "generic.prm"),
+                             joinpaths(self.outputroot, IMAGESDIR))
+
+        # copy generic.ins
+        generic_ins = cpfile(joinpaths(self.installtree.root, ANABOOTDIR,
+                                       "generic.ins"), self.outputroot)
+
+        replace(generic_ins, r"@INITRD_LOAD_ADDRESS@", INITRD_ADDRESS)
+
+        for kernel in self.kernellist:
+            # copy kernel
+            kernel.fname = "kernel.img"
+            kernel.fpath = cpfile(kernel.fpath,
+                                  joinpaths(self.outputroot, IMAGESDIR,
+                                            kernel.fname))
+
+            # create and copy initrd
+            initrd = DataHolder()
+            initrd.fname = "initrd.img"
+            initrd.fpath = joinpaths(self.outputroot, IMAGESDIR, initrd.fname)
+
+            logger.info("compressing the install tree")
+            self.installtree.compress(initrd, kernel)
+
+            # run addrsize
+            addrsize = joinpaths(self.installtree.root, "usr", libdir,
+                                 "anaconda", "addrsize")
+
+            cmd = [addrsize, INITRD_ADDRESS, initrd.fpath,
+                   joinpaths(self.outputroot, IMAGESDIR, "initrd_addrsize")]
+
+            p = subprocess.Popen(cmd, stdin=subprocess.PIPE,
+                                 stdout=subprocess.PIPE)
+            p.wait()
+
+            # add kernel and initrd to .treeinfo
+            kernel_arch = kernel.version.split(".")[-1]
+            section = "images-{0}".format(kernel_arch)
+            data = {"kernel": joinpaths(IMAGESDIR, kernel.fname),
+                    "initrd": joinpaths(IMAGESDIR, initrd.fname),
+                    "initrd.addrsize": joinpaths(IMAGESDIR, "initrd_addrsize"),
+                    "generic.prm": joinpaths(IMAGESDIR,
+                                             os.path.basename(generic_prm)),
+                    "generic.ins": os.path.basename(generic_ins)}
+            self.treeinfo.add_section(section, data)
+
+        # create cdboot.img
+        bootiso_fpath = joinpaths(self.outputroot, IMAGESDIR, "cdboot.img")
+
+        # run mks390cdboot
+        mks390cdboot = joinpaths(self.installtree.root, "usr", libdir,
+                                 "anaconda", "mk-s390-cdboot")
+
+        cmd = [mks390cdboot, "-i", kernel.fpath, "-r", initrd.fpath,
+               "-p", generic_prm, "-o", bootiso_fpath]
+
+        p = subprocess.Popen(cmd, stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE)
+
+        # add cdboot.img to treeinfo
+        data = {"cdboot.img": joinpaths(IMAGESDIR, "cdboot.img")}
+        self.treeinfo.add_section(section, data)
+
+    def create_boot(self, efiboot=None):
+        pass
