@@ -41,6 +41,12 @@ install "kernel"
     install "xorg-x11-libs"
 % endif
 
+## sparc specific packages
+% if basearch == "sparc":
+    install "silo"
+    install "tilo"
+% endif
+
 ## other required packages
 install "NetworkManager-gnome"
 install "at-spi"
