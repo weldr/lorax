@@ -172,6 +172,7 @@ install "xorg-x11-fonts-ethiopic"
 install "xorg-x11-fonts-misc"
 install "xorg-x11-server-Xorg"
 install "xorg-x11-server-utils"
+install "yum-langpacks"
 install "${product}-logos"
 install "${product}-release"
 
