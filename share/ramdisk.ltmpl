@@ -29,6 +29,18 @@ install "kernel"
     install "ppc64-utils"
 % endif
 
+## s390 specific packages
+% if basearch == "s390" or basearch == "s390x":
+    install "binutils"
+    install "login"
+    install "lsscsi"
+    install "modutils"
+    install "mount"
+    install "portmap"
+    install "s390utils"
+    install "xorg-x11-libs"
+% endif
+
 ## other required packages
 install "NetworkManager-gnome"
 install "at-spi"
