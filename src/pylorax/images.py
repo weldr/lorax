@@ -667,3 +667,21 @@ class S390(object):
 
     def create_boot(self, efiboot=None):
         pass
+
+
+class Factory(object):
+
+    DISPATCH_MAP = {"ppc": PPC,
+                    "i386": X86,
+                    "x86_64": X86,
+                    "s390": S390,
+                    "s390x": S390}
+
+    def __init__(self):
+        pass
+
+    def get_class(self, arch):
+        if arch in self.DISPATCH_MAP:
+            return self.DISPATCH_MAP[arch]
+        else:
+            raise Exception("no support for {0}".format(arch))

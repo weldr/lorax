@@ -367,12 +367,8 @@ class Lorax(BaseLoraxClass):
                             self.variant, self.basearch)
 
         # get the image class
-        if self.basearch == "ppc":
-            imgclass = images.PPC
-        elif self.basearch in ("i386", "x86_64"):
-            imgclass = images.X86
-        else:
-            raise Exception("not supported arch '{0}'".format(self.basearch))
+        factory = images.Factory()
+        imgclass = factory.get_class(self.basearch)
 
         i = imgclass(kernellist=self.outputtree.kernels,
                      installtree=self.installtree,
