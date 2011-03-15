@@ -75,6 +75,10 @@ class LoraxInstallTree(BaseLoraxClass):
         shutil.move(langtable, joinpaths(self.root, "etc"))
 
     def create_keymaps(self):
+        if self.basearch in ("s390", "s390x"):
+            # skip on s390
+            return True
+
         keymaps = joinpaths(self.root, "etc/keymaps.gz")
 
         # look for override
