@@ -529,9 +529,9 @@ class X86(object):
             if self.basearch == "x86_64":
                 section = "images-xen"
                 data = {"kernel": joinpaths(PXEBOOTDIR, kernel.fname)}
-                treeinfo.add_section(section, data)
+                self.treeinfo.add_section(section, data)
                 data = {"initrd": joinpaths(PXEBOOTDIR, initrd.fname)}
-                treeinfo.add_section(section, data)
+                self.treeinfo.add_section(section, data)
 
     def create_boot(self, efiboot=None):
         # define efiargs and efigraft
