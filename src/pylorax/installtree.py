@@ -409,6 +409,7 @@ class LoraxInstallTree(BaseLoraxClass):
         [("/apps/metacity/general/button_layout", "string", ":"),
          ("/apps/metacity/general/action_right_click_titlebar",
           "string", "none"),
+         ("/apps/metacity/general/num_workspaces", "int", "1"),
          ("/apps/metacity/window_keybindings/close", "string", "disabled"),
          ("/apps/metacity/global_keybindings/run_command_window_screenshot",
           "string", "disabled"),
