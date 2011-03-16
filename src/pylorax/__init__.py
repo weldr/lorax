@@ -297,10 +297,6 @@ class Lorax(BaseLoraxClass):
             logger.info("running depmod")
             self.installtree.run_depmod(kernel)
 
-        # create gconf
-        logger.info("creating gconf files")
-        self.installtree.create_gconf()
-
         # move repos
         logger.info("moving anaconda repos")
         self.installtree.move_repos()

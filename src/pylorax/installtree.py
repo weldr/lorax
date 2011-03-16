@@ -323,30 +323,6 @@ class LoraxInstallTree(BaseLoraxClass):
         # move modules out of the tree
         shutil.move(moddir, self.workdir)
 
-    def create_gconf(self):
-        gconfdir = joinpaths(self.root, ".gconf/desktop")
-        os.makedirs(gconfdir)
-        touch(joinpaths(gconfdir, "%gconf.xml"))
-
-        gconfdir = joinpaths(gconfdir, "gnome")
-        os.mkdir(gconfdir)
-        touch(joinpaths(gconfdir, "%gconf.xml"))
-
-        gconfdir = joinpaths(gconfdir, "interface")
-        os.mkdir(gconfdir)
-
-        text = """<?xml version="1.0"?>
-<gconf>
-        <entry name="accessibility" mtime="1176200664" type="bool" value="true">
-        </entry>
-        <entry name="at-spi-corba" mtime="1176200664" type="bool" value="true">
-        </entry>
-</gconf>
-"""
-
-        with open(joinpaths(gconfdir, "%gconf.xml"), "w") as fobj:
-            fobj.write(text)
-
     def move_repos(self):
         src = joinpaths(self.root, "etc/yum.repos.d")
         dst = joinpaths(self.root, "etc/anaconda.repos.d")
