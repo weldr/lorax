@@ -292,7 +292,7 @@ class PPC(object):
         p.wait()
 
         # copy yaboot.conf to etc dir
-        if (biarch):
+        if biarch():
             yabootconf = cpfile(self.reqs["yabootconf3264"],
                                 joinpaths(self.outputroot, ETCDIR,
                                           "yaboot.conf"))
