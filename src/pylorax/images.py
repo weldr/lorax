@@ -177,7 +177,7 @@ class PPC(object):
             initrd.itype = kernel.ktype
 
             logger.info("compressing the install tree")
-            self.installtree.compress(initrd, kernel)
+            self.installtree.compress(initrd, kernel, type="gzip")
 
             # add kernel and initrd to the list
             self.kernels.append(kernel)
@@ -194,7 +194,7 @@ class PPC(object):
             dst = joinpaths(self.outputroot, ppcdir, "yaboot.conf")
             yabootconf = cpfile(self.reqs["yabootconf"], dst)
 
-            replace(yabootconf, r"%BITS%", bits)
+            replace(yabootconf, r"%BITS%", str(bits))
             replace(yabootconf, r"%PRODUCT%", self.product)
             replace(yabootconf, r"%VERSION%", self.version)
 
