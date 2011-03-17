@@ -468,6 +468,11 @@ class Lorax(BaseLoraxClass):
                                                    "EFI/BOOT")
             os.makedirs(self.outputtree.efibootdir)
 
+            # create imgdir
+            self.outputtree.imgdir = joinpaths(self.outputtree.root,
+                                               "images")
+            os.makedirs(self.outputtree.imgdir)
+
             kernel = i.kernels[0]
             initrd = i.initrds[0]
 
