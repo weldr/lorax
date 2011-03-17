@@ -463,6 +463,11 @@ class Lorax(BaseLoraxClass):
         # create efi images
         efiboot = None
         if grubefi and self.efiarch not in ("IA32",):
+            # create efibootdir
+            self.outputtree.efibootdir = joinpaths(self.outputtree.root,
+                                                   "EFI/BOOT")
+            os.makedirs(self.outputtree.efibootdir)
+
             kernel = i.kernels[0]
             initrd = i.initrds[0]
 
