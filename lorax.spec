@@ -1,5 +1,5 @@
 Name:           lorax
-Version:        0.3.1
+Version:        0.3.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -52,6 +52,11 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Mon Mar 21 2011 Martin Gracik <mgracik@redhat.com> 0.3.2-1
+- gconf/metacity: have only one workspace. (#683548)
+- Do not remove libassuan. (#684742)
+- Add yum-langpacks yum plugin to anaconda environment (notting) (#687866)
+
 * Tue Mar 15 2011 Martin Gracik <mgracik@redhat.com> 0.3.1-1
 - Add the images-xen section to treeinfo on x86_64
 - Add /sbin to $PATH (for the tty2 terminal)
