@@ -157,9 +157,8 @@ class PPC(object):
             # create ppc dir
             os.makedirs(joinpaths(self.outputroot, ppcdir))
 
-            if (kernel_arch == "ppc"):
-                # create mac dir
-                os.makedirs(joinpaths(self.outputroot, MACDIR))
+            # create mac dir
+            os.makedirs(joinpaths(self.outputroot, MACDIR))
 
             # create netboot dir
             os.makedirs(joinpaths(self.outputroot, NETBOOTDIR))
@@ -744,7 +743,7 @@ class SPARC(object):
     def create_boot(self, efiboot=None):
         # create isopath dir
         isopathdir = joinpaths(self.outputroot, ISOPATHDIR)
-        makedirs(isopathdir)
+        os.makedirs(isopathdir)
 
         # copy sparc dir to isopath dir
         shutil.copytree(joinpaths(self.outputroot, SPARCDIR),
