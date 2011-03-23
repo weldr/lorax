@@ -633,7 +633,7 @@ class S390(object):
             self.installtree.compress(initrd, kernel)
 
             # run addrsize
-            addrsize = joinpaths(self.installtree.root, "usr", libdir,
+            addrsize = joinpaths(self.installtree.root, "usr/libexec",
                                  "anaconda", "addrsize")
 
             cmd = [addrsize, INITRD_ADDRESS, initrd.fpath,
@@ -658,7 +658,7 @@ class S390(object):
         bootiso_fpath = joinpaths(self.outputroot, IMAGESDIR, "cdboot.img")
 
         # run mks390cdboot
-        mks390cdboot = joinpaths(self.installtree.root, "usr", libdir,
+        mks390cdboot = joinpaths(self.installtree.root, "usr/libexec",
                                  "anaconda", "mk-s390-cdboot")
 
         cmd = [mks390cdboot, "-i", kernel.fpath, "-r", initrd.fpath,
