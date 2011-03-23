@@ -163,10 +163,13 @@ class Lorax(BaseLoraxClass):
 
         # do we have all lorax required commands?
         self.lcmds = constants.LoraxRequiredCommands()
+
+        """
         missing = self.lcmds.get_missing()
         if missing:
             logger.critical("missing required command: {0}".format(missing))
             sys.exit(1)
+        """
 
         # do we have a proper yum base object?
         logger.info("checking yum base object")
