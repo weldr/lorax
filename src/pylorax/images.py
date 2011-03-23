@@ -666,6 +666,7 @@ class S390(object):
 
         p = subprocess.Popen(cmd, stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE)
+        p.wait()
 
         # add cdboot.img to treeinfo
         data = {"cdboot.img": joinpaths(IMAGESDIR, "cdboot.img")}
