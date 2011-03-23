@@ -337,7 +337,7 @@ class LoraxInstallTree(BaseLoraxClass):
     def misc_tree_modifications(self):
         if self.basearch in ("s390", "s390x"):
             # copy shutdown
-            src = joinpaths(self.root, "usr/libexec/anaconda/shutdown")
+            src = joinpaths(self.root, "usr", self.libdir, "anaconda/shutdown")
             dst = joinpaths(self.root, "sbin", "init")
             os.unlink(dst)
             shutil.copy2(src, dst)
