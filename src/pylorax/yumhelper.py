@@ -134,7 +134,7 @@ class LoraxYumHelper(object):
 
         return True
 
-    def process_transaction(self, skip_broken=True):
+    def process_transaction(self, skip_broken=False):
         # skip broken
         self.ybo.conf.skip_broken = skip_broken
         self.ybo.buildTransaction()
