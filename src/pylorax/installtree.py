@@ -496,6 +496,35 @@ class LoraxInstallTree(BaseLoraxClass):
         # change permissions
         chmod_(shadow, 400)
 
+        # generate ssh keys for s390
+        if self.basearch in ("s390", "s390x"):
+            logger.info("generating SSH1 RSA host key")
+            rsa1 = joinpaths(self.root, "etc/ssh/ssh_host_key")
+            cmd = [self.lcmds.SSHKEYGEN, "-q", "-t", "rsa1", "-f", rsa1,
+                   "-C", "", "-N", ""]
+            p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+            p.wait()
+
+            logger.info("generating SSH2 RSA host key")
+            rsa2 = joinpaths(self.root, "etc/ssh/ssh_host_rsa_key")
+            cmd = [self.lcmds.SSHKEYGEN, "-q", "-t", "rsa", "-f", rsa2,
+                   "-C", "", "-N", ""]
+            p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+            p.wait()
+
+            logger.info("generating SSH2 DSA host key")
+            dsa = joinpaths(self.root, "etc/ssh/ssh_host_dsa_key")
+            cmd = [self.lcmds.SSHKEYGEN, "-q", "-t", "dsa", "-f", dsa,
+                   "-C", "", "-N", ""]
+            p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+            p.wait()
+
+            # change key file permissions
+            for key in [rsa1, rsa2, dsa]:
+                chmod_(key, 0600)
+                chmod_(key + ".pub", 0644)
+
+
     def get_anaconda_portions(self):
         src = joinpaths(self.root, "usr", self.libdir, "anaconda", "loader")
         dst = joinpaths(self.root, "sbin")
