@@ -51,6 +51,7 @@ class LoraxRequiredCommands(dict):
         self["MODINFO"] = "modinfo"
         self["MOUNT"] = "mount"
         self["PARTED"] = "parted"
+        self["SSHKEYGEN"] = "ssh-keygen"
         self["UMOUNT"] = "umount"
 
     def __getattr__(self, attr):
