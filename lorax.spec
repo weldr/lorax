@@ -7,7 +7,6 @@ Group:          Applications/System
 License:        GPLv2+
 URL:            http://git.fedorahosted.org/git/?p=lorax.git
 Source0:        https://fedorahosted.org/releases/l/o/%{name}/%{name}-%{version}.tar.bz2
-BuildArch:      noarch
 
 BuildRequires:  python-setuptools
 Requires:       python2-devel
@@ -20,13 +19,20 @@ Requires:       device-mapper
 Requires:       findutils
 Requires:       GConf2
 Requires:       isomd5sum
-Requires:       syslinux
 Requires:       glibc
 Requires:       util-linux-ng
 Requires:       dosfstools
 Requires:       genisoimage
 Requires:       parted
 Requires:       pyliblzma
+
+%ifarch i386 x86_64
+Requires:       syslinux
+%endif
+
+%ifarch sparc sparc64
+Requires:       silo
+%endif
 
 %description
 Lorax is a tool for creating the anaconda install images.
