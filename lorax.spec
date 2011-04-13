@@ -1,5 +1,5 @@
 Name:           lorax
-Version:        0.4.1
+Version:        0.4.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -58,6 +58,12 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Wed Apr 13 2011 Martin Gracik <mgracik@redhat.com> 0.4.2-1
+- Do not remove shutdown from sbin
+- Change BuildRequires to python2-devel
+- Remove pungi patch
+- Remove pseudo code
+
 * Wed Apr 13 2011 Martin Gracik <mgracik@redhat.com> 0.4.1-1
 - Provide shutdown on s390x (#694518)
 - Fix arch specific requires in spec file
