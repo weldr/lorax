@@ -392,7 +392,7 @@ class LoraxInstallTree(BaseLoraxClass):
             os.unlink(name)
             os.symlink("init", name)
 
-        for fname in ["runlevel", "shutdown", "telinit"]:
+        for fname in ["runlevel", "telinit"]:
             name = joinpaths(self.root, "sbin", fname)
             os.unlink(name)
 
