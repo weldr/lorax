@@ -8,8 +8,7 @@ License:        GPLv2+
 URL:            http://git.fedorahosted.org/git/?p=lorax.git
 Source0:        https://fedorahosted.org/releases/l/o/%{name}/%{name}-%{version}.tar.bz2
 
-BuildRequires:  python-setuptools
-Requires:       python2-devel
+BuildRequires:  python2-devel
 Requires:       python-mako
 Requires:       gawk
 Requires:       glibc-common
