@@ -67,6 +67,7 @@ ARCHMAPS = {
         "s390":     {"base": "s390",    "efi": "",      "is64": False},
         "s390x":    {"base": "s390x",   "efi": "",      "is64": True},
         "sparc":    {"base": "sparc",   "efi": "",      "is64": False},
+        "sparcv9":  {"base": "sparc",   "efi": "",      "is64": False},
         "sparc64":  {"base": "sparc",   "efi": "",      "is64": True},
         "ia64":     {"base": "ia64",    "efi": "IA64",  "is64": True}
         }
