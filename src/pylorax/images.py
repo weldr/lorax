@@ -693,7 +693,14 @@ class SPARC(object):
         self.reqs = collections.defaultdict(str)
 
     def backup_required(self, workdir):
-        pass
+        os.makedirs(joinpaths(self.workdir, "bfiles"))
+
+        for fname in glob.glob(joinpaths(self.installtree.root, "boot",
+                                         "*.b")):
+            cpfile(fname, joinpaths(self.workdir, "bfiles"))
+
+        self.regs["bfiles"] = glob.glob(joinpaths(self.workdir, "bfiles",
+                                                  "*.b"))
 
     def create_initrd(self, libdir):
         # create directories
@@ -714,8 +721,7 @@ class SPARC(object):
         replace(bootmsg, r"%VERSION%", self.version)
 
         # copy  *.b to sparc dir
-        for fname in glob.glob(joinpaths(self.installtree.root, ANABOOTDIR,
-                                         "*.b")):
+        for fname in self.regs["bfiles"]:
             cpfile(fname, joinpaths(self.outputroot, SPARCDIR))
 
         # create images
