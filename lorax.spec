@@ -1,5 +1,5 @@
 Name:           lorax
-Version:        0.4
+Version:        0.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -59,6 +59,58 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Wed Apr 13 2011 Martin Gracik <mgracik@redhat.com> 0.5-1
+- Remove pungi patch
+- Remove pseudo code
+- Add a /bin/login shim for use only in the installation environment.
+- Set the hostname from a config file, not programmatically.
+- Add systemd and agetty to the installation environment.
+- Specify "cpio -H newc" instead of "cpio -c".
+- Provide shutdown on s390x (#694518)
+- Fix arch specific requires in spec file
+- Add s390 modules and do some cleanup of the template
+- Generate ssh keys on s390
+- Don't remove tr, needed for s390
+- Do not check if we have all commands
+- Change location of addrsize and mk-s390-cdboot
+- Shutdown is in another location
+- Do not skip broken packages
+- Don't install network-manager-netbook
+- Wait for subprocess to finish
+- Have to call os.makedirs
+- images dir already exists, we just need to set it
+- Do not remove libassuan.
+- The biarch is a function not an attribute
+- Create images directory in outputtree
+- Use gzip on ppc initrd
+- Create efibootdir if doing efi images
+- Get rid of create_gconf().
+- gconf/metacity: have only one workspace.
+- Add yum-langpacks yum plugin to anaconda environment (notting)
+- Replace variables in yaboot.conf
+- Add sparc specific packages
+- Skip keymap creation on s390
+- Copy shutdown and linuxrc.s390 on s390
+- Add packages for s390
+- Add support for sparc
+- Use factory to get the image classes
+- treeinfo has to be addressed as self.treeinfo
+- Add support for s390
+- Add the xen section to treeinfo on x86_64
+- Fix magic and mapping paths
+- Fix passing of prepboot and macboot arguments
+- Small ppc fixes
+- Check if the file we want to remove exists
+- Install x86 specific packages only on x86
+- Change the location of zImage.lds
+- Added ppc specific packages
+- memtest and efika.forth are in /boot
+- Add support for ppc
+- Minor sparc pseudo code changes
+- Added sparc pseudo code (dgilmore)
+- Added s390 and x86 pseudo code
+- Added ppc pseudo code
+
 * Mon Mar 14 2011 Martin Gracik <mgracik@redhat.com> 0.4-1
 - Add the images-xen section to treeinfo on x86_64
 - Print a message when no arguments given (#684463)
