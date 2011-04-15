@@ -25,11 +25,11 @@ Requires:       genisoimage
 Requires:       parted
 Requires:       pyliblzma
 
-%ifarch i386 x86_64
+%ifarch %{ix86} x86_64
 Requires:       syslinux
 %endif
 
-%ifarch sparc sparc64
+%ifarch %{sparc}
 Requires:       silo
 %endif
 
