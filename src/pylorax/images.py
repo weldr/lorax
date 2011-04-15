@@ -698,7 +698,7 @@ class SPARC(object):
         for fname in glob.glob(joinpaths(self.installtree.root, "boot/*.b")):
             cpfile(fname, joinpaths(workdir, "bfiles"))
 
-        self.regs["bfiles"] = glob.glob(joinpaths(workdir, "bfiles/*.b"))
+        self.reqs["bfiles"] = glob.glob(joinpaths(workdir, "bfiles/*.b"))
 
     def create_initrd(self, libdir):
         # create directories
@@ -719,7 +719,7 @@ class SPARC(object):
         replace(bootmsg, r"%VERSION%", self.version)
 
         # copy  *.b to sparc dir
-        for fname in self.regs["bfiles"]:
+        for fname in self.reqs["bfiles"]:
             cpfile(fname, joinpaths(self.outputroot, SPARCDIR))
 
         # create images
