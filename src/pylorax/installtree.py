@@ -117,7 +117,7 @@ class LoraxInstallTree(BaseLoraxClass):
             shutil.move(override, keymaps)
         else:
             # create keymaps
-            cmd = [joinpaths(self.root, "usr/share/anaconda", "getkeymaps"),
+            cmd = [joinpaths(self.root, "usr/libexec/anaconda", "getkeymaps"),
                    self.basearch, keymaps, self.root]
             proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
             proc.wait()
