@@ -693,14 +693,12 @@ class SPARC(object):
         self.reqs = collections.defaultdict(str)
 
     def backup_required(self, workdir):
-        os.makedirs(joinpaths(self.workdir, "bfiles"))
+        os.makedirs(joinpaths(workdir, "bfiles"))
 
-        for fname in glob.glob(joinpaths(self.installtree.root, "boot",
-                                         "*.b")):
-            cpfile(fname, joinpaths(self.workdir, "bfiles"))
+        for fname in glob.glob(joinpaths(self.installtree.root, "boot/*.b")):
+            cpfile(fname, joinpaths(workdir, "bfiles"))
 
-        self.regs["bfiles"] = glob.glob(joinpaths(self.workdir, "bfiles",
-                                                  "*.b"))
+        self.regs["bfiles"] = glob.glob(joinpaths(workdir, "bfiles/*.b"))
 
     def create_initrd(self, libdir):
         # create directories
