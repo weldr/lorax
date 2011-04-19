@@ -1,5 +1,5 @@
 Name:           lorax
-Version:        0.4.2
+Version:        0.4.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -58,6 +58,16 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Tue Apr 19 2011 Martin Gracik <mgracik@redhat.com> 0.4.3-1
+- bits is an integer and replace needs arguments to be strings (#697542)
+- Use arch macros in the lorax.spec
+- use reqs not regs for files to backup (dgilmore)
+- Reflect changes made in ntfs-3g and ntfsprogs packages (#696706)
+- getkeymaps resides in /usr/libexec/anaconda
+- workdir is a local variable, not a class attribute
+- Add sparcv9 to arch map
+- Change the location of *.b files on sparc
+
 * Wed Apr 13 2011 Martin Gracik <mgracik@redhat.com> 0.4.2-1
 - Do not remove shutdown from sbin
 - Change BuildRequires to python2-devel
