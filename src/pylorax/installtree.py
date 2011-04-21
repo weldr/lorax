@@ -504,7 +504,7 @@ class LoraxInstallTree(BaseLoraxClass):
         dst = joinpaths(self.root, "sbin")
         shutil.copy2(src, dst)
 
-    def compress(self, initrd, kernel, type="xz"):
+    def compress(self, initrd, kernel, type="xz", speed="9"):
         chdir = lambda: os.chdir(self.root)
         start = time.time()
 
@@ -521,12 +521,7 @@ class LoraxInstallTree(BaseLoraxClass):
                                 stdin=find.stdout, stdout=subprocess.PIPE,
                                 preexec_fn=chdir)
 
-        if type == "gzip":
-            cmd = [self.lcmds.GZIP, "-9"]
-        elif type == "xz":
-            cmd = [self.lcmds.XZ, "-9"]
-
-        compressed = subprocess.Popen(cmd, stdin=cpio.stdout,
+        compressed = subprocess.Popen([type, "-%s" % speed], stdin=cpio.stdout,
                                       stdout=open(initrd.fpath, "wb"))
 
         logger.debug("compressing")

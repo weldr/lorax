@@ -98,6 +98,13 @@ class Lorax(BaseLoraxClass):
         self.conf.add_section("templates")
         self.conf.set("templates", "ramdisk", "ramdisk.ltmpl")
 
+        self.conf.add_section("yum")
+        self.conf.set("yum", "skipbroken", "0")
+
+        self.conf.add_section("compression")
+        self.conf.set("compression", "type", "xz")
+        self.conf.set("compression", "speed", "9")
+
         # read the config file
         if os.path.isfile(conf_file):
             self.conf.read(conf_file)
@@ -251,7 +258,9 @@ class Lorax(BaseLoraxClass):
         # install packages
         for package in required:
             self.installtree.yum.install(package)
-        self.installtree.yum.process_transaction()
+
+        skipbroken = self.conf.getboolean("yum", "skipbroken")
+        self.installtree.yum.process_transaction(skipbroken)
 
         # write .buildstamp
         buildstamp = BuildStamp(self.workdir, self.product, self.version,
@@ -370,13 +379,18 @@ class Lorax(BaseLoraxClass):
         factory = images.Factory()
         imgclass = factory.get_class(self.basearch)
 
+        ctype = self.conf.get("compression", "type")
+        cspeed = self.conf.get("compression", "speed")
+
         i = imgclass(kernellist=self.outputtree.kernels,
                      installtree=self.installtree,
                      outputroot=self.outputtree.root,
                      product=self.product,
                      version=self.version,
                      treeinfo=treeinfo,
-                     basearch=self.basearch)
+                     basearch=self.basearch,
+                     ctype=ctype,
+                     cspeed=cspeed)
 
         # backup required files
         i.backup_required(self.workdir)
