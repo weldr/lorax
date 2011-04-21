@@ -41,6 +41,7 @@ class LoraxRequiredCommands(dict):
         self["DMSETUP"] = "dmsetup"
         self["FIND"] = "find"
         self["GCONFTOOL"] = "gconftool-2"
+        self["GZIP"] = "gzip"
         self["IMPLANTISOMD5"] = "implantisomd5"
         self["ISOHYBRID"] = "isohybrid"
         self["LDCONFIG"] = "ldconfig"
@@ -53,6 +54,7 @@ class LoraxRequiredCommands(dict):
         self["PARTED"] = "parted"
         self["SSHKEYGEN"] = "ssh-keygen"
         self["UMOUNT"] = "umount"
+        self["XZ"] = "xz"
 
     def __getattr__(self, attr):
         return self[attr]

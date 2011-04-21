@@ -26,7 +26,6 @@ import sys
 import os
 import shutil
 import gzip
-import lzma
 import re
 import glob
 import time
@@ -510,26 +509,31 @@ class LoraxInstallTree(BaseLoraxClass):
         start = time.time()
 
         # move corresponding modules to the tree
+        logger.debug("moving modules inside initrd")
         shutil.move(joinpaths(self.workdir, kernel.version),
                     joinpaths(self.root, "modules"))
 
         find = subprocess.Popen([self.lcmds.FIND, "."], stdout=subprocess.PIPE,
                                 preexec_fn=chdir)
 
-        cpio = subprocess.Popen([self.lcmds.CPIO, "--quiet", "-H", "newc", "-o"],
+        cpio = subprocess.Popen([self.lcmds.CPIO,
+                                 "--quiet", "-H", "newc", "-o"],
                                 stdin=find.stdout, stdout=subprocess.PIPE,
                                 preexec_fn=chdir)
 
         if type == "gzip":
-            compressed = gzip.open(initrd.fpath, "wb")
+            cmd = [self.lcmds.GZIP, "-9"]
         elif type == "xz":
-            compressed = lzma.LZMAFile(initrd.fpath, "w",
-                    options={"format":"xz", "level":9})
+            cmd = [self.lcmds.XZ, "-9"]
 
-        compressed.write(cpio.stdout.read())
-        compressed.close()
+        compressed = subprocess.Popen(cmd, stdin=cpio.stdout,
+                                      stdout=open(initrd.fpath, "wb"))
+
+        logger.debug("compressing")
+        rc = compressed.wait()
 
         # move modules out of the tree again
+        logger.debug("moving modules outside initrd")
         shutil.move(joinpaths(self.root, "modules", kernel.version),
                     self.workdir)
 

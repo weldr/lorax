@@ -23,7 +23,8 @@ Requires:       util-linux-ng
 Requires:       dosfstools
 Requires:       genisoimage
 Requires:       parted
-Requires:       pyliblzma
+Requires:       gzip
+Requires:       xz
 
 %ifarch %{ix86} x86_64
 Requires:       syslinux
