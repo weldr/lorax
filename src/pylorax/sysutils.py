@@ -19,9 +19,7 @@
 # Red Hat Author(s):  Martin Gracik <mgracik@redhat.com>
 #
 
-__all__ = ["joinpaths", "touch", "replace", "chown_", "chmod_",
-           "create_loop_dev", "remove_loop_dev",
-           "create_dm_dev", "remove_dm_dev"]
+__all__ = ["joinpaths", "touch", "replace", "chown_", "chmod_"]
 
 
 import sys
@@ -31,7 +29,6 @@ import fileinput
 import pwd
 import grp
 import glob
-import subprocess
 import shutil
 
 
@@ -85,48 +82,6 @@ def chmod_(path, mode, recursive=False):
             for nested in os.listdir(fname):
                 nested = joinpaths(fname, nested)
                 chmod_(nested, mode, recursive)
-
-
-def create_loop_dev(fname):
-    cmd = ["losetup", "-f"]
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    retcode = proc.wait()
-    if not retcode == 0:
-        return None
-
-    loopdev = proc.stdout.read().strip()
-
-    cmd = ["losetup", loopdev, fname]
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    retcode = proc.wait()
-    if not retcode == 0:
-        return None
-
-    return loopdev
-
-
-def remove_loop_dev(dev):
-    cmd = ["losetup", "-d", dev]
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    return proc.wait()
-
-
-def create_dm_dev(name, size, loopdev):
-    table = '0 {0} linear {1} 0'.format(size, loopdev)
-
-    cmd = ["dmsetup", "create", name, "--table", table]
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    retcode = proc.wait()
-    if not retcode == 0:
-        return None
-
-    return joinpaths("/dev/mapper", name)
-
-
-def remove_dm_dev(dev):
-    cmd = ["dmsetup", "remove", dev]
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    return proc.wait()
 
 
 def cpfile(src, dst):
