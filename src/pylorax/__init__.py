@@ -34,7 +34,6 @@ import os
 import ConfigParser
 import tempfile
 import shutil
-import itertools
 import glob
 import math
 import subprocess
@@ -201,24 +200,15 @@ class Lorax(BaseLoraxClass):
                   "product": self.product.name.lower() }
 
         template = ltmpl.LoraxTemplate()
-        template = template.parse(tfile, tvars)
+        template.parse(tfile, tvars)
 
-        # get required directories
         logger.info("creating tree directories")
-        dirs = [f[1:] for f in template if f[0] == "mkdir"]
-        dirs = itertools.chain.from_iterable(dirs)
-
-        # create directories
-        for d in dirs:
+        for d in template.getdata("mkdir"):
             os.makedirs(joinpaths(self.installtree.root, d))
 
-        # get list of required packages
-        logger.info("getting list of required packages")
-        required = [f[1:] for f in template if f[0] == "install"]
-        required = itertools.chain.from_iterable(required)
-
         # install packages
-        for package in required:
+        logger.info("getting list of required packages")
+        for package in template.getdata("install"):
             self.installtree.yum.install(package)
 
         skipbroken = self.conf.getboolean("yum", "skipbroken")
@@ -252,8 +242,8 @@ class Lorax(BaseLoraxClass):
         self.installtree.move_stubs()
 
         logger.info("getting list of required modules")
-        modules = [f[1:] for f in template if f[0] == "module"]
-        modules = list(itertools.chain.from_iterable(modules))
+        # Need a list to pass to cleanup_kernel_modules, not a generator
+        modules = list(template.getdata("module"))
 
         self.installtree.move_modules()
 
@@ -319,7 +309,7 @@ class Lorax(BaseLoraxClass):
         i.backup_required(self.workdir)
 
         logger.info("getting list of not required packages")
-        remove = [f[1:] for f in template if f[0] == "remove"]
+        remove = template.getdata("remove", mode="lines")
 
         rdb = {}
         order = []

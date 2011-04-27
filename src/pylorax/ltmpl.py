@@ -56,4 +56,13 @@ class LoraxTemplate(object):
         # split with shlex
         lines = map(shlex.split, lines)
 
+        self.lines = lines
         return lines
+
+    def getdata(self, cmd, mode="tokens"):
+        '''returns a generator that yields every token on every line starting
+        with 'cmd'. if mode is "lines", you get a list for each line instead.'''
+        if mode == "lines":
+            return (f[1:] for f in self.lines if f[0]==cmd)
+        else:
+            return (i for f in self.lines if f[0]==cmd for i in f[1:])
