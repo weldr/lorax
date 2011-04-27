@@ -39,11 +39,10 @@ from sysutils import *
 
 class LoraxInstallTree(BaseLoraxClass):
 
-    def __init__(self, yum, basearch, libdir, workdir):
+    def __init__(self, yum, libdir, workdir):
         BaseLoraxClass.__init__(self)
         self.yum = yum
         self.root = self.yum.installroot
-        self.basearch = basearch
         self.libdir = libdir
         self.workdir = workdir
 
@@ -73,15 +72,11 @@ class LoraxInstallTree(BaseLoraxClass):
         # move the lang-table to etc
         shutil.move(langtable, joinpaths(self.root, "etc"))
 
-    def create_keymaps(self):
-        if self.basearch in ("s390", "s390x"):
-            # skip on s390
-            return True
-
+    def create_keymaps(self, basearch):
         keymaps = joinpaths(self.root, "etc/keymaps.gz")
 
         # look for override
-        override = "keymaps-override-{0.basearch}".format(self)
+        override = "keymaps-override-{0}".format(basearch)
         override = joinpaths(self.root, "usr/share/anaconda", override)
         if os.path.isfile(override):
             logger.debug("using keymaps override")
@@ -89,16 +84,16 @@ class LoraxInstallTree(BaseLoraxClass):
         else:
             # create keymaps
             cmd = [joinpaths(self.root, "usr/libexec/anaconda", "getkeymaps"),
-                   self.basearch, keymaps, self.root]
+                   basearch, keymaps, self.root]
             proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
             proc.wait()
 
         return True
 
-    def create_screenfont(self):
+    def create_screenfont(self, basearch):
         dst = joinpaths(self.root, "etc/screenfont.gz")
 
-        screenfont = "screenfont-{0.basearch}.gz".format(self)
+        screenfont = "screenfont-{0}.gz".format(basearch)
         screenfont = joinpaths(self.root, "usr/share/anaconda", screenfont)
         if not os.path.isfile(screenfont):
             return False
@@ -367,23 +362,18 @@ class LoraxInstallTree(BaseLoraxClass):
         with open(joinpaths(self.root, "etc/depmod.d/dd.conf"), "w") as fobj:
             fobj.write(text)
 
-    def misc_tree_modifications(self):
-        if self.basearch in ("s390", "s390x"):
-            # copy linuxrc.s390
-            src = joinpaths(self.root, "usr/share/anaconda/linuxrc.s390")
-            dst = joinpaths(self.root, "sbin", "init")
-            os.unlink(dst)
-            shutil.copy2(src, dst)
+    def misc_s390_modifications(self):
+        # copy linuxrc.s390
+        src = joinpaths(self.root, "usr/share/anaconda/linuxrc.s390")
+        dst = joinpaths(self.root, "sbin", "init")
+        os.unlink(dst)
+        shutil.copy2(src, dst)
 
+    def misc_tree_modifications(self):
         # init symlinks
         target = "/sbin/init"
         name = joinpaths(self.root, "init")
         os.symlink(target, name)
-
-        # mtab symlink
-        #target = "/proc/mounts"
-        #name = joinpaths(self.root, "etc", "mtab")
-        #os.symlink(target, name)
 
         os.unlink(joinpaths(self.root, "etc/systemd/system/default.target"))
         os.symlink("/lib/systemd/system/anaconda.target", joinpaths(self.root, "etc/systemd/system/default.target"))
@@ -496,33 +486,32 @@ class LoraxInstallTree(BaseLoraxClass):
         # change permissions
         chmod_(shadow, 400)
 
-        # generate ssh keys for s390
-        if self.basearch in ("s390", "s390x"):
-            logger.info("generating SSH1 RSA host key")
-            rsa1 = joinpaths(self.root, "etc/ssh/ssh_host_key")
-            cmd = [self.lcmds.SSHKEYGEN, "-q", "-t", "rsa1", "-f", rsa1,
-                   "-C", "", "-N", ""]
-            p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-            p.wait()
+    def generate_ssh_keys(self):
+        logger.info("generating SSH1 RSA host key")
+        rsa1 = joinpaths(self.root, "etc/ssh/ssh_host_key")
+        cmd = [self.lcmds.SSHKEYGEN, "-q", "-t", "rsa1", "-f", rsa1,
+               "-C", "", "-N", ""]
+        p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        p.wait()
 
-            logger.info("generating SSH2 RSA host key")
-            rsa2 = joinpaths(self.root, "etc/ssh/ssh_host_rsa_key")
-            cmd = [self.lcmds.SSHKEYGEN, "-q", "-t", "rsa", "-f", rsa2,
-                   "-C", "", "-N", ""]
-            p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-            p.wait()
+        logger.info("generating SSH2 RSA host key")
+        rsa2 = joinpaths(self.root, "etc/ssh/ssh_host_rsa_key")
+        cmd = [self.lcmds.SSHKEYGEN, "-q", "-t", "rsa", "-f", rsa2,
+               "-C", "", "-N", ""]
+        p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        p.wait()
 
-            logger.info("generating SSH2 DSA host key")
-            dsa = joinpaths(self.root, "etc/ssh/ssh_host_dsa_key")
-            cmd = [self.lcmds.SSHKEYGEN, "-q", "-t", "dsa", "-f", dsa,
-                   "-C", "", "-N", ""]
-            p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-            p.wait()
+        logger.info("generating SSH2 DSA host key")
+        dsa = joinpaths(self.root, "etc/ssh/ssh_host_dsa_key")
+        cmd = [self.lcmds.SSHKEYGEN, "-q", "-t", "dsa", "-f", dsa,
+               "-C", "", "-N", ""]
+        p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        p.wait()
 
-            # change key file permissions
-            for key in [rsa1, rsa2, dsa]:
-                chmod_(key, 0600)
-                chmod_(key + ".pub", 0644)
+        # change key file permissions
+        for key in [rsa1, rsa2, dsa]:
+            chmod_(key, 0600)
+            chmod_(key + ".pub", 0644)
 
 
     def get_anaconda_portions(self):
@@ -579,11 +568,8 @@ class LoraxInstallTree(BaseLoraxClass):
 
     @property
     def kernels(self):
-        kerneldir = "boot"
-        if self.basearch == "ia64":
-            kerneldir = "boot/efi/EFI/redhat"
-
-        kerneldir = joinpaths(self.root, kerneldir)
+        kerneldir = joinpaths(self.root, "boot")
+        # FIXME: kernel search path?
         kpattern = re.compile(r"vmlinuz-(?P<ver>[-._0-9a-z]+?"
                               r"(?P<pae>(PAE)?)(?P<xen>(xen)?))$")
 

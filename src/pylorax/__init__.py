@@ -179,8 +179,8 @@ class Lorax(BaseLoraxClass):
             logger.debug("self.arch.%s = %s", attr, getattr(self.arch,attr))
 
         logger.info("setting up install tree")
-        self.installtree = LoraxInstallTree(self.yum, self.arch.basearch,
-                                            self.arch.libdir, self.workdir)
+        self.installtree = LoraxInstallTree(self.yum, self.arch.libdir,
+                                            self.workdir)
 
         logger.info("setting up build parameters")
         product = DataHolder(name=product, version=version, release=release,
@@ -233,10 +233,11 @@ class Lorax(BaseLoraxClass):
         self.installtree.remove_locales()
 
         logger.info("creating keymaps")
-        self.installtree.create_keymaps()
+        if self.arch.basearch not in ("s390", "s390x"):
+            self.installtree.create_keymaps(basearch=self.arch.basearch)
 
         logger.info("creating screenfont")
-        self.installtree.create_screenfont()
+        self.installtree.create_screenfont(basearch=self.arch.basearch)
 
         logger.info("moving stubs")
         self.installtree.move_stubs()
@@ -254,6 +255,9 @@ class Lorax(BaseLoraxClass):
         self.installtree.create_depmod_conf()
 
         # misc tree modifications
+        if self.arch.basearch in ("s390", "s390x"):
+            # TODO: move this to the arch template
+            self.installtree.misc_s390_modifications()
         self.installtree.misc_tree_modifications()
 
         # get config files
@@ -262,6 +266,8 @@ class Lorax(BaseLoraxClass):
 
         self.installtree.get_config_files(config_dir)
         self.installtree.setup_sshd(config_dir)
+        if self.arch.basearch in ("s390", "s390x"):
+            self.installtree.generate_ssh_keys()
 
         # get anaconda portions
         self.installtree.get_anaconda_portions()
