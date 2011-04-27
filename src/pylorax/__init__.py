@@ -55,25 +55,17 @@ from treeinfo import TreeInfo
 from discinfo import DiscInfo
 import images
 
-
-ARCHMAPS = {
-        "i386":     {"base": "i386",    "efi": "IA32",  "is64": False},
-        "i586":     {"base": "i386",    "efi": "IA32",  "is64": False},
-        "i686":     {"base": "i386",    "efi": "IA32",  "is64": False},
-        "x86_64":   {"base": "x86_64",  "efi": "X64",   "is64": True},
-        "ppc":      {"base": "ppc",     "efi": "",      "is64": False},
-        "ppc64":    {"base": "ppc",     "efi": "",      "is64": True},
-        "s390":     {"base": "s390",    "efi": "",      "is64": False},
-        "s390x":    {"base": "s390x",   "efi": "",      "is64": True},
-        "sparc":    {"base": "sparc",   "efi": "",      "is64": False},
-        "sparcv9":  {"base": "sparc",   "efi": "",      "is64": False},
-        "sparc64":  {"base": "sparc",   "efi": "",      "is64": True},
-        "ia64":     {"base": "ia64",    "efi": "IA64",  "is64": True}
-        }
-
-LIB32 = "lib"
-LIB64 = "lib64"
-
+class ArchData(object):
+    lib64_arches = ("x86_64", "ppc64", "sparc64", "s390x", "ia64")
+    archmap = {"i386": "i386", "i586":"i386", "i686":"i386", "x86_64":"x86_64",
+               "ppc":"ppc", "ppc64": "ppc",
+               "sparc":"sparc", "sparcv9":"sparc", "sparc64":"sparc",
+               "s390":"s390", "s390x":"s390x",
+    }
+    def __init__(self, buildarch):
+        self.buildarch = buildarch
+        self.basearch = self.archmap.get(buildarch) or buildarch
+        self.libdir = "lib64" if buildarch in self.lib64_arches else "lib"
 
 class Lorax(BaseLoraxClass):
 
@@ -183,48 +175,30 @@ class Lorax(BaseLoraxClass):
         logger.debug("using install root: {0}".format(self.yum.installroot))
 
         logger.info("setting up build architecture")
-
-        self.buildarch = self.get_buildarch()
-        logger.debug("set buildarch = {0.buildarch}".format(self))
-
-        archmap = ARCHMAPS.get(self.buildarch)
-        assert archmap is not None
-
-        self.basearch = archmap.get("base")
-        self.efiarch = archmap.get("efi")
-        self.libdir = LIB64 if archmap.get("is64") else LIB32
-        logger.debug("set basearch = {0.basearch}".format(self))
-        logger.debug("set efiarch = {0.efiarch}".format(self))
-        logger.debug("set libdir = {0.libdir}".format(self))
+        self.arch = ArchData(self.get_buildarch())
+        for attr in ('buildarch', 'basearch', 'libdir'):
+            logger.debug("self.arch.%s = %s", attr, getattr(self.arch,attr))
 
         logger.info("setting up install tree")
-        self.installtree = LoraxInstallTree(self.yum, self.basearch,
-                                            self.libdir, self.workdir)
+        self.installtree = LoraxInstallTree(self.yum, self.arch.basearch,
+                                            self.arch.libdir, self.workdir)
 
         logger.info("setting up build parameters")
+        product = DataHolder(name=product, version=version, release=release,
+                             variant=variant, bugurl=bugurl, is_beta=is_beta)
         self.product = product
-        self.version = version
-        self.release = release
-        logger.debug("set product = {0.product}".format(self))
-        logger.debug("set version = {0.version}".format(self))
-        logger.debug("set release = {0.release}".format(self))
-
-        # set up optional build parameters
-        self.variant = variant
-        self.bugurl = bugurl
-        self.is_beta = is_beta
-        logger.debug("set variant = {0.variant}".format(self))
-        logger.debug("set bugurl = {0.bugurl}".format(self))
-        logger.debug("set is_beta = {0.is_beta}".format(self))
+        logger.debug("product data: %s" % product)
 
         logger.info("parsing the template")
         tfile = joinpaths(self.conf.get("lorax", "sharedir"),
                           self.conf.get("templates", "ramdisk"))
 
-        tvars = { "basearch": self.basearch,
-                  "buildarch": self.buildarch,
-                  "libdir" : self.libdir,
-                  "product": self.product.lower() }
+        # TODO: normalize with arch templates:
+        #       tvars = dict(product=product, arch=arch)
+        tvars = { "basearch": self.arch.basearch,
+                  "buildarch": self.arch.buildarch,
+                  "libdir" : self.arch.libdir,
+                  "product": self.product.name.lower() }
 
         template = ltmpl.LoraxTemplate()
         template = template.parse(tfile, tvars)
@@ -251,8 +225,8 @@ class Lorax(BaseLoraxClass):
         self.installtree.yum.process_transaction(skipbroken)
 
         # write .buildstamp
-        buildstamp = BuildStamp(self.workdir, self.product, self.version,
-                                self.bugurl, self.is_beta, self.buildarch)
+        buildstamp = BuildStamp(self.workdir, self.product.name, self.product.version,
+                                self.product.bugurl, self.product.is_beta, self.arch.buildarch)
 
         buildstamp.write()
         shutil.copy2(buildstamp.path, self.installtree.root)
@@ -315,18 +289,18 @@ class Lorax(BaseLoraxClass):
         self.installtree.get_anaconda_portions()
 
         # write .discinfo
-        discinfo = DiscInfo(self.workdir, self.release, self.basearch)
+        discinfo = DiscInfo(self.workdir, self.product.release, self.arch.basearch)
         discinfo.write()
 
         shutil.copy2(discinfo.path, self.outputdir)
 
         # create .treeinfo
-        treeinfo = TreeInfo(self.workdir, self.product, self.version,
-                            self.variant, self.basearch)
+        treeinfo = TreeInfo(self.workdir, self.product.name, self.product.version,
+                            self.product.variant, self.arch.basearch)
 
         # get the image class
         factory = images.Factory()
-        imgclass = factory.get_class(self.basearch)
+        imgclass = factory.get_class(self.arch.basearch)
 
         ctype = self.conf.get("compression", "type")
         cspeed = self.conf.get("compression", "speed")
@@ -334,10 +308,10 @@ class Lorax(BaseLoraxClass):
         i = imgclass(kernellist=kernels,
                      installtree=self.installtree,
                      outputroot=self.outputdir,
-                     product=self.product,
-                     version=self.version,
+                     product=self.product.name,
+                     version=self.product.version,
                      treeinfo=treeinfo,
-                     basearch=self.basearch,
+                     basearch=self.arch.basearch,
                      ctype=ctype,
                      cspeed=cspeed)
 
@@ -383,7 +357,7 @@ class Lorax(BaseLoraxClass):
 
         # compress install tree (create initrd)
         logger.info("creating the initrd")
-        i.create_initrd(self.libdir)
+        i.create_initrd(self.arch.libdir)
 
         # create boot iso
         logger.info("creating boot iso")
