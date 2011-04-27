@@ -521,7 +521,11 @@ class LoraxInstallTree(BaseLoraxClass):
                                 stdin=find.stdout, stdout=subprocess.PIPE,
                                 preexec_fn=chdir)
 
-        compressed = subprocess.Popen([type, "-%s" % speed], stdin=cpio.stdout,
+        cmd = [type, "-%s" % speed]
+        if type == "xz":
+            cmd.append("--check=crc32")
+
+        compressed = subprocess.Popen(cmd, stdin=cpio.stdout,
                                       stdout=open(initrd.fpath, "wb"))
 
         logger.debug("compressing")
