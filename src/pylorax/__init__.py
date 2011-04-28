@@ -178,8 +178,7 @@ class Lorax(BaseLoraxClass):
             logger.debug("self.arch.%s = %s", attr, getattr(self.arch,attr))
 
         logger.info("setting up install tree")
-        self.installtree = LoraxInstallTree(self.yum, self.arch.libdir,
-                                            self.workdir)
+        self.installtree = LoraxInstallTree(self.yum, self.arch.libdir)
 
         logger.info("setting up build parameters")
         product = DataHolder(name=product, version=version, release=release,

@@ -39,12 +39,11 @@ from sysutils import *
 
 class LoraxInstallTree(BaseLoraxClass):
 
-    def __init__(self, yum, libdir, workdir):
+    def __init__(self, yum, libdir):
         BaseLoraxClass.__init__(self)
         self.yum = yum
         self.root = self.yum.installroot
         self.libdir = libdir
-        self.workdir = workdir
 
         self.lcmds = constants.LoraxRequiredCommands()
 
@@ -178,9 +177,9 @@ class LoraxInstallTree(BaseLoraxClass):
         os.symlink("../modules", joinpaths(self.root, "lib/modules"))
         os.symlink("../firmware", joinpaths(self.root, "lib/firmware"))
 
-    def cleanup_kernel_modules(self, keepmodules, kernel):
-        logger.info("cleaning up kernel modules for %s", kernel.version)
-        moddir = joinpaths(self.root, "modules", kernel.version)
+    def cleanup_kernel_modules(self, keepmodules, kernelver):
+        logger.info("cleaning up kernel modules for %s", kernelver)
+        moddir = joinpaths(self.root, "modules", kernelver)
         fwdir = joinpaths(self.root, "firmware")
 
         # expand required modules
@@ -307,9 +306,9 @@ class LoraxInstallTree(BaseLoraxClass):
             for modname in sorted(modlist.keys()):
                 fobj.write(modlist[modname])
 
-    def compress_modules(self, kernel):
-        logger.debug("compressing modules for %s", kernel.version)
-        moddir = joinpaths(self.root, "modules", kernel.version)
+    def compress_modules(self, kernelver):
+        logger.debug("compressing modules for %s", kernelver)
+        moddir = joinpaths(self.root, "modules", kernelver)
 
         for root, _, fnames in os.walk(moddir):
             for fname in filter(lambda f: f.endswith(".ko"), fnames):
@@ -323,13 +322,13 @@ class LoraxInstallTree(BaseLoraxClass):
 
                 os.unlink(path)
 
-    def run_depmod(self, kernel):
-        logger.debug("running depmod for %s", kernel.version)
-        systemmap = "System.map-{0.version}".format(kernel)
+    def run_depmod(self, kernelver):
+        logger.debug("running depmod for %s", kernelver)
+        systemmap = "System.map-{0}".format(kernelver)
         systemmap = joinpaths(self.root, "boot", systemmap)
 
         cmd = [self.lcmds.DEPMOD, "-a", "-F", systemmap, "-b", self.root,
-               kernel.version]
+               kernelver]
 
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
         retcode = proc.wait()
@@ -337,7 +336,7 @@ class LoraxInstallTree(BaseLoraxClass):
             logger.critical(proc.stdout.read())
             sys.exit(1)
 
-        moddir = joinpaths(self.root, "modules", kernel.version)
+        moddir = joinpaths(self.root, "modules", kernelver)
 
         # remove *map files
         mapfiles = joinpaths(moddir, "*map")
@@ -347,9 +346,6 @@ class LoraxInstallTree(BaseLoraxClass):
         # remove build and source symlinks
         for fname in ["build", "source"]:
             os.unlink(joinpaths(moddir, fname))
-
-        # move modules out of the tree
-        shutil.move(moddir, self.workdir)
 
     def move_repos(self):
         src = joinpaths(self.root, "etc/yum.repos.d")
@@ -527,14 +523,9 @@ class LoraxInstallTree(BaseLoraxClass):
         dst = joinpaths(self.root, "sbin")
         shutil.copy2(src, dst)
 
-    def compress(self, initrd, kernel, type="xz", speed="9"):
+    def compress(self, outfile, type="xz", speed="9"):
         chdir = lambda: os.chdir(self.root)
         start = time.time()
-
-        # move corresponding modules to the tree
-        logger.debug("moving modules inside initrd")
-        shutil.move(joinpaths(self.workdir, kernel.version),
-                    joinpaths(self.root, "modules"))
 
         find = subprocess.Popen([self.lcmds.FIND, "."], stdout=subprocess.PIPE,
                                 preexec_fn=chdir)
@@ -545,15 +536,10 @@ class LoraxInstallTree(BaseLoraxClass):
                                 preexec_fn=chdir)
 
         compressed = subprocess.Popen([type, "-%s" % speed], stdin=cpio.stdout,
-                                      stdout=open(initrd.fpath, "wb"))
+                                      stdout=open(outfile, "wb"))
 
         logger.debug("compressing")
         rc = compressed.wait()
-
-        # move modules out of the tree again
-        logger.debug("moving modules outside initrd")
-        shutil.move(joinpaths(self.root, "modules", kernel.version),
-                    self.workdir)
 
         elapsed = time.time() - start
 
@@ -561,32 +547,7 @@ class LoraxInstallTree(BaseLoraxClass):
 
     def install_kernel_modules(self, keepmodules):
         self.move_modules()
-        for kernel in self.kernels:
+        for kernel in os.listdir(joinpaths(self.root, "modules")):
             self.cleanup_kernel_modules(keepmodules, kernel)
             self.compress_modules(kernel)
             self.run_depmod(kernel)
-
-    @property
-    def kernels(self):
-        kerneldir = joinpaths(self.root, "boot")
-        # FIXME: kernel search path?
-        kpattern = re.compile(r"vmlinuz-(?P<ver>[-._0-9a-z]+?"
-                              r"(?P<pae>(PAE)?)(?P<xen>(xen)?))$")
-
-        kernels = []
-        for fname in os.listdir(kerneldir):
-            match = kpattern.match(fname)
-            if match:
-                ktype = constants.K_NORMAL
-                if match.group("pae"):
-                    ktype = constants.K_PAE
-                elif match.group("xen"):
-                    ktype = constants.K_XEN
-
-                kernels.append(DataHolder(fname=fname,
-                                          fpath=joinpaths(kerneldir, fname),
-                                          version=match.group("ver"),
-                                          ktype=ktype))
-
-        kernels = sorted(kernels, key=operator.attrgetter("ktype"))
-        return kernels
