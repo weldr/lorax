@@ -130,6 +130,37 @@ class LoraxInstallTree(BaseLoraxClass):
             dst = joinpaths(path, "site-packages")
             shutil.move(src, dst)
 
+    def remove_packages(self, remove):
+        rdb = {}
+        order = []
+        for item in remove:
+            package = None
+            pattern = None
+
+            if item[0] == "--path":
+                # remove files
+                package = None
+                pattern = item[1]
+            else:
+                # remove package
+                package = item[0]
+
+                try:
+                    pattern = item[1]
+                except IndexError:
+                    pattern = None
+
+            if package not in rdb:
+                rdb[package] = [pattern]
+                order.append(package)
+            elif pattern not in rdb[package]:
+                rdb[package].append(pattern)
+
+        for package in order:
+            pattern_list = rdb[package]
+            logger.debug("{0}\t{1}".format(package, pattern_list))
+            self.yum.remove(package, pattern_list)
+
     def cleanup_python_files(self):
         for root, _, fnames in os.walk(self.root):
             for fname in fnames:
@@ -153,6 +184,7 @@ class LoraxInstallTree(BaseLoraxClass):
         os.symlink("../firmware", joinpaths(self.root, "lib/firmware"))
 
     def cleanup_kernel_modules(self, keepmodules, kernel):
+        logger.info("cleaning up kernel modules for %s", kernel.version)
         moddir = joinpaths(self.root, "modules", kernel.version)
         fwdir = joinpaths(self.root, "firmware")
 
@@ -281,6 +313,7 @@ class LoraxInstallTree(BaseLoraxClass):
                 fobj.write(modlist[modname])
 
     def compress_modules(self, kernel):
+        logger.debug("compressing modules for %s", kernel.version)
         moddir = joinpaths(self.root, "modules", kernel.version)
 
         for root, _, fnames in os.walk(moddir):
@@ -296,6 +329,7 @@ class LoraxInstallTree(BaseLoraxClass):
                 os.unlink(path)
 
     def run_depmod(self, kernel):
+        logger.debug("running depmod for %s", kernel.version)
         systemmap = "System.map-{0.version}".format(kernel)
         systemmap = joinpaths(self.root, "boot", systemmap)
 
@@ -535,6 +569,13 @@ class LoraxInstallTree(BaseLoraxClass):
         elapsed = time.time() - start
 
         return True, elapsed
+
+    def install_kernel_modules(self, keepmodules):
+        self.move_modules()
+        for kernel in self.kernels:
+            self.cleanup_kernel_modules(keepmodules, kernel)
+            self.compress_modules(kernel)
+            self.run_depmod(kernel)
 
     @property
     def kernels(self):

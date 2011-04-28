@@ -221,7 +221,7 @@ class Lorax(BaseLoraxClass):
         buildstamp.write()
         shutil.copy2(buildstamp.path, self.installtree.root)
 
-        # DEBUG save list of installed packages
+        logger.debug("saving pkglists to %s", self.workdir)
         dname = joinpaths(self.workdir, "pkglists")
         os.makedirs(dname)
         for pkgname, pkgobj in self.installtree.yum.installed_packages.items():
@@ -245,23 +245,11 @@ class Lorax(BaseLoraxClass):
         # Need a list to pass to cleanup_kernel_modules, not a generator
         modules = list(template.getdata("module"))
 
-        self.installtree.move_modules()
+        self.installtree.install_kernel_modules(modules)
 
-        for kernel in self.installtree.kernels:
-            logger.info("cleaning up kernel modules")
-            self.installtree.cleanup_kernel_modules(modules, kernel)
-
-            logger.info("compressing modules")
-            self.installtree.compress_modules(kernel)
-
-            logger.info("running depmod")
-            self.installtree.run_depmod(kernel)
-
-        # move repos
         logger.info("moving anaconda repos")
         self.installtree.move_repos()
 
-        # create depmod conf
         logger.info("creating depmod.conf")
         self.installtree.create_depmod_conf()
 
@@ -310,36 +298,7 @@ class Lorax(BaseLoraxClass):
 
         logger.info("getting list of not required packages")
         remove = template.getdata("remove", mode="lines")
-
-        rdb = {}
-        order = []
-        for item in remove:
-            package = None
-            pattern = None
-
-            if item[0] == "--path":
-                # remove files
-                package = None
-                pattern = item[1]
-            else:
-                # remove package
-                package = item[0]
-
-                try:
-                    pattern = item[1]
-                except IndexError:
-                    pattern = None
-
-            if package not in rdb:
-                rdb[package] = [pattern]
-                order.append(package)
-            elif pattern not in rdb[package]:
-                rdb[package].append(pattern)
-
-        for package in order:
-            pattern_list = rdb[package]
-            logger.debug("{0}\t{1}".format(package, pattern_list))
-            self.installtree.yum.remove(package, pattern_list)
+        self.installtree.remove_packages(remove)
 
         # cleanup python files
         logger.info("cleaning up python files")
