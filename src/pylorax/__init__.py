@@ -51,7 +51,6 @@ from installtree import LoraxInstallTree
 from buildstamp import BuildStamp
 from treeinfo import TreeInfo
 from discinfo import DiscInfo
-import images
 
 class ArchData(object):
     lib64_arches = ("x86_64", "ppc64", "sparc64", "s390x", "ia64")
@@ -273,46 +272,35 @@ class Lorax(BaseLoraxClass):
         discinfo = DiscInfo(self.product.release, self.arch.basearch)
         discinfo.write(joinpaths(self.outputdir, ".discinfo"))
 
-        # create .treeinfo
-        treeinfo = TreeInfo(self.product.name, self.product.version,
-                            self.product.variant, self.arch.basearch)
-
-        # get the image class
-        factory = images.Factory()
-        imgclass = factory.get_class(self.arch.basearch)
-
-        ctype = self.conf.get("compression", "type")
-        cspeed = self.conf.get("compression", "speed")
-
-        i = imgclass(kernellist=kernels,
-                     installtree=self.installtree,
-                     outputroot=self.outputdir,
-                     product=self.product.name,
-                     version=self.product.version,
-                     treeinfo=treeinfo,
-                     basearch=self.arch.basearch,
-                     ctype=ctype,
-                     cspeed=cspeed)
-
-        # backup required files
-        i.backup_required(self.workdir)
+        # XXX do we need to backup installtree here?
 
         logger.info("getting list of not required packages")
         remove = template.getdata("remove", mode="lines")
         self.installtree.remove_packages(remove)
 
-        # cleanup python files
         logger.info("cleaning up python files")
         self.installtree.cleanup_python_files()
 
-        # compress install tree (create initrd)
-        logger.info("creating the initrd")
-        i.create_initrd(self.arch.libdir)
+        # Set up the TreeInfo object - we're about to start building
+        treeinfo = TreeInfo(self.product.name, self.product.version,
+                            self.product.variant, self.arch.basearch)
 
-        # create boot iso
-        logger.info("creating boot iso")
-        i.create_boot(efiboot=None) # FIXME restore proper EFI function
+        logger.info("creating the runtime image")
+        runtime = joinpaths(self.workdir, "install.img")
+        ctype = self.conf.get("compression", "type")
+        cspeed = self.conf.get("compression", "speed")
+        self.installtree.compress(runtime, ctype, cspeed)
+        cpfile(runtime, joinpaths(self.outputdir, "images/install.img"))
+        treeinfo.add_section("stage2", {"mainimage": "images/install.img"})
 
+        logger.info("building output tree and boot images")
+        treebuilder = TreeBuilder(product, arch,
+                                  self.installtree.root, self.outputdir)
+        treebuilder.build()
+        for section, data in treebuilder.treeinfo_data:
+            treeinfo.add_section(section, data)
+
+        # write .treeinfo
         treeinfo.write(joinpaths(self.outputdir, ".treeinfo"))
 
     def get_buildarch(self):
