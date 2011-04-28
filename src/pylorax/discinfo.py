@@ -23,20 +23,17 @@ import logging
 logger = logging.getLogger("pylorax.discinfo")
 
 import time
-from sysutils import joinpaths
 
 
 class DiscInfo(object):
 
-    def __init__(self, workdir, release, basearch):
-        self.path = joinpaths(workdir, ".discinfo")
-
+    def __init__(self, release, basearch):
         self.release = release
         self.basearch = basearch
 
-    def write(self):
+    def write(self, outfile):
         logger.info("writing .discinfo file")
-        with open(self.path, "w") as fobj:
+        with open(outfile, "w") as fobj:
             fobj.write("{0:f}\n".format(time.time()))
             fobj.write("{0.release}\n".format(self))
             fobj.write("{0.basearch}\n".format(self))

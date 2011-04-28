@@ -33,7 +33,6 @@ import sys
 import os
 import ConfigParser
 import tempfile
-import shutil
 import glob
 import math
 import subprocess
@@ -215,11 +214,10 @@ class Lorax(BaseLoraxClass):
         self.installtree.yum.process_transaction(skipbroken)
 
         # write .buildstamp
-        buildstamp = BuildStamp(self.workdir, self.product.name, self.product.version,
+        buildstamp = BuildStamp(self.product.name, self.product.version,
                                 self.product.bugurl, self.product.is_beta, self.arch.buildarch)
 
-        buildstamp.write()
-        shutil.copy2(buildstamp.path, self.installtree.root)
+        buildstamp.write(joinpaths(self.installtree.root, ".buildstamp"))
 
         logger.debug("saving pkglists to %s", self.workdir)
         dname = joinpaths(self.workdir, "pkglists")
@@ -273,13 +271,11 @@ class Lorax(BaseLoraxClass):
         self.installtree.get_anaconda_portions()
 
         # write .discinfo
-        discinfo = DiscInfo(self.workdir, self.product.release, self.arch.basearch)
-        discinfo.write()
-
-        shutil.copy2(discinfo.path, self.outputdir)
+        discinfo = DiscInfo(self.product.release, self.arch.basearch)
+        discinfo.write(joinpaths(self.outputdir, ".discinfo"))
 
         # create .treeinfo
-        treeinfo = TreeInfo(self.workdir, self.product.name, self.product.version,
+        treeinfo = TreeInfo(self.product.name, self.product.version,
                             self.product.variant, self.arch.basearch)
 
         # get the image class
@@ -318,9 +314,7 @@ class Lorax(BaseLoraxClass):
         logger.info("creating boot iso")
         i.create_boot(efiboot=None) # FIXME restore proper EFI function
 
-        treeinfo.write()
-
-        shutil.copy2(treeinfo.path, self.outputdir)
+        treeinfo.write(joinpaths(self.outputdir, ".treeinfo"))
 
     def get_buildarch(self):
         # get architecture of the available anaconda package

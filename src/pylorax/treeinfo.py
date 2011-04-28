@@ -24,15 +24,13 @@ logger = logging.getLogger("pylorax.treeinfo")
 
 import ConfigParser
 import time
-from sysutils import joinpaths
 
 
 class TreeInfo(object):
 
-    def __init__(self, workdir, product, version, variant, basearch,
+    def __init__(self, product, version, variant, basearch,
                  packagedir=""):
 
-        self.path = joinpaths(workdir, ".treeinfo")
         self.c = ConfigParser.ConfigParser()
 
         section = "general"
@@ -52,7 +50,7 @@ class TreeInfo(object):
 
         map(lambda (key, value): self.c.set(section, key, value), data.items())
 
-    def write(self):
+    def write(self, outfile):
         logger.info("writing .treeinfo file")
-        with open(self.path, "w") as fobj:
+        with open(outfile, "w") as fobj:
             self.c.write(fobj)
