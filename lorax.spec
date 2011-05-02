@@ -1,5 +1,5 @@
 Name:           lorax
-Version:        0.5
+Version:        0.6
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -59,6 +59,22 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Mon May 02 2011 Martin Gracik <mgracik@redhat.com> 0.6-1
+- Disable rsyslogd rate limiting on imuxsock.
+- Use crc32 check when compressing with xz
+- Allow compression type be specified in lorax.conf
+- Use xz and gzip commands instead of libraries
+- Add the udf module to the image.
+- Preserve anaconda's /usr/bin so anaconda-cleanup is in the image.
+- Use arch macros in the lorax.spec
+- use reqs not regs for files to backup (dgilmore)
+- Reflect changes made in ntfs-3g and ntfsprogs packages (#696706)
+- getkeymaps resides in /usr/libexec/anaconda
+- workdir is a local variable, not a class attribute
+- Add sparcv9 to arch map
+- Change the location of *.b files on sparc
+- Change BuildRequires to python2-devel
+
 * Wed Apr 13 2011 Martin Gracik <mgracik@redhat.com> 0.5-1
 - Remove pungi patch
 - Remove pseudo code
