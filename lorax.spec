@@ -1,3 +1,5 @@
+%define debug_package %{nil}
+
 Name:           lorax
 Version:        0.8
 Release:        1%{?dist}
