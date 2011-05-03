@@ -2,7 +2,7 @@
 
 Name:           lorax
 Version:        0.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
@@ -61,6 +61,9 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Tue May 03 2011 Martin Gracik <mgracik@redhat.com> 0.6-3
+- Disable debuginfo package
+
 * Mon May 02 2011 Martin Gracik <mgracik@redhat.com> 0.6-1
 - Disable rsyslogd rate limiting on imuxsock.
 - Use crc32 check when compressing with xz
