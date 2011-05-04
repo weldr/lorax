@@ -44,6 +44,7 @@ import yum
 import yumhelper
 import ltmpl
 
+import imgutils
 import constants
 from sysutils import *
 
@@ -185,7 +186,7 @@ class Lorax(BaseLoraxClass):
         self.product = product
         logger.debug("product data: %s" % product)
 
-        logger.info("parsing the template")
+        logger.info("parsing the runtime template")
         tfile = joinpaths(self.conf.get("lorax", "sharedir"),
                           self.conf.get("templates", "ramdisk"))
 
@@ -275,32 +276,38 @@ class Lorax(BaseLoraxClass):
         # XXX do we need to backup installtree here?
 
         logger.info("getting list of not required packages")
-        remove = template.getdata("remove", mode="lines")
-        self.installtree.remove_packages(remove)
+        removepkgs = template.getdata("remove", mode="lines")
+        self.installtree.remove_packages(removepkgs)
 
         logger.info("cleaning up python files")
         self.installtree.cleanup_python_files()
 
-        # Set up the TreeInfo object - we're about to start building
-        treeinfo = TreeInfo(self.product.name, self.product.version,
-                            self.product.variant, self.arch.basearch)
-
         logger.info("creating the runtime image")
-        runtime = joinpaths(self.workdir, "install.img")
-        ctype = self.conf.get("compression", "type")
-        cspeed = self.conf.get("compression", "speed")
-        self.installtree.compress(runtime, ctype, cspeed)
-        cpfile(runtime, joinpaths(self.outputdir, "images/install.img"))
-        treeinfo.add_section("stage2", {"mainimage": "images/install.img"})
+        # TODO: different img styles / create_runtime implementations
+        runtimedir = joinpaths(self.workdir, "runtime")
+        # FIXME: compression options (type, speed, etc.)
+        create_runtime(self.installtree.root, runtimedir)
 
-        logger.info("building output tree and boot images")
+        logger.info("preparing to build output tree and boot images")
         treebuilder = TreeBuilder(product, arch,
                                   self.installtree.root, self.outputdir)
+
+        # TODO: different image styles may do this part differently
+        logger.info("rebuilding initramfs images")
+        treebuilder.rebuild_initrds(add_args=["--xz", "--add", "btrfs"])
+
+        # TODO: keep small initramfs for split initramfs/runtime media
+        logger.info("adding runtime to initrds")
+        treebuilder.initrd_append(runtimedir)
+
+        logger.info("populating output tree and building boot images")
         treebuilder.build()
+
+        logger.info("writing .treeinfo")
+        treeinfo = TreeInfo(self.product.name, self.product.version,
+                            self.product.variant, self.arch.basearch)
         for section, data in treebuilder.treeinfo_data:
             treeinfo.add_section(section, data)
-
-        # write .treeinfo
         treeinfo.write(joinpaths(self.outputdir, ".treeinfo"))
 
     def get_buildarch(self):
@@ -319,3 +326,25 @@ class Lorax(BaseLoraxClass):
             buildarch = os.uname()[4]
 
         return buildarch
+
+def create_runtime(inroot, outdir):
+    runtime = "squashfs.img"
+    # these exact paths are required by dracut
+    livedir = "LiveOS"
+    rootfs = "rootfs.img"
+    cmdline = "etc/cmdline"
+    # make live rootfs image
+    fssize = 2 * (1024*1024*1024) # 2GB sparse file compresses down to nothin'
+    livedir = joinpaths(outdir, livedir)
+    os.makedirs(livedir)
+    imgutils.mkext4img(inroot,  joinpaths(livedir, rootfs),
+                       label="Anaconda", size=fssize)
+    # squash the live image
+    imgutils.mksquashfs(livedir, joinpaths(outdir, runtime),
+                        compressargs=["-no-progress"])
+    remove(livedir)
+    # make the cmdline file
+    os.makedirs(joinpaths(outdir, os.path.dirname(cmdline)))
+    with open(joinpaths(outdir, cmdline), "w") as fobj:
+        fobj.write("root=live:/%s\n" % runtime)
+    return (runtime, cmdline)
