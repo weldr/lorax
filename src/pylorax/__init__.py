@@ -689,7 +689,8 @@ class Lorax(BaseLoraxClass):
             return None
 
         # create dm device
-        dmdev = create_dm_dev("efiboot", disksize / 512, loopdev)
+        tablename = "efiboot%s" % (os.getpid(),)
+        dmdev = create_dm_dev(tablename, disksize / 512, loopdev)
 
         if not dmdev:
             remove_loop_dev(loopdev)
