@@ -290,7 +290,7 @@ class Lorax(BaseLoraxClass):
         create_runtime(self.installtree.root, runtimedir)
 
         logger.info("preparing to build output tree and boot images")
-        treebuilder = TreeBuilder(product, arch,
+        treebuilder = TreeBuilder(self.product, self.arch,
                                   self.installtree.root, self.outputdir)
 
         # TODO: different image styles may do this part differently
