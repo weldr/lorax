@@ -19,7 +19,7 @@
 # Red Hat Author(s):  Martin Gracik <mgracik@redhat.com>
 #
 
-__all__ = ["joinpaths", "touch", "replace", "chown_", "chmod_"]
+__all__ = ["joinpaths", "touch", "replace", "chown_", "chmod_", "remove"]
 
 
 import sys
