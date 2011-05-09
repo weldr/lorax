@@ -48,6 +48,7 @@ import imgutils
 import constants
 from sysutils import *
 
+from treebuilder import TreeBuilder
 from installtree import LoraxInstallTree
 from buildstamp import BuildStamp
 from treeinfo import TreeInfo
