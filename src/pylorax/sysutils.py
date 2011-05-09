@@ -19,8 +19,8 @@
 # Red Hat Author(s):  Martin Gracik <mgracik@redhat.com>
 #
 
-__all__ = ["joinpaths", "touch", "replace", "chown_", "chmod_", "remove"]
-
+__all__ = ["joinpaths", "touch", "replace", "chown_", "chmod_", "remove",
+           "linktree"]
 
 import sys
 import os
@@ -30,6 +30,7 @@ import pwd
 import grp
 import glob
 import shutil
+import subprocess
 
 
 def joinpaths(*args, **kwargs):
@@ -96,3 +97,6 @@ def remove(target):
         shutil.rmtree(target)
     else:
         os.unlink(target)
+
+def linktree(src, dst):
+    subprocess.check_call(["/bin/cp", "-al", src, dst])
