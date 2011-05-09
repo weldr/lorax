@@ -20,8 +20,7 @@
 import logging
 logger = logging.getLogger("pylorax.treebuilder")
 
-import os
-import glob
+import os, re, glob
 from subprocess import check_call, PIPE
 
 from sysutils import joinpaths, cpfile, replace, remove
@@ -143,8 +142,12 @@ class TreeBuilder(BaseBuilder):
 # everything else operates on outroot
 # "mkdir", "treeinfo", "runcmd", "remove", "replace" will take multiple args
 
-# TODO: replace installtree. need glob(), find(glob), installpkg, removepkg, module
-#       also: run_transaction?
+# TODO: replace installtree:
+#       glob(), find(glob)
+#       installpkg/removepkg pkgglob [pkgglob..]
+#       run_pkg_transaction
+#       removefrom [pkgname] glob [glob..]
+#       module modname [modname...]
 
 class TemplateRunner(object):
     commands = ('install', 'mkdir', 'replace', 'append', 'treeinfo',
