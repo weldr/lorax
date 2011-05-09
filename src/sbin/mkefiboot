@@ -1,0 +1,66 @@
+#!/usr/bin/python
+# mkefiboot - a tool to make EFI boot images
+# Copyright (C) 2011  Red Hat, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Red Hat Author(s):  Will Woods <wwoods@redhat.com>
+
+import os, tempfile, optparse
+from subprocess import check_call, PIPE
+from lorax.imgutils import mkdosimg, round_to_blocks, LoopDev, DMDev, dm_detach
+
+def mkefiboot(bootdir, outfile, label):
+    '''Make an EFI boot image with the contents of bootdir in EFI/BOOT'''
+    mkdosimg(None, outfile, label, graft={'EFI/BOOT':bootdir})
+
+def mkefidisk(efiboot, outfile):
+    '''Make a bootable EFI disk image out of the given EFI boot image.'''
+    partsize = os.path.getsize(efiboot) + 17408
+    disksize = round_to_blocks(17408 + partsize, 512)
+    with LoopDev(outfile, disksize) as loopdev:
+        with DMDev(loopdev, disksize) as dmdev:
+            check_call(["parted", "--script", "/dev/mapper/%s" % dmdev,
+            "mklabel", "gpt",
+            "unit", "b",
+            "mkpart", "'EFI System Partition'", "fat32", "17408", str(partsize),
+            "set", "1", "boot", "on"], stdout=PIPE, stderr=PIPE)
+            with open(efiboot, "rb") as infile:
+                with open("/dev/mapper/%sp1" % dmdev, "wb") as outfile:
+                    outfile.write(infile.read())
+            dm_detach(dmdev+"p1")
+
+if __name__ == '__main__':
+    parser = optparse.OptionParser(usage="%prog EFIBOOTDIR IMGFILE")
+    parser.add_option("-d", "--disk", action="store_true", default=False,
+                      help="make a full EFI disk image")
+    parser.add_option("-l", "--label", action="store", default="ANACONDA",
+                      help="filesystem label to use")
+    # get args
+    (opt, args) = parser.parse_args()
+    if len(args) != 2:
+        parser.error("need exactly two arguments")
+    (bootdir, outfile) = args
+    # sanity checks
+    if not os.path.isdir(bootdir):
+        parser.error("%s is not a directory" % bootdir)
+    if os.getuid() > 0:
+        parser.error("need root permissions")
+    # do the thing!
+    if opt.disk:
+        efiboot = tempfile.NamedTemporaryFile(prefix="mkefiboot.").name
+        mkefiboot(bootdir, efiboot, opt.label)
+        mkefidisk(efiboot, outfile)
+    else:
+        mkefiboot(bootdir, outfile, opt.label)
