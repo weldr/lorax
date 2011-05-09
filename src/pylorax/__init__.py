@@ -18,7 +18,7 @@
 #
 # Red Hat Author(s):  Martin Gracik <mgracik@redhat.com>
 #                     David Cantrell <dcantrell@redhat.com>
-#
+#                     Will Woods <wwoods@redhat.com>
 
 # set up logging
 import logging
@@ -274,7 +274,9 @@ class Lorax(BaseLoraxClass):
         discinfo = DiscInfo(self.product.release, self.arch.basearch)
         discinfo.write(joinpaths(self.outputdir, ".discinfo"))
 
-        # XXX do we need to backup installtree here?
+        logger.info("backing up installroot")
+        installroot = joinpaths(self.workdir, "installroot")
+        linktree(self.installtree.root, installroot)
 
         logger.info("getting list of not required packages")
         removepkgs = template.getdata("remove", mode="lines")
@@ -291,7 +293,7 @@ class Lorax(BaseLoraxClass):
 
         logger.info("preparing to build output tree and boot images")
         treebuilder = TreeBuilder(self.product, self.arch,
-                                  self.installtree.root, self.outputdir)
+                                  installroot, self.outputdir)
 
         # TODO: different image styles may do this part differently
         logger.info("rebuilding initramfs images")
