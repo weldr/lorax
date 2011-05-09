@@ -1,0 +1,68 @@
+<%
+ANABOOTDIR="usr/share/anaconda/boot"
+SYSLINUXDIR="usr/share/syslinux"
+PXEBOOTDIR="images/pxeboot"
+BOOTDIR="isolinux"
+KERNELDIR=PXEBOOTDIR
+%>
+
+mkdir ${BOOTDIR} ${KERNELDIR}
+install ${SYSLINUXDIR}/isolinux.bin ${BOOTDIR}
+install ${ANABOOTDIR}/syslinux.cfg ${BOOTDIR}/isolinux.cfg
+install ${ANABOOTDIR}/syslinux-vesa-splash.jpg ${BOOTDIR}/splash.jpg
+install ${ANABOOTDIR}/*.msg ${BOOTDIR}
+install ${SYSLINUXDIR}/vesamenu.c32 ${BOOTDIR}
+install ${ANABOOTDIR}/grub.conf ${BOOTDIR}
+
+replace @VERSION@ ${product.version} ${BOOTDIR}/*.msg ${BOOTDIR}/grub.conf
+replace @PRODUCT@ ${product.name}    ${BOOTDIR}/grub.conf
+
+replace "default linux" "default vesamenu.c32" ${BOOTDIR}/isolinux.cfg
+replace "prompt 1"      "#prompt 1"            ${BOOTDIR}/isolinux.cfg
+
+%if exists("boot/memtest*"):
+    install boot/memtest* ${BOOTDIR}
+    append ${BOOTDIR}/isolinux.cfg "label memtest86"
+    append ${BOOTDIR}/isolinux.cfg "  menu label ^Memory test"
+    append ${BOOTDIR}/isolinux.cfg "  kernel memtest"
+    append ${BOOTDIR}/isolinux.cfg "  append -"
+%endif
+
+%for kernel in kernels:
+    %if kernel.flavor:
+        installkernel images-xen ${kernel.path} ${KERNELDIR}/vmlinuz-${kernel.flavor}
+        installinitrd images-xen ${kernel.initrd.path} ${KERNELDIR}/initrd-${kernel.flavor}.img
+    %else:
+        installkernel images-${basearch} ${kernel.path} ${KERNELDIR}/vmlinuz
+        installinitrd images-${basearch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
+    %endif
+%endfor
+
+hardlink ${KERNELDIR}/vmlinuz ${BOOTDIR}
+hardlink ${KERNELDIR}/initrd ${BOOTDIR}
+%if basearch == 'x86_64':
+    treeinfo images-xen kernel ${KERNELDIR}/vmlinuz
+    treeinfo images-xen initrd ${KERNELDIR}/initrd.img
+%endif
+
+## WHeeeeeeee, EFI.
+## We could remove the basearch restriction someday..
+<% efiargs=""; efigraft="" %>
+%if exists("boot/efi/EFI/redhat/grub.efi") and basearch != 'i386':
+    <%
+    efiarch = 'X64' if basearch=='x86_64' else 'IA32'
+    efiargs="-eltorito-alt-boot -e images/efiboot.img -no-emul-boot"
+    efigraft="BOOT/EFI={0}/BOOT/EFI".format(outroot)
+    %>
+    <%include file="efi.tmpl" args="ANABOOTDIR=ANABOOTDIR, KERNELDIR=KERNELDIR, efiarch=efiarch"/>
+%endif
+
+runcmd mkisofs -v -o ${outroot}/images/boot.iso \
+       -b ${BOOTDIR}/isolinux.bin -c ${BOOTDIR}/boot.cat \
+       -boot-load-size 4 -boot-info-table ${efiargs} \
+       -R -J -V '${product.name}' -T -graft-points \
+       ${BOOTDIR}=${outroot}/${BOOTDIR} \
+       images=${outroot}/images \
+       ${efigraft}
+runcmd isohybrid ${outroot}/images/boot.iso
+treeinfo images-${basearch} boot.iso images/boot.iso

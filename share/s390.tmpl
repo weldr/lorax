@@ -1,0 +1,26 @@
+<%
+ANABOOTDIR="usr/share/anaconda/boot"
+BOOTDIR="images"
+KERNELDIR=BOOTDIR
+INITRD_ADDRESS="0x02000000"
+MKCDBOOT="usr/libexec/anaconda/mk-s390-cdboot"
+# The assumption seems to be that there is only one s390 kernel, ever
+kernel = kernels[0]
+%>
+
+install ${ANABOOTDIR}/redhat.exec ${BOOTDIR}
+install ${ANABOOTDIR}/generic.prm ${BOOTDIR}
+install ${ANABOOTDIR}/generic.ins .
+
+replace @INITRD_LOAD_ADDRESS@ ${INITRD_ADDRESS} generic.ins
+
+installkernel images-${basearch} ${kernel.path} ${KERNELDIR}/kernel.img
+installinitrd images-${basearch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
+runcmd usr/libexec/anaconda/addrsize ${INITRD_ADDRESS} ${KERNELDIR}/initrd.img ${outroot}/${BOOTDIR}/initrd_addrsize
+treeinfo images-${basearch} initrd.addrsize ${BOOTDIR}/initrd_addrsize
+treeinfo images-${basearch} generic.prm ${BOOTDIR}/generic.prm
+treeinfo images-${basearch} generic.ins generic.ins
+
+runcmd ${MKCDBOOT} -i ${kernel.path} -r ${kernel.initrd.path} \
+       -p ${outroot}/${BOOTDIR}/generic.prm \
+       -o ${outroot}/${BOOTDIR}/cdboot.img

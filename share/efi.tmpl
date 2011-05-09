@@ -1,0 +1,37 @@
+<%page args="ANABOOTDIR, KERNELDIR, efiarch"/>
+<% EFIBOOTDIR="EFI/BOOT" %>
+
+mkdir ${EFIBOOTDIR}
+install boot/efi/EFI/redhat/grub.efi ${EFIBOOTDIR}/BOOT${efiarch}.bin
+install boot/grub/splash.xml.gz ${EFIBOOTDIR}
+
+## actually make the EFI images
+${make_efiboot("images/efidisk.img", include_kernel=True, disk=True)}
+${make_efiboot("images/efiboot.img", include_kernel=False)}
+
+## This is kinda gross, but then... so's EFI.
+<%def name="make_efiboot(img, include_kernel, disk=False)">
+    <%
+    kdir = EFIBOOTDIR if include_kernel else KERNELDIR
+    args = "--label=ANACONDA"
+    if disk: args += " --disk"
+    %>
+    %if include_kernel:
+        copy ${KERNELDIR}/vmlinuz ${EFIBOOTDIR}
+        copy ${KERNELDIR}/initrd ${EFIBOOTDIR}
+    %endif
+    install ${ANABOOTDIR}/grub.conf ${EFIBOOTDIR}/BOOT${efiarch}.conf
+    replace @PRODUCT@ ${product.name} ${EFIBOOTDIR}/BOOT${efiarch}.conf
+    replace @VERSION@ ${product.version} ${EFIBOOTDIR}/BOOT${efiarch}.conf
+    replace @KERNELPATH@ /${kdir}/vmlinuz ${EFIBOOTDIR}/BOOT${efiarch}.conf
+    replace @INITRDPATH@ /${kdir}/initrd ${EFIBOOTDIR}/BOOT${efiarch}.conf
+    replace @SPLASHPATH@ /EFI/BOOT/splash.xpm.gz ${EFIBOOTDIR}/BOOT${efiarch}.conf
+    %if efiarch == 'IA32':
+        copy ${EFIBOOTDIR}/BOOT${efiarch}.conf ${EFIBOOTDIR}/BOOT.conf
+    %endif
+    runcmd mkefiboot ${args} ${outroot}/${EFIBOOTDIR} ${outroot}/${img}
+    %if include_kernel:
+        remove ${EFIBOOTDIR}/vmlinuz
+        remove ${EFIBOOTDIR}/initrd
+    %endif
+</%def>

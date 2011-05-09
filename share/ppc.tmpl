@@ -1,0 +1,99 @@
+<%
+ANABOOTDIR="usr/share/anaconda/boot"
+BOOTDIR="ppc"
+MACDIR=BOOTDIR+"/mac"
+NETBOOTDIR="images/netboot"
+
+MKZIMAGE="usr/bin/mkzimage"
+ZSTUB="usr/share/ppc64-utils/zImage.stub"
+WRAPPER="usr/sbin/wrapper"
+WRAPPER_A="usr/"+libdir+"/kernel-wrapper/wrapper.a"
+MAPPING=ANABOOTDIR+"/mapping"
+MAGIC=ANABOOTDIR+"/magic"
+bitsizes = set()
+prepboot = ""
+macboot = ""
+%>
+
+mkdir ${BOOTDIR} ${BOOTDIR}/chrp etc
+install ${ANABOOTDIR}/bootinfo.txt ${BOOTDIR}
+install boot/efika.forth ${BOOTDIR}
+install usr/lib/yaboot/yaboot ${BOOTDIR}/chrp
+
+## Mac boot stuff
+mkdir ${MACDIR}
+install usr/lib/yaboot/yaboot ${MACDIR}
+install ofboot.b ${MACDIR}
+<%
+  macboot =  "-hfs-volid {0}".format(product.version)
+  macboot += "-hfs-bless {0}/isopath/{1}".format(outroot,MACDIR)
+%>
+
+%for kernel in kernels:
+    <%
+      bits = 64 if kernel.arch == "ppc64" else 32
+      KERNELDIR=BOOTDIR+"/ppc%s" % bits
+      NETIMG=NETBOOTDIR+"/ppc%s.img" % bits
+      bitsizes.add(bits)
+    %>
+    mkdir ${KERNELDIR}
+    install ${ANABOOTDIR}/yaboot.conf.in ${KERNELDIR}/yaboot.conf
+    installkernel images-${kernel.arch} ${kernel.path} ${KERNELDIR}/vmlinuz
+    ## Note: this used to be ramdisk.img.gz
+    installinitrd images-${kernel.arch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
+
+    replace %PRODUCT% ${product.name}    ${KERNELDIR}/yaboot.conf
+    replace %VERSION% ${product.version} ${KERNELDIR}/yaboot.conf
+    replace %BITS%    ${bits}            ${KERNELDIR}/yaboot.conf
+
+    ## Weirdo wrapper junk that makes the netboot combined ppc{32,64}.img
+    %if exists(MKZIMAGE) and exists(ZSTUB):
+        copy usr/${libdir}/kernel-wrapper/zImage.lds ${KERNELDIR}
+        runcmd chdir=${KERNELDIR} ${inroot}/${MKZIMAGE} vmlinuz no no initrd.img \
+               ${inroot}/${ZSTUB} ${outroot}/${NETIMG}
+        remove ${KERNELDIR}/zImage.lds
+        treeinfo images-${kernel.arch} zimage ${NETIMG}
+    %elif exists(WRAPPER) and exists(WRAPPER_A):
+        runcmd chdir=${KERNELDIR} ${inroot}/${WRAPPER} -o ${outroot}/${NETIMG} \
+               -i initrd.img -D ${inroot}/${os.path.dirname(WRAPPER_A)} vmlinuz
+        treeinfo images-${kernel.arch} zimage ${NETIMG}
+    %endif
+    %if exists(NETIMG) and bits == 32:
+        <% prepboot="-prep-boot " + NETIMG %>
+    %endif
+%endfor
+
+%if not exists(NETBOOTDIR+"/*.img"):
+    remove ${NETBOOTDIR}
+%endif
+
+runcmd usr/lib/yaboot/addnote ${outroot}/${BOOTDIR}/chrp/yaboot
+
+%if len(bitsizes) == 2:
+    ## magic ppc biarch tree! we need magic ppc biarch config.
+    install ${ANABOOTDIR}/yaboot.conf.3264 etc/yaboot.conf
+    replace %PRODUCT% ${product.name}    etc/yaboot.conf
+    replace %VERSION% ${product.version} etc/yaboot.conf
+    replace %BITS%    32                 etc/yaboot.conf
+%else:
+    copy ${KERNELDIR}/yaboot.conf etc/yaboot.conf
+%endif
+
+## XXX why don't we use graft-points here?
+##     is it because of the scary warnings in mkisofs(1)?
+mkdir isopath
+copy ${BOOTDIR} isopath
+copy etc isopath
+runcmd mkisofs -o ${outroot}/images/boot.iso -chrp-boot -U \
+        ${prepboot} -part -hfs -T -r -l -J \
+        -A "${product.name} ${product.version}" -sysid PPC -V "PBOOT" \
+        -volset "${product.version}" -volset-size 1 -volset-seqno 1 \
+        ${macboot} -map ${MAPPING} -magic ${MAGIC} \
+        -no-desktop -allow-multidot -graft-points ${outroot}/isopath
+remove isopath
+%if len(bitsizes) == 2:
+    treeinfo images-ppc   boot.iso images/boot.iso
+    treeinfo images-ppc64 boot.iso images/boot.iso
+%else:
+    treeinfo images-${kernel.arch} boot.iso images/boot.iso
+%fi
