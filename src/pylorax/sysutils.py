@@ -135,3 +135,9 @@ def cpfile(src, dst):
         dst = joinpaths(dst, os.path.basename(src))
 
     return dst
+
+def remove(target):
+    if os.path.isdir(target):
+        shutil.rmtree(target)
+    else:
+        os.unlink(target)
