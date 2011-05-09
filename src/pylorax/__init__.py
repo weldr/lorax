@@ -33,9 +33,6 @@ import sys
 import os
 import ConfigParser
 import tempfile
-import glob
-import math
-import subprocess
 
 from base import BaseLoraxClass, DataHolder
 import output
