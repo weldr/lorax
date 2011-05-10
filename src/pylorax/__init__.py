@@ -307,7 +307,7 @@ class Lorax(BaseLoraxClass):
         logger.info("writing .treeinfo")
         treeinfo = TreeInfo(self.product.name, self.product.version,
                             self.product.variant, self.arch.basearch)
-        for section, data in treebuilder.treeinfo_data:
+        for section, data in treebuilder.treeinfo_data.items():
             treeinfo.add_section(section, data)
         treeinfo.write(joinpaths(self.outputdir, ".treeinfo"))
 
