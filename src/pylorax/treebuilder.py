@@ -211,8 +211,8 @@ class TemplateRunner(object):
             if not isdir(d):
                 os.makedirs(d)
 
-    def replace(self, pat, repl, *files):
-        for g in globs:
+    def replace(self, pat, repl, *fileglobs):
+        for g in fileglobs:
             for f in glob(self._out(f)):
                 replace(pat, repl, f)
 
