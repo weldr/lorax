@@ -215,7 +215,7 @@ class TemplateRunner(object):
     def replace(self, pat, repl, *fileglobs):
         for g in fileglobs:
             for f in _glob(g, root=self.outroot):
-                replace(pat, repl, f)
+                replace(f, pat, repl)
 
     def append(self, filename, data):
         with open(self._out(filename), "a") as fobj:
