@@ -20,7 +20,8 @@
 import logging
 logger = logging.getLogger("pylorax.treebuilder")
 
-import os, re, glob
+import os, re
+from glob import glob
 from os.path import join, basename, isdir, getsize
 from subprocess import check_call, PIPE
 from tempfile import NamedTemporaryFile
@@ -65,7 +66,7 @@ def findkernels(root="/", kdir="boot"):
 
 def _exists(root, p):
     if p[0] != '/': p = joinpaths(root, p)
-    return (len(glob.glob(p)) > 0)
+    return (len(glob(p)) > 0)
 
 class BaseBuilder(object):
     def __init__(self, product, arch, inroot, outroot, templatedir=None):
@@ -79,17 +80,21 @@ class BaseBuilder(object):
     def getdefaults(self):
         return dict(arch=self.arch, product=self.product,
                     inroot=self.inroot, outroot=self.outroot,
-                    basearch=self.arch.basearch, libdir=self.arch.libdir,
-                    exists=lambda p: _exists(self.inroot, p))
+                    basearch=self.arch.basearch, libdir=self.arch.libdir)
 
-    def runtemplate(self, templatefile, **variables):
+    def runtemplate(self, tfile, **tvars):
+        # get data for template - start with defaults and override from args
         for k,v in self.getdefaults().items():
-            variables.setdefault(k,v) # setdefault won't override existing args
-        t = LoraxTemplate(directories=[self.templatedir])
-        logger.info("parsing %s with the following variables", templatefile)
-        for key, val in variables.items():
+            tvars.setdefault(k,v) # setdefault won't override existing keys
+        logger.info("parsing %s with the following variables", tfile)
+        for key, val in tvars.items():
             logger.info("  %s: %s", key, val)
-        template = t.parse(templatefile, variables)
+        # set up functions for template
+        tvars.setdefault('exists', lambda p: _exists(tvars['inroot'], p))
+        tvars.setdefault('glob', glob)
+        # parse and run the template
+        t = LoraxTemplate(directories=[self.templatedir])
+        template = t.parse(tfile, tvars)
         self.runner = TemplateRunner(self.inroot, self.outroot, template)
         logger.info("running template commands")
         self.runner.run()
@@ -194,7 +199,7 @@ class TemplateRunner(object):
                 logger.error(str(e))
 
     def install(self, srcglob, dest):
-        sources = glob.glob(self._in(srcglob))
+        sources = glob(self._in(srcglob))
         if not sources:
             raise IOError, "couldn't find %s" % srcglob
         for src in sources:
@@ -207,8 +212,9 @@ class TemplateRunner(object):
                 os.makedirs(d)
 
     def replace(self, pat, repl, *files):
-        for f in files:
-            replace(pat, repl, self._out(f))
+        for g in globs:
+            for f in glob(self._out(f)):
+                replace(pat, repl, f)
 
     def append(self, filename, data):
         with open(self._out(filename), "a") as fobj:
