@@ -148,7 +148,7 @@ class TreeBuilder(BaseBuilder):
                 initrd.write(cpio.read())
 
     def implantisomd5(self):
-        for section, data in self.treeinfo_data:
+        for section, data in self.treeinfo_data.items():
             if 'boot.iso' in data:
                 iso = joinpaths(self.outputdir, data['boot.iso'])
                 check_call(["implantisomd5", iso])
