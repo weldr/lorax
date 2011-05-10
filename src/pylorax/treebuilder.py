@@ -21,6 +21,7 @@ import logging
 logger = logging.getLogger("pylorax.treebuilder")
 
 import os, re, glob
+from os.path import join, basename, isdir, getsize
 from subprocess import check_call, PIPE
 from tempfile import NamedTemporaryFile
 
@@ -134,7 +135,7 @@ class TreeBuilder(BaseBuilder):
             initrd_path = joinpaths(self.inroot, kernel.initrd.path)
             with open(initrd_path, "ab") as initrd:
                 logger.info("%s size before appending: %i",
-                    kernel.initrd.path, os.path.getsize(initrd.name))
+                    kernel.initrd.path, getsize(initrd.name))
                 initrd.write(cpio.read())
 
     def implantisomd5(self):
@@ -202,7 +203,7 @@ class TemplateRunner(object):
     def mkdir(self, *dirs):
         for d in dirs:
             d = self._out(d)
-            if not os.path.isdir(d):
+            if not isdir(d):
                 os.makedirs(d)
 
     def replace(self, pat, repl, *files):
@@ -214,7 +215,7 @@ class TemplateRunner(object):
             fobj.write(data+"\n")
 
     def treeinfo(self, section, key, *valuetoks):
-        if section not in self.treeinfo:
+        if section not in self.treeinfo_data:
             self.treeinfo_data[section] = dict()
         self.treeinfo_data[section][key] = " ".join(valuetoks)
 
@@ -227,6 +228,8 @@ class TemplateRunner(object):
         self.treeinfo(section, "initrd", dest)
 
     def hardlink(self, src, dest):
+        if isdir(dest):
+            dest = join(dest, basename(src))
         os.link(self._out(src), self._out(dest))
 
     def symlink(self, target, dest):
