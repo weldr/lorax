@@ -20,8 +20,7 @@
 import logging
 logger = logging.getLogger("pylorax.treebuilder")
 
-import os, re
-from glob import glob
+import os, re, glob
 from os.path import join, basename, isdir, getsize
 from subprocess import check_call, PIPE
 from tempfile import NamedTemporaryFile
@@ -64,9 +63,14 @@ def findkernels(root="/", kdir="boot"):
 
     return kernels
 
-def _exists(root, p):
-    if p[0] != '/': p = joinpaths(root, p)
-    return (len(glob(p)) > 0)
+def _glob(glob, root="", fatal=True):
+    files_found = glob.glob(os.path.join(root, glob))
+    if fatal and not files_found:
+        raise IOError, "nothing matching %s" % os.path.join(root, glob)
+    return files_found
+
+def _exists(path, root=""):
+    return (len(_glob(path, root, fatal=False)) > 0)
 
 class BaseBuilder(object):
     def __init__(self, product, arch, inroot, outroot, templatedir=None):
@@ -90,8 +94,8 @@ class BaseBuilder(object):
         for key, val in tvars.items():
             logger.info("  %s: %s", key, val)
         # set up functions for template
-        tvars.setdefault('exists', lambda p: _exists(tvars['inroot'], p))
-        tvars.setdefault('glob', glob)
+        tvars.setdefault('exists', lambda p: _exists(p, root=tvars['inroot']))
+        tvars.setdefault('glob', lambda g: glob(g, root=tvars['inroot']))
         # parse and run the template
         t = LoraxTemplate(directories=[self.templatedir])
         template = t.parse(tfile, tvars)
@@ -155,8 +159,8 @@ class TreeBuilder(BaseBuilder):
 # everything else operates on outroot
 # "mkdir", "treeinfo", "runcmd", "remove", "replace" will take multiple args
 
-# TODO: replace installtree:
-#       glob(), find(glob)
+# TODO: to replace installtree:
+#       find(glob)
 #       installpkg/removepkg pkgglob [pkgglob..]
 #       run_pkg_transaction
 #       removefrom [pkgname] glob [glob..]
@@ -175,7 +179,7 @@ class TemplateRunner(object):
         self.fatalerrors = fatalerrors
 
         self.treeinfo_data = dict()
-        self.exists = lambda p: _exists(inroot, p)
+        self.exists = lambda p: _exists(p, root=inroot)
 
     def _out(self, path):
         return joinpaths(self.outroot, path)
@@ -199,10 +203,7 @@ class TemplateRunner(object):
                 logger.error(str(e))
 
     def install(self, srcglob, dest):
-        sources = glob(self._in(srcglob))
-        if not sources:
-            raise IOError, "couldn't find %s" % srcglob
-        for src in sources:
+        for src in _glob(srcglob, root=self.inroot):
             cpfile(src, self._out(dest))
 
     def mkdir(self, *dirs):
@@ -213,7 +214,7 @@ class TemplateRunner(object):
 
     def replace(self, pat, repl, *fileglobs):
         for g in fileglobs:
-            for f in glob(self._out(f)):
+            for f in _glob(g, root=self.outroot):
                 replace(pat, repl, f)
 
     def append(self, filename, data):
