@@ -234,7 +234,7 @@ class TemplateRunner(object):
         self.treeinfo(section, "initrd", dest)
 
     def hardlink(self, src, dest):
-        if isdir(dest):
+        if isdir(self._out(dest)):
             dest = join(dest, basename(src))
         os.link(self._out(src), self._out(dest))
 
