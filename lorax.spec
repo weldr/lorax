@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        0.4.5
+Version:        0.4.6
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -60,6 +60,10 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Tue May 10 2011 Martin Gracik <mgracik@redhat.com> 0.4.6-1
+- Do not remove libmodman (#701622)
+- Add firmware for Intel Wireless WiFi Link 6030 Adapters (#703291)
+
 * Tue May 03 2011 Martin Gracik <mgracik@redhat.com> 0.4.5-1
 - Disable debuginfo package
 - Do not remove libproxy (#701622)
