@@ -290,7 +290,8 @@ class Lorax(BaseLoraxClass):
 
         logger.info("preparing to build output tree and boot images")
         treebuilder = TreeBuilder(self.product, self.arch,
-                                  installroot, self.outputdir)
+                                  installroot, self.outputdir,
+                                  templatedir=self.conf.get("lorax", "sharedir"))
 
         # TODO: different image styles may do this part differently
         logger.info("rebuilding initramfs images")
