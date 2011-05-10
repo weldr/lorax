@@ -19,11 +19,11 @@
 
 import os, tempfile, optparse
 from subprocess import check_call, PIPE
-from lorax.imgutils import mkdosimg, round_to_blocks, LoopDev, DMDev, dm_detach
+from pylorax.imgutils import mkdosimg, round_to_blocks, LoopDev, DMDev, dm_detach
 
 def mkefiboot(bootdir, outfile, label):
     '''Make an EFI boot image with the contents of bootdir in EFI/BOOT'''
-    mkdosimg(None, outfile, label, graft={'EFI/BOOT':bootdir})
+    mkdosimg(None, outfile, label=label, graft={'EFI/BOOT':bootdir})
 
 def mkefidisk(efiboot, outfile):
     '''Make a bootable EFI disk image out of the given EFI boot image.'''
