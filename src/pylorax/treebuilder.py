@@ -22,10 +22,12 @@ logger = logging.getLogger("pylorax.treebuilder")
 
 import os, re, glob
 from subprocess import check_call, PIPE
+from tempfile import NamedTemporaryFile
 
 from sysutils import joinpaths, cpfile, replace, remove
 from ltmpl import LoraxTemplate
 from base import DataHolder
+from imgutils import mkcpio
 
 templatemap = {'i386':    'x86.tmpl',
                'x86_64':  'x86.tmpl',
@@ -114,21 +116,25 @@ class TreeBuilder(BaseBuilder):
         if not backup:
             dracut.append("--force")
         for kernel in self.kernels:
+            logger.info("rebuilding %s", kernel.initrd.path)
             if backup:
                 initrd = joinpaths(self.inroot, kernel.initrd.path)
                 os.rename(initrd, initrd + backup)
             check_call(["chroot", self.inroot] + \
                        dracut + [kernel.initrd.path, kernel.version])
 
-    def initrd_append(rootdir):
+    def initrd_append(self, rootdir):
         '''Place the given files into a cpio archive and append that archive
         to the initrds.'''
-        cpio = NamedTemporaryFile(prefix="lorax.")
-        mkcpio(rootdir, cpio, compression=None)
+        cpio = NamedTemporaryFile(prefix="lorax.") # XXX workdir?
+        mkcpio(rootdir, cpio.name, compression=None)
         for kernel in self.kernels:
-            initrd = open(kernel.initrd.path, "ab")
-            cpio = open(cpio, "rb")
-            initrd.write(cpio.read())
+            cpio.seek(0)
+            initrd_path = joinpaths(self.inroot, kernel.initrd.path)
+            with open(initrd_path, "ab") as initrd:
+                logger.info("%s size before appending: %i",
+                    kernel.initrd.path, os.path.getsize(initrd.name))
+                initrd.write(cpio.read())
 
     def implantisomd5(self):
         for section, data in self.treeinfo_data:
