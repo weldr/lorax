@@ -14,8 +14,8 @@ install ${ANABOOTDIR}/*.msg ${BOOTDIR}
 install ${SYSLINUXDIR}/vesamenu.c32 ${BOOTDIR}
 install ${ANABOOTDIR}/grub.conf ${BOOTDIR}
 
-replace @VERSION@ ${product.version} ${BOOTDIR}/*.msg ${BOOTDIR}/grub.conf
-replace @PRODUCT@ ${product.name}    ${BOOTDIR}/grub.conf
+replace @VERSION@ ${product.version} ${BOOTDIR}/grub.conf ${BOOTDIR}/isolinux.cfg ${BOOTDIR}/*.msg
+replace @PRODUCT@ ${product.name}    ${BOOTDIR}/grub.conf ${BOOTDIR}/isolinux.cfg ${BOOTDIR}/*.msg
 
 replace "default linux" "default vesamenu.c32" ${BOOTDIR}/isolinux.cfg
 replace "prompt 1"      "#prompt 1"            ${BOOTDIR}/isolinux.cfg
@@ -39,7 +39,7 @@ replace "prompt 1"      "#prompt 1"            ${BOOTDIR}/isolinux.cfg
 %endfor
 
 hardlink ${KERNELDIR}/vmlinuz ${BOOTDIR}
-hardlink ${KERNELDIR}/initrd ${BOOTDIR}
+hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
 %if basearch == 'x86_64':
     treeinfo images-xen kernel ${KERNELDIR}/vmlinuz
     treeinfo images-xen initrd ${KERNELDIR}/initrd.img
@@ -57,10 +57,10 @@ hardlink ${KERNELDIR}/initrd ${BOOTDIR}
     <%include file="efi.tmpl" args="ANABOOTDIR=ANABOOTDIR, KERNELDIR=KERNELDIR, efiarch=efiarch"/>
 %endif
 
-runcmd mkisofs -v -o ${outroot}/images/boot.iso \
+runcmd mkisofs -o ${outroot}/images/boot.iso \
        -b ${BOOTDIR}/isolinux.bin -c ${BOOTDIR}/boot.cat \
-       -boot-load-size 4 -boot-info-table ${efiargs} \
-       -R -J -V '${product.name}' -T -graft-points \
+       -boot-load-size 4 -boot-info-table -no-emul-boot \
+       ${efiargs} -R -J -V '${product.name}' -T -graft-points \
        ${BOOTDIR}=${outroot}/${BOOTDIR} \
        images=${outroot}/images \
        ${efigraft}
