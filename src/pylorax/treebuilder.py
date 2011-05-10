@@ -150,7 +150,7 @@ class TreeBuilder(BaseBuilder):
     def implantisomd5(self):
         for section, data in self.treeinfo_data.items():
             if 'boot.iso' in data:
-                iso = joinpaths(self.outputdir, data['boot.iso'])
+                iso = joinpaths(self.outroot, data['boot.iso'])
                 check_call(["implantisomd5", iso])
 
 
