@@ -67,11 +67,12 @@ def _exists(root, p):
     return (len(glob.glob(p)) > 0)
 
 class BaseBuilder(object):
-    def __init__(self, product, arch, inroot, outroot):
+    def __init__(self, product, arch, inroot, outroot, templatedir=None):
         self.arch = arch
         self.product = product
         self.inroot = inroot
         self.outroot = outroot
+        self.templatedir = templatedir
         self.runner = None
 
     def getdefaults(self):
@@ -83,7 +84,7 @@ class BaseBuilder(object):
     def runtemplate(self, templatefile, **variables):
         for k,v in self.getdefaults().items():
             variables.setdefault(k,v) # setdefault won't override existing args
-        t = LoraxTemplate()
+        t = LoraxTemplate(directories=[self.templatedir])
         logger.info("parsing %s with the following variables", templatefile)
         for key, val in variables.items():
             logger.info("  %s: %s", key, val)
