@@ -51,7 +51,7 @@ from buildstamp import BuildStamp
 from treeinfo import TreeInfo
 from discinfo import DiscInfo
 
-class ArchData(object):
+class ArchData(DataHolder):
     lib64_arches = ("x86_64", "ppc64", "sparc64", "s390x", "ia64")
     archmap = {"i386": "i386", "i586":"i386", "i686":"i386", "x86_64":"x86_64",
                "ppc":"ppc", "ppc64": "ppc",
