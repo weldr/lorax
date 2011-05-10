@@ -81,7 +81,7 @@ class BaseBuilder(object):
                     exists=lambda p: _exists(self.inroot, p))
 
     def runtemplate(self, templatefile, **variables):
-        for k,v in self.getdefaults():
+        for k,v in self.getdefaults().items():
             variables.setdefault(k,v) # setdefault won't override existing args
         t = LoraxTemplate()
         logger.info("parsing %s with the following variables", templatefile)
