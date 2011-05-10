@@ -22,18 +22,19 @@
 import sys
 import shlex
 
-from mako.template import Template
 from mako.lookup import TemplateLookup
 from mako.exceptions import RichTraceback
 
 
 class LoraxTemplate(object):
+    def __init__(self, directories=["/usr/share/lorax"]):
+        # we have to add ["/"] to the template lookup directories or the
+        # file includes won't work properly for absolute paths
+        self.directories = ["/"] + directories
 
     def parse(self, template_file, variables):
-        # we have to set the template lookup directories to ["/"],
-        # otherwise the file includes will not work properly
-        lookup = TemplateLookup(directories=["/"])
-        template = Template(filename=template_file, lookup=lookup)
+        lookup = TemplateLookup(directories=self.directories)
+        template = lookup.get_template(template_file)
 
         try:
             textbuf = template.render(**variables)
