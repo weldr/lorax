@@ -63,10 +63,10 @@ def findkernels(root="/", kdir="boot"):
 
     return kernels
 
-def _glob(glob, root="", fatal=True):
-    files_found = glob.glob(os.path.join(root, glob))
+def _glob(globpat, root="", fatal=True):
+    files_found = glob.glob(os.path.join(root, globpat))
     if fatal and not files_found:
-        raise IOError, "nothing matching %s" % os.path.join(root, glob)
+        raise IOError, "nothing matching %s" % os.path.join(root, globpat)
     return files_found
 
 def _exists(path, root=""):
@@ -95,7 +95,7 @@ class BaseBuilder(object):
             logger.info("  %s: %s", key, val)
         # set up functions for template
         tvars.setdefault('exists', lambda p: _exists(p, root=tvars['inroot']))
-        tvars.setdefault('glob', lambda g: glob(g, root=tvars['inroot']))
+        tvars.setdefault('glob', lambda g: _glob(g, root=tvars['inroot']))
         # parse and run the template
         t = LoraxTemplate(directories=[self.templatedir])
         template = t.parse(tfile, tvars)
