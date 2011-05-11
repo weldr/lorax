@@ -341,8 +341,7 @@ def create_runtime(inroot, outdir):
     imgutils.mkext4img(inroot,  joinpaths(livedir, rootfs),
                        label="Anaconda", size=fssize)
     # squash the live image
-    imgutils.mksquashfs(livedir, joinpaths(outdir, runtime),
-                        compressargs=["-no-progress"])
+    imgutils.mksquashfs(livedir, joinpaths(outdir, runtime))
     remove(livedir)
     # make the cmdline file
     os.makedirs(joinpaths(outdir, os.path.dirname(cmdline)))
