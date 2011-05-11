@@ -129,25 +129,28 @@ def do_grafts(grafts, dest, preserve=True):
         copytree(filename, join(dest, imgpath), preserve)
 
 def round_to_blocks(size, blocksize):
-    '''Round the size of a file to the size of the blocks it would use'''
+    '''If size isn't a multiple of blocksize, round up to the next multiple'''
     diff = size % blocksize
-    if diff:
+    if diff or not size:
         size += blocksize - diff
     return size
 
-def estimate_size(rootdir, fstype=None, blocksize=4096, overhead=1024):
-    if not rootdir:
-        return 0
+def estimate_size(rootdir, graft={}, fstype=None, blocksize=4096, overhead=1024):
     getsize = lambda f: os.lstat(f).st_size
     if fstype == "btrfs":
         overhead = 64*1024 # don't worry, it's all sparse
     if fstype in ("vfat", "msdos"):
         overhead = 128
+        blocksize = 2048
         getsize = lambda f: os.stat(f).st_size # no symlinks, count as copies
     total = overhead*blocksize
-    for root, dirs, files in os.walk(rootdir):
-        for f in files:
-            total += round_to_blocks(getsize(join(root,f)), blocksize)
+    dirlist = graft.values()
+    if rootdir:
+        dirlist.append(rootdir)
+    for root in dirlist:
+        for top, dirs, files in os.walk(root):
+            for f in files + dirs:
+                total += round_to_blocks(getsize(join(top,f)), blocksize)
     if fstype == "btrfs":
         total = max(256*1024*1024, total) # btrfs minimum size: 256MB
     return total
@@ -193,9 +196,7 @@ def mkfsimage(fstype, rootdir, outfile, size=None, mkfsargs=[], mountargs="", gr
     Will raise CalledProcessError if something goes wrong.'''
     preserve = (fstype not in ("msdos", "vfat"))
     if not size:
-        size = estimate_size(rootdir, fstype)
-        for f in graft.values():
-            size += estimate_size(f, fstype)
+        size = estimate_size(rootdir, graft, fstype)
     with LoopDev(outfile, size) as loopdev:
         check_call(["mkfs.%s" % fstype] + mkfsargs + [loopdev],
                    stdout=PIPE, stderr=PIPE)
