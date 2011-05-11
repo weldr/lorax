@@ -52,7 +52,7 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
     <%
     efiarch = 'X64' if basearch=='x86_64' else 'IA32'
     efiargs="-eltorito-alt-boot -e images/efiboot.img -no-emul-boot"
-    efigraft="BOOT/EFI={0}/BOOT/EFI".format(outroot)
+    efigraft="EFI/BOOT={0}/EFI/BOOT".format(outroot)
     %>
     <%include file="efi.tmpl" args="ANABOOTDIR=ANABOOTDIR, KERNELDIR=KERNELDIR, efiarch=efiarch"/>
 %endif
