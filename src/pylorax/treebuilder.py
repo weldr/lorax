@@ -284,5 +284,4 @@ class TemplateRunner(object):
             dirname = cmd[0].split('=',1)[1]
             chdir = lambda: os.chdir(dirname)
             cmd = cmd[1:]
-        logger.info("runcmd: %s", cmd)
         check_call(cmd, preexec_fn=chdir)
