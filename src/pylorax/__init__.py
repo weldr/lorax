@@ -304,7 +304,7 @@ class Lorax(BaseLoraxClass):
         logger.info("populating output tree and building boot images")
         treebuilder.build()
 
-        logger.info("writing .treeinfo")
+        # write .treeinfo file and we're done
         treeinfo = TreeInfo(self.product.name, self.product.version,
                             self.product.variant, self.arch.basearch)
         for section, data in treebuilder.treeinfo_data.items():
