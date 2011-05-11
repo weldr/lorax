@@ -142,7 +142,7 @@ def estimate_size(rootdir, fstype=None, blocksize=4096, overhead=1024):
     if fstype == "btrfs":
         overhead = 64*1024 # don't worry, it's all sparse
     if fstype in ("vfat", "msdos"):
-        overhead = 32
+        overhead = 128
         getsize = lambda f: os.stat(f).st_size # no symlinks, count as copies
     total = overhead*blocksize
     for root, dirs, files in os.walk(rootdir):
