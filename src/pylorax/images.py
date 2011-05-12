@@ -643,7 +643,7 @@ class S390(object):
                                  "anaconda", "addrsize")
 
             cmd = [addrsize, INITRD_ADDRESS, initrd.fpath,
-                   joinpaths(self.outputroot, IMAGESDIR, "initrd_addrsize")]
+                   joinpaths(self.outputroot, IMAGESDIR, "initrd.addrsize")]
 
             p = subprocess.Popen(cmd, stdin=subprocess.PIPE,
                                  stdout=subprocess.PIPE)
@@ -654,7 +654,7 @@ class S390(object):
             section = "images-{0}".format(kernel_arch)
             data = {"kernel": joinpaths(IMAGESDIR, kernel.fname),
                     "initrd": joinpaths(IMAGESDIR, initrd.fname),
-                    "initrd.addrsize": joinpaths(IMAGESDIR, "initrd_addrsize"),
+                    "initrd.addrsize": joinpaths(IMAGESDIR, "initrd.addrsize"),
                     "generic.prm": joinpaths(IMAGESDIR,
                                              os.path.basename(generic_prm)),
                     "generic.ins": os.path.basename(generic_ins)}
