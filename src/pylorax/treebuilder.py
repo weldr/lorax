@@ -25,7 +25,7 @@ from os.path import join, basename, isdir, getsize
 from subprocess import check_call, PIPE
 from tempfile import NamedTemporaryFile
 
-from sysutils import joinpaths, cpfile, replace, remove
+from sysutils import joinpaths, cpfile, replace, remove, linktree
 from ltmpl import LoraxTemplate
 from base import DataHolder
 from imgutils import mkcpio
@@ -102,6 +102,40 @@ class BaseBuilder(object):
         self.runner = TemplateRunner(self.inroot, self.outroot, template)
         logger.info("running template commands")
         self.runner.run()
+
+class RuntimeBuilder(BaseBuilder):
+    '''Builds the anaconda runtime image.
+    inroot will be the same as outroot, so 'install' == 'copy'.'''
+    def __init__(self, product, arch, yum, outroot, templatedir=None):
+        BaseBuilder.__init__(self, product, arch, outroot, outroot, templatedir)
+        self.yum = yum
+        # FIXME pass yum to runner
+        self.root = outroot
+
+    def install(self):
+        '''Install packages and do initial setup with runtime-install.tmpl'''
+        self.runtemplate("runtime-install.tmpl", root=self.outroot)
+
+    def postinstall(self, configdir="/usr/share/lorax/config_files"):
+        '''Do some post-install setup work with runtime-postinstall.tmpl'''
+        # link configdir into outroot
+        configdir_outroot = "tmp/config_files"
+        linktree(configdir, join(self.outroot, configdir_outroot))
+        self.runtemplate("runtime-postinstall.tmpl", root=self.outroot,
+                         configdir=configdir_outroot)
+
+    def cleanup(self):
+        '''Remove unneeded packages and files with runtime-cleanup.tmpl'''
+        self.runtemplate("runtime-cleanup.tmpl", root=self.outroot,
+                         removelocales=self.removelocales)
+
+    @property
+    def removelocales(self):
+        localedir = join(self.root, "usr/share/locale")
+        locales = set([basename(d) for d in _glob("*", localedir) if isdir(d)])
+        langtable = join(self.root, "usr/share/anaconda/lang-table")
+        keeplocales = set([line.split()[1] for line in open(langtable)])
+        return locales.difference(keeplocales)
 
 class TreeBuilder(BaseBuilder):
     '''Builds the arch-specific boot images.
