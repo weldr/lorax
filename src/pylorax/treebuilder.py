@@ -99,7 +99,7 @@ class BaseBuilder(object):
         # parse and run the template
         t = LoraxTemplate(directories=[self.templatedir])
         template = t.parse(tfile, tvars)
-        self.runner = TemplateRunner(self.inroot, self.outroot, template)
+        self.runner = TemplateRunner(template, **tvars)
         logger.info("running template commands")
         self.runner.run()
 
@@ -206,11 +206,13 @@ class TemplateRunner(object):
                 'copy', 'copyif', 'move', 'moveif', 'remove', 'chmod',
                 'runcmd', 'log')
 
-    def __init__(self, inroot, outroot, parsed_template, fatalerrors=False):
+    def __init__(self, parsed_template, inroot=None, outroot=None,
+                 fatalerrors=False, **kwargs):
+        self.template = parsed_template
         self.inroot = inroot
         self.outroot = outroot
-        self.template = parsed_template
         self.fatalerrors = fatalerrors
+        self.kwargs = kwargs
 
         self.treeinfo_data = dict()
         self.exists = lambda p: _exists(p, root=inroot)
