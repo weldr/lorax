@@ -330,21 +330,18 @@ class Lorax(BaseLoraxClass):
 
 def create_runtime(inroot, outdir):
     runtime = "squashfs.img"
-    # these exact paths are required by dracut
-    livedir = "LiveOS"
-    rootfs = "rootfs.img"
     cmdline = "etc/cmdline"
-    # make live rootfs image
+    # make live rootfs image - must be named "LiveOS/rootfs.img" for dracut
+    workdir = joinpaths(outdir, "runtime-workdir")
     fssize = 2 * (1024*1024*1024) # 2GB sparse file compresses down to nothin'
-    livedir = joinpaths(outdir, livedir)
-    os.makedirs(livedir)
-    imgutils.mkext4img(inroot,  joinpaths(livedir, rootfs),
+    os.makedirs(joinpaths(workdir, "LiveOS"))
+    imgutils.mkext4img(inroot,  joinpaths(workdir, "LiveOS/rootfs.img"),
                        label="Anaconda", size=fssize)
-    # squash the live image
-    imgutils.mksquashfs(livedir, joinpaths(outdir, runtime))
-    remove(livedir)
-    # make the cmdline file
+    # squash the live rootfs and clean up workdir
+    imgutils.mksquashfs(workdir, joinpaths(outdir, runtime))
+    remove(workdir)
+    # make "etc/cmdline" for dracut to use as default cmdline args
     os.makedirs(joinpaths(outdir, os.path.dirname(cmdline)))
     with open(joinpaths(outdir, cmdline), "w") as fobj:
         fobj.write("root=live:/%s\n" % runtime)
-    return (runtime, cmdline)
+    return [runtime, cmdline] # return list of files to append to initrd
