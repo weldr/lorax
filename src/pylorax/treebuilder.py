@@ -79,7 +79,6 @@ class BaseBuilder(object):
         self.inroot = inroot
         self.outroot = outroot
         self.templatedir = templatedir
-        self.runner = None
 
     def getdefaults(self):
         return dict(arch=self.arch, product=self.product,
@@ -99,9 +98,10 @@ class BaseBuilder(object):
         # parse and run the template
         t = LoraxTemplate(directories=[self.templatedir])
         template = t.parse(tfile, tvars)
-        self.runner = TemplateRunner(template, **tvars)
+        runner = TemplateRunner(template, **tvars)
         logger.info("running template commands")
-        self.runner.run()
+        runner.run()
+        return runner
 
 class RuntimeBuilder(BaseBuilder):
     '''Builds the anaconda runtime image.
@@ -141,13 +141,10 @@ class TreeBuilder(BaseBuilder):
     '''Builds the arch-specific boot images.
     inroot should be the installtree root (the newly-built runtime dir)'''
     def build(self):
-        self.runtemplate(templatemap[self.arch.basearch], kernels=self.kernels)
+        template = templatemap[self.arch.basearch]
+        runner = self.runtemplate(template, kernels=self.kernels)
+        self.treeinfo_data = runner.results.treeinfo
         self.implantisomd5()
-
-    @property
-    def treeinfo_data(self):
-        if self.runner:
-            return self.runner.treeinfo_data
 
     @property
     def kernels(self):
@@ -214,7 +211,7 @@ class TemplateRunner(object):
         self.fatalerrors = fatalerrors
         self.kwargs = kwargs
 
-        self.treeinfo_data = dict()
+        self.results = DataHolder(treeinfo=dict()) # just treeinfo right now
         self.exists = lambda p: _exists(p, root=inroot)
 
     def _out(self, path):
@@ -258,9 +255,9 @@ class TemplateRunner(object):
             fobj.write(data+"\n")
 
     def treeinfo(self, section, key, *valuetoks):
-        if section not in self.treeinfo_data:
-            self.treeinfo_data[section] = dict()
-        self.treeinfo_data[section][key] = " ".join(valuetoks)
+        if section not in self.results.treeinfo:
+            self.results.treeinfo[section] = dict()
+        self.results.treeinfo[section][key] = " ".join(valuetoks)
 
     def installkernel(self, section, src, dest):
         self.install(src, dest)
