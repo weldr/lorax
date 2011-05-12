@@ -52,7 +52,7 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
     <%
     efiarch = 'X64' if basearch=='x86_64' else 'IA32'
     efiargs="-eltorito-alt-boot -e images/efiboot.img -no-emul-boot"
-    efigraft="EFI/BOOT={0}/EFI/BOOT".format(outroot)
+    efigraft="EFI/BOOT={0}/EFI/BOOT images/efiboot.img={0}/images/efiboot.img".format(outroot)
     %>
     <%include file="efi.tmpl" args="ANABOOTDIR=ANABOOTDIR, KERNELDIR=KERNELDIR, efiarch=efiarch"/>
 %endif
@@ -62,7 +62,7 @@ runcmd mkisofs -o ${outroot}/images/boot.iso \
        -boot-load-size 4 -boot-info-table -no-emul-boot \
        ${efiargs} -R -J -V '${product.name}' -T -graft-points \
        ${BOOTDIR}=${outroot}/${BOOTDIR} \
-       images=${outroot}/images \
+       ${KERNELDIR}=${outroot}/${KERNELDIR} \
        ${efigraft}
 runcmd isohybrid ${outroot}/images/boot.iso
 treeinfo images-${basearch} boot.iso images/boot.iso
