@@ -12,6 +12,8 @@ FIXME:
       - also do_installpkg, do_removepkg
         - or maybe run_transaction?
 - handle [compression] conf keys (type, speed)
+- run prelink on runtime image
+  - chroot ${root} /etc/cron.daily/prelink
 
 
 Good ideas:
