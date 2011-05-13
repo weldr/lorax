@@ -1,5 +1,4 @@
 <%page args="root arch configdir"/>
-## FIXME copy configdir into root before this
 <%
 KEYMAP_OVERRIDE = "usr/share/anaconda/keymaps-override-%s" % arch.basearch
 SCREENFONT = "usr/share/anaconda/screenfont-%s.gz" % arch.basearch
@@ -45,9 +44,19 @@ append etc/depmod.d/dd.conf "search updates built-in"
 
 
 ## misc_tree_modifications()
-symlink "/sbin/init" init
-remove etc/systemd/system/default.target
-symlink "/lib/systemd/system/anaconda.target" etc/systemd/system/default.target
+%if conf.systemd:
+    symlink "/sbin/init" init
+    remove etc/systemd/system/default.target
+    symlink "/lib/systemd/system/anaconda.target" etc/systemd/system/default.target
+    install ${configdir}/network etc/sysconfig
+%else:
+    copy usr/${libdir}/anaconda/shutdown sbin/shutdown
+    copy usr/${libdir}/anaconda/init sbin/init
+    symlink init sbin/halt
+    symlink init sbin/poweroff
+    symlink init sbin/reboot
+    remove sbin/runlevel sbin/shutdown sbin/telinit
+%endif
 append etc/resolv.conf ""
 append bin/login "#!/bin/bash"
 append bin/login "exec -l /bin/bash"
@@ -75,7 +84,6 @@ install ${configdir}/libuser.conf etc
 %if exists(root+"/etc/selinux/targeted"):
     install ${configdir}/selinux.config etc/selinux/config
 %endif
-install ${configdir}/network etc/sysconfig
 
 
 ## setup_sshd(configdir)
