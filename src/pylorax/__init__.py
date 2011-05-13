@@ -249,10 +249,12 @@ class Lorax(BaseLoraxClass):
         logger.info("creating depmod.conf")
         self.installtree.create_depmod_conf()
 
-        # misc tree modifications
+        # set up /sbin/init
         if self.arch.basearch in ("s390", "s390x"):
-            # TODO: move this to the arch template
-            self.installtree.misc_s390_modifications()
+            self.installtree.setup_s390_init()
+        else:
+            self.installtree.setup_init()
+        # misc tree modifications
         self.installtree.misc_tree_modifications()
 
         # get config files
