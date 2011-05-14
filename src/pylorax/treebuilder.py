@@ -191,11 +191,8 @@ class TreeBuilder(BaseBuilder):
 # "mkdir", "treeinfo", "runcmd", "remove", "replace" will take multiple args
 
 # TODO: to replace installtree:
-#       find(glob)
-#       installpkg/removepkg pkgglob [pkgglob..]
-#       run_pkg_transaction
-#       removefrom [pkgname] glob [glob..]
 #       module modname [modname...]
+#       get yum object somehow
 
 class TemplateRunner(object):
     commands = ('install', 'mkdir', 'replace', 'append', 'treeinfo',
@@ -318,3 +315,35 @@ class TemplateRunner(object):
             chdir = lambda: os.chdir(dirname)
             cmd = cmd[1:]
         check_call(cmd, preexec_fn=chdir)
+
+    def module(self, *modnames):
+        for mod in modnames:
+            # XXX TODO surely this code is elsewhere?
+            # expand groups
+            # resolve deps
+            # get firmware
+            pass
+
+    def installpkg(self, *pkgs):
+        for p in pkgs:
+            self.yum.install(pattern=p)
+
+    def removepkg(self, *pkgs):
+        for p in pkgs:
+            self.yum.remove(pattern=p)
+
+    def run_pkg_transaction(self):
+        self.yum.buildTransaction()
+        self.yum.repos.setProgressBar(LoraxDownloadCallback())
+        self.yum.processTransaction(callback=LoraxTransactionCallback(),
+                                    rpmDisplay=LoraxRpmCallback())
+        self.yum.closeRpmDB()
+
+    def removefrom(self, pkg, *globs):
+        globs_re = re.compile("|".join([fnmatch.translate(g) for g in globs]))
+        pkg_files = []
+        for pkgobj in self.yum.doPackageLists(pkgnarrow="installed", patterns=[pkg]):
+            pkg_files += pkgobj.filelist
+        remove = filter(globs_re.match(pkg_files))
+        logger.debug("removing %i files from %s", len(remove), pkg)
+        self.remove(*remove)
