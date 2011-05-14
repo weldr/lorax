@@ -26,6 +26,7 @@ from subprocess import check_call, PIPE
 from tempfile import NamedTemporaryFile
 
 from sysutils import joinpaths, cpfile, replace, remove, linktree
+from yumhelper import *
 from ltmpl import LoraxTemplate
 from base import DataHolder
 from imgutils import mkcpio
@@ -72,83 +73,83 @@ def _glob(globpat, root="", fatal=True):
 def _exists(path, root=""):
     return (len(_glob(path, root, fatal=False)) > 0)
 
-class BaseBuilder(object):
-    def __init__(self, product, arch, inroot, outroot, templatedir=None):
-        self.arch = arch
-        self.product = product
-        self.inroot = inroot
-        self.outroot = outroot
+class TemplateParser(object):
+    def __init__(self, templatedir=None, defaults={}):
         self.templatedir = templatedir
+        self.defaults = defaults
 
-    def getdefaults(self):
-        return dict(arch=self.arch, product=self.product,
-                    inroot=self.inroot, outroot=self.outroot,
-                    basearch=self.arch.basearch, libdir=self.arch.libdir)
-
-    def runtemplate(self, tfile, **tvars):
-        # get data for template - start with defaults and override from args
-        for k,v in self.getdefaults().items():
-            tvars.setdefault(k,v) # setdefault won't override existing keys
-        logger.info("parsing %s with the following variables", tfile)
-        for key, val in tvars.items():
-            logger.info("  %s: %s", key, val)
-        # set up functions for template
-        tvars.setdefault('exists', lambda p: _exists(p, root=tvars['inroot']))
-        tvars.setdefault('glob', lambda g: _glob(g, root=tvars['inroot']))
-        # parse and run the template
+    def parse(templatefile, variables):
+        for k,v in self.defaults.items():
+            variables.setdefault(k,v)
+        logger.info("parsing %s with the following variables", templatefile)
+        for k,v in variables.items():
+            logger.info("  %s: %s", k, v)
         t = LoraxTemplate(directories=[self.templatedir])
-        template = t.parse(tfile, tvars)
-        runner = TemplateRunner(template, **tvars)
-        logger.info("running template commands")
-        runner.run()
-        return runner
+        return t.parse(templatefile, variables)
 
-class RuntimeBuilder(BaseBuilder):
+class RuntimeBuilder(object):
     '''Builds the anaconda runtime image.
     inroot will be the same as outroot, so 'install' == 'copy'.'''
+    # XXX product.name = product.name.lower()?
     def __init__(self, product, arch, yum, outroot, templatedir=None):
-        BaseBuilder.__init__(self, product, arch, outroot, outroot, templatedir)
-        self.yum = yum
-        # FIXME pass yum to runner
-        self.root = outroot
+        v = DataHolder(arch=arch, product=product, yum=yum,
+                       outroot=outroot, inroot=outroot, root=outroot,
+                       basearch=arch.basearch, libdir=arch.libdir,
+                       exists = lambda p: _exists(p, root=self.root),
+                       glob = lambda g: _glob(g, root=self.root, Fatal=False))
+        self.vars = v
+        self.templatedir = templatedir
+
+    def runtemplate(self, templatefile, **variables):
+        parser = TemplateParser(self.templatedir, self.vars)
+        template = parser.parse(templatefile, variables)
+        runner = TemplateRunner(self.vars.inroot, self.vars.outroot, self.vars.yum)
+        runner.run(template)
 
     def install(self):
         '''Install packages and do initial setup with runtime-install.tmpl'''
-        self.runtemplate("runtime-install.tmpl", root=self.outroot)
+        self.runtemplate("runtime-install.tmpl")
 
     def postinstall(self, configdir="/usr/share/lorax/config_files"):
         '''Do some post-install setup work with runtime-postinstall.tmpl'''
-        # link configdir into outroot
+        # link configdir into outroot beforehand
         configdir_outroot = "tmp/config_files"
-        linktree(configdir, join(self.outroot, configdir_outroot))
-        self.runtemplate("runtime-postinstall.tmpl", root=self.outroot,
-                         configdir=configdir_outroot)
+        linktree(configdir, join(self.vars.outroot, configdir_outroot))
+        self.runtemplate("runtime-postinstall.tmpl", configdir=configdir_outroot)
 
     def cleanup(self):
         '''Remove unneeded packages and files with runtime-cleanup.tmpl'''
-        self.runtemplate("runtime-cleanup.tmpl", root=self.outroot,
-                         removelocales=self.removelocales)
-
-    @property
-    def removelocales(self):
-        localedir = join(self.root, "usr/share/locale")
+        # get removelocales list first
+        localedir = join(self.vars.root, "usr/share/locale")
+        langtable = join(self.vars.root, "usr/share/anaconda/lang-table")
         locales = set([basename(d) for d in _glob("*", localedir) if isdir(d)])
-        langtable = join(self.root, "usr/share/anaconda/lang-table")
         keeplocales = set([line.split()[1] for line in open(langtable)])
-        return locales.difference(keeplocales)
+        removelocales = locales.difference(keeplocales)
+        self.runtemplate("runtime-cleanup.tmpl", removelocales=removelocales)
 
 class TreeBuilder(BaseBuilder):
     '''Builds the arch-specific boot images.
     inroot should be the installtree root (the newly-built runtime dir)'''
+    def __init__(self, product, arch, inroot, outroot, templatedir=None):
+        v = DataHolder(arch=arch, product=product,
+                       inroot = inroot, outroot=outroot,
+                       basearch=arch.basearch, libdir=arch.libdir,
+                       exists = lambda p: _exists(p, root=self.root))
+        self.vars = v
+        self.templatedir = templatedir
+
     def build(self):
-        template = templatemap[self.arch.basearch]
-        runner = self.runtemplate(template, kernels=self.kernels)
+        parser = TemplateParser(self.templatedir, self.vars)
+        templatefile = templatemap[self.vars.arch.basearch]
+        template = parser.parse(templatefile, kernels=self.kernels)
+        runner = TemplateRunner(self.vars.inroot, self.vars.outroot)
+        runner.run(template)
         self.treeinfo_data = runner.results.treeinfo
         self.implantisomd5()
 
     @property
     def kernels(self):
-        return findkernels(root=self.inroot)
+        return findkernels(root=self.vars.inroot)
 
     def rebuild_initrds(self, add_args=[], backup=""):
         '''Rebuild all the initrds in the tree. If backup is specified, each
@@ -160,9 +161,9 @@ class TreeBuilder(BaseBuilder):
         for kernel in self.kernels:
             logger.info("rebuilding %s", kernel.initrd.path)
             if backup:
-                initrd = joinpaths(self.inroot, kernel.initrd.path)
+                initrd = joinpaths(self.vars.inroot, kernel.initrd.path)
                 os.rename(initrd, initrd + backup)
-            check_call(["chroot", self.inroot] + \
+            check_call(["chroot", self.vars.inroot] + \
                        dracut + [kernel.initrd.path, kernel.version])
 
     def initrd_append(self, rootdir):
@@ -172,7 +173,7 @@ class TreeBuilder(BaseBuilder):
         mkcpio(rootdir, cpio.name, compression=None)
         for kernel in self.kernels:
             cpio.seek(0)
-            initrd_path = joinpaths(self.inroot, kernel.initrd.path)
+            initrd_path = joinpaths(self.vars.inroot, kernel.initrd.path)
             with open(initrd_path, "ab") as initrd:
                 logger.info("%s size before appending: %i",
                     kernel.initrd.path, getsize(initrd.name))
@@ -181,7 +182,7 @@ class TreeBuilder(BaseBuilder):
     def implantisomd5(self):
         for section, data in self.treeinfo_data.items():
             if 'boot.iso' in data:
-                iso = joinpaths(self.outroot, data['boot.iso'])
+                iso = joinpaths(self.vars.outroot, data['boot.iso'])
                 check_call(["implantisomd5", iso])
 
 
@@ -190,41 +191,29 @@ class TreeBuilder(BaseBuilder):
 # everything else operates on outroot
 # "mkdir", "treeinfo", "runcmd", "remove", "replace" will take multiple args
 
-# TODO: to replace installtree:
-#       module modname [modname...]
-#       get yum object somehow
-
 class TemplateRunner(object):
-    commands = ('install', 'mkdir', 'replace', 'append', 'treeinfo',
-                'installkernel', 'installinitrd', 'hardlink', 'symlink',
-                'copy', 'copyif', 'move', 'moveif', 'remove', 'chmod',
-                'runcmd', 'log')
-
-    def __init__(self, parsed_template, inroot=None, outroot=None,
-                 fatalerrors=False, **kwargs):
-        self.template = parsed_template
+    def __init__(self, inroot, outroot, yum=None, fatalerrors=False):
         self.inroot = inroot
         self.outroot = outroot
+        self.yum = yum
         self.fatalerrors = fatalerrors
-        self.kwargs = kwargs
-
-        self.results = DataHolder(treeinfo=dict()) # just treeinfo right now
-        self.exists = lambda p: _exists(p, root=inroot)
+        self.results = DataHolder(treeinfo=dict()) # just treeinfo for now
 
     def _out(self, path):
         return joinpaths(self.outroot, path)
     def _in(self, path):
         return joinpaths(self.inroot, path)
 
-    def run(self):
-        for (num, line) in enumerate(self.template,1):
-            logger.debug("template line %i: %s", num, line)
+    def run(self, parsed_template):
+        logger.info("running template commands")
+        for (num, line) in enumerate(parsed_template,1):
+            logger.debug("template line %i: %s", num, " ".join(line))
             (cmd, args) = (line[0], line[1:])
             try:
-                if cmd not in self.commands:
-                    raise ValueError, "unknown command %s" % cmd
                 # grab the method named in cmd and pass it the given arguments
-                f = getattr(self, cmd)
+                f = getattr(self, cmd, None)
+                if f is None or cmd is 'run':
+                    raise ValueError, "unknown command %s" % cmd
                 f(*args)
             except Exception as e:
                 logger.error("template command error: %s", str(line))
@@ -276,7 +265,7 @@ class TemplateRunner(object):
         cpfile(self._out(src), self._out(dest))
 
     def copyif(self, src, dest):
-        if self.exists(src):
+        if _exists(self._out(src)):
             self.copy(src, dest)
             return True
 
@@ -318,11 +307,12 @@ class TemplateRunner(object):
 
     def module(self, *modnames):
         for mod in modnames:
-            # XXX TODO surely this code is elsewhere?
+            # XXX this code is in dracut, maybe it can help
             # expand groups
             # resolve deps
             # get firmware
             pass
+        logger.info("TODO: module %s", " ".join(modnames))
 
     def installpkg(self, *pkgs):
         for p in pkgs:
@@ -341,9 +331,8 @@ class TemplateRunner(object):
 
     def removefrom(self, pkg, *globs):
         globs_re = re.compile("|".join([fnmatch.translate(g) for g in globs]))
-        pkg_files = []
-        for pkgobj in self.yum.doPackageLists(pkgnarrow="installed", patterns=[pkg]):
-            pkg_files += pkgobj.filelist
-        remove = filter(globs_re.match(pkg_files))
+        pkglist = self.yum.doPackageLists(pkgnarrow="installed", patterns=[pkg])
+        pkg_files = [f for pkg in pkglist.installed for f in pkg.filelist]
+        remove = filter(globs_re.match, pkg_files)
         logger.debug("removing %i files from %s", len(remove), pkg)
         self.remove(*remove)
