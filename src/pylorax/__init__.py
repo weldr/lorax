@@ -38,15 +38,13 @@ from base import BaseLoraxClass, DataHolder
 import output
 
 import yum
-import yumhelper
 import ltmpl
 
 import imgutils
 import constants
 from sysutils import *
 
-from treebuilder import TreeBuilder
-from installtree import LoraxInstallTree
+from treebuilder import RuntimeBuilder, TreeBuilder
 from buildstamp import BuildStamp
 from treeinfo import TreeInfo
 from discinfo import DiscInfo
@@ -158,7 +156,7 @@ class Lorax(BaseLoraxClass):
 
         # do we have all lorax required commands?
         self.lcmds = constants.LoraxRequiredCommands()
-        # TODO: actually check for required commands
+        # TODO: actually check for required commands (runcmd etc)
 
         # do we have a proper yum base object?
         logger.info("checking yum base object")
@@ -166,17 +164,12 @@ class Lorax(BaseLoraxClass):
             logger.critical("no yum base object")
             sys.exit(1)
 
-        logger.info("setting up yum helper")
-        self.yum = yumhelper.LoraxYumHelper(ybo)
-        logger.debug("using install root: {0}".format(self.yum.installroot))
+        logger.debug("using install root: {0}".format(ybo.installroot))
 
         logger.info("setting up build architecture")
-        self.arch = ArchData(self.get_buildarch())
+        self.arch = ArchData(get_buildarch(ybo))
         for attr in ('buildarch', 'basearch', 'libdir'):
             logger.debug("self.arch.%s = %s", attr, getattr(self.arch,attr))
-
-        logger.info("setting up install tree")
-        self.installtree = LoraxInstallTree(self.yum, self.arch.libdir)
 
         logger.info("setting up build parameters")
         product = DataHolder(name=product, version=version, release=release,
@@ -184,31 +177,12 @@ class Lorax(BaseLoraxClass):
         self.product = product
         logger.debug("product data: %s" % product)
 
-        logger.info("parsing the runtime template")
-        tfile = joinpaths(self.conf.get("lorax", "sharedir"),
-                          self.conf.get("templates", "ramdisk"))
+        templatedir = self.conf.get("lorax", "sharedir")
+        rb = RuntimeBuilder(product, arch, self.outputdir, ybo, templatedir)
 
-        # TODO: normalize with arch templates:
-        #       tvars = dict(product=product, arch=arch)
-        tvars = { "basearch": self.arch.basearch,
-                  "buildarch": self.arch.buildarch,
-                  "libdir" : self.arch.libdir,
-                  "product": self.product.name.lower() }
-
-        template = ltmpl.LoraxTemplate()
-        template.parse(tfile, tvars)
-
-        logger.info("creating tree directories")
-        for d in template.getdata("mkdir"):
-            os.makedirs(joinpaths(self.installtree.root, d))
-
-        # install packages
-        logger.info("getting list of required packages")
-        for package in template.getdata("install"):
-            self.installtree.yum.install(package)
-
-        skipbroken = self.conf.getboolean("yum", "skipbroken")
-        self.installtree.yum.process_transaction(skipbroken)
+        logger.info("installing runtime packages")
+        rb.yum.conf.skip_broken = self.conf.getboolean("yum", "skipbroken")
+        rb.install()
 
         # write .buildstamp
         buildstamp = BuildStamp(self.product.name, self.product.version,
@@ -219,55 +193,13 @@ class Lorax(BaseLoraxClass):
         logger.debug("saving pkglists to %s", self.workdir)
         dname = joinpaths(self.workdir, "pkglists")
         os.makedirs(dname)
-        for pkgname, pkgobj in self.installtree.yum.installed_packages.items():
-            with open(joinpaths(dname, pkgname), "w") as fobj:
+        for pkgobj in ybo.doPackageLists(pkgnarrow='installed').installed:
+            with open(joinpaths(dname, pkgobj.name), "w") as fobj:
                 for fname in pkgobj.filelist:
                   fobj.write("{0}\n".format(fname))
 
-        logger.info("removing locales")
-        self.installtree.remove_locales()
-
-        logger.info("creating keymaps")
-        if self.arch.basearch not in ("s390", "s390x"):
-            self.installtree.create_keymaps(basearch=self.arch.basearch)
-
-        logger.info("creating screenfont")
-        self.installtree.create_screenfont(basearch=self.arch.basearch)
-
-        logger.info("moving stubs")
-        self.installtree.move_stubs()
-
-        logger.info("getting list of required modules")
-        # Need a list to pass to cleanup_kernel_modules, not a generator
-        modules = list(template.getdata("module"))
-
-        self.installtree.install_kernel_modules(modules)
-
-        logger.info("moving anaconda repos")
-        self.installtree.move_repos()
-
-        logger.info("creating depmod.conf")
-        self.installtree.create_depmod_conf()
-
-        # set up /sbin/init
-        if self.arch.basearch in ("s390", "s390x"):
-            self.installtree.setup_s390_init()
-        else:
-            self.installtree.setup_init()
-        # misc tree modifications
-        self.installtree.misc_tree_modifications()
-
-        # get config files
-        config_dir = joinpaths(self.conf.get("lorax", "sharedir"),
-                               "config_files")
-
-        self.installtree.get_config_files(config_dir)
-        self.installtree.setup_sshd(config_dir)
-        if self.arch.basearch in ("s390", "s390x"):
-            self.installtree.generate_ssh_keys()
-
-        # get anaconda portions
-        self.installtree.get_anaconda_portions()
+        logger.info("doing post-install configuration")
+        rb.postinstall()
 
         # write .discinfo
         discinfo = DiscInfo(self.product.release, self.arch.basearch)
@@ -277,12 +209,8 @@ class Lorax(BaseLoraxClass):
         installroot = joinpaths(self.workdir, "installroot")
         linktree(self.installtree.root, installroot)
 
-        logger.info("getting list of not required packages")
-        removepkgs = template.getdata("remove", mode="lines")
-        self.installtree.remove_packages(removepkgs)
-
-        logger.info("cleaning up python files")
-        self.installtree.cleanup_python_files()
+        logger.info("cleaning unneeded files")
+        rb.clean()
 
         logger.info("creating the runtime image")
         # TODO: different img styles / create_runtime implementations
@@ -293,13 +221,13 @@ class Lorax(BaseLoraxClass):
         logger.info("preparing to build output tree and boot images")
         treebuilder = TreeBuilder(self.product, self.arch,
                                   installroot, self.outputdir,
-                                  templatedir=self.conf.get("lorax", "sharedir"))
+                                  templatedir)
 
         # TODO: different image styles may do this part differently
         logger.info("rebuilding initramfs images")
-        treebuilder.rebuild_initrds(add_args=["--xz", "--add", "btrfs"])
+        treebuilder.rebuild_initrds(add_args=["--xz"])
 
-        # TODO: keep small initramfs for split initramfs/runtime media
+        # TODO: keep small initramfs for split initramfs/runtime media?
         logger.info("adding runtime to initrds")
         treebuilder.initrd_append(runtimedir)
 
@@ -313,22 +241,22 @@ class Lorax(BaseLoraxClass):
             treeinfo.add_section(section, data)
         treeinfo.write(joinpaths(self.outputdir, ".treeinfo"))
 
-    def get_buildarch(self):
-        # get architecture of the available anaconda package
-        _, available = self.yum.search("anaconda")
+def get_buildarch(ybo):
+    # get architecture of the available anaconda package
+    available = ybo.doPackageLists(patterns=["anaconda"]).available
 
-        if available:
+    if available:
+        anaconda = available.pop(0)
+        # src is not a real arch
+        if anaconda.arch == "src":
             anaconda = available.pop(0)
-            # src is not a real arch
-            if anaconda.arch == "src":
-                anaconda = available.pop(0)
-            buildarch = anaconda.arch
-        else:
-            # fallback to the system architecture
-            logger.warning("using system architecture")
-            buildarch = os.uname()[4]
+        buildarch = anaconda.arch
+    else:
+        # fallback to the system architecture
+        logger.warning("using system architecture")
+        buildarch = os.uname()[4]
 
-        return buildarch
+    return buildarch
 
 def create_runtime(inroot, outdir):
     runtime = "squashfs.img"

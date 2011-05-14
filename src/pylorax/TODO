@@ -1,19 +1,5 @@
 FIXME:
-- make TemplateRunner handle ramdisk.tmpl and installtree
-  - DONE: rewrite ramdisk.tmpl a bit
-    - DONE: install -> installpkg
-    - DONE: remove -> removepkg
-    - DONE: remove --path -> remove
-    - DONE: module takes multiple args
-  - DONE: rewrite installtree as template
-    - DONE: split installtree into postinstall/cleanup
-  - add TemplateRunner commands
-    - installpkg, removepkg, module
-      - also do_installpkg, do_removepkg
-        - or maybe run_transaction?
 - handle [compression] conf keys (type, speed)
-- run prelink on runtime image
-  - chroot ${root} /etc/cron.daily/prelink
 
 
 Good ideas:
@@ -21,6 +7,8 @@ Good ideas:
   - update imgutils to be able to partition images
     - via dmsetup stuff in anaconda.storage?
 - allow alternate runtime images via conf key
+- run prelink on runtime image
+  - chroot ${root} /etc/cron.daily/prelink
 
 
 Someday:
