@@ -217,6 +217,9 @@ class Lorax(BaseLoraxClass):
         runtimedir = joinpaths(self.workdir, "runtime")
         # FIXME: compression options (type, speed, etc.)
         create_runtime(self.installtree.root, runtimedir)
+        # HACK FOR F15: Work around loader being a jerk about mounts/udev
+        if int(product.version) < 16:
+            anaconda_dracut_hack(runtimedir)
 
         logger.info("preparing to build output tree and boot images")
         treebuilder = TreeBuilder(self.product, self.arch,
@@ -275,3 +278,16 @@ def create_runtime(inroot, outdir):
     with open(joinpaths(outdir, cmdline), "w") as fobj:
         fobj.write("root=live:/%s\n" % runtime)
     return [runtime, cmdline] # return list of files to append to initrd
+
+def anaconda_dracut_hack(outdir):
+    '''Hack to make anaconda 15.x able to start up from dracut'''
+    hookdir = joinpaths(outdir, "lib/dracut/hooks/pre-pivot")
+    os.makedirs(hookdir)
+    with open(joinpaths(hookdir,"99anaconda-umount.sh"), "w") as f:
+        s = ['#!/bin/sh',
+             'udevadm control --stop-exec-queue',
+             'udevd=$(pidof udevd) && kill $udevd',
+             'umount -l /proc /sys /dev/pts /dev',
+             'echo "mustard=progress" > /proc/cmdline',
+             '[ "$udevd" ] && kill -9 $udevd']
+        f.writelines([line+"\n" for line in s])
