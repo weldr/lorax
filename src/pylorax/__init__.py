@@ -182,7 +182,7 @@ class Lorax(BaseLoraxClass):
         logger.debug("product data: %s" % product)
 
         templatedir = self.conf.get("lorax", "sharedir")
-        rb = RuntimeBuilder(product, arch, self.outputdir, ybo, templatedir)
+        rb = RuntimeBuilder(self.product, self.arch, self.outputdir, ybo, templatedir)
 
         logger.info("installing runtime packages")
         rb.yum.conf.skip_broken = self.conf.getboolean("yum", "skipbroken")
