@@ -110,33 +110,6 @@ move usr/${libdir}/anaconda/loader sbin
 move usr/share/anaconda/loader.tr etc
 move usr/libexec/anaconda/auditd sbin
 
-## TODO: prune this list - a lot of these are deprecated/gone
-module =drm =net =scsi
-## storage
-module edd floppy ide-cd ide-cd_mod iscsi_ibft iscsi_tcp loop mmc-block
-module scsi_mod scsi_wait_scan sd_mod sdhci sdhci-pci sg sr_mod st
-module ums-alauda ums-cypress ums-datafab ums-freecom ums-jumpshot ums-karma
-module ums-onetouch ums-sddr09 ums-sddr55 ums-usbat
-## filesystems
-module btrfs ext2 ext3 ext4 hfsplus fat jfs msdos reiserfs udf vfat xfs
-module cramfs squashfs fuse cifs gfs2 nfs lockd sunrpc
-## device controllers
-module ehci-hcd ohci-hcd uhci-hcd usbhid usb-storage ub
-module ohci1394 firewire-ohci firewire-sbp2 fw-ohci fw-sbp2 sbp2
-module i82365 pcmcia tcic yenta_socket
-## device-mapper & MD RAID
-module dm-crypt dm-mirror dm-mod dm-multipath dm-round-robin dm-snapshot dm-zero
-module linear raid0 raid1 raid10 raid456 raid5 raid6 
-## misc (network, i/o, crypto, virt)
-module 8021q ipv6 netconsole
-module appletouch bcm5974 mousedev pcspkr
-module aes_generic arc4 cbc crc32c crypto_blkcipher ecb lrw sha256_generic xts
-module virtio_pci
-## s390 modules
-%if basearch == "s390x":
-    module dasd_eckd_mod dasd_fba_mod dasd_diag_mod
-%endif
-
 ## move_modules()
 move lib/modules modules
 move lib/firmware firmware
@@ -144,4 +117,11 @@ symlink ../modules lib/modules
 symlink ../firmware lib/firmware
 
 ## no compress_modules (runtime's already compressed)
-## TODO: run_depmod()
+## run_depmod()
+%for kernel in kernels:
+    runcmd depmod -a -F ${root}/boot/System.map-${kernel.version} -b ${root} ${kernel.version}
+    remove modules/${kernel.version}/*.map
+    remove modules/${kernel.version}/build
+    remove modules/${kernel.version}/source
+    ## TODO FIXME: need anaconda magical module-info
+%endfor

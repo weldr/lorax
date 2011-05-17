@@ -305,15 +305,6 @@ class TemplateRunner(object):
             cmd = cmd[1:]
         check_call(cmd, preexec_fn=chdir)
 
-    def module(self, *modnames):
-        for mod in modnames:
-            # XXX this code is in dracut, maybe it can help
-            # expand groups
-            # resolve deps
-            # get firmware
-            pass
-        logger.info("TODO: module %s", " ".join(modnames))
-
     def installpkg(self, *pkgs):
         for p in pkgs:
             self.yum.install(pattern=p)
