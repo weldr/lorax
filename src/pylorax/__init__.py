@@ -164,7 +164,11 @@ class Lorax(BaseLoraxClass):
             logger.critical("no yum base object")
             sys.exit(1)
 
-        logger.debug("using install root: {0}".format(ybo.installroot))
+        # create an install root
+        self.inroot = joinpaths(ybo.conf.installroot, "installroot")
+        os.makedirs(self.inroot)
+        logger.debug("using install root: {0}".format(self.inroot))
+        ybo.conf.installroot = self.inroot
 
         logger.info("setting up build architecture")
         self.arch = ArchData(get_buildarch(ybo))
@@ -188,7 +192,7 @@ class Lorax(BaseLoraxClass):
         buildstamp = BuildStamp(self.product.name, self.product.version,
                                 self.product.bugurl, self.product.is_beta, self.arch.buildarch)
 
-        buildstamp.write(joinpaths(self.installtree.root, ".buildstamp"))
+        buildstamp.write(joinpaths(self.inroot, ".buildstamp"))
 
         logger.debug("saving pkglists to %s", self.workdir)
         dname = joinpaths(self.workdir, "pkglists")
@@ -207,7 +211,7 @@ class Lorax(BaseLoraxClass):
 
         logger.info("backing up installroot")
         installroot = joinpaths(self.workdir, "installroot")
-        linktree(self.installtree.root, installroot)
+        linktree(self.inroot, installroot)
 
         logger.info("cleaning unneeded files")
         rb.clean()
@@ -216,7 +220,7 @@ class Lorax(BaseLoraxClass):
         # TODO: different img styles / create_runtime implementations
         runtimedir = joinpaths(self.workdir, "runtime")
         # FIXME: compression options (type, speed, etc.)
-        create_runtime(self.installtree.root, runtimedir)
+        create_runtime(self.inroot, runtimedir)
         # HACK FOR F15: Work around loader being a jerk about mounts/udev
         if int(product.version) < 16:
             anaconda_dracut_hack(runtimedir)
