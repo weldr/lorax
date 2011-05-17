@@ -127,7 +127,7 @@ class RuntimeBuilder(object):
         removelocales = locales.difference(keeplocales)
         self.runtemplate("runtime-cleanup.tmpl", removelocales=removelocales)
 
-class TreeBuilder(BaseBuilder):
+class TreeBuilder(object):
     '''Builds the arch-specific boot images.
     inroot should be the installtree root (the newly-built runtime dir)'''
     def __init__(self, product, arch, inroot, outroot, templatedir=None):
