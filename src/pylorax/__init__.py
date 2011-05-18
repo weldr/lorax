@@ -220,10 +220,7 @@ class Lorax(BaseLoraxClass):
         # TODO: different img styles / create_runtime implementations
         runtimedir = joinpaths(self.workdir, "runtime")
         # FIXME: compression options (type, speed, etc.)
-        create_runtime(self.inroot, runtimedir)
-        # HACK FOR F15: Work around loader being a jerk about mounts/udev
-        if int(product.version) < 16:
-            anaconda_dracut_hack(runtimedir)
+        rb.create_runtime(runtimedir)
 
         logger.info("preparing to build output tree and boot images")
         treebuilder = TreeBuilder(self.product, self.arch,
@@ -264,34 +261,3 @@ def get_buildarch(ybo):
         buildarch = os.uname()[4]
 
     return buildarch
-
-def create_runtime(inroot, outdir):
-    runtime = "squashfs.img"
-    cmdline = "etc/cmdline"
-    # make live rootfs image - must be named "LiveOS/rootfs.img" for dracut
-    workdir = joinpaths(outdir, "runtime-workdir")
-    fssize = 2 * (1024*1024*1024) # 2GB sparse file compresses down to nothin'
-    os.makedirs(joinpaths(workdir, "LiveOS"))
-    imgutils.mkext4img(inroot,  joinpaths(workdir, "LiveOS/rootfs.img"),
-                       label="Anaconda", size=fssize)
-    # squash the live rootfs and clean up workdir
-    imgutils.mksquashfs(workdir, joinpaths(outdir, runtime))
-    remove(workdir)
-    # make "etc/cmdline" for dracut to use as default cmdline args
-    os.makedirs(joinpaths(outdir, os.path.dirname(cmdline)))
-    with open(joinpaths(outdir, cmdline), "w") as fobj:
-        fobj.write("root=live:/%s\n" % runtime)
-    return [runtime, cmdline] # return list of files to append to initrd
-
-def anaconda_dracut_hack(outdir):
-    '''Hack to make anaconda 15.x able to start up from dracut'''
-    hookdir = joinpaths(outdir, "lib/dracut/hooks/pre-pivot")
-    os.makedirs(hookdir)
-    with open(joinpaths(hookdir,"99anaconda-umount.sh"), "w") as f:
-        s = ['#!/bin/sh',
-             'udevadm control --stop-exec-queue',
-             'udevd=$(pidof udevd) && kill $udevd',
-             'umount -l /proc /sys /dev/pts /dev',
-             'echo "mustard=progress" > /proc/cmdline',
-             '[ "$udevd" ] && kill -9 $udevd']
-        f.writelines([line+"\n" for line in s])

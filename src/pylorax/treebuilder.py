@@ -127,6 +127,36 @@ class RuntimeBuilder(object):
         removelocales = locales.difference(keeplocales)
         self.runtemplate("runtime-cleanup.tmpl", removelocales=removelocales)
 
+    def create_runtime(self, outdir):
+        runtime = "squashfs.img"
+        cmdline = "etc/cmdline"
+        # make live rootfs image - must be named "LiveOS/rootfs.img" for dracut
+        workdir = joinpaths(outdir, "runtime-workdir")
+        fssize = 2 * (1024*1024*1024) # 2GB sparse file compresses down to nothin'
+        os.makedirs(joinpaths(workdir, "LiveOS"))
+        imgutils.mkext4img(self.root,  joinpaths(workdir, "LiveOS/rootfs.img"),
+                           label="Anaconda", size=fssize)
+        # squash the live rootfs and clean up workdir
+        imgutils.mksquashfs(workdir, joinpaths(outdir, runtime))
+        remove(workdir)
+
+        # make "etc/cmdline" for dracut to use as default cmdline args
+        os.makedirs(joinpaths(outdir, os.path.dirname(cmdline)))
+        with open(joinpaths(outdir, cmdline), "w") as fobj:
+            fobj.write("root=live:/%s\n" % runtime)
+        # dracut hack to make anaconda 15.x start up properly
+        if self.vars.product.version <= 15:
+            hookdir = joinpaths(outdir, "lib/dracut/hooks/pre-pivot")
+            os.makedirs(hookdir)
+            with open(joinpaths(hookdir,"99anaconda-umount.sh"), "w") as f:
+                s = ['#!/bin/sh',
+                     'udevadm control --stop-exec-queue',
+                     'udevd=$(pidof udevd) && kill $udevd',
+                     'umount -l /proc /sys /dev/pts /dev',
+                     'echo "mustard=progress" > /proc/cmdline',
+                     '[ "$udevd" ] && kill -9 $udevd']
+                f.writelines([line+"\n" for line in s])
+
 class TreeBuilder(object):
     '''Builds the arch-specific boot images.
     inroot should be the installtree root (the newly-built runtime dir)'''
