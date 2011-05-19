@@ -3,8 +3,12 @@
 ## anaconda package
 install "anaconda"
 
-## kernel
+## kernel & firmware
 install "kernel"
+% if basearch != "s390x":
+    install "*-firmware"
+% endif
+
 % if basearch == "i386":
     install "kernel-PAE"
     install "gpart"
@@ -160,29 +164,6 @@ install "xorg-x11-server-utils"
 install "yum-langpacks"
 install "${product}-logos"
 install "${product}-release"
-
-## required firmware
-% if basearch != "s390x":
-    install "aic94xx-firmware"
-    install "ar9170-firmware"
-    install "atmel-firmware"
-    install "ipw2100-firmware"
-    install "ipw2200-firmware"
-    install "iwl1000-firmware"
-    install "iwl3945-firmware"
-    install "iwl4965-firmware"
-    install "iwl5000-firmware"
-    install "iwl5150-firmware"
-    install "iwl6000-firmware"
-    install "iwl6000g2b-firmware"
-    install "iwl6050-firmware"
-    install "ql2100-firmware"
-    install "ql2200-firmware"
-    install "ql23xx-firmware"
-    install "ql2400-firmware"
-    install "ql2500-firmware"
-    install "zd1211-firmware"
-% endif
 
 ## required directories
 mkdir "/etc/sysconfig"
