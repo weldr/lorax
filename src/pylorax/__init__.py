@@ -166,7 +166,8 @@ class Lorax(BaseLoraxClass):
 
         # create an install root
         self.inroot = joinpaths(ybo.conf.installroot, "installroot")
-        os.makedirs(self.inroot)
+        if not os.path.isdir(self.inroot):
+            os.makedirs(self.inroot)
         logger.debug("using install root: {0}".format(self.inroot))
         ybo.conf.installroot = self.inroot
 
