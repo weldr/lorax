@@ -23,7 +23,7 @@ import sys
 import shlex
 
 from mako.lookup import TemplateLookup
-from mako.exceptions import RichTraceback
+from mako.exceptions import text_error_template
 
 
 class LoraxTemplate(object):
@@ -39,11 +39,7 @@ class LoraxTemplate(object):
         try:
             textbuf = template.render(**variables)
         except:
-            traceback = RichTraceback()
-            for (filename, lineno, function, line) in traceback.traceback:
-                print "File %s, line %s, in %s" % (filename, lineno, function)
-                print line
-
+            print text_error_template().render()
             sys.exit(2)
 
         # split, strip and remove empty lines
