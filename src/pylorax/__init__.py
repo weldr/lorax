@@ -195,13 +195,13 @@ class Lorax(BaseLoraxClass):
 
         buildstamp.write(joinpaths(self.inroot, ".buildstamp"))
 
-        logger.debug("saving pkglists to %s", self.workdir)
         dname = joinpaths(self.workdir, "pkglists")
-        os.makedirs(dname)
-        for pkgobj in ybo.doPackageLists(pkgnarrow='installed').installed:
-            with open(joinpaths(dname, pkgobj.name), "w") as fobj:
-                for fname in pkgobj.filelist:
-                  fobj.write("{0}\n".format(fname))
+        if not os.path.isdir(dname):
+            os.makedirs(dname)
+            for pkgobj in ybo.doPackageLists(pkgnarrow='installed').installed:
+                with open(joinpaths(dname, pkgobj.name), "w") as fobj:
+                    for fname in pkgobj.filelist:
+                      fobj.write("{0}\n".format(fname))
 
         logger.info("doing post-install configuration")
         rb.postinstall() # FIXME: configdir=
