@@ -25,7 +25,7 @@ from os.path import join, basename, isdir, getsize
 from subprocess import check_call, PIPE
 from tempfile import NamedTemporaryFile
 
-from sysutils import joinpaths, cpfile, replace, remove, linktree
+from sysutils import joinpaths, cpfile, mvfile, replace, remove, linktree
 from yumhelper import *
 from ltmpl import LoraxTemplate
 from base import DataHolder
@@ -81,17 +81,15 @@ class TemplateParser(object):
     def parse(self, templatefile, variables):
         for k,v in self.defaults.items():
             variables.setdefault(k,v)
-        logger.info("parsing %s with the following variables", templatefile)
-        for k,v in variables.items():
-            logger.info("  %s: %s", k, v)
+        logger.info("parsing %s", templatefile)
         t = LoraxTemplate(directories=[self.templatedir])
         return t.parse(templatefile, variables)
 
 class RuntimeBuilder(object):
     '''Builds the anaconda runtime image.'''
-    # XXX product.name = product.name.lower()?
     def __init__(self, product, arch, yum, templatedir=None):
         root = yum.conf.installroot
+        product.name = product.name.lower()
         v = DataHolder(arch=arch, product=product, yum=yum, root=root,
                        basearch=arch.basearch, libdir=arch.libdir,
                        exists = lambda p: _exists(p, root=root),
@@ -115,7 +113,8 @@ class RuntimeBuilder(object):
         # link configdir into runtime root beforehand
         configdir_path = "tmp/config_files"
         fullpath = join(self.vars.root, configdir_path)
-        remove(fullpath)
+        if os.path.exists(fullpath):
+            remove(fullpath)
         linktree(configdir, fullpath)
         self.runtemplate("runtime-postinstall.tmpl", configdir=configdir_path)
 
@@ -303,7 +302,7 @@ class TemplateRunner(object):
             self.copy(src, dest)
 
     def move(self, src, dest):
-        os.rename(self._out(src), self._out(dest))
+        mvfile(self._out(src), self._out(dest))
 
     def moveif(self, src, dest):
         if _exists(self._out(src)):
