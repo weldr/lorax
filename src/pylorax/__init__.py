@@ -248,15 +248,12 @@ class Lorax(BaseLoraxClass):
 
 def get_buildarch(ybo):
     # get architecture of the available anaconda package
-    available = ybo.doPackageLists(patterns=["anaconda"]).available
-
-    if available:
-        anaconda = available.pop(0)
-        # src is not a real arch
-        if anaconda.arch == "src":
-            anaconda = available.pop(0)
-        buildarch = anaconda.arch
-    else:
+    buildarch = None
+    for anaconda in ybo.doPackageLists(patterns=["anaconda"]).available:
+        if anaconda.arch != "src":
+            buildarch = anaconda.arch
+            break
+    if not buildarch:
         # fallback to the system architecture
         logger.warning("using system architecture")
         buildarch = os.uname()[4]
