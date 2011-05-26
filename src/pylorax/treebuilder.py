@@ -291,6 +291,8 @@ class TemplateRunner(object):
         os.link(self._out(src), self._out(dest))
 
     def symlink(self, target, dest):
+        if _exists(self._out(dest)):
+            self.remove(dest)
         os.symlink(target, self._out(dest))
 
     def copy(self, src, dest):
@@ -299,16 +301,13 @@ class TemplateRunner(object):
     def copyif(self, src, dest):
         if _exists(self._out(src)):
             self.copy(src, dest)
-            return True
 
     def move(self, src, dest):
-        self.copy(src, dest)
-        self.remove(src)
+        os.rename(self._out(src), self._out(dest))
 
     def moveif(self, src, dest):
-        if self.copyif(src, dest):
-            self.remove(src)
-            return True
+        if _exists(self._out(src)):
+            self.move(src, dest)
 
     def remove(self, *targets):
         for t in targets:
