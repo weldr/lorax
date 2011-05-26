@@ -88,15 +88,14 @@ class TemplateParser(object):
         return t.parse(templatefile, variables)
 
 class RuntimeBuilder(object):
-    '''Builds the anaconda runtime image.
-    inroot will be the same as outroot, so 'install' == 'copy'.'''
+    '''Builds the anaconda runtime image.'''
     # XXX product.name = product.name.lower()?
-    def __init__(self, product, arch, outroot, yum, templatedir=None):
-        v = DataHolder(arch=arch, product=product, yum=yum,
-                       outroot=outroot, inroot=outroot, root=outroot,
+    def __init__(self, product, arch, yum, templatedir=None):
+        root = yum.conf.installroot
+        v = DataHolder(arch=arch, product=product, yum=yum, root=root,
                        basearch=arch.basearch, libdir=arch.libdir,
-                       exists = lambda p: _exists(p, root=self.root),
-                       glob = lambda g: _glob(g, root=self.root, Fatal=False))
+                       exists = lambda p: _exists(p, root=root),
+                       glob = lambda g: _glob(g, root=root, Fatal=False))
         self.vars = v
         self.yum = yum
         self.templatedir = templatedir
@@ -104,7 +103,7 @@ class RuntimeBuilder(object):
     def runtemplate(self, templatefile, **variables):
         parser = TemplateParser(self.templatedir, self.vars)
         template = parser.parse(templatefile, variables)
-        runner = TemplateRunner(self.vars.inroot, self.vars.outroot, self.vars.yum)
+        runner = TemplateRunner(self.vars.root, self.vars.root, self.vars.yum)
         runner.run(template)
 
     def install(self):
@@ -113,10 +112,10 @@ class RuntimeBuilder(object):
 
     def postinstall(self, configdir="/usr/share/lorax/config_files"):
         '''Do some post-install setup work with runtime-postinstall.tmpl'''
-        # link configdir into outroot beforehand
-        configdir_outroot = "tmp/config_files"
-        linktree(configdir, join(self.vars.outroot, configdir_outroot))
-        self.runtemplate("runtime-postinstall.tmpl", configdir=configdir_outroot)
+        # link configdir into runtime root beforehand
+        configdir_path = "tmp/config_files"
+        linktree(configdir, join(self.vars.root, configdir_path))
+        self.runtemplate("runtime-postinstall.tmpl", configdir=configdir_path)
 
     def cleanup(self):
         '''Remove unneeded packages and files with runtime-cleanup.tmpl'''
@@ -163,9 +162,9 @@ class TreeBuilder(object):
     inroot should be the installtree root (the newly-built runtime dir)'''
     def __init__(self, product, arch, inroot, outroot, templatedir=None):
         v = DataHolder(arch=arch, product=product,
-                       inroot = inroot, outroot=outroot,
+                       inroot=inroot, outroot=outroot,
                        basearch=arch.basearch, libdir=arch.libdir,
-                       exists = lambda p: _exists(p, root=self.root))
+                       exists = lambda p: _exists(p, root=inroot))
         self.vars = v
         self.templatedir = templatedir
 

@@ -183,7 +183,7 @@ class Lorax(BaseLoraxClass):
         logger.debug("product data: %s" % product)
 
         templatedir = self.conf.get("lorax", "sharedir")
-        rb = RuntimeBuilder(self.product, self.arch, self.outputdir, ybo, templatedir)
+        rb = RuntimeBuilder(self.product, self.arch, ybo, templatedir)
 
         logger.info("installing runtime packages")
         rb.yum.conf.skip_broken = self.conf.getboolean("yum", "skipbroken")
@@ -204,7 +204,7 @@ class Lorax(BaseLoraxClass):
                   fobj.write("{0}\n".format(fname))
 
         logger.info("doing post-install configuration")
-        rb.postinstall()
+        rb.postinstall() # FIXME: configdir=
 
         # write .discinfo
         discinfo = DiscInfo(self.product.release, self.arch.basearch)
