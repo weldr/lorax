@@ -95,7 +95,7 @@ class RuntimeBuilder(object):
         v = DataHolder(arch=arch, product=product, yum=yum, root=root,
                        basearch=arch.basearch, libdir=arch.libdir,
                        exists = lambda p: _exists(p, root=root),
-                       glob = lambda g: _glob(g, root=root, Fatal=False))
+                       glob = lambda g: _glob(g, root=root, fatal=False))
         self.vars = v
         self.yum = yum
         self.templatedir = templatedir
