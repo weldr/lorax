@@ -92,6 +92,12 @@ def cpfile(src, dst):
 
     return dst
 
+def mvfile(src, dst):
+    if os.path.isdir(dst):
+        dst = joinpaths(dst, os.path.basename(src))
+    os.rename(src, dst)
+    return dst
+
 def remove(target):
     if os.path.isdir(target):
         shutil.rmtree(target)
