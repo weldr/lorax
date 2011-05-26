@@ -78,7 +78,7 @@ class TemplateParser(object):
         self.templatedir = templatedir
         self.defaults = defaults
 
-    def parse(templatefile, variables):
+    def parse(self, templatefile, variables):
         for k,v in self.defaults.items():
             variables.setdefault(k,v)
         logger.info("parsing %s with the following variables", templatefile)
@@ -91,13 +91,14 @@ class RuntimeBuilder(object):
     '''Builds the anaconda runtime image.
     inroot will be the same as outroot, so 'install' == 'copy'.'''
     # XXX product.name = product.name.lower()?
-    def __init__(self, product, arch, yum, outroot, templatedir=None):
+    def __init__(self, product, arch, outroot, yum, templatedir=None):
         v = DataHolder(arch=arch, product=product, yum=yum,
                        outroot=outroot, inroot=outroot, root=outroot,
                        basearch=arch.basearch, libdir=arch.libdir,
                        exists = lambda p: _exists(p, root=self.root),
                        glob = lambda g: _glob(g, root=self.root, Fatal=False))
         self.vars = v
+        self.yum = yum
         self.templatedir = templatedir
 
     def runtemplate(self, templatefile, **variables):
