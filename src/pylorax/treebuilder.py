@@ -25,7 +25,7 @@ from os.path import join, basename, isdir, getsize
 from subprocess import check_call, PIPE
 from tempfile import NamedTemporaryFile
 
-from sysutils import joinpaths, cpfile, mvfile, replace, remove, linktree
+from sysutils import cpfile, mvfile, replace, remove, linktree
 from yumhelper import *
 from ltmpl import LoraxTemplate
 from base import DataHolder
@@ -47,10 +47,10 @@ def findkernels(root="/", kdir="boot"):
     kre = re.compile(r"vmlinuz-(?P<version>.+?\.(?P<arch>[a-z0-9_]+)"
                      r"(\.(?P<flavor>{0}))?)$".format("|".join(flavors)))
     kernels = []
-    for f in os.listdir(joinpaths(root, kdir)):
+    for f in os.listdir(join(root, kdir)):
         match = kre.match(f)
         if match:
-            kernel = DataHolder(path=joinpaths(kdir, f))
+            kernel = DataHolder(path=join(kdir, f))
             kernel.update(match.groupdict()) # sets version, arch, flavor
             kernels.append(kernel)
 
@@ -59,15 +59,15 @@ def findkernels(root="/", kdir="boot"):
         # NOTE: if both exist, the last one found will win
         for imgname in ("initrd", "initramfs"):
             i = kernel.path.replace("vmlinuz", imgname, 1) + ".img"
-            if os.path.exists(joinpaths(root, i)):
+            if os.path.exists(join(root, i)):
                 kernel.initrd = DataHolder(path=i)
 
     return kernels
 
 def _glob(globpat, root="", fatal=True):
-    files_found = glob.glob(os.path.join(root, globpat))
+    files_found = glob.glob(join(root, globpat))
     if fatal and not files_found:
-        raise IOError, "nothing matching %s" % os.path.join(root, globpat)
+        raise IOError, "nothing matching %s" % join(root, globpat)
     return files_found
 
 def _exists(path, root=""):
@@ -132,24 +132,24 @@ class RuntimeBuilder(object):
         runtime = "squashfs.img"
         cmdline = "etc/cmdline"
         # make live rootfs image - must be named "LiveOS/rootfs.img" for dracut
-        workdir = joinpaths(outdir, "runtime-workdir")
+        workdir = join(outdir, "runtime-workdir")
         fssize = 2 * (1024*1024*1024) # 2GB sparse file compresses down to nothin'
-        os.makedirs(joinpaths(workdir, "LiveOS"))
-        imgutils.mkext4img(self.root,  joinpaths(workdir, "LiveOS/rootfs.img"),
+        os.makedirs(join(workdir, "LiveOS"))
+        imgutils.mkext4img(self.root, join(workdir, "LiveOS/rootfs.img"),
                            label="Anaconda", size=fssize)
         # squash the live rootfs and clean up workdir
-        imgutils.mksquashfs(workdir, joinpaths(outdir, runtime))
+        imgutils.mksquashfs(workdir, join(outdir, runtime))
         remove(workdir)
 
         # make "etc/cmdline" for dracut to use as default cmdline args
-        os.makedirs(joinpaths(outdir, os.path.dirname(cmdline)))
-        with open(joinpaths(outdir, cmdline), "w") as fobj:
+        os.makedirs(join(outdir, os.path.dirname(cmdline)))
+        with open(join(outdir, cmdline), "w") as fobj:
             fobj.write("root=live:/%s\n" % runtime)
         # dracut hack to make anaconda 15.x start up properly
         if self.vars.product.version <= 15:
-            hookdir = joinpaths(outdir, "lib/dracut/hooks/pre-pivot")
+            hookdir = join(outdir, "lib/dracut/hooks/pre-pivot")
             os.makedirs(hookdir)
-            with open(joinpaths(hookdir,"99anaconda-umount.sh"), "w") as f:
+            with open(join(hookdir,"99anaconda-umount.sh"), "w") as f:
                 s = ['#!/bin/sh',
                      'udevadm control --stop-exec-queue',
                      'udevd=$(pidof udevd) && kill $udevd',
@@ -192,7 +192,7 @@ class TreeBuilder(object):
         for kernel in self.kernels:
             logger.info("rebuilding %s", kernel.initrd.path)
             if backup:
-                initrd = joinpaths(self.vars.inroot, kernel.initrd.path)
+                initrd = join(self.vars.inroot, kernel.initrd.path)
                 os.rename(initrd, initrd + backup)
             check_call(["chroot", self.vars.inroot] + \
                        dracut + [kernel.initrd.path, kernel.version])
@@ -204,7 +204,7 @@ class TreeBuilder(object):
         mkcpio(rootdir, cpio.name, compression=None)
         for kernel in self.kernels:
             cpio.seek(0)
-            initrd_path = joinpaths(self.vars.inroot, kernel.initrd.path)
+            initrd_path = join(self.vars.inroot, kernel.initrd.path)
             with open(initrd_path, "ab") as initrd:
                 logger.info("%s size before appending: %i",
                     kernel.initrd.path, getsize(initrd.name))
@@ -213,7 +213,7 @@ class TreeBuilder(object):
     def implantisomd5(self):
         for section, data in self.treeinfo_data.items():
             if 'boot.iso' in data:
-                iso = joinpaths(self.vars.outroot, data['boot.iso'])
+                iso = join(self.vars.outroot, data['boot.iso'])
                 check_call(["implantisomd5", iso])
 
 
@@ -231,9 +231,9 @@ class TemplateRunner(object):
         self.results = DataHolder(treeinfo=dict()) # just treeinfo for now
 
     def _out(self, path):
-        return joinpaths(self.outroot, path)
+        return join(self.outroot, path)
     def _in(self, path):
-        return joinpaths(self.inroot, path)
+        return join(self.inroot, path)
 
     def run(self, parsed_template):
         logger.info("running template commands")
