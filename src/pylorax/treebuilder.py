@@ -114,7 +114,9 @@ class RuntimeBuilder(object):
         '''Do some post-install setup work with runtime-postinstall.tmpl'''
         # link configdir into runtime root beforehand
         configdir_path = "tmp/config_files"
-        linktree(configdir, join(self.vars.root, configdir_path))
+        fullpath = join(self.vars.root, configdir_path)
+        remove(fullpath)
+        linktree(configdir, fullpath)
         self.runtemplate("runtime-postinstall.tmpl", configdir=configdir_path)
 
     def cleanup(self):
