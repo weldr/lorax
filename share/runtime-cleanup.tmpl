@@ -226,8 +226,16 @@ remove /var/yp
 ## icons cache
 remove /usr/share/icons/*/icon-theme.cache
 
-## systemd or not?
-%if conf.systemd:
+## remove systemd for F15, otherwise clean it up
+%if int(product.version) == 15:
+    remove /cgroup /var/cache /var/log
+    removepkg chkconfig filesystem systemd-units
+    removefrom NetworkManager /lib/systemd/*
+    removefrom dbus /lib/systemd/*
+    removefrom initscripts /lib/systemd/*
+    removefrom systemd /bin/* /lib/systemd/* /usr/share/systemd/*
+    removefrom util-linux /sbin/agetty
+%else:
     removefrom ConsoleKit /lib/systemd/*
     removefrom avahi /lib/systemd/*
     removefrom chkconfig /sbin/chkconfig
@@ -252,14 +260,6 @@ remove /usr/share/icons/*/icon-theme.cache
     removefrom systemd-units /lib/systemd/system/quota*
     removefrom systemd-units /lib/systemd/system/smartcard*
     removefrom systemd-units /lib/systemd/system/systemd-remount-api-vfs.service
-%else:
-    remove /cgroup /var/cache /var/log
-    removepkg chkconfig filesystem systemd-units
-    removefrom NetworkManager /lib/systemd/*
-    removefrom dbus /lib/systemd/*
-    removefrom initscripts /lib/systemd/*
-    removefrom systemd /bin/* /lib/systemd/* /usr/share/systemd/*
-    removefrom util-linux /sbin/agetty
 %endif
 
 ## other package specific removals
