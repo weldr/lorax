@@ -117,12 +117,9 @@ move lib/firmware firmware
 symlink ../modules lib/modules
 symlink ../firmware lib/firmware
 
-## no compress_modules (runtime's already compressed)
-## run_depmod()
-%for kernel in kernels:
-    runcmd depmod -a -F ${root}/boot/System.map-${kernel.version} -b ${root} ${kernel.version}
-    remove modules/${kernel.version}/*.map
-    remove modules/${kernel.version}/build
-    remove modules/${kernel.version}/source
-    ## TODO FIXME: need anaconda magical module-info
+## TODO: cleanup_kernel_modules(), then depmod
+## TODO: depmod -a -F ${root}/boot/System.map-${kver} -b ${root} ${kver}
+%for moddir in glob("modules/*"):
+    remove ${moddir}/*.map ${moddir}/build ${moddir}/source
+    ## FIXME: generate magical anaconda 'module-info' files
 %endfor
