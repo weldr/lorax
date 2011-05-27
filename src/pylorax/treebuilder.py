@@ -20,7 +20,7 @@
 import logging
 logger = logging.getLogger("pylorax.treebuilder")
 
-import os, re, glob
+import os, re, glob, fnmatch
 from os.path import basename, isdir, getsize
 from subprocess import check_call, PIPE
 from tempfile import NamedTemporaryFile
@@ -29,7 +29,7 @@ from sysutils import joinpaths, cpfile, mvfile, replace, remove, linktree
 from yumhelper import *
 from ltmpl import LoraxTemplate
 from base import DataHolder
-from imgutils import mkcpio
+import imgutils
 
 templatemap = {'i386':    'x86.tmpl',
                'x86_64':  'x86.tmpl',
@@ -201,7 +201,7 @@ class TreeBuilder(object):
         '''Place the given files into a cpio archive and append that archive
         to the initrds.'''
         cpio = NamedTemporaryFile(prefix="lorax.") # XXX workdir?
-        mkcpio(rootdir, cpio.name, compression=None)
+        imgutils.mkcpio(rootdir, cpio.name, compression=None)
         for kernel in self.kernels:
             cpio.seek(0)
             initrd_path = joinpaths(self.vars.inroot, kernel.initrd.path)
