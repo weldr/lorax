@@ -340,8 +340,12 @@ class TemplateRunner(object):
             self.yum.install(pattern=p)
 
     def removepkg(self, *pkgs):
-        for p in pkgs:
-            self.yum.remove(pattern=p)
+        #for p in pkgs:
+        #    self.yum.remove(pattern=p)
+        pkglist = self.yum.doPackageLists(pkgnarrow="installed", patterns=[pkg])
+        for pkg in pkglist.installed:
+            filepaths = [f.lstrip('/') for f in pkg.filelist]
+            self.remove(*filepaths)
 
     def run_pkg_transaction(self, *args):
         if '--noscripts' in args:
