@@ -5,13 +5,6 @@ SCREENFONT = "usr/share/anaconda/screenfont-%s.gz" % arch.basearch
 PYTHONDIR = glob(root+"/usr/"+arch.libdir+"/python?.?")[0]
 stubs = ("list-harddrives", "loadkeys", "mknod", "raidstart", "raidstop")
 %>
-<%def name="generate_ssh_keys()">
-    runcmd ssh-keygen -q -C "" -N "" -t rsa1 -f ${root}/etc/ssh/ssh_host_key
-    runcmd ssh-keygen -q -C "" -N "" -t rsa  -f ${root}/etc/ssh/ssh_host_rsa_key
-    runcmd ssh-keygen -q -C "" -N "" -t dsa  -f ${root}/etc/ssh/ssh_host_dsa_key
-    chmod etc/ssh/ssh_host*_key 600
-    chmod etc/ssh/ssh_host*_key.pub 644
-</%def>
 
 ## create_keymaps(arch.basearch)
 %if arch.basearch not in ("s390", "s390x"):
@@ -22,10 +15,8 @@ stubs = ("list-harddrives", "loadkeys", "mknod", "raidstart", "raidstop")
     %endif
 %endif
 
-
 ## create_screenfont()
 moveif usr/share/anaconda/screenfont-${arch.basearch}.gz etc/screenfont.gz
-
 
 ## move_stubs()
 move usr/share/anaconda/restart-anaconda usr/bin
@@ -34,14 +25,8 @@ move ${PYTHONDIR}/site-packages/pyanaconda/sitecustomize.py ${PYTHONDIR}/site-pa
     moveif usr/share/anaconda/${stub}-stub usr/bin/${stub}
 %endfor
 
-
 ## move_repos()
 move etc/yum.repos.d etc/anaconda.repos.d
-
-
-## create_depmod_conf()
-append etc/depmod.d/dd.conf "search updates built-in"
-
 
 ## misc_tree_modifications()
 ## set up our own init for F15, otherwise use systemd
@@ -60,7 +45,6 @@ append etc/depmod.d/dd.conf "search updates built-in"
 append etc/resolv.conf ""
 append bin/login "#!/bin/bash"
 append bin/login "exec -l /bin/bash"
-
 
 ## get_config_files(configdir)
 ## gconf stuff
@@ -85,7 +69,6 @@ install ${configdir}/libuser.conf etc
     install ${configdir}/selinux.config etc/selinux/config
 %endif
 
-
 ## setup_sshd(configdir)
 install ${configdir}/sshd_config.anaconda etc/ssh
 install ${configdir}/pam.sshd etc/pam.d/sshd
@@ -101,9 +84,13 @@ chmod etc/shadow 400
     ## misc_s390_modifications()
     remove sbin/init
     move usr/share/anaconda/linuxrc.s390 sbin/init
-    ${generate_ssh_keys()}
+    ## generate ssh keys
+    runcmd ssh-keygen -q -C "" -N "" -t rsa1 -f ${root}/etc/ssh/ssh_host_key
+    runcmd ssh-keygen -q -C "" -N "" -t rsa  -f ${root}/etc/ssh/ssh_host_rsa_key
+    runcmd ssh-keygen -q -C "" -N "" -t dsa  -f ${root}/etc/ssh/ssh_host_dsa_key
+    chmod etc/ssh/ssh_host*_key 600
+    chmod etc/ssh/ssh_host*_key.pub 644
 %endif
-
 
 ## get_anaconda_portions()
 move usr/${libdir}/anaconda/loader sbin
@@ -115,6 +102,9 @@ move lib/modules modules
 move lib/firmware firmware
 symlink ../modules lib/modules
 symlink ../firmware lib/firmware
+
+## create_depmod_conf()
+append etc/depmod.d/dd.conf "search updates built-in"
 
 ## TODO: cleanup_kernel_modules(), then depmod
 ## TODO: depmod -a -F ${root}/boot/System.map-${kver} -b ${root} ${kver}
