@@ -343,7 +343,9 @@ class TemplateRunner(object):
         for p in pkgs:
             self.yum.remove(pattern=p)
 
-    def run_pkg_transaction(self):
+    def run_pkg_transaction(self, *args):
+        if '--noscripts' in args:
+            self.yum.conf.tsflags.append("noscripts")
         self.yum.buildTransaction()
         self.yum.repos.setProgressBar(LoraxDownloadCallback())
         self.yum.processTransaction(callback=LoraxTransactionCallback(),
