@@ -2,7 +2,7 @@
 <%
 KEYMAP_OVERRIDE = "usr/share/anaconda/keymaps-override-%s" % arch.basearch
 SCREENFONT = "usr/share/anaconda/screenfont-%s.gz" % arch.basearch
-PYTHONDIR = glob(root+"/usr/lib*/python?.?")[0]
+PYTHONDIR = glob(root+"/usr/"+arch.libdir+"/python?.?")[0]
 stubs = ("list-harddrives", "loadkeys", "mknod", "raidstart", "raidstop")
 %>
 <%def name="generate_ssh_keys()">
