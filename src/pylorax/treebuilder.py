@@ -64,11 +64,11 @@ def findkernels(root="/", kdir="boot"):
 
     return kernels
 
-def _glob(globpat, root="", fatal=True):
+def _glob(globpat, root="/", fatal=True):
     files_found = glob.glob(joinpaths(root, globpat))
     if fatal and not files_found:
         raise IOError, "nothing matching %s" % joinpaths(root, globpat)
-    return files_found
+    return [f.replace(root+os.path.sep,"",1) for f in files_found]
 
 def _exists(path, root=""):
     return (len(_glob(path, root, fatal=False)) > 0)
@@ -253,7 +253,7 @@ class TemplateRunner(object):
                 logger.error(str(e))
 
     def install(self, srcglob, dest):
-        for src in _glob(srcglob, root=self.inroot):
+        for src in _glob(self._in(srcglob)):
             cpfile(src, self._out(dest))
 
     def mkdir(self, *dirs):
@@ -264,7 +264,7 @@ class TemplateRunner(object):
 
     def replace(self, pat, repl, *fileglobs):
         for g in fileglobs:
-            for f in _glob(g, root=self.outroot):
+            for f in _glob(self._in(g)):
                 replace(f, pat, repl)
 
     def append(self, filename, data):
