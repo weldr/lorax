@@ -99,7 +99,7 @@ def mvfile(src, dst):
     return dst
 
 def remove(target):
-    if os.path.isdir(target):
+    if os.path.isdir(target) and not os.path.islink(target):
         shutil.rmtree(target)
     else:
         os.unlink(target)
