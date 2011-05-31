@@ -217,10 +217,11 @@ class TreeBuilder(object):
                 check_call(["implantisomd5", iso])
 
 
-# note: "install", "replace", "exists" allow globs
+# command notes:
 # "install" and "exist" assume their first argument is in inroot
 # everything else operates on outroot
-# "mkdir", "treeinfo", "runcmd", "remove", "replace" will take multiple args
+# multiple args allowed: mkdir, treeinfo, runcmd, remove, replace
+# globs accepted: chmod, install*, remove*, replace
 
 class TemplateRunner(object):
     def __init__(self, inroot, outroot, yum=None, fatalerrors=False):
@@ -308,12 +309,14 @@ class TemplateRunner(object):
         if _exists(self._out(src)):
             self.move(src, dest)
 
-    def remove(self, *targets):
-        for t in targets:
-            remove(self._out(t))
+    def remove(self, *fileglobs):
+        for g in fileglobs:
+            for f in _glob(self._out(g), fatal=False):
+                remove(f)
 
-    def chmod(self, target, mode):
-        os.chmod(self._out(target), int(mode,8))
+    def chmod(self, fileglob, mode):
+        for f in _glob(self._out(fileglob)):
+            os.chmod(f, int(mode,8))
 
     def gconfset(self, path, keytype, value, outfile=None):
         if outfile is None:
