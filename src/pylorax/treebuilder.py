@@ -169,18 +169,18 @@ class TreeBuilder(object):
         self.vars = v
         self.templatedir = templatedir
 
+    @property
+    def kernels(self):
+        return findkernels(root=self.vars.inroot)
+
     def build(self):
         parser = TemplateParser(self.templatedir, self.vars)
         templatefile = templatemap[self.vars.arch.basearch]
-        template = parser.parse(templatefile, kernels=self.kernels)
+        template = parser.parse(templatefile, {'kernels':self.kernels})
         runner = TemplateRunner(self.vars.inroot, self.vars.outroot)
         runner.run(template)
         self.treeinfo_data = runner.results.treeinfo
         self.implantisomd5()
-
-    @property
-    def kernels(self):
-        return findkernels(root=self.vars.inroot)
 
     def rebuild_initrds(self, add_args=[], backup=""):
         '''Rebuild all the initrds in the tree. If backup is specified, each
