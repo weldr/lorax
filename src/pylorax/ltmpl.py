@@ -47,6 +47,9 @@ class LoraxTemplate(object):
         lines = map(lambda line: line.strip(), lines)
         lines = filter(lambda line: line, lines)
 
+        # remove comments
+        lines = filter(lambda line: not line.startswith("#"), lines)
+
         # mako template now returns unicode strings
         lines = map(lambda line: line.encode("ascii"), lines)
 
