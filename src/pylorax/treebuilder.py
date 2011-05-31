@@ -135,7 +135,7 @@ class RuntimeBuilder(object):
         workdir = joinpaths(outdir, "runtime-workdir")
         fssize = 2 * (1024*1024*1024) # 2GB sparse file compresses down to nothin'
         os.makedirs(joinpaths(workdir, "LiveOS"))
-        imgutils.mkext4img(self.root, joinpaths(workdir, "LiveOS/rootfs.img"),
+        imgutils.mkext4img(self.vars.root, joinpaths(workdir, "LiveOS/rootfs.img"),
                            label="Anaconda", size=fssize)
         # squash the live rootfs and clean up workdir
         imgutils.mksquashfs(workdir, joinpaths(outdir, runtime))
