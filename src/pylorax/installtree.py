@@ -504,7 +504,7 @@ class LoraxInstallTree(BaseLoraxClass):
         dst = joinpaths(self.root, "sbin")
         shutil.copy2(src, dst)
 
-    def compress(self, initrd, kernel, type="xz", speed="9"):
+    def compress(self, initrd, kernel, type="xz", args="-9"):
         chdir = lambda: os.chdir(self.root)
         start = time.time()
 
@@ -521,7 +521,7 @@ class LoraxInstallTree(BaseLoraxClass):
                                 stdin=find.stdout, stdout=subprocess.PIPE,
                                 preexec_fn=chdir)
 
-        cmd = [type, "-%s" % speed]
+        cmd = [type, args.split()]
         if type == "xz":
             cmd.append("--check=crc32")
 

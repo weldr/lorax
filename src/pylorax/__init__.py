@@ -103,7 +103,7 @@ class Lorax(BaseLoraxClass):
 
         self.conf.add_section("compression")
         self.conf.set("compression", "type", "xz")
-        self.conf.set("compression", "speed", "9")
+        self.conf.set("compression", "args", "-9")
 
         # read the config file
         if os.path.isfile(conf_file):
@@ -380,7 +380,7 @@ class Lorax(BaseLoraxClass):
         imgclass = factory.get_class(self.basearch)
 
         ctype = self.conf.get("compression", "type")
-        cspeed = self.conf.get("compression", "speed")
+        cargs = self.conf.get("compression", "args")
 
         i = imgclass(kernellist=self.outputtree.kernels,
                      installtree=self.installtree,
@@ -390,7 +390,7 @@ class Lorax(BaseLoraxClass):
                      treeinfo=treeinfo,
                      basearch=self.basearch,
                      ctype=ctype,
-                     cspeed=cspeed)
+                     cargs=cargs)
 
         # backup required files
         i.backup_required(self.workdir)

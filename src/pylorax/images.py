@@ -79,7 +79,7 @@ SPARCDIR = "boot"
 class PPC(object):
 
     def __init__(self, kernellist, installtree, outputroot, product, version,
-                 treeinfo, basearch, ctype, cspeed):
+                 treeinfo, basearch, ctype, cargs):
 
         self.kernellist = kernellist
         self.installtree = installtree
@@ -89,7 +89,7 @@ class PPC(object):
         self.treeinfo = treeinfo
         self.basearch = basearch
         self.ctype = ctype
-        self.cspeed = cspeed
+        self.cargs = cargs
         self.kernels, self.initrds = [], []
 
         self.reqs = collections.defaultdict(str)
@@ -178,7 +178,7 @@ class PPC(object):
             initrd.itype = kernel.ktype
 
             logger.info("compressing the install tree")
-            self.installtree.compress(initrd, kernel, self.ctype, self.cspeed)
+            self.installtree.compress(initrd, kernel, self.ctype, self.cargs)
 
             # add kernel and initrd to the list
             self.kernels.append(kernel)
@@ -361,7 +361,7 @@ class PPC(object):
 class X86(object):
 
     def __init__(self, kernellist, installtree, outputroot, product, version,
-                 treeinfo, basearch, ctype, cspeed):
+                 treeinfo, basearch, ctype, cargs):
 
         self.kernellist = kernellist
         self.installtree = installtree
@@ -371,7 +371,7 @@ class X86(object):
         self.treeinfo = treeinfo
         self.basearch = basearch
         self.ctype = ctype
-        self.cspeed = cspeed
+        self.cargs = cargs
         self.kernels, self.initrds = [], []
 
         self.reqs = collections.defaultdict(str)
@@ -512,7 +512,7 @@ class X86(object):
             initrd.itype = kernel.ktype
 
             logger.info("compressing the install tree")
-            self.installtree.compress(initrd, kernel, self.ctype, self.cspeed)
+            self.installtree.compress(initrd, kernel, self.ctype, self.cargs)
 
             # add kernel and initrd to the list
             self.kernels.append(kernel)
@@ -586,7 +586,7 @@ class X86(object):
 class S390(object):
 
     def __init__(self, kernellist, installtree, outputroot, product, version,
-                 treeinfo, basearch, ctype, cspeed):
+                 treeinfo, basearch, ctype, cargs):
 
         self.kernellist = kernellist
         self.installtree = installtree
@@ -596,7 +596,7 @@ class S390(object):
         self.treeinfo = treeinfo
         self.basearch = basearch
         self.ctype = ctype
-        self.cspeed = cspeed
+        self.cargs = cargs
         self.kernels, self.initrds = [], []
 
         self.reqs = collections.defaultdict(str)
@@ -636,7 +636,7 @@ class S390(object):
             initrd.fpath = joinpaths(self.outputroot, IMAGESDIR, initrd.fname)
 
             logger.info("compressing the install tree")
-            self.installtree.compress(initrd, kernel, self.ctype, self.cspeed)
+            self.installtree.compress(initrd, kernel, self.ctype, self.cargs)
 
             # run addrsize
             addrsize = joinpaths(self.installtree.root, "usr/libexec",
@@ -685,7 +685,7 @@ class S390(object):
 class SPARC(object):
 
     def __init__(self, kernellist, installtree, outputroot, product, version,
-                 treeinfo, basearch, ctype, cspeed):
+                 treeinfo, basearch, ctype, cargs):
 
         self.kernellist = kernellist
         self.installtree = installtree
@@ -695,7 +695,7 @@ class SPARC(object):
         self.treeinfo = treeinfo
         self.basearch = basearch
         self.ctype = ctype
-        self.cspeed = cspeed
+        self.cargs = cargs
         self.kernels, self.initrds = [], []
 
         self.reqs = collections.defaultdict(str)
@@ -744,7 +744,7 @@ class SPARC(object):
             initrd.fpath = joinpaths(self.outputroot, SPARCDIR,  initrd.fname)
 
             logger.info("compressing the install tree")
-            self.installtree.compress(initrd, kernel, self.ctype, self.cspeed)
+            self.installtree.compress(initrd, kernel, self.ctype, self.cargs)
 
             # add kernel and initrd to .treeinfo
             kernel_arch = kernel.version.split(".")[-1]
