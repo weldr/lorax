@@ -46,6 +46,7 @@ class LoraxInstallTree(BaseLoraxClass):
         self.basearch = basearch
         self.libdir = libdir
         self.workdir = workdir
+        self.initramfs = None
 
         self.lcmds = constants.LoraxRequiredCommands()
 
@@ -512,7 +513,10 @@ class LoraxInstallTree(BaseLoraxClass):
         shutil.move(joinpaths(self.workdir, kernel.version),
                     joinpaths(self.root, "modules"))
 
-        self.make_initramfs_runtime(initrd, kernel, type, args)
+        if type == "squashfs":
+            self.make_squashfs_runtime(initrd, kernel, type, args)
+        else:
+            self.make_initramfs_runtime(initrd, kernel, type, args)
 
         # move modules out of the tree again
         logger.debug("moving modules outside initrd")
@@ -543,6 +547,99 @@ class LoraxInstallTree(BaseLoraxClass):
         logger.debug("compressing")
         rc = compressed.wait()
 
+    def make_dracut_initramfs(self):
+        outfile = "/tmp/initramfs.img" # inside the chroot
+        logger.debug("chrooting into installtree to create initramfs.img")
+        subprocess.check_call(["chroot", self.root,
+                               "/sbin/dracut", "--nomdadmconf", "--nolvmconf",
+                               "--xz", "--modules", "base dmsquash-live",
+                               outfile, self.kernels[0].version])
+        # move output file into installtree workdir
+        self.initramfs = joinpaths(self.workdir, "initramfs.img")
+        shutil.move(joinpaths(self.root, outfile), self.initramfs)
+
+    def make_squashfs_runtime(self, runtime, kernel, type, args):
+        """This is a little complicated, but dracut wants to find a squashfs
+        image named "squashfs.img" which contains a filesystem image named
+        "LiveOS/rootfs.img".
+        Placing squashfs.img inside a cpio image and concatenating that
+        with the existing initramfs.img will make squashfs.img appear inside
+        initramfs at boot time.
+        """
+        # Check to be sure we have a dracut initramfs to use
+        assert self.initramfs, "make_dracut_initramfs has not been run!"
+
+        # These exact names are required by dracut
+        squashname = "squashfs.img"
+        imgname = "LiveOS/rootfs.img"
+
+        # Create fs image of installtree (2GB sparse file)
+        fsimage = joinpaths(self.workdir, "installtree.img")
+        open(fsimage, "wb").truncate(2*1024**3)
+        mountpoint = joinpaths(self.workdir, "rootfs")
+        os.mkdir(mountpoint, 0755)
+        mkfs = [self.lcmds.MKFS_EXT4, "-q", "-L", "Anaconda", "-F", fsimage]
+        logger.debug("formatting rootfs image: %s" % " ".join(mkfs))
+        subprocess.check_call(mkfs, stdout=subprocess.PIPE)
+        logger.debug("mounting rootfs image at %s", mountpoint)
+        subprocess.check_call([self.lcmds.MOUNT, "-o", "loop",
+                               fsimage, mountpoint])
+        try:
+            logger.info("copying installtree into rootfs image")
+            srcfiles = [joinpaths(self.root, f) for f in os.listdir(self.root)]
+            subprocess.check_call(["cp", "-a"] + srcfiles + [mountpoint])
+        finally:
+            logger.debug("unmounting rootfs image")
+            rc = subprocess.call([self.lcmds.UMOUNT, mountpoint])
+        if rc != 0:
+            logger.critical("umount %s failed (returncode %i)", mountpoint, rc)
+            sys.exit(rc)
+        os.rmdir(mountpoint)
+
+        # Make squashfs with rootfs image inside
+        logger.info("creating %s containing %s", squashname, imgname)
+        squashtree = joinpaths(self.workdir, "squashfs")
+        os.makedirs(joinpaths(squashtree, os.path.dirname(imgname)))
+        shutil.move(fsimage, joinpaths(squashtree, imgname))
+        squashimage = joinpaths(self.workdir, squashname)
+        cmd = [self.lcmds.MKSQUASHFS, squashtree, squashimage] + args.split()
+        subprocess.check_call(cmd)
+        shutil.rmtree(squashtree)
+
+        # Put squashimage in a new initramfs image with dracut config
+        logger.debug("creating initramfs image containing %s", squashname)
+        initramfsdir = joinpaths(self.workdir, "initramfs")
+        # write boot cmdline for dracut
+        cmdline = joinpaths(initramfsdir, "etc/cmdline")
+        os.makedirs(os.path.dirname(cmdline))
+        with open(cmdline, "wb") as fobj:
+            fobj.write("root=live:/{0}\n".format(squashname))
+        # add squashimage to new cpio image
+        shutil.move(squashimage, initramfsdir)
+        # create cpio container
+        squash_cpio = joinpaths(self.workdir, "squashfs.cpio")
+        chdir = lambda: os.chdir(initramfsdir)
+        find = subprocess.Popen([self.lcmds.FIND, "."], stdout=subprocess.PIPE,
+                                preexec_fn=chdir)
+        cpio = subprocess.Popen([self.lcmds.CPIO, "--quiet", "-c", "-o"],
+                                stdin=find.stdout,
+                                stdout=open(squash_cpio, "wb"),
+                                preexec_fn=chdir)
+        cpio.communicate()
+        shutil.rmtree(initramfsdir)
+
+        # create final image
+        logger.debug("concatenating dracut initramfs and squashfs initramfs")
+        logger.debug("initramfs.img size = %i", os.stat(self.initramfs).st_size)
+        with open(runtime.fpath, "wb") as output:
+            for f in self.initramfs, squash_cpio:
+                with open(f, "rb") as fobj:
+                    data = fobj.read(4096)
+                    while data:
+                        output.write(data)
+                        data = fobj.read(4096)
+        os.remove(self.initramfs)
+        os.remove(squash_cpio)
 
     @property
     def kernels(self):

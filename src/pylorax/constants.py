@@ -48,6 +48,8 @@ class LoraxRequiredCommands(dict):
         self["LOSETUP"] = "losetup"
         self["MKDOSFS"] = "mkdosfs"
         self["MKISOFS"] = "mkisofs"
+        self["MKFS_EXT4"] = "mkfs.ext4"
+        self["MKSQUASHFS"] = "mksquashfs"
         self["MODINFO"] = "modinfo"
         self["MOUNT"] = "mount"
         self["PARTED"] = "parted"

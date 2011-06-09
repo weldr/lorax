@@ -102,8 +102,8 @@ class Lorax(BaseLoraxClass):
         self.conf.set("yum", "skipbroken", "0")
 
         self.conf.add_section("compression")
-        self.conf.set("compression", "type", "xz")
-        self.conf.set("compression", "args", "-9")
+        self.conf.set("compression", "type", "squashfs")
+        self.conf.set("compression", "args", "-comp xz")
 
         # read the config file
         if os.path.isfile(conf_file):
@@ -292,6 +292,10 @@ class Lorax(BaseLoraxClass):
         # move stubs
         logger.info("moving stubs")
         self.installtree.move_stubs()
+
+        if self.conf.get("compression", "type") == "squashfs":
+            # create dracut initramfs (before stuff gets shuffled/removed)
+            self.installtree.make_dracut_initramfs()
 
         # get the list of required modules
         logger.info("getting list of required modules")
