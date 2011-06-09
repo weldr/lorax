@@ -75,6 +75,7 @@ ARCHMAPS = {
 LIB32 = "lib"
 LIB64 = "lib64"
 
+bcj = dict(i386="x86", x86_64="x86", ppc="powerpc", sparc="sparc", ia64="ia64")
 
 class Lorax(BaseLoraxClass):
 
@@ -104,6 +105,7 @@ class Lorax(BaseLoraxClass):
         self.conf.add_section("compression")
         self.conf.set("compression", "type", "squashfs")
         self.conf.set("compression", "args", "-comp xz")
+        self.conf.set("compression", "bcj", "on")
 
         # read the config file
         if os.path.isfile(conf_file):
@@ -385,6 +387,9 @@ class Lorax(BaseLoraxClass):
 
         ctype = self.conf.get("compression", "type")
         cargs = self.conf.get("compression", "args")
+        if self.conf.get("compression", "bcj") == "on":
+            if self.basearch in bcj:
+                cargs += " -Xbcj %s" % bcj.get(self.basearch)
 
         i = imgclass(kernellist=self.outputtree.kernels,
                      installtree=self.installtree,
