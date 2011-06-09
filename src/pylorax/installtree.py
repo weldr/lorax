@@ -505,7 +505,6 @@ class LoraxInstallTree(BaseLoraxClass):
         shutil.copy2(src, dst)
 
     def compress(self, initrd, kernel, type="xz", args="-9"):
-        chdir = lambda: os.chdir(self.root)
         start = time.time()
 
         # move corresponding modules to the tree
@@ -513,6 +512,19 @@ class LoraxInstallTree(BaseLoraxClass):
         shutil.move(joinpaths(self.workdir, kernel.version),
                     joinpaths(self.root, "modules"))
 
+        self.make_initramfs_runtime(initrd, kernel, type, args)
+
+        # move modules out of the tree again
+        logger.debug("moving modules outside initrd")
+        shutil.move(joinpaths(self.root, "modules", kernel.version),
+                    self.workdir)
+
+        elapsed = time.time() - start
+
+        return True, elapsed
+
+    def make_initramfs_runtime(self, initrd, kernel, type, args):
+        chdir = lambda: os.chdir(self.root)
         find = subprocess.Popen([self.lcmds.FIND, "."], stdout=subprocess.PIPE,
                                 preexec_fn=chdir)
 
@@ -531,14 +543,6 @@ class LoraxInstallTree(BaseLoraxClass):
         logger.debug("compressing")
         rc = compressed.wait()
 
-        # move modules out of the tree again
-        logger.debug("moving modules outside initrd")
-        shutil.move(joinpaths(self.root, "modules", kernel.version),
-                    self.workdir)
-
-        elapsed = time.time() - start
-
-        return True, elapsed
 
     @property
     def kernels(self):
