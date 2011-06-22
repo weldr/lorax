@@ -142,9 +142,9 @@ class RuntimeBuilder(object):
 class TreeBuilder(object):
     '''Builds the arch-specific boot images.
     inroot should be the installtree root (the newly-built runtime dir)'''
-    def __init__(self, product, arch, inroot, outroot, templatedir=None):
+    def __init__(self, product, arch, inroot, outroot, runtime, templatedir=None):
         v = DataHolder(arch=arch, product=product,
-                       inroot=inroot, outroot=outroot,
+                       inroot=inroot, outroot=outroot, runtime=runtime,
                        basearch=arch.basearch, libdir=arch.libdir,
                        exists = lambda p: _exists(p, root=inroot))
         self.vars = v

@@ -219,14 +219,15 @@ class Lorax(BaseLoraxClass):
         rb.cleanup()
 
         logger.info("creating the runtime image")
-        runtime = joinpaths(self.workdir, "install.img")
+        # NOTE: dracut dmsquash-live-root requires image named "*squashfs.img"
+        runtime = "images/anaconda-squashfs.img"
         # FIXME: compression options (type, speed, etc.)
-        rb.create_runtime(runtime)
+        rb.create_runtime(joinpaths(installroot,runtime))
 
         logger.info("preparing to build output tree and boot images")
         treebuilder = TreeBuilder(product=self.product, arch=self.arch,
                                   inroot=installroot, outroot=self.outputdir,
-                                  templatedir=templatedir)
+                                  runtime=runtime, templatedir=templatedir)
 
         logger.info("rebuilding initramfs images")
         treebuilder.rebuild_initrds(add_args=["--xz"])
