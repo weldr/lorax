@@ -218,23 +218,17 @@ class Lorax(BaseLoraxClass):
         rb.cleanup()
 
         logger.info("creating the runtime image")
-        # TODO: different img styles / create_runtime implementations
-        runtimedir = joinpaths(self.workdir, "runtime")
+        runtime = joinpaths(self.workdir, "install.img")
         # FIXME: compression options (type, speed, etc.)
-        rb.create_runtime(runtimedir)
+        rb.create_runtime(runtime)
 
         logger.info("preparing to build output tree and boot images")
         treebuilder = TreeBuilder(self.product, self.arch,
                                   installroot, self.outputdir,
                                   templatedir)
 
-        # TODO: different image styles may do this part differently
         logger.info("rebuilding initramfs images")
         treebuilder.rebuild_initrds(add_args=["--xz"])
-
-        # TODO: keep small initramfs for split initramfs/runtime media?
-        logger.info("adding runtime to initrds")
-        treebuilder.initrd_append(runtimedir)
 
         logger.info("populating output tree and building boot images")
         treebuilder.build()

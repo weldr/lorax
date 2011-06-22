@@ -128,35 +128,16 @@ class RuntimeBuilder(object):
         removelocales = locales.difference(keeplocales)
         self.runtemplate("runtime-cleanup.tmpl", removelocales=removelocales)
 
-    def create_runtime(self, outdir):
-        runtime = "squashfs.img"
-        cmdline = "etc/cmdline"
+    def create_runtime(self, outfile="/tmp/squashfs.img"):
         # make live rootfs image - must be named "LiveOS/rootfs.img" for dracut
-        workdir = joinpaths(outdir, "runtime-workdir")
+        workdir = joinpaths(basename(outfile), "runtime-workdir")
         fssize = 2 * (1024*1024*1024) # 2GB sparse file compresses down to nothin'
         os.makedirs(joinpaths(workdir, "LiveOS"))
         imgutils.mkext4img(self.vars.root, joinpaths(workdir, "LiveOS/rootfs.img"),
                            label="Anaconda", size=fssize)
         # squash the live rootfs and clean up workdir
-        imgutils.mksquashfs(workdir, joinpaths(outdir, runtime))
+        imgutils.mksquashfs(workdir, outfile)
         remove(workdir)
-
-        # make "etc/cmdline" for dracut to use as default cmdline args
-        os.makedirs(joinpaths(outdir, os.path.dirname(cmdline)))
-        with open(joinpaths(outdir, cmdline), "w") as fobj:
-            fobj.write("root=live:/%s\n" % runtime)
-        # dracut hack to make anaconda 15.x start up properly
-        if self.vars.product.version <= 15:
-            hookdir = joinpaths(outdir, "lib/dracut/hooks/pre-pivot")
-            os.makedirs(hookdir)
-            with open(joinpaths(hookdir,"99anaconda-umount.sh"), "w") as f:
-                s = ['#!/bin/sh',
-                     'udevadm control --stop-exec-queue',
-                     'udevd=$(pidof udevd) && kill $udevd',
-                     'umount -l /proc /sys /dev/pts /dev',
-                     'echo "mustard=progress" > /proc/cmdline',
-                     '[ "$udevd" ] && kill -9 $udevd']
-                f.writelines([line+"\n" for line in s])
 
 class TreeBuilder(object):
     '''Builds the arch-specific boot images.
@@ -189,6 +170,7 @@ class TreeBuilder(object):
         dracut = ["/sbin/dracut", "--nomdadmconf", "--nolvmconf"] + add_args
         if not backup:
             dracut.append("--force")
+        # XXX FIXME: add anaconda dracut module!
         for kernel in self.kernels:
             logger.info("rebuilding %s", kernel.initrd.path)
             if backup:
@@ -196,19 +178,6 @@ class TreeBuilder(object):
                 os.rename(initrd, initrd + backup)
             check_call(["chroot", self.vars.inroot] + \
                        dracut + [kernel.initrd.path, kernel.version])
-
-    def initrd_append(self, rootdir):
-        '''Place the given files into a cpio archive and append that archive
-        to the initrds.'''
-        cpio = NamedTemporaryFile(prefix="lorax.") # XXX workdir?
-        imgutils.mkcpio(rootdir, cpio.name, compression=None)
-        for kernel in self.kernels:
-            cpio.seek(0)
-            initrd_path = joinpaths(self.vars.inroot, kernel.initrd.path)
-            with open(initrd_path, "ab") as initrd:
-                logger.info("%s size before appending: %i",
-                    kernel.initrd.path, getsize(initrd.name))
-                initrd.write(cpio.read())
 
     def implantisomd5(self):
         for section, data in self.treeinfo_data.items():
