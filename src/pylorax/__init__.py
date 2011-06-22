@@ -204,7 +204,7 @@ class Lorax(BaseLoraxClass):
                     fobj.write("{0}\n".format(fname))
 
         logger.info("doing post-install configuration")
-        rb.postinstall() # FIXME: configdir=
+        rb.postinstall(configdir=joinpaths(templatedir,"config_files"))
 
         # write .discinfo
         discinfo = DiscInfo(self.product.release, self.arch.basearch)
