@@ -236,6 +236,10 @@ class TemplateRunner(object):
     def _in(self, path):
         return joinpaths(self.inroot, path)
 
+    def _filelist(self, *pkgs):
+        pkglist = self.yum.doPackageLists(pkgnarrow="installed", patterns=pkgs)
+        return set([f for pkg in pkglist.installed for f in pkg.filelist])
+
     def run(self, parsed_template):
         logger.info("running template commands")
         for (num, line) in enumerate(parsed_template,1):
@@ -343,12 +347,9 @@ class TemplateRunner(object):
             self.yum.install(pattern=p)
 
     def removepkg(self, *pkgs):
-        #for p in pkgs:
-        #    self.yum.remove(pattern=p)
-        pkglist = self.yum.doPackageLists(pkgnarrow="installed", patterns=pkgs)
-        for pkg in pkglist.installed:
-            filepaths = [f.lstrip('/') for f in pkg.filelist]
-            self.remove(*filepaths)
+        # NOTE: "for p in pkgs: self.yum.remove(pattern=p)" traces back, so..
+        filepaths = [f.lstrip('/') for f in self._filelist(*pkgs)]
+        self.remove(*filepaths)
 
     def run_pkg_transaction(self):
         self.yum.buildTransaction()
@@ -359,8 +360,6 @@ class TemplateRunner(object):
 
     def removefrom(self, pkg, *globs):
         globs_re = re.compile("|".join([fnmatch.translate(g) for g in globs]))
-        pkglist = self.yum.doPackageLists(pkgnarrow="installed", patterns=[pkg])
-        pkg_files = [f for pkg in pkglist.installed for f in pkg.filelist]
-        remove = filter(globs_re.match, pkg_files)
+        remove = filter(globs_re.match, self._filelist(pkg))
         logger.debug("removing %i files from %s", len(remove), pkg)
         self.remove(*remove)
