@@ -25,7 +25,7 @@ import sys, os, re
 import yum, yum.callbacks, yum.rpmtrans
 import output
 
-__all__ = ['LoraxDownloadCallback', 'LoraxTransactionCallback', 
+__all__ = ['LoraxDownloadCallback', 'LoraxTransactionCallback',
            'LoraxRpmCallback']
 
 class LoraxDownloadCallback(yum.callbacks.DownloadBaseCallback):
