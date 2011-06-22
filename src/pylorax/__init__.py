@@ -183,7 +183,8 @@ class Lorax(BaseLoraxClass):
         logger.debug("product data: %s" % product)
 
         templatedir = self.conf.get("lorax", "sharedir")
-        rb = RuntimeBuilder(self.product, self.arch, ybo, templatedir)
+        rb = RuntimeBuilder(product=self.product, arch=self.arch,
+                            yum=ybo, templatedir=templatedir)
 
         logger.info("installing runtime packages")
         rb.yum.conf.skip_broken = self.conf.getboolean("yum", "skipbroken")
@@ -223,9 +224,9 @@ class Lorax(BaseLoraxClass):
         rb.create_runtime(runtime)
 
         logger.info("preparing to build output tree and boot images")
-        treebuilder = TreeBuilder(self.product, self.arch,
-                                  installroot, self.outputdir,
-                                  templatedir)
+        treebuilder = TreeBuilder(product=self.product, arch=self.arch,
+                                  inroot=installroot, outroot=self.outputdir,
+                                  templatedir=templatedir)
 
         logger.info("rebuilding initramfs images")
         treebuilder.rebuild_initrds(add_args=["--xz"])
