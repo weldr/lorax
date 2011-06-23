@@ -15,6 +15,9 @@ prepboot = ""
 macboot = ""
 %>
 
+mkdir images
+install ${runtime} images
+
 mkdir ${BOOTDIR} ${BOOTDIR}/chrp etc
 install ${ANABOOTDIR}/bootinfo.txt ${BOOTDIR}
 install boot/efika.forth ${BOOTDIR}
@@ -84,6 +87,7 @@ runcmd usr/lib/yaboot/addnote ${outroot}/${BOOTDIR}/chrp/yaboot
 mkdir isopath
 copy ${BOOTDIR} isopath
 copy etc isopath
+copy images isopath
 runcmd mkisofs -o ${outroot}/images/boot.iso -chrp-boot -U \
         ${prepboot} -part -hfs -T -r -l -J \
         -A "${product.name} ${product.version}" -sysid PPC -V "PBOOT" \

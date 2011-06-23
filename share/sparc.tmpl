@@ -4,6 +4,9 @@ BOOTDIR="boot"
 KERNELDIR=BOOTDIR
 %>
 
+mkdir images
+install ${runtime} images
+
 install boot/*.b ${BOOTDIR}
 install ${ANABOOTDIR}/silo.conf ${BOOTDIR}
 install ${ANABOOTDIR}/boot.msg ${BOOTDIR}/boot.msg
@@ -22,5 +25,6 @@ runcmd mkisofs -R -J -T -G /${BOOTDIR}/isofs.b -B ... \
   -x Fedora -x repodata \
   -sparc-label "${product.name} ${product.version} Boot Disc" \
   -o ${outroot}/images/boot.iso \
-  -graft-points boot=${BOOTDIR}
+  -graft-points boot=${outroot}/${BOOTDIR} \
+                ${runtime}=${outroot}/${runtime}
 treeinfo images-${basearch} boot.iso images/boot.iso
