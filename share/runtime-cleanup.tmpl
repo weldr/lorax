@@ -54,6 +54,26 @@ remove /var/tmp /var/yp
 ## icons cache
 remove /usr/share/icons/*/icon-theme.cache
 
+## clean up kernel modules
+<%
+removekmods = """
+sound drivers/media drivers/hwmon drivers/video drivers/char
+net/atm net/bluetooth net/sched net/sctp net/bridge
+net/rds net/l2tp net/decnet net/netfilter net/ipv4 net/ipv6
+drivers/watchdog drivers/target drivers/rtc drivers/input/joystick
+drivers/bluetooth drivers/hid drivers/edac drivers/staging
+drivers/usb/serial drivers/usb/host drivers/usb/misc
+fs/ocfs2 fs/nls fs/ceph fs/nfsd fs/ubifs fs/nilfs2
+arch/x86/kvm
+""".split()
+%>
+%for kernel in kernels:
+    %for kmodpath in removekmods:
+        remove /modules/${kernel.version}/kernel/${kmodpath}
+    %endfor
+%endfor
+## FIXME: run depmod, generate module-info
+
 ## remove systemd for F15, otherwise clean it up
 %if int(product.version) == 15:
     remove /cgroup /var/cache /var/log
