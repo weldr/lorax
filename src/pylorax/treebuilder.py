@@ -123,7 +123,7 @@ class RuntimeBuilder(object):
         # get removelocales list first
         localedir = joinpaths(self.vars.root, "usr/share/locale")
         langtable = joinpaths(self.vars.root, "usr/share/anaconda/lang-table")
-        locales = set([basename(d) for d in _glob("*", localedir) if isdir(d)])
+        locales = set([basename(d) for d in _glob(localedir+"/*") if isdir(d)])
         keeplocales = set([line.split()[1] for line in open(langtable)])
         removelocales = locales.difference(keeplocales)
         self.runtemplate("runtime-cleanup.tmpl", removelocales=removelocales)
