@@ -41,18 +41,24 @@ removepkg xml-common xorg-x11-font-utils xorg-x11-server-common xorg-x11-xauth
 removepkg xorg-x11-xinit yajl yum-utils
 
 ## other removals
+remove /boot /home /media /mnt /opt /srv
+remove /usr/etc /usr/games /usr/local /usr/tmp
 remove /usr/share/doc /usr/share/info /usr/share/man /usr/share/gnome
 remove /usr/share/mime/application /usr/share/mime/audio /usr/share/mime/image
 remove /usr/share/mime/inode /usr/share/mime/message /usr/share/mime/model
 remove /usr/share/mime/multipart /usr/share/mime/packages /usr/share/mime/text
 remove /usr/share/mime/video /usr/share/mime/x-content /usr/share/mime/x-epoc
-remove /boot /home /media /mnt /opt /srv /usr/etc /usr/games /usr/local
-remove /usr/tmp /var/db /var/games /var/lib/rpm/* /var/lib/yum /var/local
-remove /var/mail /var/nis /var/opt /var/preserve /var/report /var/spool
-remove /var/tmp /var/yp
+remove /var/db /var/games /var/tmp /var/yp /var/nis /var/opt /var/local
+remove /var/mail /var/spool /var/preserve /var/report
+remove /var/lib/rpm/* /var/lib/yum
 
 ## icons cache
 remove /usr/share/icons/*/icon-theme.cache
+
+## remove generated locales - anaconda knows how to restore them at runtime
+removefrom glibc-common /usr/lib/locale/*
+## locale-archive is not in the glibc-common filelist
+remove /usr/lib/locale/locale-archive
 
 ## clean up kernel modules
 <%
@@ -216,12 +222,6 @@ removefrom glibc-common /etc/* /usr/bin/catchsegv /usr/bin/gencat
 removefrom glibc-common /usr/bin/getconf /usr/bin/getent /usr/bin/ldd
 removefrom glibc-common /usr/bin/locale /usr/bin/rpcgen /usr/bin/sprof
 removefrom glibc-common /usr/bin/tzselect /usr/libexec/* /usr/sbin/*
-
-# remove generated locales anaconda knows how to restore them at runtime
-removefrom glibc-common /usr/lib/locale/*
-# locale-archive is not in the glibc-common filelist
-remove /usr/lib/locale/locale-archive
-
 removefrom gmp /usr/${libdir}/libgmpxx.* /usr/${libdir}/libmp.*
 removefrom gnome-bluetooth-libs /usr/${libdir}/libgnome-bluetooth*
 removefrom gnome-bluetooth-libs /usr/share/*
