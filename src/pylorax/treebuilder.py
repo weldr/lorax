@@ -143,8 +143,10 @@ class TreeBuilder(object):
     '''Builds the arch-specific boot images.
     inroot should be the installtree root (the newly-built runtime dir)'''
     def __init__(self, product, arch, inroot, outroot, runtime, templatedir=None):
+        # NOTE: if you pass an arg named "runtime" to a mako template it'll
+        # clobber some mako internal variables - hence "runtime_img".
         v = DataHolder(arch=arch, product=product,
-                       inroot=inroot, outroot=outroot, runtime=runtime,
+                       inroot=inroot, outroot=outroot, runtime_img=runtime,
                        basearch=arch.basearch, libdir=arch.libdir,
                        exists = lambda p: _exists(p, root=inroot))
         self.vars = v

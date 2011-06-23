@@ -7,7 +7,7 @@ KERNELDIR=PXEBOOTDIR
 %>
 
 mkdir images
-install ${runtime} images
+install ${runtime_img} images
 
 mkdir ${BOOTDIR} ${KERNELDIR}
 install ${SYSLINUXDIR}/isolinux.bin ${BOOTDIR}
@@ -66,7 +66,7 @@ runcmd mkisofs -o ${outroot}/images/boot.iso \
        ${efiargs} -R -J -V '${product.name}' -T -graft-points \
        ${BOOTDIR}=${outroot}/${BOOTDIR} \
        ${KERNELDIR}=${outroot}/${KERNELDIR} \
-       ${runtime}=${outroot}/${runtime} \
+       ${runtime_img}=${outroot}/${runtime_img} \
        ${efigraft}
 runcmd isohybrid ${outroot}/images/boot.iso
 treeinfo images-${basearch} boot.iso images/boot.iso

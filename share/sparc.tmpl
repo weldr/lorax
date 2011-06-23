@@ -5,7 +5,7 @@ KERNELDIR=BOOTDIR
 %>
 
 mkdir images
-install ${runtime} images
+install ${runtime_img} images
 
 install boot/*.b ${BOOTDIR}
 install ${ANABOOTDIR}/silo.conf ${BOOTDIR}
@@ -26,5 +26,5 @@ runcmd mkisofs -R -J -T -G /${BOOTDIR}/isofs.b -B ... \
   -sparc-label "${product.name} ${product.version} Boot Disc" \
   -o ${outroot}/images/boot.iso \
   -graft-points boot=${outroot}/${BOOTDIR} \
-                ${runtime}=${outroot}/${runtime}
+                ${runtime_img}=${outroot}/${runtime_img}
 treeinfo images-${basearch} boot.iso images/boot.iso
