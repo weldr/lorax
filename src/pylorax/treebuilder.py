@@ -89,6 +89,7 @@ class RuntimeBuilder(object):
     '''Builds the anaconda runtime image.'''
     def __init__(self, product, arch, yum, templatedir=None):
         root = yum.conf.installroot
+        product = product.copy()
         product.name = product.name.lower()
         v = DataHolder(arch=arch, product=product, yum=yum, root=root,
                        basearch=arch.basearch, libdir=arch.libdir,
