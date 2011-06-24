@@ -62,3 +62,6 @@ class DataHolder(dict):
 
     def __setattr__(self, attr, value):
         self[attr] = value
+
+    def copy(self):
+        return DataHolder(**dict.copy(self))
