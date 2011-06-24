@@ -219,8 +219,7 @@ class Lorax(BaseLoraxClass):
         rb.cleanup()
 
         logger.info("creating the runtime image")
-        # NOTE: dracut dmsquash-live-root requires image named "*squashfs.img"
-        runtime = "images/anaconda-squashfs.img"
+        runtime = "images/install.img"
         # FIXME: compression options (type, speed, etc.)
         rb.create_runtime(joinpaths(installroot,runtime))
 

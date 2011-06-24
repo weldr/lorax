@@ -16,7 +16,7 @@ macboot = ""
 %>
 
 mkdir images
-install ${runtime_img} images
+install ${runtime_img} images/install.img
 
 mkdir ${BOOTDIR} ${BOOTDIR}/chrp etc
 install ${ANABOOTDIR}/bootinfo.txt ${BOOTDIR}
@@ -87,7 +87,8 @@ runcmd usr/lib/yaboot/addnote ${outroot}/${BOOTDIR}/chrp/yaboot
 mkdir isopath
 copy ${BOOTDIR} isopath
 copy etc isopath
-copy images isopath
+mkdir isopath/LiveOS
+hardlink images/install.img isopath/LiveOS/squashfs.img
 runcmd mkisofs -o ${outroot}/images/boot.iso -chrp-boot -U \
         ${prepboot} -part -hfs -T -r -l -J \
         -A "${product.name} ${product.version}" -sysid PPC -V "PBOOT" \
