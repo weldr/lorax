@@ -64,8 +64,21 @@ def findkernels(root="/", kdir="boot"):
 
     return kernels
 
+def brace_expand(s):
+    if not ('{' in s and ',' in s and '}' in s):
+        yield s
+    else:
+        right = s.find('}')
+        left = s[:right].rfind('{')
+        (prefix, choices, suffix) = (s[:left], s[left+1:right], s[right+1:])
+        for choice in choices.split(','):
+            for alt in brace_expand(prefix+choice+suffix):
+                yield alt
+
 def _glob(globpat, root="/", fatal=True):
-    files_found = glob.glob(joinpaths(root, globpat))
+    files_found = set()
+    for g in brace_expand(globpat):
+        files_found.update(glob.glob(joinpaths(root, g)))
     if fatal and not files_found:
         raise IOError, "nothing matching %s" % joinpaths(root, globpat)
     return [f.replace(root+os.path.sep,"",1) for f in files_found]
@@ -331,6 +344,7 @@ class TemplateRunner(object):
         self.yum.closeRpmDB()
 
     def removefrom(self, pkg, *globs):
+        globs = set(brace_expand(globs))
         globs_re = re.compile("|".join([fnmatch.translate(g) for g in globs]))
         remove = filter(globs_re.match, self._filelist(pkg))
         logger.debug("removing %i files from %s", len(remove), pkg)
