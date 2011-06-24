@@ -73,10 +73,8 @@ fs/ocfs2 fs/nls fs/ceph fs/nfsd fs/ubifs fs/nilfs2
 arch/x86/kvm
 """.split()
 %>
-%for kernel in kernels:
-    %for kmodpath in removekmods:
-        remove /modules/${kernel.version}/kernel/${kmodpath}
-    %endfor
+%for kmodpath in removekmods:
+    remove /modules/*/kernel/${kmodpath}
 %endfor
 ## FIXME: run depmod, generate module-info
 
