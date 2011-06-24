@@ -29,19 +29,10 @@ move ${PYTHONDIR}/site-packages/pyanaconda/sitecustomize.py ${PYTHONDIR}/site-pa
 move etc/yum.repos.d etc/anaconda.repos.d
 
 ## misc_tree_modifications()
-## set up our own init for F15, otherwise use systemd
-%if int(product.version) == 15:
-    copy usr/${libdir}/anaconda/init sbin/init
-    symlink init sbin/halt
-    symlink init sbin/poweroff
-    symlink init sbin/reboot
-    remove sbin/runlevel sbin/shutdown sbin/telinit
-%else:
-    symlink "/sbin/init" init
-    remove etc/systemd/system/default.target
-    symlink "/lib/systemd/system/anaconda.target" etc/systemd/system/default.target
-    install ${configdir}/network etc/sysconfig
-%endif
+symlink /sbin/init init
+remove etc/systemd/system/default.target
+symlink /lib/systemd/system/anaconda.target etc/systemd/system/default.target
+install ${configdir}/network etc/sysconfig
 append etc/resolv.conf ""
 append bin/login "#!/bin/bash"
 append bin/login "exec -l /bin/bash"
