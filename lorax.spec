@@ -1,8 +1,8 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        0.6
-Release:        3%{?dist}
+Version:        0.7
+Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
@@ -61,6 +61,18 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Fri Jun 24 2011 Martin Gracik <mgracik@redhat.com> 0.7-1
+- Use bcj filter for compressing squashfs ramdisk
+- Add 'squashfs' compression type
+- refactor: split make_initramfs_runtime out of compress()
+- refactor: rename "compression speed" -> "compression args"
+- Install all firmware packages (#705392)
+- Use initrd.addrsize, not initrd_addrsize (#703862)
+- Do not remove libmodman (#701622)
+- Add firmware for Intel Wireless WiFi Link 6030 Adapters (#703291)
+- Do not remove libproxy (#701622)
+- Use process-specific name for dm devices.
+
 * Tue May 03 2011 Martin Gracik <mgracik@redhat.com> 0.6-3
 - Disable debuginfo package
 
