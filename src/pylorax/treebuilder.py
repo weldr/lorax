@@ -288,7 +288,7 @@ class TemplateRunner(object):
 
     def append(self, filename, data):
         with open(self._out(filename), "a") as fobj:
-            fobj.write(data+"\n")
+            fobj.write(data.decode('string_escape')+"\n")
 
     def treeinfo(self, section, key, *valuetoks):
         if section not in self.results.treeinfo:
