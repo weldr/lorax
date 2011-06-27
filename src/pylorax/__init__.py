@@ -41,7 +41,6 @@ import yum
 import ltmpl
 
 import imgutils
-import constants
 from sysutils import *
 
 from treebuilder import RuntimeBuilder, TreeBuilder
@@ -153,10 +152,6 @@ class Lorax(BaseLoraxClass):
         if not os.geteuid() == 0:
             logger.critical("no root privileges")
             sys.exit(1)
-
-        # do we have all lorax required commands?
-        self.lcmds = constants.LoraxRequiredCommands()
-        # TODO: actually check for required commands (runcmd etc)
 
         # do we have a proper yum base object?
         logger.info("checking yum base object")
