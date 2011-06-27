@@ -42,12 +42,16 @@ install ofboot.b ${MACDIR}
     mkdir ${KERNELDIR}
     install ${ANABOOTDIR}/yaboot.conf.in ${KERNELDIR}/yaboot.conf
     installkernel images-${kernel.arch} ${kernel.path} ${KERNELDIR}/vmlinuz
-    ## Note: this used to be ramdisk.img.gz
     installinitrd images-${kernel.arch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
 
+    ## FIXME: anaconda has the initrd name hard-coded as "ramdisk.img.gz"
+    replace ramdisk.image.gz initrd.img  ${KERNELDIR}/yaboot.conf
     replace %PRODUCT% ${product.name}    ${KERNELDIR}/yaboot.conf
     replace %VERSION% ${product.version} ${KERNELDIR}/yaboot.conf
     replace %BITS%    ${bits}            ${KERNELDIR}/yaboot.conf
+    ## FIXME: root=%ROOT% should really be in the config somewhere
+    replace "read-only" "read-only\n\tappend=\"root=live:CDLABEL=PBOOT\""
+
 
     ## Weirdo wrapper junk that makes the netboot combined ppc{32,64}.img
     %if exists(MKZIMAGE) and exists(ZSTUB):
@@ -75,9 +79,13 @@ runcmd usr/lib/yaboot/addnote ${outroot}/${BOOTDIR}/chrp/yaboot
 %if len(bitsizes) == 2:
     ## magic ppc biarch tree! we need magic ppc biarch config.
     install ${ANABOOTDIR}/yaboot.conf.3264 etc/yaboot.conf
+    ## FIXME: hardcoded image name (see above)
+    replace ramdisk.image.gz initrd.img  etc/yaboot.conf
     replace %PRODUCT% ${product.name}    etc/yaboot.conf
     replace %VERSION% ${product.version} etc/yaboot.conf
     replace %BITS%    32                 etc/yaboot.conf
+    ## FIXME: see above about root=%ROOT%
+    replace "read-only" "read-only\n\tappend=\"root=live:CDLABEL=PBOOT\""
 %else:
     copy ${KERNELDIR}/yaboot.conf etc/yaboot.conf
 %endif

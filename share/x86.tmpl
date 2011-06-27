@@ -60,6 +60,11 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
     <%include file="efi.tmpl" args="ANABOOTDIR=ANABOOTDIR, KERNELDIR=KERNELDIR, efiarch=efiarch"/>
 %endif
 
+## CDLABEL matches the -V argument to mkisofs
+replace "append initrd=initrd.img" \
+        "append initrd=initrd.img root=live:CDLABEL='${product.name}'" \
+        ${BOOTDIR}/isolinux.cfg
+
 runcmd mkisofs -o ${outroot}/images/boot.iso \
        -b ${BOOTDIR}/isolinux.bin -c ${BOOTDIR}/boot.cat \
        -boot-load-size 4 -boot-info-table -no-emul-boot \
