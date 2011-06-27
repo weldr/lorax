@@ -50,7 +50,6 @@ import constants
 from sysutils import *
 
 from installtree import LoraxInstallTree
-from outputtree import LoraxOutputTree
 from buildstamp import BuildStamp
 from treeinfo import TreeInfo
 from discinfo import DiscInfo
@@ -337,15 +336,11 @@ class Lorax(BaseLoraxClass):
         # get anaconda portions
         self.installtree.get_anaconda_portions()
 
-        # set up output tree
-        self.outputtree = LoraxOutputTree(self.outputdir, self.installtree,
-                                          self.product, self.version)
-
         # write .discinfo
         discinfo = DiscInfo(self.workdir, self.release, self.basearch)
         discinfo.write()
 
-        shutil.copy2(discinfo.path, self.outputtree.root)
+        shutil.copy2(discinfo.path, self.outputdir)
 
         # move grubefi to workdir
         grubefi = joinpaths(self.installtree.root, "boot/efi/EFI/redhat",
@@ -368,7 +363,25 @@ class Lorax(BaseLoraxClass):
             splash = None
 
         # copy kernels to output directory
-        self.outputtree.get_kernels(self.workdir)
+        self.kernels = []
+
+        for n, kernel in enumerate(self.installtree.kernels):
+            suffix = ""
+            if kernel.ktype == constants.K_PAE:
+                suffix = "-PAE"
+            elif kernel.ktype == constants.K_XEN:
+                suffix = "-XEN"
+
+            kname = "vmlinuz{0}".format(suffix)
+
+            dst = joinpaths(self.workdir, kname)
+            shutil.copy2(kernel.fpath, dst)
+
+            # change the fname and fpath to new values
+            self.kernels.append(DataHolder(fname=kname,
+                                           fpath=dst,
+                                           version=kernel.version,
+                                           ktype=kernel.ktype))
 
         # create .treeinfo
         treeinfo = TreeInfo(self.workdir, self.product, self.version,
@@ -384,9 +397,9 @@ class Lorax(BaseLoraxClass):
             if self.basearch in bcj:
                 cargs += " -Xbcj %s" % bcj.get(self.basearch)
 
-        i = imgclass(kernellist=self.outputtree.kernels,
+        i = imgclass(kernellist=self.kernels,
                      installtree=self.installtree,
-                     outputroot=self.outputtree.root,
+                     outputroot=self.outputdir,
                      product=self.product,
                      version=self.version,
                      treeinfo=treeinfo,
@@ -443,13 +456,11 @@ class Lorax(BaseLoraxClass):
         efiboot = None
         if grubefi and self.efiarch not in ("IA32",):
             # create efibootdir
-            self.outputtree.efibootdir = joinpaths(self.outputtree.root,
-                                                   "EFI/BOOT")
-            os.makedirs(self.outputtree.efibootdir)
+            self.efibootdir = joinpaths(self.outputdir, "EFI/BOOT")
+            os.makedirs(self.efibootdir)
 
             # set imgdir
-            self.outputtree.imgdir = joinpaths(self.outputtree.root,
-                                               "images")
+            self.imgdir = joinpaths(self.outputdir, "images")
 
             kernel = i.kernels[0]
             initrd = i.initrds[0]
@@ -483,8 +494,8 @@ class Lorax(BaseLoraxClass):
                 sys.exit(1)
 
             # copy efiboot and efidisk to imgdir
-            shutil.copy2(efiboot, self.outputtree.imgdir)
-            shutil.copy2(efidisk, self.outputtree.imgdir)
+            shutil.copy2(efiboot, self.imgdir)
+            shutil.copy2(efidisk, self.imgdir)
 
         # create boot iso
         logger.info("creating boot iso")
@@ -492,7 +503,7 @@ class Lorax(BaseLoraxClass):
 
         treeinfo.write()
 
-        shutil.copy2(treeinfo.path, self.outputtree.root)
+        shutil.copy2(treeinfo.path, self.outputdir)
 
     def get_buildarch(self):
         # get architecture of the available anaconda package
@@ -603,7 +614,7 @@ class Lorax(BaseLoraxClass):
             shutil.copy2(fpath, dst)
 
             if not include_kernel:
-                shutil.copy2(fpath, self.outputtree.efibootdir)
+                shutil.copy2(fpath, self.efibootdir)
 
         # unmount the efiboot image
         cmd = [self.lcmds.UMOUNT, efibootdir]
