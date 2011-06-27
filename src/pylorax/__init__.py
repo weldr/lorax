@@ -341,13 +341,6 @@ class Lorax(BaseLoraxClass):
         self.outputtree = LoraxOutputTree(self.outputdir, self.installtree,
                                           self.product, self.version)
 
-        #self.outputtree.prepare()
-        #self.outputtree.get_isolinux()
-        #self.outputtree.get_memtest()
-        #self.outputtree.get_splash()
-        #self.outputtree.get_msg_files()
-        #self.outputtree.get_grub_conf()
-
         # write .discinfo
         discinfo = DiscInfo(self.workdir, self.release, self.basearch)
         discinfo.write()
@@ -446,47 +439,6 @@ class Lorax(BaseLoraxClass):
         logger.info("creating the initrd")
         i.create_initrd(self.libdir)
 
-        #initrds = []
-        #for kernel in self.outputtree.kernels:
-        #    suffix = ""
-        #    if kernel.ktype == constants.K_PAE:
-        #        suffix = "-PAE"
-        #    elif kernel.ktype == constants.K_XEN:
-        #        suffix = "-XEN"
-        #
-        #    fname = "initrd{0}.img".format(suffix)
-        #
-        #    initrd = DataHolder(fname=fname,
-        #                        fpath=joinpaths(self.workdir, fname),
-        #                        itype=kernel.ktype)
-        #
-        #    logger.info("compressing install tree ({0})".format(kernel.version))
-        #    success, elapsed = self.installtree.compress(initrd, kernel)
-        #    if not success:
-        #        logger.error("error while compressing install tree")
-        #    else:
-        #        logger.info("took {0:.2f} seconds".format(elapsed))
-        #
-        #    initrds.append(initrd)
-        #
-        #    # add kernel and initrd paths to .treeinfo
-        #    section = "images-{0}".format("xen" if suffix else self.basearch)
-        #    data = {"kernel": "images/pxeboot/{0}".format(kernel.fname)}
-        #    treeinfo.add_section(section, data)
-        #    data = {"initrd": "images/pxeboot/{0}".format(initrd.fname)}
-        #    treeinfo.add_section(section, data)
-        #
-        ## copy initrds to outputtree
-        #shutil.copy2(initrds[0].fpath, self.outputtree.isolinuxdir)
-        #
-        ## create hard link
-        #source = joinpaths(self.outputtree.isolinuxdir, initrds[0].fname)
-        #link_name = joinpaths(self.outputtree.pxebootdir, initrds[0].fname)
-        #os.link(source, link_name)
-        #
-        #for initrd in initrds[1:]:
-        #    shutil.copy2(initrd.fpath, self.outputtree.pxebootdir)
-
         # create efi images
         efiboot = None
         if grubefi and self.efiarch not in ("IA32",):
@@ -537,18 +489,6 @@ class Lorax(BaseLoraxClass):
         # create boot iso
         logger.info("creating boot iso")
         i.create_boot(efiboot)
-
-        #bootiso = self.create_bootiso(self.outputtree, efiboot)
-        #if bootiso is None:
-        #    logger.critical("unable to create boot iso")
-        #    sys.exit(1)
-        #
-        #shutil.move(bootiso, self.outputtree.imgdir)
-        #
-        ## add the boot.iso
-        #section = "images-{0}".format(self.basearch)
-        #data = {"boot.iso": "images/{0}".format(os.path.basename(bootiso))}
-        #treeinfo.add_section(section, data)
 
         treeinfo.write()
 
@@ -733,42 +673,3 @@ class Lorax(BaseLoraxClass):
         remove_loop_dev(loopdev)
 
         return efidisk
-
-    def create_bootiso(self, outputtree, efiboot=None):
-        bootiso = joinpaths(self.workdir, "boot.iso")
-        if os.path.isfile(bootiso):
-            os.unlink(bootiso)
-
-        if efiboot is not None:
-            efiargs = ["-eltorito-alt-boot", "-e", "images/efiboot.img",
-                       "-no-emul-boot"]
-            efigraft = ["EFI/BOOT={0}".format(outputtree.efibootdir)]
-        else:
-            efiargs = []
-            efigraft = []
-
-        cmd = [self.lcmds.MKISOFS, "-o", bootiso,
-               "-b", "isolinux/isolinux.bin", "-c", "isolinux/boot.cat",
-               "-no-emul-boot", "-boot-load-size", "4",
-               "-boot-info-table"] + efiargs + ["-R", "-J", "-V", self.product,
-               "-T", "-graft-points",
-               "isolinux={0}".format(outputtree.isolinuxdir),
-               "images={0}".format(outputtree.imgdir)] + efigraft
-        logger.debug(cmd)
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-        retcode = proc.wait()
-
-        if not retcode == 0:
-            return None
-
-        # create hybrid iso
-        cmd = [self.lcmds.ISOHYBRID, bootiso]
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-        retcode = proc.wait()
-
-        # implant iso md5
-        cmd = [self.lcmds.IMPLANTISOMD5, bootiso]
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-        retcode = proc.wait()
-
-        return bootiso
