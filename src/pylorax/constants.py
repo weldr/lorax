@@ -57,16 +57,4 @@ class LoraxRequiredCommands(dict):
     def __getattr__(self, attr):
         return self[attr]
 
-    def get_missing(self):
-        missing = []
-        for cmd in self.values():
-            found = [joinpaths(path, cmd) for path in self.__path
-                     if os.path.exists(joinpaths(path, cmd))]
-
-            if not found:
-                missing.append(cmd)
-
-        return missing
-
-
 FS_OVERHEAD = 512
