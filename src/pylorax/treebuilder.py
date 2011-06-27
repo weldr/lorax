@@ -65,7 +65,6 @@ def findkernels(root="/", kdir="boot"):
     return kernels
 
 def generate_module_info(moddir, outfile=None):
-    logger.info("reading module data in %s", moddir)
     def module_desc(mod):
         return check_output(["modinfo", "-F", "description", mod]).strip()
     def read_module_set(name):
@@ -82,7 +81,6 @@ def generate_module_info(moddir, outfile=None):
                 modinfo.append(dict(name=name, type=modtype, desc=desc))
 
     out = open(outfile or joinpaths(moddir,"module-info"), "w")
-    logger.info("writing %s", out.name)
     for mod in sorted(modinfo, key=lambda m: m.get('name')):
         out.write('{name}\n\t{type}\n\t"{desc:.65}"\n'.format(**mod))
 
@@ -206,6 +204,7 @@ class TreeBuilder(object):
         for kernel in self.kernels:
             kver = kernel.version
             ksyms = joinpaths(inroot, "boot/System.map-%s" % kver)
+            logger.info("doing depmod and module-info for %s", kver)
             check_call(["depmod", "-a", "-F", ksyms, "-b", inroot, kver])
             generate_module_info(joinpaths(inroot, "modules", kver))
 
