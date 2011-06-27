@@ -22,7 +22,7 @@ logger = logging.getLogger("pylorax.treebuilder")
 
 import os, re, glob, fnmatch
 from os.path import basename, isdir, getsize
-from subprocess import check_call, PIPE
+from subprocess import check_call, check_output, PIPE
 from tempfile import NamedTemporaryFile
 
 from sysutils import joinpaths, cpfile, mvfile, replace, remove, linktree
