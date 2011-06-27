@@ -183,6 +183,7 @@ class Lorax(BaseLoraxClass):
         logger.debug("product data: %s" % product)
 
         templatedir = self.conf.get("lorax", "sharedir")
+        # NOTE: rb.root = ybo.conf.installroot (== self.inroot)
         rb = RuntimeBuilder(product=self.product, arch=self.arch,
                             yum=ybo, templatedir=templatedir)
 
@@ -227,6 +228,9 @@ class Lorax(BaseLoraxClass):
         treebuilder = TreeBuilder(product=self.product, arch=self.arch,
                                   inroot=installroot, outroot=self.outputdir,
                                   runtime=runtime, templatedir=templatedir)
+
+        logger.info("generating kernel module metadata")
+        treebuilder.generate_module_data()
 
         logger.info("rebuilding initramfs images")
         treebuilder.rebuild_initrds(add_args=["--xz"])

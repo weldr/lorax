@@ -76,7 +76,7 @@ arch/x86/kvm
 %for kmodpath in removekmods:
     remove /modules/*/kernel/${kmodpath}
 %endfor
-## FIXME: run depmod, generate module-info
+remove /modules/*/{build,source,*.map}
 
 ## Clean up systemd
 removefrom ConsoleKit /lib/systemd/*

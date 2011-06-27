@@ -96,10 +96,3 @@ symlink ../firmware lib/firmware
 
 ## create_depmod_conf()
 append etc/depmod.d/dd.conf "search updates built-in"
-
-## TODO: cleanup_kernel_modules(), then depmod
-## TODO: depmod -a -F ${root}/boot/System.map-${kver} -b ${root} ${kver}
-%for moddir in glob("modules/*"):
-    remove ${moddir}/*.map ${moddir}/build ${moddir}/source
-    ## FIXME: generate magical anaconda 'module-info' files
-%endfor

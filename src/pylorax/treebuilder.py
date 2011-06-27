@@ -64,6 +64,28 @@ def findkernels(root="/", kdir="boot"):
 
     return kernels
 
+def generate_module_info(moddir, outfile=None):
+    logger.info("reading module data in %s", moddir)
+    def module_desc(mod):
+        return check_output(["modinfo", "-F", "description", mod]).strip()
+    def read_module_set(name):
+        return set(l.strip() for l in open(join(moddir,name)) if ".ko" in l)
+    modsets = {'scsi':read_module_set("modules.block"),
+               'eth':read_module_set("modules.networking")}
+
+    modinfo = list()
+    for root, dirs, files in os.walk(moddir):
+        for modtype, modset in modsets.items():
+            for mod in modset.intersection(files):  # modules in this dir
+                (name, ext) = os.path.splitext(mod) # foo.ko -> (foo, .ko)
+                desc = module_desc(join(root,mod)) or "%s driver" % name
+                modinfo.append(dict(name=name, type=modtype, desc=desc))
+
+    out = open(outfile or join(moddir,"module-info"), "w")
+    logger.info("writing %s", out.name)
+    for mod in sorted(modinfo, key=lambda m: m.get('name')):
+        out.write('{name}\n\t{type}\n\t"{desc:.65}"\n'.format(**mod))
+
 def brace_expand(s):
     if not ('{' in s and ',' in s and '}' in s):
         yield s
@@ -178,6 +200,14 @@ class TreeBuilder(object):
         runner.run(template)
         self.treeinfo_data = runner.results.treeinfo
         self.implantisomd5()
+
+    def generate_module_data(self):
+        inroot = self.vars.inroot
+        for kernel in self.kernels:
+            kver = kernel.version
+            ksyms = joinpaths(inroot, "boot/System.map-%s" % kver)
+            check_call(["depmod", "-a", "-F", ksyms, "-b", inroot, kver])
+            generate_module_info(joinpaths(inroot, "modules", kver))
 
     def rebuild_initrds(self, add_args=[], backup=""):
         '''Rebuild all the initrds in the tree. If backup is specified, each
