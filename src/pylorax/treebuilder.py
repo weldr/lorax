@@ -374,8 +374,10 @@ class TemplateRunner(object):
         self.yum.closeRpmDB()
 
     def removefrom(self, pkg, *globs):
-        globs = set(brace_expand(globs))
-        globs_re = re.compile("|".join([fnmatch.translate(g) for g in globs]))
+        globset = set()
+        for g in globs:
+            globset.update(brace_expand(g))
+        globs_re = re.compile("|".join([fnmatch.translate(g) for g in globset]))
         remove = filter(globs_re.match, self._filelist(pkg))
         logger.debug("removing %i files from %s", len(remove), pkg)
         self.remove(*remove)
