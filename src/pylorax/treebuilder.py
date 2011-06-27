@@ -69,7 +69,7 @@ def generate_module_info(moddir, outfile=None):
     def module_desc(mod):
         return check_output(["modinfo", "-F", "description", mod]).strip()
     def read_module_set(name):
-        return set(l.strip() for l in open(join(moddir,name)) if ".ko" in l)
+        return set(l.strip() for l in open(joinpaths(moddir,name)) if ".ko" in l)
     modsets = {'scsi':read_module_set("modules.block"),
                'eth':read_module_set("modules.networking")}
 
@@ -78,10 +78,10 @@ def generate_module_info(moddir, outfile=None):
         for modtype, modset in modsets.items():
             for mod in modset.intersection(files):  # modules in this dir
                 (name, ext) = os.path.splitext(mod) # foo.ko -> (foo, .ko)
-                desc = module_desc(join(root,mod)) or "%s driver" % name
+                desc = module_desc(joinpaths(root,mod)) or "%s driver" % name
                 modinfo.append(dict(name=name, type=modtype, desc=desc))
 
-    out = open(outfile or join(moddir,"module-info"), "w")
+    out = open(outfile or joinpaths(moddir,"module-info"), "w")
     logger.info("writing %s", out.name)
     for mod in sorted(modinfo, key=lambda m: m.get('name')):
         out.write('{name}\n\t{type}\n\t"{desc:.65}"\n'.format(**mod))
