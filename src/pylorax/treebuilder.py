@@ -106,41 +106,24 @@ def _glob(globpat, root="/", fatal=True):
 def _exists(path, root=""):
     return (len(_glob(path, root, fatal=False)) > 0)
 
-class TemplateParser(object):
-    def __init__(self, templatedir=None, defaults={}):
-        self.templatedir = templatedir
-        self.defaults = defaults
-
-    def parse(self, templatefile, variables):
-        for k,v in self.defaults.items():
-            variables.setdefault(k,v)
-        logger.info("parsing %s", templatefile)
-        t = LoraxTemplate(directories=[self.templatedir])
-        return t.parse(templatefile, variables)
 
 class RuntimeBuilder(object):
     '''Builds the anaconda runtime image.'''
     def __init__(self, product, arch, yum, templatedir=None):
         root = yum.conf.installroot
+        # use a copy of product so we can modify it locally
         product = product.copy()
         product.name = product.name.lower()
-        v = DataHolder(arch=arch, product=product, yum=yum, root=root,
-                       basearch=arch.basearch, libdir=arch.libdir,
-                       exists = lambda p: _exists(p, root=root),
-                       glob = lambda g: _glob(g, root=root, fatal=False))
-        self.vars = v
+        self.vars = DataHolder(arch=arch, product=product, yum=yum, root=root,
+                               basearch=arch.basearch, libdir=arch.libdir)
         self.yum = yum
-        self.templatedir = templatedir
-
-    def runtemplate(self, templatefile, **variables):
-        parser = TemplateParser(self.templatedir, self.vars)
-        template = parser.parse(templatefile, variables)
-        runner = TemplateRunner(self.vars.root, self.vars.root, self.vars.yum)
-        runner.run(template)
+        self._runner = LoraxTemplateRunner(inroot=root, outroot=root, yum=yum)
+        self._runner.templatedir = templatedir
+        self._runner.defaults = self.vars
 
     def install(self):
         '''Install packages and do initial setup with runtime-install.tmpl'''
-        self.runtemplate("runtime-install.tmpl")
+        self._runner.run("runtime-install.tmpl")
 
     def postinstall(self, configdir="/usr/share/lorax/config_files"):
         '''Do some post-install setup work with runtime-postinstall.tmpl'''
@@ -150,7 +133,7 @@ class RuntimeBuilder(object):
         if os.path.exists(fullpath):
             remove(fullpath)
         linktree(configdir, fullpath)
-        self.runtemplate("runtime-postinstall.tmpl", configdir=configdir_path)
+        self._runner.run("runtime-postinstall.tmpl", configdir=configdir_path)
 
     def cleanup(self):
         '''Remove unneeded packages and files with runtime-cleanup.tmpl'''
@@ -160,7 +143,7 @@ class RuntimeBuilder(object):
         locales = set([basename(d) for d in _glob(localedir+"/*") if isdir(d)])
         keeplocales = set([line.split()[1] for line in open(langtable)])
         removelocales = locales.difference(keeplocales)
-        self.runtemplate("runtime-cleanup.tmpl", removelocales=removelocales)
+        self._runner.run("runtime-cleanup.tmpl", removelocales=removelocales)
 
     def create_runtime(self, outfile="/tmp/squashfs.img"):
         # make live rootfs image - must be named "LiveOS/rootfs.img" for dracut
@@ -179,24 +162,21 @@ class TreeBuilder(object):
     def __init__(self, product, arch, inroot, outroot, runtime, templatedir=None):
         # NOTE: if you pass an arg named "runtime" to a mako template it'll
         # clobber some mako internal variables - hence "runtime_img".
-        v = DataHolder(arch=arch, product=product,
-                       inroot=inroot, outroot=outroot, runtime_img=runtime,
-                       basearch=arch.basearch, libdir=arch.libdir,
-                       exists = lambda p: _exists(p, root=inroot))
-        self.vars = v
-        self.templatedir = templatedir
+        self.vars = DataHolder(arch=arch, product=product, runtime_img=runtime,
+                               inroot=inroot, outroot=outroot,
+                               basearch=arch.basearch, libdir=arch.libdir)
+        self._runner = LoraxTemplateRunner(inroot, outroot)
+        self._runner.templatedir = templatedir
+        self._runner.defaults = self.vars
 
     @property
     def kernels(self):
         return findkernels(root=self.vars.inroot)
 
     def build(self):
-        parser = TemplateParser(self.templatedir, self.vars)
         templatefile = templatemap[self.vars.arch.basearch]
-        template = parser.parse(templatefile, {'kernels':self.kernels})
-        runner = TemplateRunner(self.vars.inroot, self.vars.outroot)
-        runner.run(template)
-        self.treeinfo_data = runner.results.treeinfo
+        self._runner.run(templatefile, kernels=self.kernels)
+        self.treeinfo_data = self.runner.results.treeinfo
         self.implantisomd5()
 
     def generate_module_data(self):
@@ -237,12 +217,18 @@ class TreeBuilder(object):
 # multiple args allowed: mkdir, treeinfo, runcmd, remove, replace
 # globs accepted: chmod, install*, remove*, replace
 
-class TemplateRunner(object):
-    def __init__(self, inroot, outroot, yum=None, fatalerrors=False):
+class LoraxTemplateRunner(object):
+    def __init__(self, inroot, outroot, yum=None, fatalerrors=False,
+                                        templatedir=None, defaults={}):
         self.inroot = inroot
         self.outroot = outroot
         self.yum = yum
         self.fatalerrors = fatalerrors
+        self.templatedir = templatedir
+        # defaults starts with some builtin methods
+        self.defaults = DataHolder(exists=lambda p: _exists(p, root=inroot),
+                            glob=lambda g: _glob(g, root=root, fatal=False))
+        self.defaults.update(defaults)
         self.results = DataHolder(treeinfo=dict()) # just treeinfo for now
 
     def _out(self, path):
@@ -254,7 +240,15 @@ class TemplateRunner(object):
         pkglist = self.yum.doPackageLists(pkgnarrow="installed", patterns=pkgs)
         return set([f for pkg in pkglist.installed for f in pkg.filelist])
 
-    def run(self, parsed_template):
+    def run(self, templatefile, **variables):
+        for k,v in self.defaults.items():
+            variables.setdefault(k,v)
+        logger.info("parsing %s", templatefile)
+        t = LoraxTemplate(directories=[self.templatedir])
+        commands = t.parse(templatefile, variables)
+        self._run(commands)
+
+    def _run(self, parsed_template):
         logger.info("running template commands")
         for (num, line) in enumerate(parsed_template,1):
             logger.debug("template line %i: %s", num, " ".join(line))
