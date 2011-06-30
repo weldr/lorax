@@ -108,7 +108,7 @@ class LoraxTemplateRunner(object):
         self.templatedir = templatedir
         # some builtin methods
         self.builtins = DataHolder(exists=lambda p: rexists(p, root=inroot),
-                                   glob=lambda g: rglob(g, root=inroot))
+                                   glob=lambda g: list(rglob(g, root=inroot)))
         self.defaults = defaults
         self.results = DataHolder(treeinfo=dict()) # just treeinfo for now
 
