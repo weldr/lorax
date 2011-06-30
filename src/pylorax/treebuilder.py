@@ -104,7 +104,7 @@ def brace_expand(s):
             for alt in brace_expand(prefix+choice+suffix):
                 yield alt
 
-def _glob(pathname, root="/", fatal=True):
+def rglob(pathname, root="/", fatal=False):
     seen = set()
     rootlen = len(root)+1
     for g in brace_expand(pathname):
@@ -115,8 +115,8 @@ def _glob(pathname, root="/", fatal=True):
     if fatal and not seen:
         raise IOError, "nothing matching %s in %s" % (pathname, root)
 
-def _exists(pathname, root=""):
-    return True if _glob(pathname, root) else False
+def rexists(pathname, root=""):
+    return True if rglob(pathname, root) else False
 
 class RuntimeBuilder(object):
     '''Builds the anaconda runtime image.'''
@@ -238,8 +238,8 @@ class LoraxTemplateRunner(object):
         self.fatalerrors = fatalerrors
         self.templatedir = templatedir
         # defaults starts with some builtin methods
-        self.defaults = DataHolder(exists=lambda p: _exists(p, root=inroot),
-                            glob=lambda g: _glob(g, root=root, fatal=False))
+        self.defaults = DataHolder(exists=lambda p: rexists(p, root=inroot),
+                                   glob=lambda g: rglob(g, root=inroot))
         self.defaults.update(defaults)
         self.results = DataHolder(treeinfo=dict()) # just treeinfo for now
 
@@ -278,7 +278,7 @@ class LoraxTemplateRunner(object):
                 logger.error(str(e))
 
     def install(self, srcglob, dest):
-        for src in _glob(self._in(srcglob)):
+        for src in rglob(self._in(srcglob), fatal=True):
             cpfile(src, self._out(dest))
 
     def mkdir(self, *dirs):
@@ -288,9 +288,13 @@ class LoraxTemplateRunner(object):
                 os.makedirs(d)
 
     def replace(self, pat, repl, *fileglobs):
+        match = False
         for g in fileglobs:
-            for f in _glob(self._out(g)):
+            for f in rglob(self._out(g)):
+                match = True
                 replace(f, pat, repl)
+        if not match:
+            raise IOError, "no files matched %s" % " ".join(fileglobs)
 
     def append(self, filename, data):
         with open(self._out(filename), "a") as fobj:
@@ -315,7 +319,7 @@ class LoraxTemplateRunner(object):
         os.link(self._out(src), self._out(dest))
 
     def symlink(self, target, dest):
-        if _exists(self._out(dest)):
+        if rexists(self._out(dest)):
             self.remove(dest)
         os.symlink(target, self._out(dest))
 
@@ -323,23 +327,23 @@ class LoraxTemplateRunner(object):
         cpfile(self._out(src), self._out(dest))
 
     def copyif(self, src, dest):
-        if _exists(self._out(src)):
+        if rexists(self._out(src)):
             self.copy(src, dest)
 
     def move(self, src, dest):
         mvfile(self._out(src), self._out(dest))
 
     def moveif(self, src, dest):
-        if _exists(self._out(src)):
+        if rexists(self._out(src)):
             self.move(src, dest)
 
     def remove(self, *fileglobs):
         for g in fileglobs:
-            for f in _glob(self._out(g), fatal=False):
+            for f in rglob(self._out(g)):
                 remove(f)
 
     def chmod(self, fileglob, mode):
-        for f in _glob(self._out(fileglob)):
+        for f in rglob(self._out(fileglob), fatal=True):
             os.chmod(f, int(mode,8))
 
     def gconfset(self, path, keytype, value, outfile=None):
