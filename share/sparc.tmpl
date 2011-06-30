@@ -19,6 +19,13 @@ replace %PRODUCT% ${product.name} ${BOOTDIR}/boot.msg
     installinitrd images-${basearch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
 %endfor
 
+replace %ROOT% 'root=live:CDLABEL=PBOOT' ${BOOTDIR}/silo.conf
+## FIXME: silo.conf is missing %ROOT%. workaround with manual twiddling
+<% cdroot='root=live:CDLABEL=PBOOT' %>
+replace 'alias=install' 'alias=install\n\tappend=${cdroot}' ${BOOTDIR}/silo.conf
+replace 'append=text'   'append="text ${cdroot}"'           ${BOOTDIR}/silo.conf
+replace 'append=ks'     'append="ks ${cdroot}"'             ${BOOTDIR}/silo.conf
+
 runcmd mkisofs -R -J -T -G /${BOOTDIR}/isofs.b -B ... \
   -s /${BOOTDIR}/silo.conf -r -V "PBOOT" \
   -A "${product.name} ${product.version}" \

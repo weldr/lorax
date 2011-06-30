@@ -19,6 +19,12 @@ install ${ANABOOTDIR}/grub.conf ${BOOTDIR}
 
 replace @VERSION@ ${product.version} ${BOOTDIR}/grub.conf ${BOOTDIR}/isolinux.cfg ${BOOTDIR}/*.msg
 replace @PRODUCT@ ${product.name}    ${BOOTDIR}/grub.conf ${BOOTDIR}/isolinux.cfg ${BOOTDIR}/*.msg
+replace %ROOT% 'root=live:CDLABEL=${udev_escape(product.name)}' ${BOOTDIR}/isolinux.cfg ${BOOTDIR}/grub.conf
+## FIXME: no %ROOT% in isolinux.cfg. workaround with manual twiddling.
+replace "append initrd=initrd.img" \
+        "append initrd=initrd.img root=live:CDLABEL=${udev_escape(product.name)}" \
+        ${BOOTDIR}/isolinux.cfg
+
 
 replace "default linux" "default vesamenu.c32" ${BOOTDIR}/isolinux.cfg
 replace "prompt 1"      "#prompt 1"            ${BOOTDIR}/isolinux.cfg
@@ -59,11 +65,6 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
     %>
     <%include file="efi.tmpl" args="ANABOOTDIR=ANABOOTDIR, KERNELDIR=KERNELDIR, efiarch=efiarch"/>
 %endif
-
-## CDLABEL matches the -V argument to mkisofs
-replace "append initrd=initrd.img" \
-        "append initrd=initrd.img root=live:CDLABEL=${udev_escape(product.name)}" \
-        ${BOOTDIR}/isolinux.cfg
 
 runcmd mkisofs -o ${outroot}/images/boot.iso \
        -b ${BOOTDIR}/isolinux.bin -c ${BOOTDIR}/boot.cat \
