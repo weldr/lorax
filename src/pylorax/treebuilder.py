@@ -135,7 +135,7 @@ class TreeBuilder(object):
     def build(self):
         templatefile = templatemap[self.vars.arch.basearch]
         self._runner.run(templatefile, kernels=self.kernels)
-        self.treeinfo_data = self.runner.results.treeinfo
+        self.treeinfo_data = self._runner.results.treeinfo
         self.implantisomd5()
 
     def implantisomd5(self):
