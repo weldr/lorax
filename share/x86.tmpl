@@ -62,7 +62,7 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
 
 ## CDLABEL matches the -V argument to mkisofs
 replace "append initrd=initrd.img" \
-        "append initrd=initrd.img root=live:CDLABEL='${product.name}'" \
+        "append initrd=initrd.img root=live:CDLABEL=${udev_escape(product.name)}" \
         ${BOOTDIR}/isolinux.cfg
 
 runcmd mkisofs -o ${outroot}/images/boot.iso \

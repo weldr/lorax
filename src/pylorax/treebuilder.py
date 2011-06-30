@@ -84,6 +84,15 @@ def generate_module_info(moddir, outfile=None):
     for mod in sorted(modinfo, key=lambda m: m.get('name')):
         out.write('{name}\n\t{type}\n\t"{desc:.65}"\n'.format(**mod))
 
+# udev whitelist: 'a-zA-Z0-9#+.:=@_-' (see is_whitelisted in libudev-util.c)
+udev_blacklist=' !"$%&\'()*,/;<>?[\\]^`{|}~' # ASCII printable, minus whitelist
+udev_blacklist += ''.join(chr(i) for i in range(32)) # ASCII non-printable
+def udev_escape(label):
+    out = u''
+    for ch in label.decode('utf8'):
+        out += ch if ch not in udev_blacklist else u'\\x%02x' % ord(ch)
+    return out.encode('utf8')
+
 def brace_expand(s):
     if not ('{' in s and ',' in s and '}' in s):
         yield s
@@ -164,7 +173,8 @@ class TreeBuilder(object):
         # clobber some mako internal variables - hence "runtime_img".
         self.vars = DataHolder(arch=arch, product=product, runtime_img=runtime,
                                inroot=inroot, outroot=outroot,
-                               basearch=arch.basearch, libdir=arch.libdir)
+                               basearch=arch.basearch, libdir=arch.libdir,
+                               udev_escape=udev_escape)
         self._runner = LoraxTemplateRunner(inroot, outroot)
         self._runner.templatedir = templatedir
         self._runner.defaults = self.vars
