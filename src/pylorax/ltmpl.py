@@ -106,10 +106,10 @@ class LoraxTemplateRunner(object):
         self.yum = yum
         self.fatalerrors = fatalerrors
         self.templatedir = templatedir
-        # defaults starts with some builtin methods
-        self.defaults = DataHolder(exists=lambda p: rexists(p, root=inroot),
+        # some builtin methods
+        self.builtins = DataHolder(exists=lambda p: rexists(p, root=inroot),
                                    glob=lambda g: rglob(g, root=inroot))
-        self.defaults.update(defaults)
+        self.defaults = defaults
         self.results = DataHolder(treeinfo=dict()) # just treeinfo for now
 
     def _out(self, path):
@@ -122,7 +122,7 @@ class LoraxTemplateRunner(object):
         return set([f for pkg in pkglist.installed for f in pkg.filelist])
 
     def run(self, templatefile, **variables):
-        for k,v in self.defaults.items():
+        for k,v in self.defaults.items() + self.builtins.items():
             variables.setdefault(k,v)
         logger.info("parsing %s", templatefile)
         t = LoraxTemplate(directories=[self.templatedir])
