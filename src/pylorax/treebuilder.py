@@ -29,68 +29,16 @@ from base import DataHolder
 from ltmpl import LoraxTemplateRunner
 import imgutils
 
-templatemap = {'i386':    'x86.tmpl',
-               'x86_64':  'x86.tmpl',
-               'ppc':     'ppc.tmpl',
-               'ppc64':   'ppc.tmpl',
-               'sparc':   'sparc.tmpl',
-               'sparc64': 'sparc.tmpl',
-               's390':    's390.tmpl',
-               's390x':   's390.tmpl',
-               }
-
-def findkernels(root="/", kdir="boot"):
-    # To find possible flavors, awk '/BuildKernel/ { print $4 }' kernel.spec
-    flavors = ('debug', 'PAE', 'PAEdebug', 'smp', 'xen')
-    kre = re.compile(r"vmlinuz-(?P<version>.+?\.(?P<arch>[a-z0-9_]+)"
-                     r"(\.(?P<flavor>{0}))?)$".format("|".join(flavors)))
-    kernels = []
-    for f in os.listdir(joinpaths(root, kdir)):
-        match = kre.match(f)
-        if match:
-            kernel = DataHolder(path=joinpaths(kdir, f))
-            kernel.update(match.groupdict()) # sets version, arch, flavor
-            kernels.append(kernel)
-
-    # look for associated initrd/initramfs
-    for kernel in kernels:
-        # NOTE: if both exist, the last one found will win
-        for imgname in ("initrd", "initramfs"):
-            i = kernel.path.replace("vmlinuz", imgname, 1) + ".img"
-            if os.path.exists(joinpaths(root, i)):
-                kernel.initrd = DataHolder(path=i)
-
-    return kernels
-
-def generate_module_info(moddir, outfile=None):
-    def module_desc(mod):
-        return check_output(["modinfo", "-F", "description", mod]).strip()
-    def read_module_set(name):
-        return set(l.strip() for l in open(joinpaths(moddir,name)) if ".ko" in l)
-    modsets = {'scsi':read_module_set("modules.block"),
-               'eth':read_module_set("modules.networking")}
-
-    modinfo = list()
-    for root, dirs, files in os.walk(moddir):
-        for modtype, modset in modsets.items():
-            for mod in modset.intersection(files):  # modules in this dir
-                (name, ext) = os.path.splitext(mod) # foo.ko -> (foo, .ko)
-                desc = module_desc(joinpaths(root,mod)) or "%s driver" % name
-                modinfo.append(dict(name=name, type=modtype, desc=desc))
-
-    out = open(outfile or joinpaths(moddir,"module-info"), "w")
-    for mod in sorted(modinfo, key=lambda m: m.get('name')):
-        out.write('{name}\n\t{type}\n\t"{desc:.65}"\n'.format(**mod))
-
-# udev whitelist: 'a-zA-Z0-9#+.:=@_-' (see is_whitelisted in libudev-util.c)
-udev_blacklist=' !"$%&\'()*,/;<>?[\\]^`{|}~' # ASCII printable, minus whitelist
-udev_blacklist += ''.join(chr(i) for i in range(32)) # ASCII non-printable
-def udev_escape(label):
-    out = u''
-    for ch in label.decode('utf8'):
-        out += ch if ch not in udev_blacklist else u'\\x%02x' % ord(ch)
-    return out.encode('utf8')
-
+templatemap = {
+    'i386':    'x86.tmpl',
+    'x86_64':  'x86.tmpl',
+    'ppc':     'ppc.tmpl',
+    'ppc64':   'ppc.tmpl',
+    'sparc':   'sparc.tmpl',
+    'sparc64': 'sparc.tmpl',
+    's390':    's390.tmpl',
+    's390x':   's390.tmpl',
+}
 
 class RuntimeBuilder(object):
     '''Builds the anaconda runtime image.'''
@@ -159,12 +107,6 @@ class TreeBuilder(object):
     def kernels(self):
         return findkernels(root=self.vars.inroot)
 
-    def build(self):
-        templatefile = templatemap[self.vars.arch.basearch]
-        self._runner.run(templatefile, kernels=self.kernels)
-        self.treeinfo_data = self.runner.results.treeinfo
-        self.implantisomd5()
-
     def generate_module_data(self):
         inroot = self.vars.inroot
         for kernel in self.kernels:
@@ -190,8 +132,68 @@ class TreeBuilder(object):
             check_call(["chroot", self.vars.inroot] + \
                        dracut + [kernel.initrd.path, kernel.version])
 
+    def build(self):
+        templatefile = templatemap[self.vars.arch.basearch]
+        self._runner.run(templatefile, kernels=self.kernels)
+        self.treeinfo_data = self.runner.results.treeinfo
+        self.implantisomd5()
+
     def implantisomd5(self):
         for section, data in self.treeinfo_data.items():
             if 'boot.iso' in data:
                 iso = joinpaths(self.vars.outroot, data['boot.iso'])
                 check_call(["implantisomd5", iso])
+
+#### TreeBuilder helper functions
+
+def findkernels(root="/", kdir="boot"):
+    # To find possible flavors, awk '/BuildKernel/ { print $4 }' kernel.spec
+    flavors = ('debug', 'PAE', 'PAEdebug', 'smp', 'xen')
+    kre = re.compile(r"vmlinuz-(?P<version>.+?\.(?P<arch>[a-z0-9_]+)"
+                     r"(\.(?P<flavor>{0}))?)$".format("|".join(flavors)))
+    kernels = []
+    for f in os.listdir(joinpaths(root, kdir)):
+        match = kre.match(f)
+        if match:
+            kernel = DataHolder(path=joinpaths(kdir, f))
+            kernel.update(match.groupdict()) # sets version, arch, flavor
+            kernels.append(kernel)
+
+    # look for associated initrd/initramfs
+    for kernel in kernels:
+        # NOTE: if both exist, the last one found will win
+        for imgname in ("initrd", "initramfs"):
+            i = kernel.path.replace("vmlinuz", imgname, 1) + ".img"
+            if os.path.exists(joinpaths(root, i)):
+                kernel.initrd = DataHolder(path=i)
+
+    return kernels
+
+def generate_module_info(moddir, outfile=None):
+    def module_desc(mod):
+        return check_output(["modinfo", "-F", "description", mod]).strip()
+    def read_module_set(name):
+        return set(l.strip() for l in open(joinpaths(moddir,name)) if ".ko" in l)
+    modsets = {'scsi':read_module_set("modules.block"),
+               'eth':read_module_set("modules.networking")}
+
+    modinfo = list()
+    for root, dirs, files in os.walk(moddir):
+        for modtype, modset in modsets.items():
+            for mod in modset.intersection(files):  # modules in this dir
+                (name, ext) = os.path.splitext(mod) # foo.ko -> (foo, .ko)
+                desc = module_desc(joinpaths(root,mod)) or "%s driver" % name
+                modinfo.append(dict(name=name, type=modtype, desc=desc))
+
+    out = open(outfile or joinpaths(moddir,"module-info"), "w")
+    for mod in sorted(modinfo, key=lambda m: m.get('name')):
+        out.write('{name}\n\t{type}\n\t"{desc:.65}"\n'.format(**mod))
+
+# udev whitelist: 'a-zA-Z0-9#+.:=@_-' (see is_whitelisted in libudev-util.c)
+udev_blacklist=' !"$%&\'()*,/;<>?[\\]^`{|}~' # ASCII printable, minus whitelist
+udev_blacklist += ''.join(chr(i) for i in range(32)) # ASCII non-printable
+def udev_escape(label):
+    out = u''
+    for ch in label.decode('utf8'):
+        out += ch if ch not in udev_blacklist else u'\\x%02x' % ord(ch)
+    return out.encode('utf8')
