@@ -104,17 +104,19 @@ def brace_expand(s):
             for alt in brace_expand(prefix+choice+suffix):
                 yield alt
 
-def _glob(globpat, root="/", fatal=True):
-    files_found = set()
-    for g in brace_expand(globpat):
-        files_found.update(glob.glob(joinpaths(root, g)))
-    if fatal and not files_found:
-        raise IOError, "nothing matching %s" % joinpaths(root, globpat)
-    return [f.replace(root+os.path.sep,"",1) for f in files_found]
+def _glob(pathname, root="/", fatal=True):
+    seen = set()
+    rootlen = len(root)+1
+    for g in brace_expand(pathname):
+        for f in glob.iglob(joinpaths(root, g)):
+            if f not in seen:
+                seen.add(f)
+                yield f[rootlen:] # remove the root to produce relative path
+    if fatal and not seen:
+        raise IOError, "nothing matching %s in %s" % (pathname, root)
 
-def _exists(path, root=""):
-    return (len(_glob(path, root, fatal=False)) > 0)
-
+def _exists(pathname, root=""):
+    return True if _glob(pathname, root) else False
 
 class RuntimeBuilder(object):
     '''Builds the anaconda runtime image.'''
@@ -149,8 +151,8 @@ class RuntimeBuilder(object):
         # get removelocales list first
         localedir = joinpaths(self.vars.root, "usr/share/locale")
         langtable = joinpaths(self.vars.root, "usr/share/anaconda/lang-table")
-        locales = set([basename(d) for d in _glob(localedir+"/*") if isdir(d)])
-        keeplocales = set([line.split()[1] for line in open(langtable)])
+        locales = set([d for d in os.listdir(localedir) if isdir(joinpaths(localedir,d))])
+        keeplocales = [line.split()[1] for line in open(langtable)]
         removelocales = locales.difference(keeplocales)
         self._runner.run("runtime-cleanup.tmpl", removelocales=removelocales)
 
