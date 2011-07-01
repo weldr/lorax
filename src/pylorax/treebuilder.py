@@ -114,7 +114,8 @@ class TreeBuilder(object):
             ksyms = joinpaths(inroot, "boot/System.map-%s" % kver)
             logger.info("doing depmod and module-info for %s", kver)
             check_call(["depmod", "-a", "-F", ksyms, "-b", inroot, kver])
-            generate_module_info(joinpaths(inroot, "modules", kver))
+            moddir = joinpaths(inroot, "lib/modules/")
+            generate_module_info(moddir+kver, outfile=moddir+"module-info")
 
     def rebuild_initrds(self, add_args=[], backup=""):
         '''Rebuild all the initrds in the tree. If backup is specified, each
