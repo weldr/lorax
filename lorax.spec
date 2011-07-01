@@ -1,5 +1,5 @@
 Name:           lorax
-Version:        0.5
+Version:        0.8
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -25,6 +25,8 @@ Requires:       genisoimage
 Requires:       parted
 Requires:       gzip
 Requires:       xz
+Requires:       squashfs-tools >= 4.2
+Requires:       e2fsprogs
 
 %ifarch %{ix86} x86_64
 Requires:       syslinux
@@ -32,6 +34,11 @@ Requires:       syslinux
 
 %ifarch %{sparc}
 Requires:       silo
+%endif
+
+%ifarch ppc ppc64
+Requires:       yaboot
+Requires:       kernel-bootwrapper
 %endif
 
 %description
