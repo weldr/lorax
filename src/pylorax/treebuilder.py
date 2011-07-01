@@ -187,6 +187,7 @@ def generate_module_info(moddir, outfile=None):
                 modinfo.append(dict(name=name, type=modtype, desc=desc))
 
     out = open(outfile or joinpaths(moddir,"module-info"), "w")
+    out.write("Version 0\n")
     for mod in sorted(modinfo, key=lambda m: m.get('name')):
         out.write('{name}\n\t{type}\n\t"{desc:.65}"\n'.format(**mod))
 
