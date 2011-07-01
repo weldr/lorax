@@ -211,11 +211,11 @@ class Lorax(BaseLoraxClass):
         installroot = joinpaths(self.workdir, "installroot")
         linktree(self.inroot, installroot)
 
-        logger.info("cleaning unneeded files")
-        rb.cleanup()
-
         logger.info("generating kernel module metadata")
         rb.generate_module_data()
+
+        logger.info("cleaning unneeded files")
+        rb.cleanup()
 
         logger.info("creating the runtime image")
         runtime = "images/install.img"
