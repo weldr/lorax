@@ -40,6 +40,27 @@ templatemap = {
     's390x':   's390.tmpl',
 }
 
+def generate_module_info(moddir, outfile=None):
+    def module_desc(mod):
+        return check_output(["modinfo", "-F", "description", mod]).strip()
+    def read_module_set(name):
+        return set(l.strip() for l in open(joinpaths(moddir,name)) if ".ko" in l)
+    modsets = {'scsi':read_module_set("modules.block"),
+               'eth':read_module_set("modules.networking")}
+
+    modinfo = list()
+    for root, dirs, files in os.walk(moddir):
+        for modtype, modset in modsets.items():
+            for mod in modset.intersection(files):  # modules in this dir
+                (name, ext) = os.path.splitext(mod) # foo.ko -> (foo, .ko)
+                desc = module_desc(joinpaths(root,mod)) or "%s driver" % name
+                modinfo.append(dict(name=name, type=modtype, desc=desc))
+
+    out = open(outfile or joinpaths(moddir,"module-info"), "w")
+    out.write("Version 0\n")
+    for mod in sorted(modinfo, key=lambda m: m.get('name')):
+        out.write('{name}\n\t{type}\n\t"{desc:.65}"\n'.format(**mod))
+
 class RuntimeBuilder(object):
     '''Builds the anaconda runtime image.'''
     def __init__(self, product, arch, yum, templatedir=None):
@@ -78,6 +99,15 @@ class RuntimeBuilder(object):
         removelocales = locales.difference(keeplocales)
         self._runner.run("runtime-cleanup.tmpl", removelocales=removelocales)
 
+    def generate_module_data(self):
+        root = self.vars.root
+        moddir = joinpaths(root, "lib/modules/")
+        for kver in os.listdir(moddir):
+            ksyms = joinpaths(root, "boot/System.map-%s" % kver)
+            logger.info("doing depmod and module-info for %s", kver)
+            check_call(["depmod", "-a", "-F", ksyms, "-b", root, kver])
+            generate_module_info(moddir+kver, outfile=moddir+"module-info")
+
     def create_runtime(self, outfile="/tmp/squashfs.img"):
         # make live rootfs image - must be named "LiveOS/rootfs.img" for dracut
         workdir = joinpaths(os.path.dirname(outfile), "runtime-workdir")
@@ -106,16 +136,6 @@ class TreeBuilder(object):
     @property
     def kernels(self):
         return findkernels(root=self.vars.inroot)
-
-    def generate_module_data(self):
-        inroot = self.vars.inroot
-        for kernel in self.kernels:
-            kver = kernel.version
-            ksyms = joinpaths(inroot, "boot/System.map-%s" % kver)
-            logger.info("doing depmod and module-info for %s", kver)
-            check_call(["depmod", "-a", "-F", ksyms, "-b", inroot, kver])
-            moddir = joinpaths(inroot, "lib/modules/")
-            generate_module_info(moddir+kver, outfile=moddir+"module-info")
 
     def rebuild_initrds(self, add_args=[], backup=""):
         '''Rebuild all the initrds in the tree. If backup is specified, each
@@ -169,27 +189,6 @@ def findkernels(root="/", kdir="boot"):
                 kernel.initrd = DataHolder(path=i)
 
     return kernels
-
-def generate_module_info(moddir, outfile=None):
-    def module_desc(mod):
-        return check_output(["modinfo", "-F", "description", mod]).strip()
-    def read_module_set(name):
-        return set(l.strip() for l in open(joinpaths(moddir,name)) if ".ko" in l)
-    modsets = {'scsi':read_module_set("modules.block"),
-               'eth':read_module_set("modules.networking")}
-
-    modinfo = list()
-    for root, dirs, files in os.walk(moddir):
-        for modtype, modset in modsets.items():
-            for mod in modset.intersection(files):  # modules in this dir
-                (name, ext) = os.path.splitext(mod) # foo.ko -> (foo, .ko)
-                desc = module_desc(joinpaths(root,mod)) or "%s driver" % name
-                modinfo.append(dict(name=name, type=modtype, desc=desc))
-
-    out = open(outfile or joinpaths(moddir,"module-info"), "w")
-    out.write("Version 0\n")
-    for mod in sorted(modinfo, key=lambda m: m.get('name')):
-        out.write('{name}\n\t{type}\n\t"{desc:.65}"\n'.format(**mod))
 
 # udev whitelist: 'a-zA-Z0-9#+.:=@_-' (see is_whitelisted in libudev-util.c)
 udev_blacklist=' !"$%&\'()*,/;<>?[\\]^`{|}~' # ASCII printable, minus whitelist

@@ -214,6 +214,9 @@ class Lorax(BaseLoraxClass):
         logger.info("cleaning unneeded files")
         rb.cleanup()
 
+        logger.info("generating kernel module metadata")
+        rb.generate_module_data()
+
         logger.info("creating the runtime image")
         runtime = "images/install.img"
         # FIXME: compression options (type, speed, etc.)
@@ -223,9 +226,6 @@ class Lorax(BaseLoraxClass):
         treebuilder = TreeBuilder(product=self.product, arch=self.arch,
                                   inroot=installroot, outroot=self.outputdir,
                                   runtime=runtime, templatedir=templatedir)
-
-        logger.info("generating kernel module metadata")
-        treebuilder.generate_module_data()
 
         logger.info("rebuilding initramfs images")
         treebuilder.rebuild_initrds(add_args=["--xz"])
