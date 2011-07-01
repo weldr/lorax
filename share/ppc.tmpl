@@ -4,12 +4,11 @@ BOOTDIR="ppc"
 MACDIR=BOOTDIR+"/mac"
 NETBOOTDIR="images/netboot"
 
-MKZIMAGE="usr/bin/mkzimage"
-ZSTUB="usr/share/ppc64-utils/zImage.stub"
 WRAPPER="usr/sbin/wrapper"
-WRAPPER_A="usr/"+libdir+"/kernel-wrapper/wrapper.a"
+WRAPPER_DATA="usr/"+libdir+"/kernel-wrapper"
 MAPPING=ANABOOTDIR+"/mapping"
 MAGIC=ANABOOTDIR+"/magic"
+
 bitsizes = set()
 prepboot = ""
 macboot = ""
@@ -52,27 +51,15 @@ install ofboot.b ${MACDIR}
     ## FIXME: root=%ROOT% should really be in the config somewhere
     replace "read-only" "read-only\n\tappend=\"root=live:CDLABEL=PBOOT\""
 
-
-    ## Weirdo wrapper junk that makes the netboot combined ppc{32,64}.img
-    %if exists(MKZIMAGE) and exists(ZSTUB):
-        copy usr/${libdir}/kernel-wrapper/zImage.lds ${KERNELDIR}
-        runcmd chdir=${KERNELDIR} ${inroot}/${MKZIMAGE} vmlinuz no no initrd.img \
-               ${inroot}/${ZSTUB} ${outroot}/${NETIMG}
-        remove ${KERNELDIR}/zImage.lds
-        treeinfo images-${kernel.arch} zimage ${NETIMG}
-    %elif exists(WRAPPER) and exists(WRAPPER_A):
-        runcmd chdir=${KERNELDIR} ${inroot}/${WRAPPER} -o ${outroot}/${NETIMG} \
-               -i initrd.img -D ${inroot}/${os.path.dirname(WRAPPER_A)} vmlinuz
-        treeinfo images-${kernel.arch} zimage ${NETIMG}
-    %endif
+    ## kernel-wrapper magic that makes the netboot combined ppc{32,64}.img
+    runcmd ${inroot}/${WRAPPER} -D ${inroot}/${WRAPPER_DATA} \
+           -i ${KERNELDIR}/initrd.img ${KERNELDIR}/vmlinuz \
+           -p openfirmware -o ${outroot}/${NETIMG}
+    treeinfo images-${kernel.arch} zimage ${NETIMG}
     %if exists(NETIMG) and bits == 32:
         <% prepboot="-prep-boot " + NETIMG %>
     %endif
 %endfor
-
-%if not exists(NETBOOTDIR+"/*.img"):
-    remove ${NETBOOTDIR}
-%endif
 
 runcmd usr/lib/yaboot/addnote ${outroot}/${BOOTDIR}/chrp/yaboot
 
