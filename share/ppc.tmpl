@@ -11,7 +11,6 @@ MAGIC=ANABOOTDIR+"/magic"
 
 bitsizes = set()
 prepboot = ""
-macboot = ""
 %>
 
 mkdir images
@@ -25,11 +24,7 @@ install usr/lib/yaboot/yaboot ${BOOTDIR}/chrp
 ## Mac boot stuff
 mkdir ${MACDIR}
 install usr/lib/yaboot/yaboot ${MACDIR}
-install ofboot.b ${MACDIR}
-<%
-  macboot =  "-hfs-volid {0}".format(product.version)
-  macboot += "-hfs-bless {0}/isopath/{1}".format(outroot,MACDIR)
-%>
+install ${ANABOOTDIR}/ofboot.b ${MACDIR}
 
 %for kernel in kernels:
     <%
@@ -38,7 +33,7 @@ install ofboot.b ${MACDIR}
       NETIMG=NETBOOTDIR+"/ppc%s.img" % bits
       bitsizes.add(bits)
     %>
-    mkdir ${KERNELDIR}
+    mkdir ${KERNELDIR} ${NETBOOTDIR}
     install ${ANABOOTDIR}/yaboot.conf.in ${KERNELDIR}/yaboot.conf
     installkernel images-${kernel.arch} ${kernel.path} ${KERNELDIR}/vmlinuz
     installinitrd images-${kernel.arch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
@@ -49,19 +44,23 @@ install ofboot.b ${MACDIR}
     replace %VERSION% ${product.version} ${KERNELDIR}/yaboot.conf
     replace %BITS%    ${bits}            ${KERNELDIR}/yaboot.conf
     ## FIXME: root=%ROOT% should really be in the config somewhere
-    replace "read-only" "read-only\n\tappend=\"root=live:CDLABEL=PBOOT\""
+    replace "read-only" "read-only\n\tappend=\"root=live:CDLABEL=PBOOT\"" ${KERNELDIR}/yaboot.conf
 
     ## kernel-wrapper magic that makes the netboot combined ppc{32,64}.img
-    runcmd ${inroot}/${WRAPPER} -D ${inroot}/${WRAPPER_DATA} \
-           -i ${KERNELDIR}/initrd.img ${KERNELDIR}/vmlinuz \
-           -p openfirmware -o ${outroot}/${NETIMG}
+    runcmd ${inroot}/${WRAPPER} -p of \
+           -D ${inroot}/${WRAPPER_DATA} \
+           -i ${outroot}/${KERNELDIR}/initrd.img \
+              ${outroot}/${KERNELDIR}/vmlinuz \
+           -o ${outroot}/${NETIMG}
     treeinfo images-${kernel.arch} zimage ${NETIMG}
-    %if exists(NETIMG) and bits == 32:
+    ## XXX FIXME? if we have a pure-64-bit image we'll get no prep-boot..
+    %if bits == 32:
+        ## Yes, this is supposed to be a relative path
         <% prepboot="-prep-boot " + NETIMG %>
     %endif
 %endfor
 
-runcmd usr/lib/yaboot/addnote ${outroot}/${BOOTDIR}/chrp/yaboot
+runcmd ${inroot}/usr/lib/yaboot/addnote ${outroot}/${BOOTDIR}/chrp/yaboot
 
 %if len(bitsizes) == 2:
     ## magic ppc biarch tree! we need magic ppc biarch config.
@@ -79,17 +78,24 @@ runcmd usr/lib/yaboot/addnote ${outroot}/${BOOTDIR}/chrp/yaboot
 
 ## XXX why don't we use graft-points here?
 ##     is it because of the scary warnings in mkisofs(1)?
-mkdir isopath
-copy ${BOOTDIR} isopath
-copy etc isopath
+mkdir isopath isopath/${NETBOOTDIR}
+hardlink ${NETIMG} isopath/${NETBOOTDIR}
+## move bootdir/etc in
+move ${BOOTDIR} isopath/${BOOTDIR}
+move etc isopath/etc
 mkdir isopath/LiveOS
 hardlink images/install.img isopath/LiveOS/squashfs.img
 runcmd mkisofs -o ${outroot}/images/boot.iso -chrp-boot -U \
         ${prepboot} -part -hfs -T -r -l -J \
-        -A "${product.name} ${product.version}" -sysid PPC -V "PBOOT" \
+        -A "${product.name} ${product.version}" -sysid PPC -V PBOOT \
         -volset "${product.version}" -volset-size 1 -volset-seqno 1 \
-        ${macboot} -map ${MAPPING} -magic ${MAGIC} \
+        -hfs-volid ${product.version} -hfs-bless ${outroot}/isopath/${MACDIR} \
+        -map ${inroot}/${MAPPING} -magic ${inroot}/${MAGIC} \
         -no-desktop -allow-multidot -graft-points ${outroot}/isopath
+
+## move bootdir/etc back where they were
+move isopath/${BOOTDIR} ${BOOTDIR}
+move isopath/etc etc
 remove isopath
 %if len(bitsizes) == 2:
     treeinfo images-ppc   boot.iso images/boot.iso
