@@ -54,7 +54,7 @@ class ArchData(DataHolder):
     def __init__(self, buildarch):
         self.buildarch = buildarch
         self.basearch = getBaseArch(buildarch)
-        self.libdir = "lib64" if basearch in self.lib64_arches else "lib"
+        self.libdir = "lib64" if self.basearch in self.lib64_arches else "lib"
 
 class Lorax(BaseLoraxClass):
 
