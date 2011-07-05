@@ -42,6 +42,7 @@ import ltmpl
 
 import imgutils
 from sysutils import *
+from rpmUtils.arch import getBaseArch
 
 from treebuilder import RuntimeBuilder, TreeBuilder
 from buildstamp import BuildStamp
@@ -50,15 +51,10 @@ from discinfo import DiscInfo
 
 class ArchData(DataHolder):
     lib64_arches = ("x86_64", "ppc64", "sparc64", "s390x", "ia64")
-    archmap = {"i386": "i386", "i586":"i386", "i686":"i386", "x86_64":"x86_64",
-               "ppc":"ppc", "ppc64": "ppc",
-               "sparc":"sparc", "sparcv9":"sparc", "sparc64":"sparc",
-               "s390":"s390", "s390x":"s390x",
-    }
     def __init__(self, buildarch):
         self.buildarch = buildarch
-        self.basearch = self.archmap.get(buildarch) or buildarch
-        self.libdir = "lib64" if buildarch in self.lib64_arches else "lib"
+        self.basearch = getBaseArch(buildarch)
+        self.libdir = "lib64" if basearch in self.lib64_arches else "lib"
 
 class Lorax(BaseLoraxClass):
 
