@@ -144,6 +144,8 @@ class TreeBuilder(object):
         dracut = ["/sbin/dracut", "--nomdadmconf", "--nolvmconf"] + add_args
         if not backup:
             dracut.append("--force")
+        # Hush some dracut warnings. TODO: bind-mount proc in place?
+        open(joinpaths(self.vars.inroot,"/proc/modules"),"w")
         # XXX FIXME: add anaconda dracut module!
         for kernel in self.kernels:
             logger.info("rebuilding %s", kernel.initrd.path)
@@ -152,6 +154,7 @@ class TreeBuilder(object):
                 os.rename(initrd, initrd + backup)
             check_call(["chroot", self.vars.inroot] + \
                        dracut + [kernel.initrd.path, kernel.version])
+        os.unlink(joinpaths(self.vars.inroot,"/proc/modules"))
 
     def build(self):
         templatefile = templatemap[self.vars.arch.basearch]
