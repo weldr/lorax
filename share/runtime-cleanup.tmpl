@@ -78,7 +78,7 @@ arch/x86/kvm
 %endfor
 remove /modules/*/{build,source,*.map}
 
-%if int(product.version) >= 15:
+%if int(product.version) > 15:
     ## Clean up systemd
     removefrom ConsoleKit /lib/systemd/*
     removefrom avahi /lib/systemd/*

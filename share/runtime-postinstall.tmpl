@@ -29,7 +29,7 @@ move ${PYTHONDIR}/site-packages/pyanaconda/sitecustomize.py ${PYTHONDIR}/site-pa
 move etc/yum.repos.d etc/anaconda.repos.d
 
 ## misc_tree_modifications()
-%if int(product.version) >= 15:
+%if int(product.version) > 15:
     ## Configure systemd to start anaconda
     symlink /sbin/init init
     remove etc/systemd/system/default.target
