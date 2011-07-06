@@ -59,13 +59,16 @@ class LoraxTemplate(object):
         lines = filter(lambda line: not line.startswith("#"), lines)
 
         # mako template now returns unicode strings
-        lines = map(lambda line: line.encode("ascii"), lines)
+        lines = map(lambda line: line.encode("utf8"), lines)
 
-        # split with shlex
-        lines = map(shlex.split, lines)
+        # split with shlex and perform brace expansion
+        lines = map(split_and_expand, lines)
 
         self.lines = lines
         return lines
+
+def split_and_expand(line):
+    return [exp for word in shlex.split(line) for exp in brace_expand(word)]
 
 def brace_expand(s):
     if not ('{' in s and ',' in s and '}' in s):
@@ -81,11 +84,10 @@ def brace_expand(s):
 def rglob(pathname, root="/", fatal=False):
     seen = set()
     rootlen = len(root)+1
-    for g in brace_expand(pathname):
-        for f in glob.iglob(joinpaths(root, g)):
-            if f not in seen:
-                seen.add(f)
-                yield f[rootlen:] # remove the root to produce relative path
+    for f in glob.iglob(joinpaths(root, pathname)):
+        if f not in seen:
+            seen.add(f)
+            yield f[rootlen:] # remove the root to produce relative path
     if fatal and not seen:
         raise IOError, "nothing matching %s in %s" % (pathname, root)
 
@@ -252,10 +254,7 @@ class LoraxTemplateRunner(object):
         self.yum.closeRpmDB()
 
     def removefrom(self, pkg, *globs):
-        globset = set()
-        for g in globs:
-            globset.update(brace_expand(g))
-        globs_re = re.compile("|".join([fnmatch.translate(g) for g in globset]))
+        globs_re = re.compile("|".join([fnmatch.translate(g) for g in globs]))
         remove = filter(globs_re.match, self._filelist(pkg))
         logger.debug("removing %i files from %s", len(remove), pkg)
         self.remove(*remove)
