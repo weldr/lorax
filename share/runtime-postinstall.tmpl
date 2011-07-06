@@ -3,7 +3,7 @@
 KEYMAP_OVERRIDE = "usr/share/anaconda/keymaps-override-%s" % arch.basearch
 SCREENFONT = "usr/share/anaconda/screenfont-%s.gz" % arch.basearch
 PYTHONDIR = glob("usr/"+arch.libdir+"/python?.?")[0]
-stubs = ("list-harddrives", "loadkeys", "mknod", "raidstart", "raidstop")
+stubs = ("list-harddrives", "loadkeys", "raidstart", "raidstop")
 %>
 
 ## create_keymaps(arch.basearch)
