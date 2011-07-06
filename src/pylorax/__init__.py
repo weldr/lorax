@@ -193,7 +193,7 @@ class Lorax(BaseLoraxClass):
             os.makedirs(dname)
         for pkgobj in ybo.doPackageLists(pkgnarrow='installed').installed:
             with open(joinpaths(dname, pkgobj.name), "w") as fobj:
-                for fname in pkgobj.filelist:
+                for fname in pkgobj.filelist + pkgobj.dirlist:
                     fobj.write("{0}\n".format(fname))
 
         logger.info("doing post-install configuration")
