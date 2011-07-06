@@ -47,6 +47,7 @@ move etc/yum.repos.d etc/anaconda.repos.d
 symlink /sbin/init init
 install ${configdir}/network etc/sysconfig
 append etc/resolv.conf ""
+copy usr/share/anaconda/lang-table etc
 
 ## get_config_files(configdir)
 ## gconf stuff

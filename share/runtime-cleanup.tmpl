@@ -5,6 +5,7 @@
 %for locale in removelocales:
     remove usr/share/locale/${locale}
 %endfor
+remove usr/share/anaconda/lang-table
 
 ## not required packages installed as dependencies
 removepkg ConsoleKit-x11 alsa-lib augeas-libs authconfig-gtk avahi-autoipd
