@@ -146,6 +146,8 @@ class TreeBuilder(object):
             dracut.append("--force")
         # Hush some dracut warnings. TODO: bind-mount proc in place?
         open(joinpaths(self.vars.inroot,"/proc/modules"),"w")
+        # Add some extra bits to the dracut initramfs
+        dracut += self.anaconda_dracut_hack()
         # XXX FIXME: add anaconda dracut module!
         for kernel in self.kernels:
             logger.info("rebuilding %s", kernel.initrd.path)
@@ -155,6 +157,19 @@ class TreeBuilder(object):
             check_call(["chroot", self.vars.inroot] + \
                        dracut + [kernel.initrd.path, kernel.version])
         os.unlink(joinpaths(self.vars.inroot,"/proc/modules"))
+
+    def anaconda_dracut_hack(self):
+        '''Hack to make F15 dracut able to boot F15 anaconda properly'''
+        hookfile = "/tmp/99anaconda-umount.sh" # path relative to inroot
+        with open(joinpaths(self.vars.inroot,hookfile), "w") as f:
+            s = ['#!/bin/sh',
+                 'udevadm control --stop-exec-queue',
+                 'udevd=$(pidof udevd) && kill $udevd',
+                 'umount -l /proc /sys /dev/pts /dev',
+                 'echo "mustard=progress" > /proc/cmdline',
+                 '[ "$udevd" ] && kill -9 $udevd']
+            f.writelines(line+"\n" for line in s)
+        return ['--include', hookfile, "/lib/dracut/hooks/pre-pivot"]
 
     def build(self):
         templatefile = templatemap[self.vars.arch.basearch]
