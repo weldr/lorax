@@ -42,9 +42,11 @@ move etc/yum.repos.d etc/anaconda.repos.d
     symlink init sbin/halt
     symlink init sbin/poweroff
     symlink init sbin/reboot
-    remove sbin/runlevel sbin/shutdown sbin/telinit
-    ## Since systemd won't be creating paths for us..
-    mkdir /var/run/dbus
+    remove sbin/runlevel sbin/telinit
+    ## Since systemd won't be setting up sockets in /run for us..
+    remove var/run
+    move run var
+    mkdir var/run/dbus
 %endif
 symlink /sbin/init init
 install ${configdir}/network etc/sysconfig

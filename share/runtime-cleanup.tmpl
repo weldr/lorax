@@ -56,11 +56,6 @@ remove /var/lib/rpm/* /var/lib/yum
 ## icons cache
 remove /usr/share/icons/*/icon-theme.cache
 
-## remove generated locales - anaconda knows how to restore them at runtime
-removefrom glibc-common /usr/lib/locale/*
-## locale-archive is not in the glibc-common filelist
-remove /usr/lib/locale/locale-archive
-
 ## clean up kernel modules
 <%
 removekmods = """
@@ -99,6 +94,10 @@ remove /modules/*/{build,source,*.map}
     removefrom systemd-units /lib/systemd/system/quota*
     removefrom systemd-units /lib/systemd/system/smartcard*
     removefrom systemd-units /lib/systemd/system/systemd-remount-api-vfs.service
+    ## remove generated locales - anaconda knows how to restore them at runtime
+    removefrom glibc-common /usr/lib/locale/*
+    ## locale-archive is not in the glibc-common filelist
+    remove /usr/lib/locale/locale-archive
 %else:
     ## F15 - remove systemd init stuff
     remove /cgroup /var/cache /var/log
@@ -108,6 +107,7 @@ remove /modules/*/{build,source,*.map}
     removefrom initscripts /lib/systemd/*
     removefrom systemd /bin/* /lib/systemd/* /usr/share/systemd/*
     removefrom util-linux /sbin/agetty
+    removefrom glibc-common /usr/share/i18n/*
 %endif
 
 ## other package specific removals
