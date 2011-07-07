@@ -43,9 +43,12 @@ move etc/yum.repos.d etc/anaconda.repos.d
     symlink init sbin/poweroff
     symlink init sbin/reboot
     remove sbin/runlevel sbin/telinit
-    ## Since systemd won't be setting up sockets in /run for us..
+    ## dracut does stuff to /run so these links won't work..
     remove var/run
-    move run var
+    remove var/lock
+    move run var/run
+    symlink run/lock var/lock
+    ## Since systemd won't be setting up sockets in /run for us..
     mkdir var/run/dbus
 %endif
 symlink /sbin/init init
