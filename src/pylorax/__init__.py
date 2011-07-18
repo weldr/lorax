@@ -305,7 +305,7 @@ class Lorax(BaseLoraxClass):
             logger.info("compressing modules")
             self.installtree.compress_modules(kernel)
 
-            logger.info("running depmod")
+            logger.info("running depmod for kernel %s" % kernel.version)
             self.installtree.run_depmod(kernel)
 
         # move repos

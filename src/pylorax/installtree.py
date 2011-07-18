@@ -46,7 +46,7 @@ class LoraxInstallTree(BaseLoraxClass):
         self.basearch = basearch
         self.libdir = libdir
         self.workdir = workdir
-        self.initramfs = None
+        self.initramfs = {}
 
         self.lcmds = constants.LoraxRequiredCommands()
 
@@ -548,15 +548,19 @@ class LoraxInstallTree(BaseLoraxClass):
         rc = compressed.wait()
 
     def make_dracut_initramfs(self):
-        outfile = "/tmp/initramfs.img" # inside the chroot
-        logger.debug("chrooting into installtree to create initramfs.img")
-        subprocess.check_call(["chroot", self.root,
-                               "/sbin/dracut", "--nomdadmconf", "--nolvmconf",
-                               "--xz", "--modules", "base dmsquash-live",
-                               outfile, self.kernels[0].version])
-        # move output file into installtree workdir
-        self.initramfs = joinpaths(self.workdir, "initramfs.img")
-        shutil.move(joinpaths(self.root, outfile), self.initramfs)
+        for kernel in self.kernels:
+            outfile = "/tmp/initramfs.img" # inside the chroot
+            logger.debug("chrooting into installtree to create initramfs.img")
+            subprocess.check_call(["chroot", self.root, "/sbin/dracut",
+                                   "--nomdadmconf", "--nolvmconf",
+                                   "--xz", "--modules", "base dmsquash-live",
+                                   outfile, kernel.version])
+            # move output file into installtree workdir
+            dstdir = joinpaths(self.workdir, kernel.version)
+            os.makedirs(dstdir)
+            self.initramfs[kernel.version] = joinpaths(dstdir, "initramfs.img")
+            shutil.move(joinpaths(self.root, outfile),
+                        self.initramfs[kernel.version])
 
     def make_squashfs_runtime(self, runtime, kernel, type, args):
         """This is a little complicated, but dracut wants to find a squashfs
@@ -567,7 +571,8 @@ class LoraxInstallTree(BaseLoraxClass):
         initramfs at boot time.
         """
         # Check to be sure we have a dracut initramfs to use
-        assert self.initramfs, "make_dracut_initramfs has not been run!"
+        assert self.initramfs.get(kernel.version), \
+                "no dracut initramfs for kernel %s" % kernel.version
 
         # These exact names are required by dracut
         squashname = "squashfs.img"
@@ -630,15 +635,16 @@ class LoraxInstallTree(BaseLoraxClass):
 
         # create final image
         logger.debug("concatenating dracut initramfs and squashfs initramfs")
-        logger.debug("initramfs.img size = %i", os.stat(self.initramfs).st_size)
+        logger.debug("initramfs.img size = %i",
+                     os.stat(self.initramfs[kernel.version]).st_size)
         with open(runtime.fpath, "wb") as output:
-            for f in self.initramfs, squash_cpio:
+            for f in self.initramfs[kernel.version], squash_cpio:
                 with open(f, "rb") as fobj:
                     data = fobj.read(4096)
                     while data:
                         output.write(data)
                         data = fobj.read(4096)
-        os.remove(self.initramfs)
+        os.remove(self.initramfs[kernel.version])
         os.remove(squash_cpio)
 
     @property
