@@ -154,13 +154,8 @@ class Lorax(BaseLoraxClass):
         if not isinstance(ybo, yum.YumBase):
             logger.critical("no yum base object")
             sys.exit(1)
-
-        # create an install root
-        self.inroot = joinpaths(ybo.conf.installroot, "installroot")
-        if not os.path.isdir(self.inroot):
-            os.makedirs(self.inroot)
+        self.inroot = ybo.conf.installroot
         logger.debug("using install root: {0}".format(self.inroot))
-        ybo.conf.installroot = self.inroot
 
         logger.info("setting up build architecture")
         self.arch = ArchData(get_buildarch(ybo))
