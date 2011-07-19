@@ -556,7 +556,7 @@ class LoraxInstallTree(BaseLoraxClass):
                                    "--xz", "--modules", "base dmsquash-live",
                                    outfile, kernel.version])
             # move output file into installtree workdir
-            dstdir = joinpaths(self.workdir, kernel.version)
+            dstdir = joinpaths(self.workdir, "dracut-%s" % kernel.version)
             os.makedirs(dstdir)
             self.initramfs[kernel.version] = joinpaths(dstdir, "initramfs.img")
             shutil.move(joinpaths(self.root, outfile),
