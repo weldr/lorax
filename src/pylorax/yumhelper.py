@@ -41,12 +41,6 @@ class LoraxYumHelper(object):
 
     def __init__(self, ybo):
         self.ybo = ybo
-
-        # create our own installroot, the pungi one may be poluted
-        installroot = joinpaths(self.ybo.conf.installroot, "installroot")
-        os.makedirs(installroot)
-        self.ybo.conf.installroot = installroot
-
         self.installroot = self.ybo.conf.installroot
         self.installed_packages = self.get_packages("installed")
 
