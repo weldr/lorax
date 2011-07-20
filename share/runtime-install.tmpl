@@ -17,7 +17,7 @@ installpkg kernel
 %endif
 
 ## x86 specific packages
-%if basearch == "i386" or basearch == "x86_64":
+%if basearch in ("i386", "x86_64"):
     installpkg biosdevname
     installpkg efibootmgr
     installpkg firstaidkit-plugin-grub
@@ -26,7 +26,7 @@ installpkg kernel
 %endif
 
 ## ppc specific packages
-%if basearch == "ppc":
+%if basearch in ("ppc", "ppc64"):
     installpkg fbset
     installpkg hfsutils
     installpkg kernel-bootwrapper
