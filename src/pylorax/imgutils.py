@@ -46,10 +46,11 @@ def mkcpio(rootdir, outfile, compression="xz", compressargs=["-9"]):
     comp.wait()
     return comp.returncode
 
-def mksquashfs(rootdir, outfile, compression="xz", compressargs=[]):
+def mksquashfs(rootdir, outfile, compression="default", compressargs=[]):
     '''Make a squashfs image containing the given rootdir.'''
-    return call(["mksquashfs", rootdir, outfile,
-                 "-comp", compression] + compressargs)
+    if compression != "default":
+        compressargs = ["-comp", compression] + compressargs
+    return call(["mksquashfs", rootdir, outfile] + compressargs)
 
 ######## Utility functions ###############################################
 
