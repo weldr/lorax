@@ -108,7 +108,7 @@ class RuntimeBuilder(object):
             check_call(["depmod", "-a", "-F", ksyms, "-b", root, kver])
             generate_module_info(moddir+kver, outfile=moddir+"module-info")
 
-    def create_runtime(self, outfile="/tmp/squashfs.img"):
+    def create_runtime(self, outfile="/tmp/squashfs.img", compression="xz", compressargs=[]):
         # make live rootfs image - must be named "LiveOS/rootfs.img" for dracut
         workdir = joinpaths(os.path.dirname(outfile), "runtime-workdir")
         fssize = 2 * (1024*1024*1024) # 2GB sparse file compresses down to nothin'
@@ -116,7 +116,7 @@ class RuntimeBuilder(object):
         imgutils.mkext4img(self.vars.root, joinpaths(workdir, "LiveOS/rootfs.img"),
                            label="Anaconda", size=fssize)
         # squash the live rootfs and clean up workdir
-        imgutils.mksquashfs(workdir, outfile)
+        imgutils.mksquashfs(workdir, outfile, compression, compressargs)
         remove(workdir)
 
 class TreeBuilder(object):

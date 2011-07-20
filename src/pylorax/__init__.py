@@ -51,10 +51,14 @@ from discinfo import DiscInfo
 
 class ArchData(DataHolder):
     lib64_arches = ("x86_64", "ppc64", "sparc64", "s390x", "ia64")
+    bcj = dict(i386="x86", x86_64="x86",
+               ppc="powerpc", ppc64="powerpc",
+               sparc="sparc", sparc64="sparc")
     def __init__(self, buildarch):
         self.buildarch = buildarch
         self.basearch = getBaseArch(buildarch)
         self.libdir = "lib64" if self.basearch in self.lib64_arches else "lib"
+        self.bcj = bcj.get(self.basearch)
 
 class Lorax(BaseLoraxClass):
 
@@ -83,7 +87,8 @@ class Lorax(BaseLoraxClass):
 
         self.conf.add_section("compression")
         self.conf.set("compression", "type", "xz")
-        self.conf.set("compression", "speed", "9")
+        self.conf.set("compression", "args", "")
+        self.conf.set("compression", "bcj", "on")
 
         # read the config file
         if os.path.isfile(conf_file):
@@ -210,8 +215,15 @@ class Lorax(BaseLoraxClass):
 
         logger.info("creating the runtime image")
         runtime = "images/install.img"
-        # FIXME: compression options (type, speed, etc.)
-        rb.create_runtime(joinpaths(installroot,runtime))
+        compression = self.conf.get("compression", "type")
+        compressargs = self.conf.get("compression", "args").split()
+        if self.conf.getboolean("compression", "bcj"):
+            if self.arch.bcj:
+                compressargs += ["-Xbcj", self.arch.bcj]
+            else:
+                logger.info("no BCJ filter for arch %s", self.arch.basearch)
+        rb.create_runtime(joinpaths(installroot,runtime),
+                          compression=compression, compressargs=compressargs)
 
         logger.info("preparing to build output tree and boot images")
         treebuilder = TreeBuilder(product=self.product, arch=self.arch,
