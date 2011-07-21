@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        16.0
+Version:        16.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -61,6 +61,9 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Thu Jul 21 2011 Martin Gracik <mgracik@redhat.com> 16.1-1
+- Default to isBeta (#723901)
+
 * Tue Jul 19 2011 Martin Gracik <mgracik@redhat.com> 16.0-1
 - Prepend dracut to the temporary initramfs directory (#722999)
 - Don't change the installroot (#722481)
