@@ -140,7 +140,7 @@ class Lorax(BaseLoraxClass):
         logger.addHandler(fh)
 
     def run(self, ybo, product, version, release, variant="", bugurl="",
-            is_beta=False, workdir=None, outputdir=None):
+            is_beta=True, workdir=None, outputdir=None):
 
         assert self._configured
 
