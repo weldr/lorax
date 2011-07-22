@@ -51,14 +51,14 @@ from discinfo import DiscInfo
 
 class ArchData(DataHolder):
     lib64_arches = ("x86_64", "ppc64", "sparc64", "s390x", "ia64")
-    bcj = dict(i386="x86", x86_64="x86",
-               ppc="powerpc", ppc64="powerpc",
-               sparc="sparc", sparc64="sparc")
+    bcj_arch = dict(i386="x86", x86_64="x86",
+                    ppc="powerpc", ppc64="powerpc",
+                    sparc="sparc", sparc64="sparc")
     def __init__(self, buildarch):
         self.buildarch = buildarch
         self.basearch = getBaseArch(buildarch)
         self.libdir = "lib64" if self.basearch in self.lib64_arches else "lib"
-        self.bcj = bcj.get(self.basearch)
+        self.bcj = self.bcj_arch.get(self.basearch)
 
 class Lorax(BaseLoraxClass):
 
