@@ -140,7 +140,7 @@ class Lorax(BaseLoraxClass):
         logger.addHandler(fh)
 
     def run(self, ybo, product, version, release, variant="", bugurl="",
-            is_beta=True, workdir=None, outputdir=None):
+            isfinal=False, workdir=None, outputdir=None):
 
         assert self._configured
 
@@ -217,10 +217,10 @@ class Lorax(BaseLoraxClass):
         # set up optional build parameters
         self.variant = variant
         self.bugurl = bugurl
-        self.is_beta = is_beta
+        self.isfinal = isfinal
         logger.debug("set variant = {0.variant}".format(self))
         logger.debug("set bugurl = {0.bugurl}".format(self))
-        logger.debug("set is_beta = {0.is_beta}".format(self))
+        logger.debug("set isfinal = {0.isfinal}".format(self))
 
         # parse the template
         logger.info("parsing the template")
@@ -258,7 +258,7 @@ class Lorax(BaseLoraxClass):
 
         # write .buildstamp
         buildstamp = BuildStamp(self.workdir, self.product, self.version,
-                                self.bugurl, self.is_beta, self.buildarch)
+                                self.bugurl, self.isfinal, self.buildarch)
 
         buildstamp.write()
         shutil.copy2(buildstamp.path, self.installtree.root)

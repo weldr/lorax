@@ -48,7 +48,7 @@ def main(args):
     required.add_option("-r", "--release", help="release information",
             metavar="STRING")
     required.add_option("-s", "--source",
-            help="source repository (may be listed multibple times)",
+            help="source repository (may be listed multiple times)",
             metavar="REPOSITORY", action="append", default=[])
 
     # optional arguments
@@ -61,8 +61,8 @@ def main(args):
     optional.add_option("-b", "--bugurl",
             help="bug reporting URL for the product", metavar="URL",
             default="your distribution provided bug reporting tool")
-    optional.add_option("--isbeta", help="",
-            action="store_true", default=False, dest="is_beta")
+    optional.add_option("--isfinal", help="",
+            action="store_true", default=False)
 
     # add the option groups to the parser
     parser.add_option_group(required)
@@ -110,7 +110,7 @@ def main(args):
     lorax = pylorax.Lorax()
     lorax.configure()
     lorax.run(yb, opts.product, opts.version, opts.release,
-              opts.variant, opts.bugurl, opts.is_beta,
+              opts.variant, opts.bugurl, opts.isfinal,
               workdir=tempdir, outputdir=outputdir)
 
 
