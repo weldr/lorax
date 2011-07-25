@@ -1,22 +1,22 @@
 <%page args="root, basearch, libdir, configdir"/>
 <%
-KEYMAP_OVERRIDE = "usr/share/anaconda/keymaps-override-%s" % arch.basearch
-SCREENFONT = "usr/share/anaconda/screenfont-%s.gz" % arch.basearch
-PYTHONDIR = glob("usr/"+arch.libdir+"/python?.?")[0]
+KEYMAP_OVERRIDE = "usr/share/anaconda/keymaps-override-%s" % basearch
+SCREENFONT = "usr/share/anaconda/screenfont-%s.gz" % basearch
+PYTHONDIR = glob("usr/"+libdir+"/python?.?")[0]
 stubs = ("list-harddrives", "loadkeys", "raidstart", "raidstop")
 %>
 
-## create_keymaps(arch.basearch)
-%if arch.basearch not in ("s390", "s390x"):
+## create_keymaps()
+%if basearch not in ("s390", "s390x"):
     %if exists(KEYMAP_OVERRIDE):
         move ${KEYMAP_OVERRIDE} etc/keymaps.gz
     %else:
-        runcmd ${root}/usr/libexec/anaconda/getkeymaps ${arch.basearch} ${root}/etc/keymaps.gz ${root}
+        runcmd ${root}/usr/libexec/anaconda/getkeymaps ${basearch} ${root}/etc/keymaps.gz ${root}
     %endif
 %endif
 
 ## create_screenfont()
-moveif usr/share/anaconda/screenfont-${arch.basearch}.gz etc/screenfont.gz
+moveif usr/share/anaconda/screenfont-${basearch}.gz etc/screenfont.gz
 
 ## move_stubs()
 move usr/share/anaconda/restart-anaconda usr/bin
@@ -90,7 +90,7 @@ append etc/shadow "root::14438:0:99999:7:::"
 append etc/shadow "install::14438:0:99999:7:::"
 chmod etc/shadow 400
 
-%if arch.basearch in ("s390", "s390x"):
+%if basearch in ("s390", "s390x"):
     ## misc_s390_modifications()
     remove sbin/init
     move usr/share/anaconda/linuxrc.s390 sbin/init
