@@ -77,27 +77,18 @@ runcmd ${inroot}/usr/lib/yaboot/addnote ${outroot}/${BOOTDIR}/chrp/yaboot
     copy ${KERNELDIR}/yaboot.conf etc/yaboot.conf
 %endif
 
-## XXX why don't we use graft-points here?
-##     is it because of the scary warnings in mkisofs(1)?
-mkdir isopath isopath/${NETBOOTDIR}
-hardlink ${NETIMG} isopath/${NETBOOTDIR}
-## move bootdir/etc in
-move ${BOOTDIR} isopath/${BOOTDIR}
-move etc isopath/etc
-mkdir isopath/LiveOS
-hardlink images/install.img isopath/LiveOS/squashfs.img
 runcmd mkisofs -o ${outroot}/images/boot.iso -chrp-boot -U \
         ${prepboot} -part -hfs -T -r -l -J \
         -A "${product.name} ${product.version}" -sysid PPC -V PBOOT \
         -volset "${product.version}" -volset-size 1 -volset-seqno 1 \
-        -hfs-volid ${product.version} -hfs-bless ${outroot}/isopath/${MACDIR} \
+        -hfs-volid ${product.version} -hfs-bless ${outroot}/${MACDIR} \
         -map ${inroot}/${MAPPING} -magic ${inroot}/${MAGIC} \
-        -no-desktop -allow-multidot -graft-points ${outroot}/isopath
+        -no-desktop -allow-multidot -graft-points \
+        etc=${outroot}/etc \
+        ${BOOTDIR}=${outroot}/${BOOTDIR} \
+        ${NETBOOTDIR}=${outroot}/${NETBOOTDIR} \
+        LiveOS/squashfs.img=${outroot}/images/install.img
 
-## move bootdir/etc back where they were
-move isopath/${BOOTDIR} ${BOOTDIR}
-move isopath/etc etc
-remove isopath
 %if len(bitsizes) == 2:
     treeinfo images-ppc   boot.iso images/boot.iso
     treeinfo images-ppc64 boot.iso images/boot.iso
