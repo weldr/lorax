@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        16.1
+Version:        16.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -61,6 +61,9 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Tue Jul 26 2011 Martin Gracik <mgracik@redhat.com> 16.2-1
+- Change IsBeta to IsFinal
+
 * Thu Jul 21 2011 Martin Gracik <mgracik@redhat.com> 16.1-1
 - Default to isBeta (#723901)
 
