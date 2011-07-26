@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        16.3
+Version:        16.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -61,6 +61,9 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Tue Jul 26 2011 Martin Gracik <mgracik@redhat.com> 16.4-1
+- Add nss libraries to the image.
+
 * Tue Jul 26 2011 Martin Gracik <mgracik@redhat.com> 16.3-1
 - Remove the sysvinit-tools removals from the template
 - Do not remove vmmouse binaries (#723831)
