@@ -41,6 +41,14 @@ class BuildStamp(object):
         self.uuid = "{0}.{1}".format(now, buildarch)
 
     def write(self):
+        # get lorax version
+        try:
+            import pylorax.version
+        except ImportError:
+            vernum = "devel"
+        else:
+            vernum = pylorax.version.num
+
         logger.info("writing .buildstamp file")
         with open(self.path, "w") as fobj:
             fobj.write("[Main]\n")
@@ -49,3 +57,5 @@ class BuildStamp(object):
             fobj.write("BugURL={0.bugurl}\n".format(self))
             fobj.write("IsFinal={0.isfinal}\n".format(self))
             fobj.write("UUID={0.uuid}\n".format(self))
+            fobj.write("[Compose]\n")
+            fobj.write("Lorax={0}\n".format(vernum))
