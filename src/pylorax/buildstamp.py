@@ -38,7 +38,14 @@ class BuildStamp(object):
         self.uuid = "{0}.{1}".format(now, buildarch)
 
     def write(self, outfile):
-        vernum = "treebuilder" # XXX TODO FIXME
+        # get lorax version
+        try:
+            import pylorax.version
+        except ImportError:
+            vernum = "devel"
+        else:
+            vernum = pylorax.version.num
+
         logger.info("writing .buildstamp file")
         with open(outfile, "w") as fobj:
             fobj.write("[Main]\n")

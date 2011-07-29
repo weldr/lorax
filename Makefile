@@ -13,6 +13,7 @@ all:
 	$(PYTHON) setup.py build
 
 install: all
+	@echo "num = '$(VERSION)-$(RELEASE)'" > src/pylorax/version.py
 	$(PYTHON) setup.py install --root=$(DESTDIR)
 
 clean:
@@ -28,7 +29,7 @@ archive: tag
 
 local:
 	@rm -rf $(PKGNAME)-$(VERSION).tar.bz2
-	@rm -rf /tmp/$(PKGNAME)-$(VERSION) /tmp/$(PKGNAME)
+	@rm -rf /tmp/$(PKGNAME)-$(VERSION)
 	@dir=$$PWD; cp -a $$dir /tmp/$(PKGNAME)-$(VERSION)
 	@rm -rf /tmp/$(PKGNAME)-$(VERSION)/.git
 	@dir=$$PWD; cd /tmp; tar --bzip2 -cSpf $$dir/$(PKGNAME)-$(VERSION).tar.bz2 $(PKGNAME)-$(VERSION)

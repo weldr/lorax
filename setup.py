@@ -3,6 +3,7 @@
 from distutils.core import setup
 from glob import glob
 import os
+import sys
 
 
 # config file
@@ -17,8 +18,20 @@ for root, dnames, fnames in os.walk("share"):
 # executable
 data_files.append(("/usr/sbin", ["src/sbin/lorax", "src/sbin/mkefiboot"]))
 
+# get the version
+sys.path.insert(0, "src")
+try:
+    import pylorax.version
+except ImportError:
+    vernum = "devel"
+else:
+    vernum = pylorax.version.num
+finally:
+    sys.path = sys.path[1:]
+
+
 setup(name="lorax",
-      version="0.1",
+      version=vernum,
       description="Lorax",
       long_description="",
       author="Martin Gracik",
