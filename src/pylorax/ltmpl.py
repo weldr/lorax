@@ -123,6 +123,9 @@ class LoraxTemplateRunner(object):
         pkglist = self.yum.doPackageLists(pkgnarrow="installed", patterns=pkgs)
         return set([f for pkg in pkglist.installed for f in pkg.filelist])
 
+    def _getsize(self, *files):
+        return sum(os.path.getsize(self._out(f)) for f in files if os.path.isfile(self._out(f)))
+
     def run(self, templatefile, **variables):
         for k,v in self.defaults.items() + self.builtins.items():
             variables.setdefault(k,v)
@@ -231,7 +234,7 @@ class LoraxTemplateRunner(object):
         '''Note that we need full paths for everything here'''
         chdir = lambda: None
         cmd = cmdlist
-        if cmd[0].startswith("chdir="):
+        if cmd[0].startswith("--chdir="):
             dirname = cmd[0].split('=',1)[1]
             chdir = lambda: os.chdir(dirname)
             cmd = cmd[1:]
@@ -242,9 +245,13 @@ class LoraxTemplateRunner(object):
             self.yum.install(pattern=p)
 
     def removepkg(self, *pkgs):
-        # NOTE: "for p in pkgs: self.yum.remove(pattern=p)" traces back, so..
-        filepaths = [f.lstrip('/') for f in self._filelist(*pkgs)]
-        self.remove(*filepaths)
+        for p in pkgs:
+            filepaths = [f.lstrip('/') for f in self._filelist(p)]
+            if filepaths:
+                logger.debug("removepkg %s: %ikb", p, self._getsize(*filepaths)/1024)
+                self.remove(*filepaths)
+            else:
+                logger.debug("removepkg %s: no files to remove!", p)
 
     def run_pkg_transaction(self):
         self.yum.buildTransaction()
@@ -254,7 +261,12 @@ class LoraxTemplateRunner(object):
         self.yum.closeRpmDB()
 
     def removefrom(self, pkg, *globs):
-        globs_re = re.compile("|".join([fnmatch.translate(g) for g in globs]))
-        remove = filter(globs_re.match, self._filelist(pkg))
-        logger.debug("removing %i files from %s", len(remove), pkg)
-        self.remove(*remove)
+        filelist = self._filelist(pkg)
+        for g in globs:
+            globs_re = re.compile(fnmatch.translate(g))
+            remove = filter(globs_re.match, filelist)
+            if remove:
+                logger.debug("removefrom %s %s: %i files, %ikb", pkg, g, len(remove), self._getsize(*remove)/1024)
+                self.remove(*remove)
+            else:
+                logger.debug("removefrom %s %s: no files to remove!", pkg, g)
