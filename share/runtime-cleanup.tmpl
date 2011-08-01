@@ -13,12 +13,12 @@ removepkg alsa* flac gstreamer-tools libsndfile pulseaudio* sound-theme-freedesk
 removepkg dracut plymouth*
 removepkg checkpolicy selinux-policy libselinux-utils
 removepkg ConsoleKit-x11 augeas-libs authconfig-gtk avahi-autoipd
-removepkg avahi-libs checkpolicy clusterlib cman coreutils-libs
-removepkg corosync corosynclib cronie cronie-anacron crontabs cups-libs curl
+removepkg avahi-libs coreutils-libs
+removepkg cronie cronie-anacron crontabs cups-libs curl
 removepkg cyrus-sasl cyrus-sasl-md5 dash db4-utils
 removepkg deltarpm desktop-file-utils device-mapper-event diffutils
 removepkg dmraid-events fedora-release fedora-release-rawhide
-removepkg fence-agents fence-virt file fipscheck
+removepkg file fipscheck
 removepkg genisoimage gnome-python2 gnome-vfs2 gnupg2 grubby
 removepkg info ipmitool iptables iptables-ipv6 isomd5sum jasper-libs
 removepkg json-glib kbd-misc libIDL libXmu libXt
@@ -31,7 +31,7 @@ removepkg logrotate lvm2-libs m4 mailx makebootfat mcpp mesa-dri-drivers
 removepkg mesa-libGL mingetty mobile-broadband-provider-info modcluster
 removepkg nc net-snmp-libs
 removepkg net-snmp-utils netcf-libs nfs-utils-lib nss-sysinit nss-tools ntp
-removepkg numactl oddjob openais openaislib passwd
+removepkg numactl oddjob passwd
 removepkg pexpect pinentry pkgconfig ppp pth
 removepkg ricci rmt rpcbind samba-common setuptool
 removepkg sg3_utils sg3_utils-libs sgml-common sgpio shadow-utils
@@ -317,7 +317,6 @@ removefrom libxml2-python /usr/${libdir}/python?.?/site-packages/libxml2mod.la
 removefrom lldpad /etc/* /usr/sbin/lldptool
 removefrom lua /usr/bin/*
 removefrom lvm2 /etc/*
-removefrom lvm2-cluster /etc/rc.d/init.d/* /usr/sbin/*
 removefrom lzo /usr/${libdir}/liblzo2.*
 removefrom madan-fonts /usr/share/fonts/madan/*
 removefrom man-db /etc/sysconfig/* /usr/bin/* /usr/libexec/* /usr/sbin/*
