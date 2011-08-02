@@ -13,6 +13,7 @@ ${make_efiboot("images/efiboot.img", include_kernel=False)}
 <%def name="make_efiboot(img, include_kernel, disk=False)">
     <%
     kdir = EFIBOOTDIR if include_kernel else KERNELDIR
+    eficonf = "%s/BOOT%s.conf" % (EFIBOOTDIR, efiarch)
     args = "--label=ANACONDA"
     if disk: args += " --disk"
     %>
@@ -20,14 +21,14 @@ ${make_efiboot("images/efiboot.img", include_kernel=False)}
         copy ${KERNELDIR}/vmlinuz ${EFIBOOTDIR}
         copy ${KERNELDIR}/initrd.img ${EFIBOOTDIR}
     %endif
-    install ${ANABOOTDIR}/grub.conf ${EFIBOOTDIR}/BOOT${efiarch}.conf
-    replace @PRODUCT@ ${product.name} ${EFIBOOTDIR}/BOOT${efiarch}.conf
-    replace @VERSION@ ${product.version} ${EFIBOOTDIR}/BOOT${efiarch}.conf
-    replace @KERNELPATH@ /${kdir}/vmlinuz ${EFIBOOTDIR}/BOOT${efiarch}.conf
-    replace @INITRDPATH@ /${kdir}/initrd.img ${EFIBOOTDIR}/BOOT${efiarch}.conf
-    replace @SPLASHPATH@ /EFI/BOOT/splash.xpm.gz ${EFIBOOTDIR}/BOOT${efiarch}.conf
+    install ${ANABOOTDIR}/grub.conf ${eficonf}
+    replace @PRODUCT@ ${product.name} ${eficonf}
+    replace @VERSION@ ${product.version} ${eficonf}
+    replace @KERNELPATH@ /${kdir}/vmlinuz ${eficonf}
+    replace @INITRDPATH@ /${kdir}/initrd.img ${eficonf}
+    replace @SPLASHPATH@ /EFI/BOOT/splash.xpm.gz ${eficonf}
     %if efiarch == 'IA32':
-        copy ${EFIBOOTDIR}/BOOT${efiarch}.conf ${EFIBOOTDIR}/BOOT.conf
+        copy ${eficonf} ${EFIBOOTDIR}/BOOT.conf
     %endif
     runcmd mkefiboot ${args} ${outroot}/${EFIBOOTDIR} ${outroot}/${img}
     %if include_kernel:
