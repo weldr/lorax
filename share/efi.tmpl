@@ -2,7 +2,7 @@
 <% EFIBOOTDIR="EFI/BOOT" %>
 
 mkdir ${EFIBOOTDIR}
-install boot/efi/EFI/redhat/grub.efi ${EFIBOOTDIR}/BOOT${efiarch}.bin
+install boot/efi/EFI/redhat/grub.efi ${EFIBOOTDIR}/BOOT${efiarch}.efi
 install boot/grub/splash.xpm.gz ${EFIBOOTDIR}
 
 ## actually make the EFI images
