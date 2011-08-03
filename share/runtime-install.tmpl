@@ -96,10 +96,6 @@ installpkg wget rsync rsh bind-utils ftp mtr vconfig rdate
 ## I'm keeping them here with commentary until I'm sure they're not needed.
 ## Why would we need firstboot in anaconda?
 installpkg firstboot
-## Cleanup leaves only pam_smbpass.so, which AFAIK we don't use
-installpkg samba-common
-## Cleanup leaves only pam_winbind.so and /usr/lib/libwbclient.so.0
-installpkg samba-winbind-clients
 
 ## actually install all the requested packages
 run_pkg_transaction
