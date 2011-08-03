@@ -196,14 +196,6 @@ removefrom firstboot /lib/systemd/* /usr/sbin/* /usr/share/firstboot/*
 removefrom firstboot /usr/share/locale/*
 removefrom fontconfig /usr/bin/*
 removefrom gawk /usr/bin/* /usr/libexec/* /usr/share/*
-removefrom gdk-pixbuf /usr/${libdir}/gdk-pixbuf/loaders/libpixbufloader-bmp*
-removefrom gdk-pixbuf /usr/${libdir}/gdk-pixbuf/loaders/libpixbufloader-gif*
-removefrom gdk-pixbuf /usr/${libdir}/gdk-pixbuf/loaders/libpixbufloader-ico*
-removefrom gdk-pixbuf /usr/${libdir}/gdk-pixbuf/loaders/libpixbufloader-pnm*
-removefrom gdk-pixbuf /usr/${libdir}/gdk-pixbuf/loaders/libpixbufloader-ras*
-removefrom gdk-pixbuf /usr/${libdir}/gdk-pixbuf/loaders/libpixbufloader-xbm*
-removefrom gdk-pixbuf /usr/${libdir}/gdk-pixbuf-*
-removefrom gdk-pixbuf /usr/${libdir}/libgdk_pixbuf_xlib* /usr/share/locale/*
 removefrom gdk-pixbuf2 /usr/${libdir}/gdk-pixbuf-2.0/2.10.0/loaders/*
 removefrom gdk-pixbuf2 /usr/share/locale*
 removefrom gfs2-utils /usr/sbin/*
@@ -243,7 +235,6 @@ removefrom grep /etc/* /usr/share/locale/*
 removefrom grub /sbin/grub-* /usr/bin/*
 removefrom gstreamer /usr/bin/* /usr/${libdir}/gstreamer-0.10/*
 removefrom gstreamer /usr/${libdir}/libgst* /usr/libexec/* /usr/share/locale/*
-removefrom gtk+ /etc/* /usr/share/locale/*
 removefrom gtk2 /usr/bin/update-gtk-immodules
 removefrom gtk2 /usr/${libdir}/gtk-2.0/2.10.0/{engines,printbackends}/*
 removefrom gtk2 /usr/share/themes/*

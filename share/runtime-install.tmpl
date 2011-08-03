@@ -100,8 +100,6 @@ installpkg firstboot
 installpkg samba-common
 ## Cleanup leaves only pam_winbind.so and /usr/lib/libwbclient.so.0
 installpkg samba-winbind-clients
-## gtk+ v1.x? Nothing uses this anymore...
-installpkg gtk+ glib gdk-pixbuf
 
 ## actually install all the requested packages
 run_pkg_transaction
