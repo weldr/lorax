@@ -4,155 +4,106 @@
 ## anaconda package
 installpkg anaconda
 
+## firstaidkit (rescue mode) package
+installpkg firstaidkit-engine
+
 ## kernel and firmware
 installpkg kernel
 %if basearch != "s390x":
     installpkg *-firmware
 %endif
 
-## i386 specific packages
+## arch-specific packages (bootloaders etc.)
 %if basearch == "i386":
-    installpkg kernel-PAE
-    installpkg gpart
+    installpkg kernel-PAE gpart
 %endif
-
-## x86 specific packages
 %if basearch in ("i386", "x86_64"):
-    installpkg biosdevname
-    installpkg efibootmgr
-    installpkg firstaidkit-plugin-grub
-    installpkg grub
-    installpkg memtest86+
+    installpkg grub firstaidkit-plugin-grub efibootmgr biosdevname memtest86+
 %endif
-
-## ppc specific packages
 %if basearch in ("ppc", "ppc64"):
-    installpkg fbset
-    installpkg hfsutils
-    installpkg kernel-bootwrapper
-    installpkg pcmciautils
-    installpkg ppc64-utils
-    installpkg yaboot
+    installpkg yaboot fbset hfsutils kernel-bootwrapper ppc64-utils
 %endif
-
-## s390 specific packages
 %if basearch == "s390x":
-    installpkg lsscsi
-    installpkg modutils
-    installpkg mount
-    installpkg s390utils-base
-    installpkg s390utils-cmsfs
+    installpkg lsscsi modutils mount s390utils-base s390utils-cmsfs
 %endif
-
-## sparc specific packages
 %if basearch == "sparc":
-    installpkg silo
-    installpkg tilo
+    installpkg silo tilo
 %endif
 
-## other required packages
+## basic system stuff
+installpkg systemd-sysv systemd-units
+installpkg rsyslog
+
+## xorg/GUI packages
+installpkg xorg-x11-drivers xorg-x11-server-Xorg xorg-x11-server-utils
+installpkg dbus-x11 metacity
 installpkg NetworkManager-gnome
-installpkg at-spi
-installpkg at-spi2-atk
-installpkg audit
-installpkg bind-utils
-installpkg bitmap-fangsongti-fonts
-installpkg btrfs-progs
-installpkg bzip2-libs
-installpkg wqy-microhei-fonts
-installpkg dbus-x11
-installpkg dejavu-sans-fonts
-installpkg dejavu-sans-mono-fonts
-installpkg dump
-installpkg ethtool
-installpkg fedora-gnome-theme
-installpkg fedora-icon-theme
-installpkg firstaidkit-engine
-installpkg firstboot
-installpkg ftp
-installpkg gdb-gdbserver
-installpkg gdk-pixbuf
-installpkg gfs2-utils
-installpkg glib
-installpkg gnome-icon-theme-legacy
-installpkg gnome-keyring
+installpkg at-spi at-spi2-atk pyatspi
 installpkg gnome-python2-gconf
-installpkg gnome-themes-standard
 installpkg gobject-introspection
-installpkg groff
-installpkg hdparm
-installpkg jfsutils
+installpkg polkit-desktop-policy
+installpkg gnome-keyring
+installpkg python-imaging
+
+## filesystem tools
+installpkg btrfs-progs jfsutils xfsprogs reiserfs-utils gfs2-utils ntfs-3g
+installpkg python-volume_key volume_key
+
+## SELinux support
+installpkg selinux-policy-targeted audit libsemanage-python
+
+## network tools/servers
+installpkg python-ethtool ethtool openssh-server nfs-utils
+installpkg tigervnc-server-minimal tigervnc-server-module
+
+## hardware utilities/libraries
+installpkg pciutils pcmciautils usbutils
+installpkg mt-st hdparm smartmontools
+installpkg libibverbs libmlx4
+
+## translations & language packs
+installpkg yum-langpacks specspo
+
+## fonts & themes
+installpkg bitmap-fangsongti-fonts
+installpkg dejavu-sans-fonts dejavu-sans-mono-fonts
 installpkg kacst-farsi-fonts
 installpkg kacst-qurn-fonts
-installpkg lcms-libs
-installpkg libgnome-keyring
-installpkg libgssglue
-installpkg libmlx4
-installpkg libsemanage-python
-installpkg libsysfs
-installpkg libtirpc
 installpkg lklug-fonts
-installpkg lohit-assamese-fonts
-installpkg lohit-bengali-fonts
-installpkg lohit-devanagari-fonts
-installpkg lohit-gujarati-fonts
-installpkg lohit-kannada-fonts
-installpkg lohit-oriya-fonts
-installpkg lohit-punjabi-fonts
-installpkg lohit-tamil-fonts
-installpkg lohit-telugu-fonts
-installpkg lsof
+installpkg lohit-*-fonts
 installpkg madan-fonts
-installpkg man-db
-installpkg metacity
-installpkg mt-st
-installpkg mtr
-installpkg nfs-utils
-installpkg notification-daemon
-installpkg ntfs-3g
-installpkg openssh-server
-installpkg pciutils
-installpkg pcmciautils
-installpkg polkit-desktop-policy
-installpkg pyatspi
-installpkg python-epdb
-installpkg python-ethtool
-installpkg python-imaging
-installpkg python-volume_key
-installpkg rdate
-installpkg reiserfs-utils
-installpkg rsh
-installpkg rsync
-installpkg rsyslog
-installpkg samba-common
-installpkg samba-winbind-clients
-installpkg selinux-policy-targeted
-installpkg smartmontools
 installpkg smc-meera-fonts
-installpkg specspo
-installpkg strace
-installpkg systemd-sysv
-installpkg tigervnc-server-minimal
-installpkg tigervnc-server-module
-installpkg udev
 installpkg un-core-dotum-fonts
-installpkg usbutils
-installpkg vconfig
-installpkg vim-minimal
 installpkg vlgothic-fonts
-installpkg volume_key
-installpkg volume_key-libs
-installpkg wget
-installpkg xfsprogs
-installpkg xorg-x11-drivers
-installpkg xorg-x11-fonts-ethiopic
-installpkg xorg-x11-fonts-misc
-installpkg xorg-x11-server-Xorg
-installpkg xorg-x11-server-utils
-installpkg xz
-installpkg yum-langpacks
+installpkg wqy-microhei-fonts
+installpkg xorg-x11-fonts-ethiopic xorg-x11-fonts-misc
+installpkg gnome-themes-standard gnome-icon-theme-legacy
+
+## branding & logos
+installpkg fedora-gnome-theme fedora-icon-theme
 installpkg ${product.name}-logos
 installpkg ${product.name}-release
+
+## debugging tools
+installpkg gdb-gdbserver
+installpkg python-epdb
+
+## extra tools not required by anaconda
+installpkg vim-minimal strace lsof dump xz
+installpkg wget rsync rsh bind-utils ftp mtr vconfig rdate
+
+## XXX NOTE these packages were being installed for unknown reasons.
+## I'm keeping them here with commentary until I'm sure they're not needed.
+## Why would we need firstboot in anaconda?
+installpkg firstboot
+## Cleanup removes everything but libman, and nothing seems to use it
+installpkg man-db
+## Cleanup leaves only pam_smbpass.so, which AFAIK we don't use
+installpkg samba-common
+## Cleanup leaves only pam_winbind.so and /usr/lib/libwbclient.so.0
+installpkg samba-winbind-clients
+## gtk+ v1.x? Nothing uses this anymore...
+installpkg gtk+ glib gdk-pixbuf
 
 ## actually install all the requested packages
 run_pkg_transaction
