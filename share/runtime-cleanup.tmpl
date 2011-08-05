@@ -468,3 +468,7 @@ removefrom ${product.name}-logos /usr/share/pixmaps/* /usr/share/plymouth/*
 ## cleanup_python_files()
 runcmd find ${root} -name "*.pyo" -type f -delete
 runcmd find ${root} -name "*.pyc" -type f -exec ln -sf /dev/null {} \;
+
+## remove any broken links in /etc, /usr, /lib
+## NOTE: not checking /var because we want to keep /var/run
+runcmd chroot ${root} find -L /etc /usr /lib -xdev -type l -delete
