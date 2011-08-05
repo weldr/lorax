@@ -24,7 +24,8 @@ import os, re
 from os.path import basename, isdir
 from subprocess import check_call, check_output
 
-from sysutils import joinpaths, remove, linktree
+from sysutils import joinpaths, remove
+from shutil import copytree
 from base import DataHolder
 from ltmpl import LoraxTemplateRunner
 import imgutils
@@ -81,12 +82,12 @@ class RuntimeBuilder(object):
 
     def postinstall(self, configdir="/usr/share/lorax/config_files"):
         '''Do some post-install setup work with runtime-postinstall.tmpl'''
-        # link configdir into runtime root beforehand
+        # copy configdir into runtime root beforehand
         configdir_path = "tmp/config_files"
         fullpath = joinpaths(self.vars.root, configdir_path)
         if os.path.exists(fullpath):
             remove(fullpath)
-        linktree(configdir, fullpath)
+        copytree(configdir, fullpath)
         self._runner.run("runtime-postinstall.tmpl", configdir=configdir_path)
 
     def cleanup(self):
