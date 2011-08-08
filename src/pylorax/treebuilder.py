@@ -80,9 +80,10 @@ class RuntimeBuilder(object):
         '''Install packages and do initial setup with runtime-install.tmpl'''
         self._runner.run("runtime-install.tmpl")
 
-    def postinstall(self, configdir="/usr/share/lorax/config_files"):
+    def postinstall(self):
         '''Do some post-install setup work with runtime-postinstall.tmpl'''
         # copy configdir into runtime root beforehand
+        configdir = joinpaths(self._runner.templatedir,"config_files")
         configdir_path = "tmp/config_files"
         fullpath = joinpaths(self.vars.root, configdir_path)
         if os.path.exists(fullpath):
