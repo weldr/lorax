@@ -107,7 +107,7 @@ class LoraxTemplateRunner(object):
         self.outroot = outroot
         self.yum = yum
         self.fatalerrors = fatalerrors
-        self.templatedir = templatedir
+        self.templatedir = templatedir or "/usr/share/lorax"
         # some builtin methods
         self.builtins = DataHolder(exists=lambda p: rexists(p, root=inroot),
                                    glob=lambda g: list(rglob(g, root=inroot)))

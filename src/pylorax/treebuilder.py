@@ -72,8 +72,8 @@ class RuntimeBuilder(object):
         self.vars = DataHolder(arch=arch, product=product, yum=yum, root=root,
                                basearch=arch.basearch, libdir=arch.libdir)
         self.yum = yum
-        self._runner = LoraxTemplateRunner(inroot=root, outroot=root, yum=yum)
-        self._runner.templatedir = templatedir
+        self._runner = LoraxTemplateRunner(inroot=root, outroot=root,
+                                           yum=yum, templatedir=templatedir)
         self._runner.defaults = self.vars
 
     def install(self):
@@ -130,8 +130,7 @@ class TreeBuilder(object):
                                inroot=inroot, outroot=outroot,
                                basearch=arch.basearch, libdir=arch.libdir,
                                udev_escape=udev_escape)
-        self._runner = LoraxTemplateRunner(inroot, outroot)
-        self._runner.templatedir = templatedir
+        self._runner = LoraxTemplateRunner(inroot, outroot, templatedir=templatedir)
         self._runner.defaults = self.vars
 
     @property
