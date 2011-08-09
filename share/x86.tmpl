@@ -1,6 +1,6 @@
 <%page args="kernels, runtime_img, basearch, outroot, product"/>
 <%
-ANABOOTDIR="tmp/config_files"
+configdir="tmp/config_files"
 SYSLINUXDIR="usr/share/syslinux"
 PXEBOOTDIR="images/pxeboot"
 BOOTDIR="isolinux"
@@ -12,11 +12,11 @@ install ${runtime_img} images/install.img
 
 mkdir ${BOOTDIR} ${KERNELDIR}
 install ${SYSLINUXDIR}/isolinux.bin ${BOOTDIR}
-install ${ANABOOTDIR}/syslinux.cfg ${BOOTDIR}/isolinux.cfg
+install ${configdir}/syslinux.cfg ${BOOTDIR}/isolinux.cfg
 install usr/share/anaconda/boot/syslinux-vesa-splash.jpg ${BOOTDIR}/splash.jpg
-install ${ANABOOTDIR}/boot.msg.x86 ${BOOTDIR}/boot.msg
+install ${configdir}/boot.msg.x86 ${BOOTDIR}/boot.msg
 install ${SYSLINUXDIR}/vesamenu.c32 ${BOOTDIR}
-install ${ANABOOTDIR}/grub.conf ${BOOTDIR}
+install ${configdir}/grub.conf ${BOOTDIR}
 
 replace @VERSION@ ${product.version} ${BOOTDIR}/grub.conf ${BOOTDIR}/isolinux.cfg ${BOOTDIR}/*.msg
 replace @PRODUCT@ ${product.name}    ${BOOTDIR}/grub.conf ${BOOTDIR}/isolinux.cfg ${BOOTDIR}/*.msg
@@ -56,7 +56,7 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
     efiargs="-eltorito-alt-boot -e images/efiboot.img -no-emul-boot"
     efigraft="EFI/BOOT={0}/EFI/BOOT images/efiboot.img={0}/images/efiboot.img".format(outroot)
     %>
-    <%include file="efi.tmpl" args="ANABOOTDIR=ANABOOTDIR, KERNELDIR=KERNELDIR, efiarch=efiarch"/>
+    <%include file="efi.tmpl" args="configdir=configdir, KERNELDIR=KERNELDIR, efiarch=efiarch"/>
 %endif
 
 runcmd mkisofs -o ${outroot}/images/boot.iso \

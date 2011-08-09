@@ -1,6 +1,6 @@
 <%page args="kernels, runtime_img, basearch, outroot, product"/>
 <%
-ANABOOTDIR="tmp/config_files"
+configdir="tmp/config_files"
 BOOTDIR="boot"
 KERNELDIR=BOOTDIR
 %>
@@ -9,8 +9,8 @@ mkdir images
 install ${runtime_img} images/install.img
 
 install boot/*.b ${BOOTDIR}
-install ${ANABOOTDIR}/silo.conf ${BOOTDIR}
-install ${ANABOOTDIR}/boot.msg.sparc ${BOOTDIR}/boot.msg
+install ${configdir}/silo.conf ${BOOTDIR}
+install ${configdir}/boot.msg.sparc ${BOOTDIR}/boot.msg
 
 replace @VERSION@ ${product.version} ${BOOTDIR}/boot.msg
 replace @PRODUCT@ ${product.name} ${BOOTDIR}/boot.msg

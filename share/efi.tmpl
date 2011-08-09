@@ -1,4 +1,4 @@
-<%page args="ANABOOTDIR, KERNELDIR, efiarch"/>
+<%page args="configdir, KERNELDIR, efiarch"/>
 <% EFIBOOTDIR="EFI/BOOT" %>
 
 mkdir ${EFIBOOTDIR}
@@ -21,7 +21,7 @@ ${make_efiboot("images/efiboot.img", include_kernel=False)}
         copy ${KERNELDIR}/vmlinuz ${EFIBOOTDIR}
         copy ${KERNELDIR}/initrd.img ${EFIBOOTDIR}
     %endif
-    install ${ANABOOTDIR}/grub.conf ${eficonf}
+    install ${configdir}/grub.conf ${eficonf}
     replace @PRODUCT@ ${product.name} ${eficonf}
     replace @VERSION@ ${product.version} ${eficonf}
     replace @KERNELPATH@ /${kdir}/vmlinuz ${eficonf}

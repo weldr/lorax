@@ -1,13 +1,13 @@
 <%page args="kernels, runtime_img, basearch, libdir, inroot, outroot, product"/>
 <%
-ANABOOTDIR="tmp/config_files"
+configdir="tmp/config_files"
 BOOTDIR="ppc"
 MACDIR=BOOTDIR+"/mac"
 NETBOOTDIR="images/netboot"
 
 WRAPPER="usr/sbin/wrapper"
 WRAPPER_DATA="usr/"+libdir+"/kernel-wrapper"
-MAPPING=ANABOOTDIR+"/mapping"
+MAPPING=configdir+"/mapping"
 
 bitsizes = set()
 prepboot = ""
@@ -17,14 +17,14 @@ mkdir images
 install ${runtime_img} images/install.img
 
 mkdir ${BOOTDIR} ${BOOTDIR}/chrp etc
-install ${ANABOOTDIR}/bootinfo.txt ${BOOTDIR}
+install ${configdir}/bootinfo.txt ${BOOTDIR}
 install boot/efika.forth ${BOOTDIR}
 install usr/lib/yaboot/yaboot ${BOOTDIR}/chrp
 
 ## boot dir for PowerMacs
 mkdir ${MACDIR}
 install usr/lib/yaboot/yaboot ${MACDIR}
-install ${ANABOOTDIR}/ofboot.b ${MACDIR}
+install ${configdir}/ofboot.b ${MACDIR}
 
 %for kernel in kernels:
     <%
@@ -34,7 +34,7 @@ install ${ANABOOTDIR}/ofboot.b ${MACDIR}
       bitsizes.add(bits)
     %>
     mkdir ${KERNELDIR} ${NETBOOTDIR}
-    install ${ANABOOTDIR}/yaboot.conf.in ${KERNELDIR}/yaboot.conf
+    install ${configdir}/yaboot.conf.in ${KERNELDIR}/yaboot.conf
     installkernel images-${kernel.arch} ${kernel.path} ${KERNELDIR}/vmlinuz
     installinitrd images-${kernel.arch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
 
@@ -62,7 +62,7 @@ runcmd ${inroot}/usr/lib/yaboot/addnote ${outroot}/${BOOTDIR}/chrp/yaboot
 ## copy yaboot.conf into /etc
 %if len(bitsizes) == 2:
     ## magic ppc biarch tree! we need magic ppc biarch config.
-    install ${ANABOOTDIR}/yaboot.conf.3264 etc/yaboot.conf
+    install ${configdir}/yaboot.conf.3264 etc/yaboot.conf
     replace @PRODUCT@ ${product.name}      etc/yaboot.conf
     replace @VERSION@ ${product.version}   etc/yaboot.conf
     replace @ROOT@ root=live:CDLABEL=PBOOT etc/yaboot.conf
