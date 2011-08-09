@@ -8,9 +8,11 @@
 remove usr/share/anaconda/lang-table
 
 ## not required packages installed as dependencies
+## perl gets pulled in on ppc
 removepkg perl*
+## no sound support
 removepkg alsa* flac gstreamer-tools libsndfile pulseaudio* sound-theme-freedesktop
-removepkg dracut plymouth*
+removepkg dracut* plymouth*
 removepkg checkpolicy selinux-policy libselinux-utils
 removepkg ConsoleKit-x11 augeas-libs authconfig-gtk avahi-autoipd
 removepkg avahi-libs coreutils-libs

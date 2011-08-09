@@ -30,6 +30,9 @@ installpkg kernel
     installpkg silo tilo
 %endif
 
+## extra dracut modules
+installpkg dracut-network
+
 ## basic system stuff
 installpkg systemd-sysv systemd-units
 installpkg rsyslog
