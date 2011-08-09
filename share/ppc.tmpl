@@ -7,7 +7,6 @@ NETBOOTDIR="images/netboot"
 
 WRAPPER="usr/sbin/wrapper"
 WRAPPER_DATA="usr/"+libdir+"/kernel-wrapper"
-MAPPING=configdir+"/mapping"
 
 bitsizes = set()
 prepboot = ""
@@ -16,11 +15,13 @@ prepboot = ""
 mkdir images
 install ${runtime_img} images/install.img
 
-mkdir ${BOOTDIR} ${BOOTDIR}/chrp etc
+## basic ppc stuff
+mkdir ${BOOTDIR}
 install ${configdir}/bootinfo.txt ${BOOTDIR}
 install boot/efika.forth ${BOOTDIR}
+## boot dir for CHRP systems
+mkdir ${BOOTDIR}/chrp
 install usr/lib/yaboot/yaboot ${BOOTDIR}/chrp
-
 ## boot dir for PowerMacs
 mkdir ${MACDIR}
 install usr/lib/yaboot/yaboot ${MACDIR}
@@ -60,6 +61,7 @@ install ${configdir}/ofboot.b ${MACDIR}
 runcmd ${inroot}/usr/lib/yaboot/addnote ${outroot}/${BOOTDIR}/chrp/yaboot
 
 ## copy yaboot.conf into /etc
+mkdir etc
 %if len(bitsizes) == 2:
     ## magic ppc biarch tree! we need magic ppc biarch config.
     install ${configdir}/yaboot.conf.3264 etc/yaboot.conf
@@ -75,7 +77,7 @@ runcmd mkisofs -o ${outroot}/images/boot.iso -chrp-boot -U \
         -A "${product.name} ${product.version}" -sysid PPC -V PBOOT \
         -volset "${product.version}" -volset-size 1 -volset-seqno 1 \
         -hfs-volid ${product.version} -hfs-bless ${outroot}/${MACDIR} \
-        -map ${inroot}/${MAPPING} \
+        -map ${inroot}/${configdir}/mapping \
         -no-desktop -allow-multidot -graft-points \
         etc=${outroot}/etc \
         ${BOOTDIR}=${outroot}/${BOOTDIR} \
