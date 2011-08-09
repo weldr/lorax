@@ -95,8 +95,8 @@ class Lorax(BaseLoraxClass):
             self.conf.read(conf_file)
 
         # set up the output
-        debug = self.conf.getboolean("lorax", "debug")
-        output_level = output.DEBUG if debug else output.INFO
+        self.debug = self.conf.getboolean("lorax", "debug")
+        output_level = output.DEBUG if self.debug else output.INFO
 
         colors = self.conf.getboolean("output", "colors")
         encoding = self.conf.get("output", "encoding")
