@@ -110,6 +110,14 @@ class RuntimeBuilder(object):
         removelocales = locales.difference(keeplocales)
         self._runner.run("runtime-cleanup.tmpl", removelocales=removelocales)
 
+    def writepkgsizes(self, pkgsizefile):
+        '''debugging data: write a big list of pkg sizes'''
+        fobj = open(pkgsizefile, "w")
+        getsize = lambda f: os.lstat(f).st_size if os.path.exists(f) else 0
+        for p in sorted(self.yum.doPackageLists(pkgnarrow='installed').installed):
+            pkgsize = sum(getsize(joinpaths(self.vars.root,f)) for f in p.filelist)
+            fobj.write("{0.name}.{0.arch}: {1}\n".format(p, pkgsize))
+
     def generate_module_data(self):
         root = self.vars.root
         moddir = joinpaths(root, "lib/modules/")

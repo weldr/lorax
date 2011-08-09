@@ -189,7 +189,8 @@ class Lorax(BaseLoraxClass):
         buildstamp.write(joinpaths(self.inroot, ".buildstamp"))
 
         if self.debug:
-            rb.writepkglists(joinpaths(self.workdir, "pkglists"))
+            rb.writepkglists(joinpaths(logdir, "pkglists"))
+            rb.writepkgsizes(joinpaths(logdir, "original-pkgsizes.txt"))
 
         logger.info("doing post-install configuration")
         rb.postinstall()
@@ -207,6 +208,9 @@ class Lorax(BaseLoraxClass):
 
         logger.info("cleaning unneeded files")
         rb.cleanup()
+
+        if self.debug:
+            rb.writepkgsizes(joinpaths(logdir, "final-pkgsizes.txt"))
 
         logger.info("creating the runtime image")
         runtime = "images/install.img"
