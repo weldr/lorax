@@ -1,6 +1,6 @@
 <%page args="kernels, runtime_img, basearch, libdir, inroot, outroot, product"/>
 <%
-ANABOOTDIR="usr/share/anaconda/boot"
+ANABOOTDIR="tmp/config_files"
 BOOTDIR="ppc"
 MACDIR=BOOTDIR+"/mac"
 NETBOOTDIR="images/netboot"
@@ -8,7 +8,6 @@ NETBOOTDIR="images/netboot"
 WRAPPER="usr/sbin/wrapper"
 WRAPPER_DATA="usr/"+libdir+"/kernel-wrapper"
 MAPPING=ANABOOTDIR+"/mapping"
-MAGIC=ANABOOTDIR+"/magic"
 
 bitsizes = set()
 prepboot = ""
@@ -22,7 +21,7 @@ install ${ANABOOTDIR}/bootinfo.txt ${BOOTDIR}
 install boot/efika.forth ${BOOTDIR}
 install usr/lib/yaboot/yaboot ${BOOTDIR}/chrp
 
-## Mac boot stuff
+## boot dir for PowerMacs
 mkdir ${MACDIR}
 install usr/lib/yaboot/yaboot ${MACDIR}
 install ${ANABOOTDIR}/ofboot.b ${MACDIR}
@@ -39,13 +38,10 @@ install ${ANABOOTDIR}/ofboot.b ${MACDIR}
     installkernel images-${kernel.arch} ${kernel.path} ${KERNELDIR}/vmlinuz
     installinitrd images-${kernel.arch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
 
-    ## FIXME: anaconda has the initrd name hard-coded as "ramdisk.img.gz"
-    replace ramdisk.image.gz initrd.img  ${KERNELDIR}/yaboot.conf
-    replace %PRODUCT% ${product.name}    ${KERNELDIR}/yaboot.conf
-    replace %VERSION% ${product.version} ${KERNELDIR}/yaboot.conf
-    replace %BITS%    ${bits}            ${KERNELDIR}/yaboot.conf
-    ## FIXME: root=%ROOT% should really be in the config somewhere
-    replace "read-only" "read-only\n\tappend=\"root=live:CDLABEL=PBOOT\"" ${KERNELDIR}/yaboot.conf
+    replace @PRODUCT@ ${product.name}    ${KERNELDIR}/yaboot.conf
+    replace @VERSION@ ${product.version} ${KERNELDIR}/yaboot.conf
+    replace @BITS@    ${bits}            ${KERNELDIR}/yaboot.conf
+    replace @ROOT@ root=live:CDLABEL=PBOOT ${KERNELDIR}/yaboot.conf
 
     ## kernel-wrapper magic that makes the netboot combined ppc{32,64}.img
     runcmd ${inroot}/${WRAPPER} -p of \
@@ -54,7 +50,7 @@ install ${ANABOOTDIR}/ofboot.b ${MACDIR}
               ${outroot}/${KERNELDIR}/vmlinuz \
            -o ${outroot}/${NETIMG}
     treeinfo images-${kernel.arch} zimage ${NETIMG}
-    ## XXX FIXME? if we have a pure-64-bit image we'll get no prep-boot..
+    ## PReP is 32-bit only
     %if bits == 32:
         ## Yes, this is supposed to be a relative path
         <% prepboot="-prep-boot " + NETIMG %>
@@ -63,16 +59,13 @@ install ${ANABOOTDIR}/ofboot.b ${MACDIR}
 
 runcmd ${inroot}/usr/lib/yaboot/addnote ${outroot}/${BOOTDIR}/chrp/yaboot
 
+## copy yaboot.conf into /etc
 %if len(bitsizes) == 2:
     ## magic ppc biarch tree! we need magic ppc biarch config.
     install ${ANABOOTDIR}/yaboot.conf.3264 etc/yaboot.conf
-    ## FIXME: hardcoded image name (see above)
-    replace ramdisk.image.gz initrd.img  etc/yaboot.conf
-    replace %PRODUCT% ${product.name}    etc/yaboot.conf
-    replace %VERSION% ${product.version} etc/yaboot.conf
-    replace %BITS%    32                 etc/yaboot.conf
-    ## FIXME: see above about root=%ROOT%
-    replace "read-only" "read-only\n\tappend=\"root=live:CDLABEL=PBOOT\""
+    replace @PRODUCT@ ${product.name}      etc/yaboot.conf
+    replace @VERSION@ ${product.version}   etc/yaboot.conf
+    replace @ROOT@ root=live:CDLABEL=PBOOT etc/yaboot.conf
 %else:
     copy ${KERNELDIR}/yaboot.conf etc/yaboot.conf
 %endif
@@ -82,7 +75,7 @@ runcmd mkisofs -o ${outroot}/images/boot.iso -chrp-boot -U \
         -A "${product.name} ${product.version}" -sysid PPC -V PBOOT \
         -volset "${product.version}" -volset-size 1 -volset-seqno 1 \
         -hfs-volid ${product.version} -hfs-bless ${outroot}/${MACDIR} \
-        -map ${inroot}/${MAPPING} -magic ${inroot}/${MAGIC} \
+        -map ${inroot}/${MAPPING} \
         -no-desktop -allow-multidot -graft-points \
         etc=${outroot}/etc \
         ${BOOTDIR}=${outroot}/${BOOTDIR} \

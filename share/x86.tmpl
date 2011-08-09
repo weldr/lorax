@@ -1,6 +1,6 @@
 <%page args="kernels, runtime_img, basearch, outroot, product"/>
 <%
-ANABOOTDIR="usr/share/anaconda/boot"
+ANABOOTDIR="tmp/config_files"
 SYSLINUXDIR="usr/share/syslinux"
 PXEBOOTDIR="images/pxeboot"
 BOOTDIR="isolinux"
@@ -13,22 +13,14 @@ install ${runtime_img} images/install.img
 mkdir ${BOOTDIR} ${KERNELDIR}
 install ${SYSLINUXDIR}/isolinux.bin ${BOOTDIR}
 install ${ANABOOTDIR}/syslinux.cfg ${BOOTDIR}/isolinux.cfg
-install ${ANABOOTDIR}/syslinux-vesa-splash.jpg ${BOOTDIR}/splash.jpg
-install ${ANABOOTDIR}/*.msg ${BOOTDIR}
+install usr/share/anaconda/boot/syslinux-vesa-splash.jpg ${BOOTDIR}/splash.jpg
+install ${ANABOOTDIR}/boot.msg.x86 ${BOOTDIR}/boot.msg
 install ${SYSLINUXDIR}/vesamenu.c32 ${BOOTDIR}
 install ${ANABOOTDIR}/grub.conf ${BOOTDIR}
 
 replace @VERSION@ ${product.version} ${BOOTDIR}/grub.conf ${BOOTDIR}/isolinux.cfg ${BOOTDIR}/*.msg
 replace @PRODUCT@ ${product.name}    ${BOOTDIR}/grub.conf ${BOOTDIR}/isolinux.cfg ${BOOTDIR}/*.msg
-replace %ROOT% 'root=live:CDLABEL=${udev_escape(product.name)}' ${BOOTDIR}/isolinux.cfg ${BOOTDIR}/grub.conf
-## FIXME: no %ROOT% in isolinux.cfg. workaround with manual twiddling.
-replace "append initrd=initrd.img" \
-        "append initrd=initrd.img root=live:CDLABEL=${udev_escape(product.name)}" \
-        ${BOOTDIR}/isolinux.cfg
-
-
-replace "default linux" "default vesamenu.c32" ${BOOTDIR}/isolinux.cfg
-replace "prompt 1"      "#prompt 1"            ${BOOTDIR}/isolinux.cfg
+replace @ROOT@ 'root=live:CDLABEL=${udev_escape(product.name)}' ${BOOTDIR}/isolinux.cfg
 
 %if exists("boot/memtest*"):
     install boot/memtest* ${BOOTDIR}

@@ -1,6 +1,6 @@
 <%page args="kernels, runtime_img, basearch, outroot, product"/>
 <%
-ANABOOTDIR="usr/share/anaconda/boot"
+ANABOOTDIR="tmp/config_files"
 BOOTDIR="boot"
 KERNELDIR=BOOTDIR
 %>
@@ -10,22 +10,17 @@ install ${runtime_img} images/install.img
 
 install boot/*.b ${BOOTDIR}
 install ${ANABOOTDIR}/silo.conf ${BOOTDIR}
-install ${ANABOOTDIR}/boot.msg ${BOOTDIR}/boot.msg
+install ${ANABOOTDIR}/boot.msg.sparc ${BOOTDIR}/boot.msg
 
-replace %VERSION% ${product.version} ${BOOTDIR}/boot.msg
-replace %PRODUCT% ${product.name} ${BOOTDIR}/boot.msg
+replace @VERSION@ ${product.version} ${BOOTDIR}/boot.msg
+replace @PRODUCT@ ${product.name} ${BOOTDIR}/boot.msg
 
 %for kernel in kernels:
     installkernel images-${basearch} ${kernel.path} ${KERNELDIR}/vmlinuz
     installinitrd images-${basearch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
 %endfor
 
-replace %ROOT% 'root=live:CDLABEL=PBOOT' ${BOOTDIR}/silo.conf
-## FIXME: silo.conf is missing %ROOT%. workaround with manual twiddling
-<% cdroot='root=live:CDLABEL=PBOOT' %>
-replace 'alias=install' 'alias=install\n\tappend=${cdroot}' ${BOOTDIR}/silo.conf
-replace 'append=text'   'append="text ${cdroot}"'           ${BOOTDIR}/silo.conf
-replace 'append=ks'     'append="ks ${cdroot}"'             ${BOOTDIR}/silo.conf
+replace @ROOT@ root=live:CDLABEL=PBOOT ${BOOTDIR}/silo.conf
 
 runcmd mkisofs -R -J -T -G /${BOOTDIR}/isofs.b -B ... \
   -s /${BOOTDIR}/silo.conf -r -V "PBOOT" \
