@@ -8,41 +8,43 @@
 remove usr/share/anaconda/lang-table
 
 ## not required packages installed as dependencies
-## perl gets pulled in on ppc
+## no perl (it gets pulled in on ppc)
 removepkg perl*
-## no sound support
+## no sound support, thanks
 removepkg alsa* flac gstreamer-tools libsndfile pulseaudio* sound-theme-freedesktop
-removepkg dracut* plymouth*
+## we don't use plymouth
+removepkg plymouth*
+## we don't create new initramfs/bootloader conf inside anaconda
+## (that happens inside the target system after we install dracut/grubby)
+removepkg dracut* grubby
+## we don't run SELinux (not in enforcing, anyway)
 removepkg checkpolicy selinux-policy libselinux-utils
-removepkg ConsoleKit-x11 augeas-libs authconfig-gtk avahi-autoipd
-removepkg avahi-libs coreutils-libs
-removepkg cronie cronie-anacron crontabs cups-libs curl
-removepkg cyrus-sasl cyrus-sasl-md5 dash db4-utils
-removepkg deltarpm desktop-file-utils device-mapper-event diffutils
-removepkg dmraid-events fedora-release fedora-release-rawhide
-removepkg file fipscheck
-removepkg genisoimage gnome-python2 gnome-vfs2 gnupg2 grubby
-removepkg info ipmitool iptables iptables-ipv6 isomd5sum jasper-libs
-removepkg json-glib kbd-misc libIDL libXmu libXt
-removepkg libXxf86misc libXxf86vm libasyncns libccss libcgroup
-removepkg libcroco libdaemon libevent libgnome libhbaapi libhbalinux
-removepkg libmcpp libpcap librdmacm librsvg2
-removepkg libsoup libtiff libutempter
-removepkg libvirt-client libwnck libxslt linux-atm-libs llvm lm_sensors-libs
+## anaconda has its own repo files
+removepkg fedora-release fedora-release-rawhide
+## no user accounts = no account management
+removepkg usermode usermode-gtk passwd shadow-utils
+## no services to turn on/off
+removepkg chkconfig
+## we don't check GPG keys (hooray bug #998)
+removepkg gnupg2 pinentry
+## no printer support in anaconda
+removepkg cups-libs
+## no storage device monitoring
+removepkg device-mapper-event dmraid-events sgpio
+## we don't support deltarpms in anaconda
+removepkg deltarpm
+
+## various other things we remove to save space
+removepkg avahi-autoipd coreutils-libs curl dash db4-utils diffutils file
+removepkg fipscheck genisoimage gnome-python2 info iptables isomd5sum
+removepkg jasper-libs kbd-misc libIDL libXmu libXt libXxf86misc libXxf86vm
+removepkg libasyncns libcroco libdaemon libevent libhbaapi libhbalinux
+removepkg libmcpp libpcap librsvg2 libtiff libutempter linux-atm-libs
 removepkg logrotate lvm2-libs m4 mailx makebootfat mcpp mesa-dri-drivers
-removepkg mesa-libGL mingetty mobile-broadband-provider-info modcluster
-removepkg nc net-snmp-libs
-removepkg net-snmp-utils netcf-libs nfs-utils-lib nss-sysinit nss-tools ntp
-removepkg numactl oddjob passwd
-removepkg pexpect pinentry pkgconfig ppp pth
-removepkg ricci rmt rpcbind setuptool
-removepkg sg3_utils sg3_utils-libs sgml-common sgpio shadow-utils
-removepkg shared-mime-info
-removepkg squashfs-tools system-config-firewall-base system-config-users
-removepkg telnet tigervnc-license ttmkfdir usermode
-removepkg usermode-gtk xdg-utils xen-libs xen-licenses
-removepkg xml-common xorg-x11-font-utils xorg-x11-server-common xorg-x11-xauth
-removepkg xorg-x11-xinit yajl yum-utils
+removepkg mingetty mobile-broadband-provider-info nss-sysinit pkgconfig ppp pth
+removepkg rmt rpcbind shared-mime-info squashfs-tools system-config-firewall-base
+removepkg tigervnc-license ttmkfdir xml-common xorg-x11-font-utils
+removepkg xorg-x11-server-common yum-utils
 
 ## other removals
 remove /boot /home /media /mnt /opt /srv /tmp/*
@@ -144,8 +146,6 @@ removefrom btrfs-progs /sbin/btrfs /sbin/btrfs-* /sbin/btrfstune
 removefrom ca-certificates /etc/pki/java/*
 removefrom ca-certificates /etc/pki/tls/certs/ca-bundle.trust.crt /etc/ssl/*
 removefrom cairo /usr/${libdir}/libcairo-script*
-removefrom chkconfig /sbin/chkconfig /usr/sbin/alternatives
-removefrom chkconfig /usr/sbin/update-alternatives /var/lib/alternatives
 removefrom coreutils /etc/* /bin/link /bin/nice /bin/stty /bin/su /bin/unlink
 removefrom coreutils /sbin/* /usr/bin/[ /usr/bin/base64 /usr/bin/chcon
 removefrom coreutils /usr/bin/cksum /usr/bin/comm /usr/bin/csplit /usr/bin/cut
@@ -472,5 +472,6 @@ runcmd find ${root} -name "*.pyo" -type f -delete
 runcmd find ${root} -name "*.pyc" -type f -exec ln -sf /dev/null {} \;
 
 ## remove any broken links in /etc, /usr, /lib
+## (broken systemd service links lead to confusing noise at boot)
 ## NOTE: not checking /var because we want to keep /var/run
 runcmd chroot ${root} find -L /etc /usr /lib -xdev -type l -delete
