@@ -80,6 +80,15 @@ class RuntimeBuilder(object):
         '''Install packages and do initial setup with runtime-install.tmpl'''
         self._runner.run("runtime-install.tmpl")
 
+    def writepkglists(self, pkglistdir):
+        '''debugging data: write out lists of package contents'''
+        if not os.path.isdir(pkglistdir):
+            os.makedirs(pkglistdir)
+        for pkgobj in self.yum.doPackageLists(pkgnarrow='installed').installed:
+            with open(joinpaths(pkglistdir, pkgobj.name), "w") as fobj:
+                for fname in pkgobj.filelist + pkgobj.dirlist:
+                    fobj.write("{0}\n".format(fname))
+
     def postinstall(self):
         '''Do some post-install setup work with runtime-postinstall.tmpl'''
         # copy configdir into runtime root beforehand
