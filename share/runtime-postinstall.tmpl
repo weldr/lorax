@@ -1,3 +1,6 @@
+## runtime-postinstall.tmpl
+## post-install setup required to make the system work.
+
 <%page args="root, basearch, libdir, configdir"/>
 <%
 # TODO: fix filenames in anaconda so we can drop the ppc64 workaround
@@ -30,13 +33,14 @@ move ${PYTHONDIR}/site-packages/pyanaconda/sitecustomize.py ${PYTHONDIR}/site-pa
 ## move_repos()
 move etc/yum.repos.d etc/anaconda.repos.d
 
-## misc_tree_modifications()
+## set up system init stuff (systemd etc.)
 %if int(product.version) > 15:
     ## Configure systemd to start anaconda
     remove etc/systemd/system/default.target
     symlink /lib/systemd/system/anaconda.target etc/systemd/system/default.target
     ## workaround: /tmp is writeable, so we don't need tmp.mount
     replace tmp.mount "" /lib/systemd/system/loader.service
+    ## make the anaconda shell on tty2 work without login
     remove bin/login
     append bin/login "#!/bin/bash"
     append bin/login "exec -l /bin/bash"
@@ -58,12 +62,43 @@ move etc/yum.repos.d etc/anaconda.repos.d
     mkdir var/run/dbus
 %endif
 symlink /sbin/init init
-install ${configdir}/network etc/sysconfig
+
+## install some basic configuration files
 append etc/resolv.conf ""
 copy usr/share/anaconda/lang-table etc
+install ${configdir}/network etc/sysconfig
+install ${configdir}/rsyslog.conf etc
+install ${configdir}/.bash_history root
+install ${configdir}/.profile root
+install ${configdir}/libuser.conf etc
+%if exists(root+"/etc/selinux/targeted"):
+    install ${configdir}/selinux.config etc/selinux/config
+%endif
 
-## get_config_files(configdir)
-## gconf stuff
+## set up sshd
+install ${configdir}/sshd_config.anaconda etc/ssh
+install ${configdir}/pam.sshd etc/pam.d/sshd
+install ${configdir}/pam.sshd etc/pam.d/login
+install ${configdir}/pam.sshd etc/pam.d/remote
+append etc/passwd "sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin"
+append etc/passwd "install:x:0:0:root:/root:/sbin/loader"
+append etc/shadow "root::14438:0:99999:7:::"
+append etc/shadow "install::14438:0:99999:7:::"
+chmod etc/shadow 400
+
+## s390-specific setup
+%if basearch in ("s390", "s390x"):
+    remove sbin/init
+    move usr/share/anaconda/linuxrc.s390 sbin/init
+    ## generate ssh keys
+    runcmd ssh-keygen -q -C "" -N "" -t rsa1 -f ${root}/etc/ssh/ssh_host_key
+    runcmd ssh-keygen -q -C "" -N "" -t rsa  -f ${root}/etc/ssh/ssh_host_rsa_key
+    runcmd ssh-keygen -q -C "" -N "" -t dsa  -f ${root}/etc/ssh/ssh_host_dsa_key
+    chmod etc/ssh/ssh_host*_key 600
+    chmod etc/ssh/ssh_host*_key.pub 644
+%endif
+
+## gconf settings
 gconfset /apps/metacity/general/button_layout string :
 gconfset /apps/metacity/general/action_right_click_titlebar string none
 gconfset /apps/metacity/general/num_workspaces int 1
@@ -76,37 +111,6 @@ gconfset /apps/metacity/global_keybindings/switch_to_workspace_left string disab
 gconfset /apps/metacity/global_keybindings/switch_to_workspace_right string disabled
 gconfset /desktop/gnome/interface/accessibility bool true
 gconfset /desktop/gnome/interface/at-spi-corba bool true
-## install files from configdir
-install ${configdir}/rsyslog.conf etc
-install ${configdir}/.bash_history root
-install ${configdir}/.profile root
-install ${configdir}/libuser.conf etc
-%if exists(root+"/etc/selinux/targeted"):
-    install ${configdir}/selinux.config etc/selinux/config
-%endif
-
-## setup_sshd(configdir)
-install ${configdir}/sshd_config.anaconda etc/ssh
-install ${configdir}/pam.sshd etc/pam.d/sshd
-install ${configdir}/pam.sshd etc/pam.d/login
-install ${configdir}/pam.sshd etc/pam.d/remote
-append etc/passwd "sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin"
-append etc/passwd "install:x:0:0:root:/root:/sbin/loader"
-append etc/shadow "root::14438:0:99999:7:::"
-append etc/shadow "install::14438:0:99999:7:::"
-chmod etc/shadow 400
-
-%if basearch in ("s390", "s390x"):
-    ## misc_s390_modifications()
-    remove sbin/init
-    move usr/share/anaconda/linuxrc.s390 sbin/init
-    ## generate ssh keys
-    runcmd ssh-keygen -q -C "" -N "" -t rsa1 -f ${root}/etc/ssh/ssh_host_key
-    runcmd ssh-keygen -q -C "" -N "" -t rsa  -f ${root}/etc/ssh/ssh_host_rsa_key
-    runcmd ssh-keygen -q -C "" -N "" -t dsa  -f ${root}/etc/ssh/ssh_host_dsa_key
-    chmod etc/ssh/ssh_host*_key 600
-    chmod etc/ssh/ssh_host*_key.pub 644
-%endif
 
 ## get_anaconda_portions()
 move usr/${libdir}/anaconda/loader sbin
