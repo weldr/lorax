@@ -35,6 +35,8 @@ move etc/yum.repos.d etc/anaconda.repos.d
     ## Configure systemd to start anaconda
     remove etc/systemd/system/default.target
     symlink /lib/systemd/system/anaconda.target etc/systemd/system/default.target
+    ## workaround: /tmp is writeable, so we don't need tmp.mount
+    replace tmp.mount "" /lib/systemd/system/loader.service
     remove bin/login
     append bin/login "#!/bin/bash"
     append bin/login "exec -l /bin/bash"
