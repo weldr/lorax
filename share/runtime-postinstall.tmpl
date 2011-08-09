@@ -37,6 +37,7 @@ move etc/yum.repos.d etc/anaconda.repos.d
 %if int(product.version) > 15:
     ## Configure systemd to start anaconda
     remove etc/systemd/system/default.target
+    remove etc/systemd/system/default.target.wants/*
     symlink /lib/systemd/system/anaconda.target etc/systemd/system/default.target
     ## workaround: /tmp is writeable, so we don't need tmp.mount
     replace tmp.mount "" /lib/systemd/system/loader.service
@@ -60,7 +61,26 @@ move etc/yum.repos.d etc/anaconda.repos.d
     symlink run/lock var/lock
     ## Since systemd won't be setting up sockets in /run for us..
     mkdir var/run/dbus
+    ## remove systemd init stuff
+    remove /cgroup /var/cache /var/log
+    removepkg systemd-units
+    removefrom NetworkManager /lib/systemd/*
+    removefrom dbus /lib/systemd/*
+    removefrom systemd /bin/* /lib/systemd/* /usr/share/systemd/*
+    removefrom util-linux /sbin/agetty
 %endif
+## remove unwanted systemd services
+removefrom systemd-units /lib/systemd/system/kexec*
+removefrom systemd-units /lib/systemd/system/local-fs.target.wants/media.mount
+removefrom systemd-units /lib/systemd/system/media.mount
+removefrom systemd-units /lib/systemd/system/*plymouth*
+removefrom systemd-units /lib/systemd/system/quota*.service
+removefrom systemd-units /lib/systemd/system/systemd-remount-api-vfs.service
+removefrom ConsoleKit /lib/systemd/system/*
+removefrom initscripts /lib/systemd/system/fedora* /lib/systemd/fedora*
+removefrom lvm2 /lib/systemd/system/*
+removefrom mdadm /lib/systemd/system/*
+## finally, make /init -> /sbin/init symlink
 symlink /sbin/init init
 
 ## install some basic configuration files

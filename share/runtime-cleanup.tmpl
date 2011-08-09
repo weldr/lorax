@@ -78,40 +78,15 @@ arch/x86/kvm
     remove /modules/*/kernel/${kmodpath}
 %endfor
 remove /modules/*/{build,source,*.map}
+## NOTE: depmod gets re-run after cleanup finishes
 
+## clean up glibc locale files
 %if int(product.version) > 15:
-    ## Clean up systemd
-    removefrom ConsoleKit /lib/systemd/*
-    removefrom avahi /lib/systemd/*
-    removefrom chkconfig /sbin/chkconfig /usr/sbin/alternatives
-    removefrom chkconfig /usr/sbin/update-alternatives /var/lib/alternatives
-    removefrom initscripts /lib/systemd/system/fedora-readonly.service
-    removefrom initscripts /lib/systemd/system/fedora-storage-init.service
-    removefrom initscripts /lib/systemd/system/fedora-wait-storage.service
-    removefrom systemd-units /lib/systemd/system/bluetooth.target
-    removefrom systemd-units /lib/systemd/system/http-daemon.target
-    removefrom systemd-units /lib/systemd/system/kexec*
-    removefrom systemd-units /lib/systemd/system/local-fs.target.wants/media.mount
-    removefrom systemd-units /lib/systemd/system/mail-transfer-agent.target
-    removefrom systemd-units /lib/systemd/system/media.mount
-    removefrom systemd-units /lib/systemd/system/printer*
-    removefrom systemd-units /lib/systemd/system/*plymouth*
-    removefrom systemd-units /lib/systemd/system/quota*
-    removefrom systemd-units /lib/systemd/system/smartcard*
-    removefrom systemd-units /lib/systemd/system/systemd-remount-api-vfs.service
-    ## remove generated locales - anaconda knows how to restore them at runtime
+    ## remove generated locales - anaconda >=16.x builds them at runtime
     removefrom glibc-common /usr/lib/locale/*
-    ## locale-archive is not in the glibc-common filelist
     remove /usr/lib/locale/locale-archive
 %else:
-    ## F15 - remove systemd init stuff
-    remove /cgroup /var/cache /var/log
-    removepkg chkconfig filesystem systemd-units
-    removefrom NetworkManager /lib/systemd/*
-    removefrom dbus /lib/systemd/*
-    removefrom initscripts /lib/systemd/*
-    removefrom systemd /bin/* /lib/systemd/* /usr/share/systemd/*
-    removefrom util-linux /sbin/agetty
+    ## remove locale source files
     removefrom glibc-common /usr/share/i18n/*
 %endif
 
@@ -374,17 +349,6 @@ removefrom smartmontools /usr/share/smartmontools/*
 removefrom sqlite /usr/bin/*
 removefrom system-config-date /etc/* /usr/bin/* /usr/share/icons/*
 removefrom system-config-keyboard /etc/* /usr/bin/* /usr/share/icons/*
-removefrom systemd-units /lib/systemd/system/bluetooth.target
-removefrom systemd-units /lib/systemd/system/http-daemon.target
-removefrom systemd-units /lib/systemd/system/kexec*
-removefrom systemd-units /lib/systemd/system/local-fs.target.wants/media.mount
-removefrom systemd-units /lib/systemd/system/mail-transfer-agent.target
-removefrom systemd-units /lib/systemd/system/media.mount
-removefrom systemd-units /lib/systemd/system/printer*
-removefrom systemd-units /lib/systemd/system/*plymouth*
-removefrom systemd-units /lib/systemd/system/quota*
-removefrom systemd-units /lib/systemd/system/smartcard*
-removefrom systemd-units /lib/systemd/system/systemd-remount-api-vfs.service
 removefrom sysvinit-tools /usr/bin/*
 removefrom tar /usr/share/locale/*
 removefrom un-core-dotum-fonts /usr/share/fonts/un-core/UnDotumBold.ttf
