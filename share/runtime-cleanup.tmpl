@@ -12,6 +12,10 @@ remove usr/share/anaconda/lang-table
 removepkg perl*
 ## no sound support, thanks
 removepkg alsa* flac gstreamer-tools libsndfile pulseaudio* sound-theme-freedesktop
+removepkg midisport-firmware
+## no fancy video, either
+removepkg libcrystalhd crystalhd-firmware ivtv-firmware cx18-firmware
+removepkg mesa-dri-drivers llvm-libs
 ## we don't use plymouth
 removepkg plymouth*
 ## we don't create new initramfs/bootloader conf inside anaconda
@@ -27,8 +31,8 @@ removepkg usermode usermode-gtk passwd shadow-utils
 removepkg chkconfig
 ## we don't check GPG keys (hooray bug #998)
 removepkg gnupg2 pinentry
-## no printer support in anaconda
-removepkg cups-libs
+## no printer/scanner support in anaconda
+removepkg cups-libs iscan-firmware
 ## no storage device monitoring
 removepkg device-mapper-event dmraid-events sgpio
 ## we don't support deltarpms in anaconda
@@ -40,7 +44,7 @@ removepkg fipscheck genisoimage gnome-python2 info iptables isomd5sum
 removepkg jasper-libs kbd-misc libIDL libXmu libXt libXxf86misc libXxf86vm
 removepkg libasyncns libcroco libdaemon libevent libhbaapi libhbalinux
 removepkg libmcpp libpcap librsvg2 libtiff libutempter linux-atm-libs
-removepkg logrotate lvm2-libs m4 mailx makebootfat mcpp mesa-dri-drivers
+removepkg logrotate lvm2-libs m4 mailx makebootfat mcpp
 removepkg mingetty mobile-broadband-provider-info nss-sysinit pkgconfig ppp pth
 removepkg rmt rpcbind shared-mime-info squashfs-tools system-config-firewall-base
 removepkg tigervnc-license ttmkfdir xml-common xorg-x11-font-utils
