@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        16.4
+Version:        16.4.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -61,6 +61,11 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Mon Aug 15 2011 Martin Gracik <mgracik@redhat.com> 16.4.1-1
+- Do not remove nss certificates (#730438)
+- Remove dogtail from the image, as it's blocking tree composition. (clumens)
+- Add libreport required packages (#729537)
+
 * Tue Jul 26 2011 Martin Gracik <mgracik@redhat.com> 16.4-1
 - Add nss libraries to the image.
 
