@@ -552,7 +552,7 @@ class LoraxInstallTree(BaseLoraxClass):
             outfile = "/tmp/initramfs.img" # inside the chroot
             logger.debug("chrooting into installtree to create initramfs.img")
             subprocess.check_call(["chroot", self.root, "/sbin/dracut",
-                                   "--nomdadmconf", "--nolvmconf",
+                                   "--noprefix", "--nomdadmconf", "--nolvmconf",
                                    "--xz", "--modules", "base dmsquash-live",
                                    outfile, kernel.version])
             # move output file into installtree workdir
