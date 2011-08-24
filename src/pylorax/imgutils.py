@@ -24,6 +24,7 @@ import os, tempfile
 from os.path import join, dirname
 from pylorax.sysutils import cpfile
 from subprocess import *
+import traceback
 
 ######## Functions for making container images (cpio, squashfs) ##########
 
@@ -190,6 +191,69 @@ class Mount(object):
         return self.mnt
     def __exit__(self, exc_type, exc_value, traceback):
         umount(self.mnt)
+
+class PartitionMount(object):
+    """ Mount a partitioned image file using kpartx """
+    def __init__(self, disk_img, mount_ok=None):
+        """
+        disk_img is the full path to a partitioned disk image
+        mount_ok is a function that is passed the mount point and
+        returns True if it should be mounted.
+        """
+        self.mount_dir = None
+        self.disk_img = disk_img
+        self.mount_ok = mount_ok
+
+        # Default is to mount partition with /etc/passwd
+        if not self.mount_ok:
+            self.mount_ok = lambda mount_dir: os.path.isfile(mount_dir+"/etc/passwd")
+
+        # Example kpartx output
+        # kpartx -p p -v -a /tmp/diskV2DiCW.im
+        # add map loop2p1 (253:2): 0 3481600 linear /dev/loop2 2048
+        # add map loop2p2 (253:3): 0 614400 linear /dev/loop2 3483648
+        cmd = [ "kpartx", "-v", "-p", "p", "-a", self.disk_img ]
+        logger.debug(cmd)
+        kpartx_output = check_output(cmd)
+        logger.debug(kpartx_output)
+
+        # list of (deviceName, sizeInBytes)
+        self.loop_devices = []
+        for line in kpartx_output.splitlines():
+            # add map loop2p3 (253:4): 0 7139328 linear /dev/loop2 528384
+            # 3rd element is size in 512 byte blocks
+            if line.startswith("add map "):
+                fields = line[8:].split()
+                self.loop_devices.append( (fields[0], int(fields[3])*512) )
+
+    def __enter__(self):
+        # Mount the device selected by mount_ok, if possible
+        mount_dir = tempfile.mkdtemp()
+        for dev, size in self.loop_devices:
+            try:
+                mount( "/dev/mapper/"+dev, mnt=mount_dir )
+                if self.mount_ok(mount_dir):
+                    self.mount_dir = mount_dir
+                    self.mount_dev = dev
+                    self.mount_size = size
+                    break
+                umount( mount_dir )
+            except CalledProcessError:
+                logger.debug(traceback.format_exc())
+        if self.mount_dir:
+            logger.info("Partition mounted on {0} size={1}".format(self.mount_dir, self.mount_size))
+        else:
+            logger.debug("Unable to mount anything from {0}".format(self.disk_img))
+            os.rmdir(mount_dir)
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if self.mount_dir:
+            umount( self.mount_dir )
+            os.rmdir(self.mount_dir)
+            self.mount_dir = None
+        call(["kpartx", "-d", self.disk_img])
+
 
 ######## Functions for making filesystem images ##########################
 
