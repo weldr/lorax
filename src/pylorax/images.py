@@ -569,11 +569,14 @@ class X86(object):
                              stdout=subprocess.PIPE)
         p.wait()
 
-        if os.path.exists(ISOHYBRID):
+        try:
             # run isohybrid
             cmd = [ISOHYBRID, boot_fpath]
             p = subprocess.Popen(cmd, stdin=subprocess.PIPE,
                                  stdout=subprocess.PIPE)
+        except OSError as e:
+            raise Exception("cannot run isohybrid: %s" % e)
+        else:
             p.wait()
 
         # run implantisomd5
