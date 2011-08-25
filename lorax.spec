@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        16.4.1
+Version:        16.4.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -61,6 +61,13 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Thu Aug 25 2011 Martin Gracik <mgracik@redhat.com> 16.4.2-1
+- Do not remove ModemManager files (#727946)
+- Raise an exception if isohybrid cannot be run on x86
+- Use --noprefix when calling dracut
+- Do not remove the fedora-release packages
+- Remove fedora-storage-init so it can't start raid/lvm. (#729640) (dlehman)
+
 * Mon Aug 15 2011 Martin Gracik <mgracik@redhat.com> 16.4.1-1
 - Do not remove nss certificates (#730438)
 - Remove dogtail from the image, as it's blocking tree composition. (clumens)
