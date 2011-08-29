@@ -159,7 +159,7 @@ class TreeBuilder(object):
         '''Rebuild all the initrds in the tree. If backup is specified, each
         initrd will be renamed with backup as a suffix before rebuilding.
         If backup is empty, the existing initrd files will be overwritten.'''
-        dracut = ["/sbin/dracut", "--nomdadmconf", "--nolvmconf"] + add_args
+        dracut = ["/sbin/dracut", "--noprefix", "--nomdadmconf", "--nolvmconf"] + add_args
         if not backup:
             dracut.append("--force")
         # Hush some dracut warnings. TODO: bind-mount proc in place?
