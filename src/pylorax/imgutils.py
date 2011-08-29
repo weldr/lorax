@@ -218,3 +218,7 @@ def mkext4img(rootdir, outfile, size=None, label="", mountargs="", graft={}):
 def mkbtrfsimg(rootdir, outfile, size=None, label="", mountargs="", graft={}):
     mkfsimage("btrfs", rootdir, outfile, size, mountargs=mountargs,
                mkfsargs=["-L", label], graft=graft)
+
+def mkhfsimg(rootdir, outfile, size=None, label="", mountargs="", graft={}):
+    mkfsimage("hfs", rootdir, outfile, size, mountargs=mountargs,
+              mkfsargs=["-v", label], graft=graft)
