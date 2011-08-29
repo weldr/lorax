@@ -49,12 +49,13 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
 
 ## WHeeeeeeee, EFI.
 ## We could remove the basearch restriction someday..
-<% efiargs=""; efigraft="" %>
+<% efiargs=""; efigraft=""; efihybrid="" %>
 %if exists("boot/efi/EFI/redhat/grub.efi") and basearch != 'i386':
     <%
     efiarch = 'X64' if basearch=='x86_64' else 'IA32'
     efiargs="-eltorito-alt-boot -e images/efiboot.img -no-emul-boot"
     efigraft="EFI/BOOT={0}/EFI/BOOT images/efiboot.img={0}/images/efiboot.img".format(outroot)
+    efihybrid="-u"
     %>
     <%include file="efi.tmpl" args="configdir=configdir, KERNELDIR=KERNELDIR, efiarch=efiarch"/>
 %endif
@@ -67,5 +68,5 @@ runcmd mkisofs -o ${outroot}/images/boot.iso \
        ${KERNELDIR}=${outroot}/${KERNELDIR} \
        LiveOS/squashfs.img=${outroot}/images/install.img \
        ${efigraft}
-runcmd isohybrid ${outroot}/images/boot.iso
+runcmd isohybrid ${efihybrid} ${outroot}/images/boot.iso
 treeinfo images-${basearch} boot.iso images/boot.iso

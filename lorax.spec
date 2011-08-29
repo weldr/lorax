@@ -31,7 +31,7 @@ Requires:       squashfs-tools >= 4.2
 Requires:       e2fsprogs
 
 %ifarch %{ix86} x86_64
-Requires:       syslinux
+Requires:       syslinux >= 4.02-5
 %endif
 
 %ifarch %{sparc}
