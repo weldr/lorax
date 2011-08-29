@@ -230,7 +230,8 @@ class Lorax(BaseLoraxClass):
                                   runtime=runtime, templatedir=templatedir)
 
         logger.info("rebuilding initramfs images")
-        treebuilder.rebuild_initrds(add_args=["--xz", "--omit", "plymouth"])
+        dracut_args=["--xz", "--add", "livenet", "--omit", "plymouth"]
+        treebuilder.rebuild_initrds(add_args=dracut_args)
 
         logger.info("populating output tree and building boot images")
         treebuilder.build()
