@@ -87,9 +87,10 @@ installpkg fedora-gnome-theme fedora-icon-theme
 installpkg ${product.name}-logos
 installpkg ${product.name}-release
 
-## debugging tools
+## debugging/bug reporting tools
 installpkg gdb-gdbserver
 installpkg python-epdb
+installpkg libreport-plugin-bugzilla libreport-plugin-reportuploader
 
 ## extra tools not required by anaconda
 installpkg vim-minimal strace lsof dump xz less eject
