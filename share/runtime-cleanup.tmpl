@@ -35,8 +35,13 @@ removepkg gnupg2 pinentry
 removepkg cups-libs iscan-firmware
 ## no storage device monitoring
 removepkg device-mapper-event dmraid-events sgpio
-## we don't support deltarpms in anaconda
+## we don't (currently) support deltarpms in anaconda
 removepkg deltarpm
+## no notifications in anaconda
+removepkg notification-daemon
+## logrotate isn't useful in anaconda
+removepkg logrotate
+remove /etc/logrotate.d
 
 ## various other things we remove to save space
 removepkg avahi-autoipd coreutils-libs curl dash db4-utils diffutils file
@@ -44,7 +49,7 @@ removepkg fipscheck genisoimage gnome-python2 info iptables isomd5sum
 removepkg jasper-libs kbd-misc libIDL libXmu libXt libXxf86misc libXxf86vm
 removepkg libasyncns libcroco libdaemon libevent libhbaapi libhbalinux
 removepkg libmcpp libpcap librsvg2 libtiff libutempter linux-atm-libs
-removepkg logrotate lvm2-libs m4 mailx makebootfat mcpp
+removepkg lvm2-libs m4 mailx makebootfat mcpp
 removepkg mingetty mobile-broadband-provider-info pkgconfig ppp pth
 removepkg rmt rpcbind shared-mime-info squashfs-tools system-config-firewall-base
 removepkg tigervnc-license ttmkfdir xml-common xorg-x11-font-utils
@@ -98,8 +103,8 @@ remove /modules/*/{build,source,*.map}
 removefrom ConsoleKit /etc/ConsoleKit* /etc/init/* /usr/bin/* /usr/lib/*
 removefrom ConsoleKit /usr/sbin/*
 removefrom GConf2 /etc/rpm/* /etc/xdg/* /usr/bin/*
-removefrom GConf2 /usr/lib/GConf/2/libgconfbackend-evoldap*
-removefrom GConf2 /usr/lib/GConf/2/libgconfbackend-oldxml* /usr/lib/gio/*
+removefrom GConf2 /usr/${libdir}/GConf/2/libgconfbackend-{evoldap,oldxml}*
+removefrom GConf2 /usr/${libdir}/gio/modules/*
 removefrom GConf2 /usr/libexec/gconf-defaults-mechanism /usr/share/GConf/*
 removefrom GConf2 /usr/share/locale/* /usr/share/sgml/*
 removefrom NetworkManager /usr/share/NetworkManager/*
@@ -275,7 +280,7 @@ removefrom lzo /usr/${libdir}/liblzo2.*
 removefrom madan-fonts /usr/share/fonts/madan/*
 removefrom mdadm /etc/*
 removefrom metacity /usr/share/applications/*
-removefrom metacity /usr/share/gnome-control-center/* /usr/share/gnome/*
+removefrom metacity /usr/share/gnome-control-center/*
 removefrom metacity /usr/share/locale/* /usr/share/metacity/*
 removefrom metacity /usr/share/themes/AgingGorilla/*
 removefrom metacity /usr/share/themes/Bright/* /usr/share/themes/Crux/*
@@ -296,9 +301,8 @@ removefrom network-manager-netbook /etc/* /usr/libexec/* /usr/share/dbus-1/*
 removefrom network-manager-netbook /usr/share/locale/*
 removefrom network-manager-netbook /usr/share/network-manager-netbook/*
 removefrom newt /usr/share/locale/*
-removefrom nfs-utils /etc/nfsmount.conf /etc/rc.d/init.d/nfs
-removefrom nfs-utils /etc/rc.d/init.d/nfslock /etc/rc.d/init.d/rpcgssd
-removefrom nfs-utils /etc/rc.d/init.d/rpcidmapd /etc/rc.d/init.d/rpcsvcgssd
+removefrom nfs-utils /etc/nfsmount.conf
+removefrom nfs-utils /etc/rc.d/init.d/* /lib/systemd/system/*
 removefrom nfs-utils /etc/sysconfig/nfs /sbin/rpc.statd /usr/sbin/exportfs
 removefrom nfs-utils /usr/sbin/gss_clnt_send_err /usr/sbin/gss_destroy_creds
 removefrom nfs-utils /usr/sbin/mountstats /usr/sbin/nfsiostat
@@ -308,13 +312,10 @@ removefrom nfs-utils /usr/sbin/rpc.svcgssd /usr/sbin/rpcdebug
 removefrom nfs-utils /usr/sbin/showmount /usr/sbin/sm-notify
 removefrom nfs-utils /usr/sbin/start-statd /var/lib/nfs/etab
 removefrom nfs-utils /var/lib/nfs/rmtab /var/lib/nfs/state /var/lib/nfs/xtab
-removefrom notification-daemon /usr/${libdir}/* /usr/libexec/*
-removefrom notification-daemon /usr/share/locale/*
 removefrom nss-softokn /usr/${libdir}/nss/*
 removefrom ntfs-3g /bin/lowntfs-3g /bin/ntfs-3g.* /bin/ntfsmount
 removefrom ntfs-3g /sbin/mount.lowntfs-3g /usr/share/hal/* /usr/bin/*
 removefrom openldap /etc/openldap/* /usr/${libdir}/libldap_r-*
-removefrom openldap /usr/${libdir}/libldif-*
 removefrom openssh /etc/ssh/* /usr/libexec/*
 removefrom openssh-clients /etc/ssh/* /usr/bin/slogin /usr/bin/ssh-*
 removefrom openssh-clients /usr/${libdir}/* /usr/libexec/*
@@ -378,7 +379,7 @@ removefrom util-linux /usr/sbin/ldattach /usr/sbin/readprofile
 removefrom util-linux /usr/sbin/rtcwake /usr/sbin/tunelp /usr/share/locale/*
 removefrom volume_key-libs /usr/share/locale/*
 removefrom wget /etc/* /usr/share/locale/*
-removefrom xfsprogs /${libdir}/* /usr/sbin/xfs_bmapd /usr/sbin/xfs_estimate
+removefrom xfsprogs /${libdir}/* /usr/sbin/xfs_bmap /usr/sbin/xfs_estimate
 removefrom xfsprogs /usr/sbin/xfs_freeze /usr/sbin/xfs_fsr
 removefrom xfsprogs /usr/sbin/xfs_growfs /usr/sbin/xfs_info /usr/sbin/xfs_io
 removefrom xfsprogs /usr/sbin/xfs_logprint /usr/sbin/xfs_mdrestore
@@ -424,8 +425,8 @@ removefrom xorg-x11-server-utils /usr/bin/xhost /usr/bin/xmodmap /usr/bin/xrdb
 removefrom xorg-x11-server-utils /usr/bin/xrefresh /usr/bin/xset
 removefrom xorg-x11-server-utils /usr/bin/xsetmode /usr/bin/xsetpointer
 removefrom xorg-x11-server-utils /usr/bin/xsetroot /usr/bin/xstdcmap
-removefrom yum etc/* /usr/share/locale/* /usr/share/yum-cli/*
-removefrom zenity /usr/share/gnome/help/* /usr/share/omf/*
+removefrom yum /etc/* /usr/share/locale/* /usr/share/yum-cli/*
+removefrom zenity /usr/share/omf/*
 removefrom ${product.name}-logos /etc/* /usr/share/firstboot/*
 removefrom ${product.name}-logos /usr/share/gnome-screensaver/*
 removefrom ${product.name}-logos /usr/share/icons/Bluecurve/*
