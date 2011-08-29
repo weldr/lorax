@@ -207,7 +207,7 @@ def mkfsimage(fstype, rootdir, outfile, size=None, mkfsargs=[], mountargs="", gr
             do_grafts(graft, mnt, preserve)
 
 # convenience functions with useful defaults
-def mkdosimg(rootdir, outfile, size=None, label="", mountargs="shortname=winnt,umask=0777", graft={}):
+def mkdosimg(rootdir, outfile, size=None, label="", mountargs="shortname=winnt,umask=0077", graft={}):
     mkfsimage("msdos", rootdir, outfile, size, mountargs=mountargs,
               mkfsargs=["-n", label], graft=graft)
 
