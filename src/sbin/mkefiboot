@@ -36,8 +36,9 @@ def mkefidisk(efiboot, outfile):
             "unit", "b",
             "mkpart", "'EFI System Partition'", "fat32", "17408", str(partsize),
             "set", "1", "boot", "on"], stdout=PIPE, stderr=PIPE)
+            partdev = "/dev/mapper/{0}p1".format(dmdev)
             with open(efiboot, "rb") as infile:
-                with open("/dev/mapper/%sp1" % dmdev, "wb") as outfile:
+                with open(partdev, "wb") as outfile:
                     outfile.write(infile.read())
             dm_detach(dmdev+"p1")
 
