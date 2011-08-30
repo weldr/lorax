@@ -46,7 +46,7 @@ remove /etc/logrotate.d
 ## various other things we remove to save space
 removepkg avahi-autoipd coreutils-libs curl dash db4-utils diffutils file
 removepkg fipscheck genisoimage gnome-python2 info iptables isomd5sum
-removepkg jasper-libs kbd-misc libIDL libXmu libXt libXxf86misc libXxf86vm
+removepkg jasper-libs kbd-misc libIDL libXt libXxf86misc libXxf86vm
 removepkg libasyncns libcroco libdaemon libevent libhbaapi libhbalinux
 removepkg libmcpp libpcap librsvg2 libtiff libutempter linux-atm-libs
 removepkg lvm2-libs m4 mailx makebootfat mcpp
@@ -389,6 +389,7 @@ removefrom xorg-x11-drv-openchrome /usr/${libdir}/libchrome*
 removefrom xorg-x11-drv-synaptics /usr/bin/*
 removefrom xorg-x11-drv-wacom /usr/bin/*
 removefrom xorg-x11-fonts-ethiopic /etc/X11/* /usr/share/X11/fonts/OTF/*
+## remove all but /usr/share/X11/fonts/misc/{6x13*,encodings.dir,fonts.*,olcursor.pcf*}
 removefrom xorg-x11-fonts-misc /etc/X11/* /usr/share/X11/fonts/encodings/*
 removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/10x20*
 removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/12x*
