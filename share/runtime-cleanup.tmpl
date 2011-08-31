@@ -18,6 +18,7 @@ removepkg libcrystalhd crystalhd-firmware ivtv-firmware cx18-firmware
 removepkg mesa-dri-drivers llvm-libs
 ## we don't use plymouth
 removepkg plymouth*
+removefrom ${product.name}-logos /usr/share/plymouth/*
 ## we don't create new initramfs/bootloader conf inside anaconda
 ## (that happens inside the target system after we install dracut/grubby)
 removepkg dracut* grubby
@@ -27,8 +28,8 @@ removepkg checkpolicy selinux-policy libselinux-utils
 removepkg fedora-release fedora-release-rawhide
 ## no user accounts = no account management
 removepkg usermode usermode-gtk passwd shadow-utils
-## no services to turn on/off
-removepkg chkconfig
+## no services to turn on/off (keep the /etc/init.d link though)
+removefrom chkconfig --allbut /etc/init.d
 ## we don't check GPG keys (hooray bug #998)
 removepkg gnupg2 pinentry
 ## no printer/scanner support in anaconda
@@ -81,23 +82,17 @@ drivers/bluetooth drivers/hid drivers/edac drivers/staging
 drivers/usb/serial drivers/usb/host drivers/usb/misc
 fs/ocfs2 fs/nls fs/ceph fs/nfsd fs/ubifs fs/nilfs2
 arch/x86/kvm
-""".split()
+"""
 %>
-%for kmodpath in removekmods:
+%for kmodpath in removekmods.split():
     remove /modules/*/kernel/${kmodpath}
 %endfor
 remove /modules/*/{build,source,*.map}
 ## NOTE: depmod gets re-run after cleanup finishes
 
-## clean up glibc locale files
-%if int(product.version) > 15:
-    ## remove generated locales - anaconda >=16.x builds them at runtime
-    removefrom glibc-common /usr/lib/locale/*
-    remove /usr/lib/locale/locale-archive
-%else:
-    ## remove locale source files
-    removefrom glibc-common /usr/share/i18n/*
-%endif
+## remove generated locales - anaconda >=16.x builds them at runtime
+removefrom glibc-common /usr/lib/locale/*
+remove /usr/lib/locale/locale-archive
 
 ## other package specific removals
 removefrom ConsoleKit /etc/ConsoleKit* /etc/init/* /usr/bin/* /usr/lib/*
@@ -354,84 +349,28 @@ removefrom sysvinit-tools /usr/bin/*
 removefrom tar /usr/share/locale/*
 removefrom un-core-dotum-fonts /usr/share/fonts/un-core/UnDotumBold.ttf
 removefrom usbutils /usr/bin/*
-removefrom util-linux /bin/findmnt /bin/taskset /etc/pam.d/chfn
-removefrom util-linux /etc/pam.d/chsh /sbin/addpart /sbin/cfdisk
-removefrom util-linux /sbin/ctrlaltdel /sbin/delpart /sbin/findfs
-removefrom util-linux /sbin/fsck.cramfs /sbin/fsfreeze /sbin/mkfs
-removefrom util-linux /sbin/mkfs.cramfs /sbin/partx /sbin/pivot_root
-removefrom util-linux /sbin/swaplabel /sbin/switch_root /usr/bin/cal
-removefrom util-linux /usr/bin/chfn /usr/bin/chrt /usr/bin/chsh /usr/bin/col
-removefrom util-linux /usr/bin/colcrt /usr/bin/colrm /usr/bin/column
-removefrom util-linux /usr/bin/ddate /usr/bin/fallocate /usr/bin/flock
-removefrom util-linux /usr/bin/floppy /usr/bin/getopt /usr/bin/hexdump
-removefrom util-linux /usr/bin/i386 /usr/bin/ionice /usr/bin/ipcmk
-removefrom util-linux /usr/bin/ipcrm /usr/bin/ipcs /usr/bin/isosize
-removefrom util-linux /usr/bin/kill /usr/bin/linux32 /usr/bin/linux64
-removefrom util-linux /usr/bin/look /usr/bin/lscpu /usr/bin/mcookie
-removefrom util-linux /usr/bin/namei /usr/bin/rename /usr/bin/renice
-removefrom util-linux /usr/bin/rev /usr/bin/script /usr/bin/scriptreplay
-removefrom util-linux /usr/bin/setarch /usr/bin/setsid /usr/bin/setterm
-removefrom util-linux /usr/bin/tailf /usr/bin/ul /usr/bin/unshare
-removefrom util-linux /usr/bin/uuidgen /usr/bin/whereis /usr/bin/write
-removefrom util-linux /usr/bin/x86_64 /usr/sbin/fdformat /usr/sbin/hwclock
-removefrom util-linux /usr/sbin/ldattach /usr/sbin/readprofile
-removefrom util-linux /usr/sbin/rtcwake /usr/sbin/tunelp /usr/share/locale/*
+removefrom util-linux --allbut \
+    /bin/{dmesg,kill,login,lsblk,more,mount,umount,mountpoint} \
+    /etc/mtab /etc/pam.d/login /etc/pam.d/remote \
+    /sbin/{agetty,blkid,blockdev,clock,fdisk,fsck,fstrim,hwclock,losetup} \
+    /sbin/{mkswap,nologin,sfdisk,swapoff,swapon,wipefs} \
+    /usr/bin/logger
 removefrom volume_key-libs /usr/share/locale/*
 removefrom wget /etc/* /usr/share/locale/*
-removefrom xfsprogs /${libdir}/* /usr/sbin/xfs_bmap /usr/sbin/xfs_estimate
-removefrom xfsprogs /usr/sbin/xfs_freeze /usr/sbin/xfs_fsr
-removefrom xfsprogs /usr/sbin/xfs_growfs /usr/sbin/xfs_info /usr/sbin/xfs_io
-removefrom xfsprogs /usr/sbin/xfs_logprint /usr/sbin/xfs_mdrestore
-removefrom xfsprogs /usr/sbin/xfs_metadump /usr/sbin/xfs_mkfile
-removefrom xfsprogs /usr/sbin/xfs_ncheck /usr/sbin/xfs_quota
-removefrom xfsprogs /usr/sbin/xfs_rtcp /usr/share/locale/*
+removefrom xfsprogs --allbut /sbin/* /usr/sbin/xfs_{admin,check,copy,db}
 removefrom xkeyboard-config /usr/share/locale/*
 removefrom xorg-x11-drv-intel /usr/${libdir}/libI*
 removefrom xorg-x11-drv-openchrome /usr/${libdir}/libchrome*
 removefrom xorg-x11-drv-synaptics /usr/bin/*
 removefrom xorg-x11-drv-wacom /usr/bin/*
 removefrom xorg-x11-fonts-ethiopic /etc/X11/* /usr/share/X11/fonts/OTF/*
-## remove all but /usr/share/X11/fonts/misc/{6x13*,encodings.dir,fonts.*,olcursor.pcf*}
-removefrom xorg-x11-fonts-misc /etc/X11/* /usr/share/X11/fonts/encodings/*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/10x20*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/12x*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/18x18*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/4x6*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/5x7*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/5x8*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/6x10*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/6x12*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/6x9*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/7x*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/8x*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/9x*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/arabic*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/cl*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/cu-*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/cu12*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/cuarabic*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/cudevnag*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/dec*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/gb*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/hang*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/jiskan*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/k14*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/micro*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/nil2*
-removefrom xorg-x11-fonts-misc /usr/share/X11/fonts/misc/olg*
-removefrom xorg-x11-server-utils /usr/bin/iceauth /usr/bin/sessreg
-removefrom xorg-x11-server-utils /usr/bin/showrgb /usr/bin/xgamma
-removefrom xorg-x11-server-utils /usr/bin/xhost /usr/bin/xmodmap /usr/bin/xrdb
-removefrom xorg-x11-server-utils /usr/bin/xrefresh /usr/bin/xset
-removefrom xorg-x11-server-utils /usr/bin/xsetmode /usr/bin/xsetpointer
-removefrom xorg-x11-server-utils /usr/bin/xsetroot /usr/bin/xstdcmap
+removefrom xorg-x11-fonts-misc --allbut /usr/share/X11/fonts/misc/{6x13,encodings,fonts,*cursor}*
+removefrom xorg-x11-server-utils --allbut /usr/bin/xrandr /usr/share/X11/rgb.txt
 removefrom yum /etc/* /usr/share/locale/* /usr/share/yum-cli/*
 removefrom zenity /usr/share/omf/*
-removefrom ${product.name}-logos /etc/* /usr/share/firstboot/*
-removefrom ${product.name}-logos /usr/share/gnome-screensaver/*
-removefrom ${product.name}-logos /usr/share/icons/Bluecurve/*
-removefrom ${product.name}-logos /usr/share/icons/oxygen/*
-removefrom ${product.name}-logos /usr/share/pixmaps/* /usr/share/plymouth/*
+removefrom ${product.name}-logos /etc/*
+removefrom ${product.name}-logos /usr/share/icons/{Bluecurve,oxygen}/*
+removefrom ${product.name}-logos /usr/share/{firstboot,gnome-screensaver,kde4,pixmaps}/*
 
 ## cleanup_python_files()
 runcmd find ${root} -name "*.pyo" -type f -delete

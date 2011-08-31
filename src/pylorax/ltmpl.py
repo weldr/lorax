@@ -113,6 +113,7 @@ class LoraxTemplateRunner(object):
                                    glob=lambda g: list(rglob(g, root=inroot)))
         self.defaults = defaults
         self.results = DataHolder(treeinfo=dict()) # just treeinfo for now
+        # TODO: set up custom logger with a filter to add line info
 
     def _out(self, path):
         return joinpaths(self.outroot, path)
@@ -247,6 +248,7 @@ class LoraxTemplateRunner(object):
     def removepkg(self, *pkgs):
         for p in pkgs:
             filepaths = [f.lstrip('/') for f in self._filelist(p)]
+            # TODO: also remove directories that aren't owned by anything else
             if filepaths:
                 logger.debug("removepkg %s: %ikb", p, self._getsize(*filepaths)/1024)
                 self.remove(*filepaths)
@@ -261,12 +263,31 @@ class LoraxTemplateRunner(object):
         self.yum.closeRpmDB()
 
     def removefrom(self, pkg, *globs):
+        cmd = "%s %s" % (pkg, " ".join(globs)) # save for later logging
+        keepmatches = False
+        if globs[0] == '--allbut':
+            keepmatches = True
+            globs = globs[1:]
+        # get pkg filelist and find files that match the globs
         filelist = self._filelist(pkg)
+        matches = set()
         for g in globs:
             globs_re = re.compile(fnmatch.translate(g))
-            remove = filter(globs_re.match, filelist)
-            if remove:
-                logger.debug("removefrom %s %s: %i files, %ikb", pkg, g, len(remove), self._getsize(*remove)/1024)
-                self.remove(*remove)
+            m = filter(globs_re.match, filelist)
+            if m:
+                matches.update(m)
             else:
-                logger.debug("removefrom %s %s: no files to remove!", pkg, g)
+                logger.debug("removefrom %s %s: no files matched!", pkg, g)
+        # are we removing the matches, or keeping only the matches?
+        if keepmatches:
+            remove = filelist.difference(matches)
+        else:
+            remove = matches
+        # remove the files
+        if remove:
+            logger.debug("%s: removed %i/%i files, %ikb/%ikb", cmd,
+                             len(remove), len(filelist),
+                             self._getsize(*remove)/1024, self._getsize(*filelist)/1024)
+            self.remove(*remove)
+        else:
+            logger.debug("%s: no files to remove!", cmd)
