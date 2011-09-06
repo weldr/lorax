@@ -20,10 +20,44 @@
 import os, tempfile, optparse
 from subprocess import check_call, PIPE
 from pylorax.imgutils import mkdosimg, round_to_blocks, LoopDev, DMDev, dm_detach
+from pylorax.imgutils import mkhfsimg, Mount
+import struct, shutil
 
 def mkefiboot(bootdir, outfile, label):
     '''Make an EFI boot image with the contents of bootdir in EFI/BOOT'''
     mkdosimg(None, outfile, label=label, graft={'EFI/BOOT':bootdir})
+
+def mkmacboot(bootdir, outfile, label, icon=None):
+    '''Make an EFI boot image for Apple's EFI implementation'''
+    graft = {'EFI/BOOT':bootdir}
+    if icon:
+        graft['.VolumeIcon.icns'] = icon
+    mkhfsimg(None, outfile, label=label, graft=graft)
+    macbless(outfile)
+
+# To make an HFS+ image bootable, we need to fill in parts of the
+# HFSPlusVolumeHeader structure - specifically, finderInfo[0,1,5].
+# For details, see Technical Note TN1150: HFS Plus Volume Format
+# http://developer.apple.com/library/mac/#technotes/tn/tn1150.html
+def macbless(imgfile):
+    '''"bless" the EFI bootloader inside the given Mac EFI boot image, by
+    writing its inode info into the HFS+ volume header.'''
+    # Get the inode number for the boot image and its parent directory
+    with LoopDev(outfile) as loopdev:
+        with Mount(loopdev) as mnt:
+            loader = glob.glob(os.path.join(mnt,'EFI/BOOT/BOOT*.efi'))[0]
+            blessnode = os.stat(loader).st_ino
+            dirnode = os.stat(os.path.dirname(loader)).st_ino
+    # format data properly (big-endian UInt32)
+    nodedata = struct.pack(">i", blessnode)
+    dirdata = struct.pack(">i", dirnode)
+    # Write it to the volume header
+    with open(imgfile, "wb") as img:
+        img.seek(0x450)      # HFSPlusVolumeHeader->finderInfo
+        img.write(dirdata)   # finderInfo[0]
+        img.write(nodedata)  # finderInfo[1]
+        img.seek(0x464)      #
+        img.write(dirdata)   # finderInfo[5]
 
 def mkefidisk(efiboot, outfile):
     '''Make a bootable EFI disk image out of the given EFI boot image.'''
@@ -48,6 +82,11 @@ if __name__ == '__main__':
                       help="make a full EFI disk image")
     parser.add_option("-l", "--label", action="store", default="ANACONDA",
                       help="filesystem label to use")
+    parser.add_option("-a", "--apple", action="store_const", const="apple",
+                      dest="imgtype", default="default",
+                      help="make an Apple EFI image (hfsplus, bless loader)")
+    parser.add_option("-i", "--icon", action="store",
+                      help="icon file to include (for Apple EFI image)")
     # get args
     (opt, args) = parser.parse_args()
     if len(args) != 2:
@@ -58,10 +97,14 @@ if __name__ == '__main__':
         parser.error("%s is not a directory" % bootdir)
     if os.getuid() > 0:
         parser.error("need root permissions")
+    if opt.icon and not opt.imgtype == "apple":
+        print "Warning: --icon is only useful for Apple EFI images"
     # do the thing!
-    if opt.disk:
-        efiboot = tempfile.NamedTemporaryFile(prefix="mkefiboot.").name
-        mkefiboot(bootdir, efiboot, opt.label)
-        mkefidisk(efiboot, outfile)
+    if opt.imgtype == apple:
+        mkmacboot(bootdir, outfile, opt.label, opt.icon)
     else:
         mkefiboot(bootdir, outfile, opt.label)
+    if opt.disk:
+        efiboot = tempfile.NamedTemporaryFile(prefix="mkefiboot.").name
+        shutil.move(outfile, efiboot)
+        mkefidisk(efiboot, outfile)
