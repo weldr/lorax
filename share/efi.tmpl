@@ -1,21 +1,26 @@
 <%page args="configdir, KERNELDIR, efiarch"/>
-<% EFIBOOTDIR="EFI/BOOT" %>
+<%
+EFIBOOTDIR="EFI/BOOT"
+APPLE_EFI_ICON="/usr/share/pixmaps/bootloader/fedora.icns"
+%>
 
 mkdir ${EFIBOOTDIR}
 install boot/efi/EFI/redhat/grub.efi ${EFIBOOTDIR}/BOOT${efiarch}.efi
 install boot/grub/splash.xpm.gz ${EFIBOOTDIR}
 
 ## actually make the EFI images
+${make_efiboot("images/efiboot.img")}
+${make_efiboot("images/macboot.img", imgtype="apple")}
 ${make_efiboot("images/efidisk.img", include_kernel=True, disk=True)}
-${make_efiboot("images/efiboot.img", include_kernel=False)}
 
 ## This is kinda gross, but then... so's EFI.
-<%def name="make_efiboot(img, include_kernel, disk=False)">
+<%def name="make_efiboot(img, include_kernel=False, disk=False, imgtype='default')">
     <%
     kdir = EFIBOOTDIR if include_kernel else KERNELDIR
     eficonf = "%s/BOOT%s.conf" % (EFIBOOTDIR, efiarch)
     args = "--label=ANACONDA"
     if disk: args += " --disk"
+    if imgtype == "apple": args += " --apple --icon=%s" % APPLE_EFI_ICON
     %>
     %if include_kernel:
         copy ${KERNELDIR}/vmlinuz ${EFIBOOTDIR}
