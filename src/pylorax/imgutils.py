@@ -22,6 +22,7 @@ logger = logging.getLogger("pylorax.imgutils")
 
 import os, tempfile
 from os.path import join, dirname
+from pylorax.sysutils import cpfile
 from subprocess import *
 
 ######## Functions for making container images (cpio, squashfs) ##########
@@ -127,7 +128,10 @@ def do_grafts(grafts, dest, preserve=True):
             targetdir = join(dest, dirname(imgpath))
         if not os.path.isdir(targetdir):
             os.makedirs(targetdir)
-        copytree(filename, join(dest, imgpath), preserve)
+        if os.path.isdir(filename):
+            copytree(filename, join(dest, imgpath), preserve)
+        else:
+            cpfile(filename, join(dest, imgpath))
 
 def round_to_blocks(size, blocksize):
     '''If size isn't a multiple of blocksize, round up to the next multiple'''
