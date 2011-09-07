@@ -21,7 +21,7 @@ import os, tempfile, optparse
 from subprocess import check_call, PIPE
 from pylorax.imgutils import mkdosimg, round_to_blocks, LoopDev, DMDev, dm_detach
 from pylorax.imgutils import mkhfsimg, Mount
-import struct, shutil
+import struct, shutil, glob
 
 def mkefiboot(bootdir, outfile, label):
     '''Make an EFI boot image with the contents of bootdir in EFI/BOOT'''
@@ -100,7 +100,7 @@ if __name__ == '__main__':
     if opt.icon and not opt.imgtype == "apple":
         print "Warning: --icon is only useful for Apple EFI images"
     # do the thing!
-    if opt.imgtype == apple:
+    if opt.imgtype == "apple":
         mkmacboot(bootdir, outfile, opt.label, opt.icon)
     else:
         mkefiboot(bootdir, outfile, opt.label)
