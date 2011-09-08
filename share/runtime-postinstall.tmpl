@@ -33,42 +33,17 @@ move ${PYTHONDIR}/site-packages/pyanaconda/sitecustomize.py ${PYTHONDIR}/site-pa
 ## move_repos()
 move etc/yum.repos.d etc/anaconda.repos.d
 
-## set up system init stuff (systemd etc.)
-%if int(product.version) > 15:
-    ## Configure systemd to start anaconda
-    remove etc/systemd/system/default.target
-    remove etc/systemd/system/default.target.wants/*
-    symlink /lib/systemd/system/anaconda.target etc/systemd/system/default.target
-    ## workaround: /tmp is writeable, so we don't need tmp.mount
-    replace tmp.mount "" /lib/systemd/system/loader.service
-    ## make the anaconda shell on tty2 work without login
-    remove bin/login
-    append bin/login "#!/bin/bash"
-    append bin/login "exec -l /bin/bash"
-    chmod bin/login 755
-%else:
-    ## Set up loader as init
-    remove sbin/init
-    copy usr/${libdir}/anaconda/init sbin/init
-    symlink init sbin/halt
-    symlink init sbin/poweroff
-    symlink init sbin/reboot
-    remove sbin/runlevel sbin/telinit
-    ## dracut does stuff to /run so these links won't work..
-    remove var/run
-    remove var/lock
-    move run var/run
-    symlink run/lock var/lock
-    ## Since systemd won't be setting up sockets in /run for us..
-    mkdir var/run/dbus
-    ## remove systemd init stuff
-    remove /cgroup /var/cache /var/log
-    removepkg systemd-units
-    removefrom NetworkManager /lib/systemd/*
-    removefrom dbus /lib/systemd/*
-    removefrom systemd /bin/* /lib/systemd/* /usr/share/systemd/*
-    removefrom util-linux /sbin/agetty
-%endif
+## Configure systemd to start anaconda
+remove etc/systemd/system/default.target
+remove etc/systemd/system/default.target.wants/*
+symlink /lib/systemd/system/anaconda.target etc/systemd/system/default.target
+## workaround: /tmp is writeable, so we don't need tmp.mount
+replace tmp.mount "" /lib/systemd/system/loader.service
+## make the anaconda shell on tty2 work without login
+remove bin/login
+append bin/login "#!/bin/bash"
+append bin/login "exec -l /bin/bash"
+chmod bin/login 755
 ## remove unwanted systemd services
 removefrom systemd-units /lib/systemd/system/kexec*
 removefrom systemd-units /lib/systemd/system/local-fs.target.wants/media.mount
