@@ -426,11 +426,6 @@ class LoraxInstallTree(BaseLoraxClass):
             dst = joinpaths(self.root, "etc/selinux", "config")
             shutil.copy2(src, dst)
 
-        # get sysconfig files
-        src = joinpaths(src_dir, "network")
-        dst = joinpaths(self.root, "etc/sysconfig")
-        shutil.copy2(src, dst)
-
         src = joinpaths(src_dir, "isolinux.cfg")
         dst = joinpaths(self.root, "usr/share/anaconda/boot")
         shutil.copy2(src, dst)
