@@ -65,7 +65,7 @@ ISOLINUXDIR = "isolinux"
 PXEBOOTDIR = "images/pxeboot"
 
 ISOLINUX_BIN = "usr/share/syslinux/isolinux.bin"
-SYSLINUX_CFG = "usr/share/anaconda/boot/syslinux.cfg"
+ISOLINUX_CFG = "usr/share/anaconda/boot/isolinux.cfg"
 
 ISOHYBRID = "isohybrid"
 
@@ -385,9 +385,9 @@ class X86(object):
 
         self.reqs["isolinux_bin"] = cpfile(isolinux_bin, workdir)
 
-        # syslinux.cfg
-        syslinux_cfg = joinpaths(self.installtree.root, SYSLINUX_CFG)
-        self.reqs["syslinux_cfg"] = cpfile(syslinux_cfg, workdir)
+        # isolinux.cfg
+        isolinux_cfg = joinpaths(self.installtree.root, ISOLINUX_CFG)
+        self.reqs["isolinux_cfg"] = cpfile(isolinux_cfg, workdir)
 
         # memtest
         memtest = glob.glob(joinpaths(self.installtree.root, "boot",
@@ -437,10 +437,9 @@ class X86(object):
         cpfile(self.reqs["isolinux_bin"],
                joinpaths(self.outputroot, ISOLINUXDIR))
 
-        # copy syslinux.cfg to isolinux dir (XXX rename to isolinux.cfg)
-        isolinux_cfg = cpfile(self.reqs["syslinux_cfg"],
-                              joinpaths(self.outputroot, ISOLINUXDIR,
-                                        "isolinux.cfg"))
+        # copy isolinux.cfg to isolinux dir
+        isolinux_cfg = cpfile(self.reqs["isolinux_cfg"],
+                              joinpaths(self.outputroot, ISOLINUXDIR))
 
         replace(isolinux_cfg, r"@PRODUCT@", self.product)
         replace(isolinux_cfg, r"@VERSION@", self.version)
@@ -450,11 +449,11 @@ class X86(object):
             cpfile(self.reqs["memtest"],
                    joinpaths(self.outputroot, ISOLINUXDIR))
 
-            with open(isolinux_cfg, "a") as f:
-                f.write("label memtest86\n")
-                f.write("  menu label ^Memory test\n")
-                f.write("  kernel memtest\n")
-                f.write("  append -\n")
+            #with open(isolinux_cfg, "a") as f:
+            #    f.write("label memtest86\n")
+            #    f.write("  menu label ^Memory test\n")
+            #    f.write("  kernel memtest\n")
+            #    f.write("  append -\n")
 
         # copy *.msg files
         for src in self.reqs["msgfiles"]:
@@ -468,10 +467,6 @@ class X86(object):
         # copy vesamenu.c32
         cpfile(self.reqs["vesamenu"],
                joinpaths(self.outputroot, ISOLINUXDIR))
-
-        # set up isolinux.cfg
-        replace(isolinux_cfg, r"default linux", "default vesamenu.c32")
-        replace(isolinux_cfg, r"prompt 1", "#prompt 1")
 
         # copy grub.conf
         grubconf = cpfile(self.reqs["grubconf"],

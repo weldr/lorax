@@ -431,6 +431,10 @@ class LoraxInstallTree(BaseLoraxClass):
         dst = joinpaths(self.root, "etc/sysconfig")
         shutil.copy2(src, dst)
 
+        src = joinpaths(src_dir, "isolinux.cfg")
+        dst = joinpaths(self.root, "usr/share/anaconda/boot")
+        shutil.copy2(src, dst)
+
     def setup_sshd(self, src_dir):
         # get sshd config
         src = joinpaths(src_dir, "sshd_config.anaconda")
