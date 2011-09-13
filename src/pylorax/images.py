@@ -344,6 +344,7 @@ class PPC(object):
                "-magic", joinpaths(self.installtree.root, MAGIC),
                "-no-desktop", "-allow-multidot", "-graft-points", isopathdir]
 
+        logger.debug("calling mkisofs: %s" % cmd)
         p = subprocess.Popen(cmd, stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE)
         p.wait()
@@ -565,6 +566,7 @@ class X86(object):
                "images={0}".format(joinpaths(self.outputroot, IMAGESDIR))] + \
               efigraft
 
+        logger.debug("calling mkisofs: %s" % cmd)
         p = subprocess.Popen(cmd, stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE)
         p.wait()
@@ -780,6 +782,7 @@ class SPARC(object):
                "-o", bootiso_fpath, "-graft-points",
                "boot=%s" % joinpaths(self.outputroot, SPARCDIR)]
 
+        logger.debug("calling mkisofs: %s" % cmd)
         p = subprocess.Popen(cmd, stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE)
 
