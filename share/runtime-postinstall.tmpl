@@ -61,7 +61,6 @@ symlink /sbin/init init
 ## install some basic configuration files
 append etc/resolv.conf ""
 copy usr/share/anaconda/lang-table etc
-install ${configdir}/network etc/sysconfig
 install ${configdir}/rsyslog.conf etc
 install ${configdir}/.bash_history root
 install ${configdir}/.profile root
