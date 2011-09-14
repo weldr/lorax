@@ -153,16 +153,42 @@ class LoraxTemplateRunner(object):
                 logger.error(str(e))
 
     def install(self, srcglob, dest):
+        '''
+        install SRC DEST
+          Copy the given file (or files, if a glob is used) from the input
+          tree to the given destination in the output tree.
+          The path to DEST must exist in the output tree.
+          If DEST is a directory, SRC will be copied into that directory.
+          If DEST doesn't exist, SRC will be copied to a file with that name,
+          assuming the rest of the path exists.
+          This is pretty much like how the 'cp' command works.
+          Examples:
+            install usr/share/myconfig/grub.conf /boot
+            install /usr/share/myconfig/grub.conf.in /boot/grub.conf
+        '''
         for src in rglob(self._in(srcglob), fatal=True):
             cpfile(src, self._out(dest))
 
     def mkdir(self, *dirs):
+        '''
+        mkdir DIR [DIR ...]
+          Create the named DIR(s). Will create leading directories as needed.
+          Example:
+            mkdir /images
+        '''
         for d in dirs:
             d = self._out(d)
             if not isdir(d):
                 os.makedirs(d)
 
     def replace(self, pat, repl, *fileglobs):
+        '''
+        replace PATTERN REPLACEMENT FILEGLOB [FILEGLOB ...]
+          Find-and-replace the given PATTERN (Python-style regex) with the given
+          REPLACEMENT string for each of the files listed.
+          Example:
+            replace @VERSION@ ${product.version} /boot/grub.conf /boot/isolinux.cfg
+        '''
         match = False
         for g in fileglobs:
             for f in rglob(self._out(g)):
@@ -172,56 +198,130 @@ class LoraxTemplateRunner(object):
             raise IOError, "no files matched %s" % " ".join(fileglobs)
 
     def append(self, filename, data):
+        '''
+        append FILE STRING
+          Append STRING (followed by a newline character) to FILE.
+          Python character escape sequences ('\n', '\t', etc.) will be
+          converted to the appropriate characters.
+          Examples:
+            append /etc/depmod.d/dd.conf "search updates built-in"
+            append /etc/resolv.conf ""
+        '''
         with open(self._out(filename), "a") as fobj:
             fobj.write(data.decode('string_escape')+"\n")
 
     def treeinfo(self, section, key, *valuetoks):
+        '''
+        treeinfo SECTION KEY ARG [ARG ...]
+          Add an item to the treeinfo data store.
+          The given SECTION will have a new item added where
+          KEY = ARG ARG ...
+          Example:
+            treeinfo images-${kernel.arch} boot.iso images/boot.iso
+        '''
         if section not in self.results.treeinfo:
             self.results.treeinfo[section] = dict()
         self.results.treeinfo[section][key] = " ".join(valuetoks)
 
     def installkernel(self, section, src, dest):
+        '''
+        installkernel SECTION SRC DEST
+          Install the kernel from SRC in the input tree to DEST in the output
+          tree, and then add an item to the treeinfo data store, in the named
+          SECTION, where "kernel" = DEST.
+
+          Equivalent to:
+            install SRC DEST
+            treeinfo SECTION kernel DEST
+        '''
         self.install(src, dest)
         self.treeinfo(section, "kernel", dest)
 
     def installinitrd(self, section, src, dest):
+        '''
+        installinitrd SECTION SRC DEST
+          Same as installkernel, but for "initrd".
+        '''
         self.install(src, dest)
         self.treeinfo(section, "initrd", dest)
 
     def hardlink(self, src, dest):
+        '''
+        hardlink SRC DEST
+          Create a hardlink at DEST which is linked to SRC.
+        '''
         if isdir(self._out(dest)):
             dest = joinpaths(dest, basename(src))
         os.link(self._out(src), self._out(dest))
 
     def symlink(self, target, dest):
+        '''
+        symlink SRC DEST
+          Create a symlink at DEST which points to SRC.
+        '''
         if rexists(self._out(dest)):
             self.remove(dest)
         os.symlink(target, self._out(dest))
 
     def copy(self, src, dest):
+        '''
+        copy SRC DEST
+          Copy SRC to DEST.
+          If DEST is a directory, SRC will be copied inside it.
+          If DEST doesn't exist, SRC will be copied to a file with
+          that name, if the path leading to it exists.
+        '''
         cpfile(self._out(src), self._out(dest))
 
     def copyif(self, src, dest):
+        '''
+        copyif SRC DEST
+          Copy SRC to DEST, but only if SRC exists.
+        '''
         if rexists(self._out(src)):
             self.copy(src, dest)
 
     def move(self, src, dest):
+        '''
+        move SRC DEST
+          Move SRC to DEST.
+        '''
         mvfile(self._out(src), self._out(dest))
 
     def moveif(self, src, dest):
+        '''
+        moveif SRC DEST
+          Move SRC to DEST, but only if SRC exists.
+        '''
         if rexists(self._out(src)):
             self.move(src, dest)
 
     def remove(self, *fileglobs):
+        '''
+        remove FILEGLOB [FILEGLOB ...]
+          Remove all the named files or directories.
+        '''
         for g in fileglobs:
             for f in rglob(self._out(g)):
                 remove(f)
 
     def chmod(self, fileglob, mode):
+        '''
+        chmod FILEGLOB OCTALMODE
+          Change the mode of all the files matching FILEGLOB to OCTALMODE.
+        '''
         for f in rglob(self._out(fileglob), fatal=True):
             os.chmod(f, int(mode,8))
 
+    # TODO: do we need a new command for gsettings?
     def gconfset(self, path, keytype, value, outfile=None):
+        '''
+        gconfset PATH KEYTYPE VALUE [OUTFILE]
+          Set the given gconf PATH, with type KEYTYPE, to the given value.
+          OUTFILE defaults to /etc/gconf/gconf.xml.defaults if not given.
+          Example:
+            gconfset /apps/metacity/general/num_workspaces int 1
+        '''
         if outfile is None:
             outfile = self._out("etc/gconf/gconf.xml.defaults")
         check_call(["gconftool-2", "--direct",
@@ -229,10 +329,36 @@ class LoraxTemplateRunner(object):
                     "--set", "--type", keytype, path, value])
 
     def log(self, msg):
+        '''
+        log MESSAGE
+          Emit the given log message. Be sure to put it in quotes!
+          Example:
+            log "Reticulating splines, please wait..."
+        '''
         logger.info(msg)
 
     def runcmd(self, *cmdlist):
-        '''Note that we need full paths for everything here'''
+        '''
+        runcmd CMD [--chdir=DIR] [ARG ...]
+          Run the given command with the given arguments.
+          If "--chdir=DIR" is given, change to the named directory
+          before executing the command.
+
+          NOTE: All paths given MUST be COMPLETE, ABSOLUTE PATHS to the file
+          or files mentioned. ${root}/${inroot}/${outroot} are good for
+          constructing these paths.
+
+          FURTHER NOTE: Please use this command only as a last resort!
+          Whenever possible, you should use the existing template commands.
+          If the existing commands don't do what you need, fix them!
+
+          Examples:
+            (this should be replaced with a "find" function)
+            runcmd find ${root} -name "*.pyo" -type f -delete
+            %for f in find(root, name="*.pyo"):
+                remove ${f}
+            %endfor
+        '''
         chdir = lambda: None
         cmd = cmdlist
         if cmd[0].startswith("--chdir="):
@@ -242,10 +368,23 @@ class LoraxTemplateRunner(object):
         check_call(cmd, preexec_fn=chdir)
 
     def installpkg(self, *pkgs):
+        '''
+        installpkg PKGGLOB [PKGGLOB ...]
+          Request installation of all packages matching the given globs.
+          Note that this is just a *request* - nothing is *actually* installed
+          until the 'run_pkg_transaction' command is given.
+        '''
         for p in pkgs:
             self.yum.install(pattern=p)
 
     def removepkg(self, *pkgs):
+        '''
+        removepkg PKGGLOB [PKGGLOB...]
+          Delete the named package(s).
+          IMPLEMENTATION NOTES:
+            RPM scriptlets (%preun/%postun) are *not* run.
+            Files are deleted, but directories are left behind.
+        '''
         for p in pkgs:
             filepaths = [f.lstrip('/') for f in self._filelist(p)]
             # TODO: also remove directories that aren't owned by anything else
@@ -256,6 +395,11 @@ class LoraxTemplateRunner(object):
                 logger.debug("removepkg %s: no files to remove!", p)
 
     def run_pkg_transaction(self):
+        '''
+        run_pkg_transaction
+          Actually install all the packages requested by previous 'installpkg'
+          commands.
+        '''
         self.yum.buildTransaction()
         self.yum.repos.setProgressBar(LoraxDownloadCallback())
         self.yum.processTransaction(callback=LoraxTransactionCallback(),
@@ -263,6 +407,16 @@ class LoraxTemplateRunner(object):
         self.yum.closeRpmDB()
 
     def removefrom(self, pkg, *globs):
+        '''
+        removefrom PKGGLOB [--allbut] FILEGLOB [FILEGLOB...]
+          Remove all files matching the given file globs from the package
+          (or packages) named.
+          If '--allbut' is used, all the files from the given package(s) will
+          be removed *except* the ones which match the file globs.
+          Examples:
+            removefrom usbutils /usr/bin/*
+            removefrom xfsprogs --allbut /sbin/*
+        '''
         cmd = "%s %s" % (pkg, " ".join(globs)) # save for later logging
         keepmatches = False
         if globs[0] == '--allbut':
