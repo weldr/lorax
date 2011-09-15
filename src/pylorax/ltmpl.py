@@ -33,6 +33,7 @@ from base import DataHolder
 
 from mako.lookup import TemplateLookup
 from mako.exceptions import text_error_template
+import sys, traceback
 
 class LoraxTemplate(object):
     def __init__(self, directories=["/usr/share/lorax"]):
@@ -47,8 +48,8 @@ class LoraxTemplate(object):
         try:
             textbuf = template.render(**variables)
         except:
-            print text_error_template().render()
-            raise SystemExit(2)
+            logger.error(text_error_template().render())
+            raise
 
         # split, strip and remove empty lines
         lines = textbuf.splitlines()
@@ -94,12 +95,6 @@ def rglob(pathname, root="/", fatal=False):
 def rexists(pathname, root=""):
     return True if rglob(pathname, root) else False
 
-# command notes:
-# "install" and "exist" assume their first argument is in inroot
-# everything else operates on outroot
-# multiple args allowed: mkdir, treeinfo, runcmd, remove, replace
-# globs accepted: chmod, install*, remove*, replace
-
 class LoraxTemplateRunner(object):
     def __init__(self, inroot, outroot, yum=None, fatalerrors=False,
                                         templatedir=None, defaults={}):
@@ -130,13 +125,15 @@ class LoraxTemplateRunner(object):
     def run(self, templatefile, **variables):
         for k,v in self.defaults.items() + self.builtins.items():
             variables.setdefault(k,v)
-        logger.info("parsing %s", templatefile)
+        logger.debug("parsing %s", templatefile)
+        self.templatefile = templatefile
         t = LoraxTemplate(directories=[self.templatedir])
         commands = t.parse(templatefile, variables)
         self._run(commands)
 
+
     def _run(self, parsed_template):
-        logger.info("running template commands")
+        logger.info("running %s", self.templatefile)
         for (num, line) in enumerate(parsed_template,1):
             logger.debug("template line %i: %s", num, " ".join(line))
             (cmd, args) = (line[0], line[1:])
@@ -146,11 +143,20 @@ class LoraxTemplateRunner(object):
                 if f is None or cmd is 'run':
                     raise ValueError, "unknown command %s" % cmd
                 f(*args)
-            except Exception as e:
-                logger.error("template command error: %s", str(line))
+            except Exception:
+                logger.error("template command error in %s:", self.templatefile)
+                logger.error("  %s", " ".join(line))
+                # format the exception traceback
+                exclines = traceback.format_exception(*sys.exc_info())
+                # skip the bit about "ltmpl.py, in _run()" - we know that
+                exclines.pop(1)
+                # log the "ErrorType: this is what happened" line
+                logger.error("  " + exclines[-1].strip())
+                # and log the entire traceback to the debug log
+                for line in ''.join(exclines).splitlines():
+                    logger.debug("  " + line)
                 if self.fatalerrors:
                     raise
-                logger.error(str(e))
 
     def install(self, srcglob, dest):
         '''
@@ -337,6 +343,7 @@ class LoraxTemplateRunner(object):
         '''
         logger.info(msg)
 
+    # TODO: add ssh-keygen, mkisofs(?), find, and other useful commands
     def runcmd(self, *cmdlist):
         '''
         runcmd CMD [--chdir=DIR] [ARG ...]
