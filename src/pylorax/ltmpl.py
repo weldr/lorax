@@ -382,7 +382,11 @@ class LoraxTemplateRunner(object):
           until the 'run_pkg_transaction' command is given.
         '''
         for p in pkgs:
-            self.yum.install(pattern=p)
+            try:
+                self.yum.install(pattern=p)
+            except Exception as e:
+                # TODO: save exception and re-raise after the loop finishes
+                logger.warn("installpkg %s failed: %s",p,str(e))
 
     def removepkg(self, *pkgs):
         '''
