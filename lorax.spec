@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        16.4.2
+Version:        16.4.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -61,6 +61,10 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Fri Sep 16 2011 Martin Gracik <mgracik@redhat.com> 16.4.3-1
+- Do not create the sysconfig/network file (#733425)
+- New syslinux theme (#734170)
+
 * Thu Aug 25 2011 Martin Gracik <mgracik@redhat.com> 16.4.2-1
 - Do not remove ModemManager files (#727946)
 - Raise an exception if isohybrid cannot be run on x86
