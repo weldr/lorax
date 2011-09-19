@@ -409,10 +409,10 @@ class X86(object):
 
         # splash
         splash = joinpaths(self.installtree.root, ANABOOTDIR,
-                           "syslinux-vesa-splash.jpg")
+                           "syslinux-splash.png")
 
         if not splash:
-            raise Exception("syslinux-vesa-splash.jpg not present")
+            raise Exception("syslinux-splash.png not present")
 
         self.reqs["splash"] = cpfile(splash, workdir)
 
@@ -459,9 +459,8 @@ class X86(object):
             dst = cpfile(src, joinpaths(self.outputroot, ISOLINUXDIR))
             replace(dst, r"@VERSION@", self.version)
 
-        # copy syslinux-vesa-splash.jpg
         splash = cpfile(self.reqs["splash"],
-                        joinpaths(self.outputroot, ISOLINUXDIR, "splash.jpg"))
+                        joinpaths(self.outputroot, ISOLINUXDIR, "splash.png"))
 
         # copy vesamenu.c32
         cpfile(self.reqs["vesamenu"],
