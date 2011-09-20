@@ -39,11 +39,6 @@ remove etc/systemd/system/default.target.wants/*
 symlink /lib/systemd/system/anaconda.target etc/systemd/system/default.target
 ## workaround: /tmp is writeable, so we don't need tmp.mount
 replace tmp.mount "" /lib/systemd/system/loader.service
-## make the anaconda shell on tty2 work without login
-remove bin/login
-append bin/login "#!/bin/bash"
-append bin/login "exec -l /bin/bash"
-chmod bin/login 755
 ## remove unwanted systemd services
 removefrom systemd-units /lib/systemd/system/kexec*
 removefrom systemd-units /lib/systemd/system/local-fs.target.wants/media.mount
