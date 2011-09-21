@@ -13,7 +13,7 @@ install ${runtime_img} images/install.img
 mkdir ${BOOTDIR} ${KERNELDIR}
 install ${SYSLINUXDIR}/isolinux.bin ${BOOTDIR}
 install ${configdir}/syslinux.cfg ${BOOTDIR}/isolinux.cfg
-install usr/share/anaconda/boot/syslinux-vesa-splash.jpg ${BOOTDIR}/splash.jpg
+install usr/share/anaconda/boot/syslinux-splash.png ${BOOTDIR}/splash.png
 install ${configdir}/boot.msg.x86 ${BOOTDIR}/boot.msg
 install ${SYSLINUXDIR}/vesamenu.c32 ${BOOTDIR}
 install ${configdir}/grub.conf ${BOOTDIR}
