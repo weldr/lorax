@@ -124,7 +124,7 @@ class Lorax(BaseLoraxClass):
         logger.addHandler(fh)
 
     def run(self, ybo, product, version, release, variant="", bugurl="",
-            is_beta=False, workdir=None, outputdir=None):
+            isfinal=False, workdir=None, outputdir=None):
 
         assert self._configured
 
@@ -169,7 +169,7 @@ class Lorax(BaseLoraxClass):
 
         logger.info("setting up build parameters")
         product = DataHolder(name=product, version=version, release=release,
-                             variant=variant, bugurl=bugurl, is_beta=is_beta)
+                             variant=variant, bugurl=bugurl, isfinal=isfinal)
         self.product = product
         logger.debug("product data: %s" % product)
 
@@ -184,7 +184,7 @@ class Lorax(BaseLoraxClass):
 
         # write .buildstamp
         buildstamp = BuildStamp(self.product.name, self.product.version,
-                                self.product.bugurl, self.product.is_beta, self.arch.buildarch)
+                                self.product.bugurl, self.product.isfinal, self.arch.buildarch)
 
         buildstamp.write(joinpaths(self.inroot, ".buildstamp"))
 

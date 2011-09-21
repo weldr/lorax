@@ -27,22 +27,25 @@ import datetime
 
 class BuildStamp(object):
 
-    def __init__(self, product, version, bugurl, is_beta, buildarch):
+    def __init__(self, product, version, bugurl, isfinal, buildarch):
         self.product = product
         self.version = version
         self.bugurl = bugurl
-        self.is_beta = is_beta
+        self.isfinal = isfinal
 
         now = datetime.datetime.now()
         now = now.strftime("%Y%m%d%H%M")
         self.uuid = "{0}.{1}".format(now, buildarch)
 
     def write(self, outfile):
+        vernum = "treebuilder" # XXX TODO FIXME
         logger.info("writing .buildstamp file")
         with open(outfile, "w") as fobj:
             fobj.write("[Main]\n")
             fobj.write("Product={0.product}\n".format(self))
             fobj.write("Version={0.version}\n".format(self))
             fobj.write("BugURL={0.bugurl}\n".format(self))
-            fobj.write("IsBeta={0.is_beta}\n".format(self))
+            fobj.write("IsFinal={0.isfinal}\n".format(self))
             fobj.write("UUID={0.uuid}\n".format(self))
+            fobj.write("[Compose]\n")
+            fobj.write("Lorax={0}\n".format(vernum))
