@@ -27,6 +27,7 @@ import subprocess
 import shutil
 import glob
 import collections
+import struct
 
 from base import DataHolder
 from sysutils import joinpaths, cpfile, replace
@@ -637,16 +638,13 @@ class S390(object):
             logger.info("compressing the install tree")
             self.installtree.compress(initrd, kernel, self.ctype, self.cargs)
 
-            # run addrsize
-            addrsize = joinpaths(self.installtree.root, "usr/libexec",
-                                 "anaconda", "addrsize")
-
-            cmd = [addrsize, INITRD_ADDRESS, initrd.fpath,
-                   joinpaths(self.outputroot, IMAGESDIR, "initrd.addrsize")]
-
-            p = subprocess.Popen(cmd, stdin=subprocess.PIPE,
-                                 stdout=subprocess.PIPE)
-            p.wait()
+            # create initrd.addrsize
+            addrsize = open(joinpaths(self.outputroot, IMAGESDIR,
+                                      "initrd.addrsize"), "wb")
+            addrsize_data = struct.pack(">iiii", 0, int(INITRD_ADDRESS, 16), 0,
+                                        os.stat(initrd.fpath).st_size)
+            addrsize.write(addrsize_data)
+            addrsize.close()
 
             # add kernel and initrd to .treeinfo
             kernel_arch = kernel.version.split(".")[-1]
