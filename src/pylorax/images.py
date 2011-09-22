@@ -657,24 +657,6 @@ class S390(object):
                     "generic.ins": os.path.basename(generic_ins)}
             self.treeinfo.add_section(section, data)
 
-        # create cdboot.img
-        bootiso_fpath = joinpaths(self.outputroot, IMAGESDIR, "cdboot.img")
-
-        # run mks390cdboot
-        mks390cdboot = joinpaths(self.installtree.root, "usr/libexec",
-                                 "anaconda", "mk-s390-cdboot")
-
-        cmd = [mks390cdboot, "-i", kernel.fpath, "-r", initrd.fpath,
-               "-p", generic_prm, "-o", bootiso_fpath]
-
-        p = subprocess.Popen(cmd, stdin=subprocess.PIPE,
-                             stdout=subprocess.PIPE)
-        p.wait()
-
-        # add cdboot.img to treeinfo
-        data = {"cdboot.img": joinpaths(IMAGESDIR, "cdboot.img")}
-        self.treeinfo.add_section(section, data)
-
     def create_boot(self, efiboot=None):
         pass
 
