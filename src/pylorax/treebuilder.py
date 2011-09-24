@@ -130,7 +130,10 @@ class RuntimeBuilder(object):
     def create_runtime(self, outfile="/tmp/squashfs.img", compression="xz", compressargs=[], size=2):
         # make live rootfs image - must be named "LiveOS/rootfs.img" for dracut
         workdir = joinpaths(os.path.dirname(outfile), "runtime-workdir")
-        fssize = size * (1024*1024*1024) # 2GB sparse file compresses down to nothin'
+        if size:
+            fssize = size * (1024*1024*1024) # 2GB sparse file compresses down to nothin'
+        else:
+            fssize = None       # Let mkext4img figure out the needed size
         os.makedirs(joinpaths(workdir, "LiveOS"))
         imgutils.mkext4img(self.vars.root, joinpaths(workdir, "LiveOS/rootfs.img"),
                            label="Anaconda", size=fssize)
