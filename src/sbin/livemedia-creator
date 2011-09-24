@@ -1,0 +1,627 @@
+#!/usr/bin/env python
+#
+# Live Media Creator
+#
+# Copyright (C) 2009  Red Hat, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Author(s): Brian C. Lane <bcl@redhat.com>
+#
+import logging
+log = logging.getLogger("livemedia-creator")
+program_log = logging.getLogger("program")
+pylorax_log = logging.getLogger("pylorax")
+
+import os
+import sys
+import uuid
+import tempfile
+import subprocess
+import socket
+import threading
+import SocketServer
+import libvirt
+from time import sleep
+import shutil
+import traceback
+import argparse
+
+# Use pykickstart to calculate disk image size
+from pykickstart.parser import KickstartParser
+from pykickstart.version import makeVersion
+
+# Use the Lorax treebuilder branch for iso creation
+from pylorax.base import DataHolder
+from pylorax.treebuilder import TreeBuilder, RuntimeBuilder
+from pylorax.sysutils import joinpaths, remove, linktree
+from pylorax.imgutils import PartitionMount
+from pylorax.executils import execWithRedirect, execWithCapture
+
+
+# Default parameters for rebuilding initramfs, overrice with --dracut-args
+DRACUT_DEFAULT = ["--xz", "--omit", "plymouth"]
+
+
+class LogRequestHandler(SocketServer.BaseRequestHandler):
+    """
+    Handle monitoring and saving the logfiles from the virtual install
+    """
+    def setup(self):
+        if self.server.log_path:
+            self.fp = open(self.server.log_path, "w")
+        else:
+            print "no log_path specified"
+        self.request.settimeout(10)
+
+    def handle(self):
+        """
+        Handle writing incoming data to a logfile and
+        checking the logs for any Tracebacks or other errors that indicate
+        that the install failed.
+        """
+        line = ""
+        while True:
+            if self.server.kill:
+                break
+
+            try:
+                data = self.request.recv(4096)
+                self.fp.write(data)
+                self.fp.flush()
+
+                # check the data for errors and set error flag
+                # need to assemble it into lines so we can test for the error
+                # string.
+                while data:
+                    more = data.split("\n", 1)
+                    line += more[0]
+                    if len(more) > 1:
+                        self.iserror(line)
+                        line = ""
+                        data = more[1]
+                    else:
+                        data = None
+
+            except socket.timeout:
+                pass
+            except:
+                break
+
+    def finish(self):
+        self.fp.close()
+
+    def iserror(self, line):
+        """
+        Check a line to see if it contains an error indicating install failure
+        """
+        if line.find("Traceback (") > -1 \
+           or line.find("Out of memory:") > -1 \
+           or line.find("Call Trace:") > -1 \
+           or line.find("insufficient disk space:") > -1:
+            self.server.log_error = True
+
+
+class LogServer(SocketServer.TCPServer):
+    """
+    Add path to logfile
+    Add log error flag
+    Add a kill switch
+    """
+    def __init__(self, log_path, *args, **kwargs):
+        self.kill = False
+        self.log_error = False
+        self.log_path = log_path
+        SocketServer.TCPServer.__init__(self, *args, **kwargs)
+
+    def log_check(self):
+        return self.log_error
+
+
+class LogMonitor(object):
+    """
+    Contains all the stuff needed to setup a thread to listen to the logs
+    from the virtual install
+    """
+    def __init__(self, log_path, host="localhost", port=0):
+        """
+        Fire up the thread listening for logs
+        """
+        self.server = LogServer(log_path, (host, port), LogRequestHandler)
+        self.host, self.port = self.server.server_address
+        self.log_path = log_path
+        self.server_thread = threading.Thread(target=self.server.handle_request)
+        self.server_thread.daemon = True
+        self.server_thread.start()
+
+    def shutdown(self):
+        self.server.kill = True
+        self.server_thread.join()
+
+
+class IsoMountpoint(object):
+    """
+    Mount the iso on a temporary directory and check to make sure the
+    vmlinuz and initrd.img files exist
+    """
+    def __init__( self, iso_path ):
+        self.iso_path = iso_path
+        self.mount_dir = tempfile.mkdtemp()
+        if not self.mount_dir:
+            raise Exception("Error creating temporary directory")
+
+        cmd = ["mount","-o","loop",self.iso_path,self.mount_dir]
+        log.debug( cmd )
+        execWithRedirect( cmd[0], cmd[1:] )
+
+        self.kernel = self.mount_dir+"/isolinux/vmlinuz"
+        self.initrd = self.mount_dir+"/isolinux/initrd.img"
+
+        if os.path.isdir( self.mount_dir+"/repodata" ):
+            self.repo = self.mount_dir
+        else:
+            self.repo = None
+
+        try:
+            for f in [self.kernel, self.initrd]:
+                if not os.path.isfile(f):
+                    raise Exception("Missing file on iso: {0}".format(f))
+        except:
+            self.umount()
+            raise
+
+    def umount( self ):
+        cmd = ["umount", self.mount_dir]
+        log.debug( cmd )
+        execWithRedirect( cmd[0], cmd[1:] )
+        os.rmdir( self.mount_dir )
+
+
+class ImageMount(object):
+    """
+    # kpartx -p p -v -a /tmp/diskV2DiCW.im
+    # add map loop2p1 (253:2): 0 3481600 linear /dev/loop2 2048
+    # add map loop2p2 (253:3): 0 614400 linear /dev/loop2 3483648
+
+    Find the / partition and only mount that
+    """
+    def __init__(self, disk_img):
+        """
+        Use kpartx to mount an image onto temporary directories
+        return a list of the dirs
+        """
+        self.disk_img = disk_img
+
+        # call kpartx and parse the output
+        cmd = [ "kpartx", "-v", "-p", "p", "-a", disk_img ]
+        log.debug( cmd )
+        kpartx_output = execWithCapture( cmd[0], cmd[1:] )
+        log.debug( kpartx_output )
+        self.loop_devices = []
+        for line in kpartx_output.splitlines():
+            # add map loop2p3 (253:4): 0 7139328 linear /dev/loop2 528384
+            # 3rd element is size in 512 byte blocks
+            if line.startswith("add map "):
+                fields = line[8:].split()
+                self.loop_devices.append((fields[0], int(fields[3])*512))
+
+        log.debug( self.loop_devices )
+
+        # Mount the devices, if possible
+        self.mount_dir = None
+        mount_dir = tempfile.mkdtemp()
+        for dev, size in self.loop_devices:
+            cmd = ["mount", "/dev/mapper/"+dev, mount_dir]
+            log.debug( cmd )
+            try:
+                execWithRedirect( cmd[0], cmd[1:] )
+                if os.path.isfile(mount_dir+"/etc/fstab"):
+                    self.mount_dir = mount_dir
+                    self.mount_dev = dev
+                    self.mount_size = size
+                    break
+                cmd = ["umount", mount_dir]
+                execWithRedirect( cmd[0], cmd[1:] )
+            except subprocess.CalledProcessError:
+                log.debug( traceback.format_exc() )
+
+        if self.mount_dir:
+            log.info( "Found root partition, mounted on {0}".format(self.mount_dir) )
+            log.info( "size = {0}".format(self.mount_size) )
+
+    def umount(self):
+        """
+        unmount the disk image
+        """
+        if self.mount_dir:
+            cmd = ["umount", self.mount_dir]
+            log.debug( cmd )
+            execWithRedirect( cmd[0], cmd[1:] )
+            os.rmdir(self.mount_dir)
+            self.mount_dir = None
+
+        cmd = ["kpartx", "-d", self.disk_img]
+        log.debug( cmd )
+        execWithRedirect( cmd[0], cmd[1:] )
+
+
+class VirtualInstall( object ):
+    """
+    Run virt-install using an iso and kickstart(s)
+    """
+    def __init__( self, iso, ks_paths, disk_img, img_size=2, 
+                  kernel_args=None, memory=1024, vnc=None,
+                  log_check=None, virtio_host="127.0.0.1", virtio_port=6080 ):
+        """
+
+        iso is an instance of IsoMountpoint
+        ks_paths is a list of paths to a kickstart files. All are injected, the
+                 first one is the one executed.
+        disk_img is the path to a disk image (doesn't need to exist)
+        img_size is the size, in GiB, of the image if it doesn't exist
+        kernel_args are extra arguments to pass on the kernel cmdline
+        memory is the amount of ram to assign to the virt
+        vnc is passed to the --graphics command verbatim
+        log_check is a method that returns True of the log indicates an error
+        virtio_host and virtio_port are used to communicate with the log monitor
+        """
+        self.virt_name = "LiveOS-"+str(uuid.uuid4())
+        # add --graphics none later
+        # add whatever serial cmds are needed later
+        cmd = [ "virt-install", "-n", self.virt_name,
+                                "-r", str(memory),
+                                "--noreboot",
+                                "--noautoconsole" ]
+
+        cmd.append("--graphics")
+        if vnc:
+            cmd.append(vnc)
+        else:
+            cmd.append("none")
+
+        for ks in ks_paths:
+            cmd.append("--initrd-inject")
+            cmd.append(ks)
+        disk_opts = "path={0}".format(disk_img)
+        disk_opts += ",format=raw"
+        if not os.path.isfile(disk_img):
+            disk_opts += ",size={0}".format(img_size)
+        extra_args = "ks=file:/{0}".format(os.path.basename(ks_paths[0]))
+        if kernel_args:
+            extra_args += " "+kernel_args
+        if not vnc:
+            extra_args += " console=/dev/ttyS0"
+        channel_args = "tcp,host={0}:{1},mode=connect,target_type=virtio" \
+                       ",name=org.fedoraproject.anaconda.log.0".format(
+                       virtio_host, virtio_port)
+        [cmd.append(o) for o in ["--disk", disk_opts,
+                                 "--extra-args", extra_args,
+                                 "--location", iso.mount_dir,
+                                 "--channel", channel_args]]
+        log.debug( cmd )
+
+        rc = execWithRedirect( cmd[0], cmd[1:] )
+        if rc:
+            raise Exception("Problem starting virtual install")
+
+        conn = libvirt.openReadOnly(None)
+        dom = conn.lookupByName(self.virt_name)
+
+        # TODO: If vnc has been passed, we should look up the port and print that
+        # for the user at this point
+
+        while dom.isActive() and not log_check():
+            sys.stdout.write(".")
+            sys.stdout.flush()
+            sleep(10)
+        print
+
+        if log_check():
+            log.info( "Installation error detected. See logfile." )
+        else:
+            log.info( "Install finished. Or at least virt shut down." )
+
+    def destroy( self ):
+        """
+        Make sure the virt has been shut down and destroyed
+
+        Could use libvirt for this instead.
+        """
+        log.info( "Shutting down {0}".format(self.virt_name) )
+        subprocess.call(["virsh","destroy",self.virt_name])
+        subprocess.call(["virsh","undefine",self.virt_name])
+
+
+def get_kernels( boot_dir ):
+    """
+    Examine the vmlinuz-* versions and return a list of them
+    """
+    files = os.listdir(boot_dir)
+    return [f[8:] for f in files if f.startswith("vmlinuz-")]
+
+
+def make_livecd( disk_img, squashfs_args="", templatedir=None,
+                 title="Linux", project="Linux", releasever=16 ):
+    """
+    Take the content from the disk image and make a livecd out of it
+
+    This uses wwood's squashfs live initramfs method:
+     * put the real / into LiveOS/rootfs.img
+     * make a squashfs of the LiveOS/rootfs.img tree
+     * make a simple initramfs with the squashfs.img and /etc/cmdline in it
+     * make a cpio of that tree
+     * append the squashfs.cpio to a dracut initramfs for each kernel installed
+
+    Then on boot dracut reads /etc/cmdline which points to the squashfs.img
+    mounts that and then mounts LiveOS/rootfs.img as /
+
+    """
+    with PartitionMount( disk_img ) as img_mount:
+        kernel_list = get_kernels( joinpaths( img_mount.mount_dir, "boot" ) )
+        log.debug( "kernel_list = {0}".format(kernel_list) )
+        if kernel_list:
+            kernel_arch = kernel_list[0].split(".")[-1]
+        else:
+            kernel_arch = "i386"
+        log.debug( "kernel_arch = {0}".format(kernel_arch) )
+
+        work_dir = tempfile.mkdtemp()
+        log.info( "working dir is {0}".format(work_dir) )
+
+        runtime = "images/install.img"
+        # This is a mounted image partition, cannot hardlink to it, so just use it
+        installroot = img_mount.mount_dir
+        # symlink installroot/images to work_dir/images so we don't run out of space
+        os.makedirs( joinpaths( work_dir, "images" ) )
+
+        # TreeBuilder expects the config files to be in /tmp/config_files
+        # I think these should be release specific, not from lorax, but for now
+        configdir = joinpaths(templatedir,"config_files/live/")
+        configdir_path = "tmp/config_files"
+        fullpath = joinpaths(installroot, configdir_path)
+        if os.path.exists(fullpath):
+            remove(fullpath)
+        shutil.copytree(configdir, fullpath)
+
+        # Fake yum object
+        fake_yum = DataHolder( conf=DataHolder( installroot=installroot ) )
+        # Fake arch with only basearch set
+        arch = DataHolder( basearch=kernel_arch, libdir=None, buildarch=None )
+        # TODO: Need to get release info from someplace...
+        product = DataHolder( name=project, version=releasever, release="",
+                                variant="", bugurl="", is_beta=False )
+
+        rb = RuntimeBuilder( product, arch, fake_yum )
+        log.info( "Creating runtime" )
+        rb.create_runtime( joinpaths( work_dir, runtime ), size=None )
+
+        # Link /images to work_dir/images to make the templates happy
+        if os.path.islink( joinpaths( installroot, "images" ) ):
+            os.unlink( joinpaths( installroot, "images" ) )
+        subprocess.check_call(["/bin/ln", "-s", joinpaths( work_dir, "images" ),
+                                                joinpaths( installroot, "images" )])
+
+        tb = TreeBuilder( product=product, arch=arch,
+                          inroot=installroot, outroot=work_dir,
+                          runtime=runtime, templatedir=templatedir)
+        log.info( "Rebuilding initrds" )
+        if not opts.dracut_args:
+            dracut_args = DRACUT_DEFAULT
+        else:
+            dracut_args = []
+            for arg in opts.dracut_args:
+                dracut_args += arg.split(" ", 1)
+        log.info( "dracut args = {0}".format( dracut_args ) )
+        tb.rebuild_initrds( add_args=dracut_args )
+        log.info( "Building boot.iso" )
+        tb.build()
+
+        return work_dir
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser( description="Create Live Install Media",
+                                      fromfile_prefix_chars="@" )
+
+    # These two are mutually exclusive, one is required
+    action = parser.add_mutually_exclusive_group( required=True )
+    action.add_argument( "--make-iso", action="store_true",
+                         help="Build a live iso" )
+    action.add_argument( "--make-disk", action="store_true",
+                         help="Build a disk image" )
+    action.add_argument( "--make-appliance", action="store_true",
+                         help="Build an appliance image and XML description" )
+    action.add_argument( "--make-ami", action="store_true",
+                         help="Build an ami image" )
+
+    source = parser.add_mutually_exclusive_group( required=True )
+    source.add_argument( "--iso", type=os.path.abspath,
+                        help="Anaconda installation .iso path to use for virt-install" )
+    source.add_argument( "--disk-image", type=os.path.abspath,
+                        help="Path to disk image to use for creating final image" )
+
+    parser.add_argument( "--ks", action="append", type=os.path.abspath,
+                         help="Kickstart file defining the install." )
+    parser.add_argument( "--image-only", action="store_true",
+                         help="Exit after creating disk image." )
+    parser.add_argument( "--keep-image", action="store_true",
+                         help="Keep raw disk image after .iso creation" )
+    parser.add_argument( "--no-virt", action="store_true",
+                         help="Use Anaconda's image install instead of virt-install" )
+
+    parser.add_argument( "--logfile", default="./livemedia.log",
+                         type=os.path.abspath,
+                         help="Path to logfile" )
+    parser.add_argument( "--lorax-templates", default="/usr/share/lorax/",
+                         type=os.path.abspath,
+                         help="Path to mako templates for lorax" )
+    parser.add_argument( "--tmp", default="/tmp", type=os.path.abspath,
+                         help="Top level temporary directory" )
+    parser.add_argument( "--resultdir", default=None, dest="result_dir",
+                         type=os.path.abspath,
+                         help="Directory to copy the resulting images and iso into. "
+                              "Defaults to the temporary working directory")
+
+    # Group of arguments to pass to virt-install
+    virt_group = parser.add_argument_group("virt-install arguments")
+    virt_group.add_argument("--ram", metavar="MEMORY", default=1024,
+                            help="Memory to allocate for installer in megabytes." )
+    virt_group.add_argument("--vcpus", default=1,
+                            help="Passed to --vcpus command" )
+    virt_group.add_argument("--vnc",
+                            help="Passed to --graphics command" )
+    virt_group.add_argument("--arch",
+                            help="Passed to --arch command" )
+    virt_group.add_argument( "--kernel-args",
+                             help="Additional argument to pass to the installation kernel" )
+
+    # dracut arguments
+    dracut_group = parser.add_argument_group( "dracut arguments" )
+    dracut_group.add_argument( "--dracut-arg", action="append", dest="dracut_args",
+                               help="Argument to pass to dracut when "
+                                    "rebuilding the initramfs. Pass this "
+                                    "once for each argument. NOTE: this "
+                                    "overrides the default. (default: %s)" % (DRACUT_DEFAULT,) )
+
+    parser.add_argument( "--title", default="Linux Live Media",
+                         help="Substituted for @TITLE@ in bootloader config files" )
+    parser.add_argument( "--project", default="Linux",
+                         help="substituted for @PROJECT@ in bootloader config files" )
+    parser.add_argument( "--releasever", type=int, default=16,
+                         help="substituted for @VERSION@ in bootloader config files" )
+    parser.add_argument( "--squashfs_args",
+                         help="additional squashfs args" )
+
+    opts = parser.parse_args()
+
+    # Setup logging to console and to logfile
+    log.setLevel( logging.DEBUG )
+    pylorax_log.setLevel( logging.DEBUG )
+    sh = logging.StreamHandler()
+    sh.setLevel( logging.INFO )
+    fmt = logging.Formatter("%(asctime)s: %(message)s")
+    sh.setFormatter( fmt )
+    log.addHandler( sh )
+    pylorax_log.addHandler( sh )
+    fh = logging.FileHandler( filename=opts.logfile, mode="w" )
+    fh.setLevel( logging.DEBUG )
+    fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
+    fh.setFormatter( fmt )
+    log.addHandler( fh )
+    pylorax_log.addHandler( fh )
+    # External program output log
+    program_log.setLevel(logging.DEBUG)
+    logfile = os.path.abspath(os.path.dirname(opts.logfile))+"/program.log"
+    fh = logging.FileHandler( filename=logfile, mode="w")
+    fh.setLevel( logging.DEBUG )
+    program_log.addHandler( fh )
+
+    log.debug( opts )
+
+    if os.getuid() != 0:
+        log.error("You need to run this as root")
+        sys.exit( 1 )
+
+    if not os.path.exists( opts.lorax_templates ):
+        log.error( "The lorax templates directory ({0}) doesn't"
+                   " exist.".format( opts.lorax_templates ) )
+        sys.exit( 1 )
+
+    if opts.result_dir and os.path.exists(opts.result_dir):
+        log.error( "The results_dir ({0}) should not exist, please delete or "
+                   "move its contents".format( opts.result_dir ))
+        sys.exit( 1 )
+
+    if opts.iso and not os.path.exists( opts.iso ):
+        log.error( "The iso {0} is missing.".format( opts.iso ) )
+        sys.exit( 1 )
+
+    if opts.disk_image and not os.path.exists( opts.disk_image ):
+        log.error( "The disk image {0} is missing.".format( opts.disk_image ) )
+        sys.exit( 1 )
+
+    if opts.no_virt:
+        log.error( "--no-virt is not yet implemented." )
+        sys.exit( 1 )
+
+    if opts.make_appliance:
+        log.error( "--make-appliance is not yet implemented." )
+        sys.exit( 1 )
+
+    if opts.make_ami:
+        log.error( "--make-ami is not yet implemented." )
+        sys.exit( 1 )
+
+    # Use virt-install to make the disk image
+    if opts.iso:
+        disk_img = tempfile.mktemp( prefix="disk", suffix=".img", dir=opts.tmp )
+        install_log = os.path.abspath(os.path.dirname(opts.logfile))+"/virt-install.log"
+
+        log.info( "disk_img = {0}".format(disk_img) )
+        log.info( "install_log = {0}".format(install_log) )
+
+        # Parse the kickstart to get the partition sizes
+        ks_version = makeVersion()
+        ks = KickstartParser( ks_version, errorsAreFatal=False, missingIncludeIsFatal=False )
+        ks.readKickstart( opts.ks[0] )
+        disk_size = 1 + (sum( [p.size for p in ks.handler.partition.partitions] ) / 1024)
+        log.info( "disk_size = {0}GB".format(disk_size) )
+
+        iso_mount = IsoMountpoint( opts.iso )
+        log_monitor = LogMonitor( install_log )
+
+        virt = VirtualInstall( iso_mount, opts.ks, disk_img, disk_size,
+                               opts.kernel_args, opts.ram, opts.vnc,
+                               log_check = log_monitor.server.log_check,
+                               virtio_host = log_monitor.host,
+                               virtio_port = log_monitor.port )
+        virt.destroy()
+        log_monitor.shutdown()
+        iso_mount.umount()
+
+        if log_monitor.server.log_check():
+            log.error( "Install failed" )
+            if not opts.keep_image:
+                log.info( "Removing bad disk image" )
+                os.unlink( disk_img )
+            sys.exit( 1 )
+        else:
+            log.info( "Disk Image install successful" )
+
+
+    result_dir = None
+    if opts.make_iso and not opts.image_only:
+        result_dir = make_livecd( opts.disk_image or disk_img, opts.squashfs_args,
+                                  opts.lorax_templates,
+                                  opts.title, opts.project, opts.releasever )
+
+        if not opts.keep_image and not opts.disk_image:
+            os.unlink( disk_img )
+
+        if opts.result_dir:
+            shutil.copytree( result_dir, opts.result_dir )
+            shutil.rmtree( result_dir )
+
+    log.info("SUMMARY")
+    log.info("-------")
+    log.info("Logs are in {0}".format(os.path.abspath(os.path.dirname(opts.logfile))))
+    if opts.keep_image:
+        log.info("Disk image is at {0}".format(disk_img))
+    else:
+        log.info("Disk image erased")
+    if result_dir:
+        log.info("Results are in {0}".format(opts.result_dir or result_dir))
+
+    sys.exit( 0 )
+
