@@ -6,8 +6,8 @@ installpkg anaconda
 ## anaconda deps that aren't in the RPM
 installpkg firstboot
 
-## firstaidkit (rescue mode) package
-installpkg firstaidkit-engine
+## firstaidkit (rescue mode) packages
+installpkg firstaidkit-plugin-{passwd,key-recovery,mdadm-conf}
 
 ## kernel and firmware
 installpkg kernel
