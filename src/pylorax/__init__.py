@@ -203,7 +203,8 @@ class Lorax(BaseLoraxClass):
         # set up install tree
         logger.info("setting up install tree")
         self.installtree = LoraxInstallTree(self.yum, self.basearch,
-                                            self.libdir, self.workdir)
+                                            self.libdir, self.workdir,
+                                            self.conf)
 
         # set up required build parameters
         logger.info("setting up build parameters")

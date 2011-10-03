@@ -39,7 +39,7 @@ from sysutils import *
 
 class LoraxInstallTree(BaseLoraxClass):
 
-    def __init__(self, yum, basearch, libdir, workdir):
+    def __init__(self, yum, basearch, libdir, workdir, conf=None):
         BaseLoraxClass.__init__(self)
         self.yum = yum
         self.root = self.yum.installroot
@@ -47,8 +47,44 @@ class LoraxInstallTree(BaseLoraxClass):
         self.libdir = libdir
         self.workdir = workdir
         self.initramfs = {}
+        self.conf = conf
 
         self.lcmds = constants.LoraxRequiredCommands()
+
+    @property
+    def dracut_hooks_path(self):
+        """ Return the path to the lorax dracut hooks scripts
+
+            Use the configured share dir if it is setup,
+            otherwise default to /usr/share/lorax/dracut_hooks
+        """
+        if self.conf:
+            return joinpaths(self.conf.get("lorax", "sharedir"),
+                              "dracut_hooks")
+        else:
+            return "/usr/share/lorax/dracut_hooks"
+
+    def copy_dracut_hooks(self, hooks):
+        """ Copy the hook scripts in hooks into the installroot's /tmp/
+        and return a list of commands to pass to dracut when creating the
+        initramfs
+
+        hooks is a list of tuples with the name of the hook script and the
+        target dracut hook directory
+        (eg. [("99anaconda-copy-ks.sh", "/lib/dracut/hooks/pre-pivot")])
+        """
+        dracut_commands = []
+        for hook_script, dracut_path in hooks:
+            src = joinpaths(self.dracut_hooks_path, hook_script)
+            if not os.path.exists(src):
+                logger.error("Missing lorax dracut hook script %s" % (src))
+                continue
+            dst = joinpaths(self.root, "/tmp/", hook_script)
+            shutil.copy2(src, dst)
+            dracut_commands += ["--include", joinpaths("/tmp/", hook_script),
+                                dracut_path]
+
+        return dracut_commands
 
     def remove_locales(self):
         chroot = lambda: os.chroot(self.root)
@@ -548,12 +584,16 @@ class LoraxInstallTree(BaseLoraxClass):
 
     def make_dracut_initramfs(self):
         for kernel in self.kernels:
+            hooks = [("99anaconda-copy-ks.sh", "/lib/dracut/hooks/pre-pivot")]
+            hook_commands = self.copy_dracut_hooks(hooks)
+
             outfile = "/tmp/initramfs.img" # inside the chroot
             logger.debug("chrooting into installtree to create initramfs.img")
             subprocess.check_call(["chroot", self.root, "/sbin/dracut",
                                    "--noprefix", "--nomdadmconf", "--nolvmconf",
-                                   "--xz", "--modules", "base dmsquash-live",
-                                   outfile, kernel.version])
+                                   "--xz", "--modules", "base dmsquash-live"] \
+                                  + hook_commands \
+                                  + [outfile, kernel.version])
             # move output file into installtree workdir
             dstdir = joinpaths(self.workdir, "dracut-%s" % kernel.version)
             os.makedirs(dstdir)
