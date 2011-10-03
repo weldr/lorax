@@ -117,7 +117,7 @@ class LoraxYumHelper(object):
                     if os.path.islink(fname) or os.path.isfile(fname):
                         os.unlink(fname)
                     else:
-                        shutil.rmtree(fname)
+                        shutil.rmtree(fname, ignore_errors=True)
 
                     logger.debug("removed {0}".format(fname))
                     count += 1
