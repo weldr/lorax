@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        16.4.4
+Version:        16.4.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -61,6 +61,13 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Mon Oct 03 2011 Martin Gracik <mgracik@redhat.com> 16.4.5-1
+- Ignore remove errors
+- Check if /proc is mounted (#741722)
+- Add xen-kbdfront package to initrd (#740378)
+- Don't use mk-s390-cdboot (dhorak)
+- Use own addrsize implementation (dhorak)
+
 * Mon Sep 19 2011 Martin Gracik <mgracik@redhat.com> 16.4.4-1
 - syslinux-vesa-splash changed filename (#739345)
 
