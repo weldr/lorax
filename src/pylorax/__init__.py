@@ -170,6 +170,13 @@ class Lorax(BaseLoraxClass):
             logger.critical("no root privileges")
             sys.exit(1)
 
+        # check if /proc is mounted
+        logger.info("checking /proc")
+        if (not os.path.isdir("/proc") and not os.path.exists("/proc/mounts")
+                and not os.path.exists("/proc/devices")):
+            logger.critical("missing required /proc files (not mounted?)")
+            sys.exit(1)
+
         # do we have all lorax required commands?
         self.lcmds = constants.LoraxRequiredCommands()
 
