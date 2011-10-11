@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        16.4.5
+Version:        16.4.6
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -61,6 +61,10 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Tue Oct 11 2011 Brian C. Lane <bcl@brianlane.com> 16.4.6-1
+- xen-kbdfront is a module not a package (#740378) (mgracik)
+- copy kickstarts into sysroot (#743135) (bcl)
+
 * Mon Oct 03 2011 Martin Gracik <mgracik@redhat.com> 16.4.5-1
 - Ignore remove errors
 - Check if /proc is mounted (#741722)
