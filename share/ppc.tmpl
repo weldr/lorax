@@ -2,6 +2,7 @@
 <%
 configdir="tmp/config_files"
 BOOTDIR="ppc"
+LIVEDIR="LiveOS"
 MACDIR=BOOTDIR+"/mac"
 NETBOOTDIR="images/netboot"
 
@@ -12,8 +13,8 @@ bitsizes = set()
 prepboot = ""
 %>
 
-mkdir images
-install ${runtime_img} images/install.img
+mkdir ${LIVEDIR}
+install ${runtime_img} ${LIVEDIR}/squashfs.img
 
 ## basic ppc stuff
 mkdir ${BOOTDIR}
@@ -82,7 +83,7 @@ runcmd mkisofs -o ${outroot}/images/boot.iso -chrp-boot -U \
         etc=${outroot}/etc \
         ${BOOTDIR}=${outroot}/${BOOTDIR} \
         ${NETBOOTDIR}=${outroot}/${NETBOOTDIR} \
-        LiveOS/squashfs.img=${outroot}/images/install.img
+        ${LIVEDIR}=${outroot}/${LIVEDIR}
 
 %if len(bitsizes) == 2:
     treeinfo images-ppc   boot.iso images/boot.iso

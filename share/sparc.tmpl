@@ -2,10 +2,11 @@
 <%
 configdir="tmp/config_files"
 BOOTDIR="boot"
+LIVEDIR="LiveOS"
 %>
 
-mkdir images
-install ${runtime_img} images/install.img
+mkdir ${LIVEDIR}
+install ${runtime_img} ${LIVEDIR}/squashfs.img
 
 install boot/*.b ${BOOTDIR}
 install ${configdir}/silo.conf ${BOOTDIR}
@@ -27,6 +28,6 @@ runcmd mkisofs -R -J -T -G /${BOOTDIR}/isofs.b -B ... \
   -x Fedora -x repodata \
   -sparc-label "${product.name} ${product.version} Boot Disc" \
   -o ${outroot}/images/boot.iso \
-  -graft-points boot=${outroot}/${BOOTDIR} \
-                LiveOS/squashfs.img=${outroot}/images/install.img
+  -graft-points ${BOOTDIR}=${outroot}/${BOOTDIR} \
+                ${LIVEDIR}=${outroot}/${LIVEDIR}
 treeinfo images-${basearch} boot.iso images/boot.iso

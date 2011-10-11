@@ -5,10 +5,11 @@ SYSLINUXDIR="usr/share/syslinux"
 PXEBOOTDIR="images/pxeboot"
 BOOTDIR="isolinux"
 KERNELDIR=PXEBOOTDIR
+LIVEDIR="LiveOS"
 %>
 
-mkdir images
-install ${runtime_img} images/install.img
+mkdir ${LIVEDIR}
+install ${runtime_img} ${LIVEDIR}/squashfs.img
 
 mkdir ${BOOTDIR} ${KERNELDIR}
 install ${SYSLINUXDIR}/isolinux.bin ${BOOTDIR}
@@ -66,7 +67,7 @@ runcmd mkisofs -o ${outroot}/images/boot.iso \
        ${efiargs} -R -J -V '${product.name}' -T -graft-points \
        ${BOOTDIR}=${outroot}/${BOOTDIR} \
        ${KERNELDIR}=${outroot}/${KERNELDIR} \
-       LiveOS/squashfs.img=${outroot}/images/install.img \
+       ${LIVEDIR}=${outroot}/${LIVEDIR} \
        ${efigraft}
 runcmd isohybrid ${efihybrid} ${outroot}/images/boot.iso
 treeinfo images-${basearch} boot.iso images/boot.iso
