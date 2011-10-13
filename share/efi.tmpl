@@ -36,7 +36,7 @@ ${make_efiboot("images/efidisk.img", include_kernel=True, disk=True)}
         replace @ROOT@ root=live:LABEL=ANACONDA ${eficonf}
     %else:
         ## NOTE: this needs to match the boot.iso label (see x86.tmpl)
-        replace @ROOT@ root=live:CDLABEL=${udev_escape(product.name)} ${eficonf}
+        replace @ROOT@ 'root=live:CDLABEL=${isolabel|udev}' ${eficonf}
     %endif
     %if efiarch == 'IA32':
         copy ${eficonf} ${EFIBOOTDIR}/BOOT.conf

@@ -1,4 +1,4 @@
-<%page args="kernels, runtime_img, basearch, outroot, product"/>
+<%page args="kernels, runtime_img, basearch, outroot, product, isolabel"/>
 <%
 configdir="tmp/config_files"
 SYSLINUXDIR="usr/share/syslinux"
@@ -21,7 +21,7 @@ install ${configdir}/grub.conf ${BOOTDIR}
 
 replace @VERSION@ ${product.version} ${BOOTDIR}/grub.conf ${BOOTDIR}/isolinux.cfg ${BOOTDIR}/*.msg
 replace @PRODUCT@ ${product.name}    ${BOOTDIR}/grub.conf ${BOOTDIR}/isolinux.cfg ${BOOTDIR}/*.msg
-replace @ROOT@ 'root=live:CDLABEL=${udev_escape(product.name)}' ${BOOTDIR}/isolinux.cfg
+replace @ROOT@ 'root=live:CDLABEL=${isolabel|udev}' ${BOOTDIR}/isolinux.cfg
 
 %if exists("boot/memtest*"):
     install boot/memtest* ${BOOTDIR}
@@ -64,7 +64,7 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
 runcmd mkisofs -o ${outroot}/images/boot.iso \
        -b ${BOOTDIR}/isolinux.bin -c ${BOOTDIR}/boot.cat \
        -boot-load-size 4 -boot-info-table -no-emul-boot \
-       ${efiargs} -R -J -V '${product.name}' -T -graft-points \
+       ${efiargs} -R -J -V '${isolabel}' -T -graft-points \
        ${BOOTDIR}=${outroot}/${BOOTDIR} \
        ${KERNELDIR}=${outroot}/${KERNELDIR} \
        ${LIVEDIR}=${outroot}/${LIVEDIR} \

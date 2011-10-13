@@ -142,12 +142,15 @@ class TreeBuilder(object):
     '''Builds the arch-specific boot images.
     inroot should be the installtree root (the newly-built runtime dir)'''
     def __init__(self, product, arch, inroot, outroot, runtime, templatedir=None):
+        # NOTE: if you change isolabel, you need to change pungi to match, or
+        # the pungi images won't boot.
+        isolabel = "{0.name} {0.version} {1.basearch}".format(product, arch)
         # NOTE: if you pass an arg named "runtime" to a mako template it'll
         # clobber some mako internal variables - hence "runtime_img".
         self.vars = DataHolder(arch=arch, product=product, runtime_img=runtime,
                                inroot=inroot, outroot=outroot,
                                basearch=arch.basearch, libdir=arch.libdir,
-                               udev_escape=udev_escape)
+                               isolabel=isolabel, udev=udev_escape)
         self._runner = LoraxTemplateRunner(inroot, outroot, templatedir=templatedir)
         self._runner.defaults = self.vars
 

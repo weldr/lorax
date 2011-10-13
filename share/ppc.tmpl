@@ -1,4 +1,4 @@
-<%page args="kernels, runtime_img, basearch, libdir, inroot, outroot, product"/>
+<%page args="kernels, runtime_img, basearch, libdir, inroot, outroot, product, isolabel"/>
 <%
 configdir="tmp/config_files"
 BOOTDIR="ppc"
@@ -68,14 +68,14 @@ mkdir etc
     install ${configdir}/yaboot.conf.3264 etc/yaboot.conf
     replace @PRODUCT@ ${product.name}      etc/yaboot.conf
     replace @VERSION@ ${product.version}   etc/yaboot.conf
-    replace @ROOT@ root=live:CDLABEL=PBOOT etc/yaboot.conf
+    replace @ROOT@ 'root=live:CDLABEL=${isolabel|udev}' etc/yaboot.conf
 %else:
     copy ${KERNELDIR}/yaboot.conf etc/yaboot.conf
 %endif
 
 runcmd mkisofs -o ${outroot}/images/boot.iso -chrp-boot -U \
         ${prepboot} -part -hfs -T -r -l -J \
-        -A "${product.name} ${product.version}" -sysid PPC -V PBOOT \
+        -A "${product.name} ${product.version}" -sysid PPC -V '${isolabel}' \
         -volset "${product.version}" -volset-size 1 -volset-seqno 1 \
         -hfs-volid ${product.version} -hfs-bless ${outroot}/${MACDIR} \
         -map ${inroot}/${configdir}/mapping \

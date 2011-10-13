@@ -1,4 +1,4 @@
-<%page args="kernels, runtime_img, basearch, outroot, product"/>
+<%page args="kernels, runtime_img, basearch, outroot, product, isolabel"/>
 <%
 configdir="tmp/config_files"
 BOOTDIR="boot"
@@ -20,10 +20,10 @@ replace @PRODUCT@ ${product.name} ${BOOTDIR}/boot.msg
     installinitrd images-${basearch} ${kernel.initrd.path} ${BOOTDIR}/initrd.img
 %endfor
 
-replace @ROOT@ root=live:CDLABEL=PBOOT ${BOOTDIR}/silo.conf
+replace @ROOT@ 'root=live:CDLABEL=${isolabel|udev}' ${BOOTDIR}/silo.conf
 
 runcmd mkisofs -R -J -T -G /${BOOTDIR}/isofs.b -B ... \
-  -s /${BOOTDIR}/silo.conf -r -V "PBOOT" \
+  -s /${BOOTDIR}/silo.conf -r -V '${isolabel}' \
   -A "${product.name} ${product.version}" \
   -x Fedora -x repodata \
   -sparc-label "${product.name} ${product.version} Boot Disc" \
