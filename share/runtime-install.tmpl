@@ -20,7 +20,7 @@ installpkg kernel
     installpkg kernel-PAE gpart
 %endif
 %if basearch in ("i386", "x86_64"):
-    installpkg grub grub-efi firstaidkit-plugin-grub efibootmgr biosdevname memtest86+
+    installpkg grub2 grub2-efi efibootmgr biosdevname memtest86+
 %endif
 %if basearch in ("ppc", "ppc64"):
     installpkg yaboot fbset hfsutils kernel-bootwrapper ppc64-utils
