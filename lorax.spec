@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        16.4.6
+Version:        16.4.7
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -61,6 +61,11 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Mon Oct 17 2011 Martin Gracik <mgracik@redhat.com> 16.4.7-1
+- Changes required for grub2 (dgilmore)
+- Add fpaste to install environment (#727842)
+- rsyslgod config: hardcode the hostname for virtio forwarding.
+
 * Tue Oct 11 2011 Brian C. Lane <bcl@brianlane.com> 16.4.6-1
 - xen-kbdfront is a module not a package (#740378) (mgracik)
 - copy kickstarts into sysroot (#743135) (bcl)
