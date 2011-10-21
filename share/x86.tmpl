@@ -13,7 +13,7 @@ install ${runtime_img} ${LIVEDIR}/squashfs.img
 
 mkdir ${BOOTDIR} ${KERNELDIR}
 install ${SYSLINUXDIR}/isolinux.bin ${BOOTDIR}
-install ${configdir}/syslinux.cfg ${BOOTDIR}/isolinux.cfg
+install ${configdir}/isolinux.cfg ${BOOTDIR}/isolinux.cfg
 install usr/share/anaconda/boot/syslinux-splash.png ${BOOTDIR}/splash.png
 install ${configdir}/boot.msg.x86 ${BOOTDIR}/boot.msg
 install ${SYSLINUXDIR}/vesamenu.c32 ${BOOTDIR}
@@ -22,14 +22,6 @@ install ${configdir}/grub.conf ${BOOTDIR}
 replace @VERSION@ ${product.version} ${BOOTDIR}/grub.conf ${BOOTDIR}/isolinux.cfg ${BOOTDIR}/*.msg
 replace @PRODUCT@ ${product.name}    ${BOOTDIR}/grub.conf ${BOOTDIR}/isolinux.cfg ${BOOTDIR}/*.msg
 replace @ROOT@ 'root=live:CDLABEL=${isolabel|udev}' ${BOOTDIR}/isolinux.cfg
-
-%if exists("boot/memtest*"):
-    install boot/memtest* ${BOOTDIR}
-    append ${BOOTDIR}/isolinux.cfg "label memtest86"
-    append ${BOOTDIR}/isolinux.cfg "  menu label ^Memory test"
-    append ${BOOTDIR}/isolinux.cfg "  kernel memtest"
-    append ${BOOTDIR}/isolinux.cfg "  append -"
-%endif
 
 %for kernel in kernels:
     %if kernel.flavor:
