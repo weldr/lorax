@@ -1,6 +1,6 @@
 <%page args="kernels, runtime_img, basearch, outroot, product, isolabel"/>
 <%
-configdir="tmp/config_files"
+configdir="tmp/config_files/x86"
 SYSLINUXDIR="usr/share/syslinux"
 PXEBOOTDIR="images/pxeboot"
 BOOTDIR="isolinux"
@@ -11,18 +11,22 @@ LIVEDIR="LiveOS"
 mkdir ${LIVEDIR}
 install ${runtime_img} ${LIVEDIR}/squashfs.img
 
-mkdir ${BOOTDIR} ${KERNELDIR}
+## install bootloader and config files
+mkdir ${BOOTDIR}
 install ${SYSLINUXDIR}/isolinux.bin ${BOOTDIR}
-install ${configdir}/isolinux.cfg ${BOOTDIR}/isolinux.cfg
-install usr/share/anaconda/boot/syslinux-splash.png ${BOOTDIR}/splash.png
-install ${configdir}/boot.msg.x86 ${BOOTDIR}/boot.msg
 install ${SYSLINUXDIR}/vesamenu.c32 ${BOOTDIR}
+install ${configdir}/isolinux.cfg ${BOOTDIR}
+install ${configdir}/boot.msg ${BOOTDIR}
 install ${configdir}/grub.conf ${BOOTDIR}
+install usr/share/anaconda/boot/syslinux-splash.png ${BOOTDIR}/splash.png
 
+## configure bootloader
 replace @VERSION@ ${product.version} ${BOOTDIR}/grub.conf ${BOOTDIR}/isolinux.cfg ${BOOTDIR}/*.msg
 replace @PRODUCT@ ${product.name}    ${BOOTDIR}/grub.conf ${BOOTDIR}/isolinux.cfg ${BOOTDIR}/*.msg
 replace @ROOT@ 'root=live:CDLABEL=${isolabel|udev}' ${BOOTDIR}/isolinux.cfg
 
+## install kernels
+mkdir ${KERNELDIR}
 %for kernel in kernels:
     %if kernel.flavor:
         installkernel images-xen ${kernel.path} ${KERNELDIR}/vmlinuz-${kernel.flavor}
@@ -53,6 +57,7 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
     <%include file="efi.tmpl" args="configdir=configdir, KERNELDIR=KERNELDIR, efiarch=efiarch"/>
 %endif
 
+## make boot.iso
 runcmd mkisofs -o ${outroot}/images/boot.iso \
        -b ${BOOTDIR}/isolinux.bin -c ${BOOTDIR}/boot.cat \
        -boot-load-size 4 -boot-info-table -no-emul-boot \

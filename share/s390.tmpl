@@ -1,6 +1,6 @@
 <%page args="kernels, runtime_img, basearch, outroot"/>
 <%
-configdir="tmp/config_files"
+configdir="tmp/config_files/s390"
 BOOTDIR="images"
 KERNELDIR=BOOTDIR
 INITRD_ADDRESS="0x02000000"
@@ -12,19 +12,27 @@ kernel = kernels[0]
 mkdir images
 install ${runtime_img} images
 
+## install bootloader (such as it is) and bootloader config
 install ${configdir}/redhat.exec ${BOOTDIR}
 install ${configdir}/generic.prm ${BOOTDIR}
 install ${configdir}/generic.ins .
 
+## configure bootloader
 replace @INITRD_LOAD_ADDRESS@ ${INITRD_ADDRESS} generic.ins
 
+## install kernel
 installkernel images-${basearch} ${kernel.path} ${KERNELDIR}/kernel.img
 installinitrd images-${basearch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
+
+## s390 needs some extra boot config
 runcmd usr/libexec/anaconda/addrsize ${INITRD_ADDRESS} ${KERNELDIR}/initrd.img ${outroot}/${BOOTDIR}/initrd_addrsize
+
+## s390 also has some special treeinfo data
 treeinfo images-${basearch} initrd.addrsize ${BOOTDIR}/initrd_addrsize
 treeinfo images-${basearch} generic.prm ${BOOTDIR}/generic.prm
 treeinfo images-${basearch} generic.ins generic.ins
 
+## make cdboot.img
 runcmd ${MKCDBOOT} \
        -i ${outroot}/${kernel.path} \
        -r ${outroot}/${kernel.initrd.path} \

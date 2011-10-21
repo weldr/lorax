@@ -9,6 +9,7 @@ KEYMAP_OVERRIDE = "usr/share/anaconda/keymaps-override-%s" % filearch
 SCREENFONT = "usr/share/anaconda/screenfont-%s.gz" % filearch
 PYTHONDIR = glob("usr/"+libdir+"/python?.?")[0]
 stubs = ("list-harddrives", "loadkeys", "raidstart", "raidstop")
+configdir = configdir + "/common"
 %>
 
 ## create_keymaps()
@@ -57,8 +58,8 @@ symlink /sbin/init init
 append etc/resolv.conf ""
 copy usr/share/anaconda/lang-table etc
 install ${configdir}/rsyslog.conf etc
-install ${configdir}/.bash_history root
-install ${configdir}/.profile root
+install ${configdir}/bash_history root/.bash_history
+install ${configdir}/profile root/.profile
 install ${configdir}/libuser.conf etc
 %if exists(root+"/etc/selinux/targeted"):
     install ${configdir}/selinux.config etc/selinux/config
