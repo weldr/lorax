@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        0.8
+Version:        17.0
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -69,6 +69,35 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Mon Oct 21 2011 Will Woods <wwoods@redhat.com> 17.0-1
+- Merges the 'treebuilder' branch of lorax
+- images are split into two parts again (initrd.img, LiveOS/squashfs.img)
+- base memory use reduced to ~200M (was ~550M in F15, ~320MB in F16)
+- initrd.img is now built by dracut
+- booting now requires correct "root=live:..." argument
+- boot.iso is EFI hybrid capable (copy iso to USB stick, boot from EFI)
+- Better support for Apple EFI (now with custom boot icon!)
+- new syslinux config (#734170)
+- add fpaste to installer environment (#727842)
+- rsyslog.conf: hardcode hostname for virtio forwarding (#744544)
+- Use a predictable ISO Volume Label (#732298)
+- syslinux-vesa-splash changed filename (#739345)
+- don't create /etc/sysconfig/network (#733425)
+- xauth and libXmu are needed for ssh -X (#731046)
+- add libreport plugins (#729537), clean up libreport
+- keep nss certs for libreport (#730438)
+- keep ModemManager (#727946)
+- keep vmmouse binaries (#723831)
+- change isbeta to isfinal, default to isFinal=False (#723901)
+- use pungi's installroot rather than making our own (#722481)
+- keep ntfsresize around (#722711)
+- replace cjkuni-uming-fonts with wqy-microhei-fonts (#709962)
+- install all firmware packages (#703291, #705392)
+- keep libmodman and libproxy (#701622)
+- write the lorax verion in the .buildstamp (#689697)
+- disable rsyslogd rate limiting on imuxsock (#696943)
+- disable debuginfo package
+
 * Wed Apr 13 2011 Martin Gracik <mgracik@redhat.com> 0.5-1
 - Remove pungi patch
 - Remove pseudo code
