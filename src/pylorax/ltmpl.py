@@ -95,6 +95,7 @@ def rglob(pathname, root="/", fatal=False):
 def rexists(pathname, root=""):
     return True if rglob(pathname, root) else False
 
+# TODO: default to strict mode (fatalerrors=True)
 class LoraxTemplateRunner(object):
     def __init__(self, inroot, outroot, yum=None, fatalerrors=False,
                                         templatedir=None, defaults={}):
@@ -385,7 +386,7 @@ class LoraxTemplateRunner(object):
             try:
                 self.yum.install(pattern=p)
             except Exception as e:
-                # TODO: save exception and re-raise after the loop finishes
+                # FIXME: save exception and re-raise after the loop finishes
                 logger.warn("installpkg %s failed: %s",p,str(e))
 
     def removepkg(self, *pkgs):

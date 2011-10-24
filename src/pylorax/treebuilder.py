@@ -167,7 +167,6 @@ class TreeBuilder(object):
             dracut.append("--force")
         # Hush some dracut warnings. TODO: bind-mount proc in place?
         open(joinpaths(self.vars.inroot,"/proc/modules"),"w")
-        # XXX FIXME: add anaconda dracut module!
         for kernel in self.kernels:
             logger.info("rebuilding %s", kernel.initrd.path)
             if backup:
