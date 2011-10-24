@@ -9,15 +9,17 @@ TAG = r$(VERSION)-$(RELEASE)
 
 default: all
 
-all:
+src/pylorax/version.py: lorax.spec
+	echo "num = '$(VERSION)-$(RELEASE)'" > src/pylorax/version.py
+
+all: src/pylorax/version.py
 	$(PYTHON) setup.py build
 
 install: all
-	@echo "num = '$(VERSION)-$(RELEASE)'" > src/pylorax/version.py
 	$(PYTHON) setup.py install --root=$(DESTDIR)
 
 clean:
-	-rm -rf build
+	-rm -rf build src/pylorax/version.py
 
 tag:
 	git tag -f $(TAG)
