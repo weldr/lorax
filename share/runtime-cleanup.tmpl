@@ -85,9 +85,9 @@ arch/x86/kvm
 """
 %>
 %for kmodpath in removekmods.split():
-    remove /modules/*/kernel/${kmodpath}
+    remove lib/modules/*/kernel/${kmodpath}
 %endfor
-remove /modules/*/{build,source,*.map}
+remove lib/modules/*/{build,source,*.map}
 ## NOTE: depmod gets re-run after cleanup finishes
 
 ## remove generated locales - anaconda >=16.x builds them at runtime

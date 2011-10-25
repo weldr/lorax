@@ -108,8 +108,8 @@ move usr/share/anaconda/loader.tr etc
 move usr/libexec/anaconda/auditd sbin
 
 ## for compatibility with Ancient Anaconda Traditions
-symlink /lib/modules /modules
-symlink /lib/firmware /firmware
+symlink ../lib/modules /modules
+symlink ../lib/firmware /firmware
 
 ## create_depmod_conf()
 append etc/depmod.d/dd.conf "search updates built-in"
