@@ -43,7 +43,7 @@ def macbless(imgfile):
     '''"bless" the EFI bootloader inside the given Mac EFI boot image, by
     writing its inode info into the HFS+ volume header.'''
     # Get the inode number for the boot image and its parent directory
-    with LoopDev(outfile) as loopdev:
+    with LoopDev(imgfile) as loopdev:
         with Mount(loopdev) as mnt:
             loader = glob.glob(os.path.join(mnt,'EFI/BOOT/BOOT*.efi'))[0]
             blessnode = os.stat(loader).st_ino
