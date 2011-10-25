@@ -17,7 +17,7 @@
 #
 # Red Hat Author(s):  Will Woods <wwoods@redhat.com>
 
-import os, tempfile, optparse
+import os, tempfile, argparse
 from subprocess import check_call, PIPE
 from pylorax.imgutils import mkdosimg, round_to_blocks, LoopDev, DMDev, dm_detach
 from pylorax.imgutils import mkhfsimg, Mount
@@ -77,34 +77,34 @@ def mkefidisk(efiboot, outfile):
             dm_detach(dmdev+"p1")
 
 if __name__ == '__main__':
-    parser = optparse.OptionParser(usage="%prog EFIBOOTDIR IMGFILE")
-    parser.add_option("-d", "--disk", action="store_true", default=False,
-                      help="make a full EFI disk image")
-    parser.add_option("-l", "--label", action="store", default="ANACONDA",
-                      help="filesystem label to use")
-    parser.add_option("-a", "--apple", action="store_const", const="apple",
-                      dest="imgtype", default="default",
-                      help="make an Apple EFI image (hfsplus, bless loader)")
-    parser.add_option("-i", "--icon", action="store",
-                      help="icon file to include (for Apple EFI image)")
-    # get args
-    (opt, args) = parser.parse_args()
-    if len(args) != 2:
-        parser.error("need exactly two arguments")
-    (bootdir, outfile) = args
+    parser = argparse.ArgumentParser(description="Make an EFI boot image from the given directory.")
+    parser.add_argument("-d", "--disk", action="store_true",
+        help="make a full EFI disk image (including partition table)")
+    parser.add_argument("-a", "--apple", action="store_const", const="apple",
+        dest="imgtype", default="default",
+        help="make an Apple EFI image (use hfs+, bless bootloader)")
+    parser.add_argument("-l", "--label", default="EFI",
+        help="filesystem label to use (default: %(default)s)")
+    parser.add_argument("-i", "--icon", metavar="ICONFILE",
+        help="icon file to include (for Apple EFI image)")
+    parser.add_argument("bootdir", metavar="EFIBOOTDIR",
+        help="input directory (will become /EFI/BOOT in the image)")
+    parser.add_argument("outfile", metavar="OUTPUTFILE",
+        help="output file to write")
+    opt = parser.parse_args()
     # sanity checks
-    if not os.path.isdir(bootdir):
-        parser.error("%s is not a directory" % bootdir)
+    if not os.path.isdir(opt.bootdir):
+        parser.error("%s is not a directory" % opt.bootdir)
     if os.getuid() > 0:
         parser.error("need root permissions")
     if opt.icon and not opt.imgtype == "apple":
         print "Warning: --icon is only useful for Apple EFI images"
     # do the thing!
     if opt.imgtype == "apple":
-        mkmacboot(bootdir, outfile, opt.label, opt.icon)
+        mkmacboot(opt.bootdir, opt.outfile, opt.label, opt.icon)
     else:
-        mkefiboot(bootdir, outfile, opt.label)
+        mkefiboot(opt.bootdir, opt.outfile, opt.label)
     if opt.disk:
         efiboot = tempfile.NamedTemporaryFile(prefix="mkefiboot.").name
-        shutil.move(outfile, efiboot)
-        mkefidisk(efiboot, outfile)
+        shutil.move(opt.outfile, efiboot)
+        mkefidisk(efiboot, opt.outfile)
