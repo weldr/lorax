@@ -1,0 +1,80 @@
+#!/usr/bin/python
+# test-parse-template - parse and print (but don't execute!) a Lorax Template.
+# Copyright (C) 2011  Red Hat, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Red Hat Author(s):  Will Woods <wwoods@redhat.com>
+
+import sys, inspect
+from pylorax.base import DataHolder
+from pylorax.ltmpl import LoraxTemplate
+from mako.exceptions import text_error_template
+
+data = DataHolder()
+data.arch = DataHolder(basearch='ARCH.BASEARCH', buildarch='ARCH.BUILDARCH', libdir='ARCH.LIBDIR')
+data.product = DataHolder(name='PRODUCT.NAME', version='PRODUCT.VERSION')
+data.glob = lambda g: ['glob.1', 'glob.2']
+data.exists = lambda e: True
+data.udev_escape = lambda s: "UDEV_ESCAPE(%s)" % s.upper()
+data.removelocales = ['REMOVELOCALE1', 'REMOVELOCALE2']
+data.kernels = [DataHolder(path="/path/to/vmlinuz", initrd=DataHolder(path="/path/to/initrd.img"), flavor=None, arch=data.arch.basearch)]
+data.basearch = data.arch.basearch
+data.libdir = data.arch.libdir
+
+def get_args(template):
+    argspec = inspect.getargspec(template.module.render_body)
+    return set(argspec.args[1:]) # skip "context"
+
+def readtemplate(templatefile):
+    parser = LoraxTemplate(directories=['.'])
+    from mako.lookup import TemplateLookup
+    lookup = TemplateLookup(directories=parser.directories)
+    return lookup.get_template(templatefile)
+
+if __name__ == '__main__':
+    # check args
+    if len(sys.argv) == 1:
+        print "usage: %s TEMPLATE [arg1=value1] [arg2=value2] ..."
+
+    # read template
+    templatefile = sys.argv[1]
+    print "parsing %s" % templatefile
+    t = readtemplate(templatefile)
+    reqargs = get_args(t)
+    print "required args: %s" % ' '.join(reqargs)
+
+    # parse extra commandline args
+    if len(sys.argv) > 2:
+        for arg in sys.argv[2:]:
+            if '=' in arg:
+                k,v = arg.split('=',1)
+                data[k] = v
+
+    # fill in remaining blanks
+    for a in reqargs.difference(data):
+        data[a] = a.upper()
+
+    print "rendering %s using values:" % templatefile
+    for a in data:
+        print "  %s=%s" % (a,repr(data[a]))
+
+    # render and print
+    try:
+        lines = t.render(**data).splitlines()
+        for line in lines:
+            print line
+    except Exception:
+        print text_error_template().render()
+        raise SystemExit(1)
