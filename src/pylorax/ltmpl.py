@@ -95,12 +95,11 @@ def rglob(pathname, root="/", fatal=False):
 def rexists(pathname, root=""):
     return True if rglob(pathname, root) else False
 
-# TODO: default to strict mode (fatalerrors=True)
 # XXX NOTE: symlinks to stuff outside inroot/outroot will make us operate
 # on files outside our roots (e.g. deleting files on the host system).
 # TODO: operate inside an actual chroot for safety? Not that RPM bothers..
 class LoraxTemplateRunner(object):
-    def __init__(self, inroot, outroot, yum=None, fatalerrors=False,
+    def __init__(self, inroot, outroot, yum=None, fatalerrors=True,
                                         templatedir=None, defaults={}):
         self.inroot = inroot
         self.outroot = outroot
