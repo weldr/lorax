@@ -94,6 +94,20 @@ remove lib/modules/*/{build,source,*.map}
 removefrom glibc-common /usr/lib/locale/*
 remove /usr/lib/locale/locale-archive
 
+## remove unused themes, theme engines, icons, etc.
+removefrom gtk2 /usr/${libdir}/gtk-2.0/*/{engines,printbackends}/*
+removefrom gtk2 /usr/share/themes/*
+## clearlooks is the theme we use for gtk2
+removefrom gtk2-engines --allbut /usr/${libdir}/*/libclearlooks.so \
+                                 /usr/share/themes/Clearlooks/*
+## the Fedora icon theme inherits from Mist, so we need that
+removefrom gnome-themes --allbut /usr/share/icons/Mist/* \
+                                 /usr/share/themes/Clearlooks/*
+## Adwaita is the default theme for gtk3 and the default metacity theme
+removefrom gnome-themes-standard --allbut /usr/share/themes/Adwaita/*
+removefrom metacity --allbut /usr/bin/* /usr/${libdir}/* /etc/*
+
+
 ## other package specific removals
 removefrom ConsoleKit /etc/ConsoleKit* /etc/init/* /usr/bin/* /usr/lib/*
 removefrom ConsoleKit /usr/sbin/*
@@ -193,16 +207,6 @@ removefrom gnome-keyring /usr/share/GConf/* /usr/share/gcr-3/*
 removefrom gnome-keyring /usr/share/glib-2.0/* /usr/share/gnome-keyring*
 removefrom gnome-keyring /usr/share/locale/*
 removefrom gnome-python2-gconf /usr/share/pygtk/*
-removefrom gnome-themes /usr/share/icons/Crux/* /usr/share/icons/HighContrast*
-removefrom gnome-themes /usr/share/icons/LargePrint/* /usr/share/locale/*
-removefrom gnome-themes /usr/share/themes/ClearlooksClassic/*
-removefrom gnome-themes /usr/share/themes/Crux/* /usr/share/themes/Glider/*
-removefrom gnome-themes /usr/share/themes/Glossy/*
-removefrom gnome-themes /usr/share/themes/HighContrast*
-removefrom gnome-themes /usr/share/themes/Inverted/*
-removefrom gnome-themes /usr/share/themes/LargePrint/*
-removefrom gnome-themes /usr/share/themes/LowContrast*
-removefrom gnome-themes /usr/share/themes/Mist/* /usr/share/themes/Simple/*
 removefrom gnutls /usr/share/locale/*
 removefrom gpgme /usr/${libdir}/libgpgme-*
 removefrom grep /etc/* /usr/share/locale/*
@@ -210,18 +214,6 @@ removefrom grub2 /sbin/* /usr/bin/*
 removefrom gstreamer /usr/bin/* /usr/${libdir}/gstreamer-0.10/*
 removefrom gstreamer /usr/${libdir}/libgst* /usr/libexec/* /usr/share/locale/*
 removefrom gtk2 /usr/bin/update-gtk-immodules
-removefrom gtk2 /usr/${libdir}/gtk-2.0/2.10.0/{engines,printbackends}/*
-removefrom gtk2 /usr/share/themes/*
-removefrom gtk2-engines /usr/share/gtk-engines/* /usr/share/locale/*
-removefrom gtk2-engines /usr/share/themes/Crux/*
-removefrom gtk2-engines /usr/share/themes/Industrial/*
-removefrom gtk2-engines /usr/share/themes/Mist/* /usr/share/themes/ThinIce/*
-removefrom gtk2-engines /usr/${libdir}/*/libcrux-engine*
-removefrom gtk2-engines /usr/${libdir}/*/libglide*
-removefrom gtk2-engines /usr/${libdir}/*/libhcengine*
-removefrom gtk2-engines /usr/${libdir}/*/libindustrial*
-removefrom gtk2-engines /usr/${libdir}/*/libmist* /usr/${libdir}/*/libredmond*
-removefrom gtk2-engines /usr/${libdir}/*/libthinice*
 removefrom gtk3 /usr/share/* /usr/${libdir}/gtk-3.0/*
 removefrom gtk3 /usr/${libdir}/libgailutil*
 removefrom gzip /usr/bin/*
@@ -270,13 +262,6 @@ removefrom lvm2 /etc/*
 removefrom lzo /usr/${libdir}/liblzo2.*
 removefrom madan-fonts /usr/share/fonts/madan/*
 removefrom mdadm /etc/*
-removefrom metacity /usr/share/applications/*
-removefrom metacity /usr/share/gnome-control-center/*
-removefrom metacity /usr/share/locale/* /usr/share/metacity/*
-removefrom metacity /usr/share/themes/AgingGorilla/*
-removefrom metacity /usr/share/themes/Bright/* /usr/share/themes/Crux/*
-removefrom metacity /usr/share/themes/Esco/* /usr/share/themes/Metabox/*
-removefrom metacity /usr/share/themes/Simple/*
 removefrom module-init-tools /etc/* /sbin/insmod.static /sbin/weak-modules
 removefrom mt-st /etc/* /sbin/*
 removefrom mtools /etc/*
