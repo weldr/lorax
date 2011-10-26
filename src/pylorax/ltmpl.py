@@ -140,7 +140,13 @@ class LoraxTemplateRunner(object):
         logger.info("running %s", self.templatefile)
         for (num, line) in enumerate(parsed_template,1):
             logger.debug("template line %i: %s", num, " ".join(line))
+            skiperror = False
             (cmd, args) = (line[0], line[1:])
+            # Following Makefile convention, if the command is prefixed with
+            # a dash ('-'), we'll ignore any errors on that line.
+            if cmd.startswith('-'):
+                cmd = cmd[1:]
+                skiperror = True
             try:
                 # grab the method named in cmd and pass it the given arguments
                 f = getattr(self, cmd, None)
@@ -148,6 +154,10 @@ class LoraxTemplateRunner(object):
                     raise ValueError, "unknown command %s" % cmd
                 f(*args)
             except Exception:
+                if skiperror:
+                    logger.error("template command error in %s (ignored):", self.templatefile)
+                    logger.error("  %s", " ".join(line))
+                    continue
                 logger.error("template command error in %s:", self.templatefile)
                 logger.error("  %s", " ".join(line))
                 # format the exception traceback
@@ -283,14 +293,6 @@ class LoraxTemplateRunner(object):
         '''
         cpfile(self._out(src), self._out(dest))
 
-    def copyif(self, src, dest):
-        '''
-        copyif SRC DEST
-          Copy SRC to DEST, but only if SRC exists.
-        '''
-        if rexists(self._out(src)):
-            self.copy(src, dest)
-
     def move(self, src, dest):
         '''
         move SRC DEST
@@ -298,18 +300,11 @@ class LoraxTemplateRunner(object):
         '''
         mvfile(self._out(src), self._out(dest))
 
-    def moveif(self, src, dest):
-        '''
-        moveif SRC DEST
-          Move SRC to DEST, but only if SRC exists.
-        '''
-        if rexists(self._out(src)):
-            self.move(src, dest)
-
     def remove(self, *fileglobs):
         '''
         remove FILEGLOB [FILEGLOB ...]
           Remove all the named files or directories.
+          Will *not* raise exceptions if the file(s) are not found.
         '''
         for g in fileglobs:
             for f in rglob(self._out(g)):

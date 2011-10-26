@@ -22,13 +22,13 @@ configdir = configdir + "/common"
 %endif
 
 ## create_screenfont()
-moveif ${SCREENFONT} etc/screenfont.gz
+-move ${SCREENFONT} etc/screenfont.gz
 
 ## move_stubs()
 move usr/share/anaconda/restart-anaconda usr/bin
 move ${PYTHONDIR}/site-packages/pyanaconda/sitecustomize.py ${PYTHONDIR}/site-packages
 %for stub in stubs:
-    moveif usr/share/anaconda/${stub}-stub usr/bin/${stub}
+    -move usr/share/anaconda/${stub}-stub usr/bin/${stub}
 %endfor
 
 ## move_repos()
