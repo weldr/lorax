@@ -150,12 +150,8 @@ removefrom cyrus-sasl-lib /usr/sbin/*
 removefrom db4 /usr/*
 removefrom dbus-glib /usr/bin/*
 removefrom dbus-x11 /etc/X11/*
-removefrom dejavu-sans-fonts /usr/share/fonts/dejavu/DejaVuSans-BoldOblique*
-removefrom dejavu-sans-fonts /usr/share/fonts/dejavu/DejaVuSans-ExtraLight*
-removefrom dejavu-sans-fonts /usr/share/fonts/dejavu/DejaVuSans-Oblique*
-removefrom dejavu-sans-fonts /usr/share/fonts/dejavu/DejaVuSansCondensed*
-removefrom dejavu-sans-mono-fonts /usr/share/fonts/dejavu/DejaVuSansMono-Bold*
-removefrom dejavu-sans-mono-fonts /usr/share/fonts/dejavu/DejaVuSansMono-Oblique*
+removefrom dejavu-sans-fonts --allbut *.conf */DejaVuSans{,-Bold}.ttf
+removefrom dejavu-sans-mono-fonts --allbut *.conf */DejaVuSansMono.ttf
 removefrom device-mapper-multipath /etc/* /sbin/mpathconf /sbin/multipathd
 removefrom dhclient /usr/*
 removefrom dmz-cursor-themes /usr/share/icons/dmz/*
