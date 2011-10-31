@@ -47,7 +47,7 @@ remove /etc/logrotate.d
 ## various other things we remove to save space
 removepkg avahi-autoipd coreutils-libs curl dash db4-utils diffutils file
 removepkg fipscheck genisoimage gnome-python2 info iptables isomd5sum
-removepkg jasper-libs kbd-misc libIDL libXt libXxf86misc libXxf86vm
+removepkg jasper-libs libIDL libXt libXxf86misc libXxf86vm
 removepkg libasyncns libcroco libdaemon libevent libhbaapi libhbalinux
 removepkg libmcpp libpcap librsvg2 libtiff libutempter linux-atm-libs
 removepkg lvm2-libs m4 mailx makebootfat mcpp
@@ -227,6 +227,9 @@ removefrom iscsi-initiator-utils /etc/rc.d/*
 removefrom jfsutils /sbin/jfs_fsck /sbin/jfs_fscklog /sbin/jfs_logdump
 removefrom jfsutils /sbin/jfs_mkfs
 removefrom kbd /bin/* /usr/share/locale/*
+removefrom kbd-misc /lib/kbd/consoletrans/*
+removefrom kbd-misc /lib/kbd/keymaps/*
+removefrom kbd-misc /lib/kbd/unimaps/*
 removefrom krb5-libs /etc/* /${libdir}/libgssrpc* /usr/${libdir}/*
 removefrom less /etc/*
 removefrom libX11-common /usr/share/X11/XErrorDB
