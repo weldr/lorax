@@ -61,6 +61,7 @@ def macbless(imgfile):
 
 def mkefidisk(efiboot, outfile):
     '''Make a bootable EFI disk image out of the given EFI boot image.'''
+    # pjones sez: "17408 is the size of the GPT tables parted creates"
     partsize = os.path.getsize(efiboot) + 17408
     disksize = round_to_blocks(17408 + partsize, 512)
     with LoopDev(outfile, disksize) as loopdev:
