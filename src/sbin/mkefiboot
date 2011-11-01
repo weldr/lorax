@@ -52,7 +52,7 @@ def macbless(imgfile):
     nodedata = struct.pack(">i", blessnode)
     dirdata = struct.pack(">i", dirnode)
     # Write it to the volume header
-    with open(imgfile, "wb") as img:
+    with open(imgfile, "r+b") as img:
         img.seek(0x450)      # HFSPlusVolumeHeader->finderInfo
         img.write(dirdata)   # finderInfo[0]
         img.write(nodedata)  # finderInfo[1]
