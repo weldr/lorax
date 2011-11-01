@@ -140,12 +140,12 @@ def round_to_blocks(size, blocksize):
         size += blocksize - diff
     return size
 
-def estimate_size(rootdir, graft={}, fstype=None, blocksize=4096, overhead=1024):
+# TODO: move filesystem data outside this function
+def estimate_size(rootdir, graft={}, fstype=None, blocksize=4096, overhead=128):
     getsize = lambda f: os.lstat(f).st_size
     if fstype == "btrfs":
         overhead = 64*1024 # don't worry, it's all sparse
     if fstype in ("vfat", "msdos"):
-        overhead = 128
         blocksize = 2048
         getsize = lambda f: os.stat(f).st_size # no symlinks, count as copies
     total = overhead*blocksize
