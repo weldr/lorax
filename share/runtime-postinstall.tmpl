@@ -3,7 +3,7 @@
 
 <%page args="root, basearch, libdir, configdir"/>
 <%
-# TODO: fix filenames in anaconda so we can drop the ppc64 workaround
+# TODO: make systemd handle the keymaps and drop this from lorax/anaconda
 filearch = 'ppc' if basearch == 'ppc64' else basearch
 KEYMAP_OVERRIDE = "usr/share/anaconda/keymaps-override-%s" % filearch
 PYTHONDIR = glob("usr/"+libdir+"/python?.?")[0]
@@ -34,8 +34,6 @@ move etc/yum.repos.d etc/anaconda.repos.d
 remove etc/systemd/system/default.target
 remove etc/systemd/system/default.target.wants/*
 symlink /lib/systemd/system/anaconda.target etc/systemd/system/default.target
-## workaround: /tmp is writeable, so we don't need tmp.mount
-replace tmp.mount "" /lib/systemd/system/loader.service
 ## remove unwanted systemd services
 removefrom systemd-units /lib/systemd/system/kexec*
 removefrom systemd-units /lib/systemd/system/local-fs.target.wants/media.mount
