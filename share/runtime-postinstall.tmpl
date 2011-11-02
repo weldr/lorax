@@ -67,11 +67,12 @@ install ${configdir}/sshd_config.anaconda etc/ssh
 install ${configdir}/pam.sshd etc/pam.d/sshd
 install ${configdir}/pam.sshd etc/pam.d/login
 install ${configdir}/pam.sshd etc/pam.d/remote
-append etc/passwd "sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin"
+
+## set up "install" user account
 append etc/passwd "install:x:0:0:root:/root:/sbin/loader"
-append etc/shadow "root::14438:0:99999:7:::"
 append etc/shadow "install::14438:0:99999:7:::"
-chmod etc/shadow 400
+## remove root password
+replace "root:*:" "root::" etc/shadow
 
 ## s390-specific setup
 %if basearch in ("s390", "s390x"):
