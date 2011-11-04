@@ -62,6 +62,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{python_sitelib}/pylorax
 %{python_sitelib}/*.egg-info
 %{_sbindir}/lorax
+%{_sbindir}/mkefiboot
 %dir %{_sysconfdir}/lorax
 %config(noreplace) %{_sysconfdir}/lorax/lorax.conf
 %dir %{_datadir}/lorax
