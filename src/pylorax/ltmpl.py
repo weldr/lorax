@@ -149,7 +149,7 @@ class LoraxTemplateRunner(object):
             try:
                 # grab the method named in cmd and pass it the given arguments
                 f = getattr(self, cmd, None)
-                if f is None or cmd is 'run':
+                if cmd[0] == '_' or cmd == 'run' or not callable(f):
                     raise ValueError, "unknown command %s" % cmd
                 f(*args)
             except Exception:
@@ -220,7 +220,7 @@ class LoraxTemplateRunner(object):
         '''
         append FILE STRING
           Append STRING (followed by a newline character) to FILE.
-          Python character escape sequences ('\n', '\t', etc.) will be
+          Python character escape sequences ('\\n', '\\t', etc.) will be
           converted to the appropriate characters.
           Examples:
             append /etc/depmod.d/dd.conf "search updates built-in"
