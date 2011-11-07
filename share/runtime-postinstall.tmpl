@@ -70,7 +70,7 @@ install ${configdir}/pam.sshd etc/pam.d/remote
 append etc/passwd "install:x:0:0:root:/root:/sbin/loader"
 append etc/shadow "install::14438:0:99999:7:::"
 ## remove root password
-replace "root:*:" "root::" etc/shadow
+replace "root:\*:" "root::" etc/shadow
 
 ## s390-specific setup
 %if basearch in ("s390", "s390x"):
