@@ -27,7 +27,7 @@ data.arch = DataHolder(basearch='ARCH.BASEARCH', buildarch='ARCH.BUILDARCH', lib
 data.product = DataHolder(name='PRODUCT.NAME', version='PRODUCT.VERSION')
 data.glob = lambda g: ['glob.1', 'glob.2']
 data.exists = lambda e: True
-data.udev_escape = lambda s: "UDEV_ESCAPE(%s)" % s.upper()
+data.udev = lambda s: "UDEV_ESCAPE(%s)" % s.upper()
 data.removelocales = ['REMOVELOCALE1', 'REMOVELOCALE2']
 data.kernels = [DataHolder(path="/path/to/vmlinuz", initrd=DataHolder(path="/path/to/initrd.img"), flavor=None, arch=data.arch.basearch)]
 data.basearch = data.arch.basearch
