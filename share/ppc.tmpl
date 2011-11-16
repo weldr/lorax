@@ -11,7 +11,14 @@ WRAPPER_DATA="usr/"+libdir+"/kernel-wrapper"
 
 bitsizes = set()
 prepboot = ""
-rootarg = "root=live:CDLABEL=%s" % udev(isolabel)
+
+## NOTE: yaboot freaks out and stops parsing its config if it sees a '\',
+## so we can't use the udev escape sequences in the root arg.
+## Instead we'll just replace any non-ASCII characters in the isolabel
+## with '_', which means we won't need any udev escapes.
+isolabel = ''.join(ch if ch.isalnum() else '_' for ch in isolabel)
+
+rootarg = "root=live:CDLABEL=%s" % isolabel
 %>
 
 mkdir ${LIVEDIR}
