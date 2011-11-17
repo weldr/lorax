@@ -1,0 +1,170 @@
+
+INTRO
+-----
+livemedia-creator uses Anaconda, kickstart and Lorax to create bootable media
+such as live iso's that use the same install path as a normal system install.
+
+The general idea is to use virt-install to install into a disk image and then
+use the disk image to create the bootable media.
+
+livemedia-creator --help will describe all of the options available. At the
+minimum you need:
+
+--make-iso to create a final bootable .iso
+--iso to specify the Anaconda install media to use with virt-install
+--ks is the kickstart to use to install the system
+
+
+QUICKSTART
+----------
+sudo livemedia-creator --make-iso \
+--iso=/extra/iso/Fedora-16-x86_64-netinst.iso --ks=./fedora-livemedia.ks
+
+If you are using the lorax git repo you can run it like so:
+
+sudo PATH=./src/sbin/:$PATH PYTHONPATH=./src/ ./src/sbin/livemedia-creator \
+--make-iso --iso=/extra/iso/Fedora-16-x86_64-netinst.iso \
+--ks=./docs/livemedia-example.ks --lorax-templates=./share/
+
+If you want to watch the install you can pass '--vnc vnc' and use a vnc
+client to connect to localhost:0
+
+This is usually a good idea when testing changes to the kickstart. It tries
+to monitor the logs for fatal errors, but may not catch everything.
+
+
+HOW IT WORKS
+------------
+The --make-* switches define the final output. Currently only --make-iso
+is working.
+
+You then need to either pass --iso and --ks in order to create a disk image
+using virt-install, or --disk-image to use a disk image from a previous run
+to create the .iso
+
+virt-install boots using the passed Anaconda installer iso and installs the
+system based on the kickstart. The %post section of the kickstart is used to
+customize the installed system in the same way that current spin-kickstarts
+do.
+
+livemedia-creator monitors the install process for problems by watching the
+install logs. They are written to the current directory or to the base directory
+specified by the --logfile command. You can also monitor the install by passing
+--vnc vnc and using a vnc client. This is recommended when first modifying a
+kickstart, since there are still places where Anaconda may get stuck without
+the log monitor catching it.
+
+The output from this process is a partitioned disk image. kpartx can be used
+to mount and examine it when there is a problem with the install. It can also
+be booted using kvm.
+
+Once the disk image is created it copies the / partition into a formatted
+disk image which is then used as the input to lorax for creation of the
+final media.
+
+The final image is created by lorax, using the templates in /usr/share/lorax/
+or the directory specified by --lorax-templates
+
+Currently the standard lorax templates are used to make a bootable iso, but
+it should be possible to modify them to output other results. They are
+written using the Mako template system which is very flexible.
+
+
+KICKSTARTS
+----------
+Existing spin kickstarts can be used to create live media with a few changes.
+Here are the steps I used to convert the XFCE spin.
+
+1. Flatten the xfce kickstart using ksflatten
+2. Add zerombr so you don't get the disk init dialog
+3. Add clearpart --all
+4. Add swap and biosboot partitions
+5. bootloader target
+6. Add shutdown to the kickstart
+7. Add network --bootproto=dhcp --activate to activate the network
+   This works for F16 builds but for F15 and before you need to pass
+   something on the cmdline that activate the network, like sshd.
+
+livemedia-creator --kernel-args="sshd"
+
+8. Add a root password
+
+rootpw rootme
+network --bootproto=dhcp --activate
+zerombr
+clearpart --all
+bootloader --location=mbr
+part biosboot --size=1
+part swap --size=512
+shutdown
+
+9. In the livesys script section of the %post remove the root password. This
+   really depends on how the spin wants to work. You could add the live user
+   that you create to the %wheel group so that sudo works if you wanted to.
+
+passwd -d root > /dev/null
+
+10. Remove /etc/fstab in %post, dracut handles mounting the rootfs
+
+cat /dev/null > /dev/fstab
+
+11. Don't delete initramfs files from /boot in %post
+12. Have grub-efi in the package list
+
+One drawback to using virt-install is that it pulls the packages from
+the repo each time you run it. To speed things up you either need a local
+mirror of the packages, or you can use a caching proxy. When using a proxy
+you pass it to livemedia-creator like so:
+
+--kernel-args="proxy=http://proxy.yourdomain.com:3128"
+
+You also need to use a specific mirror instead of mirrormanager so that the
+packages will get cached:
+
+url --url="http://download.fedora.redhat.com/pub/fedora/linux/development/16/x86_64/os/"
+
+You can also add an update repo, but don't name it updates. Add --proxy to
+it as well.
+
+
+DEBUGGING PROBLEMS
+------------------
+Cleaning up an aborted (ctrl-c) virt-install run (as root):
+virsh list to show the name of the virt
+virsh destroy <name>
+virsh undefine <name>
+umount /tmp/tmpXXXX
+rm -rf /tmp/tmpXXXX
+rm /tmp/diskXXXXX
+
+The logs from the virt-install run are stored in virt-install.log,
+logs from livemedia-creator are in livemedia.log and program.log
+
+You can add --image-only to skip the .iso creation and examine the resulting
+disk image. Or you can pass --keep-image to keep it around after lorax is
+run.
+
+
+THE FUTURE
+----------
+The current release only supports creating live iso's. In the future
+I want it to be able to create ami images as well as appliance images.
+
+It is also limited to x86 architectures because of it's use of virt-install.
+I hope to be able to support other arches by using Anaconda's image install
+feature instead of virt-install. This will require that livemedia-creator
+be running on the same release as is being created in order to avoid odd
+problems.
+
+I would like to provide a set of alternate lorax template scripts to create
+other media.
+
+
+HACKING
+-------
+Development on this will take place as part of the lorax project, and on the
+anaconda-devel-list mailing list.
+
+Feedback, enhancements and bugs are welcome.
+You can use http://bugzilla.redhat.com to report bugs.
+
