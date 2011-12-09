@@ -2,7 +2,7 @@
 #
 # Live Media Creator
 #
-# Copyright (C) 2009  Red Hat, Inc.
+# Copyright (C) 2011  Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -46,12 +46,13 @@ from pykickstart.version import makeVersion
 from pylorax.base import DataHolder
 from pylorax.treebuilder import TreeBuilder, RuntimeBuilder
 from pylorax.sysutils import joinpaths, remove, linktree
-from pylorax.imgutils import PartitionMount
+from pylorax.imgutils import PartitionMount, mksparse
 from pylorax.executils import execWithRedirect, execWithCapture
 
 
 # Default parameters for rebuilding initramfs, overrice with --dracut-args
-DRACUT_DEFAULT = ["--xz", "--omit", "plymouth"]
+DRACUT_DEFAULT = ["--xz", "--add", "livenet", "--add", "dmsquash-live",
+                  "--omit", "plymouth"]
 
 
 class LogRequestHandler(SocketServer.BaseRequestHandler):
@@ -106,11 +107,14 @@ class LogRequestHandler(SocketServer.BaseRequestHandler):
         """
         Check a line to see if it contains an error indicating install failure
         """
-        if line.find("Traceback (") > -1 \
-           or line.find("Out of memory:") > -1 \
-           or line.find("Call Trace:") > -1 \
-           or line.find("insufficient disk space:") > -1:
-            self.server.log_error = True
+        simple_tests = [ "Traceback (",
+                         "Out of memory:",
+                         "Call Trace:",
+                         "insufficient disk space:" ]
+        for t in simple_tests:
+            if line.find( t ) > -1:
+                self.server.log_error = True
+                return
 
 
 class LogServer(SocketServer.TCPServer):
@@ -343,6 +347,22 @@ class VirtualInstall( object ):
         subprocess.call(["virsh","undefine",self.virt_name])
 
 
+def anaconda_install( disk_img, disk_size, kickstart, repo, args ):
+    """
+
+    """
+    # Create the sparse image
+    mksparse( disk_img, disk_size * 1024**3 )
+
+    cmd = [ "anaconda", "--image", disk_img, "--kickstart", kickstart,
+            "--script", "--repo", repo_url ]
+    cmd += args
+
+    log.debug( cmd )
+
+    return execWithRedirect( cmd[0], cmd[1:] )
+
+
 def get_kernels( boot_dir ):
     """
     Examine the vmlinuz-* versions and return a list of them
@@ -434,7 +454,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser( description="Create Live Install Media",
                                       fromfile_prefix_chars="@" )
 
-    # These two are mutually exclusive, one is required
+    # These are mutually exclusive, one is required
     action = parser.add_mutually_exclusive_group( required=True )
     action.add_argument( "--make-iso", action="store_true",
                          help="Build a live iso" )
@@ -445,10 +465,9 @@ if __name__ == '__main__':
     action.add_argument( "--make-ami", action="store_true",
                          help="Build an ami image" )
 
-    source = parser.add_mutually_exclusive_group( required=True )
-    source.add_argument( "--iso", type=os.path.abspath,
+    parser.add_argument( "--iso", type=os.path.abspath,
                         help="Anaconda installation .iso path to use for virt-install" )
-    source.add_argument( "--disk-image", type=os.path.abspath,
+    parser.add_argument( "--disk-image", type=os.path.abspath,
                         help="Path to disk image to use for creating final image" )
 
     parser.add_argument( "--ks", action="append", type=os.path.abspath,
@@ -459,6 +478,11 @@ if __name__ == '__main__':
                          help="Keep raw disk image after .iso creation" )
     parser.add_argument( "--no-virt", action="store_true",
                          help="Use Anaconda's image install instead of virt-install" )
+    parser.add_argument( "--proxy",
+                         help="proxy URL to use for the install" )
+    parser.add_argument( "--anaconda-arg", action="append", dest="anaconda_args",
+                         help="Additional argument to pass to anaconda (no-virt "
+                              "mode). Pass once for each argument" )
 
     parser.add_argument( "--logfile", default="./livemedia.log",
                          type=os.path.abspath,
@@ -551,10 +575,6 @@ if __name__ == '__main__':
         log.error( "The disk image {0} is missing.".format( opts.disk_image ) )
         sys.exit( 1 )
 
-    if opts.no_virt:
-        log.error( "--no-virt is not yet implemented." )
-        sys.exit( 1 )
-
     if opts.make_appliance:
         log.error( "--make-appliance is not yet implemented." )
         sys.exit( 1 )
@@ -563,14 +583,12 @@ if __name__ == '__main__':
         log.error( "--make-ami is not yet implemented." )
         sys.exit( 1 )
 
-    # Use virt-install to make the disk image
-    if opts.iso:
-        disk_img = tempfile.mktemp( prefix="disk", suffix=".img", dir=opts.tmp )
-        install_log = os.path.abspath(os.path.dirname(opts.logfile))+"/virt-install.log"
+    if not opts.no_virt and not opts.iso and not opts.disk_image:
+        log.error( "virt-install needs an install iso." )
+        sys.exit( 1 )
 
-        log.info( "disk_img = {0}".format(disk_img) )
-        log.info( "install_log = {0}".format(install_log) )
-
+    # Make the disk image
+    if not opts.disk_image:
         # Parse the kickstart to get the partition sizes
         ks_version = makeVersion()
         ks = KickstartParser( ks_version, errorsAreFatal=False, missingIncludeIsFatal=False )
@@ -578,19 +596,62 @@ if __name__ == '__main__':
         disk_size = 1 + (sum( [p.size for p in ks.handler.partition.partitions] ) / 1024)
         log.info( "disk_size = {0}GB".format(disk_size) )
 
-        iso_mount = IsoMountpoint( opts.iso )
-        log_monitor = LogMonitor( install_log )
+        if ks.handler.method.method != "url":
+            log.error( "Only url install method is currently supported. Please "
+                       "fix your kickstart file." )
+            sys.exit( 1 )
+        repo_url = ks.handler.method.url
 
-        virt = VirtualInstall( iso_mount, opts.ks, disk_img, disk_size,
-                               opts.kernel_args, opts.ram, opts.vnc,
-                               log_check = log_monitor.server.log_check,
-                               virtio_host = log_monitor.host,
-                               virtio_port = log_monitor.port )
-        virt.destroy()
-        log_monitor.shutdown()
-        iso_mount.umount()
+        disk_img = tempfile.mktemp( prefix="disk", suffix=".img", dir=opts.tmp )
+        install_log = os.path.abspath(os.path.dirname(opts.logfile))+"/virt-install.log"
 
-        if log_monitor.server.log_check():
+        log.info( "disk_img = {0}".format(disk_img) )
+        log.info( "install_log = {0}".format(install_log) )
+
+        if opts.no_virt:
+            anaconda_args = []
+            if opts.anaconda_args:
+                for arg in opts.anaconda_args:
+                    anaconda_args += arg.split(" ", 1)
+            if opts.proxy:
+                anaconda_args += [ "--proxy", opts.proxy ]
+
+            # Use anaconda's image install
+            install_error = anaconda_install( disk_img, disk_size, opts.ks[0],
+                                              repo_url, anaconda_args )
+
+            # Move the anaconda logs over to a log directory
+            log_dir = os.path.abspath(os.path.dirname(opts.logfile))
+            log_anaconda = joinpaths( log_dir, "anaconda" )
+            if not os.path.isdir( log_anaconda ):
+                os.mkdir( log_anaconda )
+            for l in ["anaconda.log", "ifcfg.log", "program.log", "storage.log",
+                      "yum.log"]:
+                if os.path.exists( "/tmp/"+l ):
+                    shutil.copy2( "/tmp/"+l, log_anaconda )
+                    os.unlink( "/tmp/"+l )
+        else:
+            iso_mount = IsoMountpoint( opts.iso )
+            log_monitor = LogMonitor( install_log )
+
+            kernel_args = ""
+            if opts.kernel_args:
+                kernel_args += opts.kernel_args
+            if opts.proxy:
+                kernel_args += " proxy="+opts.proxy
+
+            virt = VirtualInstall( iso_mount, opts.ks, disk_img, disk_size,
+                                   kernel_args, opts.ram, opts.vnc,
+                                   log_check = log_monitor.server.log_check,
+                                   virtio_host = log_monitor.host,
+                                   virtio_port = log_monitor.port )
+            virt.destroy()
+            log_monitor.shutdown()
+            iso_mount.umount()
+
+            install_error = log_monitor.server.log_check()
+
+        if install_error:
             log.error( "Install failed" )
             if not opts.keep_image:
                 log.info( "Removing bad disk image" )
@@ -616,7 +677,7 @@ if __name__ == '__main__':
     log.info("SUMMARY")
     log.info("-------")
     log.info("Logs are in {0}".format(os.path.abspath(os.path.dirname(opts.logfile))))
-    if opts.keep_image:
+    if opts.keep_image or opts.make_disk:
         log.info("Disk image is at {0}".format(disk_img))
     else:
         log.info("Disk image erased")

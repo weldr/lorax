@@ -36,7 +36,7 @@ to monitor the logs for fatal errors, but may not catch everything.
 HOW IT WORKS
 ------------
 The --make-* switches define the final output. Currently only --make-iso
-is working.
+and --make-disk are working.
 
 You then need to either pass --iso and --ks in order to create a disk image
 using virt-install, or --disk-image to use a disk image from a previous run
@@ -127,6 +127,33 @@ You can also add an update repo, but don't name it updates. Add --proxy to
 it as well.
 
 
+ANACONDA IMAGE INSTALL
+----------------------
+You can create images without using virt-install by passing --no-virt on the
+cmdline. This will use Anaconda's image install feature to handle the install.
+There are a couple of things to keep in mind when doing this:
+
+1. It will be most reliable when building images for the same release that the
+   host is running. Because Anaconda has expectations about the system it is
+   running under you may encounter strange bugs if you try to build newer or
+   older releases.
+
+2. Make sure selinux is set to permissive or disabled. It won't install
+   correctly with selinux set to enforcing yet.
+
+3. It may totally trash your host. So far I haven't had this happen, but the
+   possibility exists that a bug in Anaconda could result in it operating on
+   real devices. I recommend running it in a virt or on a system that you can
+   afford to lose all data from.
+
+The logs from anaconda will be placed in an ./anaconda/ directory in either
+the current directory or in the directory used for --logfile
+
+Example cmdline:
+
+sudo livemedia-creator --make-iso --no-virt --ks=./fedora-livemedia.ks
+
+
 DEBUGGING PROBLEMS
 ------------------
 Cleaning up an aborted (ctrl-c) virt-install run (as root):
@@ -143,6 +170,9 @@ logs from livemedia-creator are in livemedia.log and program.log
 You can add --image-only to skip the .iso creation and examine the resulting
 disk image. Or you can pass --keep-image to keep it around after lorax is
 run.
+
+Cleaning up aborted --no-virt installs can sometimes be accomplished by running
+the anaconda-cleanup script.
 
 
 THE FUTURE
