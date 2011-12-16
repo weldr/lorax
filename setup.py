@@ -16,7 +16,8 @@ for root, dnames, fnames in os.walk("share"):
                            [os.path.join(root, fname)]))
 
 # executable
-data_files.append(("/usr/sbin", ["src/sbin/lorax", "src/sbin/mkefiboot"]))
+data_files.append(("/usr/sbin", ["src/sbin/lorax", "src/sbin/mkefiboot",
+                                 "src/sbin/livemedia-creator"]))
 
 # get the version
 sys.path.insert(0, "src")

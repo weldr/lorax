@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.0
+Version:        17.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -47,6 +47,10 @@ Requires:       kernel-bootwrapper
 %description
 Lorax is a tool for creating the anaconda install images.
 
+It also includes livemedia-creator which is used to create bootable livemedia,
+including live isos and disk images. It can use libvirtd for the install, or
+Anaconda's image install feature.
+
 %prep
 %setup -q
 
@@ -58,11 +62,12 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 %files
 %defattr(-,root,root,-)
-%doc COPYING AUTHORS
+%doc COPYING AUTHORS README.livemedia-creator
 %{python_sitelib}/pylorax
 %{python_sitelib}/*.egg-info
 %{_sbindir}/lorax
 %{_sbindir}/mkefiboot
+%{_sbindir}/livemedia-creator
 %dir %{_sysconfdir}/lorax
 %config(noreplace) %{_sysconfdir}/lorax/lorax.conf
 %dir %{_datadir}/lorax
@@ -70,6 +75,11 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Fri Dec 16 2011 Brian C. Lane <bcl@redhat.com> 17.1-1
+- Add livemedia-creator and sub-packages with proper deps for virt and non-virt
+  operation.
+- Adjust a couple lorax treebuilder classes to make them callable
+
 * Mon Oct 21 2011 Will Woods <wwoods@redhat.com> 17.0-1
 - Merges the 'treebuilder' branch of lorax
 - images are split into two parts again (initrd.img, LiveOS/squashfs.img)
