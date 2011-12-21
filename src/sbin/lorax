@@ -93,6 +93,9 @@ def main(args):
             or not opts.source or not outputdir:
         parser.error("missing one or more required arguments")
 
+    if os.path.exists(outputdir):
+        parser.error("output directory should not exist.")
+
     # create the temporary directory for lorax
     tempdir = tempfile.mkdtemp(prefix="lorax.", dir=tempfile.gettempdir())
 
