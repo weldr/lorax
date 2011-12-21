@@ -75,10 +75,19 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
-* Fri Dec 16 2011 Brian C. Lane <bcl@redhat.com> 17.1-1
-- Add livemedia-creator and sub-packages with proper deps for virt and non-virt
-  operation.
-- Adjust a couple lorax treebuilder classes to make them callable
+* Wed Dec 21 2011 Brian C. Lane <bcl@redhat.com> 17.1-1
+- lorax: check for output directory early and quit (bcl)
+- lorax: Add --proxy command (bcl)
+- lorax: add --config option (bcl)
+- Modify spec file for livemedia-creator (bcl)
+- Add no-virt mode to livemedia-creator (bcl)
+- Add livemedia-creator README and example ks (bcl)
+- Add config files for live media (bcl)
+- Add livemedia-creator (bcl)
+- Allow a None to be passed as size to create_runtime (bcl)
+- Add execWith utils from anaconda (bcl)
+- Changes needed for livecd creation (bcl)
+- dracut has moved to /usr/bin (bcl)
 
 * Mon Oct 21 2011 Will Woods <wwoods@redhat.com> 17.0-1
 - Merges the 'treebuilder' branch of lorax
