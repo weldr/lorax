@@ -65,6 +65,8 @@ def main(args):
             action="store_true", default=False, dest="is_beta")
     optional.add_option("-c", "--config", default="/etc/lorax/lorax.conf",
             help="config file", metavar="STRING")
+    optional.add_option("--proxy", default=None,
+            help="repo proxy url:port", metavar="STRING")
 
     # add the option groups to the parser
     parser.add_option_group(required)
@@ -101,7 +103,7 @@ def main(args):
     os.mkdir(yumtempdir)
 
     yb = get_yum_base_object(installtree, opts.source, opts.mirrorlist,
-                             yumtempdir)
+                             yumtempdir, opts.proxy)
 
     if yb is None:
         print("error: unable to create the yumbase object", file=sys.stderr)
@@ -117,7 +119,7 @@ def main(args):
 
 
 def get_yum_base_object(installroot, repositories, mirrorlists=[],
-                        tempdir="/tmp"):
+                        tempdir="/tmp", proxy=None):
 
     def sanitize_repo(repo):
         if repo.startswith("/"):
@@ -151,6 +153,9 @@ def get_yum_base_object(installroot, repositories, mirrorlists=[],
             "plugins": 0,
             "reposdir": "",
             "tsflags": "nodocs"}
+
+    if proxy:
+        data["proxy"] = proxy
 
     c.add_section(section)
     map(lambda (key, value): c.set(section, key, value), data.items())
