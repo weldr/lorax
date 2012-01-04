@@ -80,7 +80,7 @@ def main(args):
     opts, args = parser.parse_args()
 
     try:
-        outputdir = args[0]
+        outputdir = os.path.abspath(args[0])
     except IndexError:
         parser.error("missing one or more required arguments")
 

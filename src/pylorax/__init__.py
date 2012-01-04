@@ -23,6 +23,7 @@
 # set up logging
 import logging
 logger = logging.getLogger("pylorax")
+logger.setLevel(logging.DEBUG)
 
 sh = logging.StreamHandler()
 sh.setLevel(logging.INFO)
