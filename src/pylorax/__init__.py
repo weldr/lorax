@@ -125,7 +125,7 @@ class Lorax(BaseLoraxClass):
         logger.addHandler(fh)
 
     def run(self, ybo, product, version, release, variant="", bugurl="",
-            isfinal=False, workdir=None, outputdir=None):
+            isfinal=False, workdir=None, outputdir=None, buildarch=None):
 
         assert self._configured
 
@@ -163,8 +163,11 @@ class Lorax(BaseLoraxClass):
         self.inroot = ybo.conf.installroot
         logger.debug("using install root: {0}".format(self.inroot))
 
+        if not buildarch:
+            buildarch = get_buildarch(ybo)
+
         logger.info("setting up build architecture")
-        self.arch = ArchData(get_buildarch(ybo))
+        self.arch = ArchData(buildarch)
         for attr in ('buildarch', 'basearch', 'libdir'):
             logger.debug("self.arch.%s = %s", attr, getattr(self.arch,attr))
 
@@ -252,8 +255,7 @@ def get_buildarch(ybo):
             buildarch = anaconda.arch
             break
     if not buildarch:
-        # fallback to the system architecture
-        logger.warning("using system architecture")
-        buildarch = os.uname()[4]
+        logger.critical("no anaconda package in the repository")
+        sys.exit(1)
 
     return buildarch

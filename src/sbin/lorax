@@ -70,6 +70,8 @@ def main(args):
     optional.add_option("-e", "--excludepkgs", default=[],
             action="append", metavar="STRING",
             help="package glob to exclude (may be listed multiple times)")
+    optional.add_option("--buildarch", default=None,
+            help="build architecture", metavar="STRING")
 
     # add the option groups to the parser
     parser.add_option_group(required)
@@ -121,7 +123,7 @@ def main(args):
     lorax.configure(conf_file=opts.config)
     lorax.run(yb, opts.product, opts.version, opts.release,
               opts.variant, opts.bugurl, opts.is_beta,
-              workdir=tempdir, outputdir=outputdir)
+              workdir=tempdir, outputdir=outputdir, buildarch=opts.buildarch)
 
 
 def get_yum_base_object(installroot, repositories, mirrorlists=[],
