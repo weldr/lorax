@@ -120,7 +120,7 @@ class LoraxTemplateRunner(object):
 
     def _filelist(self, *pkgs):
         pkglist = self.yum.doPackageLists(pkgnarrow="installed", patterns=pkgs)
-        return set([f for pkg in pkglist.installed for f in pkg.filelist])
+        return set([f for pkg in pkglist.installed for f in pkg.filelist+pkg.ghostlist])
 
     def _getsize(self, *files):
         return sum(os.path.getsize(self._out(f)) for f in files if os.path.isfile(self._out(f)))
