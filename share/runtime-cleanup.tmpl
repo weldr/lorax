@@ -358,4 +358,5 @@ runcmd find ${root} -name "*.pyc" -type f -exec ln -sf /dev/null {} \;
 ## remove any broken links in /etc, /usr, /lib
 ## (broken systemd service links lead to confusing noise at boot)
 ## NOTE: not checking /var because we want to keep /var/run
-runcmd chroot ${root} find -L /etc /usr /lib -xdev -type l -delete
+## NOTE: Excluding /etc/mtab which links to /proc/self/mounts for systemd
+runcmd chroot ${root} find -L /etc /usr /lib -xdev -type l -and \! -name "mtab" -delete
