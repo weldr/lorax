@@ -1,40 +1,27 @@
-Policies for initrd.img and install.img image generation.
+Lorax is a tool for building bootable/installable Fedora images. Its primary
+focus is Fedora installation images but it should be able to create other
+types of images too.
 
-lorax takes a different approach than the previous buildinstall set of scripts
-for generating the boot and install images and tree data files.  First, the
-main ideas:
+Some design precepts:
 
-    * Configuration files control the list of packages to make images with.
+  * It should be easy to make small changes to images.
+    - Image configs should be extendable/inheritable
+    - Configs should be self-contained and portable - everything in one dir
+      - kickstart, templates, config files, image-specific data files
+        (bootloader templates, keymaps, service files, etc).
 
-    * Rather than explicitly listing the files to keep in the images (i.e.,
-      we used to have KEEPFILE variables in upd-instroot), we now take what
-      the packages lay down and do a minimal tree scrubbing (remove docs,
-      for example).  This is customizable through configuration files
-      because we will always have exceptions.  But the policy in lorax is
-      opposite of the buildinstall policy:  take everything that RPMS lay
-      down, remove what we don't want--rather than removing everything
-      that is not explicitly listed in KEEPFILE variables.
+  * Templates should be brief but expressive.
+    - Don't make the user maintain huge lists of files/packages
+      (do filename globbing and brace expansion, resolve package deps, etc.)
+    - Provide commands that allow blacklists/exceptions
+      (e.g.: removefrom PKG --allbut FILE FILE...)
 
-    * The main root tree generated from the package set is broken in to
-      /usr for the install.img and everything else for the initrd.img.
-      This is configurable through configuration files since we will
-      always have exceptions.
+  * The template language should make common actions easy and obvious.
+    - Avoid 'runcmd' - add new builtins instead!
+    - Corollary: It should be easy to extend the template runner
 
-    * Static data such as files we need to place in /etc in the images or
-      other control files are stored in /usr/share/lorax and copied in to
-      the image staging tree.
+  * Image configs should allow custom commands/scripts
+    - If you already have a bunch of kickstarts/Ruby/whatever for setting up
+      images, you should be able to use that too
 
-The approach of taking what the packages give us is a decision to make
-maintenance of the image building tools easier.  Whatever the packages lay
-down should be sufficient for the installation images and we shouldn't
-have to have our own list of files to keep and library gathering routines.
-Let the packaging tools figure that out.
-
-The whole tool is written in Python with a driver program ("lorax"), but the
-actual logic for the program is in the pylorax module.  The idea behind this
-is that tools such as pungi can potentially import pylorax directly and not
-have to run the command line tool to do image generation work.  That is,
-pungi can use lorax programatically.
-
-This tool is still in the early stages of development (Sep 2008) and patches
-and comments are welcome.
+  * Lorax should be usable as a script or a (python) library
