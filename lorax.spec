@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.1
+Version:        17.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -75,6 +75,15 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Thu Jan 12 2012 Martin Gracik <mgracik@redhat.com> 17.2-1
+- Allow specifying buildarch on the command line (#771382) (mgracik)
+- lorax: Don't touch /etc/mtab in cleanup (bcl)
+- Update TODO and POLICY to reflect the current state of things (wwoods)
+- consider %ghost files part of the filelists in templates (wwoods)
+- lorax: Add option to exclude packages (bcl)
+- dracut needs kbd directories (#769932) (bcl)
+- better debug, handle relative output paths (bcl)
+
 * Wed Dec 21 2011 Brian C. Lane <bcl@redhat.com> 17.1-1
 - lorax: check for output directory early and quit (bcl)
 - lorax: Add --proxy command (bcl)
