@@ -48,8 +48,8 @@ remove /etc/logrotate.d
 removepkg avahi-autoipd coreutils-libs curl dash db4-utils diffutils file
 removepkg fipscheck genisoimage gnome-python2 info iptables isomd5sum
 removepkg jasper-libs libIDL libXt libXxf86misc libXxf86vm
-removepkg libasyncns libcroco libdaemon libevent libhbaapi libhbalinux
-removepkg libmcpp libpcap librsvg2 libtiff libutempter linux-atm-libs
+removepkg libasyncns libdaemon libevent libhbaapi libhbalinux
+removepkg libmcpp libpcap libtiff libutempter linux-atm-libs
 removepkg lvm2-libs m4 mailx makebootfat mcpp
 removepkg mingetty mobile-broadband-provider-info pkgconfig ppp pth
 removepkg rmt rpcbind shared-mime-info squashfs-tools system-config-firewall-base
@@ -100,6 +100,8 @@ removefrom gtk2 /usr/share/themes/*
 ## clearlooks is the theme we use for gtk2
 removefrom gtk2-engines --allbut /usr/${libdir}/*/libclearlooks.so \
                                  /usr/share/themes/Clearlooks/*
+removefrom gtk3 /usr/${libdir}/gtk-3.0/*/printbackends/*
+removefrom gtk3 /usr/share/themes/*
 ## the Fedora icon theme inherits from Mist, so we need that
 removefrom gnome-themes --allbut /usr/share/icons/Mist/* \
                                  /usr/share/themes/Clearlooks/*
@@ -184,7 +186,6 @@ removefrom firstboot /lib/systemd/* /usr/sbin/* /usr/share/firstboot/*
 removefrom firstboot /usr/share/locale/*
 removefrom fontconfig /usr/bin/*
 removefrom gawk /usr/bin/* /usr/libexec/* /usr/share/*
-removefrom gdk-pixbuf2 /usr/${libdir}/gdk-pixbuf-2.0/2.10.0/loaders/*
 removefrom gdk-pixbuf2 /usr/share/locale*
 removefrom gfs2-utils /usr/sbin/*
 removefrom glib2 /etc/* /usr/bin/* /usr/share/locale/*
@@ -214,6 +215,7 @@ removefrom grub2 /sbin/* /usr/bin/*
 removefrom gstreamer /usr/bin/* /usr/${libdir}/gstreamer-0.10/*
 removefrom gstreamer /usr/${libdir}/libgst* /usr/libexec/* /usr/share/locale/*
 removefrom gtk2 /usr/bin/update-gtk-immodules
+removefrom gtk3 /usr/bin/update-gtk-immodules
 removefrom gtk3 /usr/share/* /usr/${libdir}/gtk-3.0/*
 removefrom gtk3 /usr/${libdir}/libgailutil*
 removefrom gzip /usr/bin/*
@@ -238,6 +240,7 @@ removefrom libcanberra-gtk2 /usr/${libdir}/gtk-2.0/*
 removefrom libcanberra-gtk3 /usr/bin/* /usr/${libdir}/*
 removefrom libcap /usr/sbin/*
 removefrom libconfig /usr/${libdir}/libconfig++*
+removefrom libcroco /usr/bin/*
 removefrom libgnome-keyring /usr/share/locale/*
 removefrom libgnomecanvas /usr/share/locale/*
 removefrom libgpg-error /usr/bin/* /usr/share/locale/*
@@ -246,6 +249,7 @@ removefrom libidn /usr/bin/* /usr/share/locale/*
 removefrom libmlx4 /etc/rdma/* /usr/${libdir}/*
 removefrom libnotify /usr/bin/*
 removefrom libpng /usr/${libdir}/libpng.*
+removefrom librsvg2 /usr/bin/*
 removefrom libselinux /sbin/*
 removefrom libsemanage /etc/selinux/*
 removefrom libstdc++ /usr/share/*

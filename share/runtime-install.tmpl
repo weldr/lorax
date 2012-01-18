@@ -2,7 +2,7 @@
 <%page args="basearch, product"/>
 
 ## anaconda package
-installpkg anaconda
+installpkg anaconda anaconda-widgets
 ## anaconda deps that aren't in the RPM
 installpkg firstboot
 
@@ -50,6 +50,7 @@ installpkg NetworkManager-gnome
 installpkg at-spi at-spi2-atk pyatspi
 installpkg gnome-python2-gconf
 installpkg gobject-introspection
+installpkg librsvg2
 installpkg polkit-desktop-policy
 installpkg gnome-keyring
 installpkg python-imaging
