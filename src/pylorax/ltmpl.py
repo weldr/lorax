@@ -25,7 +25,7 @@ logger = logging.getLogger("pylorax.ltmpl")
 
 import os, re, glob, shlex, fnmatch
 from os.path import basename, isdir
-from subprocess import check_call
+from subprocess import check_call, check_output
 
 from sysutils import joinpaths, cpfile, mvfile, replace, remove
 from yumhelper import * # Lorax*Callback classes
@@ -366,11 +366,17 @@ class LoraxTemplateRunner(object):
         '''
         chdir = lambda: None
         cmd = cmdlist
+        logger.debug('running command: %s', cmd)
         if cmd[0].startswith("--chdir="):
             dirname = cmd[0].split('=',1)[1]
             chdir = lambda: os.chdir(dirname)
             cmd = cmd[1:]
-        check_call(cmd, preexec_fn=chdir)
+
+        try:
+            check_output(cmd, preexec_fn=chdir)
+        except CalledProcessError as e:
+            logger.debug('command exited with %d: %s', e.returncode, e.output)
+            sys.exit(e.returncode)
 
     def installpkg(self, *pkgs):
         '''
