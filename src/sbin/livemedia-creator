@@ -2,7 +2,7 @@
 #
 # Live Media Creator
 #
-# Copyright (C) 2011  Red Hat, Inc.
+# Copyright (C) 2011-2012  Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ from pykickstart.version import makeVersion
 
 # Use the Lorax treebuilder branch for iso creation
 from pylorax.base import DataHolder
-from pylorax.treebuilder import TreeBuilder, RuntimeBuilder
+from pylorax.treebuilder import TreeBuilder, RuntimeBuilder, udev_escape
 from pylorax.sysutils import joinpaths, remove, linktree
 from pylorax.imgutils import PartitionMount, mksparse
 from pylorax.executils import execWithRedirect, execWithCapture
@@ -158,8 +158,11 @@ class IsoMountpoint(object):
     """
     Mount the iso on a temporary directory and check to make sure the
     vmlinuz and initrd.img files exist
+    Check the iso for a LiveOS directory and set a flag.
+    Extract the iso's label.
     """
     def __init__( self, iso_path ):
+        self.label = None
         self.iso_path = iso_path
         self.mount_dir = tempfile.mkdtemp()
         if not self.mount_dir:
@@ -176,6 +179,7 @@ class IsoMountpoint(object):
             self.repo = self.mount_dir
         else:
             self.repo = None
+        self.liveos = os.path.isdir( self.mount_dir+"/LiveOS" )
 
         try:
             for f in [self.kernel, self.initrd]:
@@ -185,11 +189,26 @@ class IsoMountpoint(object):
             self.umount()
             raise
 
+        self.get_iso_label()
+
     def umount( self ):
         cmd = ["umount", self.mount_dir]
         log.debug( cmd )
         execWithRedirect( cmd[0], cmd[1:] )
         os.rmdir( self.mount_dir )
+
+    def get_iso_label( self ):
+        """
+        Get the iso's label using isoinfo
+        """
+        cmd = [ "isoinfo", "-d", "-i", self.iso_path ]
+        log.debug( cmd )
+        isoinfo_output = execWithCapture( cmd[0], cmd[1:] )
+        log.debug( isoinfo_output )
+        for line in isoinfo_output.splitlines():
+            if line.startswith("Volume id: "):
+                self.label = line[11:]
+                return
 
 
 class ImageMount(object):
@@ -297,22 +316,38 @@ class VirtualInstall( object ):
         for ks in ks_paths:
             cmd.append("--initrd-inject")
             cmd.append(ks)
+
         disk_opts = "path={0}".format(disk_img)
         disk_opts += ",format=raw"
         if not os.path.isfile(disk_img):
             disk_opts += ",size={0}".format(img_size)
+        cmd.append("--disk")
+        cmd.append(disk_opts)
+
+        if iso.liveos:
+            disk_opts = "path={0},device=cdrom".format(iso.iso_path)
+            cmd.append("--disk")
+            cmd.append(disk_opts)
+
         extra_args = "ks=file:/{0}".format(os.path.basename(ks_paths[0]))
         if kernel_args:
             extra_args += " "+kernel_args
         if not vnc:
             extra_args += " console=/dev/ttyS0"
+        if iso.liveos:
+            extra_args += " root=live:CDLABEL={0}".format(udev_escape(iso.label))
+        cmd.append("--extra-args")
+        cmd.append(extra_args)
+
+        cmd.append("--location")
+        cmd.append(iso.mount_dir)
+
         channel_args = "tcp,host={0}:{1},mode=connect,target_type=virtio" \
                        ",name=org.fedoraproject.anaconda.log.0".format(
                        virtio_host, virtio_port)
-        [cmd.append(o) for o in ["--disk", disk_opts,
-                                 "--extra-args", extra_args,
-                                 "--location", iso.mount_dir,
-                                 "--channel", channel_args]]
+        cmd.append("--channel")
+        cmd.append(channel_args)
+
         log.debug( cmd )
 
         rc = execWithRedirect( cmd[0], cmd[1:] )
