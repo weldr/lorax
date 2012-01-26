@@ -25,7 +25,7 @@ from os.path import basename, isdir
 from subprocess import check_call, check_output
 
 from sysutils import joinpaths, remove
-from shutil import copytree
+from shutil import copytree, copy2
 from base import DataHolder
 from ltmpl import LoraxTemplateRunner
 import imgutils
@@ -163,6 +163,7 @@ class TreeBuilder(object):
                                isolabel=isolabel, udev=udev_escape)
         self._runner = LoraxTemplateRunner(inroot, outroot, templatedir=templatedir)
         self._runner.defaults = self.vars
+        self.templatedir = templatedir
 
     @property
     def kernels(self):
@@ -175,6 +176,9 @@ class TreeBuilder(object):
         dracut = ["dracut", "--noprefix", "--nomdadmconf", "--nolvmconf"] + add_args
         if not backup:
             dracut.append("--force")
+        hooks = [("99anaconda-copy-ks.sh", "/lib/dracut/hooks/pre-pivot")]
+        hook_commands = self.copy_dracut_hooks(hooks)
+
         # Hush some dracut warnings. TODO: bind-mount proc in place?
         open(joinpaths(self.vars.inroot,"/proc/modules"),"w")
         for kernel in self.kernels:
@@ -183,7 +187,7 @@ class TreeBuilder(object):
                 initrd = joinpaths(self.vars.inroot, kernel.initrd.path)
                 os.rename(initrd, initrd + backup)
             check_call(["chroot", self.vars.inroot] + \
-                       dracut + [kernel.initrd.path, kernel.version])
+                       dracut + hook_commands + [kernel.initrd.path, kernel.version])
         os.unlink(joinpaths(self.vars.inroot,"/proc/modules"))
 
     def build(self):
@@ -197,6 +201,39 @@ class TreeBuilder(object):
             if 'boot.iso' in data:
                 iso = joinpaths(self.vars.outroot, data['boot.iso'])
                 check_call(["implantisomd5", iso])
+
+    @property
+    def dracut_hooks_path(self):
+        """ Return the path to the lorax dracut hooks scripts
+
+            Use the configured share dir if it is setup,
+            otherwise default to /usr/share/lorax/dracut_hooks
+        """
+        if self.templatedir:
+            return joinpaths(self.templatedir, "dracut_hooks")
+        else:
+            return "/usr/share/lorax/dracut_hooks"
+
+    def copy_dracut_hooks(self, hooks):
+        """ Copy the hook scripts in hooks into the installroot's /tmp/
+        and return a list of commands to pass to dracut when creating the
+        initramfs
+
+        hooks is a list of tuples with the name of the hook script and the
+        target dracut hook directory
+        (eg. [("99anaconda-copy-ks.sh", "/lib/dracut/hooks/pre-pivot")])
+        """
+        dracut_commands = []
+        for hook_script, dracut_path in hooks:
+            src = joinpaths(self.dracut_hooks_path, hook_script)
+            if not os.path.exists(src):
+                logger.error("Missing lorax dracut hook script %s" % (src))
+                continue
+            dst = joinpaths(self.vars.inroot, "/tmp/", hook_script)
+            copy2(src, dst)
+            dracut_commands += ["--include", joinpaths("/tmp/", hook_script),
+                                dracut_path]
+        return dracut_commands
 
 #### TreeBuilder helper functions
 
