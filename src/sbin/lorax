@@ -61,8 +61,8 @@ def main(args):
     optional.add_option("-b", "--bugurl",
             help="bug reporting URL for the product", metavar="URL",
             default="your distribution provided bug reporting tool")
-    optional.add_option("--isbeta", help="",
-            action="store_true", default=False, dest="is_beta")
+    optional.add_option("--isfinal", help="",
+            action="store_true", default=False, dest="isfinal")
     optional.add_option("-c", "--config", default="/etc/lorax/lorax.conf",
             help="config file", metavar="STRING")
     optional.add_option("--proxy", default=None,
@@ -122,7 +122,7 @@ def main(args):
     lorax = pylorax.Lorax()
     lorax.configure(conf_file=opts.config)
     lorax.run(yb, opts.product, opts.version, opts.release,
-              opts.variant, opts.bugurl, opts.is_beta,
+              opts.variant, opts.bugurl, opts.isfinal,
               workdir=tempdir, outputdir=outputdir, buildarch=opts.buildarch)
 
 

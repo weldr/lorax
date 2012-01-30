@@ -455,7 +455,7 @@ def make_livecd( disk_img, squashfs_args="", templatedir=None,
         arch = DataHolder( basearch=kernel_arch, libdir=None, buildarch=None )
         # TODO: Need to get release info from someplace...
         product = DataHolder( name=project, version=releasever, release="",
-                                variant="", bugurl="", is_beta=False )
+                                variant="", bugurl="", isfinal=False )
 
         rb = RuntimeBuilder( product, arch, fake_yum )
         log.info( "Creating runtime" )
