@@ -6,4 +6,4 @@ image=/ppc/ppc@BITS@/vmlinuz
 	label=linux
 	initrd=/ppc/ppc@BITS@/initrd.img
 	read-only
-	append="@ROOT@"
+	append="@ROOT@ rd.luks=0 rd.md=0 rd.dm=0"
