@@ -288,5 +288,5 @@ def mkbtrfsimg(rootdir, outfile, size=None, label="", mountargs="", graft={}):
                mkfsargs=["-L", label], graft=graft)
 
 def mkhfsimg(rootdir, outfile, size=None, label="", mountargs="", graft={}):
-    mkfsimage("hfs", rootdir, outfile, size, mountargs=mountargs,
+    mkfsimage("hfsplus", rootdir, outfile, size, mountargs=mountargs,
               mkfsargs=["-v", label], graft=graft)
