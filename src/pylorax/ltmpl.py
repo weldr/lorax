@@ -34,6 +34,7 @@ from base import DataHolder
 from mako.lookup import TemplateLookup
 from mako.exceptions import text_error_template
 import sys, traceback
+import struct
 
 class LoraxTemplate(object):
     def __init__(self, directories=["/usr/share/lorax"]):
@@ -460,3 +461,15 @@ class LoraxTemplateRunner(object):
             self.remove(*remove)
         else:
             logger.debug("%s: no files to remove!", cmd)
+
+    def createaddrsize(self, addr, src, dest):
+        '''
+        createaddrsize INITRD_ADDRESS INITRD ADDRSIZE
+          Create the initrd.addrsize file required in LPAR boot process.
+          Examples:
+            createaddrsize ${INITRD_ADDRESS} ${outroot}/${BOOTDIR}/initrd.img ${outroot}/${BOOTDIR}/initrd.addrsize
+        '''
+        addrsize = open(dest, "wb")
+        addrsize_data = struct.pack(">iiii", 0, int(addr, 16), 0, os.stat(src).st_size)
+        addrsize.write(addrsize_data)
+        addrsize.close()
