@@ -130,7 +130,7 @@ removefrom audit /etc/* /sbin/audispd /sbin/auditctl /sbin/aureport
 removefrom audit /sbin/ausearch /sbin/autrace /usr/bin/*
 removefrom audit-libs /etc/* /${libdir}/libauparse*
 removefrom authconfig /usr/sbin/* /usr/share/*
-removefrom bash /etc/* /usr/bin/* /usr/share/*
+removefrom bash /etc/* /usr/bin/bashbug* /usr/share/*
 removefrom bind-libs-lite /usr/${libdir}/libirs*
 removefrom bind-libs-lite /usr/${libdir}/libisccfg-export*
 removefrom bind-utils /usr/bin/dig /usr/bin/host /usr/bin/nsupdate
@@ -139,8 +139,8 @@ removefrom btrfs-progs /sbin/btrfs /sbin/btrfs-* /sbin/btrfstune
 removefrom ca-certificates /etc/pki/java/*
 removefrom ca-certificates /etc/pki/tls/certs/ca-bundle.trust.crt /etc/ssl/*
 removefrom cairo /usr/${libdir}/libcairo-script*
-removefrom coreutils /etc/* /bin/link /bin/nice /bin/stty /bin/su /bin/unlink
-removefrom coreutils /sbin/* /usr/bin/[ /usr/bin/base64 /usr/bin/chcon
+removefrom coreutils /etc/* /usr/bin/link /usr/bin/nice /usr/bin/stty /usr/bin/su /usr/bin/unlink
+removefrom coreutils /usr/sbin/runuser /usr/bin/[ /usr/bin/base64 /usr/bin/chcon
 removefrom coreutils /usr/bin/cksum /usr/bin/comm /usr/bin/csplit /usr/bin/cut
 removefrom coreutils /usr/bin/dir /usr/bin/dircolors /usr/bin/dirname
 removefrom coreutils /usr/bin/expand /usr/bin/factor /usr/bin/fmt
@@ -168,7 +168,7 @@ removefrom dbus-x11 /etc/X11/*
 removefrom dejavu-sans-fonts --allbut *.conf */DejaVuSans{,-Bold}.ttf
 removefrom dejavu-sans-mono-fonts --allbut *.conf */DejaVuSansMono.ttf
 removefrom device-mapper-multipath /etc/* /sbin/mpathconf /sbin/multipathd
-removefrom dhclient /usr/*
+removefrom dhclient /usr/lib/* /usr/share/*
 removefrom dnsmasq /etc/rc.d/* /usr/sbin/*
 removefrom dosfstools /sbin/dosfsck /sbin/fsck.*
 removefrom dump /etc/*
@@ -185,7 +185,7 @@ removefrom findutils /usr/bin/oldfind /usr/share/*
 removefrom firstboot /lib/systemd/* /usr/sbin/* /usr/share/firstboot/*
 removefrom firstboot /usr/share/locale/*
 removefrom fontconfig /usr/bin/*
-removefrom gawk /usr/bin/* /usr/libexec/* /usr/share/*
+removefrom gawk /usr/bin/{igawk,pgawk} /usr/libexec/* /usr/share/*
 removefrom gdk-pixbuf2 /usr/share/locale*
 removefrom gfs2-utils /usr/sbin/*
 removefrom glib2 /etc/* /usr/bin/* /usr/share/locale/*
@@ -218,17 +218,21 @@ removefrom gtk2 /usr/bin/update-gtk-immodules
 removefrom gtk3 /usr/bin/update-gtk-immodules
 removefrom gtk3 /usr/share/* /usr/${libdir}/gtk-3.0/*
 removefrom gtk3 /usr/${libdir}/libgailutil*
-removefrom gzip /usr/bin/*
+removefrom gzip /usr/bin/{gzexe,zcmp,zdiff,zegrep,zfgrep,zforce,zgrep,zless,zmore,znew}
 removefrom hwdata /etc/* /usr/share/hwdata/oui.txt /usr/share/hwdata/pnp.ids
 removefrom hwdata /usr/share/hwdata/upgradelist
 removefrom initscripts /etc/ppp/* /usr/sbin/* /usr/share/locale/*
 removefrom iproute /etc/* /sbin/cbq /sbin/ifcfg /sbin/rtmon /sbin/tc /usr/*
-removefrom iputils /etc/* /bin/ping6 /bin/tracepath* /sbin/ifenslave
-removefrom iputils /sbin/rdisc /usr/sbin/*
+removefrom iputils /etc/* /usr/bin/ping6 /usr/bin/tracepath* /usr/sbin/ifenslave
+removefrom iputils /usr/sbin/*
 removefrom iscsi-initiator-utils /etc/rc.d/*
 removefrom jfsutils /sbin/jfs_fsck /sbin/jfs_fscklog /sbin/jfs_logdump
 removefrom jfsutils /sbin/jfs_mkfs
-removefrom kbd /bin/* /usr/share/locale/*
+removefrom kbd \
+    /usr/bin/{chvt,deallocvt,fgconsole,getkeycodes,kbdinfo,kbdrate,loadunimap,\
+        mapscrn,open,openvt,psfaddtable,psfgettable,psfstriptable,psfxtable,\
+        setkeycodes,setleds,setmetamode,setvtrgb,showconsolefont,showkey} \
+    /usr/share/locale/*
 removefrom krb5-libs /etc/* /${libdir}/libgssrpc* /usr/${libdir}/*
 removefrom less /etc/*
 removefrom libX11-common /usr/share/X11/XErrorDB
@@ -250,7 +254,7 @@ removefrom libmlx4 /etc/rdma/* /usr/${libdir}/*
 removefrom libnotify /usr/bin/*
 removefrom libpng /usr/${libdir}/libpng.*
 removefrom librsvg2 /usr/bin/*
-removefrom libselinux /sbin/*
+removefrom libselinux /usr/sbin/*
 removefrom libsemanage /etc/selinux/*
 removefrom libstdc++ /usr/share/*
 removefrom libthai /usr/share/libthai/*
@@ -266,17 +270,17 @@ removefrom lvm2 /etc/*
 removefrom lzo /usr/${libdir}/liblzo2.*
 removefrom madan-fonts /usr/share/fonts/madan/*
 removefrom mdadm /etc/*
-removefrom module-init-tools /etc/* /sbin/insmod.static /sbin/weak-modules
-removefrom mt-st /etc/* /sbin/*
+removefrom module-init-tools /etc/* /usr/sbin/insmod.static /usr/sbin/weak-modules
+removefrom mt-st /etc/* /usr/sbin/*
 removefrom mtools /etc/*
 removefrom ncurses /usr/bin/captoinfo /usr/bin/infocmp /usr/bin/infotocap
 removefrom ncurses /usr/bin/reset /usr/bin/tabs /usr/bin/tic /usr/bin/toe
 removefrom ncurses /usr/bin/tput /usr/bin/tset
 removefrom ncurses-libs /usr/${libdir}/libform* /usr/${libdir}/libmenu*
 removefrom ncurses-libs /usr/${libdir}/libpanel.* /usr/${libdir}/libtic*
-removefrom net-tools /bin/netstat /etc/ethers /sbin/ether-wake /sbin/ipmaddr
-removefrom net-tools /sbin/iptunnel /sbin/mii-diag /sbin/mii-tool /sbin/nameif
-removefrom net-tools /sbin/plipconfig /sbin/slattach /usr/share/locale/*
+removefrom net-tools /usr/bin/netstat /etc/ethers /usr/sbin/ether-wake /usr/sbin/ipmaddr
+removefrom net-tools /usr/sbin/iptunnel /usr/sbin/mii-diag /usr/sbin/mii-tool /usr/sbin/nameif
+removefrom net-tools /usr/sbin/plipconfig /usr/sbin/slattach /usr/share/locale/*
 removefrom newt /usr/share/locale/*
 removefrom nfs-utils /etc/nfsmount.conf
 removefrom nfs-utils /etc/rc.d/init.d/* /lib/systemd/system/*
@@ -290,17 +294,17 @@ removefrom nfs-utils /usr/sbin/showmount /usr/sbin/sm-notify
 removefrom nfs-utils /usr/sbin/start-statd /var/lib/nfs/etab
 removefrom nfs-utils /var/lib/nfs/rmtab /var/lib/nfs/state /var/lib/nfs/xtab
 removefrom nss-softokn /usr/${libdir}/nss/*
-removefrom ntfs-3g --allbut /sbin/mount.ntfs* /${libdir}/*
-removefrom ntfsprogs --allbut /sbin/ntfsresize
+removefrom ntfs-3g --allbut /usr/sbin/mount.ntfs* /${libdir}/*
+removefrom ntfsprogs --allbut /usr/sbin/ntfsresize
 removefrom openldap /etc/openldap/* /usr/${libdir}/libldap_r-*
 removefrom openssh /etc/ssh/* /usr/libexec/*
 removefrom openssh-clients /etc/ssh/* /usr/bin/slogin /usr/bin/ssh-*
 removefrom openssh-clients /usr/${libdir}/* /usr/libexec/*
 removefrom openssh-server /etc/ssh/* /usr/${libdir}/* /usr/libexec/*
 removefrom openssl /etc/pki/* /usr/bin/* /usr/${libdir}/openssl/*
-removefrom pam /sbin/* /usr/share/locale/*
+removefrom pam /usr/sbin/* /usr/share/locale/*
 removefrom pciutils /usr/sbin/*
-removefrom pcmciautils /sbin/*
+removefrom pcmciautils /usr/sbin/*
 removefrom pcre /usr/bin/* /usr/${libdir}/*
 removefrom policycoreutils /etc/* /usr/bin/* /usr/share/locale/*
 removefrom polkit /usr/bin/*
@@ -310,7 +314,7 @@ removefrom procps /usr/bin/free /usr/bin/pgrep /usr/bin/pkill
 removefrom procps /usr/bin/pmap /usr/bin/pwdx /usr/bin/skill /usr/bin/slabtop
 removefrom procps /usr/bin/snice /usr/bin/tload /usr/bin/uptime
 removefrom procps /usr/bin/vmstat /usr/bin/w /usr/bin/watch
-removefrom psmisc /sbin/* /usr/share/locale/*
+removefrom psmisc /usr/share/locale/*
 removefrom pygtk2 /usr/bin/* /usr/${libdir}/pygtk/*
 removefrom pykickstart /usr/bin/* /usr/share/locale/*
 removefrom python-bugzilla /usr/bin/*
@@ -333,14 +337,14 @@ removefrom tar /usr/share/locale/*
 removefrom un-core-dotum-fonts /usr/share/fonts/un-core/UnDotumBold.ttf
 removefrom usbutils /usr/bin/*
 removefrom util-linux --allbut \
-    /bin/{dmesg,kill,login,lsblk,more,mount,umount,mountpoint} \
+    /usr/bin/{dmesg,kill,login,lsblk,more,mount,umount,mountpoint} \
     /etc/mtab /etc/pam.d/login /etc/pam.d/remote \
-    /sbin/{agetty,blkid,blockdev,clock,fdisk,fsck,fstrim,hwclock,losetup} \
-    /sbin/{mkswap,nologin,sfdisk,swapoff,swapon,wipefs} \
+    /usr/sbin/{agetty,blkid,blockdev,clock,fdisk,fsck,fstrim,hwclock,losetup} \
+    /usr/sbin/{mkswap,nologin,sfdisk,swapoff,swapon,wipefs} \
     /usr/bin/logger
 removefrom volume_key-libs /usr/share/locale/*
 removefrom wget /etc/* /usr/share/locale/*
-removefrom xfsprogs --allbut /sbin/* /usr/sbin/xfs_{admin,check,copy,db}
+removefrom xfsprogs --allbut /usr/sbin/{fsck.xfs,mkfs.xfs,xfs_repair} /usr/sbin/xfs_{admin,check,copy,db}
 removefrom xkeyboard-config /usr/share/locale/*
 removefrom xorg-x11-drv-intel /usr/${libdir}/libI*
 removefrom xorg-x11-drv-openchrome /usr/${libdir}/libchrome*
