@@ -50,9 +50,9 @@ from pylorax.imgutils import PartitionMount, mksparse
 from pylorax.executils import execWithRedirect, execWithCapture
 
 
-# Default parameters for rebuilding initramfs, overrice with --dracut-args
+# Default parameters for rebuilding initramfs, override with --dracut-args
 DRACUT_DEFAULT = ["--xz", "--add", "livenet", "--add", "dmsquash-live",
-                  "--omit", "plymouth"]
+                  "--add", "convertfs", "--omit", "plymouth"]
 
 
 class LogRequestHandler(SocketServer.BaseRequestHandler):
