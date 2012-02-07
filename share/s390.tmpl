@@ -1,4 +1,4 @@
-<%page args="kernels, runtime_img, basearch, outroot"/>
+<%page args="kernels, runtime_img, runtime_base, basearch, outroot"/>
 <%
 configdir="tmp/config_files/s390"
 BOOTDIR="images"
@@ -11,6 +11,7 @@ kernel = kernels[0]
 
 mkdir images
 install ${runtime_img} images
+treeinfo images-${basearch} LiveOS images/${runtime_base}
 
 ## install bootloader (such as it is) and bootloader config
 install ${configdir}/redhat.exec ${BOOTDIR}

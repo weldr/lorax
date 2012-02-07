@@ -7,6 +7,7 @@ LIVEDIR="LiveOS"
 
 mkdir ${LIVEDIR}
 install ${runtime_img} ${LIVEDIR}/squashfs.img
+treeinfo images-${basearch} LiveOS ${LIVEDIR}/squashfs.img
 
 ## install bootloader and config files
 install boot/*.b ${BOOTDIR}
