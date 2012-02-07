@@ -82,6 +82,7 @@ replace "root:\*:" "root::" etc/shadow
     runcmd ssh-keygen -q -C "" -N "" -t dsa  -f ${root}/etc/ssh/ssh_host_dsa_key
     chmod etc/ssh/ssh_host*_key 600
     chmod etc/ssh/ssh_host*_key.pub 644
+    mkdir var/run/dbus
 %endif
 
 ## gconf settings
