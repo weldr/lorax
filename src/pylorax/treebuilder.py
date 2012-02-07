@@ -158,6 +158,7 @@ class TreeBuilder(object):
         # NOTE: if you pass an arg named "runtime" to a mako template it'll
         # clobber some mako internal variables - hence "runtime_img".
         self.vars = DataHolder(arch=arch, product=product, runtime_img=runtime,
+                               runtime_base=basename(runtime),
                                inroot=inroot, outroot=outroot,
                                basearch=arch.basearch, libdir=arch.libdir,
                                isolabel=isolabel, udev=udev_escape)
