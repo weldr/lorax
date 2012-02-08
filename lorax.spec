@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.2
+Version:        17.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -75,6 +75,18 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Wed Feb 08 2012 Brian C. Lane <bcl@redhat.com> 17.3-1
+- keep convertfs.sh script in image (#787893) (bcl)
+- Add dracut convertfs module (#787893) (bcl)
+- fix templates to work with F17 usrmove (tflink)
+- changing hfs to hfsplus so that the correct mkfs binary is called (tflink)
+- Add luks, md and dm dracut args to bootloaders (bcl)
+- update lorax and livemedia_creator to use isfinal (bcl)
+- lorax: copy kickstarts into sysroot (#743135) (bcl)
+- livemedia-creator: Mount iso if rootfs is LiveOS (bcl)
+- Log output of failed command (mgracik)
+- Add packages required for gtk3 and the new anaconda UI. (clumens)
+
 * Thu Jan 12 2012 Martin Gracik <mgracik@redhat.com> 17.2-1
 - Allow specifying buildarch on the command line (#771382) (mgracik)
 - lorax: Don't touch /etc/mtab in cleanup (bcl)
