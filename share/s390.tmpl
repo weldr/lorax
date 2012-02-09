@@ -11,7 +11,7 @@ kernel = kernels[0]
 
 mkdir images
 install ${runtime_img} images
-treeinfo images-${basearch} LiveOS images/${runtime_base}
+treeinfo stage2 mainimage images/${runtime_base}
 
 ## install bootloader (such as it is) and bootloader config
 install ${configdir}/redhat.exec ${BOOTDIR}
