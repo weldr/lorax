@@ -23,9 +23,7 @@ rootarg = "root=live:CDLABEL=%s" % isolabel
 
 mkdir ${LIVEDIR}
 install ${runtime_img} ${LIVEDIR}/squashfs.img
-%for kernel in kernels:
-    treeinfo images-${kernel.arch} LiveOS ${LIVEDIR}/squashfs.img
-%endfor
+treeinfo stage2 mainimage ${LIVEDIR}/squashfs.img
 
 ## install bootloaders.
 ## NOTE: there's two different bootloader setups here:
