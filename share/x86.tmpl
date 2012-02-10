@@ -19,6 +19,7 @@ install ${configdir}/isolinux.cfg ${BOOTDIR}
 install ${configdir}/boot.msg ${BOOTDIR}
 install ${configdir}/grub.conf ${BOOTDIR}
 install usr/share/anaconda/boot/syslinux-splash.png ${BOOTDIR}/splash.png
+install boot/memtest* ${BOOTDIR}/memtest
 
 ## configure bootloader
 replace @VERSION@ ${product.version} ${BOOTDIR}/grub.conf ${BOOTDIR}/isolinux.cfg ${BOOTDIR}/*.msg
