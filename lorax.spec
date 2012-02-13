@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.3
+Version:        17.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -75,6 +75,13 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Mon Feb 13 2012 Brian C. Lane <bcl@redhat.com> 17.4-1
+- Change the squashfs image section in .treeinfo (mgracik)
+- Add path to squashfs image to the treeinfo (mgracik)
+- Add runtime basename variable to the template (mgracik)
+- add memtest to the boot.iso for x86 (#787234) (bcl)
+- Add dracut args to grub.conf (bcl)
+
 * Wed Feb 08 2012 Brian C. Lane <bcl@redhat.com> 17.3-1
 - keep convertfs.sh script in image (#787893) (bcl)
 - Add dracut convertfs module (#787893) (bcl)
