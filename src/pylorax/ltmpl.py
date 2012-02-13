@@ -25,7 +25,7 @@ logger = logging.getLogger("pylorax.ltmpl")
 
 import os, re, glob, shlex, fnmatch
 from os.path import basename, isdir
-from subprocess import check_call, check_output
+from subprocess import check_call, check_output, CalledProcessError
 
 from sysutils import joinpaths, cpfile, mvfile, replace, remove
 from yumhelper import * # Lorax*Callback classes
