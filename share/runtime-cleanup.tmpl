@@ -143,7 +143,7 @@ removefrom ca-certificates /etc/pki/tls/certs/ca-bundle.trust.crt /etc/ssl/*
 removefrom cairo /usr/${libdir}/libcairo-script*
 removefrom coreutils /etc/* /usr/bin/link /usr/bin/nice /usr/bin/stty /usr/bin/su /usr/bin/unlink
 removefrom coreutils /usr/sbin/runuser /usr/bin/[ /usr/bin/base64 /usr/bin/chcon
-removefrom coreutils /usr/bin/cksum /usr/bin/comm /usr/bin/csplit /usr/bin/cut
+removefrom coreutils /usr/bin/cksum /usr/bin/comm /usr/bin/csplit
 removefrom coreutils /usr/bin/dir /usr/bin/dircolors /usr/bin/dirname
 removefrom coreutils /usr/bin/expand /usr/bin/factor /usr/bin/fmt
 removefrom coreutils /usr/bin/fold /usr/bin/groups /usr/bin/hostid /usr/bin/id
@@ -226,7 +226,7 @@ removefrom hwdata /usr/share/hwdata/upgradelist
 removefrom initscripts /etc/ppp/* /usr/sbin/* /usr/share/locale/*
 removefrom iproute /etc/* /sbin/cbq /sbin/ifcfg /sbin/rtmon /sbin/tc /usr/*
 removefrom iputils /etc/* /usr/bin/ping6 /usr/bin/tracepath* /usr/sbin/ifenslave
-removefrom iputils /usr/sbin/*
+removefrom iputils /usr/sbin/* --allbut /usr/sbin/arping
 removefrom iscsi-initiator-utils /etc/rc.d/*
 removefrom jfsutils /sbin/jfs_fsck /sbin/jfs_fscklog /sbin/jfs_logdump
 removefrom jfsutils /sbin/jfs_mkfs
