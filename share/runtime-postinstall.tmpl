@@ -3,22 +3,10 @@
 
 <%page args="root, basearch, libdir, configdir"/>
 <%
-# TODO: make systemd handle the keymaps and drop this from lorax/anaconda
-filearch = 'ppc' if basearch == 'ppc64' else basearch
-KEYMAP_OVERRIDE = "usr/share/anaconda/keymaps-override-%s" % filearch
 PYTHONDIR = glob("usr/"+libdir+"/python?.?")[0]
 stubs = ("list-harddrives", "loadkeys", "raidstart", "raidstop")
 configdir = configdir + "/common"
 %>
-
-## create_keymaps()
-%if basearch not in ("s390", "s390x"):
-    %if exists(KEYMAP_OVERRIDE):
-        move ${KEYMAP_OVERRIDE} etc/keymaps.gz
-    %else:
-        runcmd ${root}/usr/libexec/anaconda/getkeymaps ${basearch} ${root}/etc/keymaps.gz ${root}
-    %endif
-%endif
 
 ## move_stubs()
 move usr/share/anaconda/restart-anaconda usr/bin
