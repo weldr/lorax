@@ -33,8 +33,6 @@ removefrom ConsoleKit /lib/systemd/system/*
 removefrom initscripts /lib/systemd/system/fedora* /lib/systemd/fedora*
 removefrom lvm2 /lib/systemd/system/*
 removefrom mdadm /lib/systemd/system/*
-## finally, make /init -> /sbin/init symlink
-symlink /sbin/init init
 
 ## install some basic configuration files
 append etc/resolv.conf ""
@@ -55,7 +53,7 @@ install ${configdir}/pam.sshd etc/pam.d/login
 install ${configdir}/pam.sshd etc/pam.d/remote
 
 ## set up "install" user account
-append etc/passwd "install:x:0:0:root:/root:/sbin/loader"
+append etc/passwd "install:x:0:0:root:/root:/sbin/anaconda"
 append etc/shadow "install::14438:0:99999:7:::"
 ## remove root password
 replace "root:\*:" "root::" etc/shadow
@@ -92,9 +90,6 @@ gconfset /apps/metacity/global_keybindings/switch_to_workspace_right string disa
 gconfset /desktop/gnome/interface/accessibility bool true
 gconfset /desktop/gnome/interface/at-spi-corba bool true
 
-## get_anaconda_portions()
-move usr/${libdir}/anaconda/loader sbin
-move usr/share/anaconda/loader.tr etc
 move usr/libexec/anaconda/auditd sbin
 
 ## for compatibility with Ancient Anaconda Traditions
