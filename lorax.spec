@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.4
+Version:        17.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -75,6 +75,10 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Wed Feb 15 2012 Brian C. Lane <bcl@redhat.com> 17.5-1
+- metacity now depends on gsettings-desktop-schemas (bcl)
+- Add findiso to grub config (mjg)
+
 * Mon Feb 13 2012 Brian C. Lane <bcl@redhat.com> 17.4-1
 - Change the squashfs image section in .treeinfo (mgracik)
 - Add path to squashfs image to the treeinfo (mgracik)
