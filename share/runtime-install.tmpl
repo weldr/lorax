@@ -33,10 +33,12 @@ installpkg kernel
 %endif
 
 ## extra dracut modules
-installpkg dracut-network
+installpkg dracut-network anaconda-dracut
 
 ## required for dracut
 installpkg kbd kbd-misc
+## required for anaconda-dracut (img-lib etc.)
+installpkg tar xz dmidecode curl
 
 ## basic system stuff
 installpkg systemd-sysv systemd-units
