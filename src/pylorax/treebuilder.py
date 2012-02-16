@@ -175,8 +175,6 @@ class TreeBuilder(object):
                   "--nomdadmconf", "--nolvmconf"] + add_args
         if not backup:
             dracut.append("--force")
-        hooks = [("99anaconda-copy-ks.sh", "/lib/dracut/hooks/pre-pivot")]
-        hook_commands = self.copy_dracut_hooks(hooks)
 
         # Hush some dracut warnings. TODO: bind-mount proc in place?
         open(joinpaths(self.vars.inroot,"/proc/modules"),"w")
@@ -186,7 +184,7 @@ class TreeBuilder(object):
                 initrd = joinpaths(self.vars.inroot, kernel.initrd.path)
                 os.rename(initrd, initrd + backup)
             check_call(["chroot", self.vars.inroot] + \
-                       dracut + hook_commands + [kernel.initrd.path, kernel.version])
+                       dracut + [kernel.initrd.path, kernel.version])
         os.unlink(joinpaths(self.vars.inroot,"/proc/modules"))
 
     def build(self):
