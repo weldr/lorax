@@ -174,7 +174,8 @@ class TreeBuilder(object):
         '''Rebuild all the initrds in the tree. If backup is specified, each
         initrd will be renamed with backup as a suffix before rebuilding.
         If backup is empty, the existing initrd files will be overwritten.'''
-        dracut = ["dracut", "--noprefix", "--nomdadmconf", "--nolvmconf"] + add_args
+        dracut = ["dracut", "--prefix=/run/initramfs",
+                  "--nomdadmconf", "--nolvmconf"] + add_args
         if not backup:
             dracut.append("--force")
         hooks = [("99anaconda-copy-ks.sh", "/lib/dracut/hooks/pre-pivot")]
