@@ -129,7 +129,7 @@ class Lorax(BaseLoraxClass):
         logger.addHandler(fh)
 
     def run(self, ybo, product, version, release, variant="", bugurl="",
-            isfinal=False, workdir=None, outputdir=None, buildarch=None):
+            isfinal=False, workdir=None, outputdir=None, buildarch=None, volid=None):
 
         assert self._configured
 
@@ -235,7 +235,8 @@ class Lorax(BaseLoraxClass):
         logger.info("preparing to build output tree and boot images")
         treebuilder = TreeBuilder(product=self.product, arch=self.arch,
                                   inroot=installroot, outroot=self.outputdir,
-                                  runtime=runtime, templatedir=templatedir)
+                                  runtime=runtime, templatedir=templatedir,
+                                  volid=volid)
 
         logger.info("rebuilding initramfs images")
         dracut_args=["--xz", "--add", "livenet", "--add", "convertfs", "--omit", "plymouth"]

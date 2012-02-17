@@ -151,10 +151,11 @@ class RuntimeBuilder(object):
 class TreeBuilder(object):
     '''Builds the arch-specific boot images.
     inroot should be the installtree root (the newly-built runtime dir)'''
-    def __init__(self, product, arch, inroot, outroot, runtime, templatedir=None):
+    def __init__(self, product, arch, inroot, outroot, runtime, templatedir=None, volid=None):
         # NOTE: if you change isolabel, you need to change pungi to match, or
         # the pungi images won't boot.
-        isolabel = "{0.name} {0.version} {1.basearch}".format(product, arch)
+        isolabel = volid or "{0.name} {0.version} {1.basearch}".format(product, arch)
+
         # NOTE: if you pass an arg named "runtime" to a mako template it'll
         # clobber some mako internal variables - hence "runtime_img".
         self.vars = DataHolder(arch=arch, product=product, runtime_img=runtime,
