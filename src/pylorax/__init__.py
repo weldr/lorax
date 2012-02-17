@@ -34,6 +34,7 @@ import sys
 import os
 import ConfigParser
 import tempfile
+import locale
 
 from base import BaseLoraxClass, DataHolder
 import output
@@ -66,6 +67,9 @@ class Lorax(BaseLoraxClass):
     def __init__(self):
         BaseLoraxClass.__init__(self)
         self._configured = False
+
+        # set locale to C
+        locale.setlocale(locale.LC_ALL, 'C')
 
     def configure(self, conf_file="/etc/lorax/lorax.conf"):
         self.conf = ConfigParser.SafeConfigParser()
