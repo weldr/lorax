@@ -181,6 +181,15 @@ class Lorax(BaseLoraxClass):
         self.product = product
         logger.debug("product data: %s" % product)
 
+        # NOTE: if you change isolabel, you need to change pungi to match, or
+        # the pungi images won't boot.
+        isolabel = volid or "{0.name} {0.version} {1.basearch}".format(self.product,
+                                                                       self.arch)
+
+        if len(isolabel) > 32:
+            logger.fatal("the volume id cannot be longer than 32 characters")
+            sys.exit(1)
+
         templatedir = self.conf.get("lorax", "sharedir")
         # NOTE: rb.root = ybo.conf.installroot (== self.inroot)
         rb = RuntimeBuilder(product=self.product, arch=self.arch,
@@ -235,8 +244,8 @@ class Lorax(BaseLoraxClass):
         logger.info("preparing to build output tree and boot images")
         treebuilder = TreeBuilder(product=self.product, arch=self.arch,
                                   inroot=installroot, outroot=self.outputdir,
-                                  runtime=runtime, templatedir=templatedir,
-                                  volid=volid)
+                                  runtime=runtime, isolabel=isolabel,
+                                  templatedir=templatedir)
 
         logger.info("rebuilding initramfs images")
         dracut_args=["--xz", "--add", "livenet", "--add", "convertfs", "--omit", "plymouth"]
