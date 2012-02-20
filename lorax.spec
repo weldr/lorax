@@ -21,7 +21,7 @@ Requires:       findutils
 Requires:       GConf2
 Requires:       isomd5sum
 Requires:       glibc
-Requires:       util-linux-ng
+Requires:       util-linux
 Requires:       dosfstools
 Requires:       hfsplus-tools
 Requires:       genisoimage
@@ -75,6 +75,11 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Mon Feb 20 2012 Brian C. Lane <bcl@redhat.com> 17.6-1
+- use --prefix=/run/initramfs when building initramfs (wwoods)
+- dhclient-script needs cut and arping (bcl)
+- Fix missing CalledProcessError import (bcl)
+
 * Wed Feb 15 2012 Brian C. Lane <bcl@redhat.com> 17.5-1
 - metacity now depends on gsettings-desktop-schemas (bcl)
 - Add findiso to grub config (mjg)
