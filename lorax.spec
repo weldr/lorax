@@ -21,7 +21,7 @@ Requires:       findutils
 Requires:       GConf2
 Requires:       isomd5sum
 Requires:       glibc
-Requires:       util-linux-ng
+Requires:       util-linux
 Requires:       dosfstools
 Requires:       hfsplus-tools
 Requires:       genisoimage
