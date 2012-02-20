@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.3
+Version:        18.0
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -75,6 +75,22 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Mon Feb 20 2012 Brian C. Lane <bcl@redhat.com> 18.0-1
+- use --prefix=/run/initramfs when building initramfs (wwoods)
+- dhclient-script needs cut and arping (bcl)
+- Fix missing CalledProcessError import (bcl)
+- metacity now depends on gsettings-desktop-schemas (bcl)
+- Add findiso to grub config (mjg)
+- add memtest to the boot.iso for x86 (#787234) (bcl)
+- Don't use mk-s390-cdboot (dhorak) (mgracik)
+- Add dracut args to grub.conf (bcl)
+- Change the squashfs image section in .treeinfo (mgracik)
+- Add path to squashfs image to the treeinfo (mgracik)
+- Add runtime basename variable to the template (mgracik)
+- use internal implementation of the addrsize utility (dan)
+- Make sure var/run is not a symlink on s390x (#787217) (mgracik)
+- Create var/run/dbus directory on s390x (#787217) (mgracik)
+
 * Wed Feb 08 2012 Brian C. Lane <bcl@redhat.com> 17.3-1
 - keep convertfs.sh script in image (#787893) (bcl)
 - Add dracut convertfs module (#787893) (bcl)
