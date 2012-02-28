@@ -116,12 +116,12 @@ the repo each time you run it. To speed things up you either need a local
 mirror of the packages, or you can use a caching proxy. When using a proxy
 you pass it to livemedia-creator like so:
 
---kernel-args="proxy=http://proxy.yourdomain.com:3128"
+--proxy=http://proxy.yourdomain.com:3128
 
 You also need to use a specific mirror instead of mirrormanager so that the
-packages will get cached:
+packages will get cached, so your kickstart url would look like:
 
-url --url="http://download.fedora.redhat.com/pub/fedora/linux/development/16/x86_64/os/"
+url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/17/x86_64/os/"
 
 You can also add an update repo, but don't name it updates. Add --proxy to
 it as well.
@@ -154,6 +154,21 @@ Example cmdline:
 sudo livemedia-creator --make-iso --no-virt --ks=./fedora-livemedia.ks
 
 
+AMI IMAGES
+----------
+Amazon EC2 images can be created by using the --make-ami switch and an appropriate
+kickstart file. All of the work to customize the image is handled by the kickstart.
+The example currently included was modified from the cloud-kickstarts version so
+that it would work with livemedia-creator.
+
+Example cmdline:
+sudo livemedia-creator --make-ami --iso=/path/to/boot.iso --ks=./docs/fedora-livemedia-ec2.ks
+
+This will produce an ami-root.img file in the working directory.
+
+At this time I have not tested the image with EC2. Feedback would we welcome.
+
+
 DEBUGGING PROBLEMS
 ------------------
 Cleaning up an aborted (ctrl-c) virt-install run (as root):
@@ -177,8 +192,8 @@ the anaconda-cleanup script.
 
 THE FUTURE
 ----------
-The current release only supports creating live iso's. In the future
-I want it to be able to create ami images as well as appliance images.
+The current release supports creating live iso's and ami images. In the future
+I also want it to be able to create appliance images.
 
 It is also limited to x86 architectures because of it's use of virt-install.
 I hope to be able to support other arches by using Anaconda's image install
