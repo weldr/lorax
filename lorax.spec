@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.6
+Version:        17.7
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -75,6 +75,20 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Tue Feb 28 2012 Martin Gracik <mgracik@redhat.com> 17.7-1
+- Don't remove btrfs utils (#796511)
+- Remove root and ip parameters from generic.prm (#796572)
+- Check if the volume id is not longer than 32 chars (#786832)
+- Add option to specify volume id on command line (#786834)
+- Install nhn-nanum-gothic-fonts (#790266)
+- Change the locale to C (#786833)
+- Don't use mk-s390-cdboot (dhorak)
+- use internal implementation of the addrsize utility
+- Make sure var/run is not a symlink on s390x (#787217)
+- Create var/run/dbus directory on s390x (#787217)
+- iputils is small and required by dhclient-script
+- missing version bump in specfile
+
 * Mon Feb 20 2012 Brian C. Lane <bcl@redhat.com> 17.6-1
 - use --prefix=/run/initramfs when building initramfs (wwoods)
 - dhclient-script needs cut and arping (bcl)
