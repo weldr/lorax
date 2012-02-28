@@ -46,7 +46,7 @@ from pykickstart.version import makeVersion
 from pylorax.base import DataHolder
 from pylorax.treebuilder import TreeBuilder, RuntimeBuilder, udev_escape
 from pylorax.sysutils import joinpaths, remove, linktree
-from pylorax.imgutils import PartitionMount, mksparse
+from pylorax.imgutils import PartitionMount, mksparse, mkext4img
 from pylorax.executils import execWithRedirect, execWithCapture
 
 
@@ -406,6 +406,23 @@ def get_kernels( boot_dir ):
     return [f[8:] for f in files if f.startswith("vmlinuz-")]
 
 
+def make_ami( disk_img, ami_img="ami-root.img", ami_label="AMI" ):
+    """
+    Copy the / partition to an un-partitioned disk image
+
+    ami_img is the filename to write, defaults to ami-root.img
+    ami_label is the FS label to apply to the image
+
+    All other AMI setup is handled by the kickstart's %post
+    """
+    with PartitionMount( disk_img ) as img_mount:
+        work_dir = tempfile.mkdtemp()
+        log.info("working dir is {0}".format(work_dir))
+        log.info("creating {0}".format(ami_img))
+        mkext4img(img_mount.mount_dir, joinpaths(work_dir, ami_img), label=ami_label)
+    return work_dir
+
+
 def make_livecd( disk_img, squashfs_args="", templatedir=None,
                  title="Linux", project="Linux", releasever=16 ):
     """
@@ -423,6 +440,9 @@ def make_livecd( disk_img, squashfs_args="", templatedir=None,
 
     """
     with PartitionMount( disk_img ) as img_mount:
+        if not img_mount or not img_mount.mount_dir:
+            return None
+
         kernel_list = get_kernels( joinpaths( img_mount.mount_dir, "boot" ) )
         log.debug( "kernel_list = {0}".format(kernel_list) )
         if kernel_list:
@@ -592,7 +612,7 @@ if __name__ == '__main__':
         log.error("You need to run this as root")
         sys.exit( 1 )
 
-    if not os.path.exists( opts.lorax_templates ):
+    if opts.make_iso and not os.path.exists( opts.lorax_templates ):
         log.error( "The lorax templates directory ({0}) doesn't"
                    " exist.".format( opts.lorax_templates ) )
         sys.exit( 1 )
@@ -612,10 +632,6 @@ if __name__ == '__main__':
 
     if opts.make_appliance:
         log.error( "--make-appliance is not yet implemented." )
-        sys.exit( 1 )
-
-    if opts.make_ami:
-        log.error( "--make-ami is not yet implemented." )
         sys.exit( 1 )
 
     if not opts.no_virt and not opts.iso and not opts.disk_image:
@@ -701,13 +717,16 @@ if __name__ == '__main__':
         result_dir = make_livecd( opts.disk_image or disk_img, opts.squashfs_args,
                                   opts.lorax_templates,
                                   opts.title, opts.project, opts.releasever )
+    elif opts.make_ami and not opts.image_only:
+        result_dir = make_ami(opts.disk_image or disk_img)
 
-        if not opts.keep_image and not opts.disk_image:
-            os.unlink( disk_img )
+    # cleanup the mess
+    if disk_img and not opts.keep_image and not opts.disk_image:
+        os.unlink( disk_img )
 
-        if opts.result_dir:
-            shutil.copytree( result_dir, opts.result_dir )
-            shutil.rmtree( result_dir )
+    if opts.result_dir and result_dir:
+        shutil.copytree( result_dir, opts.result_dir )
+        shutil.rmtree( result_dir )
 
     log.info("SUMMARY")
     log.info("-------")
