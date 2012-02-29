@@ -30,6 +30,7 @@ Requires:       gzip
 Requires:       xz
 Requires:       squashfs-tools >= 4.2
 Requires:       e2fsprogs
+Requires:       yum
 
 %ifarch %{ix86} x86_64
 Requires:       syslinux >= 4.02-5
@@ -40,8 +41,11 @@ Requires:       silo
 %endif
 
 %ifarch ppc ppc64
-Requires:       yaboot
 Requires:       kernel-bootwrapper
+%endif
+
+%ifarch s390 s390x
+Requires:       openssh
 %endif
 
 %description
