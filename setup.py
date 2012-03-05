@@ -15,7 +15,7 @@ for root, dnames, fnames in os.walk("share"):
                            [os.path.join(root, fname)]))
 
 # executable
-data_files.append(("/usr/sbin", ["src/sbin/lorax"]))
+data_files.append(("/usr/sbin", ["src/sbin/lorax", "src/sbin/mkefiboot"]))
 
 setup(name="lorax",
       version="0.1",
