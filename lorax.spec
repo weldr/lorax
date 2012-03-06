@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        0.4.6
+Version:        0.4.7
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -53,6 +53,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{python_sitelib}/pylorax
 %{python_sitelib}/*.egg-info
 %{_sbindir}/lorax
+%{_sbindir}/mkefiboot
 %dir %{_sysconfdir}/lorax
 %config(noreplace) %{_sysconfdir}/lorax/lorax.conf
 %dir %{_datadir}/lorax
@@ -60,6 +61,9 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Tue Mar 06 2012 Brian C. Lane <bcl@redhat.com> 0.4.7-1
+- add mkefiboot and imgutils.py (bcl)
+
 * Tue May 10 2011 Martin Gracik <mgracik@redhat.com> 0.4.6-1
 - Do not remove libmodman (#701622)
 - Add firmware for Intel Wireless WiFi Link 6030 Adapters (#703291)
