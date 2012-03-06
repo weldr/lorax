@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.0
+Version:        18.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -75,6 +75,20 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Tue Mar 06 2012 Brian C. Lane <bcl@redhat.com> 18.1-1
+- livemedia-creator: update README (bcl)
+- example livemedia kickstart for ec2 (bcl)
+- livemedia-creator: console=ttyS0 not /dev/ttyS0 (bcl)
+- livemedia-creator: Add support for making ami images (bcl)
+- Don't remove btrfs utils (#796511) (mgracik)
+- Remove root and ip parameters from generic.prm (#796572) (mgracik)
+- Check if the volume id is not longer than 32 chars (#786832) (mgracik)
+- Add option to specify volume id on command line (#786834) (mgracik)
+- Install nhn-nanum-gothic-fonts (#790266) (mgracik)
+- Change the locale to C (#786833) (mgracik)
+- iputils is small and required by dhclient-script (bcl)
+- util-linux-ng is now util-linux (bcl)
+
 * Mon Feb 20 2012 Brian C. Lane <bcl@redhat.com> 18.0-1
 - use --prefix=/run/initramfs when building initramfs (wwoods)
 - dhclient-script needs cut and arping (bcl)
