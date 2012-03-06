@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.7
+Version:        17.8
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -75,6 +75,12 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Tue Mar 06 2012 Brian C. Lane <bcl@redhat.com> 17.8-1
+- livemedia-creator: update README (bcl)
+- example livemedia kickstart for ec2 (bcl)
+- livemedia-creator: console=ttyS0 not /dev/ttyS0 (bcl)
+- livemedia-creator: Add support for making ami images (bcl)
+
 * Tue Feb 28 2012 Martin Gracik <mgracik@redhat.com> 17.7-1
 - Don't remove btrfs utils (#796511)
 - Remove root and ip parameters from generic.prm (#796572)
