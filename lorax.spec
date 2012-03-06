@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        16.4.7
+Version:        16.4.8
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -54,6 +54,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{python_sitelib}/pylorax
 %{python_sitelib}/*.egg-info
 %{_sbindir}/lorax
+%{_sbindir}/mkefiboot
 %dir %{_sysconfdir}/lorax
 %config(noreplace) %{_sysconfdir}/lorax/lorax.conf
 %dir %{_datadir}/lorax
@@ -61,6 +62,10 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Tue Mar 06 2012 Brian C. Lane <bcl@redhat.com> 16.4.8-1
+- add mkefiboot and imgutils.py (bcl)
+- Do not remove /usr/bin/env (mgracik)
+
 * Mon Oct 17 2011 Martin Gracik <mgracik@redhat.com> 16.4.7-1
 - Changes required for grub2 (dgilmore)
 - Add fpaste to install environment (#727842)
