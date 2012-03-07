@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.8
+Version:        17.9
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -79,6 +79,10 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Wed Mar 07 2012 Martin Gracik <mgracik@redhat.com> 17.9-1
+- Fix product name replacing in templates
+  Resolves: rhbz#799919
+
 * Tue Mar 06 2012 Brian C. Lane <bcl@redhat.com> 17.8-1
 - livemedia-creator: update README (bcl)
 - example livemedia kickstart for ec2 (bcl)
