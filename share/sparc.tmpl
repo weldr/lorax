@@ -16,7 +16,7 @@ install ${configdir}/boot.msg ${BOOTDIR}
 
 ## configure bootloader
 replace @VERSION@ ${product.version} ${BOOTDIR}/boot.msg
-replace @PRODUCT@ ${product.name} ${BOOTDIR}/boot.msg
+replace @PRODUCT@ '${product.name}' ${BOOTDIR}/boot.msg
 replace @ROOT@ 'root=live:CDLABEL=${isolabel|udev}' ${BOOTDIR}/silo.conf
 
 ## install kernels

@@ -26,7 +26,7 @@ ${make_efiboot("images/macboot.img", imgtype="apple")}
         copy ${KERNELDIR}/initrd.img ${EFIBOOTDIR}
     %endif
     install ${configdir}/grub.conf ${eficonf}
-    replace @PRODUCT@ ${product.name} ${eficonf}
+    replace @PRODUCT@ '${product.name}' ${eficonf}
     replace @VERSION@ ${product.version} ${eficonf}
     replace @KERNELPATH@ /${kdir}/vmlinuz ${eficonf}
     replace @INITRDPATH@ /${kdir}/initrd.img ${eficonf}
