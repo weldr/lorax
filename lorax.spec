@@ -2,7 +2,7 @@
 
 Name:           lorax
 Version:        16.4.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
@@ -21,12 +21,16 @@ Requires:       findutils
 Requires:       GConf2
 Requires:       isomd5sum
 Requires:       glibc
-Requires:       util-linux-ng
+Requires:       util-linux
 Requires:       dosfstools
+Requires:       hfsplus-tools
 Requires:       genisoimage
 Requires:       parted
 Requires:       gzip
 Requires:       xz
+Requires:       squashfs-tools >= 4.2
+Requires:       e2fsprogs
+Requires:       yum
 
 %ifarch %{ix86} x86_64
 Requires:       syslinux
@@ -62,6 +66,9 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Wed Mar 07 2012 Brian C. Lane <bcl@redhat.com> 16.4.8-2
+- Add new requires for imgutils and mkefiboot
+
 * Tue Mar 06 2012 Brian C. Lane <bcl@redhat.com> 16.4.8-1
 - add mkefiboot and imgutils.py (bcl)
 - Do not remove /usr/bin/env (mgracik)
