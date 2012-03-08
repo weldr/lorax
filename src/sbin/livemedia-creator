@@ -424,7 +424,7 @@ def make_ami( disk_img, ami_img="ami-root.img", ami_label="AMI" ):
 
 
 def make_livecd( disk_img, squashfs_args="", templatedir=None,
-                 title="Linux", project="Linux", releasever=16 ):
+                 title="Linux", project="Linux", releasever=16, isolabel=None ):
     """
     Take the content from the disk image and make a livecd out of it
 
@@ -487,9 +487,14 @@ def make_livecd( disk_img, squashfs_args="", templatedir=None,
         subprocess.check_call(["/bin/ln", "-s", joinpaths( work_dir, "images" ),
                                                 joinpaths( installroot, "images" )])
 
+        isolabel = isolabel or "{0.name} {0.version} {1.basearch}".format(product, arch)
+        if len(isolabel) > 32:
+            isolabel = isolabel[:32]
+            log.error("Truncating isolabel to 32 chars: %s" % (isolabel,))
+
         tb = TreeBuilder( product=product, arch=arch,
                           inroot=installroot, outroot=work_dir,
-                          runtime=runtime, templatedir=templatedir)
+                          runtime=runtime, isolabel=isolabel, templatedir=templatedir)
         log.info( "Rebuilding initrds" )
         if not opts.dracut_args:
             dracut_args = DRACUT_DEFAULT
@@ -579,6 +584,7 @@ if __name__ == '__main__':
                          help="substituted for @PROJECT@ in bootloader config files" )
     parser.add_argument( "--releasever", type=int, default=16,
                          help="substituted for @VERSION@ in bootloader config files" )
+    parser.add_argument( "--volid", default=None, help="volume id")
     parser.add_argument( "--squashfs_args",
                          help="additional squashfs args" )
 
@@ -637,6 +643,10 @@ if __name__ == '__main__':
     if not opts.no_virt and not opts.iso and not opts.disk_image:
         log.error( "virt-install needs an install iso." )
         sys.exit( 1 )
+
+    if opts.volid and len(opts.volid) > 32:
+        logger.fatal("the volume id cannot be longer than 32 characters")
+        sys.exit(1)
 
     # Make the disk image
     if not opts.disk_image:
@@ -716,7 +726,8 @@ if __name__ == '__main__':
     if opts.make_iso and not opts.image_only:
         result_dir = make_livecd( opts.disk_image or disk_img, opts.squashfs_args,
                                   opts.lorax_templates,
-                                  opts.title, opts.project, opts.releasever )
+                                  opts.title, opts.project, opts.releasever,
+                                  opts.volid )
     elif opts.make_ami and not opts.image_only:
         result_dir = make_ami(opts.disk_image or disk_img)
 
