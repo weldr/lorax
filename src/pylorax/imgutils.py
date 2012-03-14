@@ -24,6 +24,7 @@ import os, tempfile
 from os.path import join, dirname
 from pylorax.sysutils import cpfile
 from subprocess import *
+import sys
 import traceback
 
 ######## Functions for making container images (cpio, squashfs) ##########
@@ -267,8 +268,13 @@ def mkfsimage(fstype, rootdir, outfile, size=None, mkfsargs=[], mountargs="", gr
     if not size:
         size = estimate_size(rootdir, graft, fstype)
     with LoopDev(outfile, size) as loopdev:
-        check_call(["mkfs.%s" % fstype] + mkfsargs + [loopdev],
-                   stdout=PIPE, stderr=PIPE)
+        try:
+            check_output(["mkfs.%s" % fstype] + mkfsargs + [loopdev])
+        except CalledProcessError as e:
+            logger.error("mkfs exited with a non-zero return code: %d" % e.returncode)
+            logger.error(e.output)
+            sys.exit(e.returncode)
+
         with Mount(loopdev, mountargs) as mnt:
             if rootdir:
                 copytree(rootdir, mnt, preserve)
