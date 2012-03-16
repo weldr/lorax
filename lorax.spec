@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.9
+Version:        17.10
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -79,6 +79,17 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Fri Mar 16 2012 Brian C. Lane <bcl@redhat.com> 17.10-1
+- merge noloader patches
+- Don't trash all the initscripts 'fedora*' services (wwoods)
+- remove anaconda-copy-ks.sh (wwoods)
+- add anaconda dracut module (wwoods)
+- runtime-postinstall: remove references to loader (wwoods)
+- runtime-postinstall: remove keymap stuff (wwoods)
+- Add the icfg package (#771733) (mgracik)
+- Log the output of mkfs (#769928) (mgracik)
+- livemedia-creator: update TreeBuilder use for isolabel (bcl)
+
 * Wed Mar 07 2012 Martin Gracik <mgracik@redhat.com> 17.9-1
 - Fix product name replacing in templates
   Resolves: rhbz#799919
