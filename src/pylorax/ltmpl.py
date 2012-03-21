@@ -309,6 +309,7 @@ class LoraxTemplateRunner(object):
         for g in fileglobs:
             for f in rglob(self._out(g)):
                 remove(f)
+                logger.debug("removed %s", f)
 
     def chmod(self, fileglob, mode):
         '''
