@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.10
+Version:        17.11
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -79,6 +79,9 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Wed Mar 21 2012 Brian C. Lane <bcl@redhat.com> 17.11-1
+- add symlink from /mnt/install -> /run/install (wwoods)
+
 * Fri Mar 16 2012 Brian C. Lane <bcl@redhat.com> 17.10-1
 - merge noloader patches
 - Don't trash all the initscripts 'fedora*' services (wwoods)
