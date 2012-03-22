@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.11
+Version:        17.12
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -79,7 +79,8 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
-* Wed Mar 21 2012 Brian C. Lane <bcl@redhat.com> 17.11-1
+* Wed Mar 21 2012 Brian C. Lane <bcl@redhat.com> 17.12-1
+- mkefiboot: Make Apple boot images appear in the startup preferences (mjg)
 - add symlink from /mnt/install -> /run/install (wwoods)
 
 * Fri Mar 16 2012 Brian C. Lane <bcl@redhat.com> 17.10-1
