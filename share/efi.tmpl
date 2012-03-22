@@ -19,7 +19,7 @@ ${make_efiboot("images/macboot.img", imgtype="apple")}
     eficonf = "%s/BOOT%s.conf" % (EFIBOOTDIR, efiarch)
     args = "--label=ANACONDA"
     if disk: args += " --disk"
-    if imgtype == "apple": args += " --apple --icon=%s" % APPLE_EFI_ICON
+    if imgtype == "apple": args += ' --apple --icon=%s --product="%s %s"' % (APPLE_EFI_ICON, product.name, product.version)
     %>
     %if include_kernel:
         copy ${KERNELDIR}/vmlinuz ${EFIBOOTDIR}

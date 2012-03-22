@@ -27,27 +27,51 @@ def mkefiboot(bootdir, outfile, label):
     '''Make an EFI boot image with the contents of bootdir in EFI/BOOT'''
     mkdosimg(None, outfile, label=label, graft={'EFI/BOOT':bootdir})
 
-def mkmacboot(bootdir, outfile, label, icon=None):
+def mkmacboot(bootdir, outfile, label, icon=None, product='Generic'):
     '''Make an EFI boot image for Apple's EFI implementation'''
     graft = {'EFI/BOOT':bootdir}
     if icon:
         graft['.VolumeIcon.icns'] = icon
     mkhfsimg(None, outfile, label=label, graft=graft)
-    macbless(outfile)
+    macmunge(outfile, product)
 
 # To make an HFS+ image bootable, we need to fill in parts of the
 # HFSPlusVolumeHeader structure - specifically, finderInfo[0,1,5].
 # For details, see Technical Note TN1150: HFS Plus Volume Format
 # http://developer.apple.com/library/mac/#technotes/tn/tn1150.html
-def macbless(imgfile):
+#
+# Additionally, we want to do some fixups to make it play nicely with
+# the startup disk preferences panel.
+def macmunge(imgfile, product):
     '''"bless" the EFI bootloader inside the given Mac EFI boot image, by
     writing its inode info into the HFS+ volume header.'''
     # Get the inode number for the boot image and its parent directory
     with LoopDev(imgfile) as loopdev:
         with Mount(loopdev) as mnt:
             loader = glob.glob(os.path.join(mnt,'EFI/BOOT/BOOT*.efi'))[0]
+            config = glob.glob(os.path.join(mnt,'EFI/BOOT/BOOT*.conf'))[0]
             blessnode = os.stat(loader).st_ino
             dirnode = os.stat(os.path.dirname(loader)).st_ino
+            with open(os.path.join(mnt,'mach_kernel'), 'w') as kernel:
+                kernel.write('Dummy kernel for booting')
+            sysdir = os.path.join(mnt,'System/Library/CoreServices/')
+            os.makedirs(sysdir)
+            with open(os.path.join(sysdir,'SystemVersion.plist'), 'w') as plist:
+                plist.write('''<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+<key>ProductBuildVersion</key>
+<string></string>
+<key>ProductName</key>
+<string>Linux</string>
+<key>ProductVersion</key>
+<string>%s</string>
+</dict>
+</plist>
+''' % (product,))
+            os.link(loader, os.path.join(sysdir,'boot.efi'))
+            os.link(config, os.path.join(sysdir,'boot.conf'))
     # format data properly (big-endian UInt32)
     nodedata = struct.pack(">i", blessnode)
     dirdata = struct.pack(">i", dirnode)
@@ -88,6 +112,8 @@ if __name__ == '__main__':
         help="filesystem label to use (default: %(default)s)")
     parser.add_argument("-i", "--icon", metavar="ICONFILE",
         help="icon file to include (for Apple EFI image)")
+    parser.add_argument("-p", "--product", metavar="PRODUCT",
+        help="product name to use (for Apple EFI image)")
     parser.add_argument("bootdir", metavar="EFIBOOTDIR",
         help="input directory (will become /EFI/BOOT in the image)")
     parser.add_argument("outfile", metavar="OUTPUTFILE",
@@ -102,7 +128,7 @@ if __name__ == '__main__':
         print "Warning: --icon is only useful for Apple EFI images"
     # do the thing!
     if opt.imgtype == "apple":
-        mkmacboot(opt.bootdir, opt.outfile, opt.label, opt.icon)
+        mkmacboot(opt.bootdir, opt.outfile, opt.label, opt.icon, opt.product)
     else:
         mkefiboot(opt.bootdir, opt.outfile, opt.label)
     if opt.disk:
