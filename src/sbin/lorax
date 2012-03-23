@@ -149,17 +149,17 @@ def get_yum_base_object(installroot, repositories, mirrorlists=[],
     repositories = filter(bool, repositories)
     mirrorlists = filter(bool, mirrorlists)
 
-    #cachedir = os.path.join(tempdir, "yum.cache")
-    #if not os.path.isdir(cachedir):
-    #    os.mkdir(cachedir)
+    cachedir = os.path.join(tempdir, "yum.cache")
+    if not os.path.isdir(cachedir):
+        os.mkdir(cachedir)
 
     yumconf = os.path.join(tempdir, "yum.conf")
     c = ConfigParser.ConfigParser()
 
     # add the main section
     section = "main"
-    data = {#"cachedir": cachedir,
-            #"keepcache": 0,
+    data = {"cachedir": cachedir,
+            "keepcache": 0,
             "gpgcheck": 0,
             "plugins": 0,
             "reposdir": "",
