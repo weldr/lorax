@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.12
+Version:        17.13
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -79,6 +79,10 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Wed Mar 28 2012 Brian C. Lane <bcl@redhat.com> 17.13-1
+- add iscsi-initiator-utils (#804522) (bcl)
+- use cache outside the installtree (bcl)
+
 * Wed Mar 21 2012 Brian C. Lane <bcl@redhat.com> 17.12-1
 - mkefiboot: Make Apple boot images appear in the startup preferences (mjg)
 - add symlink from /mnt/install -> /run/install (wwoods)
