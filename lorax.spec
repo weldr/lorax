@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.1
+Version:        18.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -79,6 +79,23 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Fri Mar 30 2012 Brian C. Lane <bcl@redhat.com> 18.2-1
+- Merge noloader commits from f17-branch (bcl)
+- mkefiboot: Make Apple boot images appear in the startup preferences (mjg)
+- add symlink from /mnt/install -> /run/install (wwoods)
+- Don't trash all the initscripts 'fedora*' services (wwoods)
+- remove anaconda-copy-ks.sh (wwoods)
+- add anaconda dracut module (wwoods)
+- runtime-postinstall: remove references to loader (wwoods)
+- runtime-postinstall: remove keymap stuff (wwoods)
+- Add the icfg package (#771733) (mgracik)
+- Log the output of mkfs (#769928) (mgracik)
+- Fix product name replacing in templates (#799919) (mgracik)
+- Fix requires (mgracik)
+- use cache outside the installtree (bcl)
+- add iscsi-initiator-utils (#804522) (bcl)
+- livemedia-creator: update TreeBuilder use for isolabel (bcl)
+
 * Tue Mar 06 2012 Brian C. Lane <bcl@redhat.com> 18.1-1
 - livemedia-creator: update README (bcl)
 - example livemedia kickstart for ec2 (bcl)
