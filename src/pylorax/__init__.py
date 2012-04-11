@@ -129,7 +129,8 @@ class Lorax(BaseLoraxClass):
         logger.addHandler(fh)
 
     def run(self, ybo, product, version, release, variant="", bugurl="",
-            isfinal=False, workdir=None, outputdir=None, buildarch=None, volid=None):
+            isfinal=False, workdir=None, outputdir=None, buildarch=None, volid=None,
+            remove_temp=False):
 
         assert self._configured
 
@@ -139,7 +140,7 @@ class Lorax(BaseLoraxClass):
             os.makedirs(self.workdir)
 
         # set up log directory
-        logdir = joinpaths(self.workdir, "log")
+        logdir = '/var/log/lorax'
         if not os.path.isdir(logdir):
             os.makedirs(logdir)
 
@@ -261,6 +262,11 @@ class Lorax(BaseLoraxClass):
         for section, data in treebuilder.treeinfo_data.items():
             treeinfo.add_section(section, data)
         treeinfo.write(joinpaths(self.outputdir, ".treeinfo"))
+
+        # cleanup
+        if remove_temp:
+            remove(self.workdir)
+
 
 def get_buildarch(ybo):
     # get architecture of the available anaconda package
