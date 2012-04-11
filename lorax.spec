@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.13
+Version:        17.14
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -79,6 +79,13 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Wed Apr 11 2012 Martin Gracik <mgracik@redhat.com> 17.14-1
+- Don't use --allbut for xfsprogs cleanup (#804779)
+- Log all removed files
+- Add spice-vdagent to initrd (#804739)
+- Add ntfs-3g to initrd (#804302)
+- ntfs-3g now uses /usr/lib (#810039) (bcl)
+
 * Wed Mar 28 2012 Brian C. Lane <bcl@redhat.com> 17.13-1
 - add iscsi-initiator-utils (#804522) (bcl)
 - use cache outside the installtree (bcl)
