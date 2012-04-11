@@ -126,7 +126,7 @@ def main(args):
     lorax.run(yb, opts.product, opts.version, opts.release,
               opts.variant, opts.bugurl, opts.isfinal,
               workdir=tempdir, outputdir=outputdir, buildarch=opts.buildarch,
-              volid=opts.volid)
+              volid=opts.volid, remove_temp=True)
 
 
 def get_yum_base_object(installroot, repositories, mirrorlists=[],
