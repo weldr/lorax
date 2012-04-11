@@ -344,7 +344,8 @@ removefrom util-linux --allbut \
     /usr/bin/logger
 removefrom volume_key-libs /usr/share/locale/*
 removefrom wget /etc/* /usr/share/locale/*
-removefrom xfsprogs --allbut /usr/sbin/{fsck.xfs,mkfs.xfs,xfs_repair} /usr/sbin/xfs_{admin,check,copy,db}
+removefrom xfsprogs /usr/sbin/xfs_{bmap,estimate,freeze,fsr,growfs,info,io,logprint,mdrestore,metadump,mkfile,ncheck,quota,rtcp}
+removefrom xfsprogs /usr/share/locale/*
 removefrom xkeyboard-config /usr/share/locale/*
 removefrom xorg-x11-drv-intel /usr/${libdir}/libI*
 removefrom xorg-x11-drv-openchrome /usr/${libdir}/libchrome*
