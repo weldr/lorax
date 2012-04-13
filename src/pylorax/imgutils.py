@@ -147,6 +147,8 @@ def estimate_size(rootdir, graft={}, fstype=None, blocksize=4096, overhead=128):
     getsize = lambda f: os.lstat(f).st_size
     if fstype == "btrfs":
         overhead = 64*1024 # don't worry, it's all sparse
+    if fstype == "hfsplus":
+        overhead = 200 # hack to deal with two bootloader copies
     if fstype in ("vfat", "msdos"):
         blocksize = 2048
         getsize = lambda f: os.stat(f).st_size # no symlinks, count as copies
