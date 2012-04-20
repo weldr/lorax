@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.14
+Version:        17.15
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -79,6 +79,13 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Fri Apr 20 2012 Martin Gracik <mgracik@redhat.com> 17.15-1
+- Don't remove dosfstools (#806648)
+- Leave some of the grub2 utilities in the install image (#749323)
+- mkefiboot: Copy Mac bootloader, rather than linking it (mjg)
+- Remove workdir if it was created by lorax (#807964)
+- add gdisk to install image (#811083) (bcl)
+
 * Wed Apr 11 2012 Martin Gracik <mgracik@redhat.com> 17.14-1
 - Don't use --allbut for xfsprogs cleanup (#804779)
 - Log all removed files
