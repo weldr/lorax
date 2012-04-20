@@ -111,6 +111,9 @@ removefrom gnome-themes --allbut /usr/share/icons/Mist/* \
 removefrom gnome-themes-standard --allbut /usr/share/themes/Adwaita/*
 removefrom metacity --allbut /usr/bin/* /usr/${libdir}/* /etc/*
 
+## filesystem tools
+removefrom e2fsprogs /usr/share/locale/*
+removefrom xfsprogs /usr/share/locale/*
 
 ## other package specific removals
 removefrom ConsoleKit /etc/ConsoleKit* /etc/init/* /usr/bin/* /usr/lib/*
@@ -137,7 +140,6 @@ removefrom bind-libs-lite /usr/${libdir}/libirs*
 removefrom bind-libs-lite /usr/${libdir}/libisccfg-export*
 removefrom bind-utils /usr/bin/dig /usr/bin/host /usr/bin/nsupdate
 removefrom bitmap-fangsongti-fonts /usr/share/fonts/*
-removefrom btrfs-progs /sbin/btrfs-* /sbin/btrfstune
 removefrom ca-certificates /etc/pki/java/*
 removefrom ca-certificates /etc/pki/tls/certs/ca-bundle.trust.crt /etc/ssl/*
 removefrom cairo /usr/${libdir}/libcairo-script*
@@ -172,9 +174,7 @@ removefrom dejavu-sans-mono-fonts --allbut *.conf */DejaVuSansMono.ttf
 removefrom device-mapper-multipath /etc/* /sbin/mpathconf /sbin/multipathd
 removefrom dhclient /usr/lib/* /usr/share/*
 removefrom dnsmasq /etc/rc.d/* /usr/sbin/*
-removefrom dosfstools /sbin/dosfsck /sbin/fsck.*
 removefrom dump /etc/*
-removefrom e2fsprogs /usr/sbin/* /usr/share/locale/*
 removefrom elfutils-libelf /usr/share/locale/*
 removefrom ethtool /usr/sbin/*
 removefrom expat /usr/bin/*
@@ -227,8 +227,6 @@ removefrom hwdata /usr/share/hwdata/upgradelist
 removefrom initscripts /etc/ppp/* /usr/sbin/* /usr/share/locale/*
 removefrom iproute /etc/* /sbin/cbq /sbin/ifcfg /sbin/rtmon /sbin/tc /usr/*
 removefrom iscsi-initiator-utils /etc/rc.d/*
-removefrom jfsutils /sbin/jfs_fsck /sbin/jfs_fscklog /sbin/jfs_logdump
-removefrom jfsutils /sbin/jfs_mkfs
 removefrom kbd \
     /usr/bin/{chvt,deallocvt,fgconsole,getkeycodes,kbdinfo,kbdrate,loadunimap,\
         mapscrn,open,openvt,psfaddtable,psfgettable,psfstriptable,psfxtable,\
@@ -296,8 +294,6 @@ removefrom nfs-utils /usr/sbin/start-statd /var/lib/nfs/etab
 removefrom nfs-utils /var/lib/nfs/rmtab /var/lib/nfs/state /var/lib/nfs/xtab
 removefrom nhn-nanum-gothic-fonts /usr/share/fonts/nhn-nanum/NanumGothic*Bold.ttf
 removefrom nss-softokn /usr/${libdir}/nss/*
-removefrom ntfs-3g --allbut /usr/sbin/mount.ntfs* /usr/${libdir}/*
-removefrom ntfsprogs --allbut /usr/sbin/ntfsresize
 removefrom openldap /etc/openldap/* /usr/${libdir}/libldap_r-*
 removefrom openssh /etc/ssh/* /usr/libexec/*
 removefrom openssh-clients /etc/ssh/* /usr/bin/slogin /usr/bin/ssh-*
@@ -345,8 +341,6 @@ removefrom util-linux --allbut \
     /usr/bin/logger
 removefrom volume_key-libs /usr/share/locale/*
 removefrom wget /etc/* /usr/share/locale/*
-removefrom xfsprogs /usr/sbin/xfs_{bmap,estimate,freeze,fsr,growfs,info,io,logprint,mdrestore,metadump,mkfile,ncheck,quota,rtcp}
-removefrom xfsprogs /usr/share/locale/*
 removefrom xkeyboard-config /usr/share/locale/*
 removefrom xorg-x11-drv-intel /usr/${libdir}/libI*
 removefrom xorg-x11-drv-openchrome /usr/${libdir}/libchrome*
