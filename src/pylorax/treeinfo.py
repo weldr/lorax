@@ -37,6 +37,7 @@ class TreeInfo(object):
         data = {"timestamp": time.time(),
                 "family": product,
                 "version": version,
+                "name": "%s-%s" % (product, version),
                 "variant": variant or "",
                 "arch": basearch,
                 "packagedir": packagedir}
