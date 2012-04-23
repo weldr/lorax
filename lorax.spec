@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.15
+Version:        17.16
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -79,6 +79,11 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Mon Apr 23 2012 Brian C. Lane <bcl@redhat.com> 17.16-1
+- add media check menu option (bcl)
+- remove unneeded dracut bootargs (bcl)
+- remove 'loadkeys' stub (#804306) (wwoods)
+
 * Fri Apr 20 2012 Martin Gracik <mgracik@redhat.com> 17.15-1
 - Don't remove dosfstools (#806648)
 - Leave some of the grub2 utilities in the install image (#749323)
