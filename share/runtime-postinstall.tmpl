@@ -42,6 +42,7 @@ install ${configdir}/rsyslog.conf etc
 install ${configdir}/bash_history root/.bash_history
 install ${configdir}/profile root/.profile
 install ${configdir}/libuser.conf etc
+install ${configdir}/sysctl.conf etc/sysctl.d/anaconda.conf
 %if exists(root+"/etc/selinux/targeted"):
     install ${configdir}/selinux.config etc/selinux/config
 %endif
