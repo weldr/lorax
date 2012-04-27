@@ -28,7 +28,7 @@ installpkg kernel
     installpkg yaboot fbset hfsutils kernel-bootwrapper ppc64-utils
 %endif
 %if basearch == "s390x":
-    installpkg lsscsi modutils mount s390utils-base s390utils-cmsfs
+    installpkg lsscsi modutils mount s390utils-base s390utils-cmsfs-fuse
 %endif
 %if basearch == "sparc":
     installpkg silo tilo
