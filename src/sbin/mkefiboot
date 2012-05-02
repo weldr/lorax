@@ -27,11 +27,14 @@ def mkefiboot(bootdir, outfile, label):
     '''Make an EFI boot image with the contents of bootdir in EFI/BOOT'''
     mkdosimg(None, outfile, label=label, graft={'EFI/BOOT':bootdir})
 
-def mkmacboot(bootdir, outfile, label, icon=None, product='Generic'):
+def mkmacboot(bootdir, outfile, label, icon=None, product='Generic',
+              diskname=None):
     '''Make an EFI boot image for Apple's EFI implementation'''
     graft = {'EFI/BOOT':bootdir}
-    if icon:
+    if icon and os.path.exists(icon):
         graft['.VolumeIcon.icns'] = icon
+    if diskname and os.path.exists(diskname):
+        graft['EFI/BOOT/.disk_label'] = diskname
     mkhfsimg(None, outfile, label=label, graft=graft)
     macmunge(outfile, product)
 
@@ -112,6 +115,8 @@ if __name__ == '__main__':
         help="filesystem label to use (default: %(default)s)")
     parser.add_argument("-i", "--icon", metavar="ICONFILE",
         help="icon file to include (for Apple EFI image)")
+    parser.add_argument("-n", "--diskname", metavar="DISKNAME",
+        help="disk name image to include (for Apple EFI image)")
     parser.add_argument("-p", "--product", metavar="PRODUCT",
         help="product name to use (for Apple EFI image)")
     parser.add_argument("bootdir", metavar="EFIBOOTDIR",
@@ -126,9 +131,12 @@ if __name__ == '__main__':
         parser.error("need root permissions")
     if opt.icon and not opt.imgtype == "apple":
         print "Warning: --icon is only useful for Apple EFI images"
+    if opt.diskname and not opt.imgtype == "apple":
+        print "Warning: --diskname is only useful for Apple EFI images"
     # do the thing!
     if opt.imgtype == "apple":
-        mkmacboot(opt.bootdir, opt.outfile, opt.label, opt.icon, opt.product)
+        mkmacboot(opt.bootdir, opt.outfile, opt.label, opt.icon, opt.product,
+                  opt.diskname)
     else:
         mkefiboot(opt.bootdir, opt.outfile, opt.label)
     if opt.disk:
