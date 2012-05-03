@@ -15,6 +15,7 @@ installpkg firstaidkit-plugin-{passwd,key-recovery,mdadm-conf}
 installpkg kernel
 %if basearch != "s390x":
     installpkg *-firmware
+    installpkg b43-openfwwf
 %endif
 
 ## arch-specific packages (bootloaders etc.)
