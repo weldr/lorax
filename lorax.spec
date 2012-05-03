@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.16
+Version:        17.17
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -79,6 +79,12 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Thu May 03 2012 Brian C. Lane <bcl@redhat.com> 17.17-1
+- Added BCM4331 firmware (#817151) (mgracik)
+- mkefiboot: Add support for disk label files (mjg)
+- Include /usr/bin/ntfsinfo. (#816664) (dlehman)
+- Add /etc/sysctl.d/anaconda.conf, set kernel.printk=1 (#816022) (wwoods)
+
 * Mon Apr 23 2012 Brian C. Lane <bcl@redhat.com> 17.16-1
 - add media check menu option (bcl)
 - remove unneeded dracut bootargs (bcl)
