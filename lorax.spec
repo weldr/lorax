@@ -1,8 +1,8 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        16.4.8
-Release:        2%{?dist}
+Version:        16.4.9
+Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
@@ -66,6 +66,11 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Thu May 03 2012 Brian C. Lane <bcl@redhat.com> 16.4.9-1
+- mkefiboot: Add support for disk label files (mjg)
+- mkefiboot: Copy Mac bootloader, rather than linking it (mjg)
+- mkefiboot: Make Apple boot images appear in the startup preferences (mjg)
+
 * Wed Mar 07 2012 Brian C. Lane <bcl@redhat.com> 16.4.8-2
 - Add new requires for imgutils and mkefiboot
 
