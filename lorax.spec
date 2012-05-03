@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.2
+Version:        18.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -79,6 +79,25 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Thu May 03 2012 Brian C. Lane <bcl@redhat.com> 18.3-1
+- Added BCM4331 firmware (#817151) (mgracik)
+- mkefiboot: Add support for disk label files (mjg)
+- Add 'tmux' to runtime image (wwoods)
+- Add /etc/sysctl.d/anaconda.conf, set kernel.printk=1 (#816022) (wwoods)
+- reduce image size from 2GB to 1GB (wwoods)
+- keep all filesystem tools (wwoods)
+- Leave some of the grub2 utilities in the install image (#749323) (mgracik)
+- add media check menu option (bcl)
+- remove unneeded dracut bootargs (bcl)
+- mkefiboot: Copy Mac bootloader, rather than linking it (mjg)
+- Remove workdir if it was created by lorax (#807964) (mgracik)
+- add gdisk to install image (#811083) (bcl)
+- Don't use --allbut for xfsprogs cleanup (#804779) (mgracik)
+- Log all removed files (mgracik)
+- Add spice-vdagent to initrd (#804739) (mgracik)
+- Add ntfs-3g to initrd (#804302) (mgracik)
+- ntfs-3g now uses /usr/lib (#810039) (bcl)
+
 * Fri Mar 30 2012 Brian C. Lane <bcl@redhat.com> 18.2-1
 - Merge noloader commits from f17-branch (bcl)
 - mkefiboot: Make Apple boot images appear in the startup preferences (mjg)
