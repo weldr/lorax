@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.17
+Version:        17.18
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -79,6 +79,9 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Tue May 08 2012 Brian C. Lane <bcl@redhat.com> 17.18-1
+- stop moving /run (#818918) (bcl)
+
 * Thu May 03 2012 Brian C. Lane <bcl@redhat.com> 17.17-1
 - Added BCM4331 firmware (#817151) (mgracik)
 - mkefiboot: Add support for disk label files (mjg)
