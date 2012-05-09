@@ -48,7 +48,7 @@ def main(args):
     required.add_option("-r", "--release", help="release information",
             metavar="STRING")
     required.add_option("-s", "--source",
-            help="source repository (may be listed multibple times)",
+            help="source repository (may be listed multiple times)",
             metavar="REPOSITORY", action="append", default=[])
 
     # optional arguments
