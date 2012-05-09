@@ -1,8 +1,8 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.18
-Release:        2%{?dist}
+Version:        17.19
+Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
@@ -84,6 +84,14 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Wed May 09 2012 Martin Gracik <mgracik@redhat.com> 17.19-1
+- Add nhn-nanum-fonts
+  Resolves: rhbz#818127
+- add name field to .treeinfo its a concatination of family and version (dgilmore)
+- include the new cmsfs-fuse interface (dhorak)
+- Fix typo in help
+  Resolves: rhbz#819476
+
 * Wed May 09 2012 Daniel Mach <dmach@redhat.com> 17.18-2
 - Disable macboot.img on RHEL
 
