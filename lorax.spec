@@ -2,13 +2,14 @@
 
 Name:           lorax
 Version:        17.18
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
 License:        GPLv2+
 URL:            http://git.fedorahosted.org/git/?p=lorax.git
 Source0:        https://fedorahosted.org/releases/l/o/%{name}/%{name}-%{version}.tar.bz2
+Patch0:         lorax-disable-macboot-img.patch
 
 BuildRequires:  python2-devel
 Requires:       python-mako
@@ -57,6 +58,10 @@ Anaconda's image install feature.
 
 %prep
 %setup -q
+# disable macboot.img on RHEL
+%if 0%{?rhel}
+%patch0 -p1
+%endif
 
 %build
 
@@ -79,6 +84,9 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Wed May 09 2012 Daniel Mach <dmach@redhat.com> 17.18-2
+- Disable macboot.img on RHEL
+
 * Tue May 08 2012 Brian C. Lane <bcl@redhat.com> 17.18-1
 - stop moving /run (#818918) (bcl)
 
