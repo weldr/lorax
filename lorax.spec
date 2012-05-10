@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.19
+Version:        17.21
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -79,6 +79,9 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Thu May 10 2012 Martin Gracik <mgracik@redhat.com> 17.21-1
+- new package built with tito
+
 * Wed May 09 2012 Martin Gracik <mgracik@redhat.com> 17.19-1
 - Add nhn-nanum-fonts
   Resolves: rhbz#818127
