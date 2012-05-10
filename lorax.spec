@@ -9,7 +9,6 @@ Group:          Applications/System
 License:        GPLv2+
 URL:            http://git.fedorahosted.org/git/?p=lorax.git
 Source0:        https://fedorahosted.org/releases/l/o/%{name}/%{name}-%{version}.tar.bz2
-Patch0:         lorax-disable-macboot-img.patch
 
 BuildRequires:  python2-devel
 Requires:       python-mako
@@ -58,10 +57,6 @@ Anaconda's image install feature.
 
 %prep
 %setup -q
-# disable macboot.img on RHEL
-%if 0%{?rhel}
-%patch0 -p1
-%endif
 
 %build
 
