@@ -32,7 +32,6 @@ import subprocess
 import socket
 import threading
 import SocketServer
-import libvirt
 from time import sleep
 import shutil
 import traceback
@@ -49,6 +48,11 @@ from pylorax.sysutils import joinpaths, remove, linktree
 from pylorax.imgutils import PartitionMount, mksparse, mkext4img
 from pylorax.executils import execWithRedirect, execWithCapture
 
+# no-virt mode doesn't need libvirt, so make it optional
+try:
+    import libvirt
+except ImportError:
+    libvirt = None
 
 # Default parameters for rebuilding initramfs, override with --dracut-args
 DRACUT_DEFAULT = ["--xz", "--add", "livenet", "--add", "dmsquash-live",
@@ -558,7 +562,10 @@ if __name__ == '__main__':
                               "Defaults to the temporary working directory")
 
     # Group of arguments to pass to virt-install
-    virt_group = parser.add_argument_group("virt-install arguments")
+    if not libvirt:
+        virt_group = parser.add_argument_group("virt-install arguments (DISABLED -- no libvirt)")
+    else:
+        virt_group = parser.add_argument_group("virt-install arguments")
     virt_group.add_argument("--ram", metavar="MEMORY", default=1024,
                             help="Memory to allocate for installer in megabytes." )
     virt_group.add_argument("--vcpus", default=1,
@@ -646,6 +653,10 @@ if __name__ == '__main__':
 
     if opts.volid and len(opts.volid) > 32:
         logger.fatal("the volume id cannot be longer than 32 characters")
+        sys.exit(1)
+
+    if not opts.no_virt and not libvirt:
+        log.error("virt-install requires libvirt to be installed.")
         sys.exit(1)
 
     # Make the disk image
