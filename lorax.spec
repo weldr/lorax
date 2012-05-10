@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.21
+Version:        17.22
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -79,6 +79,9 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Thu May 10 2012 Martin Gracik <mgracik@redhat.com> 17.22-1
+- Rebuild. (mgracik@redhat.com)
+
 * Thu May 10 2012 Martin Gracik <mgracik@redhat.com> 17.21-1
 - new package built with tito
 
