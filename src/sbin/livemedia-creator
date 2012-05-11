@@ -554,7 +554,7 @@ if __name__ == '__main__':
     parser.add_argument( "--lorax-templates", default="/usr/share/lorax/",
                          type=os.path.abspath,
                          help="Path to mako templates for lorax" )
-    parser.add_argument( "--tmp", default="/tmp", type=os.path.abspath,
+    parser.add_argument( "--tmp", default="/var/tmp", type=os.path.abspath,
                          help="Top level temporary directory" )
     parser.add_argument( "--resultdir", default=None, dest="result_dir",
                          type=os.path.abspath,
@@ -658,6 +658,8 @@ if __name__ == '__main__':
     if not opts.no_virt and not libvirt:
         log.error("virt-install requires libvirt to be installed.")
         sys.exit(1)
+
+    tempfile.tempdir = opts.tmp
 
     # Make the disk image
     if not opts.disk_image:
