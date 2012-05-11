@@ -61,8 +61,6 @@ replace "root:\*:" "root::" etc/shadow
 
 ## s390-specific setup
 %if basearch in ("s390", "s390x"):
-    remove sbin/init
-    move usr/share/anaconda/linuxrc.s390 sbin/init
     ## generate ssh keys
     runcmd ssh-keygen -q -C "" -N "" -t rsa1 -f ${root}/etc/ssh/ssh_host_key
     runcmd ssh-keygen -q -C "" -N "" -t rsa  -f ${root}/etc/ssh/ssh_host_rsa_key
