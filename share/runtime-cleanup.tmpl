@@ -221,7 +221,7 @@ removefrom gzip /usr/bin/{gzexe,zcmp,zdiff,zegrep,zfgrep,zforce,zgrep,zless,zmor
 removefrom hwdata /etc/* /usr/share/hwdata/oui.txt /usr/share/hwdata/pnp.ids
 removefrom hwdata /usr/share/hwdata/upgradelist
 removefrom initscripts /etc/ppp/* /usr/sbin/* /usr/share/locale/*
-removefrom iproute /etc/* /sbin/cbq /sbin/ifcfg /sbin/rtmon /sbin/tc /usr/*
+removefrom iproute --allbut /usr/sbin/{ip,routef,routel,rtpr}
 removefrom iscsi-initiator-utils /etc/rc.d/*
 removefrom kbd \
     /usr/bin/{chvt,deallocvt,fgconsole,getkeycodes,kbdinfo,kbdrate,loadunimap,\
