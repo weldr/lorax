@@ -23,16 +23,15 @@ remove etc/systemd/system/default.target
 remove etc/systemd/system/default.target.wants/*
 symlink /lib/systemd/system/anaconda.target etc/systemd/system/default.target
 ## remove/disable unwanted systemd services
-removefrom systemd-units /lib/systemd/system/kexec*
-removefrom systemd-units /lib/systemd/system/local-fs.target.wants/media.mount
-removefrom systemd-units /lib/systemd/system/media.mount
-removefrom systemd-units /lib/systemd/system/*plymouth*
-removefrom systemd-units /lib/systemd/system/quota*.service
-removefrom systemd-units /lib/systemd/system/systemd-remount-api-vfs.service
-removefrom ConsoleKit /lib/systemd/system/*
-removefrom initscripts /lib/systemd/system/local-fs.target.wants/fedora-storage* /lib/systemd/system/basic.target.wants/*
-removefrom lvm2 /lib/systemd/system/*
-removefrom mdadm /lib/systemd/system/*
+removefrom systemd /usr/lib/systemd/system/kexec*
+removefrom systemd /usr/lib/systemd/system/local-fs.target.wants/media.mount
+removefrom systemd /usr/lib/systemd/system/media.mount
+removefrom systemd /usr/lib/systemd/system/*plymouth*
+removefrom systemd /usr/lib/systemd/system/quota*.service
+removefrom systemd /usr/lib/systemd/system/systemd-remount-api-vfs.service
+removefrom initscripts */lib/systemd/system/local-fs.target.wants/fedora-storage*.service */lib/systemd/system/basic.target.wants/*.service
+removefrom lvm2 */lib/systemd/system/*
+removefrom mdadm */lib/systemd/system/*
 
 ## install some basic configuration files
 append etc/resolv.conf ""
