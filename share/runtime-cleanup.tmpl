@@ -116,8 +116,6 @@ removefrom e2fsprogs /usr/share/locale/*
 removefrom xfsprogs /usr/share/locale/*
 
 ## other package specific removals
-removefrom ConsoleKit /etc/ConsoleKit* /etc/init/* /usr/bin/* /usr/lib/*
-removefrom ConsoleKit /usr/sbin/*
 removefrom GConf2 /etc/rpm/* /etc/xdg/* /usr/bin/*
 removefrom GConf2 /usr/${libdir}/GConf/2/libgconfbackend-{evoldap,oldxml}*
 removefrom GConf2 /usr/${libdir}/gio/modules/*
@@ -217,7 +215,6 @@ removefrom grep /etc/* /usr/share/locale/*
 removefrom gstreamer /usr/bin/* /usr/${libdir}/gstreamer-0.10/*
 removefrom gstreamer /usr/${libdir}/libgst* /usr/libexec/* /usr/share/locale/*
 removefrom gtk2 /usr/bin/update-gtk-immodules
-removefrom gtk3 /usr/bin/update-gtk-immodules
 removefrom gtk3 /usr/share/* /usr/${libdir}/gtk-3.0/*
 removefrom gtk3 /usr/${libdir}/libgailutil*
 removefrom gzip /usr/bin/{gzexe,zcmp,zdiff,zegrep,zfgrep,zforce,zgrep,zless,zmore,znew}
@@ -250,7 +247,6 @@ removefrom libgssglue /etc/*
 removefrom libidn /usr/bin/* /usr/share/locale/*
 removefrom libmlx4 /etc/rdma/* /usr/${libdir}/*
 removefrom libnotify /usr/bin/*
-removefrom libpng /usr/${libdir}/libpng.*
 removefrom librsvg2 /usr/bin/*
 removefrom libselinux /usr/sbin/*
 removefrom libsemanage /etc/selinux/*
@@ -301,7 +297,6 @@ removefrom openssh-server /etc/ssh/* /usr/${libdir}/* /usr/libexec/*
 removefrom openssl /etc/pki/* /usr/bin/* /usr/${libdir}/openssl/*
 removefrom pam /usr/sbin/* /usr/share/locale/*
 removefrom pciutils /usr/sbin/*
-removefrom pcmciautils /usr/sbin/*
 removefrom pcre /usr/bin/* /usr/${libdir}/*
 removefrom policycoreutils /etc/* /usr/bin/* /usr/share/locale/*
 removefrom polkit /usr/bin/*
@@ -322,7 +317,6 @@ removefrom libreport /usr/bin/* /usr/share/locale/*
 removefrom rpm /usr/bin/* /usr/lib/rpm/platform/* /usr/share/locale/*
 removefrom rsync /etc/*
 removefrom sed /usr/share/locale/*
-removefrom selinux-policy-targeted /usr/share/selinux/*
 removefrom smartmontools /etc/* /usr/sbin/smartd
 removefrom smartmontools /usr/sbin/update-smart-drivedb
 removefrom smartmontools /usr/share/smartmontools/*
@@ -349,7 +343,6 @@ removefrom xorg-x11-fonts-ethiopic /etc/X11/* /usr/share/X11/fonts/OTF/*
 removefrom xorg-x11-fonts-misc --allbut /usr/share/X11/fonts/misc/{6x13,encodings,fonts,*cursor}*
 removefrom xorg-x11-server-utils --allbut /usr/bin/xrandr /usr/share/X11/rgb.txt
 removefrom yum /etc/* /usr/share/locale/* /usr/share/yum-cli/*
-removefrom zenity /usr/share/omf/*
 removefrom ${product.name}-logos /etc/*
 removefrom ${product.name}-logos /usr/share/icons/{Bluecurve,oxygen}/*
 removefrom ${product.name}-logos /usr/share/{firstboot,gnome-screensaver,kde4,pixmaps}/*
