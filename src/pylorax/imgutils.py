@@ -72,6 +72,16 @@ def loop_detach(loopdev):
     '''Detach the given loop device. Return False on failure.'''
     return (call(["losetup", "--detach", loopdev]) == 0)
 
+def get_loop_name(path):
+    '''Return the loop device associated with the path.
+    Raises RuntimeError if more than one loop is associated'''
+    buf = check_output(["losetup", "-j", path], stderr=PIPE)
+    if len(buf.splitlines()) > 1:
+        # there should never be more than one loop device listed
+        raise RuntimeError("multiple loops associated with %s" % path)
+    name = os.path.basename(buf.split(":")[0])
+    return name
+
 def dm_attach(dev, size, name=None):
     '''Attach a devicemapper device to the given device, with the given size.
     If name is None, a random name will be chosen. Returns the device name.

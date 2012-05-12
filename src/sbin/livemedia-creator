@@ -45,7 +45,8 @@ from pykickstart.version import makeVersion
 from pylorax.base import DataHolder
 from pylorax.treebuilder import TreeBuilder, RuntimeBuilder, udev_escape
 from pylorax.sysutils import joinpaths, remove, linktree
-from pylorax.imgutils import PartitionMount, mksparse, mkext4img
+from pylorax.imgutils import PartitionMount, mksparse, mkext4img, loop_detach
+from pylorax.imgutils import get_loop_name, dm_detach
 from pylorax.executils import execWithRedirect, execWithCapture
 
 # no-virt mode doesn't need libvirt, so make it optional
@@ -385,6 +386,17 @@ class VirtualInstall( object ):
         subprocess.call(["virsh","destroy",self.virt_name])
         subprocess.call(["virsh","undefine",self.virt_name])
 
+def is_image_mounted(disk_img):
+    """
+    Return True if the disk_img is mounted
+    """
+    with open("/proc/mounts") as mounts:
+        for mount in mounts:
+            fields = mount.split()
+            if len(fields) > 2 and fields[1] == disk_img:
+                return True
+    return False
+
 
 def anaconda_install( disk_img, disk_size, kickstart, repo, args ):
     """
@@ -704,6 +716,14 @@ if __name__ == '__main__':
                 if os.path.exists( "/tmp/"+l ):
                     shutil.copy2( "/tmp/"+l, log_anaconda )
                     os.unlink( "/tmp/"+l )
+
+            # If anaconda failed the disk image may still be in use by dm
+            dm_name = os.path.splitext(os.path.basename(disk_img))[0]
+            dm_path = "/dev/mapper/"+dm_name
+            if os.path.exists(dm_path):
+                dm_detach(dm_path)
+                loop_detach(get_loop_name(disk_img))
+
         else:
             iso_mount = IsoMountpoint( opts.iso )
             log_monitor = LogMonitor( install_log )
