@@ -619,6 +619,10 @@ if __name__ == '__main__':
                        "fix your kickstart file." )
             sys.exit( 1 )
         repo_url = ks.handler.method.url
+        if ks.handler.displaymode.displayMode is not None:
+            log.error("The kickstart must not set a display mode (text, cmdline, "
+                      "graphical), this will interfere with livemedia-creator.")
+            sys.exit(1)
 
         disk_img = tempfile.mktemp( prefix="disk", suffix=".img", dir=opts.tmp )
         install_log = os.path.abspath(os.path.dirname(opts.logfile))+"/virt-install.log"
