@@ -130,7 +130,7 @@ class Lorax(BaseLoraxClass):
 
     def run(self, ybo, product, version, release, variant="", bugurl="",
             isfinal=False, workdir=None, outputdir=None, buildarch=None, volid=None,
-            remove_temp=False):
+            domacboot=True, remove_temp=False):
 
         assert self._configured
 
@@ -246,7 +246,7 @@ class Lorax(BaseLoraxClass):
         treebuilder = TreeBuilder(product=self.product, arch=self.arch,
                                   inroot=installroot, outroot=self.outputdir,
                                   runtime=runtime, isolabel=isolabel,
-                                  templatedir=templatedir)
+                                  domacboot=domacboot, templatedir=templatedir)
 
         logger.info("rebuilding initramfs images")
         dracut_args=["--xz", "--add", "anaconda", "--omit", "plymouth",

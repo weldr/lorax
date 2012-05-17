@@ -74,6 +74,8 @@ def main(args):
             help="build architecture", metavar="STRING")
     optional.add_option("--volid", default=None,
             help="volume id", metavar="STRING")
+    optional.add_option("--nomacboot", help="",
+            action="store_false", default=True, dest="domacboot")
 
     # add the option groups to the parser
     parser.add_option_group(required)
@@ -126,7 +128,7 @@ def main(args):
     lorax.run(yb, opts.product, opts.version, opts.release,
               opts.variant, opts.bugurl, opts.isfinal,
               workdir=tempdir, outputdir=outputdir, buildarch=opts.buildarch,
-              volid=opts.volid, remove_temp=True)
+              volid=opts.volid, domacboot=opts.domacboot, remove_temp=True)
 
 
 def get_yum_base_object(installroot, repositories, mirrorlists=[],
