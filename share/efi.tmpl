@@ -11,7 +11,9 @@ install boot/grub/splash.xpm.gz ${EFIBOOTDIR}
 
 ## actually make the EFI images
 ${make_efiboot("images/efiboot.img")}
-${make_efiboot("images/macboot.img", imgtype="apple")}
+%if domacboot:
+    ${make_efiboot("images/macboot.img", imgtype="apple")}
+%endif
 
 ## This is kinda gross, but then... so's EFI.
 <%def name="make_efiboot(img, include_kernel=False, disk=False, imgtype='default')">

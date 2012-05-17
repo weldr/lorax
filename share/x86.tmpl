@@ -53,7 +53,10 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
     <%
     efiarch = 'X64' if basearch=='x86_64' else 'IA32'
     efigraft="EFI/BOOT={0}/EFI/BOOT".format(outroot)
-    for img in ("images/efiboot.img", "images/macboot.img"):
+    images = ["images/efiboot.img"]
+    if domacboot:
+        images.append("images/macboot.img")
+    for img in images:
         efiargs += " -eltorito-alt-boot -e {0} -no-emul-boot".format(img)
         efigraft += " {0}={1}/{0}".format(img,outroot)
     efihybrid="--uefi --mac"
