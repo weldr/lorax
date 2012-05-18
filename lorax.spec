@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.24
+Version:        17.25
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -79,6 +79,9 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Fri May 18 2012 Martin Gracik <mgracik@redhat.com> 17.25-1
+- Use --mac for isohybrid only if doing macboot images (mgracik@redhat.com)
+
 * Fri May 18 2012 Martin Gracik <mgracik@redhat.com> 17.24-1
 - Add --nomacboot option (mgracik@redhat.com)
 - linuxrc.s390 is dead in anaconda (dan@danny.cz)
