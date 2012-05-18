@@ -59,7 +59,7 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
     for img in images:
         efiargs += " -eltorito-alt-boot -e {0} -no-emul-boot".format(img)
         efigraft += " {0}={1}/{0}".format(img,outroot)
-    efihybrid="--uefi --mac"
+    efihybrid = "--uefi --mac" if domacboot else "--uefi"
     %>
     <%include file="efi.tmpl" args="configdir=configdir, KERNELDIR=KERNELDIR, efiarch=efiarch"/>
 %endif
