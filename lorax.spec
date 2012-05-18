@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.23
+Version:        17.24
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -79,6 +79,16 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Fri May 18 2012 Martin Gracik <mgracik@redhat.com> 17.24-1
+- Add --nomacboot option (mgracik@redhat.com)
+- linuxrc.s390 is dead in anaconda (dan@danny.cz)
+- livemedia-creator: check kickstart for display modes (#819660)
+  (bcl@redhat.com)
+- livemedia-creator: Removed unused ImageMount class (bcl@redhat.com)
+- livemedia-creator: cleanup after a crash (bcl@redhat.com)
+- livemedia-creator: start using /var/tmp instead of /tmp (bcl@redhat.com)
+- livemedia-creator: make libvirt module optional (bcl@redhat.com)
+
 * Thu May 10 2012 Martin Gracik <mgracik@redhat.com> 17.23-1
 - Use gz not bz2 for source (mgracik@redhat.com)
 
