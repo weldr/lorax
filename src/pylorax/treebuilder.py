@@ -76,8 +76,30 @@ class RuntimeBuilder(object):
                                            yum=yum, templatedir=templatedir)
         self._runner.defaults = self.vars
 
+    def _install_branding(self):
+        release = None
+        for pkg in self.yum.whatProvides('/etc/system-release', None, None):
+            if pkg.name.startswith('generic'):
+                continue
+            else:
+                release = pkg.name
+                break
+
+        if not release:
+            logger.error('could not get the release')
+            return
+
+        # release
+        logger.info('got release: %s', release)
+        self._runner.installpkg(release)
+
+        # logos
+        release, _suffix = release.split('-', 1)
+        self._runner.installpkg('%s-logos' % release)
+
     def install(self):
         '''Install packages and do initial setup with runtime-install.tmpl'''
+        self._install_branding()
         self._runner.run("runtime-install.tmpl")
 
     def writepkglists(self, pkglistdir):
