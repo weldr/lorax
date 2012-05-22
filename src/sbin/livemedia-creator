@@ -364,6 +364,9 @@ def make_ami( disk_img, ami_img="ami-root.img", ami_label="AMI" ):
     All other AMI setup is handled by the kickstart's %post
     """
     with PartitionMount( disk_img ) as img_mount:
+        if not img_mount or not img_mount.mount_dir:
+            return None
+
         work_dir = tempfile.mkdtemp()
         log.info("working dir is {0}".format(work_dir))
         log.info("creating {0}".format(ami_img))
