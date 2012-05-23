@@ -268,9 +268,10 @@ removefrom ncurses /usr/bin/reset /usr/bin/tabs /usr/bin/tic /usr/bin/toe
 removefrom ncurses /usr/bin/tput /usr/bin/tset
 removefrom ncurses-libs /usr/${libdir}/libform* /usr/${libdir}/libmenu*
 removefrom ncurses-libs /usr/${libdir}/libpanel.* /usr/${libdir}/libtic*
-removefrom net-tools /usr/bin/netstat /etc/ethers /usr/sbin/ether-wake /usr/sbin/ipmaddr
-removefrom net-tools /usr/sbin/iptunnel /usr/sbin/mii-diag /usr/sbin/mii-tool /usr/sbin/nameif
-removefrom net-tools /usr/sbin/plipconfig /usr/sbin/slattach /usr/share/locale/*
+removefrom net-tools */bin/netstat */sbin/ether-wake */sbin/ipmaddr
+removefrom net-tools */sbin/iptunnel */sbin/mii-diag */sbin/mii-tool
+removefrom net-tools */sbin/nameif */sbin/plipconfig */sbin/slattach
+removefrom net-tools /usr/share/locale/*
 removefrom newt /usr/share/locale/*
 removefrom nfs-utils /etc/nfsmount.conf
 removefrom nfs-utils /etc/rc.d/init.d/* /lib/systemd/system/*
