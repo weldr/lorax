@@ -31,6 +31,7 @@ Requires:       xz
 Requires:       squashfs-tools >= 4.2
 Requires:       e2fsprogs
 Requires:       yum
+Requires:       pykickstart
 
 %ifarch %{ix86} x86_64
 Requires:       syslinux >= 4.02-5

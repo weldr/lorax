@@ -24,7 +24,7 @@ If you are using the lorax git repo you can run it like so:
 
 sudo PATH=./src/sbin/:$PATH PYTHONPATH=./src/ ./src/sbin/livemedia-creator \
 --make-iso --iso=/extra/iso/Fedora-16-x86_64-netinst.iso \
---ks=./docs/livemedia-example.ks --lorax-templates=./share/
+--ks=./docs/fedora-livemedia.ks --lorax-templates=./share/
 
 If you want to watch the install you can pass '--vnc vnc' and use a vnc
 client to connect to localhost:0
@@ -35,8 +35,7 @@ to monitor the logs for fatal errors, but may not catch everything.
 
 HOW IT WORKS
 ------------
-The --make-* switches define the final output. Currently only --make-iso
-and --make-disk are working.
+The --make-* switches define the final output.
 
 You then need to either pass --iso and --ks in order to create a disk image
 using virt-install, or --disk-image to use a disk image from a previous run
@@ -48,19 +47,19 @@ customize the installed system in the same way that current spin-kickstarts
 do.
 
 livemedia-creator monitors the install process for problems by watching the
-install logs. They are written to the current directory or to the base directory
-specified by the --logfile command. You can also monitor the install by passing
---vnc vnc and using a vnc client. This is recommended when first modifying a
-kickstart, since there are still places where Anaconda may get stuck without
-the log monitor catching it.
+install logs. They are written to the current directory or to the base
+directory specified by the --logfile command. You can also monitor the install
+by passing --vnc vnc and using a vnc client. This is recommended when first
+modifying a kickstart, since there are still places where Anaconda may get
+stuck without the log monitor catching it.
 
 The output from this process is a partitioned disk image. kpartx can be used
 to mount and examine it when there is a problem with the install. It can also
 be booted using kvm.
 
-Once the disk image is created it copies the / partition into a formatted
-disk image which is then used as the input to lorax for creation of the
-final media.
+When creating an iso the disk image's / partition is copied into a formatted
+disk image which is then used as the input to lorax for creation of the final
+media.
 
 The final image is created by lorax, using the templates in /usr/share/lorax/
 or the directory specified by --lorax-templates
@@ -169,6 +168,38 @@ This will produce an ami-root.img file in the working directory.
 At this time I have not tested the image with EC2. Feedback would we welcome.
 
 
+APPLIANCE CREATION ------------------ livemedia-creator can now replace
+appliance-tools by using the --make-appliance switch. This will create the
+partitioned disk image and an XML file that can be used with virt-image to
+setup a virtual system.
+
+The XML is generated using the Mako template from
+/usr/share/lorax/appliance/virt-image.xml You can use a different template by
+passing --app-template <template path>
+
+Documentation on the Mako template system can be found here:
+http://docs.makotemplates.org/en/latest/index.html
+
+The name of the final output XML is appliance.xml, this can be changed with
+--app-file <file path>
+
+The following variables are passed to the template:
+disks           A list of disk_info about each disk.
+                Each entry has the following attributes:
+    name           base name of the disk image file
+    format         "raw"
+    checksum_type  "sha256"
+    checksum       sha256 checksum of the disk image
+name            Name of appliance, from --app-name argument
+arch            Architecture
+memory          Memory in KB (from --ram)
+vcpus           from --vcpus
+networks        list of networks from the kickstart or []
+title           from --title
+project         from --project
+releasever      from --releasever
+
+
 DEBUGGING PROBLEMS
 ------------------
 Cleaning up an aborted (ctrl-c) virt-install run (as root):
@@ -188,21 +219,6 @@ run.
 
 Cleaning up aborted --no-virt installs can sometimes be accomplished by running
 the anaconda-cleanup script.
-
-
-THE FUTURE
-----------
-The current release supports creating live iso's and ami images. In the future
-I also want it to be able to create appliance images.
-
-It is also limited to x86 architectures because of it's use of virt-install.
-I hope to be able to support other arches by using Anaconda's image install
-feature instead of virt-install. This will require that livemedia-creator
-be running on the same release as is being created in order to avoid odd
-problems.
-
-I would like to provide a set of alternate lorax template scripts to create
-other media.
 
 
 HACKING

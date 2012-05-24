@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<image>
+  <name>${name}</name>
+  <domain>
+    <boot type='hvm'>
+      <guest>
+        <arch>${arch}</arch>
+      </guest>
+      <os>
+        <loader dev='hd'/>
+      </os>
+%for disk, letter in zip(disks, xrange(97, 123)):
+      <drive disk='${disk.name}' target='hd${chr(letter)}'/>
+%endfor
+    </boot>
+    <devices>
+      <vcpu>${vcpus}</vcpu>
+      <memory>${memory}</memory>
+%for net in networks:
+      <interface/>
+%endfor
+      <graphics/>
+    </devices>
+  </domain>
+  <storage>
+%for disk in disks:
+  <disk file='${disk.name}' use='system' format='${disk.format}'>
+  %if disk.checksum:
+    <checksum type='${disk.checksum_type}'>${disk.checksum}</checksum>
+  %endif
+  </disk>
+%endfor
+  </storage>
+</image>
+

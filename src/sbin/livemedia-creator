@@ -36,10 +36,15 @@ from time import sleep
 import shutil
 import traceback
 import argparse
+import hashlib
 
 # Use pykickstart to calculate disk image size
 from pykickstart.parser import KickstartParser
 from pykickstart.version import makeVersion
+
+# Use Mako templates for appliance builder descriptions
+from mako.template import Template
+from mako.exceptions import text_error_template
 
 # Use the Lorax treebuilder branch for iso creation
 from pylorax.base import DataHolder
@@ -332,7 +337,11 @@ def is_image_mounted(disk_img):
 
 def anaconda_install( disk_img, disk_size, kickstart, repo, args ):
     """
-
+    disk_img    Full path of the disk image
+    disk_size   Disk size in GB
+    kickstart   Full path to kickstart file
+    repo        URL of repository
+    args        Extra args to pass to anaconda --image install
     """
     # Create the sparse image
     mksparse( disk_img, disk_size * 1024**3 )
@@ -352,6 +361,53 @@ def get_kernels( boot_dir ):
     """
     files = os.listdir(boot_dir)
     return [f[8:] for f in files if f.startswith("vmlinuz-")]
+
+
+def make_appliance(disk_img, name, template, outfile, networks=None, ram=1024,
+                   vcpus=1, title="Linux", project="Linux", releasever=17):
+    """
+    Generate an appliance description file
+
+    disk_img    Full path of the disk image
+    name        Name of the appliance, passed to the template
+    template    Full path of Mako template
+    outfile     Full path of file to write, using template
+    networks    List of networks from the kickstart
+    ram         Ram, in MB, passed to template. Default is 1024
+    vcpus       CPUs, passed to template. Default is 1
+    title       Title, passed to template. Default is 'Linux'
+    project     Project, passed to template. Default is 'Linux'
+    releasever  Release version, passed to template. Default is 17
+    """
+    if not (disk_img and template and outfile):
+        return None
+
+    log.info("Creating appliance definition using ${0}".format(template))
+
+    # Mount the disk and figure out the arch
+    arch = "x86_64"
+
+    log.info("Calculating SHA256 checksum of {0}".format(disk_img))
+    sha256 = hashlib.sha256()
+    with open(disk_img) as f:
+        while True:
+            data = f.read(1024*1024)
+            if not data:
+                break
+            sha256.update(data)
+    log.info("SHA256 of {0} is {1}".format(disk_img, sha256.hexdigest()))
+    disk_info = DataHolder(name=os.path.basename(disk_img), format="raw",
+                           checksum_type="sha256", checksum=sha256.hexdigest())
+    try:
+        result = Template(filename=template).render(disks=[disk_info], name=name,
+                          arch=arch, memory=ram*1024, vcpus=vcpus, networks=networks,
+                          title=title, project=project, releasever=releasever)
+    except Exception:
+        log.error(text_error_template().render())
+        raise
+
+    with open(outfile, "w") as f:
+        f.write(result)
 
 
 def make_ami( disk_img, ami_img="ami-root.img", ami_label="AMI" ):
@@ -483,6 +539,8 @@ if __name__ == '__main__':
 
     parser.add_argument( "--ks", action="append", type=os.path.abspath,
                          help="Kickstart file defining the install." )
+    parser.add_argument( "--image-name", default=None,
+                         help="Name of disk image to create. Default is a random name." )
     parser.add_argument( "--image-only", action="store_true",
                          help="Exit after creating disk image." )
     parser.add_argument( "--keep-image", action="store_true",
@@ -507,6 +565,15 @@ if __name__ == '__main__':
                          type=os.path.abspath,
                          help="Directory to copy the resulting images and iso into. "
                               "Defaults to the temporary working directory")
+
+    # Group of arguments for appliance creation
+    app_group = parser.add_argument_group("appliance arguments")
+    app_group.add_argument( "--app-name", default=None,
+                            help="Name of appliance to pass to template")
+    app_group.add_argument( "--app-template", default=None,
+                         help="Path to template to use for appliance data.")
+    app_group.add_argument( "--app-file", default="appliance.xml",
+                         help="Appliance template results file.")
 
     # Group of arguments to pass to virt-install
     if not libvirt:
@@ -590,10 +657,6 @@ if __name__ == '__main__':
         log.error( "The disk image {0} is missing.".format( opts.disk_image ) )
         sys.exit( 1 )
 
-    if opts.make_appliance:
-        log.error( "--make-appliance is not yet implemented." )
-        sys.exit( 1 )
-
     if not opts.no_virt and not opts.iso and not opts.disk_image:
         log.error( "virt-install needs an install iso." )
         sys.exit( 1 )
@@ -606,14 +669,41 @@ if __name__ == '__main__':
         log.error("virt-install requires libvirt to be installed.")
         sys.exit(1)
 
-    tempfile.tempdir = opts.tmp
+    if opts.no_virt and not os.path.exists("/usr/sbin/anaconda"):
+        log.error("no-virt requires anaconda to be installed.")
+        sys.exit(1)
 
-    # Make the disk image
-    if not opts.disk_image:
-        # Parse the kickstart to get the partition sizes
+    if opts.make_appliance and not opts.app_template:
+        opts.app_template = joinpaths(opts.lorax_templates,
+                                            "appliance/libvirt.tmpl")
+
+    if opts.make_appliance and not os.path.exists(opts.app_template):
+        log.error("The appliance template ({0}) doesn't "
+                  "exist".format(opts.app_template))
+        sys.exit(1)
+
+    if opts.image_name and os.path.exists(joinpaths(opts.tmp,opts.image_name)):
+        log.error("The disk image to be created should not exist.")
+        sys.exit(1)
+
+    if opts.app_file:
+        opts.app_file = joinpaths(opts.tmp, opts.app_file)
+
+    tempfile.tempdir = opts.tmp
+    disk_img = None
+
+    # Parse the kickstart
+    if opts.ks:
         ks_version = makeVersion()
         ks = KickstartParser( ks_version, errorsAreFatal=False, missingIncludeIsFatal=False )
         ks.readKickstart( opts.ks[0] )
+
+    # Make the disk image
+    if not opts.disk_image:
+        if not opts.ks:
+            log.error("Image creation requires a kickstart file")
+            sys.exit(1)
+
         disk_size = 1 + (sum( [p.size for p in ks.handler.partition.partitions] ) / 1024)
         log.info( "disk_size = {0}GB".format(disk_size) )
 
@@ -627,7 +717,10 @@ if __name__ == '__main__':
                       "graphical), this will interfere with livemedia-creator.")
             sys.exit(1)
 
-        disk_img = tempfile.mktemp( prefix="disk", suffix=".img", dir=opts.tmp )
+        if opts.image_name:
+            disk_img = joinpaths(opts.tmp, opts.image_name)
+        else:
+            disk_img = tempfile.mktemp( prefix="disk", suffix=".img", dir=opts.tmp )
         install_log = os.path.abspath(os.path.dirname(opts.logfile))+"/virt-install.log"
 
         log.info( "disk_img = {0}".format(disk_img) )
@@ -700,12 +793,21 @@ if __name__ == '__main__':
                                   opts.lorax_templates,
                                   opts.title, opts.project, opts.releasever,
                                   opts.volid )
+        # cleanup the mess
+        if disk_img and not opts.keep_image and not opts.disk_image:
+            os.unlink( disk_img )
+            log.info("Disk image erased")
+            disk_img = None
     elif opts.make_ami and not opts.image_only:
         result_dir = make_ami(opts.disk_image or disk_img)
-
-    # cleanup the mess
-    if disk_img and not opts.keep_image and not opts.disk_image:
-        os.unlink( disk_img )
+    elif opts.make_appliance and not opts.image_only:
+        if not opts.ks:
+            networks = []
+        else:
+            networks = ks.handler.network.network
+        make_appliance(opts.disk_image or disk_img, opts.app_name,
+                       opts.app_template, opts.app_file, networks, opts.ram,
+                       opts.vcpus, opts.arch, opts.title, opts.project, opts.releasever)
 
     if opts.result_dir and result_dir:
         shutil.copytree( result_dir, opts.result_dir )
@@ -714,10 +816,10 @@ if __name__ == '__main__':
     log.info("SUMMARY")
     log.info("-------")
     log.info("Logs are in {0}".format(os.path.abspath(os.path.dirname(opts.logfile))))
-    if opts.keep_image or opts.make_disk:
+    if disk_img:
         log.info("Disk image is at {0}".format(disk_img))
-    else:
-        log.info("Disk image erased")
+    if opts.make_appliance:
+        log.info("Appliance description is in {0}".format(opts.app_file))
     if result_dir:
         log.info("Results are in {0}".format(opts.result_dir or result_dir))
 
