@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.3
+Version:        18.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -79,6 +79,26 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Fri May 25 2012 Martin Gracik <mgracik@redhat.com> 18.4-1
+- Initialized to use tito.
+- Use gz not bz2 for source
+- remove 'loadkeys' stub (#804306)
+- add name field to .treeinfo its a concatination of family and version
+- Fix typo in help (#819476)
+- include the new cmsfs-fuse interface
+- linuxrc.s390 is dead in anaconda
+- Add the ppc magic file
+- Install proper branding packages from repo (#813969)
+- Use --mac for isohybrid only if doing macboot images
+- Add --nomacboot option
+- Add packages needed for NTP functionality in the installer
+- livemedia-creator: check kickstart for display modes (#819660)
+- livemedia-creator: Removed unused ImageMount class
+- livemedia-creator: cleanup after a crash
+- livemedia-creator: start using /var/tmp instead of /tmp
+- livemedia-creator: make libvirt module optional
+- stop moving /run (#818918)
+
 * Thu May 03 2012 Brian C. Lane <bcl@redhat.com> 18.3-1
 - Added BCM4331 firmware (#817151) (mgracik)
 - mkefiboot: Add support for disk label files (mjg)
