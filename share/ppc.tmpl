@@ -44,6 +44,10 @@ mkdir ${MACDIR}
 install usr/lib/yaboot/yaboot ${MACDIR}
 install ${configdir}/ofboot.b ${MACDIR}
 
+## copy mapping and magic files needed for isos
+install ${configdir}/mapping ${BOOTDIR}
+install ${configdir}/magic ${BOOTDIR}
+
 ## NOTE: PPC is kind of funky. There's three possible "arch" setups here:
 ## ppc, ppc64, and 'hybrid' (ppc userspace, both ppc & ppc64 kernels).
 
