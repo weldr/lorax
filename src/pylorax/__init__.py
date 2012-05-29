@@ -35,6 +35,7 @@ import os
 import ConfigParser
 import tempfile
 import locale
+import subprocess
 
 from base import BaseLoraxClass, DataHolder
 import output
@@ -166,6 +167,17 @@ class Lorax(BaseLoraxClass):
         if not os.geteuid() == 0:
             logger.critical("no root privileges")
             sys.exit(1)
+
+        # is selinux disabled?
+        logger.info("checking the selinux mode")
+        try:
+            seoutput = subprocess.check_output("/sbin/getenforce").strip()
+        except subprocess.CalledProcessError:
+            logger.error("could not get the selinux mode")
+        else:
+            if seoutput == "Enforcing":
+                logger.critical("selinux must be disabled or in Permissive mode")
+                sys.exit(1)
 
         # do we have a proper yum base object?
         logger.info("checking yum base object")
