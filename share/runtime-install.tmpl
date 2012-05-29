@@ -38,6 +38,9 @@ installpkg kernel
 ## extra dracut modules
 installpkg dracut-network anaconda-dracut
 
+## rpcbind or portmap needed by dracut nfs module
+installpkg rpcbind
+
 ## required for dracut
 installpkg kbd kbd-misc
 ## required for anaconda-dracut (img-lib etc.)
