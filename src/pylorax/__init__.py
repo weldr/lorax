@@ -134,6 +134,13 @@ class Lorax(BaseLoraxClass):
 
         assert self._configured
 
+        if domacboot:
+            try:
+                subprocess.check_call("rpm -q hfsplus-tools")
+            except subprocess.CalledProcessError:
+                logger.critical("you need to install hfsplus-tools to create mac images")
+                sys.exit(1)
+
         # set up work directory
         self.workdir = workdir or tempfile.mkdtemp(prefix="pylorax.work.")
         if not os.path.isdir(self.workdir):

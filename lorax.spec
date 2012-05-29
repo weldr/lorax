@@ -23,7 +23,6 @@ Requires:       isomd5sum
 Requires:       glibc
 Requires:       util-linux
 Requires:       dosfstools
-Requires:       hfsplus-tools
 Requires:       genisoimage
 Requires:       parted
 Requires:       gzip
