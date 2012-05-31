@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.4
+Version:        18.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -78,6 +78,14 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Thu May 31 2012 Martin Gracik <mgracik@redhat.com> 18.5-1
+- Don't remove sha256sum from the install image (mgracik@redhat.com)
+- Check if selinux is not in Enforcing mode (#824835) (mgracik@redhat.com)
+- Install rpcbind (#824835) (mgracik@redhat.com)
+- Remove hfsplus-tools dependency (#818913) (mgracik@redhat.com)
+- Copy mapping and magic to BOOTDIR on ppc (#815550) (mgracik@redhat.com)
+- Automatic commit of package [lorax] release [18.4-1]. (mgracik@redhat.com)
+
 * Fri May 25 2012 Martin Gracik <mgracik@redhat.com> 18.4-1
 - Initialized to use tito.
 - Use gz not bz2 for source
