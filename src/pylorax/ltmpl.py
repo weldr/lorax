@@ -382,17 +382,24 @@ class LoraxTemplateRunner(object):
 
     def installpkg(self, *pkgs):
         '''
-        installpkg PKGGLOB [PKGGLOB ...]
+        installpkg [--required] PKGGLOB [PKGGLOB ...]
           Request installation of all packages matching the given globs.
           Note that this is just a *request* - nothing is *actually* installed
           until the 'run_pkg_transaction' command is given.
         '''
+        required = False
+        if pkgs[0] == '--required':
+            pkgs = pkgs[1:]
+            required = True
+
         for p in pkgs:
             try:
                 self.yum.install(pattern=p)
             except Exception as e:
                 # FIXME: save exception and re-raise after the loop finishes
-                logger.warn("installpkg %s failed: %s",p,str(e))
+                logger.error("installpkg %s failed: %s",p,str(e))
+                if required:
+                    sys.exit(1)
 
     def removepkg(self, *pkgs):
         '''
