@@ -11,24 +11,26 @@ URL:            http://git.fedorahosted.org/git/?p=lorax.git
 Source0:        https://fedorahosted.org/releases/l/o/%{name}/%{name}-%{version}.tar.gz
 
 BuildRequires:  python2-devel
-Requires:       python-mako
-Requires:       gawk
-Requires:       glibc-common
-Requires:       cpio
-Requires:       module-init-tools
-Requires:       device-mapper
-Requires:       findutils
+
 Requires:       GConf2
-Requires:       isomd5sum
-Requires:       glibc
-Requires:       util-linux
+Requires:       cpio
+Requires:       device-mapper
 Requires:       dosfstools
-Requires:       genisoimage
-Requires:       parted
-Requires:       gzip
-Requires:       xz
-Requires:       squashfs-tools >= 4.2
 Requires:       e2fsprogs
+Requires:       findutils
+Requires:       gawk
+Requires:       genisoimage
+Requires:       glibc
+Requires:       glibc-common
+Requires:       gzip
+Requires:       isomd5sum
+Requires:       libselinux-python
+Requires:       module-init-tools
+Requires:       parted
+Requires:       python-mako
+Requires:       squashfs-tools >= 4.2
+Requires:       util-linux
+Requires:       xz
 Requires:       yum
 
 %ifarch %{ix86} x86_64
