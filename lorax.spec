@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.5
+Version:        18.6
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -80,6 +80,10 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Fri Jun 01 2012 Martin Gracik <mgracik@redhat.com> 18.6-1
+- Fix the rpm call (mgracik@redhat.com)
+- Use selinux python module to get enforcing mode (mgracik@redhat.com)
+
 * Thu May 31 2012 Martin Gracik <mgracik@redhat.com> 18.5-1
 - Don't remove sha256sum from the install image (mgracik@redhat.com)
 - Check if selinux is not in Enforcing mode (#824835) (mgracik@redhat.com)
