@@ -428,6 +428,13 @@ class LoraxTemplateRunner(object):
         self.yum.repos.setProgressBar(LoraxDownloadCallback())
         self.yum.processTransaction(callback=LoraxTransactionCallback(),
                                     rpmDisplay=LoraxRpmCallback())
+
+        # verify if all packages that were supposed to be installed,
+        # are really installed
+        errs = [t.po for t in self.yum.tsInfo if not self.yum.rpmdb.contains(po=t.po)]
+        for po in errs:
+            logger.error("package '%s' was not installed", po)
+
         self.yum.closeRpmDB()
 
     def removefrom(self, pkg, *globs):
