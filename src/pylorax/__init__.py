@@ -170,6 +170,16 @@ class Lorax(BaseLoraxClass):
             sys.exit(1)
 
         # is selinux disabled?
+        # With selinux in enforcing mode the rpcbind package required for
+        # dracut nfs module, which is in turn required by anaconda module,
+        # will not get installed, because it's preinstall scriptlet fails,
+        # resulting in an incomplete initial ramdisk image.
+        # The reason is that the scriptlet runs tools from the shadow-utils
+        # package in chroot, particularly groupadd and useradd to add the
+        # required rpc group and rpc user. This operation fails, because
+        # the selinux context on files in the chroot, that the shadow-utils
+        # tools need to access (/etc/group, /etc/passwd, /etc/shadow etc.),
+        # is wrong and selinux therefore disallows access to these files.
         logger.info("checking the selinux mode")
         if selinux.security_getenforce():
             logger.critical("selinux must be disabled or in Permissive mode")
