@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.6
+Version:        18.7
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -81,6 +81,16 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Mon Jun 04 2012 Martin Gracik <mgracik@redhat.com> 18.7-1
+- Comment on why selinux needs to be in permissive or disabled
+  (mgracik@redhat.com)
+- Verify the yum transaction (mgracik@redhat.com)
+- Do not remove shared-mime-info (#825960) (mgracik@redhat.com)
+- Add a --required switch to installpkg (mgracik@redhat.com)
+- livemedia-creator: Hook up arch option (bcl@redhat.com)
+- livemedia-creator: Add appliance creation (bcl@redhat.com)
+- livemedia-creator: handle failed mount for ami (bcl@redhat.com)
+
 * Fri Jun 01 2012 Martin Gracik <mgracik@redhat.com> 18.6-1
 - Fix the rpm call (mgracik@redhat.com)
 - Use selinux python module to get enforcing mode (mgracik@redhat.com)
