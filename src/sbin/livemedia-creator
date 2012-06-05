@@ -61,8 +61,8 @@ except ImportError:
     libvirt = None
 
 # Default parameters for rebuilding initramfs, override with --dracut-args
-DRACUT_DEFAULT = ["--xz", "--add", "livenet", "--add", "dmsquash-live",
-                  "--add", "convertfs", "--omit", "plymouth"]
+DRACUT_DEFAULT = ["--xz", "--add", "livenet dmsquash-live convertfs pollcdrom",
+                  "--omit", "plymouth"]
 
 
 class LogRequestHandler(SocketServer.BaseRequestHandler):
