@@ -181,7 +181,7 @@ class Lorax(BaseLoraxClass):
         # tools need to access (/etc/group, /etc/passwd, /etc/shadow etc.),
         # is wrong and selinux therefore disallows access to these files.
         logger.info("checking the selinux mode")
-        if selinux.security_getenforce():
+        if selinux.is_selinux_enabled() and selinux.security_getenforce():
             logger.critical("selinux must be disabled or in Permissive mode")
             sys.exit(1)
 
