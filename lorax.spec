@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.7
+Version:        18.8
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -81,6 +81,10 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Wed Jun 06 2012 Martin Gracik <mgracik@redhat.com> 18.8-1
+- Check if selinux is enabled before getting the mode (mgracik@redhat.com)
+- Add grub2 so that rescue is more useful (bcl@redhat.com)
+
 * Mon Jun 04 2012 Martin Gracik <mgracik@redhat.com> 18.7-1
 - Comment on why selinux needs to be in permissive or disabled
   (mgracik@redhat.com)
