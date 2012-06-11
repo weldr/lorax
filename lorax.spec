@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.25
+Version:        17.26
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -80,6 +80,13 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Mon Jun 11 2012 Brian C. Lane <bcl@redhat.com> 17.26-1
+- livemedia-creator: Hook up arch option (bcl@redhat.com)
+- livemedia-creator: Add appliance creation (bcl@redhat.com)
+- livemedia-creator: handle failed mount for ami (bcl@redhat.com)
+- Add the ppc magic file (mgracik@redhat.com)
+- Install proper branding packages from repo (#813969) (mgracik@redhat.com)
+
 * Fri May 18 2012 Martin Gracik <mgracik@redhat.com> 17.25-1
 - Use --mac for isohybrid only if doing macboot images (mgracik@redhat.com)
 
