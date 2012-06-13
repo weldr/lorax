@@ -26,6 +26,7 @@ from pylorax.sysutils import cpfile
 from subprocess import *
 import sys
 import traceback
+from time import sleep
 
 ######## Functions for making container images (cpio, squashfs) ##########
 
@@ -119,13 +120,31 @@ def mount(dev, opts="", mnt=None):
     check_call(mount)
     return mnt
 
-def umount(mnt):
-    '''Unmount the given mountpoint. If the mount was a temporary dir created
-    by mount, it will be deleted. Returns false if the unmount fails.'''
+def umount(mnt,  lazy=False, maxretry=3, retrysleep=1.0):
+    '''Unmount the given mountpoint. If lazy is True, do a lazy umount (-l).
+    If the mount was a temporary dir created by mount, it will be deleted.
+    raises CalledProcessError if umount fails.'''
     umount = ["umount"]
+    if lazy: umount += ["-l"]
     umount += [mnt]
     logger.debug(" ".join(umount))
-    rv = call(umount)
+    count = 0
+    while maxretry > 0:
+        try:
+            rv = check_call(umount)
+        except CalledProcessError:
+            count += 1
+            if count == maxretry:
+                raise
+            logger.warn("failed to unmount %s. retrying (%d/%d)...",
+                         mnt, count, maxretry)
+            if logger.getEffectiveLevel() <= logging.DEBUG:
+                fuser = check_output(["fuser", "-vm", mnt],
+                                     stderr=STDOUT)
+                logger.debug("fuser -vm:\n%s\n", fuser)
+            sleep(retrysleep)
+        else:
+            break
     if 'lorax.imgutils' in mnt:
         os.rmdir(mnt)
         logger.debug("remove tmp mountdir %s", mnt)
