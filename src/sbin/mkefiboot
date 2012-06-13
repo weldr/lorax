@@ -17,6 +17,10 @@
 #
 # Red Hat Author(s):  Will Woods <wwoods@redhat.com>
 
+import logging
+logging.basicConfig()
+log = logging.getLogger()
+
 import os, tempfile, argparse
 from subprocess import check_call, PIPE
 from pylorax.imgutils import mkdosimg, round_to_blocks, LoopDev, DMDev, dm_detach
@@ -106,6 +110,9 @@ def mkefidisk(efiboot, outfile):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Make an EFI boot image from the given directory.")
+    parser.add_argument("--debug", action="store_const", const=logging.DEBUG,
+        dest="loglevel", default=log.getEffectiveLevel(),
+        help="print debugging info")
     parser.add_argument("-d", "--disk", action="store_true",
         help="make a full EFI disk image (including partition table)")
     parser.add_argument("-a", "--apple", action="store_const", const="apple",
@@ -124,6 +131,8 @@ if __name__ == '__main__':
     parser.add_argument("outfile", metavar="OUTPUTFILE",
         help="output file to write")
     opt = parser.parse_args()
+    # logging
+    log.setLevel(opt.loglevel)
     # sanity checks
     if not os.path.isdir(opt.bootdir):
         parser.error("%s is not a directory" % opt.bootdir)
