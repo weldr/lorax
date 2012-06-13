@@ -1,7 +1,14 @@
 ## lorax template file: cleanup for the ramdisk (runtime image)
 <%page args="removelocales, libdir, product, root"/>
 
-## remove_locales()
+## strip unused languages out of the locale-archive
+runcmd localedef --prefix ${root} \
+                 --delete-from-archive ${" ".join(removelocales)}
+move usr/lib/locale/locale-archive usr/lib/locale/locale-archive.tmpl
+runcmd chroot ${root} build-locale-archive
+## remove the sources
+remove usr/share/i18n
+## remove unused locales
 %for locale in removelocales:
     remove usr/share/locale/${locale}
 %endfor
@@ -91,10 +98,6 @@ arch/x86/kvm
 %endfor
 remove lib/modules/*/{build,source,*.map}
 ## NOTE: depmod gets re-run after cleanup finishes
-
-## remove generated locales - anaconda >=16.x builds them at runtime
-removefrom glibc-common /usr/lib/locale/*
-remove /usr/lib/locale/locale-archive
 
 ## remove unused themes, theme engines, icons, etc.
 removefrom gtk2 /usr/${libdir}/gtk-2.0/*/{engines,printbackends}/*
@@ -200,7 +203,8 @@ removefrom glibc /usr/libexec/* /usr/sbin/*
 removefrom glibc-common /etc/* /usr/bin/catchsegv /usr/bin/gencat
 removefrom glibc-common /usr/bin/getconf /usr/bin/getent /usr/bin/ldd
 removefrom glibc-common /usr/bin/locale /usr/bin/rpcgen /usr/bin/sprof
-removefrom glibc-common /usr/bin/tzselect /usr/libexec/* /usr/sbin/*
+removefrom glibc-common /usr/bin/tzselect /usr/bin/localedef
+removefrom glibc-common /usr/libexec/* /usr/sbin/*
 removefrom gmp /usr/${libdir}/libgmpxx.* /usr/${libdir}/libmp.*
 removefrom gnome-bluetooth-libs /usr/${libdir}/libgnome-bluetooth*
 removefrom gnome-bluetooth-libs /usr/share/*
