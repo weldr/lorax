@@ -23,12 +23,7 @@
 # set up logging
 import logging
 logger = logging.getLogger("pylorax")
-logger.setLevel(logging.DEBUG)
-
-sh = logging.StreamHandler()
-sh.setLevel(logging.INFO)
-logger.addHandler(sh)
-
+logger.addHandler(logging.NullHandler())
 
 import sys
 import os
@@ -125,6 +120,11 @@ class Lorax(BaseLoraxClass):
 
         self._configured = True
 
+    def init_stream_logging(self):
+        sh = logging.StreamHandler()
+        sh.setLevel(logging.INFO)
+        logger.addHandler(sh)
+
     def init_file_logging(self, logdir, logname="pylorax.log"):
         fh = logging.FileHandler(filename=joinpaths(logdir, logname), mode="w")
         fh.setLevel(logging.DEBUG)
@@ -153,6 +153,7 @@ class Lorax(BaseLoraxClass):
         if not os.path.isdir(logdir):
             os.makedirs(logdir)
 
+        self.init_stream_logging()
         self.init_file_logging(logdir)
         logger.debug("using work directory {0.workdir}".format(self))
         logger.debug("using log directory {0}".format(logdir))
