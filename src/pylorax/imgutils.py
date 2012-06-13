@@ -41,6 +41,8 @@ def mkcpio(rootdir, outfile, compression="xz", compressargs=["-9"]):
     if compression is None:
         compression = "cat" # this is a little silly
         compressargs = []
+    logger.debug("mkcpio %s | %s %s > %s", rootdir, compression,
+                                        " ".join(compressargs), outfile)
     find = Popen(["find", ".", "-print0"], stdout=PIPE, preexec_fn=chdir)
     cpio = Popen(["cpio", "--null", "--quiet", "-H", "newc", "-o"],
                  stdin=find.stdout, stdout=PIPE, preexec_fn=chdir)
@@ -53,7 +55,9 @@ def mksquashfs(rootdir, outfile, compression="default", compressargs=[]):
     '''Make a squashfs image containing the given rootdir.'''
     if compression != "default":
         compressargs = ["-comp", compression] + compressargs
-    return call(["mksquashfs", rootdir, outfile] + compressargs)
+    cmd = ["mksquashfs", rootdir, outfile] + compressargs
+    logger.debug(" ".join(cmd))
+    return call(cmd)
 
 ######## Utility functions ###############################################
 
@@ -106,24 +110,32 @@ def mount(dev, opts="", mnt=None):
     raises CalledProcessError if mount fails.'''
     if mnt is None:
         mnt = tempfile.mkdtemp(prefix="lorax.imgutils.")
+        logger.debug("make tmp mountdir %s", mnt)
     mount = ["mount"]
     if opts:
         mount += ["-o", opts]
-    check_call(mount + [dev, mnt])
+    mount += [dev, mnt]
+    logger.debug(" ".join(mount))
+    check_call(mount)
     return mnt
 
 def umount(mnt):
     '''Unmount the given mountpoint. If the mount was a temporary dir created
     by mount, it will be deleted. Returns false if the unmount fails.'''
-    rv = call(["umount", mnt])
+    umount = ["umount"]
+    umount += [mnt]
+    logger.debug(" ".join(umount))
+    rv = call(umount)
     if 'lorax.imgutils' in mnt:
         os.rmdir(mnt)
+        logger.debug("remove tmp mountdir %s", mnt)
     return (rv == 0)
 
 def copytree(src, dest, preserve=True):
     '''Copy a tree of files using cp -a, thus preserving modes, timestamps,
     links, acls, sparse files, xattrs, selinux contexts, etc.
     If preserve is False, uses cp -R (useful for modeless filesystems)'''
+    logger.debug("copytree %s %s", src, dest)
     chdir = lambda: os.chdir(src)
     cp = ["cp", "-a"] if preserve else ["cp", "-R", "-L"]
     check_call(cp + [".", os.path.abspath(dest)], preexec_fn=chdir)
