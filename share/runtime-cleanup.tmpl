@@ -30,7 +30,9 @@ removefrom ${product.name}-logos /usr/share/plymouth/*
 ## (that happens inside the target system after we install dracut/grubby)
 removepkg dracut-network grubby anaconda-dracut
 ## In order to execute the /usr move on upgrades we need convertfs from dracut
-removefrom dracut --allbut /usr/lib/dracut/modules.d/30convertfs/convertfs.sh
+## We also need dracut-shutdown.service and dracut-initramfs-restore to reboot
+removefrom dracut --allbut /usr/lib/dracut/modules.d/30convertfs/convertfs.sh \
+                  /usr/lib/systemd/* /usr/lib/dracut/dracut-initramfs-restore
 ## we don't run SELinux (not in enforcing, anyway)
 removepkg checkpolicy selinux-policy libselinux-utils
 ## anaconda has its own repo files
