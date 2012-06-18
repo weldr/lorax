@@ -25,7 +25,7 @@ logger = logging.getLogger("pylorax.ltmpl")
 
 import os, re, glob, shlex, fnmatch
 from os.path import basename, isdir
-from subprocess import check_call, check_output, CalledProcessError
+from subprocess import check_call, check_output, CalledProcessError, STDOUT
 
 from sysutils import joinpaths, cpfile, mvfile, replace, remove
 from yumhelper import * # Lorax*Callback classes
@@ -155,8 +155,7 @@ class LoraxTemplateRunner(object):
                 f(*args)
             except Exception:
                 if skiperror:
-                    logger.error("template command error in %s (ignored):", self.templatefile)
-                    logger.error("  %s", " ".join(line))
+                    logger.debug("ignoring error")
                     continue
                 logger.error("template command error in %s:", self.templatefile)
                 logger.error("  %s", " ".join(line))
@@ -375,10 +374,15 @@ class LoraxTemplateRunner(object):
             cmd = cmd[1:]
 
         try:
-            check_output(cmd, preexec_fn=chdir)
+            output = check_output(cmd, preexec_fn=chdir, stderr=STDOUT)
+            if output:
+                logger.debug('command output:\n%s', output)
+            logger.debug("command finished successfully")
         except CalledProcessError as e:
-            logger.debug('command exited with %d: %s', e.returncode, e.output)
-            sys.exit(e.returncode)
+            if e.output:
+                logger.debug('command output:\n%s', e.output)
+            logger.debug('command returned failure (%d)', e.returncode)
+            raise
 
     def installpkg(self, *pkgs):
         '''
@@ -399,7 +403,7 @@ class LoraxTemplateRunner(object):
                 # FIXME: save exception and re-raise after the loop finishes
                 logger.error("installpkg %s failed: %s",p,str(e))
                 if required:
-                    sys.exit(1)
+                    raise
 
     def removepkg(self, *pkgs):
         '''
