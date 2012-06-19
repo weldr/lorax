@@ -531,3 +531,25 @@ class LoraxTemplateRunner(object):
         addrsize_data = struct.pack(">iiii", 0, int(addr, 16), 0, os.stat(src).st_size)
         addrsize.write(addrsize_data)
         addrsize.close()
+
+    def systemctl(self, cmd, *units):
+        '''
+        systemctl [enable|disable|mask] UNIT [UNIT...]
+          Enable, disable, or mask the given systemd units.
+          Examples:
+            systemctl disable lvm2-monitor.service
+            systemctl mask fedora-storage-init.service fedora-configure.service
+        '''
+        if cmd not in ('enable', 'disable', 'mask'):
+            raise ValueError('unsupported systemctl cmd: %s' % cmd)
+        if not units:
+            logger.debug("systemctl: no units given for %s, ignoring", cmd)
+            return
+        self.mkdir("/run/systemd/system") # XXX workaround for systemctl bug
+        systemctl = ('systemctl', '--root', self.outroot, '--no-reload',
+                     '--quiet', cmd)
+        # XXX for some reason 'systemctl enable/disable' always returns 1
+        try:
+            check_call(systemctl + units)
+        except CalledProcessError:
+            pass

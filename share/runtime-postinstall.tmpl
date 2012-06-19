@@ -20,18 +20,24 @@ move etc/yum.repos.d etc/anaconda.repos.d
 
 ## Configure systemd to start anaconda
 remove etc/systemd/system/default.target
-remove etc/systemd/system/default.target.wants/*
 symlink /lib/systemd/system/anaconda.target etc/systemd/system/default.target
-## remove/disable unwanted systemd services
-removefrom systemd /usr/lib/systemd/system/kexec*
-removefrom systemd /usr/lib/systemd/system/local-fs.target.wants/media.mount
-removefrom systemd /usr/lib/systemd/system/media.mount
-removefrom systemd /usr/lib/systemd/system/*plymouth*
-removefrom systemd /usr/lib/systemd/system/quota*.service
-removefrom systemd /usr/lib/systemd/system/systemd-remount-api-vfs.service
-removefrom initscripts */lib/systemd/system/local-fs.target.wants/fedora-storage*.service */lib/systemd/system/basic.target.wants/*.service
-removefrom lvm2 */lib/systemd/system/*
-removefrom mdadm */lib/systemd/system/*
+
+## Disable unwanted systemd services
+systemctl disable systemd-readahead-collect.service \
+                  systemd-readahead-replay.service \
+                  mdmonitor.service \
+                  mdmonitor-takeover.service \
+                  lvm2-monitor.service
+## These services can't be disabled normally (they're linked into place in
+## /usr/lib/systemd rather than /etc/systemd), so we have to mask them.
+systemctl mask fedora-configure.service fedora-loadmodules.service \
+               fedora-storage-init.service fedora-storage-init-late.service \
+               fedora-autorelabel.service fedora-autorelabel-mark.service \
+               fedora-wait-storage.service media.mount \
+               plymouth-quit.service plymouth-quit-wait.service \
+               plymouth-kexec.service plymouth-halt.service \
+               plymouth-poweroff.service plymouth-reboot.service \
+               plymouth-read-write.service plymouth-start.service
 
 ## install some basic configuration files
 append etc/resolv.conf ""
