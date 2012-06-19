@@ -348,8 +348,9 @@ removefrom ${product.name}-logos /usr/share/{firstboot,gnome-screensaver,kde4,pi
 runcmd find ${root} -name "*.pyo" -type f -delete
 runcmd find ${root} -name "*.pyc" -type f -exec ln -sf /dev/null {} \;
 
-## remove any broken links in /etc, /usr, /lib
+## remove any broken links in /etc or /usr
 ## (broken systemd service links lead to confusing noise at boot)
 ## NOTE: not checking /var because we want to keep /var/run
 ## NOTE: Excluding /etc/mtab which links to /proc/self/mounts for systemd
-runcmd chroot ${root} find -L /etc /usr /lib -xdev -type l -and \! -name "mtab" -delete
+runcmd chroot ${root} find -L /etc /usr -xdev -type l -and \! -name "mtab" \
+                -printf "removing broken symbolic link %p -> %l\n" -delete
