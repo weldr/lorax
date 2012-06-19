@@ -96,10 +96,49 @@ def rglob(pathname, root="/", fatal=False):
 def rexists(pathname, root=""):
     return True if rglob(pathname, root) else False
 
-# XXX NOTE: symlinks to stuff outside inroot/outroot will make us operate
-# on files outside our roots (e.g. deleting files on the host system).
 # TODO: operate inside an actual chroot for safety? Not that RPM bothers..
 class LoraxTemplateRunner(object):
+    '''
+    This class parses and executes Lorax templates. Sample usage:
+
+      # install a bunch of packages
+      runner = LoraxTemplateRunner(inroot=rundir, outroot=rundir, yum=yum_obj)
+      runner.run("install-packages.ltmpl")
+
+      # modify a runtime dir
+      runner = LoraxTemplateRunner(inroot=rundir, outroot=newrun)
+      runner.run("runtime-transmogrify.ltmpl")
+
+    NOTES:
+
+    * Parsing procedure is roughly:
+      1. Mako template expansion (on the whole file)
+      2. For each line of the result,
+        a. Whitespace splitting (using shlex.split())
+        b. Brace expansion (using brace_expand())
+        c. If the first token is the name of a function, call that function
+           with the rest of the line as arguments
+
+    * Parsing and execution are *separate* passes - so you can't use the result
+      of a command in an %if statement (or any other control statements)!
+
+    * Commands that run external programs (systemctl, gconfset) currently use
+      the *host*'s copy of that program, which may cause problems if there's a
+      big enough difference between the host and the image you're modifying.
+
+    * The commands are not executed under a real chroot, so absolute symlinks
+      will point *outside* the inroot/outroot. Be careful with symlinks!
+
+    ADDING NEW COMMANDS:
+
+    * Each template command is just a method of the LoraxTemplateRunner
+      object - so adding a new command is as easy as adding a new function.
+
+    * Each function gets arguments that correspond to the rest of the tokens
+      on that line (after word splitting and brace expansion)
+
+    * Commands should raise exceptions for errors - don't use sys.exit()
+    '''
     def __init__(self, inroot, outroot, yum=None, fatalerrors=True,
                                         templatedir=None, defaults={}):
         self.inroot = inroot
