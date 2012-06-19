@@ -35,6 +35,7 @@ removefrom mdadm */lib/systemd/system/*
 
 ## install some basic configuration files
 append etc/resolv.conf ""
+append etc/fstab ""
 copy usr/share/anaconda/lang-table etc
 install ${configdir}/i18n etc/sysconfig
 install ${configdir}/rsyslog.conf etc
