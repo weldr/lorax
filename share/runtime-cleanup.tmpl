@@ -23,12 +23,10 @@ removepkg midisport-firmware
 ## no fancy video, either
 removepkg libcrystalhd crystalhd-firmware ivtv-firmware cx18-firmware
 removepkg mesa-dri-drivers llvm-libs
-## we don't use plymouth
-removepkg plymouth*
-removefrom ${product.name}-logos /usr/share/plymouth/*
 ## we don't create new initramfs/bootloader conf inside anaconda
 ## (that happens inside the target system after we install dracut/grubby)
 removepkg dracut-network grubby anaconda-dracut
+removefrom ${product.name}-logos /usr/share/plymouth/*
 ## In order to execute the /usr move on upgrades we need convertfs from dracut
 ## We also need dracut-shutdown.service and dracut-initramfs-restore to reboot
 removefrom dracut --allbut /usr/lib/dracut/modules.d/30convertfs/convertfs.sh \

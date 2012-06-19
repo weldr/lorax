@@ -33,11 +33,7 @@ systemctl disable systemd-readahead-collect.service \
 systemctl mask fedora-configure.service fedora-loadmodules.service \
                fedora-storage-init.service fedora-storage-init-late.service \
                fedora-autorelabel.service fedora-autorelabel-mark.service \
-               fedora-wait-storage.service media.mount \
-               plymouth-quit.service plymouth-quit-wait.service \
-               plymouth-kexec.service plymouth-halt.service \
-               plymouth-poweroff.service plymouth-reboot.service \
-               plymouth-read-write.service plymouth-start.service
+               fedora-wait-storage.service media.mount
 
 ## install some basic configuration files
 append etc/resolv.conf ""
