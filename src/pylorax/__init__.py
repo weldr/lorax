@@ -277,7 +277,7 @@ class Lorax(BaseLoraxClass):
                                   domacboot=domacboot, templatedir=templatedir)
 
         logger.info("rebuilding initramfs images")
-        dracut_args=["--xz", "--add", "anaconda pollcdrom", "--omit", "plymouth",
+        dracut_args=["--xz", "--add", "anaconda pollcdrom",
                      "--install", "/.buildstamp"]
         treebuilder.rebuild_initrds(add_args=dracut_args)
 
