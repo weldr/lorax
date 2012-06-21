@@ -39,6 +39,8 @@ templatemap = {
     'sparc64': 'sparc.tmpl',
     's390':    's390.tmpl',
     's390x':   's390.tmpl',
+    'arm':     'arm.tmpl',
+    'armhfp':  'arm.tmpl',
 }
 
 def generate_module_info(moddir, outfile=None):
@@ -258,7 +260,7 @@ class TreeBuilder(object):
 
 def findkernels(root="/", kdir="boot"):
     # To find possible flavors, awk '/BuildKernel/ { print $4 }' kernel.spec
-    flavors = ('debug', 'PAE', 'PAEdebug', 'smp', 'xen')
+    flavors = ('debug', 'PAE', 'PAEdebug', 'smp', 'xen', 'highbank', 'imx', 'kirkwood', 'omap', 'tegra')
     kre = re.compile(r"vmlinuz-(?P<version>.+?\.(?P<arch>[a-z0-9_]+)"
                      r"(\.(?P<flavor>{0}))?)$".format("|".join(flavors)))
     kernels = []

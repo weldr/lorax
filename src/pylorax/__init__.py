@@ -52,7 +52,9 @@ class ArchData(DataHolder):
     lib64_arches = ("x86_64", "ppc64", "sparc64", "s390x", "ia64")
     bcj_arch = dict(i386="x86", x86_64="x86",
                     ppc="powerpc", ppc64="powerpc",
-                    sparc="sparc", sparc64="sparc")
+                    sparc="sparc", sparc64="sparc",
+                    arm="arm", armhfp="arm")
+
     def __init__(self, buildarch):
         self.buildarch = buildarch
         self.basearch = getBaseArch(buildarch)
