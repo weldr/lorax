@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.8
+Version:        18.9
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -81,6 +81,29 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Thu Jun 21 2012 Martin Gracik <mgracik@redhat.com> 18.9-1
+- Add initial support for ARM based systems (dmarlin) (mgracik@redhat.com)
+- Add plymouth to the installer runtime (wwoods@redhat.com)
+- add 'systemctl' command and use it in postinstall (wwoods@redhat.com)
+- add dracut-shutdown.service (and its dependencies) (wwoods@redhat.com)
+- leave pregenerated locale files (save RAM) (wwoods@redhat.com)
+- runtime-cleanup: log broken symlinks being removed (wwoods@redhat.com)
+- Add some documentation to LoraxTemplateRunner (wwoods@redhat.com)
+- fix '-runcmd' and improve logging (wwoods@redhat.com)
+- mkefiboot: add --debug (wwoods@redhat.com)
+- pylorax.imgutils: add retry loop and "lazy" to umount() (wwoods@redhat.com)
+- pylorax.imgutils: add debug logging (wwoods@redhat.com)
+- pylorax: set up logging as recommended by logging module (wwoods@redhat.com)
+- remove dmidecode (wwoods@redhat.com)
+- clean up net-tools properly (wwoods@redhat.com)
+- runtime-cleanup: correctly clean up kbd (wwoods@redhat.com)
+- runtime-cleanup: correctly clean up iproute (wwoods@redhat.com)
+- runtime-cleanup: drop a bunch of do-nothing removals (wwoods@redhat.com)
+- Create missing /etc/fstab (wwoods@redhat.com)
+- Fix systemd unit cleanup in runtime-postinstall (wwoods@redhat.com)
+- Disable Alt+Tab in metacity (mgracik@redhat.com)
+- Add pollcdrom module to dracut (bcl@redhat.com)
+
 * Wed Jun 06 2012 Martin Gracik <mgracik@redhat.com> 18.8-1
 - Check if selinux is enabled before getting the mode (mgracik@redhat.com)
 - Add grub2 so that rescue is more useful (bcl@redhat.com)
