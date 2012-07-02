@@ -52,10 +52,12 @@ removepkg notification-daemon
 ## logrotate isn't useful in anaconda
 removepkg logrotate
 remove /etc/logrotate.d
+## anaconda needs this to do media check
+removefrom isomd5sum --allbut /usr/bin/checkisomd5
 
 ## various other things we remove to save space
 removepkg avahi-autoipd coreutils-libs curl dash db4-utils diffutils file
-removepkg fipscheck genisoimage gnome-python2 info iptables isomd5sum
+removepkg fipscheck genisoimage gnome-python2 info iptables
 removepkg jasper-libs libIDL libXt libXxf86misc libXxf86vm
 removepkg libasyncns libdaemon libhbaapi libhbalinux
 removepkg libmcpp libpcap libtiff libutempter linux-atm-libs
