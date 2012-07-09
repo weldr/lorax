@@ -8,7 +8,7 @@ StrictModes yes
 X11Forwarding yes
 X11DisplayOffset 10
 PrintMotd yes
-XAuthLocation /sbin/xauth
+XAuthLocation /bin/xauth
 KeepAlive yes
 SyslogFacility AUTHPRIV
 RSAAuthentication yes
