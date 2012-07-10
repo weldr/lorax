@@ -18,7 +18,8 @@ prepboot = ""
 ## with '_', which means we won't need any udev escapes.
 isolabel = ''.join(ch if ch.isalnum() else '_' for ch in isolabel)
 
-rootarg = "root=live:CDLABEL=%s" % isolabel
+## Anaconda finds the CDROM device automatically
+rootarg = ""
 %>
 
 mkdir ${LIVEDIR}
