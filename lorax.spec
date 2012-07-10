@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.9
+Version:        18.10
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -81,6 +81,17 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Tue Jul 10 2012 Martin Gracik <mgracik@redhat.com> 18.10-1
+- Don't set a root= argument (wwoods@redhat.com)
+  Resolves: rhbz#837208
+- Don't remove the id tool (mgracik@redhat.com)
+  Resolves: rhbz#836493
+- Xauth is in bin (mgracik@redhat.com)
+  Resolves: rhbz#837317
+- Actually add plymouth to the initramfs (wwoods@redhat.com)
+- don't use --prefix with dracut anymore (wwoods@redhat.com)
+- newui requires checkisomd5 to run media check. (clumens@redhat.com)
+
 * Thu Jun 21 2012 Martin Gracik <mgracik@redhat.com> 18.9-1
 - Add initial support for ARM based systems (dmarlin) (mgracik@redhat.com)
 - Add plymouth to the installer runtime (wwoods@redhat.com)
