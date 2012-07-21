@@ -673,7 +673,11 @@ if __name__ == '__main__':
         sys.exit(1)
 
     if not opts.no_virt and not libvirt:
-        log.error("virt-install requires libvirt to be installed.")
+        log.error("virt-install requires libvirt-python to be installed.")
+        sys.exit(1)
+
+    if not opts.no_virt and not os.path.exists("/usr/bin/virt-install"):
+        log.error("virt-install requires python-virtinst to be installed.")
         sys.exit(1)
 
     if opts.no_virt and not os.path.exists("/usr/sbin/anaconda"):
