@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.10
+Version:        18.11
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -81,6 +81,9 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Fri Jul 20 2012 Brian C. Lane <bcl@redhat.com> 18.11-1
+- livemedia-creator: add some error checking (bcl@redhat.com)
+
 * Tue Jul 10 2012 Martin Gracik <mgracik@redhat.com> 18.10-1
 - Don't set a root= argument (wwoods@redhat.com)
   Resolves: rhbz#837208
