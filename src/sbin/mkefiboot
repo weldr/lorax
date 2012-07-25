@@ -24,7 +24,7 @@ log = logging.getLogger()
 import os, tempfile, argparse
 from subprocess import check_call, PIPE
 from pylorax.imgutils import mkdosimg, round_to_blocks, LoopDev, DMDev, dm_detach
-from pylorax.imgutils import mkhfsimg, Mount
+from pylorax.imgutils import mkhfsimg, Mount, estimate_size
 import struct, shutil, glob
 
 def mkefiboot(bootdir, outfile, label):
@@ -39,7 +39,9 @@ def mkmacboot(bootdir, outfile, label, icon=None, product='Generic',
         graft['.VolumeIcon.icns'] = icon
     if diskname and os.path.exists(diskname):
         graft['EFI/BOOT/.disk_label'] = diskname
-    mkhfsimg(None, outfile, label=label, graft=graft)
+    # everything winds up bein there twice...
+    size = estimate_size(bootdir, graft=graft) * 2
+    mkhfsimg(None, outfile, label=label, graft=graft, size=size)
     macmunge(outfile, product)
 
 # To make an HFS+ image bootable, we need to fill in parts of the
@@ -55,8 +57,9 @@ def macmunge(imgfile, product):
     # Get the inode number for the boot image and its parent directory
     with LoopDev(imgfile) as loopdev:
         with Mount(loopdev) as mnt:
-            loader = glob.glob(os.path.join(mnt,'EFI/BOOT/BOOT*.efi'))[0]
-            config = glob.glob(os.path.join(mnt,'EFI/BOOT/BOOT*.conf'))[0]
+            shim = glob.glob(os.path.join(mnt, 'EFI/BOOT/BOOT*.efi'))[0]
+            loader = glob.glob(os.path.join(mnt,'EFI/BOOT/grub*.efi'))[0]
+            config = glob.glob(os.path.join(mnt,'EFI/*/grub*.cfg'))[0]
             blessnode = os.stat(loader).st_ino
             dirnode = os.stat(os.path.dirname(loader)).st_ino
             with open(os.path.join(mnt,'mach_kernel'), 'w') as kernel:
@@ -77,8 +80,9 @@ def macmunge(imgfile, product):
 </dict>
 </plist>
 ''' % (product,))
-            shutil.copy(loader, os.path.join(sysdir,'boot.efi'))
-            shutil.copy(config, os.path.join(sysdir,'boot.conf'))
+            shutil.copy(shim, os.path.join(sysdir,'boot.efi'))
+            shutil.copy(loader, sysdir)
+            shutil.copy(config, sysdir)
     # format data properly (big-endian UInt32)
     nodedata = struct.pack(">i", blessnode)
     dirdata = struct.pack(">i", dirnode)

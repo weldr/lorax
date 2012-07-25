@@ -383,7 +383,8 @@ memtest86+
 nss-mdns
 -ibus-pinyin-db-open-phrase
 -smartmontools
-grub-efi
+grub2-efi
 grub2
+shim
 
 %end

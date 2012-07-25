@@ -12,7 +12,7 @@ installpkg pigz
 
 ## firstaidkit (rescue mode) packages
 installpkg firstaidkit-plugin-{passwd,key-recovery,mdadm-conf}
-installpkg grub2
+installpkg grub2 grub2-tools
 
 ## kernel and firmware
 installpkg kernel
@@ -30,7 +30,7 @@ installpkg kernel
     installpkg kernel-PAE gpart
 %endif
 %if basearch in ("i386", "x86_64"):
-    installpkg grub-efi efibootmgr biosdevname memtest86+
+    installpkg shim grub2-efi efibootmgr biosdevname memtest86+
 %endif
 %if basearch in ("ppc", "ppc64"):
     installpkg yaboot fbset hfsutils kernel-bootwrapper ppc64-utils

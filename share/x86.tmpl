@@ -50,7 +50,7 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
 ## WHeeeeeeee, EFI.
 ## We could remove the basearch restriction someday..
 <% efiargs=""; efigraft=""; efihybrid="" %>
-%if exists("boot/efi/EFI/redhat/grub.efi") and basearch != 'i386':
+%if exists("boot/efi/EFI/fedora/grub-cd.efi") and basearch != 'i386':
     <%
     efiarch = 'X64' if basearch=='x86_64' else 'IA32'
     efigraft="EFI/BOOT={0}/EFI/BOOT".format(outroot)
@@ -62,7 +62,7 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
         efigraft += " {0}={1}/{0}".format(img,outroot)
     efihybrid = "--uefi --mac" if domacboot else "--uefi"
     %>
-    <%include file="efi.tmpl" args="configdir=configdir, KERNELDIR=KERNELDIR, efiarch=efiarch"/>
+    <%include file="efi.tmpl" args="configdir=configdir, KERNELDIR=KERNELDIR, efiarch=efiarch, isolabel=isolabel"/>
 %endif
 
 ## make boot.iso

@@ -1,4 +1,4 @@
-<%page args="configdir, KERNELDIR, efiarch"/>
+<%page args="configdir, KERNELDIR, efiarch, isolabel"/>
 <%
 EFIBOOTDIR="EFI/BOOT"
 APPLE_EFI_ICON=inroot+"/usr/share/pixmaps/bootloader/fedora.icns"
@@ -6,7 +6,10 @@ APPLE_EFI_DISKNAME=inroot+"/usr/share/pixmaps/bootloader/fedora-media.vol"
 %>
 
 mkdir ${EFIBOOTDIR}
-install boot/efi/EFI/redhat/grub.efi ${EFIBOOTDIR}/BOOT${efiarch}.efi
+mkdir ${EFIBOOTDIR}/fonts/
+install boot/efi/EFI/fedora/shim.efi ${EFIBOOTDIR}/BOOT${efiarch}.efi
+install boot/efi/EFI/fedora/grub-cd.efi ${EFIBOOTDIR}/grubx64.efi
+install boot/efi/EFI/fedora/fonts/unicode.pf2 ${EFIBOOTDIR}/fonts/
 install boot/grub/splash.xpm.gz ${EFIBOOTDIR}
 
 ## actually make the EFI images
@@ -19,7 +22,7 @@ ${make_efiboot("images/efiboot.img")}
 <%def name="make_efiboot(img, include_kernel=False, disk=False, imgtype='default')">
     <%
     kdir = EFIBOOTDIR if include_kernel else KERNELDIR
-    eficonf = "%s/BOOT%s.conf" % (EFIBOOTDIR, efiarch)
+    eficonf = "%s/grub.cfg" % (EFIBOOTDIR, )
     args = "--label=ANACONDA"
     if disk: args += " --disk"
     if imgtype == "apple": args += ' --apple --icon=%s --diskname=%s --product="%s %s"' % (APPLE_EFI_ICON, APPLE_EFI_DISKNAME, product.name, product.version)
@@ -28,12 +31,14 @@ ${make_efiboot("images/efiboot.img")}
         copy ${KERNELDIR}/vmlinuz ${EFIBOOTDIR}
         copy ${KERNELDIR}/initrd.img ${EFIBOOTDIR}
     %endif
-    install ${configdir}/grub.conf ${eficonf}
+    install ${configdir}/grub2-efi.cfg ${eficonf}
     replace @PRODUCT@ '${product.name}' ${eficonf}
     replace @VERSION@ ${product.version} ${eficonf}
+    replace @KERNELNAME@ vmlinuz ${eficonf}
     replace @KERNELPATH@ /${kdir}/vmlinuz ${eficonf}
     replace @INITRDPATH@ /${kdir}/initrd.img ${eficonf}
     replace @SPLASHPATH@ /EFI/BOOT/splash.xpm.gz ${eficonf}
+    replace @ISOLABEL@ '${isolabel}' ${eficonf}
     %if disk:
         ## FIXME: using root= causes problems with product.img (see bug 811979)
         replace @ROOT@ root=live:LABEL=ANACONDA ${eficonf}
