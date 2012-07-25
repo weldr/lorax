@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.11
+Version:        18.12
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -81,6 +81,12 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Wed Jul 25 2012 Martin Gracik <mgracik@redhat.com> 18.12-1
+- Add 'mvebu' to list of recognized ARM kernels. (dmarlin@redhat.com)
+- Cleanup boot menus (#809663) (mgracik@redhat.com)
+- Don't remove chvt from the install image (#838554) (mgracik@redhat.com)
+- Add llvm-libs (#826351) (mgracik@redhat.com)
+
 * Fri Jul 20 2012 Brian C. Lane <bcl@redhat.com> 18.11-1
 - livemedia-creator: add some error checking (bcl@redhat.com)
 
