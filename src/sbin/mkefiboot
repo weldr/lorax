@@ -92,15 +92,16 @@ def macmunge(imgfile, product):
 
 def mkefidisk(efiboot, outfile):
     '''Make a bootable EFI disk image out of the given EFI boot image.'''
-    # pjones sez: "17408 is the size of the GPT tables parted creates"
-    partsize = os.path.getsize(efiboot) + 17408
-    disksize = round_to_blocks(17408 + partsize, 512)
+    # pjones sez: "17408 is the size of the GPT tables parted creates,
+    #              but there are two of them."
+    partsize = os.path.getsize(efiboot) + 17408 * 2
+    disksize = round_to_blocks(2 * 17408 + partsize, 512)
     with LoopDev(outfile, disksize) as loopdev:
         with DMDev(loopdev, disksize) as dmdev:
             check_call(["parted", "--script", "/dev/mapper/%s" % dmdev,
             "mklabel", "gpt",
             "unit", "b",
-            "mkpart", "'EFI System Partition'", "fat32", "17408", str(partsize),
+            "mkpart", "'EFI System Partition'", "fat32", "34816", str(partsize),
             "set", "1", "boot", "on"], stdout=PIPE, stderr=PIPE)
             partdev = "/dev/mapper/{0}p1".format(dmdev)
             with open(efiboot, "rb") as infile:
