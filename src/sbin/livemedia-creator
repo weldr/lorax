@@ -179,7 +179,6 @@ class IsoMountpoint(object):
             raise Exception("Error creating temporary directory")
 
         cmd = ["mount","-o","loop",self.iso_path,self.mount_dir]
-        log.debug( cmd )
         execWithRedirect( cmd[0], cmd[1:] )
 
         self.kernel = self.mount_dir+"/isolinux/vmlinuz"
@@ -203,7 +202,6 @@ class IsoMountpoint(object):
 
     def umount( self ):
         cmd = ["umount", self.mount_dir]
-        log.debug( cmd )
         execWithRedirect( cmd[0], cmd[1:] )
         os.rmdir( self.mount_dir )
 
@@ -212,7 +210,6 @@ class IsoMountpoint(object):
         Get the iso's label using isoinfo
         """
         cmd = [ "isoinfo", "-d", "-i", self.iso_path ]
-        log.debug( cmd )
         isoinfo_output = execWithCapture( cmd[0], cmd[1:] )
         log.debug( isoinfo_output )
         for line in isoinfo_output.splitlines():
@@ -295,8 +292,6 @@ class VirtualInstall( object ):
             cmd.append("--arch")
             cmd.append(arch)
 
-        log.debug( cmd )
-
         rc = execWithRedirect( cmd[0], cmd[1:] )
         if rc:
             raise Exception("Problem starting virtual install")
@@ -354,8 +349,6 @@ def anaconda_install( disk_img, disk_size, kickstart, repo, args ):
     cmd = [ "anaconda", "--image", disk_img, "--kickstart", kickstart,
             "--script", "--repo", repo_url ]
     cmd += args
-
-    log.debug( cmd )
 
     return execWithRedirect( cmd[0], cmd[1:] )
 
@@ -498,8 +491,9 @@ def make_livecd( disk_img, squashfs_args="", templatedir=None,
         # Link /images to work_dir/images to make the templates happy
         if os.path.islink( joinpaths( installroot, "images" ) ):
             os.unlink( joinpaths( installroot, "images" ) )
-        subprocess.check_call(["/bin/ln", "-s", joinpaths( work_dir, "images" ),
-                                                joinpaths( installroot, "images" )])
+        cmd = ["/bin/ln", "-s", joinpaths(work_dir, "images"),
+               joinpaths(installroot, "images")]
+        execWithRedirect(cmd[0], cmd[1:])
 
         isolabel = isolabel or "{0.name} {0.version} {1.basearch}".format(product, arch)
         if len(isolabel) > 32:
@@ -522,6 +516,33 @@ def make_livecd( disk_img, squashfs_args="", templatedir=None,
         tb.build()
 
         return work_dir
+
+
+def setup_logging(opts):
+    # Setup logging to console and to logfile
+    log.setLevel(logging.DEBUG)
+    pylorax_log.setLevel(logging.DEBUG)
+
+    sh = logging.StreamHandler()
+    sh.setLevel(logging.INFO)
+    fmt = logging.Formatter("%(asctime)s: %(message)s")
+    sh.setFormatter(fmt)
+    log.addHandler(sh)
+    pylorax_log.addHandler(sh)
+
+    fh = logging.FileHandler(filename=opts.logfile, mode="w")
+    fh.setLevel(logging.DEBUG)
+    fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
+    fh.setFormatter(fmt)
+    log.addHandler(fh)
+    pylorax_log.addHandler(fh)
+
+    # External program output log
+    program_log.setLevel(logging.DEBUG)
+    logfile = os.path.abspath(os.path.dirname(opts.logfile))+"/program.log"
+    fh = logging.FileHandler(filename=logfile, mode="w")
+    fh.setLevel(logging.DEBUG)
+    program_log.addHandler(fh)
 
 
 if __name__ == '__main__':
@@ -618,27 +639,7 @@ if __name__ == '__main__':
 
     opts = parser.parse_args()
 
-    # Setup logging to console and to logfile
-    log.setLevel( logging.DEBUG )
-    pylorax_log.setLevel( logging.DEBUG )
-    sh = logging.StreamHandler()
-    sh.setLevel( logging.INFO )
-    fmt = logging.Formatter("%(asctime)s: %(message)s")
-    sh.setFormatter( fmt )
-    log.addHandler( sh )
-    pylorax_log.addHandler( sh )
-    fh = logging.FileHandler( filename=opts.logfile, mode="w" )
-    fh.setLevel( logging.DEBUG )
-    fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
-    fh.setFormatter( fmt )
-    log.addHandler( fh )
-    pylorax_log.addHandler( fh )
-    # External program output log
-    program_log.setLevel(logging.DEBUG)
-    logfile = os.path.abspath(os.path.dirname(opts.logfile))+"/program.log"
-    fh = logging.FileHandler( filename=logfile, mode="w")
-    fh.setLevel( logging.DEBUG )
-    program_log.addHandler( fh )
+    setup_logging(opts)
 
     log.debug( opts )
 
