@@ -20,8 +20,13 @@
 #
 # Red Hat Author(s):  Martin Gracik <mgracik@redhat.com>
 #
-
 from __future__ import print_function
+
+import logging
+log = logging.getLogger("lorax")
+program_log = logging.getLogger("program")
+pylorax_log = logging.getLogger("pylorax")
+
 
 import sys
 import os
@@ -31,6 +36,32 @@ import ConfigParser
 
 import yum
 import pylorax
+
+def setup_logging(opts):
+    # Setup logging to console and to logfile
+    log.setLevel(logging.DEBUG)
+    pylorax_log.setLevel(logging.DEBUG)
+
+    sh = logging.StreamHandler()
+    sh.setLevel(logging.INFO)
+    fmt = logging.Formatter("%(asctime)s: %(message)s")
+    sh.setFormatter(fmt)
+    log.addHandler(sh)
+    pylorax_log.addHandler(sh)
+
+    fh = logging.FileHandler(filename=opts.logfile, mode="w")
+    fh.setLevel(logging.DEBUG)
+    fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
+    fh.setFormatter(fmt)
+    log.addHandler(fh)
+    pylorax_log.addHandler(fh)
+
+    # External program output log
+    program_log.setLevel(logging.DEBUG)
+    logfile = os.path.abspath(os.path.dirname(opts.logfile))+"/program.log"
+    fh = logging.FileHandler(filename=logfile, mode="w")
+    fh.setLevel(logging.DEBUG)
+    program_log.addHandler(fh)
 
 
 def main(args):
@@ -76,6 +107,8 @@ def main(args):
             help="volume id", metavar="STRING")
     optional.add_option("--nomacboot", help="",
             action="store_false", default=True, dest="domacboot")
+    optional.add_option("--logfile", default="./lorax.log",
+            help="Path to logfile")
 
     # add the option groups to the parser
     parser.add_option_group(required)
@@ -104,6 +137,10 @@ def main(args):
 
     if os.path.exists(outputdir):
         parser.error("output directory should not exist.")
+
+    opts.logfile = os.path.abspath(opts.logfile)
+
+    setup_logging(opts)
 
     # create the temporary directory for lorax
     tempdir = tempfile.mkdtemp(prefix="lorax.", dir=tempfile.gettempdir())
