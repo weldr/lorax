@@ -1,0 +1,117 @@
+<%page args="kernels, runtime_img, basearch, libdir, inroot, outroot, product, isolabel"/>
+<%
+configdir="tmp/config_files/ppc"
+BOOTDIR="ppc"
+LIVEDIR="LiveOS"
+MACDIR=BOOTDIR+"/mac"
+NETBOOTDIR="images/netboot"
+
+WRAPPER="usr/sbin/wrapper"
+WRAPPER_DATA="usr/"+libdir+"/kernel-wrapper"
+
+bitsizes = set()
+prepboot = ""
+
+## NOTE: yaboot freaks out and stops parsing its config if it sees a '\',
+## so we can't use the udev escape sequences in the root arg.
+## Instead we'll just replace any non-ASCII characters in the isolabel
+## with '_', which means we won't need any udev escapes.
+isolabel = ''.join(ch if ch.isalnum() else '_' for ch in isolabel)
+
+rootarg = "root=live:CDLABEL=%s" % isolabel
+%>
+
+mkdir ${LIVEDIR}
+install ${runtime_img} ${LIVEDIR}/squashfs.img
+treeinfo stage2 mainimage ${LIVEDIR}/squashfs.img
+
+## install bootloaders.
+## NOTE: there's two different bootloader setups here:
+##   ppc/chrp: for normal PPC systems. needs 'addnote' run on yaboot.
+##             uses /etc/yaboot.conf, as is the default.
+##   ppc/mac: for PowerMacs. no 'addnote' (it breaks some Macs!)
+##            ofboot.b picks one of /ppc/ppc{32,64}/yaboot.conf for yaboot,
+##            thus automatically booting the correct kernel for the machine.
+mkdir ${BOOTDIR}
+## boot stuff for normal (CHRP/PREP) PPC systems
+install ${configdir}/bootinfo.txt ${BOOTDIR}
+install boot/efika.forth ${BOOTDIR}
+mkdir ${BOOTDIR}/chrp
+install usr/lib/yaboot/yaboot ${BOOTDIR}/chrp
+runcmd ${inroot}/usr/lib/yaboot/addnote ${outroot}/${BOOTDIR}/chrp/yaboot
+## special boot dir for PowerMacs
+mkdir ${MACDIR}
+install usr/lib/yaboot/yaboot ${MACDIR}
+install ${configdir}/ofboot.b ${MACDIR}
+
+## copy mapping and magic files needed for isos
+install ${configdir}/mapping ${BOOTDIR}
+install ${configdir}/magic ${BOOTDIR}
+
+## NOTE: PPC is kind of funky. There's three possible "arch" setups here:
+## ppc, ppc64, and 'hybrid' (ppc userspace, both ppc & ppc64 kernels).
+
+## Install kernel and bootloader config (in separate places for each arch)
+%for kernel in kernels:
+    <%
+      bits = 64 if kernel.arch == "ppc64" else 32
+      ## separate dirs/images for each arch
+      KERNELDIR=BOOTDIR+"/ppc%s" % bits
+      NETIMG=NETBOOTDIR+"/ppc%s.img" % bits
+      bitsizes.add(bits)
+    %>
+    ## install kernel
+    mkdir ${KERNELDIR} ${NETBOOTDIR}
+    installkernel images-${kernel.arch} ${kernel.path} ${KERNELDIR}/vmlinuz
+    installinitrd images-${kernel.arch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
+
+    ## install arch-specific bootloader config
+    install ${configdir}/yaboot.conf.in  ${KERNELDIR}/yaboot.conf
+    replace @BITS@    ${bits}            ${KERNELDIR}/yaboot.conf
+    replace @PRODUCT@ '${product.name}'  ${KERNELDIR}/yaboot.conf
+    replace @VERSION@ ${product.version} ${KERNELDIR}/yaboot.conf
+    replace @ROOT@    "${rootarg}"       ${KERNELDIR}/yaboot.conf
+
+    ## kernel-wrapper magic that makes the netboot combined ppc{32,64}.img
+    runcmd ${inroot}/${WRAPPER} -p of \
+           -D ${inroot}/${WRAPPER_DATA} \
+           -i ${outroot}/${KERNELDIR}/initrd.img \
+              ${outroot}/${KERNELDIR}/vmlinuz \
+           -o ${outroot}/${NETIMG}
+    treeinfo images-${kernel.arch} zimage ${NETIMG}
+    ## PReP is 32-bit only
+    %if bits == 32:
+        ## Yes, this is supposed to be a relative path
+        <% prepboot="-prep-boot " + NETIMG %>
+    %endif
+%endfor
+
+## choose correct yaboot.conf
+mkdir etc
+%if len(bitsizes) == 2:
+    ## both kernels means hybrid - use the magic hybrid config
+    install ${configdir}/yaboot.conf.3264  etc/yaboot.conf
+    replace @PRODUCT@ ${product.name}      etc/yaboot.conf
+    replace @VERSION@ ${product.version}   etc/yaboot.conf
+    replace @ROOT@    "${rootarg}"         etc/yaboot.conf
+%else:
+    ## single arch - use the arch-specific yaboot.conf from above
+    copy ${KERNELDIR}/yaboot.conf etc/yaboot.conf
+%endif
+
+## make boot.iso
+runcmd mkisofs -o ${outroot}/images/boot.iso -chrp-boot -U \
+        ${prepboot} -part -hfs -T -r -l -J \
+        -A "${product.name} ${product.version}" -sysid PPC -V '${isolabel}' \
+        -volset "${product.version}" -volset-size 1 -volset-seqno 1 \
+        -hfs-volid ${product.version} -hfs-bless ${outroot}/${MACDIR} \
+        -map ${inroot}/${configdir}/mapping \
+        -no-desktop -allow-multidot -graft-points \
+        etc=${outroot}/etc \
+        ${BOOTDIR}=${outroot}/${BOOTDIR} \
+        ${NETBOOTDIR}=${outroot}/${NETBOOTDIR} \
+        ${LIVEDIR}=${outroot}/${LIVEDIR}
+
+%for kernel in kernels:
+    treeinfo images-${kernel.arch} boot.iso images/boot.iso
+%endfor

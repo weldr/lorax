@@ -466,7 +466,7 @@ def make_livecd( disk_img, squashfs_args="", templatedir=None,
 
         # TreeBuilder expects the config files to be in /tmp/config_files
         # I think these should be release specific, not from lorax, but for now
-        configdir = joinpaths(templatedir,"config_files/live/")
+        configdir = joinpaths(templatedir,"live/config_files/")
         configdir_path = "tmp/config_files"
         fullpath = joinpaths(installroot, configdir_path)
         if os.path.exists(fullpath):
@@ -498,7 +498,8 @@ def make_livecd( disk_img, squashfs_args="", templatedir=None,
 
         tb = TreeBuilder( product=product, arch=arch,
                           inroot=installroot, outroot=work_dir,
-                          runtime=runtime, isolabel=isolabel, templatedir=templatedir)
+                          runtime=runtime, isolabel=isolabel,
+                          templatedir=joinpaths(templatedir,"live/"))
         log.info( "Rebuilding initrds" )
         if not opts.dracut_args:
             dracut_args = DRACUT_DEFAULT
