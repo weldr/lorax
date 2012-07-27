@@ -70,9 +70,11 @@ class tee(threading.Thread):
 # @param stdout The file descriptor to redirect stdout to.
 # @param stderr The file descriptor to redirect stderr to.
 # @param root The directory to chroot to before running command.
+# @param preexec_fn function to pass to Popen
+# @param cwd working directory to pass to Popen
 # @return The return code of command.
 def execWithRedirect(command, argv, stdin = None, stdout = None,
-                     stderr = None, root = '/'):
+                     stderr = None, root = None, preexec_fn=None, cwd=None):
     def chroot ():
         os.chroot(root)
 
@@ -115,6 +117,13 @@ def execWithRedirect(command, argv, stdin = None, stdout = None,
     env = os.environ.copy()
     env.update({"LC_ALL": "C"})
 
+    if root:
+        preexec_fn = chroot
+        cwd = root
+        program_log.info("chrooting into %s" % (cwd,))
+    elif cwd:
+        program_log.info("chdiring into %s" % (cwd,))
+
     try:
         #prepare tee proceses
         proc_std = tee(pstdout, stdout, program_log.info, command)
@@ -127,7 +136,7 @@ def execWithRedirect(command, argv, stdin = None, stdout = None,
         proc = subprocess.Popen([command] + argv, stdin=stdin,
                                 stdout=pstdin,
                                 stderr=perrin,
-                                preexec_fn=chroot, cwd=root,
+                                preexec_fn=preexec_fn, cwd=cwd,
                                 env=env)
 
         proc.wait()
@@ -170,8 +179,10 @@ def execWithRedirect(command, argv, stdin = None, stdout = None,
 # @param stdin The file descriptor to read stdin from.
 # @param stderr The file descriptor to redirect stderr to.
 # @param root The directory to chroot to before running command.
+# @param preexec_fn function to pass to Popen
+# @param cwd working directory to pass to Popen
 # @return The output of command from stdout.
-def execWithCapture(command, argv, stdin = None, stderr = None, root='/'):
+def execWithCapture(command, argv, stdin = None, stderr = None, root=None, preexec_fn=None, cwd=None):
     def chroot():
         os.chroot(root)
 
@@ -207,11 +218,18 @@ def execWithCapture(command, argv, stdin = None, stderr = None, root='/'):
     env = os.environ.copy()
     env.update({"LC_ALL": "C"})
 
+    if root:
+        preexec_fn = chroot
+        cwd = root
+        program_log.info("chrooting into %s" % (cwd,))
+    elif cwd:
+        program_log.info("chdiring into %s" % (cwd,))
+
     try:
         proc = subprocess.Popen([command] + argv, stdin=stdin,
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE,
-                                preexec_fn=chroot, cwd=root,
+                                preexec_fn=preexec_fn, cwd=cwd,
                                 env=env)
 
         while True:

@@ -178,8 +178,7 @@ class IsoMountpoint(object):
         if not self.mount_dir:
             raise Exception("Error creating temporary directory")
 
-        cmd = ["mount","-o","loop",self.iso_path,self.mount_dir]
-        execWithRedirect( cmd[0], cmd[1:] )
+        execWithRedirect("mount", ["-o", "loop", self.iso_path, self.mount_dir])
 
         self.kernel = self.mount_dir+"/isolinux/vmlinuz"
         self.initrd = self.mount_dir+"/isolinux/initrd.img"
@@ -201,16 +200,14 @@ class IsoMountpoint(object):
         self.get_iso_label()
 
     def umount( self ):
-        cmd = ["umount", self.mount_dir]
-        execWithRedirect( cmd[0], cmd[1:] )
+        execWithRedirect("umount", [self.mount_dir])
         os.rmdir( self.mount_dir )
 
     def get_iso_label( self ):
         """
         Get the iso's label using isoinfo
         """
-        cmd = [ "isoinfo", "-d", "-i", self.iso_path ]
-        isoinfo_output = execWithCapture( cmd[0], cmd[1:] )
+        isoinfo_output = execWithCapture("isoinfo", ["-d", "-i", self.iso_path])
         log.debug( isoinfo_output )
         for line in isoinfo_output.splitlines():
             if line.startswith("Volume id: "):
@@ -491,9 +488,8 @@ def make_livecd( disk_img, squashfs_args="", templatedir=None,
         # Link /images to work_dir/images to make the templates happy
         if os.path.islink( joinpaths( installroot, "images" ) ):
             os.unlink( joinpaths( installroot, "images" ) )
-        cmd = ["/bin/ln", "-s", joinpaths(work_dir, "images"),
-               joinpaths(installroot, "images")]
-        execWithRedirect(cmd[0], cmd[1:])
+        execWithRedirect("/bin/ln", ["-s", joinpaths(work_dir, "images"),
+                                     joinpaths(installroot, "images")])
 
         isolabel = isolabel or "{0.name} {0.version} {1.basearch}".format(product, arch)
         if len(isolabel) > 32:

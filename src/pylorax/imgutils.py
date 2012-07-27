@@ -22,11 +22,13 @@ logger = logging.getLogger("pylorax.imgutils")
 
 import os, tempfile
 from os.path import join, dirname
-from pylorax.sysutils import cpfile
-from subprocess import *
+from subprocess import CalledProcessError
 import sys
 import traceback
 from time import sleep
+
+from pylorax.sysutils import cpfile
+from pylorax.executils import execWithRedirect, execWithCapture
 
 ######## Functions for making container images (cpio, squashfs) ##########
 
@@ -36,7 +38,6 @@ def mkcpio(rootdir, outfile, compression="xz", compressargs=["-9"]):
     compressargs will be used on the compression commandline.'''
     if compression not in (None, "xz", "gzip", "lzma"):
         raise ValueError, "Unknown compression type %s" % compression
-    chdir = lambda: os.chdir(rootdir)
     if compression == "xz":
         compressargs.insert(0, "--check=crc32")
     if compression is None:
@@ -44,9 +45,9 @@ def mkcpio(rootdir, outfile, compression="xz", compressargs=["-9"]):
         compressargs = []
     logger.debug("mkcpio %s | %s %s > %s", rootdir, compression,
                                         " ".join(compressargs), outfile)
-    find = Popen(["find", ".", "-print0"], stdout=PIPE, preexec_fn=chdir)
+    find = Popen(["find", ".", "-print0"], stdout=PIPE, cwd=rootdir)
     cpio = Popen(["cpio", "--null", "--quiet", "-H", "newc", "-o"],
-                 stdin=find.stdout, stdout=PIPE, preexec_fn=chdir)
+                 stdin=find.stdout, stdout=PIPE, cwd=rootdir)
     comp = Popen([compression] + compressargs,
                  stdin=cpio.stdout, stdout=open(outfile, "wb"))
     comp.wait()
@@ -56,9 +57,7 @@ def mksquashfs(rootdir, outfile, compression="default", compressargs=[]):
     '''Make a squashfs image containing the given rootdir.'''
     if compression != "default":
         compressargs = ["-comp", compression] + compressargs
-    cmd = ["mksquashfs", rootdir, outfile] + compressargs
-    logger.debug(" ".join(cmd))
-    return call(cmd)
+    return execWithRedirect("mksquashfs", [rootdir, outfile] + compressargs)
 
 ######## Utility functions ###############################################
 
@@ -70,17 +69,17 @@ def mksparse(outfile, size):
 def loop_attach(outfile):
     '''Attach a loop device to the given file. Return the loop device name.
     Raises CalledProcessError if losetup fails.'''
-    dev = check_output(["losetup", "--find", "--show", outfile], stderr=PIPE)
+    dev = execWithCapture("losetup", ["--find", "--show", outfile])
     return dev.strip()
 
 def loop_detach(loopdev):
     '''Detach the given loop device. Return False on failure.'''
-    return (call(["losetup", "--detach", loopdev]) == 0)
+    return (execWithRedirect("losetup", ["--detach", loopdev]) == 0)
 
 def get_loop_name(path):
     '''Return the loop device associated with the path.
     Raises RuntimeError if more than one loop is associated'''
-    buf = check_output(["losetup", "-j", path], stderr=PIPE)
+    buf = execWithCapture("losetup", ["-j", path])
     if len(buf.splitlines()) > 1:
         # there should never be more than one loop device listed
         raise RuntimeError("multiple loops associated with %s" % path)
@@ -93,15 +92,14 @@ def dm_attach(dev, size, name=None):
     raises CalledProcessError if dmsetup fails.'''
     if name is None:
         name = tempfile.mktemp(prefix="lorax.imgutils.", dir="")
-    check_call(["dmsetup", "create", name, "--table",
-                "0 %i linear %s 0" % (size/512, dev)],
-                stdout=PIPE, stderr=PIPE)
+    execWithRedirect("dmsetup", ["create", name, "--table",
+                                 "0 %i linear %s 0" % (size/512, dev)])
     return name
 
 def dm_detach(dev):
     '''Detach the named devicemapper device. Returns False if dmsetup fails.'''
     dev = dev.replace("/dev/mapper/", "") # strip prefix, if it's there
-    return call(["dmsetup", "remove", dev], stdout=PIPE, stderr=PIPE)
+    return execWithRedirect("dmsetup", ["remove", dev])
 
 def mount(dev, opts="", mnt=None):
     '''Mount the given device at the given mountpoint, using the given opts.
@@ -116,8 +114,7 @@ def mount(dev, opts="", mnt=None):
     if opts:
         mount += ["-o", opts]
     mount += [dev, mnt]
-    logger.debug(" ".join(mount))
-    check_call(mount)
+    execWithRedirect(mount[0], mount[1:])
     return mnt
 
 def umount(mnt,  lazy=False, maxretry=3, retrysleep=1.0):
@@ -127,11 +124,10 @@ def umount(mnt,  lazy=False, maxretry=3, retrysleep=1.0):
     umount = ["umount"]
     if lazy: umount += ["-l"]
     umount += [mnt]
-    logger.debug(" ".join(umount))
     count = 0
     while maxretry > 0:
         try:
-            rv = check_call(umount)
+            rv = execWithRedirect(umount[0], umount[1:])
         except CalledProcessError:
             count += 1
             if count == maxretry:
@@ -139,8 +135,7 @@ def umount(mnt,  lazy=False, maxretry=3, retrysleep=1.0):
             logger.warn("failed to unmount %s. retrying (%d/%d)...",
                          mnt, count, maxretry)
             if logger.getEffectiveLevel() <= logging.DEBUG:
-                fuser = check_output(["fuser", "-vm", mnt],
-                                     stderr=STDOUT)
+                fuser = execWithCapture("fuser", ["-vm", mnt])
                 logger.debug("fuser -vm:\n%s\n", fuser)
             sleep(retrysleep)
         else:
@@ -155,9 +150,9 @@ def copytree(src, dest, preserve=True):
     links, acls, sparse files, xattrs, selinux contexts, etc.
     If preserve is False, uses cp -R (useful for modeless filesystems)'''
     logger.debug("copytree %s %s", src, dest)
-    chdir = lambda: os.chdir(src)
     cp = ["cp", "-a"] if preserve else ["cp", "-R", "-L"]
-    check_call(cp + [".", os.path.abspath(dest)], preexec_fn=chdir)
+    cp += [".", os.path.abspath(dest)]
+    execWithRedirect(cp[0], cp[1:], cwd=src)
 
 def do_grafts(grafts, dest, preserve=True):
     '''Copy each of the items listed in grafts into dest.
@@ -256,9 +251,7 @@ class PartitionMount(object):
         # kpartx -p p -v -a /tmp/diskV2DiCW.im
         # add map loop2p1 (253:2): 0 3481600 linear /dev/loop2 2048
         # add map loop2p2 (253:3): 0 614400 linear /dev/loop2 3483648
-        cmd = [ "kpartx", "-v", "-p", "p", "-a", self.disk_img ]
-        logger.debug(cmd)
-        kpartx_output = check_output(cmd)
+        kpartx_output = execWithCapture("kpartx", ["-v", "-p", "p", "-a", self.disk_img])
         logger.debug(kpartx_output)
 
         # list of (deviceName, sizeInBytes)
@@ -296,7 +289,7 @@ class PartitionMount(object):
             umount( self.mount_dir )
             os.rmdir(self.mount_dir)
             self.mount_dir = None
-        call(["kpartx", "-d", self.disk_img])
+        execWithRedirect("kpartx", ["-d", self.disk_img])
 
 
 ######## Functions for making filesystem images ##########################
@@ -312,7 +305,7 @@ def mkfsimage(fstype, rootdir, outfile, size=None, mkfsargs=[], mountargs="", gr
         size = estimate_size(rootdir, graft, fstype)
     with LoopDev(outfile, size) as loopdev:
         try:
-            check_output(["mkfs.%s" % fstype] + mkfsargs + [loopdev])
+            execWithRedirect("mkfs.%s" % fstype, mkfsargs + [loopdev])
         except CalledProcessError as e:
             logger.error("mkfs exited with a non-zero return code: %d" % e.returncode)
             logger.error(e.output)

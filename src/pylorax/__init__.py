@@ -30,7 +30,7 @@ import os
 import ConfigParser
 import tempfile
 import locale
-import subprocess
+from subprocess import CalledProcessError
 import selinux
 
 from base import BaseLoraxClass, DataHolder
@@ -47,6 +47,7 @@ from treebuilder import RuntimeBuilder, TreeBuilder
 from buildstamp import BuildStamp
 from treeinfo import TreeInfo
 from discinfo import DiscInfo
+from executils import execWithRedirect
 
 class ArchData(DataHolder):
     lib64_arches = ("x86_64", "ppc64", "sparc64", "s390x", "ia64")
@@ -140,8 +141,8 @@ class Lorax(BaseLoraxClass):
 
         if domacboot:
             try:
-                subprocess.check_call(["rpm", "-q", "hfsplus-tools"])
-            except subprocess.CalledProcessError:
+                execWithRedirect("rpm", ["-q", "hfsplus-tools"])
+            except CalledProcessError:
                 logger.critical("you need to install hfsplus-tools to create mac images")
                 sys.exit(1)
 

@@ -25,11 +25,12 @@ logger = logging.getLogger("pylorax.ltmpl")
 
 import os, re, glob, shlex, fnmatch
 from os.path import basename, isdir
-from subprocess import check_call, check_output, CalledProcessError, STDOUT
+from subprocess import CalledProcessError
 
 from sysutils import joinpaths, cpfile, mvfile, replace, remove
 from yumhelper import * # Lorax*Callback classes
 from base import DataHolder
+from pylorax.executils import execWithRedirect, execWithCapture
 
 from mako.lookup import TemplateLookup
 from mako.exceptions import text_error_template
@@ -368,9 +369,10 @@ class LoraxTemplateRunner(object):
         '''
         if outfile is None:
             outfile = self._out("etc/gconf/gconf.xml.defaults")
-        check_call(["gconftool-2", "--direct",
+        cmd = ["gconftool-2", "--direct",
                     "--config-source=xml:readwrite:%s" % outfile,
-                    "--set", "--type", keytype, path, value])
+                    "--set", "--type", keytype, path, value]
+        execWithRedirect(cmd[0], cmd[1:])
 
     def log(self, msg):
         '''
@@ -404,16 +406,15 @@ class LoraxTemplateRunner(object):
                 remove ${f}
             %endfor
         '''
-        chdir = lambda: None
+        cwd = None
         cmd = cmdlist
         logger.debug('running command: %s', cmd)
         if cmd[0].startswith("--chdir="):
-            dirname = cmd[0].split('=',1)[1]
-            chdir = lambda: os.chdir(dirname)
+            cwd = cmd[0].split('=',1)[1]
             cmd = cmd[1:]
 
         try:
-            output = check_output(cmd, preexec_fn=chdir, stderr=STDOUT)
+            output = execWithCapture(cmd[0], cmd[1:], cwd=cwd)
             if output:
                 logger.debug('command output:\n%s', output)
             logger.debug("command finished successfully")
@@ -550,6 +551,7 @@ class LoraxTemplateRunner(object):
                      '--quiet', cmd)
         # XXX for some reason 'systemctl enable/disable' always returns 1
         try:
-            check_call(systemctl + units)
+            cmd = systemctl + units
+            execWithRedirect(cmd[0], cmd[1:])
         except CalledProcessError:
             pass
