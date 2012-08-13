@@ -22,6 +22,9 @@ mkdir ${LIVEDIR}
 install ${runtime_img} ${LIVEDIR}/squashfs.img
 treeinfo stage2 mainimage ${LIVEDIR}/squashfs.img
 
+# Add platforms to treeinfo for Beaker support.
+treeinfo ${basearch} platforms highbank,imx,mvebu,omap,tegra
+
 ## install kernels
 mkdir ${KERNELDIR}
 %for kernel in kernels:
