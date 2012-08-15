@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.12
+Version:        18.13
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -81,6 +81,17 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Wed Aug 15 2012 Brian C. Lane <bcl@redhat.com> 18.13-1
+- Add a command line option to override the ARM platform. (dmarlin@redhat.com)
+- Don't remove krb5-libs (#848227) (mgracik@redhat.com)
+- Add grub2-efi support and Secure Boot shim support. (pjones@redhat.com)
+- Fix GPT code to allocate space for /2/ tables. (pjones@redhat.com)
+- Add platforms to the treeinfo for Beaker support. (dmarlin@redhat.com)
+- add logging to lorax (bcl@redhat.com)
+- move live templates into their own subdir of share (bcl@redhat.com)
+- clean up command execution (bcl@redhat.com)
+- livemedia-creator: cleanup logging a bit (bcl@redhat.com)
+
 * Wed Jul 25 2012 Martin Gracik <mgracik@redhat.com> 18.12-1
 - Add 'mvebu' to list of recognized ARM kernels. (dmarlin@redhat.com)
 - Cleanup boot menus (#809663) (mgracik@redhat.com)
