@@ -577,6 +577,9 @@ if __name__ == '__main__':
     parser.add_argument( "--anaconda-arg", action="append", dest="anaconda_args",
                          help="Additional argument to pass to anaconda (no-virt "
                               "mode). Pass once for each argument" )
+    parser.add_argument( "--armplatform",
+                         help="the platform to use when creating images for ARM, "
+                              "i.e., highbank, mvebu, omap, tegra, etc." )
 
     parser.add_argument( "--logfile", default="./livemedia.log",
                          type=os.path.abspath,
@@ -742,6 +745,8 @@ if __name__ == '__main__':
                     anaconda_args += arg.split(" ", 1)
             if opts.proxy:
                 anaconda_args += [ "--proxy", opts.proxy ]
+            if opts.armplatform:
+                anaconda_args += [ "--armplatform", opts.armplatform ]
 
             # Use anaconda's image install
             install_error = anaconda_install( disk_img, disk_size, opts.ks[0],
