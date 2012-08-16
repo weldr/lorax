@@ -170,15 +170,27 @@ class IsoMountpoint(object):
     vmlinuz and initrd.img files exist
     Check the iso for a LiveOS directory and set a flag.
     Extract the iso's label.
+
+    initrd_path can be used to point to a boot.iso tree with a newer
+    initrd.img than the iso has. The iso is still used for stage2.
     """
-    def __init__( self, iso_path ):
+    def __init__( self, iso_path, initrd_path=None ):
+        """ iso_path is the path to a  boot.iso
+            initrd_path overrides mounting the iso for access to
+                        initrd and vmlinuz.
+        """
         self.label = None
         self.iso_path = iso_path
-        self.mount_dir = tempfile.mkdtemp()
-        if not self.mount_dir:
-            raise Exception("Error creating temporary directory")
+        self.initrd_path = initrd_path
 
-        execWithRedirect("mount", ["-o", "loop", self.iso_path, self.mount_dir])
+        if not self.initrd_path:
+            self.mount_dir = tempfile.mkdtemp()
+            if not self.mount_dir:
+                raise Exception("Error creating temporary directory")
+
+            execWithRedirect("mount", ["-o", "loop", self.iso_path, self.mount_dir])
+        else:
+            self.mount_dir = self.initrd_path
 
         self.kernel = self.mount_dir+"/isolinux/vmlinuz"
         self.initrd = self.mount_dir+"/isolinux/initrd.img"
@@ -200,8 +212,9 @@ class IsoMountpoint(object):
         self.get_iso_label()
 
     def umount( self ):
-        execWithRedirect("umount", [self.mount_dir])
-        os.rmdir( self.mount_dir )
+        if not self.initrd_path:
+            execWithRedirect("umount", [self.mount_dir])
+            os.rmdir( self.mount_dir )
 
     def get_iso_label( self ):
         """
@@ -580,6 +593,10 @@ if __name__ == '__main__':
     parser.add_argument( "--armplatform",
                          help="the platform to use when creating images for ARM, "
                               "i.e., highbank, mvebu, omap, tegra, etc." )
+    parser.add_argument( "--location", default=None, type=os.path.abspath,
+                         help="location of iso directory tree with initrd.img "
+                              "and vmlinuz. Used to run virt-install with a "
+                              "newer initrd than the iso." )
 
     parser.add_argument( "--logfile", default="./livemedia.log",
                          type=os.path.abspath,
@@ -771,7 +788,7 @@ if __name__ == '__main__':
                 loop_detach(get_loop_name(disk_img))
 
         else:
-            iso_mount = IsoMountpoint( opts.iso )
+            iso_mount = IsoMountpoint( opts.iso, opts.location )
             log_monitor = LogMonitor( install_log )
 
             kernel_args = ""
