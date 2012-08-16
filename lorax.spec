@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.13
+Version:        18.14
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -81,6 +81,10 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Thu Aug 16 2012 Brian C. Lane <bcl@redhat.com> 18.14-1
+- remove cleanup of some essential libraries (bcl@redhat.com)
+- Mask the tmp.mount service to avoid tmpfs (jkeating@redhat.com)
+
 * Wed Aug 15 2012 Brian C. Lane <bcl@redhat.com> 18.13-1
 - Add a command line option to override the ARM platform. (dmarlin@redhat.com)
 - Don't remove krb5-libs (#848227) (mgracik@redhat.com)
