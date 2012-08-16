@@ -58,7 +58,7 @@ removefrom isomd5sum --allbut /usr/bin/checkisomd5
 ## various other things we remove to save space
 removepkg avahi-autoipd coreutils-libs curl dash db4-utils diffutils file
 removepkg fipscheck genisoimage gnome-python2 info iptables
-removepkg jasper-libs libIDL libXt libXxf86misc libXxf86vm
+removepkg jasper-libs libXt libXxf86misc
 removepkg libasyncns libdaemon libhbaapi libhbalinux
 removepkg libmcpp libpcap libtiff libutempter linux-atm-libs
 removepkg lvm2-libs m4 mailx makebootfat mcpp
@@ -203,7 +203,7 @@ removefrom glibc /${libdir}/libnss_hesiod* /${libdir}/libnss_nis*
 removefrom glibc /${libdir}/libthread* /${libdir}/rtkaio* /sbin/*
 removefrom glibc /usr/libexec/* /usr/sbin/*
 removefrom glibc-common /etc/* /usr/bin/catchsegv /usr/bin/gencat
-removefrom glibc-common /usr/bin/getconf /usr/bin/getent /usr/bin/ldd
+removefrom glibc-common /usr/bin/getconf /usr/bin/getent
 removefrom glibc-common /usr/bin/locale /usr/bin/rpcgen /usr/bin/sprof
 removefrom glibc-common /usr/bin/tzselect /usr/bin/localedef
 removefrom glibc-common /usr/libexec/* /usr/sbin/*
@@ -255,7 +255,6 @@ removefrom libstdc++ /usr/share/*
 removefrom libthai /usr/share/libthai/*
 removefrom libuser /usr/bin/* /usr/sbin/* /usr/share/locale/*
 removefrom libvorbis /usr/${libdir}/libvorbisenc.*
-removefrom libxcb /usr/${libdir}/libxcb-*
 removefrom libxml2 /usr/bin/*
 removefrom libxml2-python /usr/${libdir}/python?.?/site-packages/libxml2mod.a
 removefrom libxml2-python /usr/${libdir}/python?.?/site-packages/libxml2mod.la
@@ -299,7 +298,6 @@ removefrom openssh-server /etc/ssh/* /usr/${libdir}/* /usr/libexec/*
 removefrom openssl /etc/pki/* /usr/bin/* /usr/${libdir}/openssl/*
 removefrom pam /usr/sbin/* /usr/share/locale/*
 removefrom pciutils /usr/sbin/*
-removefrom pcre /usr/bin/* /usr/${libdir}/*
 removefrom policycoreutils /etc/* /usr/bin/* /usr/share/locale/*
 removefrom polkit /usr/bin/*
 removefrom polkit-desktop-policy /var/lib/*
