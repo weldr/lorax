@@ -128,7 +128,12 @@ def umount(mnt,  lazy=False, maxretry=3, retrysleep=1.0):
     while maxretry > 0:
         try:
             rv = execWithRedirect(umount[0], umount[1:])
-        except CalledProcessError:
+        except Exception:
+            # execWithRedirect will log what the errors was, so we can just
+            # ignore it and retry.
+            pass
+
+        if rv != 0:
             count += 1
             if count == maxretry:
                 raise
