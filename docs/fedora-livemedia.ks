@@ -50,7 +50,7 @@ cat > /etc/rc.d/init.d/livesys << EOF
 
 . /etc/init.d/functions
 
-if ! strstr "\`cat /proc/cmdline\`" liveimg || [ "\$1" != "start" ]; then
+if ! strstr "\`cat /proc/cmdline\`" rd.live.image || [ "\$1" != "start" ]; then
     exit 0
 fi
 
@@ -238,7 +238,7 @@ cat > /etc/rc.d/init.d/livesys-late << EOF
 
 . /etc/init.d/functions
 
-if ! strstr "\`cat /proc/cmdline\`" liveimg || [ "\$1" != "start" ] || [ -e /.liveimg-late-configured ] ; then
+if ! strstr "\`cat /proc/cmdline\`" rd.live.image || [ "\$1" != "start" ] || [ -e /.liveimg-late-configured ] ; then
     exit 0
 fi
 
