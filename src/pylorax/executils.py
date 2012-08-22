@@ -407,4 +407,15 @@ def execConsole():
     except OSError as e:
         raise RuntimeError, "Error running /bin/sh: " + e.strerror
 
+def runcmd(cmd, **kwargs):
+    """ run execWithRedirect with raise_err=True
+    """
+    kwargs["raise_err"] = True
+    return execWithRedirect(cmd[0], cmd[1:], **kwargs)
+
+def runcmd_output(cmd, **kwargs):
+    """ run execWithCapture with raise_err=True
+    """
+    kwargs["raise_err"] = True
+    return execWithCapture(cmd[0], cmd[1:], **kwargs)
 

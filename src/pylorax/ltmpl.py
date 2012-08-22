@@ -30,7 +30,7 @@ from subprocess import CalledProcessError
 from sysutils import joinpaths, cpfile, mvfile, replace, remove
 from yumhelper import * # Lorax*Callback classes
 from base import DataHolder
-from pylorax.executils import execWithRedirect, execWithCapture
+from pylorax.executils import runcmd, runcmd_output
 
 from mako.lookup import TemplateLookup
 from mako.exceptions import text_error_template
@@ -372,7 +372,7 @@ class LoraxTemplateRunner(object):
         cmd = ["gconftool-2", "--direct",
                     "--config-source=xml:readwrite:%s" % outfile,
                     "--set", "--type", keytype, path, value]
-        execWithRedirect(cmd[0], cmd[1:], raise_err=True)
+        runcmd(cmd)
 
     def log(self, msg):
         '''
@@ -414,7 +414,7 @@ class LoraxTemplateRunner(object):
             cmd = cmd[1:]
 
         try:
-            output = execWithCapture(cmd[0], cmd[1:], cwd=cwd, raise_err=True)
+            output = runcmd_output(cmd, cwd=cwd)
             if output:
                 logger.debug('command output:\n%s', output)
             logger.debug("command finished successfully")
@@ -552,6 +552,6 @@ class LoraxTemplateRunner(object):
         # XXX for some reason 'systemctl enable/disable' always returns 1
         try:
             cmd = systemctl + units
-            execWithRedirect(cmd[0], cmd[1:], raise_err=True)
+            runcmd(cmd)
         except CalledProcessError:
             pass

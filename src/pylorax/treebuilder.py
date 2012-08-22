@@ -28,7 +28,7 @@ from shutil import copytree, copy2
 from base import DataHolder
 from ltmpl import LoraxTemplateRunner
 import imgutils
-from pylorax.executils import execWithRedirect, execWithCapture
+from pylorax.executils import runcmd, runcmd_output
 
 templatemap = {
     'i386':    'x86.tmpl',
@@ -45,7 +45,7 @@ templatemap = {
 
 def generate_module_info(moddir, outfile=None):
     def module_desc(mod):
-        output = execWithCapture("modinfo", ["-F", "description", mod], raise_err=True)
+        output = runcmd_output(["modinfo", "-F", "description", mod])
         return output.strip()
     def read_module_set(name):
         return set(l.strip() for l in open(joinpaths(moddir,name)) if ".ko" in l)
@@ -149,7 +149,7 @@ class RuntimeBuilder(object):
         for kver in os.listdir(moddir):
             ksyms = joinpaths(root, "boot/System.map-%s" % kver)
             logger.info("doing depmod and module-info for %s", kver)
-            execWithRedirect("depmod", ["-a", "-F", ksyms, "-b", root, kver], raise_err=True)
+            runcmd(["depmod", "-a", "-F", ksyms, "-b", root, kver])
             generate_module_info(moddir+kver, outfile=moddir+"module-info")
 
     def create_runtime(self, outfile="/tmp/squashfs.img", compression="xz", compressargs=[], size=1):
@@ -167,7 +167,7 @@ class RuntimeBuilder(object):
         with imgutils.LoopDev( joinpaths(workdir, "LiveOS/rootfs.img") ) as loopdev:
             with imgutils.Mount(loopdev) as mnt:
                 cmd = [ "setfiles", "-e", "/proc", "-e", "/sys", "-e", "/dev", "-e", "/selinux", "/etc/selinux/targeted/contexts/files/file_contexts", "/"]
-                execWithRedirect(cmd[0], cmd[1:], root=mnt, raise_err=True)
+                runcmd(cmd, root=mnt)
 
         # squash the live rootfs and clean up workdir
         imgutils.mksquashfs(workdir, outfile, compression, compressargs)
@@ -208,7 +208,7 @@ class TreeBuilder(object):
                 initrd = joinpaths(self.vars.inroot, kernel.initrd.path)
                 os.rename(initrd, initrd + backup)
             cmd = dracut + [kernel.initrd.path, kernel.version]
-            execWithRedirect(cmd[0], cmd[1:], root=self.vars.inroot, raise_err=True)
+            runcmd(cmd, root=self.vars.inroot)
         os.unlink(joinpaths(self.vars.inroot,"/proc/modules"))
 
     def build(self):
@@ -221,7 +221,7 @@ class TreeBuilder(object):
         for section, data in self.treeinfo_data.items():
             if 'boot.iso' in data:
                 iso = joinpaths(self.vars.outroot, data['boot.iso'])
-                execWithRedirect("implantisomd5", [iso], raise_err=True)
+                runcmd(["implantisomd5", iso])
 
     @property
     def dracut_hooks_path(self):

@@ -32,7 +32,7 @@ import glob
 import shutil
 import subprocess
 
-from pylorax.executils import execWithRedirect
+from pylorax.executils import runcmd
 
 def joinpaths(*args, **kwargs):
     path = os.path.sep.join(args)
@@ -106,5 +106,5 @@ def remove(target):
         os.unlink(target)
 
 def linktree(src, dst):
-    execWithRedirect("/bin/cp", ["-al", src, dst], raise_err=True)
+    runcmd(["/bin/cp", "-al", src, dst])
 

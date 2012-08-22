@@ -47,7 +47,7 @@ from treebuilder import RuntimeBuilder, TreeBuilder
 from buildstamp import BuildStamp
 from treeinfo import TreeInfo
 from discinfo import DiscInfo
-from executils import execWithRedirect
+from executils import runcmd
 
 class ArchData(DataHolder):
     lib64_arches = ("x86_64", "ppc64", "sparc64", "s390x", "ia64")
@@ -141,7 +141,7 @@ class Lorax(BaseLoraxClass):
 
         if domacboot:
             try:
-                execWithRedirect("rpm", ["-q", "hfsplus-tools"], raise_err=True)
+                runcmd(["rpm", "-q", "hfsplus-tools"])
             except CalledProcessError:
                 logger.critical("you need to install hfsplus-tools to create mac images")
                 sys.exit(1)

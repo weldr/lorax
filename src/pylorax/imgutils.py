@@ -29,6 +29,7 @@ from time import sleep
 
 from pylorax.sysutils import cpfile
 from pylorax.executils import execWithRedirect, execWithCapture
+from pylorax.executils import runcmd, runcmd_output
 
 ######## Functions for making container images (cpio, squashfs) ##########
 
@@ -69,7 +70,7 @@ def mksparse(outfile, size):
 def loop_attach(outfile):
     '''Attach a loop device to the given file. Return the loop device name.
     Raises CalledProcessError if losetup fails.'''
-    dev = execWithCapture("losetup", ["--find", "--show", outfile], raise_err=True)
+    dev = runcmd_output(["losetup", "--find", "--show", outfile])
     return dev.strip()
 
 def loop_detach(loopdev):
@@ -79,7 +80,7 @@ def loop_detach(loopdev):
 def get_loop_name(path):
     '''Return the loop device associated with the path.
     Raises RuntimeError if more than one loop is associated'''
-    buf = execWithCapture("losetup", ["-j", path], raise_err=True)
+    buf = runcmd_output(["losetup", "-j", path])
     if len(buf.splitlines()) > 1:
         # there should never be more than one loop device listed
         raise RuntimeError("multiple loops associated with %s" % path)
@@ -92,8 +93,8 @@ def dm_attach(dev, size, name=None):
     raises CalledProcessError if dmsetup fails.'''
     if name is None:
         name = tempfile.mktemp(prefix="lorax.imgutils.", dir="")
-    execWithRedirect("dmsetup", ["create", name, "--table",
-                                 "0 %i linear %s 0" % (size/512, dev)], raise_err=True)
+    runcmd(["dmsetup", "create", name, "--table",
+                       "0 %i linear %s 0" % (size/512, dev)])
     return name
 
 def dm_detach(dev):
@@ -114,7 +115,7 @@ def mount(dev, opts="", mnt=None):
     if opts:
         mount += ["-o", opts]
     mount += [dev, mnt]
-    execWithRedirect(mount[0], mount[1:], raise_err=True)
+    runcmd(mount)
     return mnt
 
 def umount(mnt,  lazy=False, maxretry=3, retrysleep=1.0):
@@ -127,7 +128,7 @@ def umount(mnt,  lazy=False, maxretry=3, retrysleep=1.0):
     count = 0
     while maxretry > 0:
         try:
-            rv = execWithRedirect(umount[0], umount[1:], raise_err=True)
+            rv = runcmd(umount)
         except CalledProcessError:
             count += 1
             if count == maxretry:
@@ -153,7 +154,7 @@ def copytree(src, dest, preserve=True):
     logger.debug("copytree %s %s", src, dest)
     cp = ["cp", "-a"] if preserve else ["cp", "-R", "-L"]
     cp += [".", os.path.abspath(dest)]
-    execWithRedirect(cp[0], cp[1:], cwd=src, raise_err=True)
+    runcmd(cp, cwd=src)
 
 def do_grafts(grafts, dest, preserve=True):
     '''Copy each of the items listed in grafts into dest.
@@ -252,7 +253,7 @@ class PartitionMount(object):
         # kpartx -p p -v -a /tmp/diskV2DiCW.im
         # add map loop2p1 (253:2): 0 3481600 linear /dev/loop2 2048
         # add map loop2p2 (253:3): 0 614400 linear /dev/loop2 3483648
-        kpartx_output = execWithCapture("kpartx", ["-v", "-p", "p", "-a", self.disk_img], raise_err=True)
+        kpartx_output = runcmd_output(["kpartx", "-v", "-p", "p", "-a", self.disk_img])
         logger.debug(kpartx_output)
 
         # list of (deviceName, sizeInBytes)
@@ -306,7 +307,7 @@ def mkfsimage(fstype, rootdir, outfile, size=None, mkfsargs=[], mountargs="", gr
         size = estimate_size(rootdir, graft, fstype)
     with LoopDev(outfile, size) as loopdev:
         try:
-            execWithRedirect("mkfs.%s" % fstype, mkfsargs + [loopdev], raise_err=True)
+            runcmd(["mkfs.%s" % fstype] + mkfsargs + [loopdev])
         except CalledProcessError as e:
             logger.error("mkfs exited with a non-zero return code: %d" % e.returncode)
             logger.error(e.output)
