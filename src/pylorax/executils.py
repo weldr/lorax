@@ -34,9 +34,10 @@ class ExecProduct(object):
         self.stdout = stdout
         self.stderr = stderr
 
-#Python reimplementation of the shell tee process, so we can
-#feed the pipe output into two places at the same time
 class tee(threading.Thread):
+    """ Python reimplementation of the shell tee process, so we can
+        feed the pipe output into two places at the same time
+    """
     def __init__(self, inputdesc, outputdesc, logmethod, command):
         threading.Thread.__init__(self)
         self.inputdesc = os.fdopen(inputdesc, "r")
@@ -63,18 +64,21 @@ class tee(threading.Thread):
         self.running = False
         return self
 
-## Run an external program and redirect the output to a file.
-# @param command The command to run.
-# @param argv A list of arguments.
-# @param stdin The file descriptor to read stdin from.
-# @param stdout The file descriptor to redirect stdout to.
-# @param stderr The file descriptor to redirect stderr to.
-# @param root The directory to chroot to before running command.
-# @param preexec_fn function to pass to Popen
-# @param cwd working directory to pass to Popen
-# @return The return code of command.
 def execWithRedirect(command, argv, stdin = None, stdout = None,
-                     stderr = None, root = None, preexec_fn=None, cwd=None):
+                     stderr = None, root = None, preexec_fn=None, cwd=None,
+                     raise_err=False):
+    """ Run an external program and redirect the output to a file.
+        @param command The command to run.
+        @param argv A list of arguments.
+        @param stdin The file descriptor to read stdin from.
+        @param stdout The file descriptor to redirect stdout to.
+        @param stderr The file descriptor to redirect stderr to.
+        @param root The directory to chroot to before running command.
+        @param preexec_fn function to pass to Popen
+        @param cwd working directory to pass to Popen
+        @param raise_err raise CalledProcessError when the returncode is not 0
+        @return The return code of command.
+    """
     def chroot ():
         os.chroot(root)
 
@@ -171,18 +175,24 @@ def execWithRedirect(command, argv, stdin = None, stdout = None,
         stderrclose()
         raise RuntimeError, errstr
 
+    if ret and raise_err:
+        raise subprocess.CalledProcessError(ret, [command]+argv)
+
     return ret
 
-## Run an external program and capture standard out.
-# @param command The command to run.
-# @param argv A list of arguments.
-# @param stdin The file descriptor to read stdin from.
-# @param stderr The file descriptor to redirect stderr to.
-# @param root The directory to chroot to before running command.
-# @param preexec_fn function to pass to Popen
-# @param cwd working directory to pass to Popen
-# @return The output of command from stdout.
-def execWithCapture(command, argv, stdin = None, stderr = None, root=None, preexec_fn=None, cwd=None):
+def execWithCapture(command, argv, stdin = None, stderr = None, root=None,
+                    preexec_fn=None, cwd=None, raise_err=False):
+    """ Run an external program and capture standard out.
+        @param command The command to run.
+        @param argv A list of arguments.
+        @param stdin The file descriptor to read stdin from.
+        @param stderr The file descriptor to redirect stderr to.
+        @param root The directory to chroot to before running command.
+        @param preexec_fn function to pass to Popen
+        @param cwd working directory to pass to Popen
+        @param raise_err raise CalledProcessError when the returncode is not 0
+        @return The output of command from stdout.
+    """
     def chroot():
         os.chroot(root)
 
@@ -249,6 +259,9 @@ def execWithCapture(command, argv, stdin = None, stderr = None, root=None, preex
         raise RuntimeError, "Error running " + command + ": " + e.strerror
 
     closefds()
+    if proc.returncode and raise_err:
+        raise subprocess.CalledProcessError(proc.returncode, [command]+argv)
+
     return rc
 
 def execWithCallback(command, argv, stdin = None, stdout = None,
