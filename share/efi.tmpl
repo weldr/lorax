@@ -40,11 +40,9 @@ ${make_efiboot("images/efiboot.img")}
     replace @SPLASHPATH@ /EFI/BOOT/splash.xpm.gz ${eficonf}
     replace @ISOLABEL@ '${isolabel}' ${eficonf}
     %if disk:
-        ## FIXME: using root= causes problems with product.img (see bug 811979)
-        replace @ROOT@ root=live:LABEL=ANACONDA ${eficonf}
+        replace @ROOT@ inst.stage2=hd:LABEL=ANACONDA ${eficonf}
     %else:
-        ## anaconda can find CDROM devices automatically so no root= is needed
-        replace @ROOT@ '' ${eficonf}
+        replace @ROOT@ 'inst.stage2=hd:LABEL=${isolabel|udev}' ${eficonf}
     %endif
     %if efiarch == 'IA32':
         copy ${eficonf} ${EFIBOOTDIR}/BOOT.conf
