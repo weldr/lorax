@@ -141,7 +141,7 @@ class Lorax(BaseLoraxClass):
 
         if domacboot:
             try:
-                execWithRedirect("rpm", ["-q", "hfsplus-tools"])
+                execWithRedirect("rpm", ["-q", "hfsplus-tools"], raise_err=True)
             except CalledProcessError:
                 logger.critical("you need to install hfsplus-tools to create mac images")
                 sys.exit(1)

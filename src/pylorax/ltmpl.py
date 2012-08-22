@@ -372,7 +372,7 @@ class LoraxTemplateRunner(object):
         cmd = ["gconftool-2", "--direct",
                     "--config-source=xml:readwrite:%s" % outfile,
                     "--set", "--type", keytype, path, value]
-        execWithRedirect(cmd[0], cmd[1:])
+        execWithRedirect(cmd[0], cmd[1:], raise_err=True)
 
     def log(self, msg):
         '''
@@ -414,7 +414,7 @@ class LoraxTemplateRunner(object):
             cmd = cmd[1:]
 
         try:
-            output = execWithCapture(cmd[0], cmd[1:], cwd=cwd)
+            output = execWithCapture(cmd[0], cmd[1:], cwd=cwd, raise_err=True)
             if output:
                 logger.debug('command output:\n%s', output)
             logger.debug("command finished successfully")
@@ -552,6 +552,6 @@ class LoraxTemplateRunner(object):
         # XXX for some reason 'systemctl enable/disable' always returns 1
         try:
             cmd = systemctl + units
-            execWithRedirect(cmd[0], cmd[1:])
+            execWithRedirect(cmd[0], cmd[1:], raise_err=True)
         except CalledProcessError:
             pass

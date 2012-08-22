@@ -69,7 +69,7 @@ def mksparse(outfile, size):
 def loop_attach(outfile):
     '''Attach a loop device to the given file. Return the loop device name.
     Raises CalledProcessError if losetup fails.'''
-    dev = execWithCapture("losetup", ["--find", "--show", outfile])
+    dev = execWithCapture("losetup", ["--find", "--show", outfile], raise_err=True)
     return dev.strip()
 
 def loop_detach(loopdev):
@@ -79,7 +79,7 @@ def loop_detach(loopdev):
 def get_loop_name(path):
     '''Return the loop device associated with the path.
     Raises RuntimeError if more than one loop is associated'''
-    buf = execWithCapture("losetup", ["-j", path])
+    buf = execWithCapture("losetup", ["-j", path], raise_err=True)
     if len(buf.splitlines()) > 1:
         # there should never be more than one loop device listed
         raise RuntimeError("multiple loops associated with %s" % path)
@@ -93,7 +93,7 @@ def dm_attach(dev, size, name=None):
     if name is None:
         name = tempfile.mktemp(prefix="lorax.imgutils.", dir="")
     execWithRedirect("dmsetup", ["create", name, "--table",
-                                 "0 %i linear %s 0" % (size/512, dev)])
+                                 "0 %i linear %s 0" % (size/512, dev)], raise_err=True)
     return name
 
 def dm_detach(dev):
@@ -114,7 +114,7 @@ def mount(dev, opts="", mnt=None):
     if opts:
         mount += ["-o", opts]
     mount += [dev, mnt]
-    execWithRedirect(mount[0], mount[1:])
+    execWithRedirect(mount[0], mount[1:], raise_err=True)
     return mnt
 
 def umount(mnt,  lazy=False, maxretry=3, retrysleep=1.0):
@@ -127,18 +127,13 @@ def umount(mnt,  lazy=False, maxretry=3, retrysleep=1.0):
     count = 0
     while maxretry > 0:
         try:
-            rv = execWithRedirect(umount[0], umount[1:])
-        except Exception:
-            # execWithRedirect will log what the errors was, so we can just
-            # ignore it and retry.
-            pass
-
-        if rv != 0:
+            rv = execWithRedirect(umount[0], umount[1:], raise_err=True)
+        except CalledProcessError:
             count += 1
             if count == maxretry:
                 raise
-            logger.warn("failed to unmount %s. retrying (%d/%d)...",
-                         mnt, count, maxretry)
+            logger.warn("failed to unmount %s (%d). retrying (%d/%d)...",
+                         mnt, rv, count, maxretry)
             if logger.getEffectiveLevel() <= logging.DEBUG:
                 fuser = execWithCapture("fuser", ["-vm", mnt])
                 logger.debug("fuser -vm:\n%s\n", fuser)
@@ -153,11 +148,12 @@ def umount(mnt,  lazy=False, maxretry=3, retrysleep=1.0):
 def copytree(src, dest, preserve=True):
     '''Copy a tree of files using cp -a, thus preserving modes, timestamps,
     links, acls, sparse files, xattrs, selinux contexts, etc.
-    If preserve is False, uses cp -R (useful for modeless filesystems)'''
+    If preserve is False, uses cp -R (useful for modeless filesystems)
+    raises CalledProcessError if copy fails.'''
     logger.debug("copytree %s %s", src, dest)
     cp = ["cp", "-a"] if preserve else ["cp", "-R", "-L"]
     cp += [".", os.path.abspath(dest)]
-    execWithRedirect(cp[0], cp[1:], cwd=src)
+    execWithRedirect(cp[0], cp[1:], cwd=src, raise_err=True)
 
 def do_grafts(grafts, dest, preserve=True):
     '''Copy each of the items listed in grafts into dest.
@@ -256,7 +252,7 @@ class PartitionMount(object):
         # kpartx -p p -v -a /tmp/diskV2DiCW.im
         # add map loop2p1 (253:2): 0 3481600 linear /dev/loop2 2048
         # add map loop2p2 (253:3): 0 614400 linear /dev/loop2 3483648
-        kpartx_output = execWithCapture("kpartx", ["-v", "-p", "p", "-a", self.disk_img])
+        kpartx_output = execWithCapture("kpartx", ["-v", "-p", "p", "-a", self.disk_img], raise_err=True)
         logger.debug(kpartx_output)
 
         # list of (deviceName, sizeInBytes)
@@ -310,7 +306,7 @@ def mkfsimage(fstype, rootdir, outfile, size=None, mkfsargs=[], mountargs="", gr
         size = estimate_size(rootdir, graft, fstype)
     with LoopDev(outfile, size) as loopdev:
         try:
-            execWithRedirect("mkfs.%s" % fstype, mkfsargs + [loopdev])
+            execWithRedirect("mkfs.%s" % fstype, mkfsargs + [loopdev], raise_err=True)
         except CalledProcessError as e:
             logger.error("mkfs exited with a non-zero return code: %d" % e.returncode)
             logger.error(e.output)

@@ -106,5 +106,5 @@ def remove(target):
         os.unlink(target)
 
 def linktree(src, dst):
-    execWithRedirect("/bin/cp", ["-al", src, dst])
+    execWithRedirect("/bin/cp", ["-al", src, dst], raise_err=True)
 
