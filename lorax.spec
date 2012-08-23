@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.14
+Version:        18.15
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -81,6 +81,17 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Thu Aug 23 2012 Brian C. Lane <bcl@redhat.com> 18.15-1
+- change grub-cd.efi to gcdx64.efi (#851326) (bcl@redhat.com)
+- use wildcard for product path to efi binaries (#851196) (bcl@redhat.com)
+- Add yum-plugin-fastestmirror (#849797) (bcl@redhat.com)
+- livemedia-creator: update templates for grub2-efi support (bcl@redhat.com)
+- imgutils: fix umount retry handling (bcl@redhat.com)
+- livemedia-creator: use stage2 instead of root (bcl@redhat.com)
+- livemedia-creator: add location option (bcl@redhat.com)
+- nm-connection-editor was moved to separate package (#849056)
+  (rvykydal@redhat.com)
+
 * Thu Aug 16 2012 Brian C. Lane <bcl@redhat.com> 18.14-1
 - remove cleanup of some essential libraries (bcl@redhat.com)
 - Mask the tmp.mount service to avoid tmpfs (jkeating@redhat.com)
