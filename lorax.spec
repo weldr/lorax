@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.15
+Version:        18.16
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -81,6 +81,9 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Thu Aug 30 2012 Brian C. Lane <bcl@redhat.com> 18.16-1
+- Revert "Mask the tmp.mount service to avoid tmpfs" (jkeating@redhat.com)
+
 * Thu Aug 23 2012 Brian C. Lane <bcl@redhat.com> 18.15-1
 - change grub-cd.efi to gcdx64.efi (#851326) (bcl@redhat.com)
 - use wildcard for product path to efi binaries (#851196) (bcl@redhat.com)
