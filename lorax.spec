@@ -20,6 +20,7 @@ Requires:       e2fsprogs
 Requires:       findutils
 Requires:       gawk
 Requires:       genisoimage
+Requires:       glib2
 Requires:       glibc
 Requires:       glibc-common
 Requires:       gzip
