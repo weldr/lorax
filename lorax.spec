@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.16
+Version:        18.17
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -82,6 +82,10 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Fri Aug 31 2012 Brian C. Lane <bcl@redhat.com> 18.17-1
+- use inst.stage2=hd:LABEL (#848641) (bcl@redhat.com)
+- Disable the maximize/unmaximize key bindings (#853410). (clumens@redhat.com)
+
 * Thu Aug 30 2012 Brian C. Lane <bcl@redhat.com> 18.16-1
 - Revert "Mask the tmp.mount service to avoid tmpfs" (jkeating@redhat.com)
 
