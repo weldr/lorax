@@ -40,10 +40,9 @@ ${make_efiboot("images/efiboot.img")}
     replace @SPLASHPATH@ /EFI/BOOT/splash.xpm.gz ${eficonf}
     replace @ISOLABEL@ '${isolabel}' ${eficonf}
     %if disk:
-        ## FIXME: using root= causes problems with product.img (see bug 811979)
-        replace @ROOT@ inst.stage2:LABEL=ANACONDA ${eficonf}
+        replace @ROOT@ root=live:LABEL=ANACONDA ${eficonf}
     %else:
-        replace @ROOT@ 'inst.stage2=hd:LABEL=${isolabel|udev}' ${eficonf}
+        replace @ROOT@ 'root=live:CDLABEL=${isolabel|udev}' ${eficonf}
     %endif
     %if efiarch == 'IA32':
         copy ${eficonf} ${EFIBOOTDIR}/BOOT.conf

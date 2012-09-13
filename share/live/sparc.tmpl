@@ -17,7 +17,7 @@ install ${configdir}/boot.msg ${BOOTDIR}
 ## configure bootloader
 replace @VERSION@ ${product.version} ${BOOTDIR}/boot.msg
 replace @PRODUCT@ '${product.name}' ${BOOTDIR}/boot.msg
-replace @ROOT@ 'inst.stage2=hd:LABEL=${isolabel|udev}' ${BOOTDIR}/silo.conf
+replace @ROOT@ 'root=live:CDLABEL=${isolabel|udev}' ${BOOTDIR}/silo.conf
 
 ## install kernels
 ## FIXME: this will overwrite if there are multiple sparc kernels
