@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        17.26
+Version:        17.27
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -80,6 +80,10 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Thu Sep 13 2012 Brian C. Lane <bcl@redhat.com> 17.27-1
+- Do not remove shared-mime-info (#825960)
+- livemedia-creator: add some error checking (bcl@redhat.com)
+
 * Mon Jun 11 2012 Brian C. Lane <bcl@redhat.com> 17.26-1
 - livemedia-creator: Hook up arch option (bcl@redhat.com)
 - livemedia-creator: Add appliance creation (bcl@redhat.com)
