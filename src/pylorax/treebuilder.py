@@ -127,13 +127,7 @@ class RuntimeBuilder(object):
 
     def cleanup(self):
         '''Remove unneeded packages and files with runtime-cleanup.tmpl'''
-        # get removelocales list first
-        localedir = joinpaths(self.vars.root, "usr/share/locale")
-        langtable = joinpaths(self.vars.root, "usr/share/anaconda/lang-table")
-        locales = set([d for d in os.listdir(localedir) if isdir(joinpaths(localedir,d))])
-        keeplocales = [line.split()[1] for line in open(langtable)]
-        removelocales = locales.difference(keeplocales)
-        self._runner.run("runtime-cleanup.tmpl", removelocales=removelocales)
+        self._runner.run("runtime-cleanup.tmpl")
 
     def writepkgsizes(self, pkgsizefile):
         '''debugging data: write a big list of pkg sizes'''

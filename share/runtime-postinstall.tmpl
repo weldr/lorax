@@ -38,7 +38,6 @@ systemctl mask fedora-configure.service fedora-loadmodules.service \
 ## install some basic configuration files
 append etc/resolv.conf ""
 append etc/fstab ""
-copy usr/share/anaconda/lang-table etc
 install ${configdir}/i18n etc/sysconfig
 install ${configdir}/rsyslog.conf etc
 install ${configdir}/bash_history root/.bash_history

@@ -1,18 +1,8 @@
 ## lorax template file: cleanup for the ramdisk (runtime image)
-<%page args="removelocales, libdir, product, root"/>
+<%page args="libdir, product, root"/>
 
-## strip unused languages out of the locale-archive
-runcmd localedef --prefix ${root} \
-                 --delete-from-archive ${" ".join(removelocales)}
-move usr/lib/locale/locale-archive usr/lib/locale/locale-archive.tmpl
-runcmd chroot ${root} build-locale-archive
 ## remove the sources
 remove usr/share/i18n
-## remove unused locales
-%for locale in removelocales:
-    remove usr/share/locale/${locale}
-%endfor
-remove usr/share/anaconda/lang-table
 
 ## not required packages installed as dependencies
 ## no perl (it gets pulled in on ppc)
