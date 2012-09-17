@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.18
+Version:        18.19
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -82,6 +82,14 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Mon Sep 17 2012 Brian C. Lane <bcl@redhat.com> 18.19-1
+- There's no lang-table in anaconda anymore (#857925) (mgracik@redhat.com)
+- add convienience functions for running commands (bcl@redhat.com)
+- restore CalledProcessError handling (bcl@redhat.com)
+- add CalledProcessError to execWith* functions (bcl@redhat.com)
+- live uses root not inst.stage2 (bcl@redhat.com)
+- Revert "X needs the DRI drivers" (#855289) (bcl@redhat.com)
+
 * Fri Sep 07 2012 Brian C. Lane <bcl@redhat.com> 18.18-1
 - Keep the dracut-lib.sh around for runtime (#851362) (jkeating@redhat.com)
 - X needs the DRI drivers (#855289) (bcl@redhat.com)
