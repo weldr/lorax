@@ -10,7 +10,6 @@ mkdir ${EFIBOOTDIR}/fonts/
 install boot/efi/EFI/*/shim.efi ${EFIBOOTDIR}/BOOT${efiarch}.efi
 install boot/efi/EFI/*/gcdx64.efi ${EFIBOOTDIR}/grubx64.efi
 install boot/efi/EFI/*/fonts/unicode.pf2 ${EFIBOOTDIR}/fonts/
-install boot/grub/splash.xpm.gz ${EFIBOOTDIR}
 
 ## actually make the EFI images
 ${make_efiboot("images/efiboot.img")}
@@ -37,7 +36,6 @@ ${make_efiboot("images/efiboot.img")}
     replace @KERNELNAME@ vmlinuz ${eficonf}
     replace @KERNELPATH@ /${kdir}/vmlinuz ${eficonf}
     replace @INITRDPATH@ /${kdir}/initrd.img ${eficonf}
-    replace @SPLASHPATH@ /EFI/BOOT/splash.xpm.gz ${eficonf}
     replace @ISOLABEL@ '${isolabel}' ${eficonf}
     %if disk:
         replace @ROOT@ inst.stage2=hd:LABEL=ANACONDA ${eficonf}
