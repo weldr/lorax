@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.19
+Version:        18.20
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -82,6 +82,10 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Wed Sep 19 2012 Brian C. Lane <bcl@redhat.com> 18.20-1
+- Remove grub 0.97 splash (bcl@redhat.com)
+- livemedia-creator: use rd.live.image instead of liveimg (bcl@redhat.com)
+
 * Mon Sep 17 2012 Brian C. Lane <bcl@redhat.com> 18.19-1
 - There's no lang-table in anaconda anymore (#857925) (mgracik@redhat.com)
 - add convienience functions for running commands (bcl@redhat.com)
