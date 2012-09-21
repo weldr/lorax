@@ -133,8 +133,8 @@ def umount(mnt,  lazy=False, maxretry=3, retrysleep=1.0):
             count += 1
             if count == maxretry:
                 raise
-            logger.warn("failed to unmount %s (%d). retrying (%d/%d)...",
-                         mnt, rv, count, maxretry)
+            logger.warn("failed to unmount %s. retrying (%d/%d)...",
+                         mnt, count, maxretry)
             if logger.getEffectiveLevel() <= logging.DEBUG:
                 fuser = execWithCapture("fuser", ["-vm", mnt])
                 logger.debug("fuser -vm:\n%s\n", fuser)
