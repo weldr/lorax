@@ -302,6 +302,7 @@ class LoraxTemplateRunner(object):
           Same as installkernel, but for "initrd".
         '''
         self.install(src, dest)
+        self.chmod(dest, '644')
         self.treeinfo(section, "initrd", dest)
 
     def hardlink(self, src, dest):
