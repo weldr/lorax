@@ -55,7 +55,7 @@ install ${configdir}/pam.sshd etc/pam.d/login
 install ${configdir}/pam.sshd etc/pam.d/remote
 
 ## set up "install" user account
-append etc/passwd "install:x:0:0:root:/root:/sbin/anaconda"
+append etc/passwd "install:x:0:0:root:/root:/usr/libexec/anaconda/run-anaconda"
 append etc/shadow "install::14438:0:99999:7:::"
 ## remove root password
 replace "root:\*:" "root::" etc/shadow
