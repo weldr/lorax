@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.20
+Version:        18.21
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -82,6 +82,14 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Thu Oct 11 2012 Brian C. Lane <bcl@redhat.com> 18.21-1
+- Change the install user's shell for tmux (jkeating@redhat.com)
+- Set permissions on the initrd (#863018) (mgracik@redhat.com)
+- Remove the default word from boot menu (#848676) (mgracik@redhat.com)
+- Disable a whole bunch more keyboard shortcuts (#863823). (clumens@redhat.com)
+- use /var/tmp instead of /tmp (bcl@redhat.com)
+- remove rv from unmount error log (bcl@redhat.com)
+
 * Wed Sep 19 2012 Brian C. Lane <bcl@redhat.com> 18.20-1
 - Remove grub 0.97 splash (bcl@redhat.com)
 - livemedia-creator: use rd.live.image instead of liveimg (bcl@redhat.com)
