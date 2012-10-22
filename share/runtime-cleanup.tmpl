@@ -5,8 +5,10 @@
 remove usr/share/i18n
 
 ## not required packages installed as dependencies
-## no perl (it gets pulled in on ppc)
-removepkg perl*
+## no perl besides s390x
+%if basearch != "s390x":
+    removepkg perl*
+%endif
 ## no sound support, thanks
 removepkg alsa* flac gstreamer-tools libsndfile pulseaudio* sound-theme-freedesktop
 removepkg midisport-firmware
