@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.21
+Version:        18.22
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -82,6 +82,10 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Tue Nov 06 2012 Brian C. Lane <bcl@redhat.com> 18.22-1
+- Install the yum-langpacks plugin (#868869) (jkeating@redhat.com)
+- perl is required by some low-level tools on s390x (#868824) (dan@danny.cz)
+
 * Thu Oct 11 2012 Brian C. Lane <bcl@redhat.com> 18.21-1
 - Change the install user's shell for tmux (jkeating@redhat.com)
 - Set permissions on the initrd (#863018) (mgracik@redhat.com)
