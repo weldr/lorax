@@ -186,10 +186,13 @@ class TreeBuilder(object):
     def kernels(self):
         return findkernels(root=self.vars.inroot)
 
-    def rebuild_initrds(self, add_args=[], backup=""):
+    def rebuild_initrds(self, add_args=[], backup="", prefix=""):
         '''Rebuild all the initrds in the tree. If backup is specified, each
         initrd will be renamed with backup as a suffix before rebuilding.
-        If backup is empty, the existing initrd files will be overwritten.'''
+        If backup is empty, the existing initrd files will be overwritten.
+        If suffix is specified, the existing initrd is untouched and a new
+        image is built with the filename "${prefix}-${kernel.version}.img"
+        '''
         dracut = ["dracut", "--nomdadmconf", "--nolvmconf"] + add_args
         if not backup:
             dracut.append("--force")
@@ -197,11 +200,16 @@ class TreeBuilder(object):
         # Hush some dracut warnings. TODO: bind-mount proc in place?
         open(joinpaths(self.vars.inroot,"/proc/modules"),"w")
         for kernel in self.kernels:
-            logger.info("rebuilding %s", kernel.initrd.path)
+            if prefix:
+                idir = os.path.dirname(kernel.initrd.path)
+                outfile = joinpaths(idir, prefix+'-'+kernel.version+'.img')
+            else:
+                outfile = kernel.initrd.path
+            logger.info("rebuilding %s", outfile)
             if backup:
-                initrd = joinpaths(self.vars.inroot, kernel.initrd.path)
+                initrd = joinpaths(self.vars.inroot, outfile)
                 os.rename(initrd, initrd + backup)
-            cmd = dracut + [kernel.initrd.path, kernel.version]
+            cmd = dracut + [outfile, kernel.version]
             runcmd(cmd, root=self.vars.inroot)
         os.unlink(joinpaths(self.vars.inroot,"/proc/modules"))
 
