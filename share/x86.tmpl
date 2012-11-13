@@ -31,19 +31,27 @@ replace @ROOT@ 'inst.stage2=hd:LABEL=${isolabel|udev}' ${BOOTDIR}/isolinux.cfg
 mkdir ${KERNELDIR}
 %for kernel in kernels:
     %if kernel.flavor:
+        ## i386 PAE
         installkernel images-xen ${kernel.path} ${KERNELDIR}/vmlinuz-${kernel.flavor}
         installinitrd images-xen ${kernel.initrd.path} ${KERNELDIR}/initrd-${kernel.flavor}.img
+        install ${kernel.upgrade.path} ${KERNELDIR}/upgrade-${kernel.flavor}.img
+        treeinfo images-xen upgrade ${KERNELDIR}/upgrade-${kernel.flavor}.img
     %else:
+        ## normal i386, x86_64
         installkernel images-${basearch} ${kernel.path} ${KERNELDIR}/vmlinuz
         installinitrd images-${basearch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
+        install ${kernel.upgrade.path} ${KERNELDIR}/upgrade.img
+        treeinfo images-${basearch} upgrade ${KERNELDIR}/upgrade.img
     %endif
 %endfor
 
 hardlink ${KERNELDIR}/vmlinuz ${BOOTDIR}
 hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
+hardlink ${KERNELDIR}/upgrade.img ${BOOTDIR}
 %if basearch == 'x86_64':
     treeinfo images-xen kernel ${KERNELDIR}/vmlinuz
     treeinfo images-xen initrd ${KERNELDIR}/initrd.img
+    treeinfo images-xen upgrade ${KERNELDIR}/upgrade.img
 %endif
 
 ## WHeeeeeeee, EFI.

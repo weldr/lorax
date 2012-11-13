@@ -32,7 +32,11 @@ mkdir ${KERNELDIR}
         installkernel images-${kernel.flavor}-${basearch} ${kernel.path} ${KERNELDIR}/vmlinuz-${kernel.flavor}
         installinitrd images-${kernel.flavor}-${basearch} ${kernel.initrd.path} ${KERNELDIR}/initrd-${kernel.flavor}.img
 
-        # create U-Boot wrapped images
+        ## install upgrader image
+        install ${kernel.upgrader.img} ${KERNELDIR}/upgrade-${kernel.flavor}.img
+        treeinfo images-${kernel.flavor}-${basearch} upgrade ${KERNELDIR}/upgrade-${kernel.flavor}.img
+
+        ## create U-Boot wrapped images
 
         runcmd mkimage \
              -A arm -O linux -T ramdisk -C none \
@@ -55,7 +59,11 @@ mkdir ${KERNELDIR}
         installkernel images-${basearch} ${kernel.path} ${KERNELDIR}/vmlinuz
         installinitrd images-${basearch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
 
-        # create U-Boot wrapped images
+        ## install upgrader image
+        install ${kernel.upgrader.img} ${KERNELDIR}/upgrade.img
+        treeinfo images-${basearch} upgrade ${KERNELDIR}/upgrade.img
+
+        ## create U-Boot wrapped images
 
         runcmd mkimage \
              -A arm -O linux -T ramdisk -C none \
