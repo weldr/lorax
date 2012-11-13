@@ -47,7 +47,7 @@ from treebuilder import RuntimeBuilder, TreeBuilder
 from buildstamp import BuildStamp
 from treeinfo import TreeInfo
 from discinfo import DiscInfo
-from executils import runcmd
+from executils import runcmd, runcmd_output
 
 class ArchData(DataHolder):
     lib64_arches = ("x86_64", "ppc64", "sparc64", "s390x", "ia64")
@@ -286,6 +286,14 @@ class Lorax(BaseLoraxClass):
         # Build upgrade.img. It'd be nice if these could coexist in the same
         # image, but that would increase the size of the anaconda initramfs,
         # which worries some people (esp. PPC tftpboot). So they're separate.
+        try:
+            # If possible, use the 'fedup' plymouth theme
+            themes = runcmd_output(['plymouth-set-default-theme', '--list'],
+                                   root=installroot)
+            if 'fedup' in themes.splitlines():
+                os.environ['PLYMOUTH_THEME_NAME'] = 'fedup'
+        except RuntimeError:
+            pass
         upgrade_args = dracut_args + ["--add", "system-upgrade"]
         treebuilder.rebuild_initrds(add_args=upgrade_args, prefix="upgrade")
 
