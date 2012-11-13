@@ -266,20 +266,23 @@ def findkernels(root="/", kdir="boot"):
     kre = re.compile(r"vmlinuz-(?P<version>.+?\.(?P<arch>[a-z0-9_]+)"
                      r"(\.(?P<flavor>{0}))?)$".format("|".join(flavors)))
     kernels = []
-    for f in os.listdir(joinpaths(root, kdir)):
+    bootfiles = os.listdir(joinpaths(root, kdir))
+    for f in bootfiles:
         match = kre.match(f)
         if match:
             kernel = DataHolder(path=joinpaths(kdir, f))
             kernel.update(match.groupdict()) # sets version, arch, flavor
             kernels.append(kernel)
 
-    # look for associated initrd/initramfs
+    # look for associated initrd/initramfs/etc.
     for kernel in kernels:
-        # NOTE: if both exist, the last one found will win
-        for imgname in ("initrd", "initramfs"):
-            i = kernel.path.replace("vmlinuz", imgname, 1) + ".img"
-            if os.path.exists(joinpaths(root, i)):
-                kernel.initrd = DataHolder(path=i)
+        for f in bootfiles:
+            if f.endswith('-'+kernel.version+'.img'):
+                imgtype, rest = f.split('-',1)
+                # special backwards-compat case
+                if imgtype == 'initramfs':
+                    imgtype = 'initrd'
+                kernel[imgtype] = DataHolder(path=joinpaths(kdir, f))
 
     return kernels
 
