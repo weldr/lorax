@@ -278,9 +278,16 @@ class Lorax(BaseLoraxClass):
                                   domacboot=domacboot, templatedir=templatedir)
 
         logger.info("rebuilding initramfs images")
-        dracut_args=["--xz", "--add", "anaconda pollcdrom",
-                     "--install", "/.buildstamp"]
-        treebuilder.rebuild_initrds(add_args=dracut_args)
+        dracut_args = ["--xz", "--install", "/.buildstamp"]
+
+        anaconda_args = dracut_args + ["--add", "anaconda pollcdrom"]
+        treebuilder.rebuild_initrds(add_args=anaconda_args)
+
+        # Build upgrade.img. It'd be nice if these could coexist in the same
+        # image, but that would increase the size of the anaconda initramfs,
+        # which worries some people (esp. PPC tftpboot). So they're separate.
+        upgrade_args = dracut_args + ["--add", "system-upgrade"]
+        treebuilder.rebuild_initrds(add_args=upgrade_args, prefix="upgrade")
 
         logger.info("populating output tree and building boot images")
         treebuilder.build()
