@@ -66,8 +66,8 @@ install ${configdir}/magic ${BOOTDIR}
     installkernel images-${kernel.arch} ${kernel.path} ${KERNELDIR}/vmlinuz
     installinitrd images-${kernel.arch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
 
-    ## upgrader image
-    install ${kernel.upgrader.path} ${KERNELDIR}/upgrade.img
+    ## upgrade image
+    install ${kernel.upgrade.path} ${KERNELDIR}/upgrade.img
     treeinfo images-${kernel.arch} upgrade ${KERNELDIR}/upgrade.img
 
     ## install arch-specific bootloader config
