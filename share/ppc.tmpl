@@ -67,7 +67,7 @@ install ${configdir}/magic ${BOOTDIR}
     installinitrd images-${kernel.arch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
 
     ## upgrade image
-    install ${kernel.upgrade.path} ${KERNELDIR}/upgrade.img
+    installinitrd ${kernel.upgrade.path} ${KERNELDIR}/upgrade.img
     treeinfo images-${kernel.arch} upgrade ${KERNELDIR}/upgrade.img
 
     ## install arch-specific bootloader config
