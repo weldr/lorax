@@ -305,6 +305,15 @@ class LoraxTemplateRunner(object):
         self.chmod(dest, '644')
         self.treeinfo(section, "initrd", dest)
 
+    def installupgradeinitrd(self, section, src, dest):
+        '''
+        installupgradeinitrd SECTION SRC DEST
+          Same as installkernel, but for "upgrade".
+        '''
+        self.install(src, dest)
+        self.chmod(dest, '644')
+        self.treeinfo(section, "upgrade", dest)
+
     def hardlink(self, src, dest):
         '''
         hardlink SRC DEST

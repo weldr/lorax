@@ -34,14 +34,12 @@ mkdir ${KERNELDIR}
         ## i386 PAE
         installkernel images-xen ${kernel.path} ${KERNELDIR}/vmlinuz-${kernel.flavor}
         installinitrd images-xen ${kernel.initrd.path} ${KERNELDIR}/initrd-${kernel.flavor}.img
-        installinitrd ${kernel.upgrade.path} ${KERNELDIR}/upgrade-${kernel.flavor}.img
-        treeinfo images-xen upgrade ${KERNELDIR}/upgrade-${kernel.flavor}.img
+        installupgradeinitrd images-xen ${kernel.upgrade.path} ${KERNELDIR}/upgrade-${kernel.flavor}.img
     %else:
         ## normal i386, x86_64
         installkernel images-${basearch} ${kernel.path} ${KERNELDIR}/vmlinuz
         installinitrd images-${basearch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
-        installinitrd ${kernel.upgrade.path} ${KERNELDIR}/upgrade.img
-        treeinfo images-${basearch} upgrade ${KERNELDIR}/upgrade.img
+        installupgradeinitrd images-${basearch} ${kernel.upgrade.path} ${KERNELDIR}/upgrade.img
     %endif
 %endfor
 

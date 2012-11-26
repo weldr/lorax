@@ -33,8 +33,7 @@ mkdir ${KERNELDIR}
         installinitrd images-${kernel.flavor}-${basearch} ${kernel.initrd.path} ${KERNELDIR}/initrd-${kernel.flavor}.img
 
         ## install upgrade image
-        installinitrd ${kernel.upgrade.img} ${KERNELDIR}/upgrade-${kernel.flavor}.img
-        treeinfo images-${kernel.flavor}-${basearch} upgrade ${KERNELDIR}/upgrade-${kernel.flavor}.img
+        installupgradeinitrd images-${kernel.flavor}-${basearch} ${kernel.upgrade.img} ${KERNELDIR}/upgrade-${kernel.flavor}.img
 
         ## create U-Boot wrapped images
 
@@ -60,8 +59,7 @@ mkdir ${KERNELDIR}
         installinitrd images-${basearch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
 
         ## install upgrade image
-        installinitrd ${kernel.upgrade.img} ${KERNELDIR}/upgrade.img
-        treeinfo images-${basearch} upgrade ${KERNELDIR}/upgrade.img
+        installupgradeinitrd images-${basearch} ${kernel.upgrade.img} ${KERNELDIR}/upgrade.img
 
         ## create U-Boot wrapped images
 

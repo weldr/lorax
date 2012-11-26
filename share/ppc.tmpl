@@ -67,8 +67,7 @@ install ${configdir}/magic ${BOOTDIR}
     installinitrd images-${kernel.arch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
 
     ## upgrade image
-    installinitrd ${kernel.upgrade.path} ${KERNELDIR}/upgrade.img
-    treeinfo images-${kernel.arch} upgrade ${KERNELDIR}/upgrade.img
+    installupgradeinitrd images-${kernel.arch} ${kernel.upgrade.path} ${KERNELDIR}/upgrade.img
 
     ## install arch-specific bootloader config
     install ${configdir}/yaboot.conf.in  ${KERNELDIR}/yaboot.conf

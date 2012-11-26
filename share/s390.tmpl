@@ -25,8 +25,7 @@ installkernel images-${basearch} ${kernel.path} ${KERNELDIR}/kernel.img
 installinitrd images-${basearch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
 
 ## upgrader image
-installinitrd ${kernel.upgrade.img} ${KERNELDIR}/upgrade.img
-treeinfo images-${basearch} upgrade ${KERNELDIR}/upgrade.img
+installupgradeinitrd images-${basearch} ${kernel.upgrade.img} ${KERNELDIR}/upgrade.img
 
 ## s390 needs some extra boot config
 createaddrsize ${INITRD_ADDRESS} ${outroot}/${BOOTDIR}/initrd.img ${outroot}/${BOOTDIR}/initrd.addrsize
