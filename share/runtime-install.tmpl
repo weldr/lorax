@@ -12,7 +12,6 @@ installpkg pigz
 
 ## firstaidkit (rescue mode) packages
 installpkg firstaidkit-plugin-{passwd,key-recovery,mdadm-conf}
-installpkg grub2 grub2-tools
 
 ## kernel and firmware
 installpkg kernel
@@ -30,10 +29,10 @@ installpkg kernel
     installpkg kernel-PAE gpart
 %endif
 %if basearch in ("i386", "x86_64"):
-    installpkg shim grub2-efi efibootmgr biosdevname memtest86+
+    installpkg grub2 grub2-tools shim grub2-efi efibootmgr biosdevname memtest86+
 %endif
 %if basearch in ("ppc", "ppc64"):
-    installpkg yaboot fbset hfsutils kernel-bootwrapper ppc64-utils
+    installpkg grub2 grub2-tools yaboot fbset hfsutils kernel-bootwrapper ppc64-utils
 %endif
 %if basearch == "s390x":
     installpkg lsscsi modutils s390utils-base s390utils-cmsfs-fuse
