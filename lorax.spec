@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.22
+Version:        18.23
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -82,6 +82,24 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Wed Dec 05 2012 Brian C. Lane <bcl@redhat.com> 18.23-1
+- remove multipath rules (#880263) (bcl@redhat.com)
+- add installupgradeinitrd function and use it to install the upgrade initrds
+  (dennis@ausil.us)
+- use installinitrd to install the upgrade.img initramfs so that we get correct
+  permissions (dennis@ausil.us)
+- ppc and arm need to use kernel.upgrade not kernel.upgrader (dennis@ausil.us)
+- remove upgrade from the sparc and sysylinux config templates
+  (dennis@ausil.us)
+- Add the 'fedup' plymouth theme if available (wwoods@redhat.com)
+- make templates install upgrade.img (wwoods@redhat.com)
+- build fedup upgrade.img (wwoods@redhat.com)
+- treebuilder: improve findkernels() initrd search (wwoods@redhat.com)
+- treebuilder: add 'prefix' to rebuild_initrds() (wwoods@redhat.com)
+- Add thai-scalable-waree-fonts (#872468) (mgracik@redhat.com)
+- Do not remove the fipscheck package (#882153) (mgracik@redhat.com)
+- Add MokManager.efi to EFI/BOOT (#882101) (mgracik@redhat.com)
+
 * Tue Nov 06 2012 Brian C. Lane <bcl@redhat.com> 18.22-1
 - Install the yum-langpacks plugin (#868869) (jkeating@redhat.com)
 - perl is required by some low-level tools on s390x (#868824) (dan@danny.cz)
