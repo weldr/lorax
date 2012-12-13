@@ -357,7 +357,7 @@ def anaconda_install( disk_img, disk_size, kickstart, repo, args ):
     mksparse( disk_img, disk_size * 1024**3 )
 
     cmd = [ "anaconda", "--image", disk_img, "--kickstart", kickstart,
-            "--script", "--repo", repo_url ]
+            "--cmdline", "--repo", repo_url ]
     cmd += args
 
     return execWithRedirect( cmd[0], cmd[1:] )
@@ -775,12 +775,13 @@ if __name__ == '__main__':
             if not os.path.isdir( log_anaconda ):
                 os.mkdir( log_anaconda )
             for l in ["anaconda.log", "ifcfg.log", "program.log", "storage.log",
-                      "yum.log"]:
+                      "packaging.log", "yum.log"]:
                 if os.path.exists( "/tmp/"+l ):
                     shutil.copy2( "/tmp/"+l, log_anaconda )
                     os.unlink( "/tmp/"+l )
 
             # If anaconda failed the disk image may still be in use by dm
+            execWithRedirect("anaconda-cleanup", [])
             dm_name = os.path.splitext(os.path.basename(disk_img))[0]
             dm_path = "/dev/mapper/"+dm_name
             if os.path.exists(dm_path):
