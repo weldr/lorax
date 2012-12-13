@@ -353,6 +353,14 @@ def anaconda_install( disk_img, disk_size, kickstart, repo, args ):
     repo        URL of repository
     args        Extra args to pass to anaconda --image install
     """
+    import selinux
+
+    # Set selinux to Permissive if it is Enforcing
+    selinux_enforcing = False
+    if selinux.is_selinux_enabled() and selinux.security_getenforce():
+        selinux_enforcing = True
+        selinux.security_setenforce(0)
+
     # Create the sparse image
     mksparse( disk_img, disk_size * 1024**3 )
 
@@ -360,7 +368,11 @@ def anaconda_install( disk_img, disk_size, kickstart, repo, args ):
             "--cmdline", "--repo", repo_url ]
     cmd += args
 
-    return execWithRedirect( cmd[0], cmd[1:] )
+    rc = execWithRedirect( cmd[0], cmd[1:] )
+
+    if selinux_enforcing:
+        selinux.security_setenforce(1)
+    return rc
 
 
 def get_kernels( boot_dir ):
