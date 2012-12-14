@@ -253,7 +253,7 @@ class PartitionMount(object):
         # kpartx -p p -v -a /tmp/diskV2DiCW.im
         # add map loop2p1 (253:2): 0 3481600 linear /dev/loop2 2048
         # add map loop2p2 (253:3): 0 614400 linear /dev/loop2 3483648
-        kpartx_output = runcmd_output(["kpartx", "-v", "-p", "p", "-a", self.disk_img])
+        kpartx_output = runcmd_output(["kpartx", "-v", "-a", "-s", self.disk_img])
         logger.debug(kpartx_output)
 
         # list of (deviceName, sizeInBytes)
@@ -291,7 +291,7 @@ class PartitionMount(object):
             umount( self.mount_dir )
             os.rmdir(self.mount_dir)
             self.mount_dir = None
-        execWithRedirect("kpartx", ["-d", self.disk_img])
+        execWithRedirect("kpartx", ["-d", "-s", self.disk_img])
 
 
 ######## Functions for making filesystem images ##########################
