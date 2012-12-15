@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.23
+Version:        18.24
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -84,6 +84,16 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Fri Dec 14 2012 Brian C. Lane <bcl@redhat.com> 18.24-1
+- imgutils: use -s for kpartx, wait for device creation (bcl@redhat.com)
+- livemedia-creator: Use SELinux Permissive mode (bcl@redhat.com)
+- livemedia-creator: use cmdline mode (bcl@redhat.com)
+- use correct variable for upgrade image on s390 (dan@danny.cz)
+- only ix86/x86_64 and ppc/ppc64 need grub2 (dan@danny.cz)
+- no mount (sub-)package since RHEL-2 (dan@danny.cz)
+- Correct argument to installupgradeinitrd. (dmarlin@redhat.com)
+- Added fedup requires to spec (bcl@redhat.com)
+
 * Wed Dec 05 2012 Brian C. Lane <bcl@redhat.com> 18.23-1
 - remove multipath rules (#880263) (bcl@redhat.com)
 - add installupgradeinitrd function and use it to install the upgrade initrds
