@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.26
+Version:        18.27
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -88,6 +88,9 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Tue Dec 18 2012 Martin Gracik <mgracik@redhat.com> 18.27-1
+- Only run installupgradeinitrd if upgrade on s390x (mgracik@redhat.com)
+
 * Tue Dec 18 2012 Martin Gracik <mgracik@redhat.com> 18.26-1
 - Only run installupgradeinitrd if upgrade (mgracik@redhat.com)
 
