@@ -34,8 +34,12 @@ Requires:       util-linux
 Requires:       xz
 Requires:       yum
 Requires:       pykickstart
+
+%if 0%{?fedora}
+# Fedora specific deps
 Requires:       fedup-dracut
 Requires:       fedup-dracut-plymouth
+%endif
 
 %ifarch %{ix86} x86_64
 Requires:       syslinux >= 4.02-5
