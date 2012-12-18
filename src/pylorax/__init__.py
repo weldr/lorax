@@ -275,7 +275,8 @@ class Lorax(BaseLoraxClass):
         treebuilder = TreeBuilder(product=self.product, arch=self.arch,
                                   inroot=installroot, outroot=self.outputdir,
                                   runtime=runtime, isolabel=isolabel,
-                                  domacboot=domacboot, templatedir=templatedir)
+                                  domacboot=domacboot, doupgrade=doupgrade,
+                                  templatedir=templatedir)
 
         logger.info("rebuilding initramfs images")
         dracut_args = ["--xz", "--install", "/.buildstamp"]
