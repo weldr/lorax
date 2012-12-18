@@ -107,6 +107,8 @@ def main(args):
             help="volume id", metavar="STRING")
     optional.add_option("--nomacboot", help="",
             action="store_false", default=True, dest="domacboot")
+    optional.add_option("--noupgrade", help="",
+            action="store_false", default=True, dest="doupgrade")
     optional.add_option("--logfile", default="./lorax.log",
             help="Path to logfile")
     optional.add_option("--tmp", default="/var/tmp",
@@ -169,7 +171,8 @@ def main(args):
     lorax.run(yb, opts.product, opts.version, opts.release,
               opts.variant, opts.bugurl, opts.isfinal,
               workdir=tempdir, outputdir=outputdir, buildarch=opts.buildarch,
-              volid=opts.volid, domacboot=opts.domacboot, remove_temp=True)
+              volid=opts.volid, domacboot=opts.domacboot, doupgrade=opts.doupgrade,
+              remove_temp=True)
 
 
 def get_yum_base_object(installroot, repositories, mirrorlists=[],

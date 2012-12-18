@@ -135,7 +135,7 @@ class Lorax(BaseLoraxClass):
 
     def run(self, ybo, product, version, release, variant="", bugurl="",
             isfinal=False, workdir=None, outputdir=None, buildarch=None, volid=None,
-            domacboot=True, remove_temp=False):
+            domacboot=True, doupgrade=True, remove_temp=False):
 
         assert self._configured
 
@@ -283,19 +283,20 @@ class Lorax(BaseLoraxClass):
         anaconda_args = dracut_args + ["--add", "anaconda pollcdrom"]
         treebuilder.rebuild_initrds(add_args=anaconda_args)
 
-        # Build upgrade.img. It'd be nice if these could coexist in the same
-        # image, but that would increase the size of the anaconda initramfs,
-        # which worries some people (esp. PPC tftpboot). So they're separate.
-        try:
-            # If possible, use the 'fedup' plymouth theme
-            themes = runcmd_output(['plymouth-set-default-theme', '--list'],
-                                   root=installroot)
-            if 'fedup' in themes.splitlines():
-                os.environ['PLYMOUTH_THEME_NAME'] = 'fedup'
-        except RuntimeError:
-            pass
-        upgrade_args = dracut_args + ["--add", "system-upgrade"]
-        treebuilder.rebuild_initrds(add_args=upgrade_args, prefix="upgrade")
+        if doupgrade:
+            # Build upgrade.img. It'd be nice if these could coexist in the same
+            # image, but that would increase the size of the anaconda initramfs,
+            # which worries some people (esp. PPC tftpboot). So they're separate.
+            try:
+                # If possible, use the 'fedup' plymouth theme
+                themes = runcmd_output(['plymouth-set-default-theme', '--list'],
+                                       root=installroot)
+                if 'fedup' in themes.splitlines():
+                    os.environ['PLYMOUTH_THEME_NAME'] = 'fedup'
+            except RuntimeError:
+                pass
+            upgrade_args = dracut_args + ["--add", "system-upgrade"]
+            treebuilder.rebuild_initrds(add_args=upgrade_args, prefix="upgrade")
 
         logger.info("populating output tree and building boot images")
         treebuilder.build()
