@@ -24,8 +24,10 @@ replace @INITRD_LOAD_ADDRESS@ ${INITRD_ADDRESS} generic.ins
 installkernel images-${basearch} ${kernel.path} ${KERNELDIR}/kernel.img
 installinitrd images-${basearch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
 
-## upgrader image
-installupgradeinitrd images-${basearch} ${kernel.upgrade.path} ${KERNELDIR}/upgrade.img
+%if doupgrade
+    ## upgrader image
+    installupgradeinitrd images-${basearch} ${kernel.upgrade.path} ${KERNELDIR}/upgrade.img
+%endif
 
 ## s390 needs some extra boot config
 createaddrsize ${INITRD_ADDRESS} ${outroot}/${BOOTDIR}/initrd.img ${outroot}/${BOOTDIR}/initrd.addrsize
