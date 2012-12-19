@@ -95,7 +95,11 @@ def rglob(pathname, root="/", fatal=False):
         raise IOError, "nothing matching %s in %s" % (pathname, root)
 
 def rexists(pathname, root=""):
-    return True if rglob(pathname, root) else False
+    # Generator is always True, even with no values;
+    # bool(rglob(...)) won't work here.
+    for _path in rglob(pathname, root):
+        return True
+    return False
 
 # TODO: operate inside an actual chroot for safety? Not that RPM bothers..
 class LoraxTemplateRunner(object):
