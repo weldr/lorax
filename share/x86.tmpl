@@ -49,11 +49,15 @@ mkdir ${KERNELDIR}
 
 hardlink ${KERNELDIR}/vmlinuz ${BOOTDIR}
 hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
-hardlink ${KERNELDIR}/upgrade.img ${BOOTDIR}
+%if doupgrade:
+    hardlink ${KERNELDIR}/upgrade.img ${BOOTDIR}
+%endif
 %if basearch == 'x86_64':
     treeinfo images-xen kernel ${KERNELDIR}/vmlinuz
     treeinfo images-xen initrd ${KERNELDIR}/initrd.img
-    treeinfo images-xen upgrade ${KERNELDIR}/upgrade.img
+    %if doupgrade:
+        treeinfo images-xen upgrade ${KERNELDIR}/upgrade.img
+    %endif
 %endif
 
 ## WHeeeeeeee, EFI.
