@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.28
+Version:        18.29
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -88,6 +88,9 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Thu Dec 20 2012 Martin Gracik <mgracik@redhat.com> 18.29-1
+- Do not remove gtk3 share files (mgracik@redhat.com)
+
 * Wed Dec 19 2012 Martin Gracik <mgracik@redhat.com> 18.28-1
 - Fix rexists (mgracik@redhat.com)
 - Several 'doupgrade' fixes in the x86 template. (dmach@redhat.com)
