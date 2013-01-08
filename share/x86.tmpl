@@ -63,7 +63,7 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
 ## WHeeeeeeee, EFI.
 ## We could remove the basearch restriction someday..
 <% efiargs=""; efigraft=""; efihybrid="" %>
-%if exists("boot/efi/EFI/fedora/gcdx64.efi") and basearch != 'i386':
+%if exists("boot/efi/EFI/*/gcdx64.efi") and basearch != 'i386':
     <%
     efiarch = 'X64' if basearch=='x86_64' else 'IA32'
     efigraft="EFI/BOOT={0}/EFI/BOOT".format(outroot)
