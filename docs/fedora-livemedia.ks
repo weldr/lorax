@@ -362,7 +362,7 @@ cat /dev/null > /etc/fstab
 
 %packages
 @admin-tools
-@base
+@standard
 @base-x
 @core
 @dial-up

@@ -25,7 +25,7 @@ part swap --size=512
 
 #
 # Repositories
-url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/17/x86_64/os/"
+url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/18/x86_64/os/"
 
 #
 #
