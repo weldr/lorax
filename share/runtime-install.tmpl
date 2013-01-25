@@ -86,7 +86,10 @@ installpkg selinux-policy-targeted audit libsemanage-python
 
 ## network tools/servers
 installpkg python-ethtool ethtool openssh-server nfs-utils
-installpkg tigervnc-server-minimal tigervnc-server-module
+installpkg tigervnc-server-minimal
+%if basearch != "s390x":
+installpkg tigervnc-server-module
+%endif
 installpkg chrony rdate
 
 ## hardware utilities/libraries
