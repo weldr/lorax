@@ -90,8 +90,11 @@ installpkg tigervnc-server-minimal tigervnc-server-module
 installpkg chrony rdate
 
 ## hardware utilities/libraries
-installpkg pciutils pcmciautils usbutils
-installpkg mt-st hdparm smartmontools
+installpkg pciutils usbutils
+installpkg mt-st smartmontools
+%if basearch != "s390x":
+installpkg hdparm pcmciautils
+%endif
 installpkg libmlx4
 
 ## translations & language packs
