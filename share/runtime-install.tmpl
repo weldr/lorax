@@ -63,7 +63,9 @@ installpkg systemd-sysv systemd-units
 installpkg rsyslog
 
 ## xorg/GUI packages
+%if basearch != "s390x":
 installpkg xorg-x11-drivers xorg-x11-server-Xorg
+%endif
 installpkg xorg-x11-server-utils xorg-x11-xauth
 installpkg dbus-x11 metacity gsettings-desktop-schemas
 installpkg nm-connection-editor
