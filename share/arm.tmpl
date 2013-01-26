@@ -16,14 +16,15 @@ kernelAddress = { 'baseline' : '0x00008000',
                   'omap'     : '0x80008000',
                   'tegra'    : '0x00008000',
                 }
+
+# keep a comma-delimited list of platforms installed to add to .treeinfo
+platforms = ""
+delimiter = ''
 %>
 
 mkdir ${LIVEDIR}
 install ${runtime_img} ${LIVEDIR}/squashfs.img
 treeinfo stage2 mainimage ${LIVEDIR}/squashfs.img
-
-# Add platforms to treeinfo for Beaker support.
-treeinfo ${basearch} platforms highbank,imx,mvebu,omap,tegra
 
 ## install kernels
 mkdir ${KERNELDIR}
@@ -31,6 +32,10 @@ mkdir ${KERNELDIR}
     %if kernel.flavor:
         installkernel images-${kernel.flavor}-${basearch} ${kernel.path} ${KERNELDIR}/vmlinuz-${kernel.flavor}
         installinitrd images-${kernel.flavor}-${basearch} ${kernel.initrd.path} ${KERNELDIR}/initrd-${kernel.flavor}.img
+<%
+        platforms = platforms + delimiter + kernel.flavor
+        delimiter = ','
+%>
 
         %if doupgrade:
             ## install upgrade image
@@ -106,6 +111,9 @@ mkdir ${KERNELDIR}
 
     %endif
 %endfor
+
+# add platform to treeinfo for Beaker support
+treeinfo ${basearch} platforms ${platforms}
 
 
 ## FIXME: ARM may need some extra boot config
