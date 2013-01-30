@@ -2,7 +2,9 @@
 INTRO
 -----
 livemedia-creator uses Anaconda, kickstart and Lorax to create bootable media
-such as live iso's that use the same install path as a normal system install.
+that use the same install path as a normal system install. It can be used to
+make live isos, bootable (partitioned) disk images and filesystem images for
+use with virtualization.
 
 The general idea is to use virt-install to install into a disk image and then
 use the disk image to create the bootable media.
@@ -18,12 +20,12 @@ minimum you need:
 QUICKSTART
 ----------
 sudo livemedia-creator --make-iso \
---iso=/extra/iso/Fedora-16-x86_64-netinst.iso --ks=./fedora-livemedia.ks
+--iso=/extra/iso/Fedora-18-x86_64-netinst.iso --ks=./docs/fedora-livemedia.ks
 
 If you are using the lorax git repo you can run it like so:
 
 sudo PATH=./src/sbin/:$PATH PYTHONPATH=./src/ ./src/sbin/livemedia-creator \
---make-iso --iso=/extra/iso/Fedora-16-x86_64-netinst.iso \
+--make-iso --iso=/extra/iso/Fedora-18-x86_64-netinst.iso \
 --ks=./docs/fedora-livemedia.ks --lorax-templates=./share/
 
 If you want to watch the install you can pass '--vnc vnc' and use a vnc
@@ -35,16 +37,17 @@ to monitor the logs for fatal errors, but may not catch everything.
 
 HOW IT WORKS
 ------------
-The --make-* switches define the final output.
+There are 2 stages, the install stage which produces a disk or filesystem
+image as its output, and the boot media creation which uses the image as
+its input. Normally you would have it run both stages, but it is possible
+to have it stop after the install stage, using --image-only, or to have it
+skip the install stage and use a previously created disk image by passing
+--disk-image or --fs-image
 
-You then need to either pass --iso and --ks in order to create a disk image
-using virt-install, or --disk-image to use a disk image from a previous run
-to create the .iso
-
-virt-install boots using the passed Anaconda installer iso and installs the
-system based on the kickstart. The %post section of the kickstart is used to
-customize the installed system in the same way that current spin-kickstarts
-do.
+When creating an iso virt-install boots using the passed Anaconda installer iso
+and installs the system based on the kickstart. The %post section of the
+kickstart is used to customize the installed system in the same way that
+current spin-kickstarts do.
 
 livemedia-creator monitors the install process for problems by watching the
 install logs. They are written to the current directory or to the base
@@ -129,7 +132,7 @@ it as well.
 ANACONDA IMAGE INSTALL
 ----------------------
 You can create images without using virt-install by passing --no-virt on the
-cmdline. This will use Anaconda's image install feature to handle the install.
+cmdline. This will use Anaconda's directory install feature to handle the install.
 There are a couple of things to keep in mind when doing this:
 
 1. It will be most reliable when building images for the same release that the
@@ -168,10 +171,11 @@ This will produce an ami-root.img file in the working directory.
 At this time I have not tested the image with EC2. Feedback would we welcome.
 
 
-APPLIANCE CREATION ------------------ livemedia-creator can now replace
-appliance-tools by using the --make-appliance switch. This will create the
-partitioned disk image and an XML file that can be used with virt-image to
-setup a virtual system.
+APPLIANCE CREATION
+------------------
+livemedia-creator can now replace appliance-tools by using the --make-appliance
+switch. This will create the partitioned disk image and an XML file that can be
+used with virt-image to setup a virtual system.
 
 The XML is generated using the Mako template from
 /usr/share/lorax/appliance/virt-image.xml You can use a different template by
@@ -218,7 +222,9 @@ disk image. Or you can pass --keep-image to keep it around after lorax is
 run.
 
 Cleaning up aborted --no-virt installs can sometimes be accomplished by running
-the anaconda-cleanup script.
+the anaconda-cleanup script. As of f18 anaconda is multi-threaded and it can
+sometimes become stuck and refuse to exit. When this happens you can usually
+clean up by first killing the anaconda process then running anaconda-cleanup.
 
 
 HACKING
