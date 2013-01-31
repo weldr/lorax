@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.29
+Version:        18.30
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -88,6 +88,23 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Thu Jan 31 2013 Brian C. Lane <bcl@redhat.com> 18.30-1
+- yum changed the callback info (bcl@redhat.com)
+- tigervnc-server-module depends on Xorg, which doesn't exist on s390x
+  (dan@danny.cz)
+- tools not existing on s390x (dan@danny.cz)
+- specspo is dead for a long time (dan@danny.cz)
+- no Xorg on s390x (dan@danny.cz)
+- Make boot configs consistent. (dmach@redhat.com)
+- Dynamically generate the list of installed platforms for .treeinfo
+  (dmarlin@redhat.com)
+- Add a U-Boot wrapped image of 'upgrade.img'. (dmarlin@redhat.com)
+- Add trigger for Anaconda's exception handling to bash_history
+  (vpodzime@redhat.com)
+- livemedia-creator: update example kickstarts (bcl@redhat.com)
+- livemedia-creator: don't pass console=ttyS0 (bcl@redhat.com)
+- Fix gcdx64.efi path to work for other distros than Fedora. (dmach@redhat.com)
+
 * Thu Dec 20 2012 Martin Gracik <mgracik@redhat.com> 18.29-1
 - Do not remove gtk3 share files (mgracik@redhat.com)
 
