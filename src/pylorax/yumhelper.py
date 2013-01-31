@@ -50,7 +50,7 @@ class LoraxDownloadCallback(yum.callbacks.DownloadBaseCallback):
 
         pkgno = 0
         total = 0
-        pkgname = "error"
+        pkgname = name
         if match:
             pkgno = int(match.group("pkgno"))
             total = int(match.group("total"))
