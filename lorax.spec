@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.30
+Version:        18.31
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -88,6 +88,10 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Tue Feb 12 2013 Brian C. Lane <bcl@redhat.com> 18.31-1
+- add syslinux and ssm (bcl@redhat.com)
+- Add filesystem image install support (bcl@redhat.com)
+
 * Thu Jan 31 2013 Brian C. Lane <bcl@redhat.com> 18.30-1
 - yum changed the callback info (bcl@redhat.com)
 - tigervnc-server-module depends on Xorg, which doesn't exist on s390x
