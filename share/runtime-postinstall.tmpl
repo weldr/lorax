@@ -22,6 +22,10 @@ move etc/yum.repos.d etc/anaconda.repos.d
 remove etc/systemd/system/default.target
 symlink /lib/systemd/system/anaconda.target etc/systemd/system/default.target
 
+## Make sure tmpfs is enabled
+mkdir etc/systemd/system/local-fs.target.wants/
+symlink /lib/systemd/system/tmp.mount etc/systemd/system/local-fs.target.wants/tmp.mount
+
 ## Disable unwanted systemd services
 systemctl disable systemd-readahead-collect.service \
                   systemd-readahead-replay.service \
