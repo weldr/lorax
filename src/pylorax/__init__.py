@@ -121,6 +121,10 @@ class Lorax(BaseLoraxClass):
         # so we have to add it ourselves
         os.environ["PATH"] = "{0}:/sbin:/usr/sbin".format(os.environ["PATH"])
 
+        # remove some environmental variables that can cause problems with package scripts
+        env_remove = ('DISPLAY', 'DBUS_SESSION_BUS_ADDRESS')
+        [os.environ.pop(k) for k in env_remove if k in os.environ]
+
         self._configured = True
 
     def init_stream_logging(self):
