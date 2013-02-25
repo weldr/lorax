@@ -45,10 +45,6 @@ Requires:       fedup-dracut-plymouth
 Requires:       syslinux >= 4.02-5
 %endif
 
-%ifarch %{sparc}
-Requires:       silo
-%endif
-
 %ifarch ppc ppc64
 Requires:       kernel-bootwrapper
 %endif

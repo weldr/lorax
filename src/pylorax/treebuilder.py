@@ -35,8 +35,6 @@ templatemap = {
     'x86_64':  'x86.tmpl',
     'ppc':     'ppc.tmpl',
     'ppc64':   'ppc.tmpl',
-    'sparc':   'sparc.tmpl',
-    'sparc64': 'sparc.tmpl',
     's390':    's390.tmpl',
     's390x':   's390.tmpl',
     'arm':     'arm.tmpl',

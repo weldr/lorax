@@ -37,9 +37,6 @@ installpkg kernel
 %if basearch == "s390x":
     installpkg lsscsi modutils s390utils-base s390utils-cmsfs-fuse
 %endif
-%if basearch == "sparc":
-    installpkg silo tilo
-%endif
 
 ## yay, plymouth
 installpkg plymouth
