@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        18.31
+Version:        19.0
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -88,6 +88,11 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Thu Feb 28 2013 Brian C. Lane <bcl@redhat.com> 19.0-1
+- New Version 19.0
+- Remove some env variables (#907692) (bcl@redhat.com)
+- Make sure tmpfs is enabled (#908253) (bcl@redhat.com)
+
 * Tue Feb 12 2013 Brian C. Lane <bcl@redhat.com> 18.31-1
 - add syslinux and ssm (bcl@redhat.com)
 - Add filesystem image install support (bcl@redhat.com)

@@ -4,7 +4,7 @@ DESTDIR ?= /
 PKGNAME = lorax
 VERSION = $(shell awk '/Version:/ { print $$2 }' $(PKGNAME).spec)
 RELEASE = $(shell awk '/Release:/ { print $$2 }' $(PKGNAME).spec | sed -e 's|%.*$$||g')
-TAG = r$(VERSION)-$(RELEASE)
+TAG = lorax-$(VERSION)-$(RELEASE)
 
 
 default: all
