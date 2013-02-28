@@ -26,14 +26,14 @@ tag:
 
 archive: tag
 	@git archive --format=tar --prefix=$(PKGNAME)-$(VERSION)/ $(TAG) > $(PKGNAME)-$(VERSION).tar
-	@bzip2 $(PKGNAME)-$(VERSION).tar
-	@echo "The archive is in $(PKGNAME)-$(VERSION).tar.bz2"
+	@gzip $(PKGNAME)-$(VERSION).tar
+	@echo "The archive is in $(PKGNAME)-$(VERSION).tar.gz"
 
 local:
-	@rm -rf $(PKGNAME)-$(VERSION).tar.bz2
-	@rm -rf /tmp/$(PKGNAME)-$(VERSION)
-	@dir=$$PWD; cp -a $$dir /tmp/$(PKGNAME)-$(VERSION)
-	@rm -rf /tmp/$(PKGNAME)-$(VERSION)/.git
-	@dir=$$PWD; cd /tmp; tar --bzip2 -cSpf $$dir/$(PKGNAME)-$(VERSION).tar.bz2 $(PKGNAME)-$(VERSION)
-	@rm -rf /tmp/$(PKGNAME)-$(VERSION)
-	@echo "The archive is in $(PKGNAME)-$(VERSION).tar.bz2"
+	@rm -rf $(PKGNAME)-$(VERSION).tar.gz
+	@rm -rf /var/tmp/$(PKGNAME)-$(VERSION)
+	@dir=$$PWD; cp -a $$dir /var/tmp/$(PKGNAME)-$(VERSION)
+	@rm -rf /var/tmp/$(PKGNAME)-$(VERSION)/.git
+	@dir=$$PWD; cd /var/tmp; tar --gzip -cSpf $$dir/$(PKGNAME)-$(VERSION).tar.gz $(PKGNAME)-$(VERSION)
+	@rm -rf /var/tmp/$(PKGNAME)-$(VERSION)
+	@echo "The archive is in $(PKGNAME)-$(VERSION).tar.gz"
