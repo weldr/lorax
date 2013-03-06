@@ -35,7 +35,6 @@ systemctl disable systemd-readahead-collect.service \
 ## These services can't be disabled normally (they're linked into place in
 ## /usr/lib/systemd rather than /etc/systemd), so we have to mask them.
 systemctl mask fedora-configure.service fedora-loadmodules.service \
-               fedora-storage-init.service fedora-storage-init-late.service \
                fedora-autorelabel.service fedora-autorelabel-mark.service \
                fedora-wait-storage.service media.mount
 
@@ -102,5 +101,12 @@ symlink ../run/install mnt/install
 
 ## create_depmod_conf()
 append etc/depmod.d/dd.conf "search updates built-in"
+
+## create multipath.conf so multipath gets auto-started
+append etc/multipath.conf "defaults {\n\tfind_multipaths yes\n\tuser_friendly_names yes\n}\n"
+
+## make lvm auto-activate
+remove etc/lvm/*
+append etc/lvm/lvm.conf "global {\n\tuse_lvmetad = 1\n}\n"
 
 ## TODO: we could run prelink here if we wanted?
