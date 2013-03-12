@@ -286,8 +286,8 @@ removefrom nss-softokn /usr/${libdir}/nss/*
 removefrom openldap /etc/openldap/* /usr/${libdir}/libldap_r-*
 removefrom openssh /etc/ssh/* /usr/libexec/*
 removefrom openssh-clients /etc/ssh/* /usr/bin/slogin /usr/bin/ssh-*
-removefrom openssh-clients /usr/${libdir}/* /usr/libexec/*
-removefrom openssh-server /etc/ssh/* /usr/${libdir}/* /usr/libexec/*
+removefrom openssh-clients /usr/libexec/*
+removefrom openssh-server /etc/ssh/* /usr/libexec/*
 removefrom openssl /etc/pki/* /usr/bin/* /usr/${libdir}/openssl/*
 removefrom pam /usr/sbin/* /usr/share/locale/*
 removefrom pciutils /usr/sbin/*
