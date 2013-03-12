@@ -26,6 +26,7 @@ import logging
 log = logging.getLogger("lorax")
 program_log = logging.getLogger("program")
 pylorax_log = logging.getLogger("pylorax")
+yum_log = logging.getLogger("yum")
 
 
 import sys
@@ -35,6 +36,9 @@ from optparse import OptionParser, OptionGroup
 import ConfigParser
 
 import yum
+# This is a bit of a hack to short circuit yum's internal logging
+# handler setup.  We already set one up so we don't need it to run.
+yum.logginglevels._added_handlers = True
 import pylorax
 
 def setup_logging(opts):
@@ -62,6 +66,13 @@ def setup_logging(opts):
     fh = logging.FileHandler(filename=logfile, mode="w")
     fh.setLevel(logging.DEBUG)
     program_log.addHandler(fh)
+
+    # yum logging
+    yum_log.setLevel(logging.DEBUG)
+    logfile = os.path.abspath(os.path.dirname(opts.logfile))+"/yum.log"
+    fh = logging.FileHandler(filename=logfile, mode="w")
+    fh.setLevel(logging.DEBUG)
+    yum_log.addHandler(fh)
 
 
 def main(args):
@@ -259,6 +270,12 @@ def get_yum_base_object(installroot, repositories, mirrorlists=[],
     yb.preconf.fn = yumconf
     yb.preconf.root = installroot
     #yb.repos.setCacheDir(cachedir)
+
+    # Turn on as much yum logging as we can
+    yb.preconf.debuglevel = 6
+    yb.preconf.errorlevel = 6
+    yb.logger.setLevel(logging.DEBUG)
+    yb.verbose_logger.setLevel(logging.DEBUG)
 
     return yb
 
