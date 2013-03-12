@@ -195,9 +195,13 @@ class TreeBuilder(object):
         if not backup:
             dracut.append("--force")
 
+        kernels = [kernel for kernel in self.kernels if hasattr(kernel, "initrd")]
+        if not kernels:
+            raise Exception("No initrds found, cannot rebuild_initrds")
+
         # Hush some dracut warnings. TODO: bind-mount proc in place?
         open(joinpaths(self.vars.inroot,"/proc/modules"),"w")
-        for kernel in self.kernels:
+        for kernel in kernels:
             if prefix:
                 idir = os.path.dirname(kernel.initrd.path)
                 outfile = joinpaths(idir, prefix+'-'+kernel.version+'.img')
@@ -282,6 +286,7 @@ def findkernels(root="/", kdir="boot"):
                     imgtype = 'initrd'
                 kernel[imgtype] = DataHolder(path=joinpaths(kdir, f))
 
+    logger.debug("kernels=%s" % kernels)
     return kernels
 
 # udev whitelist: 'a-zA-Z0-9#+.:=@_-' (see is_whitelisted in libudev-util.c)
