@@ -158,7 +158,7 @@ class RuntimeBuilder(object):
         # Reset selinux context on new rootfs
         with imgutils.LoopDev( joinpaths(workdir, "LiveOS/rootfs.img") ) as loopdev:
             with imgutils.Mount(loopdev) as mnt:
-                cmd = [ "setfiles", "-e", "/proc", "-e", "/sys", "-e", "/dev", "-e", "/selinux", "/etc/selinux/targeted/contexts/files/file_contexts", "/"]
+                cmd = [ "setfiles", "-e", "/proc", "-e", "/sys", "-e", "/dev",  "/etc/selinux/targeted/contexts/files/file_contexts", "/"]
                 runcmd(cmd, root=mnt)
 
         # squash the live rootfs and clean up workdir
