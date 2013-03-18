@@ -106,5 +106,4 @@ def remove(target):
         os.unlink(target)
 
 def linktree(src, dst):
-    runcmd(["/bin/cp", "-al", src, dst])
-
+    runcmd(["/bin/cp", "-alx", src, dst])
