@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.0
+Version:        19.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -84,6 +84,20 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Tue Mar 19 2013 Brian C. Lane <bcl@redhat.com> 19.1-1
+- Print & log messages on scriptlet/transaction errors (wwoods@redhat.com)
+- sysutils: add -x to cp in linktree (wwoods@redhat.com)
+- treebuilder: fix "Can't stat exclude path "/selinux"..." message
+  (wwoods@redhat.com)
+- runtime: install dracut-{nohostonly,norescue} (wwoods@redhat.com)
+- runtime-install: install shim-unsigned (wwoods@redhat.com)
+- Add explicit install of net-tools (#921619) (bcl@redhat.com)
+- Don't remove hmac files for ssh and sshd (#882153) (bcl@redhat.com)
+- Raise an error when there are no initrds (bcl@redhat.com)
+- Add yum logging to yum.log (bcl@redhat.com)
+- remove sparc support (dennis@ausil.us)
+- Change Makefile to produce .tgz (bcl@redhat.com)
+
 * Thu Feb 28 2013 Brian C. Lane <bcl@redhat.com> 19.0-1
 - New Version 19.0
 - Remove some env variables (#907692) (bcl@redhat.com)
