@@ -142,7 +142,7 @@ removefrom cairo /usr/${libdir}/libcairo-script*
 removefrom coreutils /etc/* /usr/bin/link /usr/bin/nice /usr/bin/stty /usr/bin/su /usr/bin/unlink
 removefrom coreutils /usr/sbin/runuser /usr/bin/[ /usr/bin/base64 /usr/bin/chcon
 removefrom coreutils /usr/bin/cksum /usr/bin/comm /usr/bin/csplit
-removefrom coreutils /usr/bin/dir /usr/bin/dircolors /usr/bin/dirname
+removefrom coreutils /usr/bin/dir /usr/bin/dircolors
 removefrom coreutils /usr/bin/expand /usr/bin/factor
 removefrom coreutils /usr/bin/fold /usr/bin/groups /usr/bin/hostid
 removefrom coreutils /usr/bin/install /usr/bin/join /usr/bin/logname
@@ -172,7 +172,6 @@ removefrom dhclient /usr/lib/* /usr/share/*
 removefrom dnsmasq /etc/rc.d/* /usr/sbin/*
 removefrom dump /etc/*
 removefrom elfutils-libelf /usr/share/locale/*
-removefrom ethtool /usr/sbin/*
 removefrom expat /usr/bin/*
 removefrom fcoe-utils /etc/rc.d/* /usr/libexec/fcoe/dcbcheck.sh
 removefrom fcoe-utils /usr/libexec/fcoe/fcc.sh /usr/libexec/fcoe/fcoe-setup.sh
@@ -320,7 +319,7 @@ removefrom sysvinit-tools /usr/bin/*
 removefrom tar /usr/share/locale/*
 removefrom usbutils /usr/bin/*
 removefrom util-linux --allbut \
-    /usr/bin/{dmesg,kill,login,lsblk,more,mount,umount,mountpoint} \
+    /usr/bin/{dmesg,getopt,kill,login,lsblk,more,mount,umount,mountpoint} \
     /etc/mtab /etc/pam.d/login /etc/pam.d/remote \
     /usr/sbin/{agetty,blkid,blockdev,clock,fdisk,fsck,fstrim,hwclock,losetup} \
     /usr/sbin/{mkswap,nologin,sfdisk,swapoff,swapon,wipefs} \
