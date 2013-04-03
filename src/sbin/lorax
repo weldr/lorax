@@ -78,11 +78,10 @@ def setup_logging(opts):
 def main(args):
     # get lorax version
     try:
-        import pylorax.version
+        from pylorax import version
+        vernum = version.num
     except ImportError:
         vernum = "devel"
-    else:
-        vernum = pylorax.version.num
 
     version = "{0}-{1}".format(os.path.basename(args[0]), vernum)
     usage = "%prog -p PRODUCT -v VERSION -r RELEASE -s REPOSITORY OUTPUTDIR"
