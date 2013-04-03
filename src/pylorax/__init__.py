@@ -142,6 +142,14 @@ class Lorax(BaseLoraxClass):
 
         assert self._configured
 
+        # get lorax version
+        try:
+            import pylorax.version
+        except ImportError:
+            vernum = "devel"
+        else:
+            vernum = pylorax.version.num
+
         if domacboot:
             try:
                 runcmd(["rpm", "-q", "hfsplus-tools"])
@@ -161,6 +169,8 @@ class Lorax(BaseLoraxClass):
 
         self.init_stream_logging()
         self.init_file_logging(logdir)
+
+        logger.debug("version is {0}".format(vernum))
         logger.debug("using work directory {0.workdir}".format(self))
         logger.debug("using log directory {0}".format(logdir))
 

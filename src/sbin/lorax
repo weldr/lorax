@@ -76,7 +76,15 @@ def setup_logging(opts):
 
 
 def main(args):
-    version = "{0} 0.1".format(os.path.basename(args[0]))
+    # get lorax version
+    try:
+        import pylorax.version
+    except ImportError:
+        vernum = "devel"
+    else:
+        vernum = pylorax.version.num
+
+    version = "{0}-{1}".format(os.path.basename(args[0]), vernum)
     usage = "%prog -p PRODUCT -v VERSION -r RELEASE -s REPOSITORY OUTPUTDIR"
 
     parser = OptionParser(usage=usage)
@@ -136,14 +144,14 @@ def main(args):
     # parse the arguments
     opts, args = parser.parse_args()
 
+    if opts.showver:
+        print(version)
+        sys.exit(0)
+
     try:
         outputdir = os.path.abspath(args[0])
     except IndexError:
         parser.error("missing one or more required arguments")
-
-    if opts.showver:
-        print(version)
-        sys.exit(0)
 
     # check for the required arguments
     if not opts.product or not opts.version or not opts.release \
