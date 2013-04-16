@@ -3,7 +3,7 @@ sshpw --username=root --plaintext randOmStrinGhERE
 # Firewall configuration
 firewall --enabled --service=mdns
 # Use network installation
-url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/18/x86_64/os/"
+url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/19/x86_64/os/"
 
 # X Window System configuration information
 xconfig  --startxonboot
@@ -375,7 +375,6 @@ cat /dev/null > /etc/fstab
 #@printing
 #@sound-and-video
 anaconda
-ibus-pinyin-db-android
 isomd5sum
 kernel
 laughlin-backgrounds-animated-gnome
@@ -386,5 +385,6 @@ nss-mdns
 grub2-efi
 grub2
 shim
-
+syslinux
+dracut-norescue
 %end
