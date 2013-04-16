@@ -22,7 +22,7 @@ installpkg kernel
 
 ## arch-specific packages (bootloaders etc.)
 %if basearch in ("arm", "armhfp"):
-    installpkg kernel-highbank kernel-imx kernel-kirkwood kernel-mvebu kernel-omap kernel-tegra
+    installpkg kernel-lpae kernel-tegra
     installpkg uboot-tools
 %endif
 %if basearch == "i386":
