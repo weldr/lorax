@@ -36,7 +36,7 @@ installpkg kernel
     installpkg grub2 grub2-tools yaboot fbset hfsutils kernel-bootwrapper ppc64-utils
 %endif
 %if basearch == "s390x":
-    installpkg lsscsi modutils s390utils-base s390utils-cmsfs-fuse
+    installpkg lsscsi s390utils-base s390utils-cmsfs-fuse
 %endif
 
 ## yay, plymouth
