@@ -38,6 +38,9 @@ systemctl mask fedora-configure.service fedora-loadmodules.service \
                fedora-autorelabel.service fedora-autorelabel-mark.service \
                fedora-wait-storage.service media.mount
 
+## Don't write the journal to the overlay, just keep it in RAM
+remove var/log/journal
+
 ## install some basic configuration files
 append etc/resolv.conf ""
 append etc/fstab ""
