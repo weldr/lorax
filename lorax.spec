@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.2
+Version:        19.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -84,6 +84,16 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Mon Apr 29 2013 Brian C. Lane <bcl@redhat.com> 19.3-1
+- Remove /var/log/journal so journald won't write to overlay
+  (wwoods@redhat.com)
+- Leave /etc/os-release in the initrd (#956241) (bcl@redhat.com)
+- no standalone modutils package (dan@danny.cz)
+- remove no longer supported arm kernel variants add the new lpae one
+  (dennis@ausil.us)
+- livemedia-creator: Update example kickstarts (bcl@redhat.com)
+- livemedia-creator: Ignore rescue kernels (bcl@redhat.com)
+
 * Mon Apr 15 2013 Brian C. Lane <bcl@redhat.com> 19.2-1
 - Let devices get detected and started automatically. (dlehman@redhat.com)
 - Fix import of version (bcl@redhat.com)
