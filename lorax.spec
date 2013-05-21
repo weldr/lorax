@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.3
+Version:        19.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -84,6 +84,10 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Tue May 21 2013 Brian C. Lane <bcl@redhat.com> 19.4-1
+- Add command for opening anaconda log file to history (mkolman@gmail.com)
+- Do not install chrony and rdate explicitly (vpodzime@redhat.com)
+
 * Mon Apr 29 2013 Brian C. Lane <bcl@redhat.com> 19.3-1
 - Remove /var/log/journal so journald won't write to overlay
   (wwoods@redhat.com)
