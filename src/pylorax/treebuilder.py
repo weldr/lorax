@@ -144,7 +144,7 @@ class RuntimeBuilder(object):
             runcmd(["depmod", "-a", "-F", ksyms, "-b", root, kver])
             generate_module_info(moddir+kver, outfile=moddir+"module-info")
 
-    def create_runtime(self, outfile="/var/tmp/squashfs.img", compression="xz", compressargs=[], size=1):
+    def create_runtime(self, outfile="/var/tmp/squashfs.img", compression="xz", compressargs=[], size=2):
         # make live rootfs image - must be named "LiveOS/rootfs.img" for dracut
         workdir = joinpaths(os.path.dirname(outfile), "runtime-workdir")
         if size:
