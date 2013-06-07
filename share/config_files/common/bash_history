@@ -8,3 +8,4 @@ dmsetup table
 multipath -d
 HOME=/root chroot /mnt/sysimage bash -l -i
 less /tmp/anaconda.log
+grep -v _yum_lock /tmp/packaging.log
