@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.4
+Version:        19.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -84,6 +84,15 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 
 %changelog
+* Thu Jun 13 2013 Brian C. Lane <bcl@redhat.com> 19.5-1
+- Let sshd decide which keys to create (#971856) (bcl@redhat.com)
+- Don't remove thbrk.tri (#886250) (bcl@redhat.com)
+- Switch from xorg-x11-fonts-ethiopic to sil-abyssinica-fonts (#875664)
+  (bcl@redhat.com)
+- Make ignoring yum_lock messages in anaconda easier. (clumens@redhat.com)
+- Bump image size up to 2G (#967556) (bcl@redhat.com)
+- livemedia-creator: Fix logic for anaconda test (#958036) (bcl@redhat.com)
+
 * Tue May 21 2013 Brian C. Lane <bcl@redhat.com> 19.4-1
 - Add command for opening anaconda log file to history (mkolman@gmail.com)
 - Do not install chrony and rdate explicitly (vpodzime@redhat.com)
