@@ -846,7 +846,7 @@ if __name__ == '__main__':
 
     is_install = not (opts.disk_image or opts.fs_image)
     if is_install and not opts.no_virt and not opts.iso:
-        log.error( "virt-install needs an install iso." )
+        log.error( "virt install needs an install iso." )
         sys.exit( 1 )
 
     if opts.volid and len(opts.volid) > 32:
@@ -854,12 +854,12 @@ if __name__ == '__main__':
         sys.exit(1)
 
     if is_install and not opts.no_virt and not libvirt:
-        log.error("virt-install requires libvirt-python to be installed.")
+        log.error("virt install requires libvirt-python to be installed.")
         sys.exit(1)
 
     if is_install and not opts.no_virt \
        and not os.path.exists("/usr/bin/virt-install"):
-        log.error("virt-install requires python-virtinst to be installed.")
+        log.error("virt-install needs to be installed.")
         sys.exit(1)
 
     if is_install and opts.no_virt \
