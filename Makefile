@@ -1,4 +1,4 @@
-PYTHON ?= /usr/bin/env python
+PYTHON ?= /usr/bin/python
 DESTDIR ?= /
 
 PKGNAME = lorax
