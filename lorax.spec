@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.5
+Version:        19.6
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -84,6 +84,16 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Jul 26 2013 Brian C. Lane <bcl@redhat.com> 19.6-1
+- Add manpage for lorax (bcl@redhat.com)
+- Add manpage for livemedia-creator (bcl@redhat.com)
+- livemedia-creator: pass inst.cmdline for headless installs (#985487)
+  (bcl@redhat.com)
+- Stop using /usr/bin/env (#987028) (bcl@redhat.com)
+- livemedia-creator: clarify required package errors (#985340) (bcl@redhat.com)
+- Include device-mapper-persistent-data in images for thinp support.
+  (dlehman@redhat.com)
+
 * Thu Jun 13 2013 Brian C. Lane <bcl@redhat.com> 19.5-1
 - Let sshd decide which keys to create (#971856) (bcl@redhat.com)
 - Don't remove thbrk.tri (#886250) (bcl@redhat.com)
