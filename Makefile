@@ -17,6 +17,8 @@ all: src/pylorax/version.py
 
 install: all
 	$(PYTHON) setup.py install --root=$(DESTDIR)
+	mkdir -p $(DESTDIR)/$(mandir)/man1
+	install -m 644 docs/livemedia-creator.1 $(DESTDIR)/$(mandir)/man1
 
 clean:
 	-rm -rf build src/pylorax/version.py

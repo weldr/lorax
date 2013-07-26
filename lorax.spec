@@ -67,7 +67,7 @@ Anaconda's image install feature.
 
 %install
 rm -rf $RPM_BUILD_ROOT
-make DESTDIR=$RPM_BUILD_ROOT install
+make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 %files
 %defattr(-,root,root,-)
@@ -81,7 +81,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %config(noreplace) %{_sysconfdir}/lorax/lorax.conf
 %dir %{_datadir}/lorax
 %{_datadir}/lorax/*
-
+%{_mandir}/man1/*.1*
 
 %changelog
 * Thu Jun 13 2013 Brian C. Lane <bcl@redhat.com> 19.5-1
