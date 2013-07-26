@@ -1,0 +1,98 @@
+.TH LORAX 1 2013\-07\-26
+.SH NAME
+lorax \- Create installer boot iso
+
+.SH SYNOPSIS
+lorax -p PRODUCT -v VERSION -r RELEASE -s REPOSITORY OUTPUTDIR
+
+.SH DESCRIPTION
+
+lorax is used to create the installer boot iso.
+
+.SH OPTIONS
+
+.TP
+\fB\-h, \-\-help\fR
+show this help message and exit
+
+.TP
+\fB\-V\fR
+show program's version number and exit
+
+.SH REQUIRED ARGUMENTS:
+
+.TP
+\fB\-p STRING, \-\-product=STRING\fR
+product name
+
+.TP
+\fB\-v STRING, \-\-version=STRING\fR
+version identifier
+
+.TP
+\fB\-r STRING, \-\-release=STRING\fR
+release information
+
+.TP
+\fB\-s REPOSITORY, \-\-source=REPOSITORY\fR
+source repository (may be listed multiple times)
+
+.SH
+OPTIONAL ARGUMENTS:
+
+.TP
+\fB\-m REPOSITORY, \-\-mirrorlist=REPOSITORY\fR
+mirrorlist repository (may be listed multiple times)
+
+.TP
+\fB\-t STRING, \-\-variant=STRING\fR
+variant name
+
+.TP
+\fB\-b URL, \-\-bugurl=URL\fR
+bug reporting URL for the product
+
+.TP
+\fB\-\-isfinal\fR
+
+.TP
+\fB\-c STRING, \-\-config=STRING\fR
+config file
+
+.TP
+\fB\-\-proxy=STRING\fR
+repo proxy url:port
+
+.TP
+\fB\-e STRING, \-\-excludepkgs=STRING\fR
+package glob to exclude (may be listed multiple times)
+
+.TP
+\fB\-\-buildarch=STRING\fR
+build architecture
+
+.TP
+\fB\-\-volid=STRING\fR
+volume id
+
+.TP
+\fB\-\-nomacboot\fR
+
+.TP
+\fB\-\-noupgrade\fR
+
+.TP
+\fB\-\-logfile=LOGFILE\fR
+Path to logfile
+
+.TP
+\fB\-\-tmp=TMP\fR
+Top level temporary directory
+
+.SH AUTHORS
+.nf
+Martin Gracik
+Will Woods
+Brian C. Lane
+.fi
+
