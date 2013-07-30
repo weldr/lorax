@@ -23,7 +23,8 @@ removefrom ${product.name}-logos /usr/share/plymouth/*
 ## We also need dracut-shutdown.service and dracut-initramfs-restore to reboot
 removefrom dracut --allbut /usr/lib/dracut/modules.d/30convertfs/convertfs.sh \
                   /usr/lib/dracut/modules.d/99base/dracut-lib.sh \
-                  /usr/lib/systemd/* /usr/lib/dracut/dracut-initramfs-restore
+                  /usr/lib/systemd/* /usr/lib/dracut/modules.d/98systemd/*.service \
+                  /usr/lib/dracut/dracut-initramfs-restore
 ## we don't run SELinux (not in enforcing, anyway)
 removepkg checkpolicy selinux-policy libselinux-utils
 ## anaconda has its own repo files

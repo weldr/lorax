@@ -34,6 +34,7 @@ Requires:       util-linux
 Requires:       xz
 Requires:       yum
 Requires:       pykickstart
+Requires:       dracut >= 030
 
 %if 0%{?fedora}
 # Fedora specific deps
