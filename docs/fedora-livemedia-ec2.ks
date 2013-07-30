@@ -64,7 +64,7 @@ iputils
 cloud-init
 
 grub
-dracut-norescue
+-dracut-config-rescue
 %end
 
 # more ec2-ify

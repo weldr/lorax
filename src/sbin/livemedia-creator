@@ -364,8 +364,9 @@ class KernelInfo(object):
         Examine the vmlinuz-* versions and return a list of them
 
         Ignore any with -rescue- in them, these are dracut rescue images.
-        The user shoud add dracut-norescue package to the kickstart to remove them,
-        but catch it here as well.
+        The user shoud add
+        -dracut-config-rescue
+        to the kickstart to remove them, but catch it here as well.
         """
         files = os.listdir(self.boot_dir)
         return [f[8:] for f in files if f.startswith("vmlinuz-") \

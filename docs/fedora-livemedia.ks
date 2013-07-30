@@ -386,5 +386,5 @@ grub2-efi
 grub2
 shim
 syslinux
-dracut-norescue
+-dracut-config-rescue
 %end
