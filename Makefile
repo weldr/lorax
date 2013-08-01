@@ -27,10 +27,13 @@ clean:
 tag:
 	git tag -f $(TAG)
 
-archive: tag
+archive:
 	@git archive --format=tar --prefix=$(PKGNAME)-$(VERSION)/ $(TAG) > $(PKGNAME)-$(VERSION).tar
 	@gzip $(PKGNAME)-$(VERSION).tar
 	@echo "The archive is in $(PKGNAME)-$(VERSION).tar.gz"
+
+dist: tag archive
+	scp $(PKGNAME)-$(VERSION).tar.gz fedorahosted.org:lorax
 
 local:
 	@rm -rf $(PKGNAME)-$(VERSION).tar.gz
