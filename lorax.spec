@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6
+Version:        19.7
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -85,6 +85,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Thu Aug 01 2013 Brian C. Lane <bcl@redhat.com> 19.7-1
+- Add a dist target that copies the archive to fedorahosted (bcl@redhat.com)
+- dracut-nohostonly and dracut-norescue got renamed for dracut >= 030
+  (harald@redhat.com)
+- EFI and related packages are only for x86_64 (pjones@redhat.com)
+- Don't remove xkeyboard-config message files (#972236) (dshea@redhat.com)
+
 * Fri Jul 26 2013 Brian C. Lane <bcl@redhat.com> 19.6-1
 - Add manpage for lorax (bcl@redhat.com)
 - Add manpage for livemedia-creator (bcl@redhat.com)
