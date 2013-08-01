@@ -28,9 +28,11 @@ installpkg kernel
 %if basearch == "i386":
     installpkg kernel-PAE gpart
 %endif
+%if basearch == "x86_64":
+    installpkg efibootmgr grub2-efi shim shim-unsigned
+%endif
 %if basearch in ("i386", "x86_64"):
     installpkg grub2 grub2-tools biosdevname memtest86+ syslinux
-    installpkg efibootmgr grub2-efi shim shim-unsigned
 %endif
 %if basearch in ("ppc", "ppc64"):
     installpkg grub2 grub2-tools yaboot fbset hfsutils kernel-bootwrapper ppc64-utils
