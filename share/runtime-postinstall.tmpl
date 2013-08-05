@@ -55,6 +55,7 @@ install ${configdir}/bash_history root/.bash_history
 install ${configdir}/profile root/.profile
 install ${configdir}/libuser.conf etc
 install ${configdir}/sysctl.conf etc/sysctl.d/anaconda.conf
+install ${configdir}/spice-vdagentd etc/sysconfig
 mkdir etc/NetworkManager/conf.d
 install ${configdir}/90-anaconda-no-auto-default.conf etc/NetworkManager/conf.d
 install ${configdir}/91-anaconda-autoconnect-slaves.conf etc/NetworkManager/conf.d
