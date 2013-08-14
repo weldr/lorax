@@ -25,7 +25,7 @@ part swap --size=512
 
 #
 # Repositories
-url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/19/x86_64/os/"
+url --url="http://dl.fedoraproject.org/pub/fedora/linux/releases/19/Everything/x86_64/os/"
 
 #
 #
@@ -65,6 +65,7 @@ cloud-init
 
 grub
 dracut-norescue
+dracut-nohostonly
 %end
 
 # more ec2-ify
