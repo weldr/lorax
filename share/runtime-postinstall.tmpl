@@ -92,6 +92,10 @@ gconfset /apps/metacity/global_keybindings/switch_windows string disabled
 gconfset /desktop/gnome/interface/accessibility bool true
 gconfset /desktop/gnome/interface/at-spi-corba bool true
 
+## Make sure we have a GTK theme
+mkdir etc/gtk-3.0/
+copy usr/share/gtk-3.0/settings.ini etc/gtk-3.0/
+
 ## Some settings are controlled by gsettings now.
 install ${configdir}/org.gnome.desktop.wm.keybindings.gschema.override usr/share/glib-2.0/schemas
 runcmd chroot ${root} glib-compile-schemas /usr/share/glib-2.0/schemas
