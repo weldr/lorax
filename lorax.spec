@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.7
+Version:        19.8
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -85,6 +85,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Aug 23 2013 Brian C. Lane <bcl@redhat.com> 19.8-1
+- Make sure we have a theme settings file in place. (clumens@redhat.com)
+- Keep liblzo2.* (#997643) (dshea@redhat.com)
+- Make sure dracut uses no-hostonly mode (bcl@redhat.com)
+- Run spice-vdagentd without systemd-logind integration (#969405)
+  (dshea@redhat.com)
+
 * Thu Aug 01 2013 Brian C. Lane <bcl@redhat.com> 19.7-1
 - Add a dist target that copies the archive to fedorahosted (bcl@redhat.com)
 - dracut-nohostonly and dracut-norescue got renamed for dracut >= 030
