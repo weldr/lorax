@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.2
+Version:        19.6.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -85,6 +85,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Aug 23 2013 Brian C. Lane <bcl@redhat.com> 19.6.3-1
+- Keep liblzo2.* (#997976) (dshea@redhat.com)
+
 * Thu Aug 01 2013 Brian C. Lane <bcl@redhat.com> 19.6.2-1
 - dracut-nohostonly and dracut-norescue got renamed for dracut >= 030 (#990305)
   (harald@redhat.com)
