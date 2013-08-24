@@ -40,6 +40,9 @@ Requires:       dracut >= 030
 # Fedora specific deps
 Requires:       fedup-dracut
 Requires:       fedup-dracut-plymouth
+%ifarch x86_64
+Requires: hfsplus-tools
+%endif
 %endif
 
 %ifarch %{ix86} x86_64
