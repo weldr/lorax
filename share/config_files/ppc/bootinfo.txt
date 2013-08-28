@@ -1,7 +1,8 @@
-<chrp-boot> <description>Linux</description> 
-<os-name>Linux</os-name> 
-<boot-script>boot &device;:\ppc\chrp\yaboot</boot-script> 
-<icon size=64,64 color-space=3,3,2> 
+<chrp-boot>
+<description>grub 2.00</description>
+<os-name>grub 2.00</os-name>
+<boot-script>boot &device;:\boot\grub\powerpc-ieee1275\core.elf</boot-script>
+<icon size=64,64 color-space=3,3,2>
 <bitmap> FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF
 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF

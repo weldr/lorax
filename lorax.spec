@@ -51,6 +51,8 @@ Requires:       syslinux >= 4.02-5
 
 %ifarch ppc ppc64
 Requires:       kernel-bootwrapper
+Requires:       grub2
+Requires:       grub2-tools
 %endif
 
 %ifarch s390 s390x
