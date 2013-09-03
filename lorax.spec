@@ -8,7 +8,7 @@ Summary:        Tool for creating the anaconda install images
 Group:          Applications/System
 License:        GPLv2+
 URL:            http://git.fedorahosted.org/git/?p=lorax.git
-Source0:        https://git.fedorahosted.org/cgit/lorax.git/snapshot/lorax-%{version}-%{release}.tar.gz
+Source0:        https://fedorahosted.org/releases/l/o/%{name}/%{name}-%{version}.tar.gz
 
 BuildRequires:  python2-devel
 
