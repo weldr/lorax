@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.8
+Version:        20.0
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -90,6 +90,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Sep 03 2013 Brian C. Lane <bcl@redhat.com> 20.0-1
+- remove firewalld from installroot (#1002195) (bcl@redhat.com)
+- Make sure grubby is installed for initrd creation (#1001896) (bcl@redhat.com)
+- GRUB2 as the ISO boot loader for POWER arch (pfsmorigo@br.ibm.com)
+- Require hfsplus-tools on Fedora x86_64 (bcl@redhat.com)
+
 * Fri Aug 23 2013 Brian C. Lane <bcl@redhat.com> 19.8-1
 - Make sure we have a theme settings file in place. (clumens@redhat.com)
 - Keep liblzo2.* (#997643) (dshea@redhat.com)
