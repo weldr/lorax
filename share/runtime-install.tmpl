@@ -15,6 +15,7 @@ installpkg firstaidkit-plugin-{passwd,key-recovery,mdadm-conf}
 
 ## kernel and firmware
 installpkg kernel
+installpkg grubby
 %if basearch != "s390x":
     installpkg *-firmware
     installpkg b43-openfwwf
