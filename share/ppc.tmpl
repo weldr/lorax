@@ -36,7 +36,6 @@ treeinfo stage2 mainimage ${LIVEDIR}/squashfs.img
 mkdir ${BOOTDIR}
 ## boot stuff for normal (CHRP/PREP) PPC systems
 install ${configdir}/bootinfo.txt ${BOOTDIR}
-install boot/efika.forth ${BOOTDIR}
 
 mkdir ${GRUBDIR}/powerpc-ieee1275
 runcmd grub2-mkimage -O powerpc-ieee1275 -d  /usr/lib/grub/powerpc-ieee1275 -p '()/boot/grub' \

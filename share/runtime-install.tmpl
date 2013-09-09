@@ -35,7 +35,7 @@ installpkg grubby
     installpkg grub2 grub2-tools biosdevname memtest86+ syslinux
 %endif
 %if basearch in ("ppc", "ppc64"):
-    installpkg grub2 grub2-tools yaboot fbset hfsutils kernel-bootwrapper ppc64-utils
+    installpkg grub2 grub2-tools fbset hfsutils kernel-bootwrapper ppc64-utils
 %endif
 %if basearch == "s390x":
     installpkg lsscsi s390utils-base s390utils-cmsfs-fuse
