@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        20.0
+Version:        20.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -90,6 +90,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Mon Sep 09 2013 Brian C. Lane <bcl@redhat.com> 20.1-1
+- Yaboot to grub2 conversion cleanup. (dwa@redhat.com)
+- Firstboot is not an anaconda dependency (vpodzime@redhat.com)
+- Revert "Switch to cgit url for Source0" (bcl@redhat.com)
+- Switch to cgit url for Source0 (bcl@redhat.com)
+
 * Tue Sep 03 2013 Brian C. Lane <bcl@redhat.com> 20.0-1
 - remove firewalld from installroot (#1002195) (bcl@redhat.com)
 - Make sure grubby is installed for initrd creation (#1001896) (bcl@redhat.com)
