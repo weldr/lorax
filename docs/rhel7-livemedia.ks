@@ -3,18 +3,19 @@ sshpw --username=root --plaintext randOmStrinGhERE
 # Firewall configuration
 firewall --enabled --service=mdns
 # Use network installation
-url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/19/x86_64/os/"
+url --url=http://repo/rhel7.0/Server/os
+repo --name=optional --baseurl=http://repo/rhel7.0/Server/optional/os
 
 # X Window System configuration information
 xconfig  --startxonboot
 # Root password
 rootpw --plaintext removethispw
 # Network information
-network  --bootproto=dhcp --device=eth0 --onboot=on --activate
+network  --bootproto=dhcp --onboot=on --activate
 # System authorization information
 auth --useshadow --enablemd5
 # System keyboard
-keyboard us
+keyboard --xlayouts=us --vckeymap=us
 # System language
 lang en_US.UTF-8
 # SELinux configuration
@@ -346,9 +347,6 @@ gconftool-2 --direct --config-source=xml:readwrite:/etc/gconf/gconf.xml.defaults
 # Turn off PackageKit-command-not-found while uninstalled
 sed -i -e 's/^SoftwareSourceSearch=true/SoftwareSourceSearch=false/' /etc/PackageKit/CommandNotFound.conf
 
-# Use the animated laughlin background by default
-gconftool-2 --direct --config-source=xml:readwrite:/etc/gconf/gconf.xml.defaults -t str -s /desktop/gnome/background/picture_filename /usr/share/backgrounds/laughlin/default-tod/laughlin.xml
-
 EOF
 
 # Remove root password
@@ -361,27 +359,15 @@ cat /dev/null > /etc/fstab
 %end
 
 %packages
-@admin-tools
-@standard
-@base-x
 @core
-@dial-up
 @fonts
+@x11
 @gnome-desktop
-@graphical-internet
-@hardware-support
 @input-methods
-#@office
-#@printing
-#@sound-and-video
 anaconda
 isomd5sum
 kernel
-laughlin-backgrounds-animated-gnome
 memtest86+
-nss-mdns
--ibus-pinyin-db-open-phrase
--smartmontools
 grub2-efi
 grub2
 shim
