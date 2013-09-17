@@ -6,7 +6,7 @@ auth --useshadow --enablemd5
 selinux --enforcing
 firewall --service=ssh
 bootloader --location=none
-network --bootproto=dhcp --device=eth0 --onboot=on --activate
+network --bootproto=dhcp --onboot=on --activate
 services --enabled=network,sshd,rsyslog
 shutdown
 
