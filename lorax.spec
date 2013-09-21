@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.3
+Version:        19.6.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -86,6 +86,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Sep 20 2013 Brian C. Lane <bcl@redhat.com> 19.6.4-1
+- livemedia-creator: Fix gcdx64.efi path to work for other distros than Fedora
+  (#1003078) (bcl@redhat.com)
+- livemedia-creator: Update example kickstart for rhel7 (#922064)
+  (bcl@redhat.com)
+
 * Fri Aug 23 2013 Brian C. Lane <bcl@redhat.com> 19.6.3-1
 - Keep liblzo2.* (#997976) (dshea@redhat.com)
 
