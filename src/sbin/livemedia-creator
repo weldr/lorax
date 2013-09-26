@@ -772,9 +772,9 @@ if __name__ == '__main__':
                          help="Directory to copy the resulting images and iso into. "
                               "Defaults to the temporary working directory")
 
-    parser.add_argument( "--macboot", action="store_true", default=True,
+    parser.add_argument( "--macboot", action="store_true",
                          dest="domacboot")
-    parser.add_argument( "--nomacboot", action="store_false",
+    parser.add_argument( "--nomacboot", action="store_false", default=False,
                          dest="domacboot")
 
     # Group of arguments for appliance creation

@@ -138,7 +138,7 @@ class Lorax(BaseLoraxClass):
 
     def run(self, ybo, product, version, release, variant="", bugurl="",
             isfinal=False, workdir=None, outputdir=None, buildarch=None, volid=None,
-            domacboot=True, doupgrade=True, remove_temp=False):
+            domacboot=False, doupgrade=True, remove_temp=False):
 
         assert self._configured
 
