@@ -123,8 +123,10 @@ def main(args):
             help="build architecture", metavar="STRING")
     optional.add_option("--volid", default=None,
             help="volume id", metavar="STRING")
+    optional.add_option("--macboot", help="",
+            action="store_true", default=True, dest="domacboot")
     optional.add_option("--nomacboot", help="",
-            action="store_false", default=True, dest="domacboot")
+            action="store_false", dest="domacboot")
     optional.add_option("--noupgrade", help="",
             action="store_false", default=True, dest="doupgrade")
     optional.add_option("--logfile", default="./lorax.log",

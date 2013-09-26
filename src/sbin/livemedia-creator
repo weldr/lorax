@@ -521,7 +521,7 @@ def make_livecd(opts, mount_dir, work_dir):
         isolabel = isolabel[:32]
         log.warn("Truncating isolabel to 32 chars: %s" % (isolabel,))
 
-    tb = TreeBuilder(product=product, arch=arch,
+    tb = TreeBuilder(product=product, arch=arch, domacboot=opts.domacboot,
                      inroot=mount_dir, outroot=work_dir,
                      runtime=RUNTIME, isolabel=isolabel,
                      templatedir=joinpaths(opts.lorax_templates,"live/"))
@@ -771,6 +771,11 @@ if __name__ == '__main__':
                          type=os.path.abspath,
                          help="Directory to copy the resulting images and iso into. "
                               "Defaults to the temporary working directory")
+
+    parser.add_argument( "--macboot", action="store_true", default=True,
+                         dest="domacboot")
+    parser.add_argument( "--nomacboot", action="store_false",
+                         dest="domacboot")
 
     # Group of arguments for appliance creation
     app_group = parser.add_argument_group("appliance arguments")
