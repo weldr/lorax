@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.5
+Version:        19.6.6
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -86,6 +86,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Mon Oct 07 2013 Brian C. Lane <bcl@redhat.com> 19.6.6-1
+- livemedia-creator: Update minimal packages in README (#1003078) (bcl@redhat.com)
+- macboot defaults to no on rhel7 (#1012529) (bcl@redhat.com)
+- Add macboot option (#1012529) (bcl@redhat.com)
+
 * Wed Sep 25 2013 Brian C. Lane <bcl@redhat.com> 19.6.5-1
 - drop dracut args from config files (#1008054) (bcl@redhat.com)
 
