@@ -22,7 +22,7 @@ installpkg grubby
 
 ## arch-specific packages (bootloaders etc.)
 %if basearch in ("arm", "armhfp"):
-    installpkg kernel-lpae kernel-tegra
+    installpkg kernel-lpae
     installpkg uboot-tools
 %endif
 %if basearch == "i386":
