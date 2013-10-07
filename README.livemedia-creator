@@ -111,7 +111,7 @@ passwd -d root > /dev/null
 cat /dev/null > /dev/fstab
 
 11. Don't delete initramfs files from /boot in %post
-12. Have grub-efi, memtest86+ and syslinux in the package list
+12. Have grub2-efi, shim, memtest86+, isomd5sum and syslinux in the package list
 13. Omit dracut-config-rescue from the package list "-dracut-config-rescue"
 
 One drawback to using virt-install is that it pulls the packages from
