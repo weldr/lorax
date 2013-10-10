@@ -80,7 +80,7 @@ remove /usr/share/icons/*/icon-theme.cache
 ## clean up kernel modules
 <%
 removekmods = """
-sound drivers/media drivers/hwmon drivers/video drivers/char
+sound drivers/media drivers/hwmon drivers/video
 net/atm net/bluetooth net/sched net/sctp net/bridge
 net/rds net/l2tp net/decnet net/netfilter net/ipv4 net/ipv6
 drivers/watchdog drivers/target drivers/rtc drivers/input/joystick
@@ -94,6 +94,8 @@ arch/x86/kvm
     remove lib/modules/*/kernel/${kmodpath}
 %endfor
 remove lib/modules/*/{build,source,*.map}
+## Need to keep virtio_console.ko in drivers/char
+runcmd chroot ${root} find /lib/modules -regex ".*/kernel/drivers/char/.*" \! -name virtio_console.ko -delete
 ## NOTE: depmod gets re-run after cleanup finishes
 
 ## remove unused themes, theme engines, icons, etc.
