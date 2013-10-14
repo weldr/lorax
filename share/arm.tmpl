@@ -2,6 +2,7 @@
 <%
 configdir="tmp/config_files/uboot"
 PXEBOOTDIR="images/pxeboot"
+DTBDIR="images/pxeboot/dtb"
 BOOTDIR="boot"
 KERNELDIR=PXEBOOTDIR
 LIVEDIR="LiveOS"
@@ -20,6 +21,9 @@ delimiter = ''
 mkdir ${LIVEDIR}
 install ${runtime_img} ${LIVEDIR}/squashfs.img
 treeinfo stage2 mainimage ${LIVEDIR}/squashfs.img
+
+mkdir ${DTBDIR}
+install boot/dtb-*/*dtb  ${DTBDIR}/
 
 ## install kernels
 mkdir ${KERNELDIR}
