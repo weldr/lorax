@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        20.2
+Version:        20.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -92,6 +92,15 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Oct 16 2013 Brian C. Lane <bcl@redhat.com> 20.3-1
+- ARM: install the dtb files into the install tree. (dennis@ausil.us)
+- ARM: Don't install or deal with in templates, no longer existing kernels
+  (dennis@ausil.us)
+- kernel changed seperator for flavours from . to + update regular expression
+  (dennis@ausil.us)
+- Keep virtio_console module (#1019564) (bcl@redhat.com)
+- Add macboot option (#1012529) (bcl@redhat.com)
+
 * Wed Sep 25 2013 Brian C. Lane <bcl@redhat.com> 20.2-1
 - drop dracut args from config files (#1008054) (bcl@redhat.com)
 - livemedia-creator: Update example kickstart (bcl@redhat.com)
