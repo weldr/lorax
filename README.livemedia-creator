@@ -16,6 +16,14 @@ minimum you need:
 --iso to specify the Anaconda install media to use with virt-install
 --ks is the kickstart to use to install the system
 
+To use livemedia-creator with virt-install you will need to install the
+following packages, as well as have libvirtd setup correctly.
+  virt-install
+  libvirt-python
+
+If you are going to be using Anaconda directly, with --no-virt mode, make sure
+you have the anaconda package installed.
+
 
 QUICKSTART
 ----------
@@ -74,13 +82,18 @@ written using the Mako template system which is very flexible.
 
 KICKSTARTS
 ----------
-Existing spin kickstarts can be used to create live media with a few changes.
-Here are the steps I used to convert the XFCE spin.
+The docs/ directory includes two example kickstarts, one to create a live desktop
+iso using GNOME, and the other to create a minimal disk image. When creating your
+own kickstarts you should start with the minimal example, it includes several
+needed packages that are not always included by dependencies.
+
+Or you can use existing spin kickstarts to create live media with a few
+changes. Here are the steps I used to convert the Fedora XFCE spin.
 
 1. Flatten the xfce kickstart using ksflatten
 2. Add zerombr so you don't get the disk init dialog
 3. Add clearpart --all
-4. Add swap and biosboot partitions
+4. Add swap partition
 5. bootloader target
 6. Add shutdown to the kickstart
 7. Add network --bootproto=dhcp --activate to activate the network
@@ -96,7 +109,6 @@ network --bootproto=dhcp --activate
 zerombr
 clearpart --all
 bootloader --location=mbr
-part biosboot --size=1
 part swap --size=512
 shutdown
 
@@ -109,6 +121,9 @@ passwd -d root > /dev/null
 10. Remove /etc/fstab in %post, dracut handles mounting the rootfs
 
 cat /dev/null > /dev/fstab
+
+    Do this only for live iso's, the filesystem will be mounted read only if
+    there is no /etc/fstab
 
 11. Don't delete initramfs files from /boot in %post
 12. Have dracut-config-generic, grub-efi, memtest86+ and syslinux in the package
@@ -180,7 +195,7 @@ switch. This will create the partitioned disk image and an XML file that can be
 used with virt-image to setup a virtual system.
 
 The XML is generated using the Mako template from
-/usr/share/lorax/appliance/virt-image.xml You can use a different template by
+/usr/share/lorax/appliance/libvirt.xml You can use a different template by
 passing --app-template <template path>
 
 Documentation on the Mako template system can be found here:
@@ -204,6 +219,10 @@ networks        list of networks from the kickstart or []
 title           from --title
 project         from --project
 releasever      from --releasever
+
+The created image can be imported into libvirt using:
+
+virt-image appliance.xml
 
 
 DEBUGGING PROBLEMS
