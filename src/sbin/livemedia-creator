@@ -36,6 +36,7 @@ from time import sleep
 import shutil
 import argparse
 import hashlib
+import re
 
 # Use pykickstart to calculate disk image size
 from pykickstart.parser import KickstartParser
@@ -123,12 +124,17 @@ class LogRequestHandler(SocketServer.BaseRequestHandler):
         """
         Check a line to see if it contains an error indicating install failure
         """
-        simple_tests = [ "Traceback (",
-                         "Out of memory:",
-                         "Call Trace:",
-                         "insufficient disk space:" ]
+        simple_tests = ["Traceback (",
+                        "Out of memory:",
+                        "Call Trace:",
+                        "insufficient disk space:"]
+        re_tests =     [r"WARNING packaging: base repo .* not valid"]
         for t in simple_tests:
-            if line.find( t ) > -1:
+            if line.find(t) > -1:
+                self.server.log_error = True
+                return
+        for t in re_tests:
+            if re.search(t, line):
                 self.server.log_error = True
                 return
 
@@ -406,7 +412,7 @@ def make_appliance(disk_img, name, template, outfile, networks=None, ram=1024,
     if not (disk_img and template and outfile):
         return None
 
-    log.info("Creating appliance definition using ${0}".format(template))
+    log.info("Creating appliance definition using {0}".format(template))
 
     if not arch:
         arch = "x86_64"
@@ -791,7 +797,7 @@ if __name__ == '__main__':
         virt_group = parser.add_argument_group("virt-install arguments (DISABLED -- no libvirt)")
     else:
         virt_group = parser.add_argument_group("virt-install arguments")
-    virt_group.add_argument("--ram", metavar="MEMORY", default=1024,
+    virt_group.add_argument("--ram", metavar="MEMORY", type=int, default=1024,
                             help="Memory to allocate for installer in megabytes." )
     virt_group.add_argument("--vcpus", default=1,
                             help="Passed to --vcpus command" )
