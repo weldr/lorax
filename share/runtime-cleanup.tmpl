@@ -337,6 +337,10 @@ removefrom ${product.name}-logos /etc/*
 removefrom ${product.name}-logos /usr/share/icons/{Bluecurve,oxygen}/*
 removefrom ${product.name}-logos /usr/share/{firstboot,gnome-screensaver,kde4,pixmaps}/*
 
+## RHEL cleanups
+removefrom subscription-manager --allbut /etc/rhsm/* /usr/share/rhsm/* /var/log/rhsm/* \
+    /etc/yum/pluginconf.d/product-id.conf /usr/lib/yum-plugins/product-id.py
+
 ## cleanup_python_files()
 runcmd find ${root} -name "*.pyo" -type f -delete
 runcmd find ${root} -name "*.pyc" -type f -exec ln -sf /dev/null {} \;
