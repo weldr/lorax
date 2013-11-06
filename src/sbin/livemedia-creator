@@ -143,9 +143,11 @@ class LogRequestHandler(SocketServer.BaseRequestHandler):
         simple_tests = ["Traceback (",
                         "Out of memory:",
                         "Call Trace:",
-                        "insufficient disk space:"]
-        re_tests =     [r"WARNING packaging: base repo .* not valid",
-                        r"WARNING packaging: .* requires .*"]
+                        "insufficient disk space:",
+                        "error populating transaction after",
+                        "traceback script(s) have been run"]
+        re_tests =     [r"packaging: base repo .* not valid",
+                        r"packaging: .* requires .*"]
         for t in simple_tests:
             if t in line:
                 self.server.log_error = True
