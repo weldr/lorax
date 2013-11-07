@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.8
+Version:        19.6.9
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -86,6 +86,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Thu Nov 07 2013 Brian C. Lane <bcl@redhat.com> 19.6.9-1
+- Install subscription-manager (#1026304) (bcl@redhat.com)
+  Resolves: rhbz#1026304
 * Fri Nov 01 2013 Brian C. Lane <bcl@redhat.com> 19.6.8-1
 - Set UEFI defaults to match BIOS (#1021451,#1021446) (bcl@redhat.com)
   Resolves: rhbz#1021451
