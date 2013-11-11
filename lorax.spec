@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.9
+Version:        19.6.10
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -86,6 +86,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Mon Nov 11 2013 Vratislav Podzimek <vpodzime@redhat.com> 19.6.10-1
+- Do not remove libdaemon from the runtime environment (vpodzime)
+  Resolves: rhbz#1028938
+
 * Thu Nov 07 2013 Brian C. Lane <bcl@redhat.com> 19.6.9-1
 - Install subscription-manager (#1026304) (bcl@redhat.com)
   Resolves: rhbz#1026304
