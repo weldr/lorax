@@ -51,6 +51,11 @@ installpkg fedup-dracut fedup-dracut-plymouth
 log "Looking for extra fedup-dracut packages..."
 -installpkg *-fedup-dracut
 
+## redhat-upgrade-dracut handles upgrades on RHEL
+installpkg redhat-upgrade-dracut redhat-upgrade-dracut-plymouth
+log "Looking for extra redhat-upgrade-dracut packages..."
+-installpkg *-redhat-upgrade-dracut
+
 ## rpcbind or portmap needed by dracut nfs module
 installpkg rpcbind
 

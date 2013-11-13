@@ -302,14 +302,14 @@ class Lorax(BaseLoraxClass):
             # image, but that would increase the size of the anaconda initramfs,
             # which worries some people (esp. PPC tftpboot). So they're separate.
             try:
-                # If possible, use the 'fedup' plymouth theme
+                # If possible, use the 'redhat-upgrade-tool' plymouth theme
                 themes = runcmd_output(['plymouth-set-default-theme', '--list'],
                                        root=installroot)
-                if 'fedup' in themes.splitlines():
-                    os.environ['PLYMOUTH_THEME_NAME'] = 'fedup'
+                if 'redhat-upgrade-tool' in themes.splitlines():
+                    os.environ['PLYMOUTH_THEME_NAME'] = 'redhat-upgrade-tool'
             except RuntimeError:
                 pass
-            upgrade_args = dracut_args + ["--add", "system-upgrade"]
+            upgrade_args = dracut_args + ["--add", "system-upgrade convertfs"]
             treebuilder.rebuild_initrds(add_args=upgrade_args, prefix="upgrade")
 
         logger.info("populating output tree and building boot images")

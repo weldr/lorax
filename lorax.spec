@@ -42,6 +42,12 @@ Requires:       fedup-dracut
 Requires:       fedup-dracut-plymouth
 %endif
 
+%if 0%{?el7}
+# RHEL 7 specific deps
+Requires:       redhat-upgrade-dracut
+Requires:       redhat-upgrade-dracut-plymouth
+%endif
+
 %ifarch %{ix86} x86_64
 Requires:       syslinux >= 4.02-5
 %endif
