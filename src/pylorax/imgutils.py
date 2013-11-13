@@ -25,6 +25,7 @@ from os.path import join, dirname
 from subprocess import CalledProcessError
 import sys
 import traceback
+import multiprocessing
 from time import sleep
 
 from pylorax.sysutils import cpfile
@@ -44,6 +45,13 @@ def mkcpio(rootdir, outfile, compression="xz", compressargs=["-9"]):
     if compression is None:
         compression = "cat" # this is a little silly
         compressargs = []
+
+    # make compression run with multiple threads if possible
+    if compression in ("xz", "lzma"):
+        compressargs.insert(0, "-T%d" % multiprocessing.cpu_count())
+    elif compression == "gzip":
+        compression = "pigz"
+
     logger.debug("mkcpio %s | %s %s > %s", rootdir, compression,
                                         " ".join(compressargs), outfile)
     find = Popen(["find", ".", "-print0"], stdout=PIPE, cwd=rootdir)

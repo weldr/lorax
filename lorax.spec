@@ -32,6 +32,7 @@ Requires:       python-mako
 Requires:       squashfs-tools >= 4.2
 Requires:       util-linux
 Requires:       xz
+Requires:       pigz
 Requires:       yum
 Requires:       pykickstart
 Requires:       dracut >= 030
