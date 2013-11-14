@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.10
+Version:        19.6.11
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -92,6 +92,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Thu Nov 14 2013 Brian C. Lane <bcl@redhat.com> 19.6.11-1
+- Create upgrade.img using redhat-upgrade-dracut (dshea@redhat.com)
+
 * Mon Nov 11 2013 Vratislav Podzimek <vpodzime@redhat.com> 19.6.10-1
 - Do not remove libdaemon from the runtime environment (vpodzime)
   Resolves: rhbz#1028938
