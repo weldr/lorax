@@ -9,6 +9,7 @@ mkdir ${EFIBOOTDIR}
 mkdir ${EFIBOOTDIR}/fonts/
 install boot/efi/EFI/*/shim.efi ${EFIBOOTDIR}/BOOT${efiarch}.efi
 install boot/efi/EFI/*/MokManager.efi ${EFIBOOTDIR}/
+install usr/share/shim/lockdown.efi ${EFIBOOTDIR}/
 install boot/efi/EFI/*/gcdx64.efi ${EFIBOOTDIR}/grubx64.efi
 install boot/efi/EFI/*/fonts/unicode.pf2 ${EFIBOOTDIR}/fonts/
 
