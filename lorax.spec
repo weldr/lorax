@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.12
+Version:        19.6.13
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -92,6 +92,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Nov 15 2013 Brian C. Lane <bcl@redhat.com> 19.6.13-1
+- Add SB lockdown to EFI grub menu (#1030495) (bcl@redhat.com)
+  Resolves: rhbz#1030495
+
 * Thu Nov 14 2013 Brian C. Lane <bcl@redhat.com> 19.6.12-1
 - Include partx (#1022899) (bcl@redhat.com)
   Resolves: rhbz#1022899
