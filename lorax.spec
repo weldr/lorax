@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        20.3
+Version:        20.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -93,6 +93,17 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Mon Nov 18 2013 Brian C. Lane <bcl@redhat.com> 20.4-1
+- drop 'xdriver=vesa' from basic graphics mode parameters (per ajax)
+  (awilliam@redhat.com)
+- Include partx (#1022899) (bcl@redhat.com)
+- Run compressions in multiple threads (vpodzime@redhat.com)
+- Do not remove libdaemon from the runtime environment (#1028938)
+  (vpodzime@redhat.com)
+- Set UEFI defaults to match BIOS (#1021451,#1021446) (bcl@redhat.com)
+- livemedia-creator: Add minimal disk example kickstart (#1019728)
+  (bcl@redhat.com)
+
 * Wed Oct 16 2013 Brian C. Lane <bcl@redhat.com> 20.3-1
 - ARM: install the dtb files into the install tree. (dennis@ausil.us)
 - ARM: Don't install or deal with in templates, no longer existing kernels
