@@ -294,7 +294,8 @@ class Lorax(BaseLoraxClass):
             else:
                 logger.info("no BCJ filter for arch %s", self.arch.basearch)
         rb.create_runtime(joinpaths(installroot,runtime),
-                          compression=compression, compressargs=compressargs)
+                          compression=compression, compressargs=compressargs,
+                          size=size)
 
         logger.info("preparing to build output tree and boot images")
         treebuilder = TreeBuilder(product=self.product, arch=self.arch,
