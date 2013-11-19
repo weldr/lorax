@@ -558,6 +558,11 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
         selinux_enforcing = True
         selinux.security_setenforce(0)
 
+    # Clean up /tmp/ from previous runs to prevent stale info from being used
+    for path in ["/tmp/yum.repos.d/", "/tmp/yum.cache/"]:
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+
     args = ["--kickstart", opts.ks[0], "--cmdline", "--repo", repo_url]
     if opts.anaconda_args:
         for arg in opts.anaconda_args:
