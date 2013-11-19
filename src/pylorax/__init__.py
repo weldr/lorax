@@ -138,7 +138,7 @@ class Lorax(BaseLoraxClass):
 
     def run(self, ybo, product, version, release, variant="", bugurl="",
             isfinal=False, workdir=None, outputdir=None, buildarch=None, volid=None,
-            domacboot=True, doupgrade=True, remove_temp=False):
+            domacboot=True, doupgrade=True, remove_temp=False, size=2):
 
         assert self._configured
 
@@ -282,7 +282,8 @@ class Lorax(BaseLoraxClass):
             else:
                 logger.info("no BCJ filter for arch %s", self.arch.basearch)
         rb.create_runtime(joinpaths(installroot,runtime),
-                          compression=compression, compressargs=compressargs)
+                          compression=compression, compressargs=compressargs,
+                          size=size)
 
         logger.info("preparing to build output tree and boot images")
         treebuilder = TreeBuilder(product=self.product, arch=self.arch,
