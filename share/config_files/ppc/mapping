@@ -23,5 +23,6 @@ RELEASE_NOTES   Ascii   'ttxt'  'ttro'  "Text File"
 .tbxi           Raw     'chrp'  'tbxi'  "Macintosh Toolbox ROM file"
 .sea            Raw     'aust'  'APPL'  "Self Expanding Archive"
 .sit            Raw     'SIT!'  'SITD'  "Stuffit Expander file"
+core.elf        Raw     'chrp'  'tbxi'  "Bootable GRUB2 executable."
 *               Raw     '????'  '????'  "Unknown"
 
