@@ -21,6 +21,9 @@ installpkg kernel
 %endif
 
 ## arch-specific packages (bootloaders etc.)
+%if basearch == "aarch64":
+    installpkg grub2-efi grubby
+%endif
 %if basearch in ("arm", "armhfp"):
     installpkg kernel-lpae kernel-tegra
     installpkg uboot-tools

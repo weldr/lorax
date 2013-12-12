@@ -37,6 +37,7 @@ templatemap = {
     'ppc64':   'ppc.tmpl',
     's390':    's390.tmpl',
     's390x':   's390.tmpl',
+    'aarch64': 'aarch64.tmpl',
     'arm':     'arm.tmpl',
     'armhfp':  'arm.tmpl',
 }
