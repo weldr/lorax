@@ -50,7 +50,7 @@ from discinfo import DiscInfo
 from executils import runcmd, runcmd_output
 
 class ArchData(DataHolder):
-    lib64_arches = ("x86_64", "ppc64", "s390x", "ia64")
+    lib64_arches = ("x86_64", "ppc64", "s390x", "ia64", "aarch64")
     bcj_arch = dict(i386="x86", x86_64="x86",
                     ppc="powerpc", ppc64="powerpc",
                     arm="arm", armhfp="arm")
