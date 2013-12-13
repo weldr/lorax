@@ -3,7 +3,7 @@
 
 <%page args="root, basearch, libdir, configdir"/>
 <%
-PYTHONDIR = glob("usr/"+libdir+"/python?.?")[0]
+PYTHONDIR = sorted(glob("usr/"+libdir+"/python?.?"))[0]
 stubs = ("list-harddrives", "raidstart", "raidstop")
 configdir = configdir + "/common"
 %>
