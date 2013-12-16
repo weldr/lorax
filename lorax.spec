@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        20.4
+Version:        21.0
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -93,6 +93,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Mon Dec 16 2013 Brian C. Lane <bcl@redhat.com> 21.0-1
+- s390 switch to generic condev (#1042766) (bcl@redhat.com)
+- sort glob output before using it (bcl@redhat.com)
+- Bless grub2 for PPC (#1020112) (catacombae@gmail.com)
+- livemedia-creator: Cleanup temp yum files (#1025837) (bcl@redhat.com)
+- lorax: pass size from Lorax.run to create_runtime (#903385) (bcl@redhat.com)
+
 * Mon Nov 18 2013 Brian C. Lane <bcl@redhat.com> 20.4-1
 - drop 'xdriver=vesa' from basic graphics mode parameters (per ajax)
   (awilliam@redhat.com)
