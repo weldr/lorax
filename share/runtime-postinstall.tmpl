@@ -38,6 +38,10 @@ systemctl mask fedora-configure.service fedora-loadmodules.service \
                fedora-autorelabel.service fedora-autorelabel-mark.service \
                fedora-wait-storage.service media.mount
 
+## Make logind activate anaconda-shell@.service on switch to empty VT
+symlink anaconda-shell@.service lib/systemd/system/autovt@.service
+replace "#ReserveVT=6" "ReserveVT=2" etc/systemd/logind.conf
+
 ## Don't write the journal to the overlay, just keep it in RAM
 remove var/log/journal
 
