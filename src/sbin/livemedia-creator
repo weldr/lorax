@@ -907,6 +907,9 @@ if __name__ == '__main__':
 
     # Parse the kickstart
     if opts.ks:
+        if not os.path.exists(opts.ks[0]):
+            log.error("kickstart file ({0}) is missing.".format(opts.ks[0]))
+            sys.exit(1)
         ks_version = makeVersion()
         ks = KickstartParser( ks_version, errorsAreFatal=False, missingIncludeIsFatal=False )
         ks.readKickstart( opts.ks[0] )
