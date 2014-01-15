@@ -49,6 +49,7 @@ from mako.exceptions import text_error_template
 # Use the Lorax treebuilder branch for iso creation
 from pylorax.base import DataHolder
 from pylorax.treebuilder import TreeBuilder, RuntimeBuilder, udev_escape
+from pylorax.treebuilder import findkernels
 from pylorax.sysutils import joinpaths, remove
 from pylorax.imgutils import PartitionMount, mksparse, mkext4img, loop_detach
 from pylorax.imgutils import get_loop_name, dm_detach, mount, umount, Mount
@@ -352,43 +353,14 @@ def is_image_mounted(disk_img):
     return False
 
 
-class KernelInfo(object):
+def get_arch(mount_dir):
+    """ Return the arch of the first kernel at <mount_dir>/boot/
+        or return i386
     """
-    Info about the kernels in boot_dir
-    """
-    def __init__(self, boot_dir):
-        self.boot_dir = boot_dir
-        self.list = self.get_kernels()
-        self.arch = self.get_kernel_arch()
-        log.debug("kernel_list for {0.boot_dir} = {0.list}".format(self))
-        log.debug("kernel_arch is {0.arch}".format(self))
-
-    def get_kernels(self):
-        """
-        Get a list of the kernels in the boot_dir
-
-        Examine the vmlinuz-* versions and return a list of them
-
-        Ignore any with -rescue- in them, these are dracut rescue images.
-        The user shoud add
-        -dracut-config-rescue
-        to the kickstart to remove them, but catch it here as well.
-        """
-        files = os.listdir(self.boot_dir)
-        return [f[8:] for f in files if f.startswith("vmlinuz-") \
-                and f.find("-rescue-") == -1]
-
-    def get_kernel_arch(self):
-        """
-        Get the arch of the first kernel in boot_dir
-
-        Defaults to i386
-        """
-        if self.list:
-            kernel_arch = self.list[0].split(".")[-1]
-        else:
-            kernel_arch = "i386"
-        return kernel_arch
+    kernels = findkernels(mount_dir)
+    if not kernels:
+        return "i386"
+    return kernels[0].arch
 
 
 def make_appliance(disk_img, name, template, outfile, networks=None, ram=1024,
@@ -466,12 +438,12 @@ def make_runtime(opts, mount_dir, work_dir):
 
     Result is in work_dir+RUNTIME
     """
-    kernels = KernelInfo(joinpaths(mount_dir, "boot" ))
+    kernel_arch = get_arch(mount_dir)
 
     # Fake yum object
     fake_yum = DataHolder(conf=DataHolder(installroot=mount_dir))
     # Fake arch with only basearch set
-    arch = DataHolder(basearch=kernels.arch, libdir=None, buildarch=None)
+    arch = DataHolder(basearch=kernel_arch, libdir=None, buildarch=None)
     # TODO: Need to get release info from someplace...
     product = DataHolder(name=opts.project, version=opts.releasever, release="",
                             variant="", bugurl="", isfinal=False)
@@ -500,9 +472,9 @@ def make_livecd(opts, mount_dir, work_dir):
     mounts that and then mounts LiveOS/rootfs.img as /
 
     """
-    kernels = KernelInfo(joinpaths(mount_dir, "boot" ))
+    kernel_arch = get_arch(mount_dir)
 
-    arch = DataHolder(basearch=kernels.arch, libdir=None, buildarch=None)
+    arch = DataHolder(basearch=kernel_arch, libdir=None, buildarch=None)
     # TODO: Need to get release info from someplace...
     product = DataHolder(name=opts.project, version=opts.releasever, release="",
                             variant="", bugurl="", isfinal=False)
