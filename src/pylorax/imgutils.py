@@ -318,6 +318,9 @@ def mkfsimage(fstype, rootdir, outfile, size=None, mkfsargs=[], mountargs="", gr
                 copytree(rootdir, mnt, preserve)
             do_grafts(graft, mnt, preserve)
 
+    # Make absolutely sure that the data has been written
+    runcmd(["sync"])
+
 # convenience functions with useful defaults
 def mkdosimg(rootdir, outfile, size=None, label="", mountargs="shortname=winnt,umask=0077", graft={}):
     mkfsimage("msdos", rootdir, outfile, size, mountargs=mountargs,
