@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.15
+Version:        19.6.16
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -92,6 +92,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Jan 24 2014 Brian C. Lane <bcl@redhat.com> 19.6.16-1
+- Activate anaconda-shell@.service on switch to empty VT (#980062)
+  (wwoods@redhat.com)
+- flush data to disk after mkfsimage (#1052175) (bcl@redhat.com)
+
 * Tue Dec 17 2013 Brian C. Lane <bcl@redhat.com> 19.6.15-1
 - Add initial 64-bit ARM (aarch64) support (#1034432) (dmarlin@redhat.com)
 
