@@ -292,7 +292,8 @@ class Lorax(BaseLoraxClass):
                                   templatedir=templatedir)
 
         logger.info("rebuilding initramfs images")
-        dracut_args = ["--xz", "--install", "/.buildstamp"]
+        dracut_args = ["--xz", "--install", "/.buildstamp",
+                       "--omit-drivers", "floppy scsi_debug"]
 
         anaconda_args = dracut_args + ["--add", "anaconda pollcdrom"]
         treebuilder.rebuild_initrds(add_args=anaconda_args)
