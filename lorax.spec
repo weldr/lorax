@@ -79,8 +79,7 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %files
 %defattr(-,root,root,-)
 %doc COPYING AUTHORS README.livemedia-creator
-%doc docs/fedora-livemedia.ks
-%doc docs/fedora-livemedia-ec2.ks
+%doc docs/*ks
 %{python_sitelib}/pylorax
 %{python_sitelib}/*.egg-info
 %{_sbindir}/lorax
