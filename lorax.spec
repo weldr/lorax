@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.2
+Version:        21.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -93,6 +93,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Feb 04 2014 Brian C. Lane <bcl@redhat.com> 21.3-1
+- Install aajohan-comfortaa-fonts (#1047430) (bcl@redhat.com)
+- Include mesa-dri-drivers (#1053940) (bcl@redhat.com)
+
 * Fri Jan 24 2014 Brian C. Lane <bcl@redhat.com> 21.2-1
 - Activate anaconda-shell@.service on switch to empty VT (#980062)
   (wwoods@redhat.com)
