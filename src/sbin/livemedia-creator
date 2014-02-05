@@ -430,7 +430,7 @@ def make_appliance(disk_img, name, template, outfile, networks=None, ram=1024,
                            checksum_type="sha256", checksum=sha256.hexdigest())
     try:
         result = Template(filename=template).render(disks=[disk_info], name=name,
-                          arch=arch, memory=ram*1024, vcpus=vcpus, networks=networks,
+                          arch=arch, memory=ram, vcpus=vcpus, networks=networks,
                           title=title, project=project, releasever=releasever)
     except Exception:
         log.error(text_error_template().render())
