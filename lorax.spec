@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.3
+Version:        21.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -92,6 +92,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Mon Feb 10 2014 Brian C. Lane <bcl@redhat.com> 21.4-1
+- livemedia-creator: virt-image needs ram in MiB not KiB (#1061773)
+  (bcl@redhat.com)
+- Don't remove libraries from bind-libs-lite (dshea@redhat.com)
+- Include all the example kickstarts (#1019728) (bcl@redhat.com)
+- Remove floppy and scsi_debug from initrd (#1060691) (bcl@redhat.com)
+
 * Tue Feb 04 2014 Brian C. Lane <bcl@redhat.com> 21.3-1
 - Install aajohan-comfortaa-fonts (#1047430) (bcl@redhat.com)
 - Include mesa-dri-drivers (#1053940) (bcl@redhat.com)
