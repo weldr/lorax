@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.20
+Version:        19.6.21
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -92,6 +92,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Thu Feb 13 2014 Brian C. Lane <bcl@redhat.com> 19.6.21-1
+- Check initrd size on ppc64 and warn (#1060691) (bcl@redhat.com)
+- Remove drivers and modules on ppc64 (#1060691) (bcl@redhat.com)
+
 * Wed Feb 12 2014 Brian C. Lane <bcl@redhat.com> 19.6.20-1
 - Include mesa-dri-drivers (#1053940) (bcl@redhat.com)
 
