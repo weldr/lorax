@@ -49,6 +49,10 @@ from treeinfo import TreeInfo
 from discinfo import DiscInfo
 from executils import runcmd, runcmd_output
 
+# List of drivers to remove on ppc64 arch to keep initrd < 32MiB
+REMOVE_PPC64_DRIVERS = "floppy scsi_debug nouveau radeon cirrus mgag200"
+REMOVE_PPC64_MODULES = "drm plymouth"
+
 class ArchData(DataHolder):
     lib64_arches = ("x86_64", "ppc64", "s390x", "ia64", "aarch64")
     bcj_arch = dict(i386="x86", x86_64="x86",
@@ -292,8 +296,12 @@ class Lorax(BaseLoraxClass):
                                   templatedir=templatedir)
 
         logger.info("rebuilding initramfs images")
-        dracut_args = ["--xz", "--install", "/.buildstamp",
-                       "--omit-drivers", "floppy scsi_debug"]
+        dracut_args = ["--xz", "--install", "/.buildstamp"]
+
+        # ppc64 cannot boot an initrd > 32MiB so remove some drivers
+        if self.arch.basearch == "ppc64":
+            dracut_args.extend(["--omit-drivers", REMOVE_PPC64_DRIVERS])
+            dracut_args.extend(["--omit", REMOVE_PPC64_MODULES])
 
         anaconda_args = dracut_args + ["--add", "anaconda pollcdrom"]
         treebuilder.rebuild_initrds(add_args=anaconda_args)
