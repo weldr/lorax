@@ -7,17 +7,11 @@ installpkg anaconda anaconda-widgets
 installpkg tmux
 installpkg firstboot
 installpkg iscsi-initiator-utils
-## speed up compression on multicore systems
-installpkg pigz
-
-## firstaidkit (rescue mode) packages
-installpkg firstaidkit-plugin-{passwd,key-recovery,mdadm-conf}
 
 ## kernel and firmware
 installpkg kernel
 %if basearch != "s390x":
     installpkg *-firmware
-    installpkg b43-openfwwf
 %endif
 
 ## arch-specific packages (bootloaders etc.)
@@ -47,12 +41,6 @@ installpkg plymouth
 
 ## extra dracut modules
 installpkg anaconda-dracut dracut-network dracut-config-generic
-
-## fedup-dracut handles upgrades
-installpkg fedup-dracut fedup-dracut-plymouth
-## install other fedup scripts, if there are any. It's OK if there aren't.
-log "Looking for extra fedup-dracut packages..."
--installpkg *-fedup-dracut
 
 ## redhat-upgrade-dracut handles upgrades on RHEL
 installpkg redhat-upgrade-dracut redhat-upgrade-dracut-plymouth
@@ -87,7 +75,7 @@ installpkg gnome-keyring
 installpkg python-imaging
 
 ## filesystem tools
-installpkg btrfs-progs jfsutils xfsprogs reiserfs-utils gfs2-utils ntfs-3g ntfsprogs
+installpkg btrfs-progs xfsprogs gfs2-utils 
 installpkg python-volume_key volume_key
 installpkg system-storage-manager
 installpkg device-mapper-persistent-data
@@ -107,7 +95,7 @@ installpkg net-tools
 installpkg pciutils usbutils
 installpkg mt-st smartmontools
 %if basearch != "s390x":
-installpkg hdparm pcmciautils
+installpkg hdparm
 %endif
 installpkg libmlx4
 
@@ -132,18 +120,16 @@ installpkg xorg-x11-fonts-misc
 installpkg gnome-themes-standard gnome-icon-theme-legacy
 
 ## branding & logos
-installpkg fedora-gnome-theme fedora-icon-theme
+installpkg fedora-gnome-theme
 
 ## debugging/bug reporting tools
 installpkg gdb-gdbserver
-installpkg python-epdb
 installpkg libreport-plugin-bugzilla libreport-plugin-reportuploader
-installpkg fpaste
 
 ## extra tools not required by anaconda
 installpkg vim-minimal strace lsof dump xz less eject
-installpkg wget rsync rsh bind-utils ftp mtr vconfig
-installpkg icfg spice-vdagent
+installpkg wget rsync rsh bind-utils ftp mtr
+installpkg spice-vdagent
 installpkg gdisk
 
 ## yum plugins
