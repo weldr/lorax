@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.21
+Version:        19.6.22
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -92,6 +92,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Feb 18 2014 Brian C. Lane <bcl@redhat.com> 19.6.22-1
+- fedora- services are named rhel- (#1066118) (bcl@redhat.com)
+- Remove unneeded packages from runtime-install (#1065557) (bcl@redhat.com)
+
 * Thu Feb 13 2014 Brian C. Lane <bcl@redhat.com> 19.6.21-1
 - Check initrd size on ppc64 and warn (#1060691) (bcl@redhat.com)
 - Remove drivers and modules on ppc64 (#1060691) (bcl@redhat.com)
