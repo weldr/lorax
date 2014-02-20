@@ -2,7 +2,6 @@
 <%
 configdir="tmp/config_files/aarch64"
 PXEBOOTDIR="images/pxeboot"
-BOOTDIR="boot"
 KERNELDIR=PXEBOOTDIR
 LIVEDIR="LiveOS"
 %>
@@ -10,15 +9,6 @@ LIVEDIR="LiveOS"
 mkdir ${LIVEDIR}
 install ${runtime_img} ${LIVEDIR}/squashfs.img
 treeinfo stage2 mainimage ${LIVEDIR}/squashfs.img
-
-## install bootloader and config files
-mkdir ${BOOTDIR}
-install ${configdir}/boot.msg ${BOOTDIR}
-install ${configdir}/grub2-efi.cfg ${BOOTDIR}
-
-## configure bootloader
-replace @VERSION@ ${product.version} ${BOOTDIR}/grub2-efi.cfg ${BOOTDIR}/*.msg
-replace @PRODUCT@ '${product.name}'  ${BOOTDIR}/grub2-efi.cfg ${BOOTDIR}/*.msg
 
 ## install kernels
 mkdir ${KERNELDIR}
@@ -35,7 +25,7 @@ mkdir ${KERNELDIR}
 ## WHeeeeeeee, EFI.
 ## We could remove the basearch restriction someday..
 <% efiargs=""; efigraft="" %>
-%if exists("boot/efi/EFI/*/gcdaa64.efi"):
+%if exists("boot/efi/EFI/*/grubaa64.efi"):
     <%
     efiarch = 'AARCH64'
     efigraft="EFI/BOOT={0}/EFI/BOOT".format(outroot)
