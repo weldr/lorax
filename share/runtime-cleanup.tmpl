@@ -17,7 +17,6 @@ removepkg libcrystalhd crystalhd-firmware ivtv-firmware cx18-firmware
 ## we don't create new initramfs/bootloader conf inside anaconda
 ## (that happens inside the target system after we install dracut/grubby)
 removepkg dracut-network grubby anaconda-dracut
-removefrom ${product.name}-logos /usr/share/plymouth/*
 ## In order to execute the /usr move on upgrades we need convertfs from dracut
 ## We also need dracut-shutdown.service and dracut-initramfs-restore to reboot
 removefrom dracut --allbut /usr/lib/dracut/modules.d/30convertfs/convertfs.sh \
@@ -332,9 +331,10 @@ removefrom xorg-x11-drv-wacom /usr/bin/*
 removefrom xorg-x11-fonts-misc --allbut /usr/share/X11/fonts/misc/{6x13,encodings,fonts,*cursor}*
 removefrom xorg-x11-server-utils --allbut /usr/bin/xrandr /usr/share/X11/rgb.txt
 removefrom yum /etc/* /usr/share/locale/* /usr/share/yum-cli/*
-removefrom ${product.name}-logos /etc/*
-removefrom ${product.name}-logos /usr/share/icons/{Bluecurve,oxygen}/*
-removefrom ${product.name}-logos /usr/share/{firstboot,gnome-screensaver,kde4,pixmaps}/*
+removefrom redhat-logos /etc/*
+removefrom redhat-logos /usr/share/icons/{Bluecurve,oxygen}/*
+removefrom redhat-logos /usr/share/{firstboot,gnome-screensaver,kde4,pixmaps}/*
+removefrom redhat-logos /usr/share/{plymouth,backgrounds}*
 
 ## RHEL cleanups
 removefrom subscription-manager --allbut /etc/rhsm/* /usr/share/rhsm/* /var/log/rhsm/* \
