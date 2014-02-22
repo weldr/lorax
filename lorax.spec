@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.22
+Version:        19.6.23
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -92,6 +92,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Feb 21 2014 Brian C. Lane <bcl@redhat.com> 19.6.23-1
+- livemedia-creator: Set the product and release version env variables (bcl@redhat.com)
+  Resolves: rhbz#1067746
+- Remove unneeded images from the product -logos (bcl@redhat.com)
+  Resolves: rhbz#1068721
+
 * Tue Feb 18 2014 Brian C. Lane <bcl@redhat.com> 19.6.22-1
 - fedora- services are named rhel- (#1066118) (bcl@redhat.com)
 - Remove unneeded packages from runtime-install (#1065557) (bcl@redhat.com)
