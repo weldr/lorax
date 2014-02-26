@@ -38,8 +38,6 @@ removepkg gnupg2 pinentry
 removepkg cups-libs iscan-firmware
 ## no storage device monitoring
 removepkg device-mapper-event dmraid-events sgpio
-## we don't (currently) support deltarpms in anaconda
-removepkg deltarpm
 ## no notifications in anaconda
 removepkg notification-daemon
 ## logrotate isn't useful in anaconda
@@ -161,7 +159,6 @@ removefrom coreutils /usr/bin/who /usr/bin/whoami /usr/bin/yes /usr/share/*
 removefrom cpio /usr/share/*
 removefrom cracklib /usr/sbin/*
 removefrom cracklib-dicts /usr/${libdir}/* /usr/sbin/*
-removefrom createrepo /usr/bin/* /usr/share/*
 removefrom cryptsetup-luks /usr/share/*
 removefrom cyrus-sasl-lib /usr/sbin/*
 removefrom db4 /usr/*
