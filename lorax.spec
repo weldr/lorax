@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.24
+Version:        19.6.25
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -92,6 +92,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Feb 26 2014 Brian C. Lane <bcl@redhat.com> 19.6.25-1
+- createrepo is needed by driver disks (bcl@redhat.com)
+  Related: rhbz#1016004
 * Tue Feb 25 2014 Brian C. Lane <bcl@redhat.com> 19.6.24-1
 - Improve aarch64 UEFI support (dmarlin@redhat.com)
   Resolves: rhbz#1067671
