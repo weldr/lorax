@@ -13,10 +13,12 @@ install boot/efi/EFI/*/grubaa64.efi ${EFIBOOTDIR}/grubaa64.efi
 %else:
 install boot/efi/EFI/*/shim.efi ${EFIBOOTDIR}/BOOT${efiarch}.efi
 install boot/efi/EFI/*/MokManager.efi ${EFIBOOTDIR}/
-install usr/share/shim/lockdown.efi ${EFIBOOTDIR}/
 install boot/efi/EFI/*/gcdx64.efi ${EFIBOOTDIR}/grubx64.efi
 %endif
 install boot/efi/EFI/*/fonts/unicode.pf2 ${EFIBOOTDIR}/fonts/
+%if exists("usr/share/shim/lockdown.efi"):
+    install usr/share/shim/lockdown.efi ${EFIBOOTDIR}/
+%endif
 
 ## actually make the EFI images
 ${make_efiboot("images/efiboot.img")}
@@ -37,7 +39,11 @@ ${make_efiboot("images/efiboot.img")}
         copy ${KERNELDIR}/vmlinuz ${EFIBOOTDIR}
         copy ${KERNELDIR}/initrd.img ${EFIBOOTDIR}
     %endif
-    install ${configdir}/grub2-efi.cfg ${eficonf}
+    %if exists("usr/share/shim/lockdown.efi"):
+        install ${configdir}/grub2-efi-lockdown.cfg ${eficonf}
+    %else:
+        install ${configdir}/grub2-efi.cfg ${eficonf}
+    %endif
     replace @PRODUCT@ '${product.name}' ${eficonf}
     replace @VERSION@ ${product.version} ${eficonf}
     replace @KERNELNAME@ vmlinuz ${eficonf}
