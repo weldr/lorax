@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.4
+Version:        21.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -92,6 +92,15 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Feb 28 2014 Brian C. Lane <bcl@redhat.com> 21.5-1
+- Use string for releasever not int (#1067746) (bcl@redhat.com)
+- createrepo is needed by driver disks (#1016004) (bcl@redhat.com)
+- Improve aarch64 UEFI support (#1067671) (dmarlin@redhat.com)
+- livemedia-creator: Set the product and release version env variables
+  (#1067746) (bcl@redhat.com)
+- Check initrd size on ppc64 and warn (#1060691) (bcl@redhat.com)
+- Remove drivers and modules on ppc64 (#1060691) (bcl@redhat.com)
+
 * Mon Feb 10 2014 Brian C. Lane <bcl@redhat.com> 21.4-1
 - livemedia-creator: virt-image needs ram in MiB not KiB (#1061773)
   (bcl@redhat.com)
