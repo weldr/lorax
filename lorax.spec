@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.25
+Version:        19.6.26
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -92,6 +92,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Feb 28 2014 Brian C. Lane <bcl@redhat.com> 19.6.26-1
+- Use string for releasever not int (bcl@redhat.com)
+  Related: rhbz#1067746
+- Make lorax's installation of lockdown.efi conditional on its existence. (pjones@redhat.com)
+  Resolves: rhbz#1071380
 * Wed Feb 26 2014 Brian C. Lane <bcl@redhat.com> 19.6.25-1
 - createrepo is needed by driver disks (bcl@redhat.com)
   Related: rhbz#1016004
