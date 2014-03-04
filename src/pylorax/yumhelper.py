@@ -96,10 +96,11 @@ class LoraxRpmCallback(yum.rpmtrans.RPMBaseCallback):
     def event(self, package, action, te_current, te_total,
               ts_current, ts_total):
 
+        action_str = self.action[action].encode("utf-8")
         info = "({0:3d}/{1:3d}) [{2:3.0f}%] {3} "
         info = info.format(ts_current, ts_total,
                            float(te_current) / float(te_total) * 100,
-                           self.action[action].lower())
+                           action_str.lower())
 
         pkg = "{0}".format(package)
 
