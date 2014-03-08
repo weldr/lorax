@@ -75,6 +75,18 @@ def mksparse(outfile, size):
     fobj = open(outfile, "w")
     os.ftruncate(fobj.fileno(), size)
 
+def mkqcow2(outfile, size, options=None):
+    '''use qemu-img to create a file of the given size.
+       options is a list of options passed to qemu-img
+
+       Default format is qcow2, override by passing "-f", fmt
+       in options.
+    '''
+    options = options or []
+    if "-f" not in options:
+        options.extend(["-f", "qcow2"])
+    runcmd(["qemu-img", "create"] + options + [outfile, str(size)])
+
 def loop_attach(outfile):
     '''Attach a loop device to the given file. Return the loop device name.
     Raises CalledProcessError if losetup fails.'''
