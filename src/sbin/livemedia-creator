@@ -53,7 +53,7 @@ from pylorax.treebuilder import findkernels
 from pylorax.sysutils import joinpaths, remove
 from pylorax.imgutils import PartitionMount, mksparse, mkext4img, loop_detach
 from pylorax.imgutils import get_loop_name, dm_detach, mount, umount, Mount
-from pylorax.imgutils import mksquashfs
+from pylorax.imgutils import mksquashfs, mkqcow2
 from pylorax.executils import execWithRedirect, execWithCapture
 
 # no-virt mode doesn't need libvirt, so make it optional
@@ -242,7 +242,8 @@ class VirtualInstall( object ):
     """
     def __init__( self, iso, ks_paths, disk_img, img_size=2, 
                   kernel_args=None, memory=1024, vnc=None, arch=None,
-                  log_check=None, virtio_host="127.0.0.1", virtio_port=6080 ):
+                  log_check=None, virtio_host="127.0.0.1", virtio_port=6080,
+                  qcow2=False):
         """
 
         iso is an instance of IsoMountpoint
@@ -276,7 +277,10 @@ class VirtualInstall( object ):
             args.append(ks)
 
         disk_opts = "path={0}".format(disk_img)
-        disk_opts += ",format=raw"
+        if qcow2:
+            disk_opts += ",format=qcow2"
+        else:
+            disk_opts += ",format=raw"
         if not os.path.isfile(disk_img):
             disk_opts += ",size={0}".format(img_size)
         args.append("--disk")
@@ -591,6 +595,19 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
     if rc:
         raise InstallError("novirt_install failed")
 
+    if opts.qcow2:
+        log.info("Converting %s to qcow2", disk_img)
+        qcow2_args = []
+        for arg in opts.qcow2_args:
+            qcow2_args += arg.split(" ", 1)
+
+        # convert the image to qcow2 format
+        if "-O" not in qcow2_args:
+            qcow2_args.extend(["-O", "qcow2"])
+        qcow2_img = tempfile.mktemp(prefix="disk", suffix=".img", dir=opts.tmp)
+        execWithRedirect("qemu-img", ["convert"] + qcow2_args + [disk_img, qcow2_img], raise_err=True)
+        execWithRedirect("mv", ["-f", qcow2_img, disk_img], raise_err=True)
+
 
 def virt_install(opts, install_log, disk_img, disk_size):
     """
@@ -605,11 +622,21 @@ def virt_install(opts, install_log, disk_img, disk_size):
     if opts.proxy:
         kernel_args += " proxy="+opts.proxy
 
+    if opts.qcow2:
+        # virt-install can't take all the qcow2 options so create the image first
+        qcow2_args = []
+        for arg in opts.qcow2_args:
+            qcow2_args += arg.split(" ", 1)
+
+        mkqcow2(disk_img, disk_size*1024**3, qcow2_args)
+
     virt = VirtualInstall(iso_mount, opts.ks, disk_img, disk_size,
                            kernel_args, opts.ram, opts.vnc, opts.arch,
                            log_check = log_monitor.server.log_check,
                            virtio_host = log_monitor.host,
-                           virtio_port = log_monitor.port)
+                           virtio_port = log_monitor.port,
+                           qcow2=opts.qcow2)
+
     virt.destroy()
     log_monitor.shutdown()
     iso_mount.umount()
@@ -717,19 +744,11 @@ if __name__ == '__main__':
 
     parser.add_argument( "--iso", type=os.path.abspath,
                         help="Anaconda installation .iso path to use for virt-install" )
-    parser.add_argument( "--disk-image", type=os.path.abspath,
-                        help="Path to disk image to use for creating final image" )
-    parser.add_argument( "--fs-image", type=os.path.abspath,
-                        help="Path to filesystem image to use for creating final image" )
-
     parser.add_argument( "--ks", action="append", type=os.path.abspath,
                          help="Kickstart file defining the install." )
-    parser.add_argument( "--image-name", default=None,
-                         help="Name of fs/disk image to create. Default is a random name." )
     parser.add_argument( "--image-only", action="store_true",
                          help="Exit after creating fs/disk image." )
-    parser.add_argument( "--keep-image", action="store_true",
-                         help="Keep raw disk image after .iso creation" )
+
     parser.add_argument( "--no-virt", action="store_true",
                          help="Use Anaconda's image install instead of virt-install" )
     parser.add_argument( "--proxy",
@@ -762,6 +781,20 @@ if __name__ == '__main__':
                          dest="domacboot")
     parser.add_argument( "--nomacboot", action="store_false",
                          dest="domacboot")
+
+    image_group = parser.add_argument_group("disk/fs image arguments")
+    image_group.add_argument( "--disk-image", type=os.path.abspath,
+                        help="Path to disk image to use for creating final image" )
+    image_group.add_argument( "--keep-image", action="store_true",
+                         help="Keep raw disk image after .iso creation" )
+    image_group.add_argument( "--fs-image", type=os.path.abspath,
+                        help="Path to filesystem image to use for creating final image" )
+    image_group.add_argument( "--image-name", default=None,
+                         help="Name of fs/disk image to create. Default is a random name." )
+    image_group.add_argument("--qcow2", action="store_true",
+                        help="create qcow2 image instead of raw sparse image")
+    image_group.add_argument("--qcow2-arg", action="append", dest="qcow2_args", default=[],
+                        help="Arguments to pass to qemu-img. Pass once for each argument")
 
     # Group of arguments for appliance creation
     app_group = parser.add_argument_group("appliance arguments")
@@ -872,6 +905,14 @@ if __name__ == '__main__':
 
     if opts.image_name and os.path.exists(joinpaths(opts.tmp, opts.image_name)):
         log.error("The disk image to be created should not exist.")
+        sys.exit(1)
+
+    if opts.qcow2 and not os.path.exists("/usr/bin/qemu-img"):
+        log.error("qcow2 requires the qemu-img utility to be installed.")
+        sys.exit(1)
+
+    if opts.qcow2 and opts.make_iso:
+        log.error("qcow2 cannot be used to make a bootable iso.")
         sys.exit(1)
 
     if opts.app_file:
