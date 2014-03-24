@@ -8,7 +8,7 @@ APPLE_EFI_DISKNAME=inroot+"/usr/share/pixmaps/bootloader/fedora-media.vol"
 mkdir ${EFIBOOTDIR}
 mkdir ${EFIBOOTDIR}/fonts/
 %if efiarch == 'AARCH64':
-install boot/efi/EFI/*/grubaa64.efi ${EFIBOOTDIR}/BOOT${efiarch}.efi
+install boot/efi/EFI/*/grubaa64.efi ${EFIBOOTDIR}/BOOTAA64.efi
 install boot/efi/EFI/*/grubaa64.efi ${EFIBOOTDIR}/grubaa64.efi
 %else:
 install boot/efi/EFI/*/shim.efi ${EFIBOOTDIR}/BOOT${efiarch}.efi
