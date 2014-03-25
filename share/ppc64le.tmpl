@@ -1,0 +1,82 @@
+<%page args="kernels, runtime_img, basearch, libdir, inroot, outroot, product, isolabel"/>
+<%
+configdir="tmp/config_files/ppc"
+BOOTDIR="ppc"
+GRUBDIR="boot/grub"
+LIVEDIR="LiveOS"
+
+## NOTE: yaboot freaks out and stops parsing its config if it sees a '\',
+## so we can't use the udev escape sequences in the root arg.
+## Instead we'll just replace any non-ASCII characters in the isolabel
+## with '_', which means we won't need any udev escapes.
+isolabel = ''.join(ch if ch.isalnum() else '_' for ch in isolabel)
+
+## Anaconda finds the CDROM device automatically
+rootarg = ""
+%>
+
+mkdir ${LIVEDIR}
+install ${runtime_img} ${LIVEDIR}/squashfs.img
+treeinfo stage2 mainimage ${LIVEDIR}/squashfs.img
+
+## install the bootloaders
+##   ppc/chrp: for normal PPC systems.
+##             uses /ppc/bootinfo.txt   in the iso root
+##             uses /boot/grub/grub.cfg in the iso root
+mkdir ${BOOTDIR}
+## boot stuff for normal (CHRP/PREP) PPC systems
+install ${configdir}/bootinfo.txt ${BOOTDIR}
+
+mkdir ${GRUBDIR}/powerpc-ieee1275
+## "()" means the current device to grub2
+runcmd grub2-mkimage --format=powerpc-ieee1275 --directory=/usr/lib/grub/powerpc-ieee1275 --prefix="()/"${GRUBDIR} \
+--output=${outroot}/${GRUBDIR}/powerpc-ieee1275/core.elf iso9660 ext2 ofnet net tftp http
+install /usr/lib/grub/powerpc-ieee1275/*.mod ${GRUBDIR}/powerpc-ieee1275
+install /usr/lib/grub/powerpc-ieee1275/*.lst ${GRUBDIR}/powerpc-ieee1275
+
+install ${configdir}/grub.cfg.in     ${GRUBDIR}/grub.cfg
+replace @PRODUCT@ '${product.name}'  ${GRUBDIR}/grub.cfg
+replace @VERSION@ ${product.version} ${GRUBDIR}/grub.cfg
+replace @ROOT@    "${rootarg}"       ${GRUBDIR}/grub.cfg
+
+## copy mapping and magic files needed for isos
+install ${configdir}/mapping ${BOOTDIR}
+install ${configdir}/magic ${BOOTDIR}
+
+## Install kernel and bootloader config (in separate places for each arch)
+%for kernel in kernels:
+    <%
+      bits = 64
+      ## separate dirs/images for each arch
+      KERNELDIR=BOOTDIR+"/ppc%s" % bits
+    %>
+    ## install kernel
+    mkdir ${KERNELDIR}
+    installkernel images-${kernel.arch} ${kernel.path} ${KERNELDIR}/vmlinuz
+    installinitrd images-${kernel.arch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
+
+    %if doupgrade:
+        ## upgrade image
+        installupgradeinitrd images-${kernel.arch} ${kernel.upgrade.path} ${KERNELDIR}/upgrade.img
+    %endif
+
+    treeinfo images-${kernel.arch} zimage
+%endfor
+
+## make boot.iso
+mkdir images/
+runcmd mkisofs -v -U -J -R -T \
+        -o ${outroot}/images/boot.iso \
+        -part -hfs -r -l -sysid PPC \
+        -A "${product.name} ${product.version}" -V '${isolabel}' \
+        -volset "${product.version}" -volset-size 1 -volset-seqno 1 \
+        -hfs-volid ${product.version} \
+        -chrp-boot -map ${inroot}/${configdir}/mapping \
+        -no-desktop -allow-multidot -graft-points \
+        ${BOOTDIR}=${outroot}/${BOOTDIR} \
+        ${GRUBDIR}=${outroot}/${GRUBDIR} \
+        ${LIVEDIR}=${outroot}/${LIVEDIR}
+
+%for kernel in kernels:
+    treeinfo images-${kernel.arch} boot.iso images/boot.iso
+%endfor
