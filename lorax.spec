@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.5
+Version:        21.6
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -92,6 +92,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Mar 26 2014 Brian C. Lane <bcl@redhat.com> 21.6-1
+- Install bzip2 for liveimg tar.bz2 support (bcl@redhat.com)
+- Remove obsolete firstaidkit packages (#1076237) (bcl@redhat.com)
+- livemedia-creator: Add option to create qcow2 disk images (bcl@redhat.com)
+- Add support for creating qcow2 images (bcl@redhat.com)
+- utf-8 encode yum actions before displaying them (#1072362) (bcl@redhat.com)
+
 * Fri Feb 28 2014 Brian C. Lane <bcl@redhat.com> 21.5-1
 - Use string for releasever not int (#1067746) (bcl@redhat.com)
 - createrepo is needed by driver disks (#1016004) (bcl@redhat.com)
