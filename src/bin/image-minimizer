@@ -1,0 +1,198 @@
+#!/usr/bin/python
+#
+# image-minimizer: removes files and packages on the filesystem
+#
+# Copyright 2007-2010 Red Hat  Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Library General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+import glob
+import optparse
+import os
+import shutil
+import sys
+import rpm
+
+class ImageMinimizer:
+    filename = ''
+    dryrun = False
+    verbose = False
+    prefix = None
+    drops = set()
+    visited = set()
+    drops_rpm = set()
+    ts = None
+
+    def __init__(self, filename, root, dryrun, verbose):
+        self.filename = filename
+        self.prefix = root
+        self.dryrun = dryrun
+        self.verbose = verbose
+        self.ts = None
+
+    # Recursively adds all files and directories.
+    # This is done becuase globbing does not allow
+    # ** for arbitrary nesting.
+    def add_directory(self, files, dirname):
+        self.visited.add(dirname)
+        for root, dirs, items in os.walk(dirname):
+            for dir in dirs:
+                self.visited.add(os.path.join(root, dir))
+            for name in items:
+                files.add(os.path.join(root, name))
+
+    def add_pattern(self, files, pattern):
+        globs = glob.glob(pattern)
+        if self.verbose and len(globs) == 0:
+            print "%s file not found" % pattern
+        for g in globs:
+            if os.path.isdir(g):
+                self.add_directory(files, g)
+            else:
+                files.add(g)
+
+    def add_pattern_rpm(self, rpms, pattern):
+        if self.ts is None:
+            if self.prefix is None:
+                raise Exception ('Must specify installation root for droprpm/keeprpm')
+            self.ts = rpm.TransactionSet(self.prefix)
+        mi = self.ts.dbMatch()
+        mi.pattern('name', rpm.RPMMIRE_GLOB, pattern)
+        not_found = True
+        for hdr in mi:
+            not_found = False
+            rpms.add(hdr['name'])
+        if self.verbose and not_found:
+            print "%s package not found" % pattern
+
+    # Parses each line in the ifle
+    def parse_line(self, line):
+        command = ""
+        pattern = ""
+        tok = line.split(None,1)
+        if len(tok) > 0:
+            command = tok[0].lower()
+            if len(tok) > 1:
+                pattern = tok[1].strip()
+
+        # Strip out all the comments and blank lines
+        if not (command.startswith('#') or command==''):
+            if command == 'keep':
+                if self.prefix is not None :
+                    pattern = pattern.lstrip('/')
+                    pattern = os.path.join(self.prefix, pattern)
+                keeps = set()
+                self.add_pattern(keeps, pattern)
+                self.drops.difference_update(keeps)
+                keeps = None
+            elif command == 'drop':
+                if self.prefix is not None :
+                    pattern = pattern.lstrip('/')
+                    pattern = os.path.join(self.prefix, pattern)
+                self.add_pattern(self.drops, pattern)
+            elif command == 'keeprpm':
+                keeps_rpm = set()
+                self.add_pattern_rpm(keeps_rpm, pattern)
+                self.drops_rpm.difference_update(keeps_rpm)
+                keeps_rpm = None
+            elif command == 'droprpm':
+                self.add_pattern_rpm(self.drops_rpm, pattern)
+            else:
+                raise Exception ('Unknown Command: ' + command)
+
+    def remove(self):
+        for tag in sorted(self.drops, reverse=True):
+            self.visited.add(os.path.split(tag)[0])
+            if os.path.isdir(tag):
+                self.visited.add(tag)
+            else:
+                if self.dryrun:
+                    print 'rm ' + tag
+                else:
+                    if self.verbose:
+                        print 'rm ' + tag
+                    os.remove(tag)
+
+        #remove all empty directory. Every 8k counts!
+        for dir in sorted(self.visited, reverse=True):
+            if len(os.listdir(dir)) == 0:
+                if self.dryrun:
+                    print 'rm -rf ' + dir
+                else:
+                    if self.verbose:
+                        print 'rm -rf ' + dir
+                    os.rmdir(dir)
+
+    def remove_rpm(self):
+
+        def runCallback(reason, amount, total, key, client_data):
+            if self.verbose and reason == rpm.RPMCALLBACK_UNINST_STOP:
+                print key, "erased"
+
+        if len(self.drops_rpm) == 0:
+            return
+
+        for pkg in self.drops_rpm:
+            if self.dryrun:
+                print "erasing ", pkg
+            else:
+                self.ts.addErase(pkg)
+        if not self.dryrun:
+            # skip ts.check(), equivalent to --nodeps
+            self.ts.run(runCallback, "erase")
+
+    def filter(self):
+        for line in (open(self.filename).readlines()):
+            self.parse_line(line.strip())
+        self.remove()
+        self.remove_rpm()
+
+
+def parse_options():
+    usage = "usage: %prog [options] filename"
+    parser = optparse.OptionParser(usage=usage)
+
+    parser.set_defaults(root=os.environ.get('INSTALL_ROOT', '/mnt/sysimage/'), dry_run=False)
+
+    parser.add_option("-i", "--installroot", type="string", dest="root",
+        help="Root path to prepend to all file patterns and installation root for RPM "
+             "operations.  Defaults to INSTALL_ROOT or /mnt/sysimage/")
+
+    parser.add_option("--dryrun", action="store_true", dest="dryrun",
+        help="If set, no filesystem changes are made.")
+
+    parser.add_option("-v", "--verbose", action="store_true", dest="verbose",
+        help="Display every action as it is performed.")
+
+    (options, args) = parser.parse_args()
+    if len(args) == 0:
+        parser.print_help()
+        sys.exit(1)
+
+    return (options, args)
+
+
+if __name__ == "__main__":
+    try:
+        (options, args) = parse_options()
+        filename = args[0]
+        minimizer = ImageMinimizer(filename, options.root, options.dryrun,
+                                    options.verbose)
+        minimizer.filter()
+    except SystemExit, e:
+        sys.exit(e.code)
+    except KeyboardInterrupt, e:
+        print >> sys.stderr, _("Aborted at user request")
+    except Exception, e:
+        print e
+        sys.exit(1)
