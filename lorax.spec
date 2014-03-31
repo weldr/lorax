@@ -62,6 +62,10 @@ Requires:       grub2-tools
 Requires:       openssh
 %endif
 
+# Moved image-minimizer tool to lorax
+Provides:       appliance-tools-minimizer
+Obsoletes:      appliance-tools-minimizer < 007.7-3
+
 %description
 Lorax is a tool for creating the anaconda install images.
 
@@ -87,6 +91,7 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_sbindir}/lorax
 %{_sbindir}/mkefiboot
 %{_sbindir}/livemedia-creator
+%{_bindir}/image-minimizer
 %dir %{_sysconfdir}/lorax
 %config(noreplace) %{_sysconfdir}/lorax/lorax.conf
 %dir %{_datadir}/lorax
