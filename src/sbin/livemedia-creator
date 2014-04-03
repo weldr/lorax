@@ -855,77 +855,75 @@ if __name__ == '__main__':
 
     log.debug( opts )
 
-    if os.getuid() != 0:
-        log.error("You need to run this as root")
-        sys.exit( 1 )
+    # Check for invalid combinations of options, print all the errors and exit.
+    errors = []
+    if not opts.disk_image and not opts.fs_image and not opts.ks:
+        errors.append("Image creation requires a kickstart file")
+
+    if opts.ks and not os.path.exists(opts.ks[0]):
+        errors.append("kickstart file (%s) is missing." % opts.ks[0])
 
     if opts.make_iso and not os.path.exists( opts.lorax_templates ):
-        log.error( "The lorax templates directory ({0}) doesn't"
-                   " exist.".format( opts.lorax_templates ) )
-        sys.exit( 1 )
+        errors.append("The lorax templates directory (%s) doesn't "
+                      "exist." % opts.lorax_templates)
 
     if opts.result_dir and os.path.exists(opts.result_dir):
-        log.error( "The results_dir ({0}) should not exist, please delete or "
-                   "move its contents".format( opts.result_dir ))
-        sys.exit( 1 )
+        errors.append("The results_dir (%s) should not exist, please delete or "
+                      "move its contents" % opts.result_dir)
 
     if opts.iso and not os.path.exists( opts.iso ):
-        log.error( "The iso {0} is missing.".format( opts.iso ) )
-        sys.exit( 1 )
+        errors.append("The iso %s is missing." % opts.iso)
 
     if opts.disk_image and not os.path.exists( opts.disk_image ):
-        log.error( "The disk image {0} is missing.".format( opts.disk_image ) )
-        sys.exit( 1 )
+        errors.append("The disk image %s is missing." % opts.disk_image)
 
     if opts.fs_image and not os.path.exists( opts.fs_image ):
-        log.error( "The filesystem image {0} is missing.".format( opts.fs_image ) )
-        sys.exit( 1 )
+        errors.append("The filesystem image %s is missing." % opts.fs_image)
 
     is_install = not (opts.disk_image or opts.fs_image)
     if is_install and not opts.no_virt and not opts.iso:
-        log.error( "virt install needs an install iso." )
-        sys.exit( 1 )
+        errors.append("virt install needs an install iso.")
 
     if opts.volid and len(opts.volid) > 32:
-        log.fatal("the volume id cannot be longer than 32 characters")
-        sys.exit(1)
+        errors.append("the volume id cannot be longer than 32 characters")
 
     if is_install and not opts.no_virt and not libvirt:
-        log.error("virt install requires libvirt-python to be installed.")
-        sys.exit(1)
+        errors.append("virt install requires libvirt-python to be installed.")
 
     if is_install and not opts.no_virt \
        and not os.path.exists("/usr/bin/virt-install"):
-        log.error("virt-install needs to be installed.")
-        sys.exit(1)
+        errors.append("virt-install needs to be installed.")
 
     if is_install and opts.no_virt \
        and not os.path.exists("/usr/sbin/anaconda"):
-        log.error("no-virt requires anaconda to be installed.")
-        sys.exit(1)
+        errors.append("no-virt requires anaconda to be installed.")
 
     if opts.make_appliance and not opts.app_template:
         opts.app_template = joinpaths(opts.lorax_templates,
                                             "appliance/libvirt.tmpl")
 
     if opts.make_appliance and not os.path.exists(opts.app_template):
-        log.error("The appliance template ({0}) doesn't "
-                  "exist".format(opts.app_template))
-        sys.exit(1)
+        errors.append("The appliance template (%s) doesn't "
+                      "exist" % opts.app_template)
 
     if opts.image_name and os.path.exists(joinpaths(opts.tmp, opts.image_name)):
-        log.error("The disk image to be created should not exist.")
-        sys.exit(1)
+        errors.append("The disk image to be created should not exist.")
 
     if opts.qcow2 and not os.path.exists("/usr/bin/qemu-img"):
-        log.error("qcow2 requires the qemu-img utility to be installed.")
-        sys.exit(1)
+        errors.append("qcow2 requires the qemu-img utility to be installed.")
 
     if opts.qcow2 and opts.make_iso:
-        log.error("qcow2 cannot be used to make a bootable iso.")
-        sys.exit(1)
+        errors.append("qcow2 cannot be used to make a bootable iso.")
 
-    # TODO check for qcow2 and fsimage
+    if opts.make_fsimage and opts.qcow2:
+        errors.append("qcow2 cannot be used to make filesystem images.")
+
+    if os.getuid() != 0:
+        errors.append("You need to run this as root")
+
+    if errors:
+        map(log.error, errors)
+        sys.exit(1)
 
     # AMI image is just a fsimage with an AMI label
     if opts.make_ami:
@@ -943,19 +941,12 @@ if __name__ == '__main__':
 
     # Parse the kickstart
     if opts.ks:
-        if not os.path.exists(opts.ks[0]):
-            log.error("kickstart file ({0}) is missing.".format(opts.ks[0]))
-            sys.exit(1)
         ks_version = makeVersion()
         ks = KickstartParser( ks_version, errorsAreFatal=False, missingIncludeIsFatal=False )
         ks.readKickstart( opts.ks[0] )
 
     # Make the disk or filesystem image
     if not opts.disk_image and not opts.fs_image:
-        if not opts.ks:
-            log.error("Image creation requires a kickstart file")
-            sys.exit(1)
-
         errors = []
         if ks.handler.method.method != "url":
             errors.append("Only url install method is currently supported. Please "
@@ -969,8 +960,7 @@ if __name__ == '__main__':
 
 
         if errors:
-            for e in errors:
-                log.error(e)
+            map(log.error, errors)
             sys.exit(1)
 
         # Make the image. Output of this is either a partitioned disk image or a fsimage
