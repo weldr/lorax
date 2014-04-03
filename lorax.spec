@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.26
+Version:        19.6.27
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -92,6 +92,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Thu Apr 03 2014 Brian C. Lane <bcl@redhat.com> 19.6.27-1
+- Stop removing curl after adding it (#1083205) (bcl@redhat.com)
+
 * Fri Feb 28 2014 Brian C. Lane <bcl@redhat.com> 19.6.26-1
 - Use string for releasever not int (bcl@redhat.com)
   Related: rhbz#1067746
