@@ -951,8 +951,13 @@ if __name__ == '__main__':
             errors.append("The kickstart must not set a display mode (text, cmdline, "
                           "graphical), this will interfere with livemedia-creator.")
 
-        # TODO add a check for fsimage partition, no autopart and only / or swap part
-
+        if opts.make_fsimage:
+            # Make sure the kickstart isn't using autopart and only has a / mountpoint
+            part_ok = not any(p for p in ks.handler.partition.partitions
+                                 if p.mountpoint not in ["/", "swap"])
+            if not part_ok or ks.handler.autopart.seen:
+                errors.append("Filesystem images must use a single / part, not autopart or "
+                              "multiple partitions. swap is allowed but not used.")
 
         if errors:
             for e in errors:
