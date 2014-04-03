@@ -1,4 +1,4 @@
-.TH LIVEMEDIA-CREATOR 1 2013\-07\-26
+.TH LIVEMEDIA-CREATOR 1 2014\-04\-03
 .SH NAME
 livemedia-creator \- Create live install media
 
@@ -8,6 +8,8 @@ livemedia-creator [-h]
     [--iso ISO] [--disk-image DISK_IMAGE]
     [--fs-image FS_IMAGE] [--ks KS]
     [--image-name IMAGE_NAME] [--image-only]
+    [--fs-label FS_LABEL]
+    [--qcow2] [--qcow2-arg QCOW2_ARGS]
     [--keep-image] [--no-virt] [--proxy PROXY]
     [--anaconda-arg ANACONDA_ARGS]
     [--armplatform ARMPLATFORM] [--location LOCATION]
@@ -30,8 +32,8 @@ use with virtualization.
 The general idea is to use virt-install to install into a disk image and then
 use the disk image to create the bootable media.
 
-livemedia-creator --help will describe all of the options available. At the
-minimum you need:
+livemedia-creator --help will describe all of the options available. To create a
+bootable iso you need at least:
 
 --make-iso to create a final bootable .iso
 --iso to specify the Anaconda install media to use with virt-install
@@ -73,7 +75,15 @@ Path to disk image to use for creating final image
 
 .TP
 \fB\-\-fs\-image FS_IMAGE\fR
-Path to filesystem image to use for creating final image
+Path to existing filesystem image to use for creating final image.
+
+.TP
+\fB\-\-qcow2\fR
+Create qcow2 image instead of raw sparse image when making disk images.
+
+.TP
+\fB\-\-qcow2\-args\fR
+Arguments to pass to qemu-img. Pass once for each argument
 
 .TP
 \fB\-\-ks KS\fR
@@ -82,6 +92,10 @@ Kickstart file defining the install.
 .TP
 \fB\-\-image\-name IMAGE_NAME\fR
 Name of fs/disk image to create. Default is a random name.
+
+.TP
+\fB\-\-fs\-label FS_LABEL\fR
+Label to set on fsimage, default is 'Anaconda'
 
 .TP
 \fB\-\-image\-only\fR

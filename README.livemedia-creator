@@ -185,7 +185,7 @@ sudo livemedia-creator --make-ami --iso=/path/to/boot.iso --ks=./docs/fedora-liv
 
 This will produce an ami-root.img file in the working directory.
 
-At this time I have not tested the image with EC2. Feedback would we welcome.
+At this time I have not tested the image with EC2. Feedback would be welcome.
 
 
 APPLIANCE CREATION
@@ -223,6 +223,23 @@ releasever      from --releasever
 The created image can be imported into libvirt using:
 
 virt-image appliance.xml
+
+You can also create qcow2 appliance images using --qcow2, for example:
+sudo livemedia-creator --make-appliance --iso=/path/to/boot.iso --ks=./docs/fedora-minimal.ks \
+--qcow2 --app-file=minimal-test.xml --image-name=minimal-test.img
+
+
+FILESYSTEM IMAGE CREATION
+-------------------------
+livemedia-creator can be used to create un-partitined filesystem images using the
+--make-fsimage option. As of version 21.8 this works with both virt-install and no-virt. Previously
+it was only available with --no-virt.
+
+Kickstarts should have a single / partition with no extra mountpoints.
+
+livemedia-creator --make-fsimage --iso=/path/to/boot.iso --ks=./docs/fedora-minimal.ks
+
+You can name the output image with --image-name and set a label on the filesystem with --fs-label
 
 
 DEBUGGING PROBLEMS
