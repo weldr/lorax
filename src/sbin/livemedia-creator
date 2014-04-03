@@ -240,7 +240,7 @@ class VirtualInstall( object ):
     """
     Run virt-install using an iso and kickstart(s)
     """
-    def __init__( self, iso, ks_paths, disk_img, img_size=2, 
+    def __init__( self, iso, ks_paths, disk_img, img_size=2048,
                   kernel_args=None, memory=1024, vnc=None, arch=None,
                   log_check=None, virtio_host="127.0.0.1", virtio_port=6080,
                   qcow2=False):
@@ -250,7 +250,7 @@ class VirtualInstall( object ):
         ks_paths is a list of paths to a kickstart files. All are injected, the
                  first one is the one executed.
         disk_img is the path to a disk image (doesn't need to exist)
-        img_size is the size, in GiB, of the image if it doesn't exist
+        img_size is the size, in MiB, of the image if it doesn't exist
         kernel_args are extra arguments to pass on the kernel cmdline
         memory is the amount of ram to assign to the virt
         vnc is passed to the --graphics command verbatim
@@ -282,7 +282,7 @@ class VirtualInstall( object ):
         else:
             disk_opts += ",format=raw"
         if not os.path.isfile(disk_img):
-            disk_opts += ",size={0}".format(img_size)
+            mksparse(disk_img, img_size * 1024**2)
         args.append("--disk")
         args.append(disk_opts)
 
@@ -397,7 +397,7 @@ def make_appliance(disk_img, name, template, outfile, networks=None, ram=1024,
     sha256 = hashlib.sha256()
     with open(disk_img) as f:
         while True:
-            data = f.read(1024*1024)
+            data = f.read(1024**2)
             if not data:
                 break
             sha256.update(data)
@@ -416,21 +416,26 @@ def make_appliance(disk_img, name, template, outfile, networks=None, ram=1024,
         f.write(result)
 
 
-def make_fsimage(diskimage, fsimage, label="Anaconda"):
+def make_fsimage(diskimage, fsimage, img_size=None, label="Anaconda"):
     """
     Copy the / partition of a partitioned disk image to an un-partitioned
     disk image.
 
     diskimage is the full path to partitioned disk image with a /
     fsimage is the full path of the output fs image file
+    img_size is the size of the fsimage in MiB or None to make it as small as possible
     label is the label to apply to the image. Defaults to "Anaconda"
     """
     with PartitionMount(diskimage) as img_mount:
         if not img_mount or not img_mount.mount_dir:
             return None
 
-        log.info("Creating fsimage %s", fsimage)
-        mkext4img(img_mount.mount_dir, fsimage, label=label)
+        log.info("Creating fsimage %s (%s)", (fsimage, img_size or "minimized"))
+        if img_size:
+            # convert to Bytes
+            img_size *= 1024**2
+
+        mkext4img(img_mount.mount_dir, fsimage, size=img_size, label=label)
 
 
 def make_runtime(opts, mount_dir, work_dir):
@@ -522,6 +527,10 @@ def make_livecd(opts, mount_dir, work_dir):
 def novirt_install(opts, disk_img, disk_size, repo_url):
     """
     Use Anaconda to install to a disk image
+
+    disk_img is the full path to the disk image to be created
+    disk_size is the size in MiB
+    repo_url is the url of the repository to use for the installation
     """
     import selinux
 
@@ -549,7 +558,7 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
         # Make a blank fs image
         args += ["--dirinstall"]
 
-        mkext4img(None, disk_img, label=opts.fs_label, size=disk_size * 1024**3)
+        mkext4img(None, disk_img, label=opts.fs_label, size=disk_size * 1024**2)
         if not os.path.isdir(ROOT_PATH):
             os.mkdir(ROOT_PATH)
         mount(disk_img, opts="loop", mnt=ROOT_PATH)
@@ -557,7 +566,7 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
         args += ["--image", disk_img]
 
         # Create the sparse image
-        mksparse(disk_img, disk_size * 1024**3)
+        mksparse(disk_img, disk_size * 1024**2)
 
     # Make sure anaconda has the right product and release
     os.environ["ANACONDA_PRODUCTNAME"] = opts.project
@@ -612,7 +621,7 @@ def virt_install(opts, install_log, disk_img, disk_size):
 
     install_log is the path to write the log from virt-install
     disk_img is the full path to the final disk or filesystem image
-    disk_size is the size of the disk to create in GiB
+    disk_size is the size of the disk to create in MiB
     """
     iso_mount = IsoMountpoint(opts.iso, opts.location)
     log_monitor = LogMonitor(install_log)
@@ -629,7 +638,7 @@ def virt_install(opts, install_log, disk_img, disk_size):
         for arg in opts.qcow2_args:
             qcow2_args += arg.split(" ", 1)
 
-        mkqcow2(disk_img, disk_size*1024**3, qcow2_args)
+        mkqcow2(disk_img, disk_size*1024**2, qcow2_args)
 
     if opts.make_fsimage:
         diskimg_path = tempfile.mktemp(prefix="disk", suffix=".img", dir=opts.tmp)
@@ -651,7 +660,7 @@ def virt_install(opts, install_log, disk_img, disk_size):
         raise InstallError("virt_install failed")
 
     if opts.make_fsimage:
-        make_fsimage(diskimg_path, disk_img, label=opts.fs_label)
+        make_fsimage(diskimg_path, disk_img, disk_size, label=opts.fs_label)
         os.unlink(diskimg_path)
 
 
@@ -678,8 +687,8 @@ def make_image(opts, ks):
 
     Returns the full path of of the image created.
     """
-    disk_size = 1 + (sum([p.size for p in ks.handler.partition.partitions]) / 1024)
-    log.info("disk_size = %sGB", disk_size)
+    disk_size = 1 + sum(p.size for p in ks.handler.partition.partitions)
+    log.info("disk_size = %sMiB", disk_size)
 
     if opts.image_name:
         disk_img = joinpaths(opts.tmp, opts.image_name)
