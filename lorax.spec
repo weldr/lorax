@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.6
+Version:        21.7
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -96,6 +96,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Apr 02 2014 Brian C. Lane <bcl@redhat.com> 21.7-1
+- Use BOOTAA64.efi for AARCH64 bootloader filename (#1080113) (bcl@redhat.com)
+- Stop removing curl after adding it (bcl@redhat.com)
+- move image-minimizer to lorax (#1082642) (bcl@redhat.com)
+- support ppc64le in lorax (hamzy@us.ibm.com)
+
 * Wed Mar 26 2014 Brian C. Lane <bcl@redhat.com> 21.6-1
 - Install bzip2 for liveimg tar.bz2 support (bcl@redhat.com)
 - Remove obsolete firstaidkit packages (#1076237) (bcl@redhat.com)
