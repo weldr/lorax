@@ -4,12 +4,13 @@ livemedia-creator \- Create live install media
 
 .SH SYNOPSIS
 livemedia-creator [-h]
-    (--make-iso | --make-disk | --make-fsimage | --make-appliance | --make-ami)
+    (--make-iso | --make-disk | --make-fsimage | --make-appliance | --make-ami | --make-tar)
     [--iso ISO] [--disk-image DISK_IMAGE]
     [--fs-image FS_IMAGE] [--ks KS]
     [--image-name IMAGE_NAME] [--image-only]
     [--fs-label FS_LABEL]
     [--qcow2] [--qcow2-arg QCOW2_ARGS]
+    [--compression] [--compress-arg]
     [--keep-image] [--no-virt] [--proxy PROXY]
     [--anaconda-arg ANACONDA_ARGS]
     [--armplatform ARMPLATFORM] [--location LOCATION]
@@ -66,6 +67,10 @@ Build an appliance image and XML description
 Build an ami image
 
 .TP
+\fB\-\-make\-tar\fR
+Build a tar of the root filesystem. Defaults to root.tar.xz
+
+.TP
 \fB\-\-iso ISO\fR
 Anaconda installation .iso path to use for virt-install
 
@@ -82,8 +87,16 @@ Path to existing filesystem image to use for creating final image.
 Create qcow2 image instead of raw sparse image when making disk images.
 
 .TP
-\fB\-\-qcow2\-args\fR
+\fB\-\-qcow2\-arg\fR
 Arguments to pass to qemu-img. Pass once for each argument
+
+.TP
+\fB\-\-compress\fR
+Compression binary for make-tar. xz, lzma, gzip, and bzip2 are supported. xz is the default.
+
+.TP
+\fB\-\-compress\-arg\fR
+Arguments to pass to compression. Pass once for each argument
 
 .TP
 \fB\-\-ks KS\fR

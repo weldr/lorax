@@ -22,7 +22,7 @@ logger = logging.getLogger("pylorax.imgutils")
 
 import os, tempfile
 from os.path import join, dirname
-from subprocess import CalledProcessError
+from subprocess import Popen, PIPE, CalledProcessError
 import sys
 import traceback
 import multiprocessing
@@ -32,13 +32,14 @@ from pylorax.sysutils import cpfile
 from pylorax.executils import execWithRedirect, execWithCapture
 from pylorax.executils import runcmd, runcmd_output
 
-######## Functions for making container images (cpio, squashfs) ##########
+######## Functions for making container images (cpio, tar, squashfs) ##########
 
-def mkcpio(rootdir, outfile, compression="xz", compressargs=["-9"]):
-    '''Make a compressed CPIO archive of the given rootdir.
-    compression should be "xz", "gzip", "lzma", or None.
+def compress(command, rootdir, outfile, compression="xz", compressargs=["-9"]):
+    '''Make a compressed archive of the given rootdir.
+    command is a list of the archiver commands to run
+    compression should be "xz", "gzip", "lzma", "bzip2", or None.
     compressargs will be used on the compression commandline.'''
-    if compression not in (None, "xz", "gzip", "lzma"):
+    if compression not in (None, "xz", "gzip", "lzma", "bzip2"):
         raise ValueError, "Unknown compression type %s" % compression
     if compression == "xz":
         compressargs.insert(0, "--check=crc32")
@@ -51,16 +52,34 @@ def mkcpio(rootdir, outfile, compression="xz", compressargs=["-9"]):
         compressargs.insert(0, "-T%d" % multiprocessing.cpu_count())
     elif compression == "gzip":
         compression = "pigz"
+        compressargs.insert(0, "-p%d" % multiprocessing.cpu_count())
+    elif compression == "bzip2":
+        compression = "pbzip2"
+        compressargs.insert(0, "-p%d" % multiprocessing.cpu_count())
 
-    logger.debug("mkcpio %s | %s %s > %s", rootdir, compression,
-                                        " ".join(compressargs), outfile)
-    find = Popen(["find", ".", "-print0"], stdout=PIPE, cwd=rootdir)
-    cpio = Popen(["cpio", "--null", "--quiet", "-H", "newc", "-o"],
-                 stdin=find.stdout, stdout=PIPE, cwd=rootdir)
-    comp = Popen([compression] + compressargs,
-                 stdin=cpio.stdout, stdout=open(outfile, "wb"))
-    comp.wait()
-    return comp.returncode
+    logger.debug("find %s -print0 |%s | %s %s > %s", rootdir, " ".join(command),
+                 compression, " ".join(compressargs), outfile)
+    find, archive, comp = None, None, None
+    try:
+        find = Popen(["find", ".", "-print0"], stdout=PIPE, cwd=rootdir)
+        archive = Popen(command, stdin=find.stdout, stdout=PIPE, cwd=rootdir)
+        comp = Popen([compression] + compressargs,
+                     stdin=archive.stdout, stdout=open(outfile, "wb"))
+        comp.wait()
+        return comp.returncode
+    except OSError as e:
+        logger.error(e)
+        # Kill off any hanging processes
+        [p.kill() for p in (find, archive, comp) if p]
+        return 1
+
+def mkcpio(rootdir, outfile, compression="xz", compressargs=["-9"]):
+    return compress(["cpio", "--null", "--quiet", "-H", "newc", "-o"],
+                    rootdir, outfile, compression, compressargs)
+
+def mktar(rootdir, outfile, compression="xz", compressargs=["-9"]):
+    return compress(["tar", "--selinux", "--acls", "--xattrs", "-cf-", "--null", "-T-"],
+                    rootdir, outfile, compression, compressargs)
 
 def mksquashfs(rootdir, outfile, compression="default", compressargs=[]):
     '''Make a squashfs image containing the given rootdir.'''
