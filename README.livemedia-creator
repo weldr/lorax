@@ -224,6 +224,21 @@ The created image can be imported into libvirt using:
 virt-image appliance.xml
 
 
+TAR FILE CREATION
+-----------------
+The --make-tar command can be used to create a tar of the root filesystem. By
+default it is compressed using xz, but this can be changed using the
+--compression and --compress-arg options. This option works with both virt and
+--no-virt install methods.
+
+As with --make-fsimage the kickstart should be limited to a single / partition.
+
+eg.
+
+livemedia-creator --make-tar --iso=/path/to/boot.iso --ks=./docs/fedora-minimal.ks \
+--image-name=fedora-root.tar.xz
+
+
 DEBUGGING PROBLEMS
 ------------------
 Cleaning up an aborted (ctrl-c) virt-install run (as root):

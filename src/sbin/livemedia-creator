@@ -2,7 +2,7 @@
 #
 # Live Media Creator
 #
-# Copyright (C) 2011-2013  Red Hat, Inc.
+# Copyright (C) 2011-2014  Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ from pylorax.treebuilder import TreeBuilder, RuntimeBuilder, udev_escape
 from pylorax.sysutils import joinpaths, remove
 from pylorax.imgutils import PartitionMount, mksparse, mkext4img, loop_detach
 from pylorax.imgutils import get_loop_name, dm_detach, mount, umount, Mount
-from pylorax.imgutils import mksquashfs
+from pylorax.imgutils import mksquashfs, mktar
 from pylorax.executils import execWithRedirect, execWithCapture
 
 # no-virt mode doesn't need libvirt, so make it optional
@@ -578,6 +578,13 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
         if not os.path.isdir(ROOT_PATH):
             os.mkdir(ROOT_PATH)
         mount(disk_img, opts="loop", mnt=ROOT_PATH)
+    elif opts.make_tar:
+        args += ["--dirinstall"]
+
+        # Install directly into ROOT_PATH, make sure it starts clean
+        if os.path.exists(ROOT_PATH):
+            shutil.rmtree(ROOT_PATH)
+            os.mkdir(ROOT_PATH)
     else:
         args += ["--image", disk_img]
 
@@ -617,6 +624,17 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
     if rc:
         raise InstallError("novirt_install failed")
 
+    if opts.make_tar:
+        compress_args = []
+        for arg in opts.compress_args:
+            compress_args += arg.split(" ", 1)
+
+        rc = mktar(ROOT_PATH, disk_img, opts.compression, compress_args)
+        shutil.rmtree(ROOT_PATH)
+
+        if rc:
+            raise InstallError("novirt_install failed")
+
 
 def virt_install(opts, install_log, disk_img, disk_size):
     """
@@ -635,7 +653,7 @@ def virt_install(opts, install_log, disk_img, disk_size):
     if opts.proxy:
         kernel_args += " proxy="+opts.proxy
 
-    if opts.make_fsimage:
+    if opts.make_fsimage or opts.make_tar:
         diskimg_path = tempfile.mktemp(prefix="disk", suffix=".img", dir=opts.tmp)
     else:
         diskimg_path = disk_img
@@ -655,6 +673,18 @@ def virt_install(opts, install_log, disk_img, disk_size):
     if opts.make_fsimage:
         make_fsimage(diskimg_path, disk_img, label=opts.fs_label)
         os.unlink(diskimg_path)
+    elif opts.make_tar:
+        compress_args = []
+        for arg in opts.compress_args:
+            compress_args += arg.split(" ", 1)
+
+        with PartitionMount(diskimg_path) as img_mount:
+            if img_mount and img_mount.mount_dir:
+                rc = mktar(img_mount.mount_dir, disk_img, opts.compression, compress_args)
+        os.unlink(diskimg_path)
+
+        if rc:
+            raise InstallError("virt_install failed")
 
 
 def make_squashfs(disk_img, work_dir, compression="xz"):
@@ -754,6 +784,8 @@ if __name__ == '__main__':
                          help="Build an appliance image and XML description" )
     action.add_argument( "--make-ami", action="store_true",
                          help="Build an ami image" )
+    action.add_argument( "--make-tar", action="store_true",
+                         help="Build a tar of the root filesystem" )
 
     parser.add_argument( "--iso", type=os.path.abspath,
                         help="Anaconda installation .iso path to use for virt-install" )
@@ -763,6 +795,10 @@ if __name__ == '__main__':
                         help="Path to existing filesystem image to use for creating final image." )
     parser.add_argument( "--fs-label", default="Anaconda",
                         help="Label to set on fsimage, default is 'Anaconda'")
+    parser.add_argument("--compression", default="xz",
+                        help="Compression binary for make-tar. xz, lzma, gzip, and bzip2 are supported. xz is the default.")
+    parser.add_argument("--compress-arg", action="append", dest="compress_args", default=[],
+                        help="Arguments to pass to compression. Pass once for each argument")
 
     parser.add_argument( "--ks", action="append", type=os.path.abspath,
                          help="Kickstart file defining the install." )
@@ -923,6 +959,11 @@ if __name__ == '__main__':
             opts.image_name = "ami-root.img"
         if opts.fs_label == "Anaconda":
             opts.fs_label = "AMI"
+    elif opts.make_tar:
+        if not opts.image_name:
+            opts.image_name = "root.tar.xz"
+        if opts.compression == "xz" and not opts.compress_args:
+            opts.compress_args = ["-9"]
 
     if opts.app_file:
         opts.app_file = joinpaths(opts.tmp, opts.app_file)
