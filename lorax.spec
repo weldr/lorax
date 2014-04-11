@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.7
+Version:        21.8
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -96,6 +96,18 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Thu Apr 10 2014 Brian C. Lane <bcl@redhat.com> 21.8-1
+- Update to support syslinux 6.02 (bcl@redhat.com)
+- livemedia-creator: Add support for making tarfiles (bcl@redhat.com)
+- livemedia-creator: Allow disk sizes to be < 1GiB (bcl@redhat.com)
+- livemedia-creator: Check fsimage kickstart for single partition
+  (bcl@redhat.com)
+- livemedia-creator: Output all the errors at once (bcl@redhat.com)
+- livemedia-creator: Update documentation to reflect new options
+  (bcl@redhat.com)
+- livemedia-creator: Make --make-fsimage work with virt-install
+  (bcl@redhat.com)
+
 * Wed Apr 02 2014 Brian C. Lane <bcl@redhat.com> 21.7-1
 - Use BOOTAA64.efi for AARCH64 bootloader filename (#1080113) (bcl@redhat.com)
 - Stop removing curl after adding it (bcl@redhat.com)
