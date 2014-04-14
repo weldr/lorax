@@ -33,8 +33,8 @@ removepkg fedora-release-rawhide
 removepkg usermode usermode-gtk passwd shadow-utils
 ## no services to turn on/off (keep the /etc/init.d link though)
 removefrom chkconfig --allbut /etc/init.d
-## we don't check GPG keys (hooray bug #998)
-removepkg gnupg2 pinentry
+## Miscellanous unnecessary gpg program
+removepkg pinentry
 ## no printer/scanner support in anaconda
 removepkg cups-libs iscan-firmware
 ## no storage device monitoring
