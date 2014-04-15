@@ -47,7 +47,7 @@ Requires: hfsplus-tools
 %endif
 
 %ifarch %{ix86} x86_64
-Requires:       syslinux >= 4.02-5
+Requires:       syslinux >= 6.02-4
 %endif
 
 %ifarch ppc ppc64

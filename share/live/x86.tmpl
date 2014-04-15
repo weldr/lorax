@@ -16,6 +16,9 @@ treeinfo stage2 mainimage ${LIVEDIR}/squashfs.img
 mkdir ${BOOTDIR}
 install ${SYSLINUXDIR}/isolinux.bin ${BOOTDIR}
 install ${SYSLINUXDIR}/vesamenu.c32 ${BOOTDIR}
+install ${SYSLINUXDIR}/ldlinux.c32 ${BOOTDIR}
+install ${SYSLINUXDIR}/libcom32.c32 ${BOOTDIR}
+install ${SYSLINUXDIR}/libutil.c32 ${BOOTDIR}
 install ${configdir}/isolinux.cfg ${BOOTDIR}
 install ${configdir}/boot.msg ${BOOTDIR}
 install ${configdir}/grub.conf ${BOOTDIR}
