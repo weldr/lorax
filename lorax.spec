@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.8
+Version:        21.9
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -96,6 +96,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Apr 15 2014 Brian C. Lane <bcl@redhat.com> 21.9-1
+- Update syslinux 6.02 support for noarch change (bcl@redhat.com)
+- runtime-cleanup: Do install GPG (walters@verbum.org)
+
 * Thu Apr 10 2014 Brian C. Lane <bcl@redhat.com> 21.8-1
 - Update to support syslinux 6.02 (bcl@redhat.com)
 - livemedia-creator: Add support for making tarfiles (bcl@redhat.com)
