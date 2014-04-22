@@ -56,6 +56,11 @@ Requires:       syslinux >= 4.02-5
 Requires:       kernel-bootwrapper
 %endif
 
+%ifarch ppc64
+# ppc.tmpl uses 32bit addnote which needs the 32bit glibc on the host
+Requires:       glibc(ppc)
+%endif
+
 %ifarch s390 s390x
 Requires:       openssh
 %endif
