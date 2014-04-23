@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.27
+Version:        19.6.28
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -92,6 +92,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Apr 23 2014 Brian C. Lane <bcl@redhat.com> 19.6.28-1
+- Install rdma so that dracut will use it along with libmlx4 (bcl)
+  Resolves: rhbz#1089564
+
 * Thu Apr 03 2014 Brian C. Lane <bcl@redhat.com> 19.6.27-1
 - Stop removing curl after adding it (#1083205) (bcl@redhat.com)
 
