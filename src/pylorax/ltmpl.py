@@ -483,8 +483,9 @@ class LoraxTemplateRunner(object):
           commands.
         '''
         self.yum.buildTransaction()
-        self.yum.repos.setProgressBar(LoraxDownloadCallback())
-        self.yum.processTransaction(callback=LoraxTransactionCallback(),
+        dl_callback = LoraxDownloadCallback()
+        self.yum.repos.setProgressBar(dl_callback)
+        self.yum.processTransaction(callback=LoraxTransactionCallback(dl_callback),
                                     rpmDisplay=LoraxRpmCallback())
 
         # verify if all packages that were supposed to be installed,

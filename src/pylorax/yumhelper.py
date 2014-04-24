@@ -21,7 +21,7 @@
 
 import logging
 logger = logging.getLogger("pylorax.yumhelper")
-import sys, os, re
+import sys
 import yum, yum.callbacks, yum.rpmtrans
 import output
 
@@ -29,13 +29,14 @@ __all__ = ['LoraxDownloadCallback', 'LoraxTransactionCallback',
            'LoraxRpmCallback']
 
 class LoraxDownloadCallback(yum.callbacks.DownloadBaseCallback):
-
     def __init__(self):
         yum.callbacks.DownloadBaseCallback.__init__(self)
+
+        self.pkgno = 0
+        self.total = 0
+
         self.output = output.LoraxOutput()
 
-        pattern = "\((?P<pkgno>\d+)/(?P<total>\d+)\):\s+(?P<pkgname>.*)"
-        self.pattern = re.compile(pattern)
 
     def updateProgress(self, name, frac, fread, ftime):
         """
@@ -45,40 +46,35 @@ class LoraxDownloadCallback(yum.callbacks.DownloadBaseCallback):
             @param fread: formated string containing BytesRead
             @param ftime: formated string containing remaining or elapsed time
         """
+        # Only update when it is finished downloading
+        if frac < 1:
+            return
 
-        match = self.pattern.match(name)
+        self.pkgno += 1
+        info = "({0:3d}/{1:3d}) "
+        info = info.format(self.pkgno, self.total)
 
-        pkgno = 0
-        total = 0
-        pkgname = name
-        if match:
-            pkgno = int(match.group("pkgno"))
-            total = int(match.group("total"))
-            pkgname = match.group("pkgname")
-
-        info = "({0:3d}/{1:3d}) [{2:3.0f}%] downloading "
-        info = info.format(pkgno, total, frac * 100)
-
-        infolen, pkglen = len(info), len(pkgname)
+        infolen, pkglen = len(info), len(name)
         if (infolen + pkglen) > self.output.width:
-            pkgname = "{0}...".format(pkgname[:self.output.width-infolen-3])
+            name = "{0}...".format(name[:self.output.width-infolen-3])
 
-        msg = "{0}<b>{1}</b>\r".format(info, pkgname)
+        msg = "{0}<b>{1}</b>\n".format(info, name)
         self.output.write(msg)
-        if frac == 1:
-            self.output.write("\n")
 
 
 class LoraxTransactionCallback(object):
 
-    def __init__(self):
+    def __init__(self, dl_callback):
         self.output = output.LoraxOutput()
+
+        self.dl_callback = dl_callback
 
     def event(self, state, data=None):
         if state == yum.callbacks.PT_DOWNLOAD:
             self.output.write("downloading packages\n")
         elif state == yum.callbacks.PT_DOWNLOAD_PKGS:
-            pass
+            # Initialize the total number of packages being downloaded
+            self.dl_callback.total = len(data)
         elif state == yum.callbacks.PT_GPGCHECK:
             self.output.write("checking package signatures\n")
         elif state == yum.callbacks.PT_TEST_TRANS:
@@ -108,10 +104,16 @@ class LoraxRpmCallback(yum.rpmtrans.RPMBaseCallback):
         if (infolen + pkglen) > self.output.width:
             pkg = "{0}...".format(pkg[:self.output.width-infolen-3])
 
-        msg = "{0}<b>{1}</b>\r".format(info, pkg)
-        self.output.write(msg)
-        if te_current == te_total:
-            self.output.write("\n")
+        msg = "{0}<b>{1}</b>".format(info, pkg)
+
+        # When not outputting to a tty we only want to print it once at the end
+        if sys.stdout.isatty():
+            self.output.write(msg + "\r")
+            if te_current == te_total:
+                self.output.write("\n")
+        elif te_current == te_total:
+            self.output.write(msg + "\n")
+
 
     def filelog(self, package, action):
         if self.fileaction.get(action) == "Installed":

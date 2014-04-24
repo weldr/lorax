@@ -106,7 +106,10 @@ class Lorax(BaseLoraxClass):
         self.debug = self.conf.getboolean("lorax", "debug")
         output_level = output.DEBUG if self.debug else output.INFO
 
-        colors = self.conf.getboolean("output", "colors")
+        if sys.stdout.isatty():
+            colors = self.conf.getboolean("output", "colors")
+        else:
+            colors = False
         encoding = self.conf.get("output", "encoding")
 
         self.output.basic_config(output_level=output_level,

@@ -74,7 +74,8 @@ class LinuxTerminalOutput(object):
 
     def basic_config(self, output_level=None, colors=None, encoding=None):
         self._output_level = output_level or self._output_level
-        self._colors = colors or self._colors
+        if colors is not None:
+            self._colors = colors
         self._encoding = encoding or self._encoding
 
     def ignore(self, message):
