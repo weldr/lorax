@@ -28,7 +28,7 @@ ${make_efiboot("images/efiboot.img")}
     <%
     kdir = EFIBOOTDIR if include_kernel else KERNELDIR
     eficonf = "%s/grub.cfg" % (EFIBOOTDIR, )
-    args = "--label=ANACONDA"
+    args = "--label=ANACONDA --debug"
     if disk: args += " --disk"
     if imgtype == "apple": args += ' --apple --icon=%s --diskname=%s --product="%s %s"' % (APPLE_EFI_ICON, APPLE_EFI_DISKNAME, product.name, product.version)
     %>
