@@ -701,8 +701,11 @@ def make_squashfs(disk_img, work_dir, compression="xz"):
     liveos_dir = joinpaths(work_dir, "runtime/LiveOS")
     os.makedirs(liveos_dir)
     os.makedirs(os.path.dirname(joinpaths(work_dir, RUNTIME)))
-    execWithRedirect("/bin/ln", [disk_img,
-                     joinpaths(liveos_dir, "rootfs.img")])
+
+    rc = execWithRedirect("/bin/ln", [disk_img, joinpaths(liveos_dir, "rootfs.img")])
+    if rc != 0:
+        shutil.copy2(disk_img, joinpaths(liveos_dir, "rootfs.img"))
+
     mksquashfs(joinpaths(work_dir, "runtime"),
                joinpaths(work_dir, RUNTIME), compression)
     remove(joinpaths(work_dir, "runtime"))
