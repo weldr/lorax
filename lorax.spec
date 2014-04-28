@@ -62,6 +62,7 @@ Requires:       openssh
 
 # Moved image-minimizer tool to lorax
 Provides:       appliance-tools-minimizer
+Obsoletes:      appliance-tools-minimizer < 007.7-3
 
 %description
 Lorax is a tool for creating the anaconda install images.
