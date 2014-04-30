@@ -60,6 +60,10 @@ Requires:       grub2-tools
 Requires:       openssh
 %endif
 
+%ifarch %{arm}
+Requires:       uboot-tools
+%endif
+
 # Moved image-minimizer tool to lorax
 Provides:       appliance-tools-minimizer
 Obsoletes:      appliance-tools-minimizer < 007.7-3
