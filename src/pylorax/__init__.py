@@ -142,7 +142,10 @@ class Lorax(BaseLoraxClass):
 
     def run(self, ybo, product, version, release, variant="", bugurl="",
             isfinal=False, workdir=None, outputdir=None, buildarch=None, volid=None,
-            domacboot=False, doupgrade=True, remove_temp=False):
+            domacboot=False, doupgrade=True, remove_temp=False,
+            size=2,
+            add_templates=None,
+            add_template_vars=None):
 
         assert self._configured
 
@@ -240,7 +243,9 @@ class Lorax(BaseLoraxClass):
         templatedir = self.conf.get("lorax", "sharedir")
         # NOTE: rb.root = ybo.conf.installroot (== self.inroot)
         rb = RuntimeBuilder(product=self.product, arch=self.arch,
-                            yum=ybo, templatedir=templatedir)
+                            yum=ybo, templatedir=templatedir,
+                            add_templates=add_templates,
+                            add_template_vars=add_template_vars)
 
         logger.info("installing runtime packages")
         rb.yum.conf.skip_broken = self.conf.getboolean("yum", "skipbroken")
