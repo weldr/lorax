@@ -67,7 +67,9 @@ def generate_module_info(moddir, outfile=None):
 
 class RuntimeBuilder(object):
     '''Builds the anaconda runtime image.'''
-    def __init__(self, product, arch, yum, templatedir=None):
+    def __init__(self, product, arch, yum, templatedir=None,
+                 add_templates=None,
+                 add_template_vars=None):
         root = yum.conf.installroot
         # use a copy of product so we can modify it locally
         product = product.copy()
@@ -77,6 +79,8 @@ class RuntimeBuilder(object):
         self.yum = yum
         self._runner = LoraxTemplateRunner(inroot=root, outroot=root,
                                            yum=yum, templatedir=templatedir)
+        self.add_templates = add_templates or []
+        self.add_template_vars = add_template_vars or {}
         self._runner.defaults = self.vars
 
     def _install_branding(self):
@@ -104,6 +108,8 @@ class RuntimeBuilder(object):
         '''Install packages and do initial setup with runtime-install.tmpl'''
         self._install_branding()
         self._runner.run("runtime-install.tmpl")
+        for tmpl in self.add_templates:
+            self._runner.run(tmpl, **self.add_template_vars)
 
     def writepkglists(self, pkglistdir):
         '''debugging data: write out lists of package contents'''
@@ -161,7 +167,8 @@ class RuntimeBuilder(object):
         # Reset selinux context on new rootfs
         with imgutils.LoopDev( joinpaths(workdir, "LiveOS/rootfs.img") ) as loopdev:
             with imgutils.Mount(loopdev) as mnt:
-                cmd = [ "setfiles", "-e", "/proc", "-e", "/sys", "-e", "/dev",  "/etc/selinux/targeted/contexts/files/file_contexts", "/"]
+                cmd = [ "setfiles", "-e", "/proc", "-e", "/sys", "-e", "/dev", "-e", "/install",
+                        "/etc/selinux/targeted/contexts/files/file_contexts", "/"]
                 runcmd(cmd, root=mnt)
 
         # squash the live rootfs and clean up workdir
