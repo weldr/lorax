@@ -43,6 +43,10 @@ test: docs
 	coverage report -m
 	[ -f "/usr/bin/coveralls" ] && [ -n "$(COVERALLS_REPO_TOKEN)" ] && coveralls || echo
 
+check:
+	@echo "*** Running pylint ***"
+	./tests/pylint/runpylint.sh
+
 clean:
 	-rm -rf build src/pylorax/version.py
 	-rm -rf build src/composer/version.py

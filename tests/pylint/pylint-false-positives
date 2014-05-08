@@ -1,0 +1,3 @@
+F0401 import-error Unable to import 'pylorax.version'
+E0611 no-name-in-module No name 'version' in module 'pylorax'
+E1101 no-member Module 'pylorax' has no 'version' member
