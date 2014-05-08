@@ -21,6 +21,10 @@ install: all
 	install -m 644 docs/lorax.1 $(DESTDIR)/$(mandir)/man1
 	install -m 644 docs/livemedia-creator.1 $(DESTDIR)/$(mandir)/man1
 
+check:
+	@echo "*** Running pylint ***"
+	./tests/pylint/runpylint.sh
+
 clean:
 	-rm -rf build src/pylorax/version.py
 
