@@ -204,11 +204,11 @@ class IsoMountpoint(object):
         self.kernel = self.mount_dir+"/isolinux/vmlinuz"
         self.initrd = self.mount_dir+"/isolinux/initrd.img"
 
-        if os.path.isdir( self.mount_dir+"/repodata" ):
+        if os.path.isdir(self.mount_dir+"/repodata"):
             self.repo = self.mount_dir
         else:
             self.repo = None
-        self.liveos = os.path.isdir( self.mount_dir+"/LiveOS" )
+        self.liveos = os.path.isdir(self.mount_dir+"/LiveOS")
 
         try:
             for f in [self.kernel, self.initrd]:
@@ -224,28 +224,27 @@ class IsoMountpoint(object):
         if not self.initrd_path:
             umount(self.mount_dir)
 
-    def get_iso_label( self ):
+    def get_iso_label(self):
         """
         Get the iso's label using isoinfo
         """
         isoinfo_output = execWithCapture("isoinfo", ["-d", "-i", self.iso_path])
-        log.debug( isoinfo_output )
+        log.debug(isoinfo_output)
         for line in isoinfo_output.splitlines():
             if line.startswith("Volume id: "):
                 self.label = line[11:]
                 return
 
 
-class VirtualInstall( object ):
+class VirtualInstall(object):
     """
     Run virt-install using an iso and kickstart(s)
     """
-    def __init__( self, iso, ks_paths, disk_img, img_size=2048,
-                  kernel_args=None, memory=1024, vnc=None, arch=None,
-                  log_check=None, virtio_host="127.0.0.1", virtio_port=6080,
-                  qcow2=False):
+    def __init__(self, iso, ks_paths, disk_img, img_size=2048,
+                 kernel_args=None, memory=1024, vnc=None, arch=None,
+                 log_check=None, virtio_host="127.0.0.1", virtio_port=6080,
+                 qcow2=False):
         """
-
         iso is an instance of IsoMountpoint
         ks_paths is a list of paths to a kickstart files. All are injected, the
                  first one is the one executed.
@@ -331,17 +330,17 @@ class VirtualInstall( object ):
         print
 
         if log_check():
-            log.info( "Installation error detected. See logfile." )
+            log.info("Installation error detected. See logfile.")
         else:
-            log.info( "Install finished. Or at least virt shut down." )
+            log.info("Install finished. Or at least virt shut down.")
 
-    def destroy( self ):
+    def destroy(self):
         """
         Make sure the virt has been shut down and destroyed
 
         Could use libvirt for this instead.
         """
-        log.info( "Shutting down {0}".format(self.virt_name) )
+        log.info("Shutting down {0}".format(self.virt_name))
         subprocess.call(["virsh", "destroy", self.virt_name])
         subprocess.call(["virsh", "undefine", self.virt_name])
 
@@ -509,7 +508,7 @@ def make_livecd(opts, mount_dir, work_dir):
                      inroot=mount_dir, outroot=work_dir,
                      runtime=RUNTIME, isolabel=isolabel,
                      templatedir=joinpaths(opts.lorax_templates,"live/"))
-    log.info( "Rebuilding initrds" )
+    log.info("Rebuilding initrds")
     if not opts.dracut_args:
         dracut_args = DRACUT_DEFAULT
     else:
@@ -775,92 +774,92 @@ def setup_logging(opts):
 
 
 def main():
-    parser = argparse.ArgumentParser( description="Create Live Install Media",
-                                      fromfile_prefix_chars="@" )
+    parser = argparse.ArgumentParser(description="Create Live Install Media",
+                                     fromfile_prefix_chars="@")
 
     # These are mutually exclusive, one is required
-    action = parser.add_mutually_exclusive_group( required=True )
-    action.add_argument( "--make-iso", action="store_true",
-                         help="Build a live iso" )
-    action.add_argument( "--make-disk", action="store_true",
-                         help="Build a partitioned disk image" )
-    action.add_argument( "--make-fsimage", action="store_true",
-                         help="Build a filesystem image" )
-    action.add_argument( "--make-appliance", action="store_true",
-                         help="Build an appliance image and XML description" )
-    action.add_argument( "--make-ami", action="store_true",
-                         help="Build an ami image" )
-    action.add_argument( "--make-tar", action="store_true",
-                         help="Build a tar of the root filesystem" )
+    action = parser.add_mutually_exclusive_group(required=True)
+    action.add_argument("--make-iso", action="store_true",
+                        help="Build a live iso")
+    action.add_argument("--make-disk", action="store_true",
+                        help="Build a partitioned disk image")
+    action.add_argument("--make-fsimage", action="store_true",
+                        help="Build a filesystem image")
+    action.add_argument("--make-appliance", action="store_true",
+                        help="Build an appliance image and XML description")
+    action.add_argument("--make-ami", action="store_true",
+                        help="Build an ami image")
+    action.add_argument("--make-tar", action="store_true",
+                        help="Build a tar of the root filesystem")
 
-    parser.add_argument( "--iso", type=os.path.abspath,
-                        help="Anaconda installation .iso path to use for virt-install" )
-    parser.add_argument( "--ks", action="append", type=os.path.abspath,
-                         help="Kickstart file defining the install." )
-    parser.add_argument( "--image-only", action="store_true",
-                         help="Exit after creating fs/disk image." )
+    parser.add_argument("--iso", type=os.path.abspath,
+                        help="Anaconda installation .iso path to use for virt-install")
+    parser.add_argument("--ks", action="append", type=os.path.abspath,
+                        help="Kickstart file defining the install.")
+    parser.add_argument("--image-only", action="store_true",
+                        help="Exit after creating fs/disk image.")
 
-    parser.add_argument( "--no-virt", action="store_true",
-                         help="Use Anaconda's image install instead of virt-install" )
-    parser.add_argument( "--proxy",
-                         help="proxy URL to use for the install" )
-    parser.add_argument( "--anaconda-arg", action="append", dest="anaconda_args",
-                         help="Additional argument to pass to anaconda (no-virt "
-                              "mode). Pass once for each argument" )
-    parser.add_argument( "--armplatform",
-                         help="the platform to use when creating images for ARM, "
-                              "i.e., highbank, mvebu, omap, tegra, etc." )
-    parser.add_argument( "--location", default=None, type=os.path.abspath,
-                         help="location of iso directory tree with initrd.img "
-                              "and vmlinuz. Used to run virt-install with a "
-                              "newer initrd than the iso." )
+    parser.add_argument("--no-virt", action="store_true",
+                        help="Use Anaconda's image install instead of virt-install")
+    parser.add_argument("--proxy",
+                        help="proxy URL to use for the install")
+    parser.add_argument("--anaconda-arg", action="append", dest="anaconda_args",
+                        help="Additional argument to pass to anaconda (no-virt "
+                             "mode). Pass once for each argument")
+    parser.add_argument("--armplatform",
+                        help="the platform to use when creating images for ARM, "
+                             "i.e., highbank, mvebu, omap, tegra, etc.")
+    parser.add_argument("--location", default=None, type=os.path.abspath,
+                        help="location of iso directory tree with initrd.img "
+                             "and vmlinuz. Used to run virt-install with a "
+                             "newer initrd than the iso.")
 
-    parser.add_argument( "--logfile", default="./livemedia.log",
-                         type=os.path.abspath,
-                         help="Path to logfile" )
-    parser.add_argument( "--lorax-templates", default="/usr/share/lorax/",
-                         type=os.path.abspath,
-                         help="Path to mako templates for lorax" )
-    parser.add_argument( "--tmp", default="/var/tmp", type=os.path.abspath,
-                         help="Top level temporary directory" )
-    parser.add_argument( "--resultdir", default=None, dest="result_dir",
-                         type=os.path.abspath,
-                         help="Directory to copy the resulting images and iso into. "
-                              "Defaults to the temporary working directory")
+    parser.add_argument("--logfile", default="./livemedia.log",
+                        type=os.path.abspath,
+                        help="Path to logfile")
+    parser.add_argument("--lorax-templates", default="/usr/share/lorax/",
+                        type=os.path.abspath,
+                        help="Path to mako templates for lorax")
+    parser.add_argument("--tmp", default="/var/tmp", type=os.path.abspath,
+                        help="Top level temporary directory")
+    parser.add_argument("--resultdir", default=None, dest="result_dir",
+                        type=os.path.abspath,
+                        help="Directory to copy the resulting images and iso into. "
+                             "Defaults to the temporary working directory")
 
-    parser.add_argument( "--macboot", action="store_true", default=True,
-                         dest="domacboot")
-    parser.add_argument( "--nomacboot", action="store_false",
-                         dest="domacboot")
+    parser.add_argument("--macboot", action="store_true", default=True,
+                        dest="domacboot")
+    parser.add_argument("--nomacboot", action="store_false",
+                        dest="domacboot")
 
     image_group = parser.add_argument_group("disk/fs image arguments")
-    image_group.add_argument( "--disk-image", type=os.path.abspath,
-                        help="Path to existing disk image to use for creating final image." )
-    image_group.add_argument( "--keep-image", action="store_true",
-                         help="Keep raw disk image after .iso creation" )
-    image_group.add_argument( "--fs-image", type=os.path.abspath,
-                        help="Path to existing filesystem image to use for creating final image." )
-    image_group.add_argument( "--image-name", default=None,
-                         help="Name of output file to create. Used for tar, fs and disk image. Default is a random name." )
-    image_group.add_argument( "--fs-label", default="Anaconda",
-                         help="Label to set on fsimage, default is 'Anaconda'")
+    image_group.add_argument("--disk-image", type=os.path.abspath,
+                             help="Path to existing disk image to use for creating final image.")
+    image_group.add_argument("--keep-image", action="store_true",
+                             help="Keep raw disk image after .iso creation")
+    image_group.add_argument("--fs-image", type=os.path.abspath,
+                             help="Path to existing filesystem image to use for creating final image.")
+    image_group.add_argument("--image-name", default=None,
+                             help="Name of output file to create. Used for tar, fs and disk image. Default is a random name.")
+    image_group.add_argument("--fs-label", default="Anaconda",
+                             help="Label to set on fsimage, default is 'Anaconda'")
     image_group.add_argument("--qcow2", action="store_true",
-                        help="Create qcow2 image instead of raw sparse image when making disk images.")
+                             help="Create qcow2 image instead of raw sparse image when making disk images.")
     image_group.add_argument("--qcow2-arg", action="append", dest="qcow2_args", default=[],
-                        help="Arguments to pass to qemu-img. Pass once for each argument")
+                             help="Arguments to pass to qemu-img. Pass once for each argument")
     image_group.add_argument("--compression", default="xz",
-                        help="Compression binary for make-tar. xz, lzma, gzip, and bzip2 are supported. xz is the default.")
+                             help="Compression binary for make-tar. xz, lzma, gzip, and bzip2 are supported. xz is the default.")
     image_group.add_argument("--compress-arg", action="append", dest="compress_args", default=[],
-                        help="Arguments to pass to compression. Pass once for each argument")
+                             help="Arguments to pass to compression. Pass once for each argument")
 
     # Group of arguments for appliance creation
     app_group = parser.add_argument_group("appliance arguments")
-    app_group.add_argument( "--app-name", default=None,
-                            help="Name of appliance to pass to template")
-    app_group.add_argument( "--app-template", default=None,
-                         help="Path to template to use for appliance data.")
-    app_group.add_argument( "--app-file", default="appliance.xml",
-                         help="Appliance template results file.")
+    app_group.add_argument("--app-name", default=None,
+                           help="Name of appliance to pass to template")
+    app_group.add_argument("--app-template", default=None,
+                           help="Path to template to use for appliance data.")
+    app_group.add_argument("--app-file", default="appliance.xml",
+                           help="Appliance template results file.")
 
     # Group of arguments to pass to virt-install
     if not libvirt:
@@ -868,33 +867,33 @@ def main():
     else:
         virt_group = parser.add_argument_group("virt-install arguments")
     virt_group.add_argument("--ram", metavar="MEMORY", type=int, default=1024,
-                            help="Memory to allocate for installer in megabytes." )
+                            help="Memory to allocate for installer in megabytes.")
     virt_group.add_argument("--vcpus", default=1,
-                            help="Passed to --vcpus command" )
+                            help="Passed to --vcpus command")
     virt_group.add_argument("--vnc",
-                            help="Passed to --graphics command" )
+                            help="Passed to --graphics command")
     virt_group.add_argument("--arch", default=None,
-                            help="Passed to --arch command" )
-    virt_group.add_argument( "--kernel-args",
-                             help="Additional argument to pass to the installation kernel" )
+                            help="Passed to --arch command")
+    virt_group.add_argument("--kernel-args",
+                            help="Additional argument to pass to the installation kernel")
 
     # dracut arguments
-    dracut_group = parser.add_argument_group( "dracut arguments" )
-    dracut_group.add_argument( "--dracut-arg", action="append", dest="dracut_args",
-                               help="Argument to pass to dracut when "
-                                    "rebuilding the initramfs. Pass this "
-                                    "once for each argument. NOTE: this "
-                                    "overrides the default. (default: %s)" % (DRACUT_DEFAULT,) )
+    dracut_group = parser.add_argument_group("dracut arguments")
+    dracut_group.add_argument("--dracut-arg", action="append", dest="dracut_args",
+                              help="Argument to pass to dracut when "
+                                   "rebuilding the initramfs. Pass this "
+                                   "once for each argument. NOTE: this "
+                                   "overrides the default. (default: %s)" % (DRACUT_DEFAULT,))
 
-    parser.add_argument( "--title", default="Linux Live Media",
-                         help="Substituted for @TITLE@ in bootloader config files" )
-    parser.add_argument( "--project", default="Linux",
-                         help="substituted for @PROJECT@ in bootloader config files" )
-    parser.add_argument( "--releasever", default="21",
-                         help="substituted for @VERSION@ in bootloader config files" )
-    parser.add_argument( "--volid", default=None, help="volume id")
-    parser.add_argument( "--squashfs_args",
-                         help="additional squashfs args" )
+    parser.add_argument("--title", default="Linux Live Media",
+                        help="Substituted for @TITLE@ in bootloader config files")
+    parser.add_argument("--project", default="Linux",
+                        help="substituted for @PROJECT@ in bootloader config files")
+    parser.add_argument("--releasever", default="21",
+                        help="substituted for @VERSION@ in bootloader config files")
+    parser.add_argument("--volid", default=None, help="volume id")
+    parser.add_argument("--squashfs_args",
+                        help="additional squashfs args")
 
     opts = parser.parse_args()
 
@@ -910,7 +909,7 @@ def main():
     if opts.ks and not os.path.exists(opts.ks[0]):
         errors.append("kickstart file (%s) is missing." % opts.ks[0])
 
-    if opts.make_iso and not os.path.exists( opts.lorax_templates ):
+    if opts.make_iso and not os.path.exists( opts.lorax_templates):
         errors.append("The lorax templates directory (%s) doesn't "
                       "exist." % opts.lorax_templates)
 
@@ -918,13 +917,13 @@ def main():
         errors.append("The results_dir (%s) should not exist, please delete or "
                       "move its contents" % opts.result_dir)
 
-    if opts.iso and not os.path.exists( opts.iso ):
+    if opts.iso and not os.path.exists(opts.iso):
         errors.append("The iso %s is missing." % opts.iso)
 
-    if opts.disk_image and not os.path.exists( opts.disk_image ):
+    if opts.disk_image and not os.path.exists(opts.disk_image):
         errors.append("The disk image %s is missing." % opts.disk_image)
 
-    if opts.fs_image and not os.path.exists( opts.fs_image ):
+    if opts.fs_image and not os.path.exists(opts.fs_image):
         errors.append("The filesystem image %s is missing." % opts.fs_image)
 
     is_install = not (opts.disk_image or opts.fs_image)
@@ -997,8 +996,8 @@ def main():
     # Parse the kickstart
     if opts.ks:
         ks_version = makeVersion()
-        ks = KickstartParser( ks_version, errorsAreFatal=False, missingIncludeIsFatal=False )
-        ks.readKickstart( opts.ks[0] )
+        ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+        ks.readKickstart(opts.ks[0])
 
     # Make the disk or filesystem image
     if not opts.disk_image and not opts.fs_image:
@@ -1067,8 +1066,8 @@ def main():
                            opts.vcpus, opts.arch, opts.title, opts.project, opts.releasever)
 
         if opts.result_dir and result_dir:
-            shutil.copytree( result_dir, opts.result_dir )
-            shutil.rmtree( result_dir )
+            shutil.copytree(result_dir, opts.result_dir)
+            shutil.rmtree(result_dir)
 
     log.info("SUMMARY")
     log.info("-------")
