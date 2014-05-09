@@ -76,8 +76,14 @@ class InstallError(Exception):
 class LogRequestHandler(SocketServer.BaseRequestHandler):
     """
     Handle monitoring and saving the logfiles from the virtual install
+
+    Incoming data is written to self.server.log_path and each line is checked
+    for patterns that would indicate that the installation failed.
+    self.server.log_error is set True when this happens.
     """
     def setup(self):
+        """Start writing to self.server.log_path"""
+
         if self.server.log_path:
             self.fp = open(self.server.log_path, "w") # pylint: disable=attribute-defined-outside-init
         else:
@@ -86,9 +92,12 @@ class LogRequestHandler(SocketServer.BaseRequestHandler):
 
     def handle(self):
         """
-        Handle writing incoming data to a logfile and
-        checking the logs for any Tracebacks or other errors that indicate
-        that the install failed.
+        Write incoming data to a logfile and check for errors
+
+        Split incoming data into lines and check for any Tracebacks or other
+        errors that indicate that the install failed.
+
+        Loops until self.server.kill is True
         """
         line = ""
         while True:
@@ -123,7 +132,9 @@ class LogRequestHandler(SocketServer.BaseRequestHandler):
 
     def iserror(self, line):
         """
-        Check a line to see if it contains an error indicating install failure
+        Check a line to see if it contains an error indicating installation failure
+
+        :param str line: log line to check for failure
         """
         simple_tests = ["Traceback (",
                         "Out of memory:",
@@ -141,29 +152,45 @@ class LogRequestHandler(SocketServer.BaseRequestHandler):
 
 
 class LogServer(SocketServer.TCPServer):
-    """
-    Add path to logfile
-    Add log error flag
-    Add a kill switch
-    """
+    """A TCP Server that listens for log data"""
     def __init__(self, log_path, *args, **kwargs):
+        """
+        Setup the log server
+
+        :param str log_path: Path to the log file to write
+        """
         self.kill = False
         self.log_error = False
         self.log_path = log_path
         SocketServer.TCPServer.__init__(self, *args, **kwargs)
 
     def log_check(self):
+        """
+        Check to see if an error has been found in the log
+
+        :returns: True if there has been an error
+        :rtype: bool
+        """
         return self.log_error
 
 
 class LogMonitor(object):
     """
-    Contains all the stuff needed to setup a thread to listen to the logs
-    from the virtual install
+    Setup a server to monitor the logs output by the installation
+
+    This needs to be running before the virt-install runs, it expects
+    there to be a listener on the port used for the virtio log port.
     """
     def __init__(self, log_path, host="localhost", port=0):
         """
-        Fire up the thread listening for logs
+        Start a thread to monitor the logs.
+
+        :param str log_path: Path to the logfile to write
+        :param str host: Host to bind to. Default is localhost.
+        :param int port: Port to listen to or 0 to pick a port
+
+        If 0 is passed for the port the dynamically assigned port will be
+        available as self.port
         """
         self.server = LogServer(log_path, (host, port), LogRequestHandler)
         self.host, self.port = self.server.server_address
@@ -173,24 +200,31 @@ class LogMonitor(object):
         self.server_thread.start()
 
     def shutdown(self):
+        """Force shutdown of the monitoring thread"""
         self.server.kill = True
         self.server_thread.join()
 
 
 class IsoMountpoint(object):
     """
-    Mount the iso on a temporary directory and check to make sure the
-    vmlinuz and initrd.img files exist
-    Check the iso for a LiveOS directory and set a flag.
-    Extract the iso's label.
+    Mount the iso and check to make sure the vmlinuz and initrd.img files exist
 
-    initrd_path can be used to point to a boot.iso tree with a newer
-    initrd.img than the iso has. The iso is still used for stage2.
+    Also check the iso for a LiveOS directory and set a flag and extract the
+    iso's label.
     """
-    def __init__( self, iso_path, initrd_path=None ):
-        """ iso_path is the path to a  boot.iso
-            initrd_path overrides mounting the iso for access to
-                        initrd and vmlinuz.
+    def __init__(self, iso_path, initrd_path=None):
+        """
+        Mount the iso
+
+        :param str iso_path: Path to the iso to mount
+        :param str initrd_path: Optional path to initrd
+
+        initrd_path can be used to point to a tree with a newer
+        initrd.img than the iso has. The iso is still used for stage2.
+
+        self.kernel and self.initrd point to the kernel and initrd.
+        self.liveos is set to True if there is a LiveOS/ directory
+        self.repo is the path to the mounted iso if there is a /repodata dir.
         """
         self.label = None
         self.iso_path = iso_path
@@ -221,12 +255,15 @@ class IsoMountpoint(object):
         self.get_iso_label()
 
     def umount( self ):
+        """Unmount the iso"""
         if not self.initrd_path:
             umount(self.mount_dir)
 
     def get_iso_label(self):
         """
         Get the iso's label using isoinfo
+
+        Sets self.label if one is found
         """
         isoinfo_output = execWithCapture("isoinfo", ["-d", "-i", self.iso_path])
         log.debug(isoinfo_output)
@@ -238,24 +275,30 @@ class IsoMountpoint(object):
 
 class VirtualInstall(object):
     """
-    Run virt-install using an iso and kickstart(s)
+    Run virt-install using an iso and a kickstart
     """
     def __init__(self, iso, ks_paths, disk_img, img_size=2048,
                  kernel_args=None, memory=1024, vnc=None, arch=None,
                  log_check=None, virtio_host="127.0.0.1", virtio_port=6080,
                  qcow2=False):
         """
-        iso is an instance of IsoMountpoint
-        ks_paths is a list of paths to a kickstart files. All are injected, the
-                 first one is the one executed.
-        disk_img is the path to a disk image (doesn't need to exist)
-        img_size is the size, in MiB, of the image if it doesn't exist
-        kernel_args are extra arguments to pass on the kernel cmdline
-        memory is the amount of ram to assign to the virt
-        vnc is passed to the --graphics command verbatim
-        arch is the optional architecture to use in the virt
-        log_check is a method that returns True of the log indicates an error
-        virtio_host and virtio_port are used to communicate with the log monitor
+        Start the installation
+
+        :param iso: Information about the iso to use for the installation
+        :type iso: IsoMountpoint
+        :param list ks_paths: Paths to kickstart files. All are injected, the
+           first one is the one executed.
+        :param str disk_img: Path to a disk image, created it it doesn't exist
+        :param int img_size: The image size, in MiB, to create if it doesn't exist
+        :param str kernel_args: Extra kernel arguments to pass on the kernel cmdline
+        :param int memory: Amount of RAM to assign to the virt, in MiB
+        :param str vnc: Arguments to pass to virt-install --graphics
+        :param str arch: Optional architecture to use in the virt
+        :param log_check: Method that returns True if the installation fails
+        :type log_check: method
+        :param str virtio_host: Hostname to connect virtio log to
+        :param int virtio_port: Port to connect virtio log to
+        :param bool qcow2: Set to True if disk_img is a qcow2
         """
         self.virt_name = "LiveOS-"+str(uuid.uuid4())
         # add --graphics none later
@@ -346,7 +389,10 @@ class VirtualInstall(object):
 
 def is_image_mounted(disk_img):
     """
-    Return True if the disk_img is mounted
+    Check to see if the disk_img is mounted
+
+    :returns: True if disk_img is in /proc/mounts
+    :rtype: bool
     """
     with open("/proc/mounts") as mounts:
         for mnt in mounts:
@@ -357,8 +403,11 @@ def is_image_mounted(disk_img):
 
 
 def get_arch(mount_dir):
-    """ Return the arch of the first kernel at <mount_dir>/boot/
-        or return i386
+    """
+    Get the kernel arch
+
+    :returns: Arch of first kernel found at mount_dir/boot/ or i386
+    :rtype: str
     """
     kernels = findkernels(mount_dir)
     if not kernels:
@@ -372,17 +421,17 @@ def make_appliance(disk_img, name, template, outfile, networks=None, ram=1024,
     """
     Generate an appliance description file
 
-    disk_img    Full path of the disk image
-    name        Name of the appliance, passed to the template
-    template    Full path of Mako template
-    outfile     Full path of file to write, using template
-    networks    List of networks from the kickstart
-    ram         Ram, in MB, passed to template. Default is 1024
-    vcpus       CPUs, passed to template. Default is 1
-    arch        CPU architecture. Default is 'x86_64'
-    title       Title, passed to template. Default is 'Linux'
-    project     Project, passed to template. Default is 'Linux'
-    releasever  Release version, passed to template. Default is 17
+    :param str disk_img: Full path of the disk image
+    :param str name: Name of the appliance, passed to the template
+    :param str template: Full path of Mako template
+    :param str outfile: Full path of file to write, using template
+    :param list networks: List of networks(str) from the kickstart
+    :param int ram: Ram, in MiB, passed to template. Default is 1024
+    :param int vcpus: CPUs, passed to template. Default is 1
+    :param str arch: CPU architecture. Default is 'x86_64'
+    :param str title: Title, passed to template. Default is 'Linux'
+    :param str project: Project, passed to template. Default is 'Linux'
+    :param str releasever: Release version, passed to template. Default is 17
     """
     if not (disk_img and template and outfile):
         return None
@@ -420,10 +469,11 @@ def make_fsimage(diskimage, fsimage, img_size=None, label="Anaconda"):
     Copy the / partition of a partitioned disk image to an un-partitioned
     disk image.
 
-    diskimage is the full path to partitioned disk image with a /
-    fsimage is the full path of the output fs image file
-    img_size is the size of the fsimage in MiB or None to make it as small as possible
-    label is the label to apply to the image. Defaults to "Anaconda"
+    :param str diskimage: The full path to partitioned disk image with a /
+    :param str fsimage: The full path of the output fs image file
+    :param int img_size: Optional size of the fsimage in MiB or None to make
+       it as small as possible
+    :param str label: The label to apply to the image. Defaults to "Anaconda"
     """
     with PartitionMount(diskimage) as img_mount:
         if not img_mount or not img_mount.mount_dir:
@@ -441,7 +491,10 @@ def make_runtime(opts, mount_dir, work_dir):
     """
     Make the squashfs image from a directory
 
-    Result is in work_dir+RUNTIME
+    :param opts: options passed to livemedia-creator
+    :type opts: argparse options
+    :param str mount_dir: Directory tree to compress
+    :param str work_dir: Output compressed image to work_dir+images/install.img
     """
     kernel_arch = get_arch(mount_dir)
 
@@ -466,16 +519,16 @@ def make_livecd(opts, mount_dir, work_dir):
     """
     Take the content from the disk image and make a livecd out of it
 
+    :param opts: options passed to livemedia-creator
+    :type opts: argparse options
+    :param str mount_dir: Directory tree to compress
+    :param str work_dir: Output compressed image to work_dir+images/install.img
+
     This uses wwood's squashfs live initramfs method:
      * put the real / into LiveOS/rootfs.img
      * make a squashfs of the LiveOS/rootfs.img tree
-     * make a simple initramfs with the squashfs.img and /etc/cmdline in it
-     * make a cpio of that tree
-     * append the squashfs.cpio to a dracut initramfs for each kernel installed
-
-    Then on boot dracut reads /etc/cmdline which points to the squashfs.img
-    mounts that and then mounts LiveOS/rootfs.img as /
-
+     * This is loaded by dracut when the cmdline is passed to the kernel:
+       root=live:CDLABEL=<volid> rd.live.image
     """
     kernel_arch = get_arch(mount_dir)
 
@@ -527,9 +580,15 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
     """
     Use Anaconda to install to a disk image
 
-    disk_img is the full path to the disk image to be created
-    disk_size is the size in MiB
-    repo_url is the url of the repository to use for the installation
+    :param opts: options passed to livemedia-creator
+    :type opts: argparse options
+    :param str disk_img: The full path to the disk image to be created
+    :param int disk_size: The size of the disk_img in MiB
+    :param str repo_url: The url of the repository to use for the installation
+
+    This method makes sure SELinux is permissive during the install, runs anaconda
+    to create the image and then based on the opts passed create a qcow2 image
+    or tarfile.
     """
     import selinux
 
@@ -635,9 +694,14 @@ def virt_install(opts, install_log, disk_img, disk_size):
     """
     Use virt-install to install to a disk image
 
-    install_log is the path to write the log from virt-install
-    disk_img is the full path to the final disk or filesystem image
-    disk_size is the size of the disk to create in MiB
+    :param opts: options passed to livemedia-creator
+    :type opts: argparse options
+    :param str install_log: The path to write the log from virt-install
+    :param str disk_img: The full path to the disk image to be created
+    :param int disk_size: The size of the disk_img in MiB
+
+    This uses virt-install with a boot.iso and a kickstart to create a disk
+    image and then optionally, based on the opts passed, creates tarfile.
     """
     iso_mount = IsoMountpoint(opts.iso, opts.location)
     log_monitor = LogMonitor(install_log)
@@ -694,8 +758,14 @@ def virt_install(opts, install_log, disk_img, disk_size):
 
 def make_squashfs(disk_img, work_dir, compression="xz"):
     """
+    Create a squashfs image of an unpartitioned filesystem disk image
+
+    :param str disk_img: Path to the unpartitioned filesystem disk image
+    :param str work_dir: Output compressed image to work_dir+images/install.img
+    :param str compression: Compression type to use
+
     Take disk_img and put it into LiveOS/rootfs.img and squashfs this
-    tree into work_dir+RUNTIME
+    tree into work_dir+images/install.img
     """
     liveos_dir = joinpaths(work_dir, "runtime/LiveOS")
     os.makedirs(liveos_dir)
@@ -712,11 +782,15 @@ def make_squashfs(disk_img, work_dir, compression="xz"):
 
 def make_image(opts, ks):
     """
-    Install to an image
+    Install to a disk image
 
-    Use virt or anaconda to install to an image.
+    :param opts: options passed to livemedia-creator
+    :type opts: argparse options
+    :param str ks: Path to the kickstart to use for the installation
+    :returns: Path of the image created
+    :rtype: str
 
-    Returns the full path of of the image created.
+    Use virt-install or anaconda to install to a disk image.
     """
     disk_size = 1 + sum(p.size for p in ks.handler.partition.partitions)
     log.info("disk_size = %sMiB", disk_size)
@@ -747,6 +821,12 @@ def make_image(opts, ks):
 
 
 def setup_logging(opts):
+    """
+    Setup the various logs
+
+    :param opts: options passed to livemedia-creator
+    :type opts: argparse options
+    """
     # Setup logging to console and to logfile
     log.setLevel(logging.DEBUG)
     pylorax_log.setLevel(logging.DEBUG)
