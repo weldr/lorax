@@ -112,7 +112,7 @@ def execWithRedirect(command, argv, stdin = None, stdout = None,
     elif stderr is None or not isinstance(stderr, file):
         stderr = sys.stderr.fileno()
 
-    program_log.info("Running... %s" % (" ".join([command] + argv),))
+    program_log.info("Running... %s", " ".join([command] + argv))
 
     #prepare os pipes for feeding tee proceses
     pstdout, pstdin = os.pipe()
@@ -124,9 +124,9 @@ def execWithRedirect(command, argv, stdin = None, stdout = None,
     if root:
         preexec_fn = chroot
         cwd = root
-        program_log.info("chrooting into %s" % (cwd,))
+        program_log.info("chrooting into %s", cwd)
     elif cwd:
-        program_log.info("chdiring into %s" % (cwd,))
+        program_log.info("chdiring into %s", cwd)
 
     try:
         #prepare tee proceses
@@ -173,7 +173,7 @@ def execWithRedirect(command, argv, stdin = None, stdout = None,
         stdinclose()
         stdoutclose()
         stderrclose()
-        raise RuntimeError, errstr
+        raise RuntimeError(errstr)
 
     if ret and raise_err:
         raise subprocess.CalledProcessError(ret, [command]+argv)
@@ -223,7 +223,7 @@ def execWithCapture(command, argv, stdin = None, stderr = None, root=None,
     elif stderr is None or not isinstance(stderr, file):
         stderr = sys.stderr.fileno()
 
-    program_log.info("Running... %s" % (" ".join([command] + argv),))
+    program_log.info("Running... %s", " ".join([command] + argv))
 
     env = os.environ.copy()
     env.update({"LC_ALL": "C"})
@@ -231,9 +231,9 @@ def execWithCapture(command, argv, stdin = None, stderr = None, root=None,
     if root:
         preexec_fn = chroot
         cwd = root
-        program_log.info("chrooting into %s" % (cwd,))
+        program_log.info("chrooting into %s", cwd)
     elif cwd:
-        program_log.info("chdiring into %s" % (cwd,))
+        program_log.info("chdiring into %s", cwd)
 
     try:
         proc = subprocess.Popen([command] + argv, stdin=stdin,
@@ -254,9 +254,9 @@ def execWithCapture(command, argv, stdin = None, stderr = None, root=None,
             if proc.returncode is not None:
                 break
     except OSError as e:
-        log.error ("Error running " + command + ": " + e.strerror)
+        log.error("Error running %s: %s", command, e.strerror)
         closefds()
-        raise RuntimeError, "Error running " + command + ": " + e.strerror
+        raise RuntimeError("Error running %s: %s" % (command, e.strerror))
 
     closefds()
     if proc.returncode and raise_err:
@@ -267,9 +267,6 @@ def execWithCapture(command, argv, stdin = None, stderr = None, root=None,
 def execWithCallback(command, argv, stdin = None, stdout = None,
                      stderr = None, echo = True, callback = None,
                      callback_data = None, root = '/'):
-    def chroot():
-        os.chroot(root)
-
     def closefds ():
         stdinclose()
         stdoutclose()
@@ -305,7 +302,7 @@ def execWithCallback(command, argv, stdin = None, stdout = None,
     elif stderr is None or not isinstance(stderr, file):
         stderr = sys.stderr.fileno()
 
-    program_log.info("Running... %s" % (" ".join([command] + argv),))
+    program_log.info("Running... %s", " ".join([command] + argv))
 
     p = os.pipe()
     p_stderr = os.pipe()
@@ -333,7 +330,7 @@ def execWithCallback(command, argv, stdin = None, stdout = None,
         except OSError as e:
             if e.errno != 4:
                 map(program_log.info, log_output.splitlines())
-                raise IOError, e.args
+                raise IOError(e.args)
 
         if echo:
             os.write(stdout, s)
@@ -349,7 +346,7 @@ def execWithCallback(command, argv, stdin = None, stdout = None,
             if pid != 0:
                 break
         except OSError as e:
-            log.critical("exception from waitpid: %s %s" %(e.errno, e.strerror))
+            log.critical("exception from waitpid: %s %s", e.errno, e.strerror)
 
         if len(s) < 1:
             break
@@ -363,7 +360,7 @@ def execWithCallback(command, argv, stdin = None, stdout = None,
         except OSError as e:
             if e.errno != 4:
                 map(program_log.error, log_errors.splitlines())
-                raise IOError, e.args
+                raise IOError(e.args)
             break
         log_errors += err
         if len(err) < 1:
@@ -379,7 +376,7 @@ def execWithCallback(command, argv, stdin = None, stdout = None,
         if not pid:
             (pid, status) = os.waitpid(childpid, 0)
     except OSError as e:
-        log.critical("exception from waitpid: %s %s" %(e.errno, e.strerror))
+        log.critical("exception from waitpid: %s %s", e.errno, e.strerror)
 
     closefds()
 
@@ -405,7 +402,7 @@ def execConsole():
         proc = subprocess.Popen(["/bin/sh"])
         proc.wait()
     except OSError as e:
-        raise RuntimeError, "Error running /bin/sh: " + e.strerror
+        raise RuntimeError("Error running /bin/sh: %s" % e.strerror)
 
 def runcmd(cmd, **kwargs):
     """ run execWithRedirect with raise_err=True

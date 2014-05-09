@@ -27,9 +27,9 @@ import os, re, glob, shlex, fnmatch
 from os.path import basename, isdir
 from subprocess import CalledProcessError
 
-from sysutils import joinpaths, cpfile, mvfile, replace, remove
-from yumhelper import * # Lorax*Callback classes
-from base import DataHolder
+from pylorax.sysutils import joinpaths, cpfile, mvfile, replace, remove
+from pylorax.yumhelper import LoraxDownloadCallback, LoraxTransactionCallback, LoraxRpmCallback
+from pylorax.base import DataHolder
 from pylorax.executils import runcmd, runcmd_output
 
 from mako.lookup import TemplateLookup
@@ -38,7 +38,8 @@ import sys, traceback
 import struct
 
 class LoraxTemplate(object):
-    def __init__(self, directories=["/usr/share/lorax"]):
+    def __init__(self, directories=None):
+        directories = directories or ["/usr/share/lorax"]
         # we have to add ["/"] to the template lookup directories or the
         # file includes won't work properly for absolute paths
         self.directories = ["/"] + directories
@@ -67,7 +68,6 @@ class LoraxTemplate(object):
         # split with shlex and perform brace expansion
         lines = map(split_and_expand, lines)
 
-        self.lines = lines
         return lines
 
 def split_and_expand(line):
@@ -92,7 +92,7 @@ def rglob(pathname, root="/", fatal=False):
             seen.add(f)
             yield f[rootlen:] # remove the root to produce relative path
     if fatal and not seen:
-        raise IOError, "nothing matching %s in %s" % (pathname, root)
+        raise IOError("nothing matching %s in %s" % (pathname, root))
 
 def rexists(pathname, root=""):
     # Generator is always True, even with no values;
@@ -145,16 +145,17 @@ class LoraxTemplateRunner(object):
     * Commands should raise exceptions for errors - don't use sys.exit()
     '''
     def __init__(self, inroot, outroot, yum=None, fatalerrors=True,
-                                        templatedir=None, defaults={}):
+                                        templatedir=None, defaults=None):
         self.inroot = inroot
         self.outroot = outroot
         self.yum = yum
         self.fatalerrors = fatalerrors
         self.templatedir = templatedir or "/usr/share/lorax"
+        self.templatefile = None
         # some builtin methods
         self.builtins = DataHolder(exists=lambda p: rexists(p, root=inroot),
                                    glob=lambda g: list(rglob(g, root=inroot)))
-        self.defaults = defaults
+        self.defaults = defaults or {}
         self.results = DataHolder(treeinfo=dict()) # just treeinfo for now
         # TODO: set up custom logger with a filter to add line info
 
@@ -195,9 +196,9 @@ class LoraxTemplateRunner(object):
                 # grab the method named in cmd and pass it the given arguments
                 f = getattr(self, cmd, None)
                 if cmd[0] == '_' or cmd == 'run' or not callable(f):
-                    raise ValueError, "unknown command %s" % cmd
+                    raise ValueError("unknown command %s" % cmd)
                 f(*args)
-            except Exception:
+            except Exception: # pylint: disable=broad-except
                 if skiperror:
                     logger.debug("ignoring error")
                     continue
@@ -258,7 +259,7 @@ class LoraxTemplateRunner(object):
                 match = True
                 replace(f, pat, repl)
         if not match:
-            raise IOError, "no files matched %s" % " ".join(fileglobs)
+            raise IOError("no files matched %s" % " ".join(fileglobs))
 
     def append(self, filename, data):
         '''
@@ -453,7 +454,7 @@ class LoraxTemplateRunner(object):
         for p in pkgs:
             try:
                 self.yum.install(pattern=p)
-            except Exception as e:
+            except Exception as e: # pylint: disable=broad-except
                 # FIXME: save exception and re-raise after the loop finishes
                 logger.error("installpkg %s failed: %s",p,str(e))
                 if required:
@@ -524,15 +525,15 @@ class LoraxTemplateRunner(object):
                 logger.debug("removefrom %s %s: no files matched!", pkg, g)
         # are we removing the matches, or keeping only the matches?
         if keepmatches:
-            remove = filelist.difference(matches)
+            remove_files = filelist.difference(matches)
         else:
-            remove = matches
+            remove_files = matches
         # remove the files
-        if remove:
+        if remove_files:
             logger.debug("%s: removed %i/%i files, %ikb/%ikb", cmd,
-                             len(remove), len(filelist),
-                             self._getsize(*remove)/1024, self._getsize(*filelist)/1024)
-            self.remove(*remove)
+                             len(remove_files), len(filelist),
+                             self._getsize(*remove_files)/1024, self._getsize(*filelist)/1024)
+            self.remove(*remove_files)
         else:
             logger.debug("%s: no files to remove!", cmd)
 

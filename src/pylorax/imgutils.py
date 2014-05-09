@@ -34,13 +34,14 @@ from pylorax.executils import runcmd, runcmd_output
 
 ######## Functions for making container images (cpio, tar, squashfs) ##########
 
-def compress(command, rootdir, outfile, compression="xz", compressargs=["-9"]):
+def compress(command, rootdir, outfile, compression="xz", compressargs=None):
     '''Make a compressed archive of the given rootdir.
     command is a list of the archiver commands to run
     compression should be "xz", "gzip", "lzma", "bzip2", or None.
     compressargs will be used on the compression commandline.'''
     if compression not in (None, "xz", "gzip", "lzma", "bzip2"):
-        raise ValueError, "Unknown compression type %s" % compression
+        raise ValueError("Unknown compression type %s" % compression)
+    compressargs = compressargs or ["-9"]
     if compression == "xz":
         compressargs.insert(0, "--check=crc32")
     if compression is None:
@@ -70,19 +71,22 @@ def compress(command, rootdir, outfile, compression="xz", compressargs=["-9"]):
     except OSError as e:
         logger.error(e)
         # Kill off any hanging processes
-        [p.kill() for p in (find, archive, comp) if p]
+        map(lambda p: p.kill(), (p for p in (find, archive, comp) if p))
         return 1
 
-def mkcpio(rootdir, outfile, compression="xz", compressargs=["-9"]):
+def mkcpio(rootdir, outfile, compression="xz", compressargs=None):
+    compressargs = compressargs or ["-9"]
     return compress(["cpio", "--null", "--quiet", "-H", "newc", "-o"],
                     rootdir, outfile, compression, compressargs)
 
-def mktar(rootdir, outfile, compression="xz", compressargs=["-9"]):
+def mktar(rootdir, outfile, compression="xz", compressargs=None):
+    compressargs = compressargs or ["-9"]
     return compress(["tar", "--selinux", "--acls", "--xattrs", "-cf-", "--null", "-T-"],
                     rootdir, outfile, compression, compressargs)
 
-def mksquashfs(rootdir, outfile, compression="default", compressargs=[]):
+def mksquashfs(rootdir, outfile, compression="default", compressargs=None):
     '''Make a squashfs image containing the given rootdir.'''
+    compressargs = compressargs or []
     if compression != "default":
         compressargs = ["-comp", compression] + compressargs
     return execWithRedirect("mksquashfs", [rootdir, outfile] + compressargs)
@@ -150,24 +154,24 @@ def mount(dev, opts="", mnt=None):
     if mnt is None:
         mnt = tempfile.mkdtemp(prefix="lorax.imgutils.")
         logger.debug("make tmp mountdir %s", mnt)
-    mount = ["mount"]
+    cmd = ["mount"]
     if opts:
-        mount += ["-o", opts]
-    mount += [dev, mnt]
-    runcmd(mount)
+        cmd += ["-o", opts]
+    cmd += [dev, mnt]
+    runcmd(cmd)
     return mnt
 
 def umount(mnt,  lazy=False, maxretry=3, retrysleep=1.0):
     '''Unmount the given mountpoint. If lazy is True, do a lazy umount (-l).
     If the mount was a temporary dir created by mount, it will be deleted.
     raises CalledProcessError if umount fails.'''
-    umount = ["umount"]
-    if lazy: umount += ["-l"]
-    umount += [mnt]
+    cmd = ["umount"]
+    if lazy: cmd += ["-l"]
+    cmd += [mnt]
     count = 0
     while maxretry > 0:
         try:
-            rv = runcmd(umount)
+            rv = runcmd(cmd)
         except CalledProcessError:
             count += 1
             if count == maxretry:
@@ -220,7 +224,8 @@ def round_to_blocks(size, blocksize):
     return size
 
 # TODO: move filesystem data outside this function
-def estimate_size(rootdir, graft={}, fstype=None, blocksize=4096, overhead=128):
+def estimate_size(rootdir, graft=None, fstype=None, blocksize=4096, overhead=128):
+    graft = graft or {}
     getsize = lambda f: os.lstat(f).st_size
     if fstype == "btrfs":
         overhead = 64*1024 # don't worry, it's all sparse
@@ -245,22 +250,24 @@ def estimate_size(rootdir, graft={}, fstype=None, blocksize=4096, overhead=128):
 
 class LoopDev(object):
     def __init__(self, filename, size=None):
+        self.loopdev = None
         self.filename = filename
         if size:
             mksparse(self.filename, size)
     def __enter__(self):
         self.loopdev = loop_attach(self.filename)
         return self.loopdev
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, exc_type, exc_value, tracebk):
         loop_detach(self.loopdev)
 
 class DMDev(object):
     def __init__(self, dev, size, name=None):
+        self.mapperdev = None
         (self.dev, self.size, self.name) = (dev, size, name)
     def __enter__(self):
         self.mapperdev = dm_attach(self.dev, self.size, self.name)
         return self.mapperdev
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, exc_type, exc_value, tracebk):
         dm_detach(self.mapperdev)
 
 class Mount(object):
@@ -269,7 +276,7 @@ class Mount(object):
     def __enter__(self):
         self.mnt = mount(self.dev, self.opts, self.mnt)
         return self.mnt
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, exc_type, exc_value, tracebk):
         umount(self.mnt)
 
 class PartitionMount(object):
@@ -280,6 +287,8 @@ class PartitionMount(object):
         mount_ok is a function that is passed the mount point and
         returns True if it should be mounted.
         """
+        self.mount_dev = None
+        self.mount_size = None
         self.mount_dir = None
         self.disk_img = disk_img
         self.mount_ok = mount_ok
@@ -325,7 +334,7 @@ class PartitionMount(object):
             os.rmdir(mount_dir)
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, exc_type, exc_value, tracebk):
         if self.mount_dir:
             umount( self.mount_dir )
             os.rmdir(self.mount_dir)
@@ -335,12 +344,14 @@ class PartitionMount(object):
 
 ######## Functions for making filesystem images ##########################
 
-def mkfsimage(fstype, rootdir, outfile, size=None, mkfsargs=[], mountargs="", graft={}):
+def mkfsimage(fstype, rootdir, outfile, size=None, mkfsargs=None, mountargs="", graft=None):
     '''Generic filesystem image creation function.
     fstype should be a filesystem type - "mkfs.${fstype}" must exist.
     graft should be a dict: {"some/path/in/image": "local/file/or/dir"};
       if the path ends with a '/' it's assumed to be a directory.
     Will raise CalledProcessError if something goes wrong.'''
+    mkfsargs = mkfsargs or []
+    graft = graft or {}
     preserve = (fstype not in ("msdos", "vfat"))
     if not size:
         size = estimate_size(rootdir, graft, fstype)
@@ -348,7 +359,7 @@ def mkfsimage(fstype, rootdir, outfile, size=None, mkfsargs=[], mountargs="", gr
         try:
             runcmd(["mkfs.%s" % fstype] + mkfsargs + [loopdev])
         except CalledProcessError as e:
-            logger.error("mkfs exited with a non-zero return code: %d" % e.returncode)
+            logger.error("mkfs exited with a non-zero return code: %d", e.returncode)
             logger.error(e.output)
             sys.exit(e.returncode)
 
@@ -361,18 +372,22 @@ def mkfsimage(fstype, rootdir, outfile, size=None, mkfsargs=[], mountargs="", gr
     runcmd(["sync"])
 
 # convenience functions with useful defaults
-def mkdosimg(rootdir, outfile, size=None, label="", mountargs="shortname=winnt,umask=0077", graft={}):
+def mkdosimg(rootdir, outfile, size=None, label="", mountargs="shortname=winnt,umask=0077", graft=None):
+    graft = graft or {}
     mkfsimage("msdos", rootdir, outfile, size, mountargs=mountargs,
               mkfsargs=["-n", label], graft=graft)
 
-def mkext4img(rootdir, outfile, size=None, label="", mountargs="", graft={}):
+def mkext4img(rootdir, outfile, size=None, label="", mountargs="", graft=None):
+    graft = graft or {}
     mkfsimage("ext4", rootdir, outfile, size, mountargs=mountargs,
               mkfsargs=["-L", label, "-b", "1024", "-m", "0"], graft=graft)
 
-def mkbtrfsimg(rootdir, outfile, size=None, label="", mountargs="", graft={}):
+def mkbtrfsimg(rootdir, outfile, size=None, label="", mountargs="", graft=None):
+    graft = graft or {}
     mkfsimage("btrfs", rootdir, outfile, size, mountargs=mountargs,
                mkfsargs=["-L", label], graft=graft)
 
-def mkhfsimg(rootdir, outfile, size=None, label="", mountargs="", graft={}):
+def mkhfsimg(rootdir, outfile, size=None, label="", mountargs="", graft=None):
+    graft = graft or {}
     mkfsimage("hfsplus", rootdir, outfile, size, mountargs=mountargs,
               mkfsargs=["-v", label], graft=graft)

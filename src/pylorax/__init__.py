@@ -33,21 +33,19 @@ import locale
 from subprocess import CalledProcessError
 import selinux
 
-from base import BaseLoraxClass, DataHolder
-import output
+from pylorax.base import BaseLoraxClass, DataHolder
+import pylorax.output as output
 
 import yum
-import ltmpl
 
-import imgutils
-from sysutils import *
+from pylorax.sysutils import joinpaths, remove, linktree
 from rpmUtils.arch import getBaseArch
 
-from treebuilder import RuntimeBuilder, TreeBuilder
-from buildstamp import BuildStamp
-from treeinfo import TreeInfo
-from discinfo import DiscInfo
-from executils import runcmd, runcmd_output
+from pylorax.treebuilder import RuntimeBuilder, TreeBuilder
+from pylorax.buildstamp import BuildStamp
+from pylorax.treeinfo import TreeInfo
+from pylorax.discinfo import DiscInfo
+from pylorax.executils import runcmd, runcmd_output
 
 # List of drivers to remove on ppc64 arch to keep initrd < 32MiB
 REMOVE_PPC64_DRIVERS = "floppy scsi_debug nouveau radeon cirrus mgag200"
@@ -60,6 +58,7 @@ class ArchData(DataHolder):
                     arm="arm", armhfp="arm")
 
     def __init__(self, buildarch):
+        super(ArchData, self).__init__()
         self.buildarch = buildarch
         self.basearch = getBaseArch(buildarch)
         self.libdir = "lib64" if self.basearch in self.lib64_arches else "lib"
@@ -70,6 +69,13 @@ class Lorax(BaseLoraxClass):
     def __init__(self):
         BaseLoraxClass.__init__(self)
         self._configured = False
+        self.product = None
+        self.workdir = None
+        self.arch = None
+        self.conf = None
+        self.inroot = None
+        self.debug = False
+        self.outputdir = None
 
         # set locale to C
         locale.setlocale(locale.LC_ALL, 'C')
@@ -129,7 +135,7 @@ class Lorax(BaseLoraxClass):
 
         # remove some environmental variables that can cause problems with package scripts
         env_remove = ('DISPLAY', 'DBUS_SESSION_BUS_ADDRESS')
-        [os.environ.pop(k) for k in env_remove if k in os.environ]
+        map(os.environ.pop, (k for k in env_remove if k in os.environ))
 
         self._configured = True
 
@@ -229,7 +235,7 @@ class Lorax(BaseLoraxClass):
         product = DataHolder(name=product, version=version, release=release,
                              variant=variant, bugurl=bugurl, isfinal=isfinal)
         self.product = product
-        logger.debug("product data: %s" % product)
+        logger.debug("product data: %s", product)
 
         # NOTE: if you change isolabel, you need to change pungi to match, or
         # the pungi images won't boot.
