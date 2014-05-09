@@ -37,11 +37,11 @@ def get_args(template):
     argspec = inspect.getargspec(template.module.render_body)
     return set(argspec.args[1:]) # skip "context"
 
-def readtemplate(templatefile):
+def readtemplate(filename):
     parser = LoraxTemplate(directories=['.'])
     from mako.lookup import TemplateLookup
     lookup = TemplateLookup(directories=parser.directories)
-    return lookup.get_template(templatefile)
+    return lookup.get_template(filename)
 
 if __name__ == '__main__':
     # check args

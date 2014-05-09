@@ -19,7 +19,6 @@
 import glob
 import optparse
 import os
-import shutil
 import sys
 import rpm
 
@@ -46,8 +45,8 @@ class ImageMinimizer:
     def add_directory(self, files, dirname):
         self.visited.add(dirname)
         for root, dirs, items in os.walk(dirname):
-            for dir in dirs:
-                self.visited.add(os.path.join(root, dir))
+            for d in dirs:
+                self.visited.add(os.path.join(root, d))
             for name in items:
                 files.add(os.path.join(root, name))
 
@@ -124,14 +123,14 @@ class ImageMinimizer:
                     os.remove(tag)
 
         #remove all empty directory. Every 8k counts!
-        for dir in sorted(self.visited, reverse=True):
-            if len(os.listdir(dir)) == 0:
+        for d in sorted(self.visited, reverse=True):
+            if len(os.listdir(d)) == 0:
                 if self.dryrun:
-                    print 'rm -rf ' + dir
+                    print 'rm -rf ' + d
                 else:
                     if self.verbose:
-                        print 'rm -rf ' + dir
-                    os.rmdir(dir)
+                        print 'rm -rf ' + d
+                    os.rmdir(d)
 
     def remove_rpm(self):
 
@@ -182,7 +181,7 @@ def parse_options():
     return (options, args)
 
 
-if __name__ == "__main__":
+def main():
     try:
         (options, args) = parse_options()
         filename = args[0]
@@ -192,7 +191,10 @@ if __name__ == "__main__":
     except SystemExit, e:
         sys.exit(e.code)
     except KeyboardInterrupt, e:
-        print >> sys.stderr, _("Aborted at user request")
+        print >> sys.stderr, "Aborted at user request"
     except Exception, e:
         print e
         sys.exit(1)
+
+if __name__ == "__main__":
+    main()

@@ -79,7 +79,7 @@ class LogRequestHandler(SocketServer.BaseRequestHandler):
     """
     def setup(self):
         if self.server.log_path:
-            self.fp = open(self.server.log_path, "w")
+            self.fp = open(self.server.log_path, "w") # pylint: disable=attribute-defined-outside-init
         else:
             print "no log_path specified"
         self.request.settimeout(10)
@@ -350,8 +350,8 @@ def is_image_mounted(disk_img):
     Return True if the disk_img is mounted
     """
     with open("/proc/mounts") as mounts:
-        for mount in mounts:
-            fields = mount.split()
+        for mnt in mounts:
+            fields = mnt.split()
             if len(fields) > 2 and fields[1] == disk_img:
                 return True
     return False
@@ -430,7 +430,7 @@ def make_fsimage(diskimage, fsimage, img_size=None, label="Anaconda"):
         if not img_mount or not img_mount.mount_dir:
             return None
 
-        log.info("Creating fsimage %s (%s)", (fsimage, img_size or "minimized"))
+        log.info("Creating fsimage %s (%s)", fsimage, img_size or "minimized")
         if img_size:
             # convert to Bytes
             img_size *= 1024**2
@@ -503,7 +503,7 @@ def make_livecd(opts, mount_dir, work_dir):
     isolabel = opts.volid or "{0.name} {0.version} {1.basearch}".format(product, arch)
     if len(isolabel) > 32:
         isolabel = isolabel[:32]
-        log.warn("Truncating isolabel to 32 chars: %s" % (isolabel,))
+        log.warn("Truncating isolabel to 32 chars: %s", isolabel)
 
     tb = TreeBuilder(product=product, arch=arch, domacboot=opts.domacboot,
                      inroot=mount_dir, outroot=work_dir,
@@ -774,7 +774,7 @@ def setup_logging(opts):
     program_log.addHandler(fh)
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser( description="Create Live Install Media",
                                       fromfile_prefix_chars="@" )
 
@@ -1027,7 +1027,7 @@ if __name__ == '__main__':
         try:
             disk_img = make_image(opts, ks)
         except InstallError as e:
-            log.error("ERROR: Image creation failed: %s" % (e))
+            log.error("ERROR: Image creation failed: %s", e)
             sys.exit(1)
 
     if not opts.image_only:
@@ -1082,3 +1082,5 @@ if __name__ == '__main__':
 
     sys.exit( 0 )
 
+if __name__ == '__main__':
+    main()

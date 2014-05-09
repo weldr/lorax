@@ -34,6 +34,7 @@ import os
 import tempfile
 from optparse import OptionParser, OptionGroup
 import ConfigParser
+import shutil
 
 import yum
 # This is a bit of a hack to short circuit yum's internal logging
@@ -195,8 +196,8 @@ def main(args):
               remove_temp=True)
 
 
-def get_yum_base_object(installroot, repositories, mirrorlists=[],
-                        tempdir="/var/tmp", proxy=None, excludepkgs=[]):
+def get_yum_base_object(installroot, repositories, mirrorlists=None,
+                        tempdir="/var/tmp", proxy=None, excludepkgs=None):
 
     def sanitize_repo(repo):
         if repo.startswith("/"):
@@ -206,6 +207,9 @@ def get_yum_base_object(installroot, repositories, mirrorlists=[],
             return repo
         else:
             return None
+
+    mirrorlists = mirrorlists or []
+    excludepkgs = excludepkgs or []
 
     # sanitize the repositories
     repositories = map(sanitize_repo, repositories)
