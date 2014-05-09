@@ -1,7 +1,7 @@
 #
 # executil.py - subprocess execution utility functions
 #
-# Copyright (C) 1999-2011
+# Copyright (C) 1999-2014
 # Red Hat, Inc.  All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify
