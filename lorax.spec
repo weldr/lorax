@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.9
+Version:        21.10
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -101,6 +101,27 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Mon May 12 2014 Brian C. Lane <bcl@redhat.com> 21.10-1
+- Add --add-template{,-var} (walters@verbum.org)
+- runtime-install: Add rpm-ostree, move dnf here (walters@verbum.org)
+- Update copyright statements (bcl@redhat.com)
+- livemedia-creator: Cleanup docstrings (bcl@redhat.com)
+- livemedia-creator: Cleanup some style issues (bcl@redhat.com)
+- Cleanup other misc pylint warnings (bcl@redhat.com)
+- Cleanup pylorax pylint warnings (bcl@redhat.com)
+- Add pylint testing (bcl@redhat.com)
+- Require uboot-tools when running on arm (dennis@ausil.us)
+- Obsolete appliance-tools-minimizer (#1084110) (bcl@redhat.com)
+- livemedia-creator: Copy fsimage if hardlink fails (bcl@redhat.com)
+- Turn on debug output for mkefiboot (bcl@redhat.com)
+- Clean up download and install output (bcl@redhat.com)
+- Install specific lohit fonts instead of all of them (#1090390)
+  (bcl@redhat.com)
+- Update grub2-efi.cfg for aarch64 to more closely match x86 (#1089418).
+  (dmarlin@redhat.com)
+- Install rdma so that dracut will use it along with libmlx4 (#1089564)
+  (bcl@redhat.com)
+
 * Tue Apr 15 2014 Brian C. Lane <bcl@redhat.com> 21.9-1
 - Update syslinux 6.02 support for noarch change (bcl@redhat.com)
 - runtime-cleanup: Do install GPG (walters@verbum.org)
