@@ -47,6 +47,7 @@ from mako.template import Template
 from mako.exceptions import text_error_template
 
 # Use the Lorax treebuilder branch for iso creation
+from pylorax import ArchData
 from pylorax.base import DataHolder
 from pylorax.treebuilder import TreeBuilder, RuntimeBuilder, udev_escape
 from pylorax.sysutils import joinpaths, remove
@@ -471,7 +472,7 @@ def make_runtime(opts, mount_dir, work_dir):
     # Fake yum object
     fake_yum = DataHolder(conf=DataHolder(installroot=mount_dir))
     # Fake arch with only basearch set
-    arch = DataHolder(basearch=kernels.arch, libdir=None, buildarch=None)
+    arch = ArchData(kernels.arch)
     # TODO: Need to get release info from someplace...
     product = DataHolder(name=opts.project, version=opts.releasever, release="",
                             variant="", bugurl="", isfinal=False)
@@ -502,7 +503,7 @@ def make_livecd(opts, mount_dir, work_dir):
     """
     kernels = KernelInfo(joinpaths(mount_dir, "boot" ))
 
-    arch = DataHolder(basearch=kernels.arch, libdir=None, buildarch=None)
+    arch = ArchData(kernels.arch)
     # TODO: Need to get release info from someplace...
     product = DataHolder(name=opts.project, version=opts.releasever, release="",
                             variant="", bugurl="", isfinal=False)
