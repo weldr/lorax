@@ -140,7 +140,8 @@ class LogRequestHandler(SocketServer.BaseRequestHandler):
                         "Out of memory:",
                         "Call Trace:",
                         "insufficient disk space:"]
-        re_tests =     [r"WARNING packaging: base repo .* not valid"]
+        re_tests =     [r"WARNING packaging: base repo .* not valid",
+                        r"WARNING packaging: .* requires .*"]
         for t in simple_tests:
             if t in line:
                 self.server.log_error = True
