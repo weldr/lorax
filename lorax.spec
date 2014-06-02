@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        20.4
+Version:        20.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -93,6 +93,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Mon Jun 02 2014 Brian C. Lane <bcl@redhat.com> 20.5-1
+- livemedia-creator: Make --make-fsimage work with virt-install
+  (bcl@redhat.com)
+- livemedia-creator: Handle virt-install failure cleanup (bcl@redhat.com)
+- Bless grub2 for PPC (#1020112) (catacombae@gmail.com)
+
 * Mon Nov 18 2013 Brian C. Lane <bcl@redhat.com> 20.4-1
 - drop 'xdriver=vesa' from basic graphics mode parameters (per ajax)
   (awilliam@redhat.com)
