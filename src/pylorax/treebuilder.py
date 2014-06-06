@@ -67,19 +67,19 @@ def generate_module_info(moddir, outfile=None):
 
 class RuntimeBuilder(object):
     '''Builds the anaconda runtime image.'''
-    def __init__(self, product, arch, yum, templatedir=None,
+    def __init__(self, product, arch, dbo, templatedir=None,
                  installpkgs=None,
                  add_templates=None,
                  add_template_vars=None):
-        root = yum.conf.installroot
+        root = dbo.conf.installroot
         # use a copy of product so we can modify it locally
         product = product.copy()
         product.name = product.name.lower()
-        self.vars = DataHolder(arch=arch, product=product, yum=yum, root=root,
+        self.vars = DataHolder(arch=arch, product=product, dbo=dbo, root=root,
                                basearch=arch.basearch, libdir=arch.libdir)
-        self.yum = yum
+        self.dbo = dbo
         self._runner = LoraxTemplateRunner(inroot=root, outroot=root,
-                                           yum=yum, templatedir=templatedir)
+                                           dbo=dbo, templatedir=templatedir)
         self.add_templates = add_templates or []
         self.add_template_vars = add_template_vars or {}
         self._installpkgs = installpkgs or []
@@ -87,7 +87,9 @@ class RuntimeBuilder(object):
 
     def _install_branding(self):
         release = None
-        for pkg in self.yum.whatProvides('/etc/system-release', None, None):
+        q = self.dbo.sack.query()
+        a = q.available()
+        for pkg in a.filter(provides='/etc/system-release'):
             if pkg.name.startswith('generic'):
                 continue
             else:
@@ -119,9 +121,10 @@ class RuntimeBuilder(object):
         '''debugging data: write out lists of package contents'''
         if not os.path.isdir(pkglistdir):
             os.makedirs(pkglistdir)
-        for pkgobj in self.yum.doPackageLists(pkgnarrow='installed').installed:
+        q = self.dbo.sack.query()
+        for pkgobj in q.installed():
             with open(joinpaths(pkglistdir, pkgobj.name), "w") as fobj:
-                for fname in pkgobj.filelist + pkgobj.dirlist:
+                for fname in pkgobj.files:
                     fobj.write("{0}\n".format(fname))
 
     def postinstall(self):
@@ -143,8 +146,9 @@ class RuntimeBuilder(object):
         '''debugging data: write a big list of pkg sizes'''
         fobj = open(pkgsizefile, "w")
         getsize = lambda f: os.lstat(f).st_size if os.path.exists(f) else 0
-        for p in sorted(self.yum.doPackageLists(pkgnarrow='installed').installed):
-            pkgsize = sum(getsize(joinpaths(self.vars.root,f)) for f in p.filelist)
+        q = self.dbo.sack.query()
+        for p in sorted(q.installed()):
+            pkgsize = sum(getsize(joinpaths(self.vars.root,f)) for f in p.files)
             fobj.write("{0.name}.{0.arch}: {1}\n".format(p, pkgsize))
 
     def generate_module_data(self):
