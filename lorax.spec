@@ -37,9 +37,9 @@ Requires:       squashfs-tools >= 4.2
 Requires:       util-linux
 Requires:       xz
 Requires:       pigz
-Requires:       yum
 Requires:       pykickstart
 Requires:       dracut >= 030
+Requires:       dnf
 
 %if 0%{?fedora}
 # Fedora specific deps
