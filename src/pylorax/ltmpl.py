@@ -169,8 +169,14 @@ class LoraxTemplateRunner(object):
         return joinpaths(self.inroot, path)
 
     def _filelist(self, *pkgs):
-        pkglist = self.dbo.doPackageLists(pkgnarrow="installed", patterns=pkgs)
-        return set([f for pkg in pkglist for f in pkg.files])
+        """ Return the list of files in the packages """
+        pkglist = []
+        for pkg_glob in pkgs:
+            pkglist += list(self.dbo.sack.query().installed().filter(name__glob=pkg_glob))
+
+        # dnf/hawkey doesn't make any distinction between file, dir or ghost like yum did
+        # so only return the files.
+        return set(f for pkg in pkglist for f in pkg.files if not os.path.isdir(self._out(f)))
 
     def _getsize(self, *files):
         return sum(os.path.getsize(self._out(f)) for f in files if os.path.isfile(self._out(f)))
@@ -513,7 +519,6 @@ class LoraxTemplateRunner(object):
                 logger.error("The transaction process has ended abruptly: %s", e)
                 queue.put(('quit', str(e)))
 
-        self.dbo.reset()
         try:
             logger.info("Checking dependencies")
             self.dbo.resolve()
@@ -551,13 +556,22 @@ class LoraxTemplateRunner(object):
         logger.info("Performing post-installation setup tasks")
         process.join()
 
-        # verify if all packages that were supposed to be installed,
-        # are really installed
-        errs = [t.po for t in self.dbo.tsInfo if not self.dbo.rpmdb.contains(po=t.po)]
-        for po in errs:
-            logger.error("package '%s' was not installed", po)
-
+        # close down the base and re-init it to pick up changes
         self.dbo.close()
+        del self.dbo
+
+        self.dbo = dnf.Base()
+        conf = self.dbo.conf
+        # Point inside the installroot
+        conf.installroot = self.outroot
+        conf.prepend_installroot('persistdir')
+        conf.debuglevel = 10
+        conf.errorlevel = 0
+        RELEASEVER = dnf.rpm.detect_releasever(self.dbo.conf.installroot)
+        self.dbo.conf.substitutions['releasever'] = RELEASEVER
+        self.dbo.read_all_repos()
+        self.dbo.fill_sack(load_system_repo=False)
+        self.dbo.read_comps()
 
     def removefrom(self, pkg, *globs):
         '''
