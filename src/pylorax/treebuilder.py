@@ -84,6 +84,7 @@ class RuntimeBuilder(object):
         self.add_template_vars = add_template_vars or {}
         self._installpkgs = installpkgs or []
         self._runner.defaults = self.vars
+        self.dbo.reset()
 
     def _install_branding(self):
         release = None
@@ -172,6 +173,13 @@ class RuntimeBuilder(object):
         # squash the live rootfs and clean up workdir
         imgutils.mksquashfs(workdir, outfile, compression, compressargs)
         remove(workdir)
+
+    def finished(self):
+        """ Done using RuntimeBuilder
+
+        Close the dnf base object
+        """
+        self.dbo.close()
 
 class TreeBuilder(object):
     '''Builds the arch-specific boot images.

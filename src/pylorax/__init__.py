@@ -302,6 +302,7 @@ class Lorax(BaseLoraxClass):
         rb.create_runtime(joinpaths(installroot,runtime),
                           compression=compression, compressargs=compressargs,
                           size=size)
+        rb.finished()
 
         logger.info("preparing to build output tree and boot images")
         treebuilder = TreeBuilder(product=self.product, arch=self.arch,
