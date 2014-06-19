@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.10
+Version:        21.11
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -101,6 +101,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Thu Jun 19 2014 Brian C. Lane <bcl@redhat.com> 21.11-1
+- livemedia-creator: Handle virt-install failure cleanup (bcl@redhat.com)
+- livemedia-creator: Fail when there are missing packages (bcl@redhat.com)
+- Keep virtio_console harder. (dshea@redhat.com)
+
 * Mon May 12 2014 Brian C. Lane <bcl@redhat.com> 21.10-1
 - Add --add-template{,-var} (walters@verbum.org)
 - runtime-install: Add rpm-ostree, move dnf here (walters@verbum.org)
