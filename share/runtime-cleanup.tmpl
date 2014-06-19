@@ -92,7 +92,7 @@ arch/x86/kvm
 %endfor
 remove lib/modules/*/{build,source,*.map}
 ## Need to keep virtio_console.ko in drivers/char
-runcmd chroot ${root} find /lib/modules -regex ".*/kernel/drivers/char/.*" \! -name virtio_console.ko -delete
+runcmd chroot ${root} find /lib/modules -regex ".*/kernel/drivers/char/.*" \! -name virtio_console.ko\* -delete
 ## NOTE: depmod gets re-run after cleanup finishes
 
 ## remove unused themes, theme engines, icons, etc.
