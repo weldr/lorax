@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.11
+Version:        21.12
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -101,6 +101,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Jun 24 2014 Brian C. Lane <bcl@redhat.com> 21.12-1
+- Stop removing libcanberra-gtk3 libraries (#1111724) (bcl@redhat.com)
+- Update tito config (bcl@redhat.com)
+
 * Thu Jun 19 2014 Brian C. Lane <bcl@redhat.com> 21.11-1
 - livemedia-creator: Handle virt-install failure cleanup (bcl@redhat.com)
 - livemedia-creator: Fail when there are missing packages (bcl@redhat.com)
