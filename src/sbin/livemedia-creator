@@ -135,7 +135,11 @@ class LogRequestHandler(SocketServer.BaseRequestHandler):
         Check a line to see if it contains an error indicating installation failure
 
         :param str line: log line to check for failure
+
+        If the line contains IGNORED it will be skipped.
         """
+        if "IGNORED" in line:
+            return
         simple_tests = ["Traceback (",
                         "Out of memory:",
                         "Call Trace:",
