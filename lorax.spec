@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.13
+Version:        21.14
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -101,6 +101,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Jun 27 2014 Brian C. Lane <bcl@redhat.com> 21.14-1
+- The theme has been absorbed into gtk3 (bcl@redhat.com)
+
 * Thu Jun 26 2014 Brian C. Lane <bcl@redhat.com> 21.13-1
 - livemedia-creator: Ignore IGNORED errors in anaconda logs (bcl@redhat.com)
 
