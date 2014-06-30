@@ -242,7 +242,7 @@ class Lorax(BaseLoraxClass):
 
         # NOTE: if you change isolabel, you need to change pungi to match, or
         # the pungi images won't boot.
-        isolabel = volid or "{0.name} {0.version} {1.basearch}".format(self.product,
+        isolabel = volid or "{0.name}-{0.version}-{1.basearch}".format(self.product,
                                                                        self.arch)
 
         if len(isolabel) > 32:

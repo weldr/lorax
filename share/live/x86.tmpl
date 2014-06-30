@@ -6,6 +6,9 @@ PXEBOOTDIR="images/pxeboot"
 BOOTDIR="isolinux"
 KERNELDIR=PXEBOOTDIR
 LIVEDIR="LiveOS"
+
+## Don't allow spaces or escape characters in the iso label
+isolabel = ''.join(ch if ch.isalnum() else '-' for ch in isolabel)
 %>
 
 mkdir ${LIVEDIR}

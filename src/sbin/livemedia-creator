@@ -557,7 +557,7 @@ def make_livecd(opts, mount_dir, work_dir):
         remove(fullpath)
     shutil.copytree(configdir, fullpath)
 
-    isolabel = opts.volid or "{0.name} {0.version} {1.basearch}".format(product, arch)
+    isolabel = opts.volid or "{0.name}-{0.version}-{1.basearch}".format(product, arch)
     if len(isolabel) > 32:
         isolabel = isolabel[:32]
         log.warn("Truncating isolabel to 32 chars: %s", isolabel)
