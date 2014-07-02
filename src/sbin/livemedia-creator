@@ -345,7 +345,7 @@ class VirtualInstall(object):
 
         extra_args = "ks=file:/{0}".format(os.path.basename(ks_paths[0]))
         if not vnc:
-            extra_args += " inst.cmdline console=ttyS0"
+            extra_args += " inst.cmdline"
         if kernel_args:
             extra_args += " "+kernel_args
         if iso.liveos:
