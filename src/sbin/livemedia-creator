@@ -366,9 +366,11 @@ class VirtualInstall(object):
             args.append("--arch")
             args.append(arch)
 
-        rc = execWithRedirect("virt-install", args)
-        if rc:
-            raise InstallError("Problem starting virtual install")
+        log.info("Running virt-install.")
+        try:
+            execWithRedirect("virt-install", args, raise_err=True)
+        except subprocess.CalledProcessError as e:
+            raise InstallError("Problem starting virtual install: %s" % e)
 
         conn = libvirt.openReadOnly(None)
         dom = conn.lookupByName(self.virt_name)
@@ -646,35 +648,37 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
     # Make sure anaconda has the right product and release
     os.environ["ANACONDA_PRODUCTNAME"] = opts.project
     os.environ["ANACONDA_PRODUCTVERSION"] = opts.releasever
-    rc = execWithRedirect("anaconda", args)
-
-    # Move the anaconda logs over to a log directory
-    log_dir = os.path.abspath(os.path.dirname(opts.logfile))
-    log_anaconda = joinpaths(log_dir, "anaconda")
-    if not os.path.isdir(log_anaconda):
-        os.mkdir(log_anaconda)
-    for l in ["anaconda.log", "ifcfg.log", "program.log", "storage.log",
-              "packaging.log", "yum.log"]:
-        if os.path.exists("/tmp/"+l):
-            shutil.copy2("/tmp/"+l, log_anaconda)
-            os.unlink("/tmp/"+l)
-
-    if opts.make_iso or opts.make_fsimage:
-        umount(ROOT_PATH)
-    else:
-        # If anaconda failed the disk image may still be in use by dm
-        execWithRedirect("anaconda-cleanup", [])
-        dm_name = os.path.splitext(os.path.basename(disk_img))[0]
-        dm_path = "/dev/mapper/"+dm_name
-        if os.path.exists(dm_path):
-            dm_detach(dm_path)
-            loop_detach(get_loop_name(disk_img))
-
-    if selinux_enforcing:
-        selinux.security_setenforce(1)
-
-    if rc:
+    log.info("Running anaconda.")
+    try:
+        execWithRedirect("anaconda", args, raise_err=True)
+    except subprocess.CalledProcessError as e:
+        log.error("Running anaconda failed: %s", e)
         raise InstallError("novirt_install failed")
+    finally:
+        # Move the anaconda logs over to a log directory
+        log_dir = os.path.abspath(os.path.dirname(opts.logfile))
+        log_anaconda = joinpaths(log_dir, "anaconda")
+        if not os.path.isdir(log_anaconda):
+            os.mkdir(log_anaconda)
+        for l in ["anaconda.log", "ifcfg.log", "program.log", "storage.log",
+                  "packaging.log", "yum.log"]:
+            if os.path.exists("/tmp/"+l):
+                shutil.copy2("/tmp/"+l, log_anaconda)
+                os.unlink("/tmp/"+l)
+
+        if opts.make_iso or opts.make_fsimage:
+            umount(ROOT_PATH)
+        else:
+            # If anaconda failed the disk image may still be in use by dm
+            execWithRedirect("anaconda-cleanup", [])
+            dm_name = os.path.splitext(os.path.basename(disk_img))[0]
+            dm_path = "/dev/mapper/"+dm_name
+            if os.path.exists(dm_path):
+                dm_detach(dm_path)
+                loop_detach(get_loop_name(disk_img))
+
+        if selinux_enforcing:
+            selinux.security_setenforce(1)
 
     if opts.qcow2:
         log.info("Converting %s to qcow2", disk_img)
@@ -697,7 +701,7 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
         shutil.rmtree(ROOT_PATH)
 
         if rc:
-            raise InstallError("novirt_install failed")
+            raise InstallError("novirt_install mktar failed: rc=%s" % rc)
 
 
 def virt_install(opts, install_log, disk_img, disk_size):
