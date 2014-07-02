@@ -151,10 +151,12 @@ class LogRequestHandler(SocketServer.BaseRequestHandler):
         for t in simple_tests:
             if t in line:
                 self.server.log_error = True
+                self.server.error_line = line
                 return
         for t in re_tests:
             if re.search(t, line):
                 self.server.log_error = True
+                self.server.error_line = line
                 return
 
 
@@ -168,6 +170,7 @@ class LogServer(SocketServer.TCPServer):
         """
         self.kill = False
         self.log_error = False
+        self.error_line = ""
         self.log_path = log_path
         SocketServer.TCPServer.__init__(self, *args, **kwargs)
 
@@ -750,7 +753,7 @@ def virt_install(opts, install_log, disk_img, disk_size):
         iso_mount.umount()
 
     if log_monitor.server.log_check():
-        raise InstallError("virt_install failed")
+        raise InstallError("virt_install failed on line: %s" % log_monitor.server.error_line)
 
     if opts.make_fsimage:
         make_fsimage(diskimg_path, disk_img, disk_size, label=opts.fs_label)
