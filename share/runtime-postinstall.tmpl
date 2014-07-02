@@ -82,22 +82,12 @@ replace "root:\*:" "root::" etc/shadow
 %endif
 
 ## gconf settings
-gconfset /apps/metacity/general/button_layout string :
-gconfset /apps/metacity/general/action_right_click_titlebar string none
-gconfset /apps/metacity/general/num_workspaces int 1
-gconfset /apps/metacity/window_keybindings/close string disabled
-gconfset /apps/metacity/global_keybindings/run_command_window_screenshot string disabled
-gconfset /apps/metacity/global_keybindings/run_command_screenshot string disabled
-gconfset /apps/metacity/global_keybindings/switch_to_workspace_up string disabled
-gconfset /apps/metacity/global_keybindings/switch_to_workspace_down string disabled
-gconfset /apps/metacity/global_keybindings/switch_to_workspace_left string disabled
-gconfset /apps/metacity/global_keybindings/switch_to_workspace_right string disabled
-gconfset /apps/metacity/global_keybindings/switch_windows string disabled
 gconfset /desktop/gnome/interface/accessibility bool true
 gconfset /desktop/gnome/interface/at-spi-corba bool true
 
 ## Some settings are controlled by gsettings now.
 install ${configdir}/org.gnome.desktop.wm.keybindings.gschema.override usr/share/glib-2.0/schemas
+install ${configdir}/org.gnome.desktop.wm.preferences.gschema.override usr/share/glib-2.0/schemas
 runcmd chroot ${root} glib-compile-schemas /usr/share/glib-2.0/schemas
 
 move usr/libexec/anaconda/auditd sbin
