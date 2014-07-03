@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.14
+Version:        21.15
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -101,6 +101,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Jul 02 2014 Brian C. Lane <bcl@redhat.com> 21.15-1
+- Convert metacity gconf settings into gsettings schema overrides
+  (dshea@redhat.com)
+- Add more keybindings to the gschema override (dshea@redhat.com)
+- Don't emit media labels with spaces in them. (pjones@redhat.com)
+- Remove biosdevname (#989209) (bcl@redhat.com)
+
 * Fri Jun 27 2014 Brian C. Lane <bcl@redhat.com> 21.14-1
 - The theme has been absorbed into gtk3 (bcl@redhat.com)
 
