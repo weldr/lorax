@@ -985,7 +985,7 @@ if __name__ == '__main__':
             sys.exit(1)
 
         errors = []
-        if ks.handler.method.method != "url":
+        if ks.handler.method.method != "url" and opts.no_virt:
             errors.append("Only url install method is currently supported. Please "
                           "fix your kickstart file." )
 
