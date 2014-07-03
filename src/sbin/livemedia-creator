@@ -1093,7 +1093,7 @@ def main():
     # Make the disk or filesystem image
     if not opts.disk_image and not opts.fs_image:
         errors = []
-        if ks.handler.method.method != "url":
+        if ks.handler.method.method != "url" and opts.no_virt:
             errors.append("Only url install method is currently supported. Please "
                           "fix your kickstart file." )
 
