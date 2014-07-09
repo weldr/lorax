@@ -339,7 +339,7 @@ class VirtualInstall(object):
         args.append(disk_opts)
 
         if iso.liveos:
-            disk_opts = "path={0},device=cdrom".format(iso.iso_path)
+            disk_opts = "path={0},device=cdrom,readonly=on,shareable=on".format(iso.iso_path)
             args.append("--disk")
             args.append(disk_opts)
 
