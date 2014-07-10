@@ -46,7 +46,6 @@ replace "#ReserveVT=6" "ReserveVT=2" etc/systemd/logind.conf
 remove var/log/journal
 
 ## install some basic configuration files
-append etc/resolv.conf ""
 append etc/fstab ""
 install ${configdir}/i18n etc/sysconfig
 install ${configdir}/rsyslog.conf etc
