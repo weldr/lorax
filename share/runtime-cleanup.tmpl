@@ -111,7 +111,8 @@ removefrom metacity --allbut /usr/bin/* /usr/${libdir}/* /etc/*
 
 ## filesystem tools
 removefrom e2fsprogs /usr/share/locale/*
-removefrom xfsprogs /usr/share/locale/*
+removefrom xfsprogs /usr/share/locale/* /usr/share/doc/* /usr/share/man/*
+removefrom xfsdump --allbut /usr/sbin/*
 
 ## other package specific removals
 removefrom GConf2 /etc/rpm/* /etc/xdg/* /usr/bin/*
