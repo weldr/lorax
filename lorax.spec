@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.15
+Version:        21.16
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -101,6 +101,19 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Jul 11 2014 Brian C. Lane <bcl@redhat.com> 21.16-1
+- Don't remove usr/lib/rpm/platform/ (#1116450) (bcl@redhat.com)
+- Add xfsdump and remove extra files from xfsprogs (#1118654) (bcl@redhat.com)
+- Add kexec anaconda addon (#1115914) (bcl@redhat.com)
+- Fix typo in lohit-telugu-fonts (bcl@redhat.com)
+- Drop writing to resolv.conf in postinstall (bcl@redhat.com)
+- livemedia-creator: Allow the boot.iso to be shared (bcl@redhat.com)
+- livemedia-creator: log more failure information (bcl@redhat.com)
+- livemedia-creator: drop console=ttyS0 (bcl@redhat.com)
+- livemedia-creator: Log the line that caused the failure (bcl@redhat.com)
+- livemedia-creator: add more errors (bcl@redhat.com)
+- Allow doing non-URL installs if using virt. (clumens@redhat.com)
+
 * Wed Jul 02 2014 Brian C. Lane <bcl@redhat.com> 21.15-1
 - Convert metacity gconf settings into gsettings schema overrides
   (dshea@redhat.com)
