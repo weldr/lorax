@@ -8,7 +8,10 @@ KERNELDIR=PXEBOOTDIR
 LIVEDIR="LiveOS"
 
 ## Don't allow spaces or escape characters in the iso label
-isolabel = ''.join(ch if ch.isalnum() else '-' for ch in isolabel)
+def valid_label(ch):
+    return ch.isalnum() or ch == '_'
+
+isolabel = ''.join(ch if valid_label(ch) else '-' for ch in isolabel)
 %>
 
 mkdir ${LIVEDIR}
