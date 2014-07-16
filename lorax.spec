@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.16
+Version:        21.17
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -101,6 +101,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Jul 16 2014 Brian C. Lane <bcl@redhat.com> 21.17-1
+- livemedia-creator: close the socket when done (bcl@redhat.com)
+- Keep seq and getconf utilities in the image (vpodzime@redhat.com)
+- Allow _ in isolabel (#1118955) (bcl@redhat.com)
+
 * Fri Jul 11 2014 Brian C. Lane <bcl@redhat.com> 21.16-1
 - Don't remove usr/lib/rpm/platform/ (#1116450) (bcl@redhat.com)
 - Add xfsdump and remove extra files from xfsprogs (#1118654) (bcl@redhat.com)
