@@ -31,7 +31,8 @@ systemctl disable systemd-readahead-collect.service \
                   systemd-readahead-replay.service \
                   mdmonitor.service \
                   mdmonitor-takeover.service \
-                  lvm2-monitor.service
+                  lvm2-monitor.service \
+                  dnf-makecache.timer
 ## These services can't be disabled normally (they're linked into place in
 ## /usr/lib/systemd rather than /etc/systemd), so we have to mask them.
 systemctl mask fedora-configure.service fedora-loadmodules.service \
