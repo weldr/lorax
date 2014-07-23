@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.17
+Version:        21.18
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -101,6 +101,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Jul 23 2014 Brian C. Lane <bcl@redhat.com> 21.18-1
+- Revert "Add kexec anaconda addon (#1115914)" (bcl@redhat.com)
+- Disable dnf-makecache.timer (#1120368) (bcl@redhat.com)
+
 * Wed Jul 16 2014 Brian C. Lane <bcl@redhat.com> 21.17-1
 - livemedia-creator: close the socket when done (bcl@redhat.com)
 - Keep seq and getconf utilities in the image (vpodzime@redhat.com)
