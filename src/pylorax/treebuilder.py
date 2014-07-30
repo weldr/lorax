@@ -155,20 +155,10 @@ class RuntimeBuilder(object):
     def create_runtime(self, outfile="/var/tmp/squashfs.img", compression="xz", compressargs=[], size=2):
         # make live rootfs image - must be named "LiveOS/rootfs.img" for dracut
         workdir = joinpaths(os.path.dirname(outfile), "runtime-workdir")
-        if size:
-            fssize = size * (1024*1024*1024) # 2GB sparse file compresses down to nothin'
-        else:
-            fssize = None       # Let mkext4img figure out the needed size
         os.makedirs(joinpaths(workdir, "LiveOS"))
-        imgutils.mkext4img(self.vars.root, joinpaths(workdir, "LiveOS/rootfs.img"),
-                           label="Anaconda", size=fssize)
 
-        # Reset selinux context on new rootfs
-        with imgutils.LoopDev( joinpaths(workdir, "LiveOS/rootfs.img") ) as loopdev:
-            with imgutils.Mount(loopdev) as mnt:
-                cmd = [ "setfiles", "-e", "/proc", "-e", "/sys", "-e", "/dev", "-e", "/install",
-                        "/etc/selinux/targeted/contexts/files/file_contexts", "/"]
-                runcmd(cmd, root=mnt)
+        imgutils.mkrootfsimg(self.vars.root, joinpaths(workdir, "LiveOS/rootfs.img"),
+                             "Anaconda", size=size)
 
         # squash the live rootfs and clean up workdir
         imgutils.mksquashfs(workdir, outfile, compression, compressargs)

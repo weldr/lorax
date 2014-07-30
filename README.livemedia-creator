@@ -238,6 +238,22 @@ eg.
 livemedia-creator --make-tar --iso=/path/to/boot.iso --ks=./docs/fedora-minimal.ks \
 --image-name=fedora-root.tar.xz
 
+LIVE IMAGE FOR PXE BOOT
+-----------------------
+
+The --make-pxe-live command will produce squashfs image containing live root
+filesystem that can be used for pxe boot. Directory with results will contain
+the live image, kernel image, initrd image and template of pxe configuration
+for the images.
+
+ATOMIC LIVE IMAGE FOR PXE BOOT
+------------------------------
+
+The --make-ostree-live command will produce the same result as --make-pxe-live
+for installations of Atomic Host.  Example kickstart for such an installation
+using Atomic installer iso with local repo included in the image can be found
+in docs/rhel-atomic-pxe-live.ks.
+
 
 DEBUGGING PROBLEMS
 ------------------

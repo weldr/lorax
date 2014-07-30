@@ -37,6 +37,7 @@ import shutil
 import argparse
 import hashlib
 import re
+import glob
 
 # Use pykickstart to calculate disk image size
 from pykickstart.parser import KickstartParser
@@ -50,11 +51,12 @@ from mako.exceptions import text_error_template
 from pylorax import ArchData
 from pylorax.base import DataHolder
 from pylorax.treebuilder import TreeBuilder, RuntimeBuilder, udev_escape
+from pylorax.treebuilder import findkernels
 from pylorax.sysutils import joinpaths, remove
 from pylorax.imgutils import PartitionMount, mksparse, mkext4img, loop_detach
 from pylorax.imgutils import get_loop_name, dm_detach, mount, umount, Mount
-from pylorax.imgutils import mksquashfs, mktar
-from pylorax.executils import execWithRedirect, execWithCapture
+from pylorax.imgutils import mksquashfs, mktar, mkrootfsimg
+from pylorax.executils import execWithRedirect, execWithCapture, runcmd
 
 # no-virt mode doesn't need libvirt, so make it optional
 try:
@@ -352,6 +354,22 @@ def is_image_mounted(disk_img):
                 return True
     return False
 
+def find_ostree_root(phys_root):
+    """
+    Find root of ostree deployment
+
+    :param str phys_root: Path to physical root
+    :returns: Relative path of ostree deployment root
+    :rtype: str
+    :raise Exception: More than one deployment roots were found
+    """
+    ostree_root = ""
+    ostree_sysroots = glob.glob(joinpaths(phys_root, "ostree/boot.0/*/*/0"))
+    if ostree_sysroots:
+        if len(ostree_sysroots) > 1:
+            raise Exception("Too many deployment roots found: %s" % ostree_sysroots)
+        ostree_root = os.path.relpath(ostree_sysroots[0], phys_root)
+    return ostree_root
 
 class KernelInfo(object):
     """
@@ -482,6 +500,99 @@ def make_runtime(opts, mount_dir, work_dir):
     log.info("Creating runtime")
     rb.create_runtime(joinpaths(work_dir, RUNTIME), size=None)
 
+def rebuild_initrds_for_live(opts, sys_root_dir, results_dir):
+    """
+    Rebuild intrds for pxe live image (root=live:http://)
+
+    :param opts: options passed to livemedia-creator
+    :type opts: argparse options
+    :param str sys_root_dir: Path to root of the system
+    :param str results_dir: Path of directory for storing results
+    """
+    if not opts.dracut_args:
+        dracut_args = DRACUT_DEFAULT
+    else:
+        dracut_args = []
+        for arg in opts.dracut_args:
+            dracut_args += arg.split(" ", 1)
+    log.info("dracut args = {0}".format(dracut_args))
+
+    dracut = ["dracut", "--nomdadmconf", "--nolvmconf"] + dracut_args
+
+    kdir = "boot"
+    if opts.ostree:
+        kernels_dir = glob.glob(joinpaths(sys_root_dir, "boot/ostree/*"))[0]
+        kdir = os.path.relpath(kernels_dir, sys_root_dir)
+
+    kernels = [kernel for kernel in findkernels(sys_root_dir, kdir)
+               if hasattr(kernel, "initrd")]
+    if not kernels:
+        raise Exception("No initrds found, cannot rebuild_initrds")
+
+    # Hush some dracut warnings. TODO: bind-mount proc in place?
+    open(joinpaths(sys_root_dir,"/proc/modules"),"w")
+
+    if opts.ostree:
+        # Dracut assumes to have some dirs in disk image
+        # /var/tmp for temp files
+        vartmp_dir = joinpaths(sys_root_dir, "var/tmp")
+        if not os.path.isdir(vartmp_dir):
+            os.mkdir(vartmp_dir)
+        # /root (maybe not fatal)
+        root_dir = joinpaths(sys_root_dir, "var/roothome")
+        if not os.path.isdir(root_dir):
+            os.mkdir(root_dir)
+        # /tmp (maybe not fatal)
+        tmp_dir = joinpaths(sys_root_dir, "sysroot/tmp")
+        if not os.path.isdir(tmp_dir):
+            os.mkdir(tmp_dir)
+
+    for kernel in kernels:
+        outfile = kernel.initrd.path + ".live"
+        log.info("rebuilding %s", outfile)
+
+        kver = kernel.version
+
+        cmd = dracut + [outfile, kver]
+        runcmd(cmd, root=sys_root_dir)
+
+        new_initrd_path = joinpaths(results_dir, os.path.basename(kernel.initrd.path))
+        shutil.move(joinpaths(sys_root_dir, outfile), new_initrd_path)
+        shutil.copy2(joinpaths(sys_root_dir, kernel.path), results_dir)
+
+    os.unlink(joinpaths(sys_root_dir,"/proc/modules"))
+
+def create_pxe_config(template, images_dir, live_image_name, add_args = None):
+    """
+    Create template for pxe to live configuration
+
+    :param str images_dir: Path of directory with images to be used
+    :param str live_image_name: Name of live rootfs image file
+    :param list add_args: Arguments to be added to initrd= pxe config
+    """
+
+    add_args = add_args or []
+
+    kernels = [kernel for kernel in findkernels(images_dir, kdir="")
+               if hasattr(kernel, "initrd")]
+    if not kernels:
+        return
+
+    kernel = kernels[0]
+
+    add_args_str = " ".join(add_args)
+
+
+    try:
+        result = Template(filename=template).render(kernel=kernel.path,
+                          initrd=kernel.initrd.path, liveimg=live_image_name,
+                          addargs=add_args_str)
+    except Exception:
+        log.error(text_error_template().render())
+        raise
+
+    with open (joinpaths(images_dir, "PXE_CONFIG"), "w") as f:
+        f.write(result)
 
 def make_livecd(opts, mount_dir, work_dir):
     """
@@ -543,6 +654,36 @@ def make_livecd(opts, mount_dir, work_dir):
 
     return work_dir
 
+def mount_boot_part_over_root(img_mount):
+    """
+    Mount boot partition to /boot of root fs mounted in img_mount
+
+    Used for OSTree so it finds deployment configurations on live rootfs
+
+    param img_mount: object with mounted disk image root partition
+    type img_mount: imgutils.PartitionMount
+    """
+    root_dir = img_mount.mount_dir
+    is_boot_part = lambda dir: os.path.exists(dir+"/loader.0")
+    tmp_mount_dir = tempfile.mkdtemp()
+    sys_root = find_ostree_root(root_dir)
+    sysroot_boot_dir = None
+    for dev, _size in img_mount.loop_devices:
+        if dev is img_mount.mount_dev:
+            continue
+        try:
+            mount("/dev/mapper/"+dev, mnt=tmp_mount_dir)
+            if is_boot_part(tmp_mount_dir):
+                umount(tmp_mount_dir)
+                sysroot_boot_dir = joinpaths(joinpaths(root_dir, sys_root), "boot")
+                mount("/dev/mapper/"+dev, mnt=sysroot_boot_dir)
+                break
+            else:
+                umount(tmp_mount_dir)
+        except subprocess.CalledProcessError as e:
+            log.debug("Looking for boot partition error: %s", e)
+    remove(tmp_mount_dir)
+    return sysroot_boot_dir
 
 def novirt_install(opts, disk_img, disk_size, repo_url):
     """
@@ -742,6 +883,55 @@ def make_image(opts, ks):
     return disk_img
 
 
+def make_live_images(opts, work_dir, root_dir, rootfs_image=None):
+    """
+    Create live images from direcory or rootfs image
+
+    :param opts: options passed to livemedia-creator
+    :type opts: argparse options
+    :param str work_dir: Directory for storing results
+    :param str root_dir: Root directory of live filesystem tree
+    :param str rootfs_image: Path to live rootfs image to be used
+    :returns: Path of directory with created images
+    :rtype: str
+    """
+    sys_root = ""
+    if opts.ostree:
+        sys_root = find_ostree_root(root_dir)
+
+    squashfs_root_dir = joinpaths(work_dir, "squashfs_root")
+    liveos_dir = joinpaths(squashfs_root_dir, "LiveOS")
+    os.makedirs(liveos_dir)
+
+    if rootfs_image:
+        rc = execWithRedirect("/bin/ln", [rootfs_image, joinpaths(liveos_dir, "rootfs.img")])
+        if rc != 0:
+            shutil.copy2(rootfs_image, joinpaths(liveos_dir, "rootfs.img"))
+    else:
+        log.info("Creating live rootfs image")
+        mkrootfsimg(root_dir, joinpaths(liveos_dir, "rootfs.img"), "LiveOS", size=None, sysroot=sys_root)
+
+    log.info("Packing live rootfs image")
+    add_pxe_args = []
+    live_image_name = "live-rootfs.squashfs.img"
+    mksquashfs(squashfs_root_dir,
+                joinpaths(work_dir, live_image_name),
+                opts.compression,
+                opts.compress_args)
+
+    remove(squashfs_root_dir)
+
+    log.info("Rebuilding initramfs for live")
+    rebuild_initrds_for_live(opts, joinpaths(root_dir, sys_root), work_dir)
+
+    if opts.ostree:
+        add_pxe_args.append("ostree=/%s" % sys_root)
+    template = joinpaths(opts.lorax_templates, "pxe-live/pxe-config.tmpl")
+    create_pxe_config(template, work_dir, live_image_name, add_pxe_args)
+
+    return work_dir
+
+
 def setup_logging(opts):
     # Setup logging to console and to logfile
     log.setLevel(logging.DEBUG)
@@ -787,6 +977,11 @@ if __name__ == '__main__':
                          help="Build an ami image" )
     action.add_argument( "--make-tar", action="store_true",
                          help="Build a tar of the root filesystem" )
+    action.add_argument( "--make-pxe-live", action="store_true",
+                         help="Build a live pxe boot squashfs image" )
+    action.add_argument( "--make-ostree-live", action="store_true",
+                         help="Build a live pxe boot squashfs image of Atomic Host" )
+
 
     parser.add_argument( "--iso", type=os.path.abspath,
                         help="Anaconda installation .iso path to use for virt-install" )
@@ -969,6 +1164,12 @@ if __name__ == '__main__':
     if opts.app_file:
         opts.app_file = joinpaths(opts.tmp, opts.app_file)
 
+    if opts.make_ostree_live:
+        opts.make_pxe_live = True
+        opts.ostree = True
+    else:
+        opts.ostree = False
+
     tempfile.tempdir = opts.tmp
     disk_img = None
 
@@ -1048,6 +1249,31 @@ if __name__ == '__main__':
             make_appliance(opts.disk_image or disk_img, opts.app_name,
                            opts.app_template, opts.app_file, networks, opts.ram,
                            opts.vcpus, opts.arch, opts.title, opts.project, opts.releasever)
+        elif opts.make_pxe_live:
+            work_dir = tempfile.mkdtemp()
+            log.info("working dir is {0}".format(work_dir))
+
+            if (opts.fs_image or opts.no_virt) and not opts.disk_image:
+                # Create pxe live images from a filesystem image
+                disk_img = opts.fs_image or disk_img
+                with Mount(disk_img, opts="loop") as mnt_dir:
+                    result_dir = make_live_images(opts, work_dir, mnt_dir, rootfs_image=disk_img)
+            else:
+                # Create pxe live images from a partitioned disk image
+                disk_img = opts.disk_image or disk_img
+                is_root_part = None
+                if opts.ostree:
+                    is_root_part = lambda dir: os.path.exists(dir+"/ostree/deploy")
+                with PartitionMount(disk_img, mount_ok=is_root_part) as img_mount:
+                    if img_mount and img_mount.mount_dir:
+                        try:
+                            mounted_sysroot_boot_dir = None
+                            if opts.ostree:
+                                mounted_sysroot_boot_dir = mount_boot_part_over_root(img_mount)
+                            result_dir = make_live_images(opts, work_dir, img_mount.mount_dir)
+                        finally:
+                            if mounted_sysroot_boot_dir:
+                                umount(mounted_sysroot_boot_dir)
 
         if opts.result_dir and result_dir:
             shutil.copytree( result_dir, opts.result_dir )

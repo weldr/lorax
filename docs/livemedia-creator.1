@@ -4,7 +4,7 @@ livemedia-creator \- Create live install media
 
 .SH SYNOPSIS
 livemedia-creator [-h]
-    (--make-iso | --make-disk | --make-fsimage | --make-appliance | --make-ami | --make-tar)
+    (--make-iso | --make-disk | --make-fsimage | --make-appliance | --make-ami | --make-tar | --make-pxe-live | --make-ostree-live)
     [--iso ISO] [--disk-image DISK_IMAGE]
     [--fs-image FS_IMAGE] [--ks KS]
     [--image-name IMAGE_NAME] [--image-only]
@@ -68,6 +68,14 @@ Build an ami image
 .TP
 \fB\-\-make\-tar\fR
 Build a tar of the root filesystem. Defaults to root.tar.xz
+
+.TP
+\fB\-\-make\-pxe\-live\fR
+Build a live pxe boot squashfs image
+
+.TP
+\fB\-\-make\-ostree\-live\fR
+Build a live pxe boot squashfs image of Atomic Host
 
 .TP
 \fB\-\-iso ISO\fR
