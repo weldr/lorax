@@ -91,6 +91,30 @@ def mksquashfs(rootdir, outfile, compression="default", compressargs=None):
         compressargs = ["-comp", compression] + compressargs
     return execWithRedirect("mksquashfs", [rootdir, outfile] + compressargs)
 
+def mkrootfsimg(rootdir, outfile, label, size=2, sysroot=""):
+    """
+    Make rootfs image from a directory
+
+    :param str rootdir: Root directory
+    :param str outfile: Path of output image file
+    :param str label: Filesystem label
+    :param int size: Size of the image, if None computed automatically
+    :param str sysroot: path to system (deployment) root relative to physical root
+    """
+    if size:
+        fssize = size * (1024*1024*1024) # 2GB sparse file compresses down to nothin'
+    else:
+        fssize = None       # Let mkext4img figure out the needed size
+
+    mkext4img(rootdir, outfile, label=label, size=fssize)
+    # Reset selinux context on new rootfs
+    with LoopDev(outfile) as loopdev:
+        with Mount(loopdev) as mnt:
+            cmd = [ "setfiles", "-e", "/proc", "-e", "/sys", "-e", "/dev", "-e", "/install",
+                    "/etc/selinux/targeted/contexts/files/file_contexts", "/"]
+            root = join(mnt, sysroot.lstrip("/"))
+            runcmd(cmd, root=root)
+
 ######## Utility functions ###############################################
 
 def mksparse(outfile, size):
