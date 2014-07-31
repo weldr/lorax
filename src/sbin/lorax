@@ -214,10 +214,10 @@ def get_yum_base_object(installroot, repositories, mirrorlists=None,
                         tempdir="/var/tmp", proxy=None, excludepkgs=None):
 
     def sanitize_repo(repo):
+        """Convert bare paths to file:/// URIs, and silently reject protocols unhandled by yum"""
         if repo.startswith("/"):
             return "file://{0}".format(repo)
-        elif (repo.startswith("http://") or repo.startswith("ftp://")
-              or repo.startswith("file://")):
+        elif any(repo.startswith(p) for p in ('http://', 'https://', 'ftp://', 'file://')):
             return repo
         else:
             return None
