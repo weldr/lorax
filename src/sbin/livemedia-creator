@@ -652,6 +652,16 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
     log.info("Running anaconda.")
     try:
         execWithRedirect("anaconda", args, raise_err=True)
+
+        # Make sure the new filesystem is correctly labeled
+        args = ["-e", "/proc", "-e", "/sys", "-e", "/dev",
+                "/etc/selinux/targeted/contexts/files/file_contexts", "/"]
+        if opts.make_iso or opts.make_fsimage or opts.make_tar:
+            execWithRedirect("setfiles", args, root=ROOT_PATH)
+        else:
+            with PartitionMount(disk_img) as img_mount:
+                if img_mount and img_mount.mount_dir:
+                    execWithRedirect("setfiles", args, root=img_mount.mount_dir)
     except subprocess.CalledProcessError as e:
         log.error("Running anaconda failed: %s", e)
         raise InstallError("novirt_install failed")
