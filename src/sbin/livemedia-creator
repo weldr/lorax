@@ -823,7 +823,7 @@ def make_image(opts, ks):
 
     Use virt-install or anaconda to install to a disk image.
     """
-    disk_size = 1 + sum(p.size for p in ks.handler.partition.partitions)
+    disk_size = 2 + sum(p.size for p in ks.handler.partition.partitions)
     log.info("disk_size = %sMiB", disk_size)
 
     if opts.image_name:
