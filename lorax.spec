@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.28
+Version:        19.6.29
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -92,6 +92,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Aug 08 2014 Brian C. Lane <bcl@redhat.com> 19.6.29-1
+- utf-8 encode yum actions before displaying them (#1072362) (bcl@redhat.com)
+- Use BOOTAA64.efi for AARCH64 bootloader filename (#1080113) (bcl@redhat.com)
+- Drop devicetree from aarch64 grub2-efi.cfg (#1089418) (bcl@redhat.com)
+- livemedia-creator: Add ppc64 live creation support (#1102318)
+  (bcl@redhat.com)
+- runtime-install: Add rpm-ostree (walters@verbum.org)
+
 * Wed Apr 23 2014 Brian C. Lane <bcl@redhat.com> 19.6.28-1
 - Install rdma so that dracut will use it along with libmlx4 (bcl)
   Resolves: rhbz#1089564
