@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.29
+Version:        19.6.30
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -97,6 +97,17 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Aug 12 2014 Brian C. Lane <bcl@redhat.com> 19.6.30-1
+- livemedia-creator: Cleanup temp yum files (bcl@redhat.com)
+  Resolves: rhbz#1073502
+- Require 32bit glibc on ppc64 (bcl@redhat.com)
+  Resolves: rhbz#1105054
+- Add xfsdump and remove extra files from xfsprogs (bcl@redhat.com)
+  Resolves: rhbz#1118654
+- Add ipmitool and drivers (bcl@redhat.com)
+  Resolves: rhbz#1126009
+- Update grub2-efi.cfg for aarch64 to more closely match x86 (dmarlin@redhat.com)
+  Resolves: rhbz#1089418
 * Fri Aug 08 2014 Brian C. Lane <bcl@redhat.com> 19.6.29-1
 - utf-8 encode yum actions before displaying them (#1072362) (bcl@redhat.com)
 - Use BOOTAA64.efi for AARCH64 bootloader filename (#1080113) (bcl@redhat.com)
