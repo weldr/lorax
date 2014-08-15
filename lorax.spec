@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.19
+Version:        21.20
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -106,6 +106,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Aug 15 2014 Brian C. Lane <bcl@redhat.com> 21.20-1
+- Require 32bit glibc on ppc64 (bcl@redhat.com)
+- Add ipmitool and drivers (#1126009) (bcl@redhat.com)
+- livemedia-creator: Padd disk size by 2MiB (bcl@redhat.com)
+- livemedia-creator: Run setfiles after no-virt installation (bcl@redhat.com)
+- https is a sane package source URL scheme (walters@verbum.org)
+
 * Wed Jul 30 2014 Brian C. Lane <bcl@redhat.com> 21.19-1
 - Add kexec anaconda addon (#1115914) (bcl@redhat.com)
 
