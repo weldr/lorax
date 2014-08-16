@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.30
+Version:        19.6.31
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -97,6 +97,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Aug 15 2014 Brian C. Lane <bcl@redhat.com> 19.6.31-1
+- Add efibootmgr to installpkg list for aarch64. (dmarlin@redhat.com)
+  Resolves: rhbz#1130366
 * Tue Aug 12 2014 Brian C. Lane <bcl@redhat.com> 19.6.30-1
 - livemedia-creator: Cleanup temp yum files (bcl@redhat.com)
   Resolves: rhbz#1073502
