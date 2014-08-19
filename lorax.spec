@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.31
+Version:        19.6.32
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -94,6 +94,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Aug 19 2014 Brian C. Lane <bcl@redhat.com> 19.6.32-1
+- Yaboot to grub2 conversion cleanup. (dwa@redhat.com)
+  Related: rhbz#1131199
+- GRUB2 as the ISO boot loader for POWER arch (#1131199) (pfsmorigo@br.ibm.com)
+  Resolves: rhbz#1131199
+- Revert "Require 32bit glibc on ppc64" (bcl@redhat.com)
+  Related: rhbz#1131199
+
 * Fri Aug 15 2014 Brian C. Lane <bcl@redhat.com> 19.6.31-1
 - Add efibootmgr to installpkg list for aarch64. (dmarlin@redhat.com)
   Resolves: rhbz#1130366
