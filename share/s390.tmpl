@@ -15,6 +15,7 @@ treeinfo stage2 mainimage images/${runtime_base}
 ## install bootloader (such as it is) and bootloader config
 install ${configdir}/redhat.exec ${BOOTDIR}
 install ${configdir}/generic.prm ${BOOTDIR}
+install ${configdir}/genericdvd.prm ${BOOTDIR}
 install ${configdir}/generic.ins .
 
 ## configure bootloader
@@ -35,4 +36,5 @@ createaddrsize ${INITRD_ADDRESS} ${outroot}/${BOOTDIR}/initrd.img ${outroot}/${B
 ## s390 also has some special treeinfo data
 treeinfo images-${basearch} initrd.addrsize ${BOOTDIR}/initrd.addrsize
 treeinfo images-${basearch} generic.prm ${BOOTDIR}/generic.prm
+treeinfo images-${basearch} genericdvd.prm ${BOOTDIR}/genericdvd.prm
 treeinfo images-${basearch} generic.ins generic.ins
