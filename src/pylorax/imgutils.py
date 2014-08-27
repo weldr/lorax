@@ -78,7 +78,8 @@ def mkcpio(rootdir, outfile, compression="xz", compressargs=["-9"]):
                     rootdir, outfile, compression, compressargs)
 
 def mktar(rootdir, outfile, compression="xz", compressargs=["-9"]):
-    return compress(["tar", "--selinux", "--acls", "--xattrs", "-cf-", "--null", "-T-"],
+    compressargs = compressargs or ["-9"]
+    return compress(["tar", "--no-recursion", "--selinux", "--acls", "--xattrs", "-cf-", "--null", "-T-"],
                     rootdir, outfile, compression, compressargs)
 
 def mksquashfs(rootdir, outfile, compression="default", compressargs=[]):
