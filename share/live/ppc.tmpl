@@ -2,6 +2,7 @@
 <%
 configdir="tmp/config_files/ppc"
 BOOTDIR="ppc"
+GRUBDIR="boot/grub"
 LIVEDIR="LiveOS"
 MACDIR=BOOTDIR+"/mac"
 NETBOOTDIR="images/netboot"
@@ -9,7 +10,6 @@ NETBOOTDIR="images/netboot"
 WRAPPER="usr/sbin/wrapper"
 WRAPPER_DATA="usr/"+libdir+"/kernel-wrapper"
 
-bitsizes = set()
 prepboot = ""
 
 ## NOTE: yaboot freaks out and stops parsing its config if it sees a '\',
@@ -17,8 +17,6 @@ prepboot = ""
 ## Instead we'll just replace any non-ASCII characters in the isolabel
 ## with '_', which means we won't need any udev escapes.
 isolabel = ''.join(ch if ch.isalnum() else '_' for ch in isolabel)
-
-rootarg = "root=live:CDLABEL=%s" % isolabel
 %>
 
 mkdir ${LIVEDIR}
@@ -35,14 +33,18 @@ treeinfo stage2 mainimage ${LIVEDIR}/squashfs.img
 mkdir ${BOOTDIR}
 ## boot stuff for normal (CHRP/PREP) PPC systems
 install ${configdir}/bootinfo.txt ${BOOTDIR}
-install boot/efika.forth ${BOOTDIR}
-mkdir ${BOOTDIR}/chrp
-install usr/lib/yaboot/yaboot ${BOOTDIR}/chrp
-runcmd ${inroot}/usr/lib/yaboot/addnote ${outroot}/${BOOTDIR}/chrp/yaboot
-## special boot dir for PowerMacs
-mkdir ${MACDIR}
-install usr/lib/yaboot/yaboot ${MACDIR}
-install ${configdir}/ofboot.b ${MACDIR}
+
+mkdir ${GRUBDIR}/powerpc-ieee1275
+runcmd grub2-mkimage -O powerpc-ieee1275 -d  /usr/lib/grub/powerpc-ieee1275 -p '()/boot/grub' \
+-o ${outroot}/${GRUBDIR}/powerpc-ieee1275/core.elf iso9660 ext2 ofnet net tftp http
+install /usr/lib/grub/powerpc-ieee1275/*.mod ${GRUBDIR}/powerpc-ieee1275
+install /usr/lib/grub/powerpc-ieee1275/*.lst ${GRUBDIR}/powerpc-ieee1275
+
+
+install ${configdir}/grub.cfg.in     ${GRUBDIR}/grub.cfg
+replace @PRODUCT@ '${product.name}'  ${GRUBDIR}/grub.cfg
+replace @VERSION@ ${product.version} ${GRUBDIR}/grub.cfg
+replace @ROOT@ 'root=live:CDLABEL=${isolabel|udev}' ${GRUBDIR}/grub.cfg
 
 ## copy mapping and magic files needed for isos
 install ${configdir}/mapping ${BOOTDIR}
@@ -58,19 +60,11 @@ install ${configdir}/magic ${BOOTDIR}
       ## separate dirs/images for each arch
       KERNELDIR=BOOTDIR+"/ppc%s" % bits
       NETIMG=NETBOOTDIR+"/ppc%s.img" % bits
-      bitsizes.add(bits)
     %>
     ## install kernel
     mkdir ${KERNELDIR} ${NETBOOTDIR}
     installkernel images-${kernel.arch} ${kernel.path} ${KERNELDIR}/vmlinuz
     installinitrd images-${kernel.arch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
-
-    ## install arch-specific bootloader config
-    install ${configdir}/yaboot.conf.in  ${KERNELDIR}/yaboot.conf
-    replace @BITS@    ${bits}            ${KERNELDIR}/yaboot.conf
-    replace @PRODUCT@ '${product.name}'  ${KERNELDIR}/yaboot.conf
-    replace @VERSION@ ${product.version} ${KERNELDIR}/yaboot.conf
-    replace @ROOT@    "${rootarg}"       ${KERNELDIR}/yaboot.conf
 
     ## kernel-wrapper magic that makes the netboot combined ppc{32,64}.img
     runcmd ${inroot}/${WRAPPER} -p of \
@@ -86,19 +80,6 @@ install ${configdir}/magic ${BOOTDIR}
     %endif
 %endfor
 
-## choose correct yaboot.conf
-mkdir etc
-%if len(bitsizes) == 2:
-    ## both kernels means hybrid - use the magic hybrid config
-    install ${configdir}/yaboot.conf.3264  etc/yaboot.conf
-    replace @PRODUCT@ ${product.name}      etc/yaboot.conf
-    replace @VERSION@ ${product.version}   etc/yaboot.conf
-    replace @ROOT@    "${rootarg}"         etc/yaboot.conf
-%else:
-    ## single arch - use the arch-specific yaboot.conf from above
-    copy ${KERNELDIR}/yaboot.conf etc/yaboot.conf
-%endif
-
 ## make boot.iso
 runcmd mkisofs -o ${outroot}/images/boot.iso -chrp-boot -U \
         ${prepboot} -part -hfs -T -r -l -J \
@@ -107,8 +88,8 @@ runcmd mkisofs -o ${outroot}/images/boot.iso -chrp-boot -U \
         -hfs-volid ${product.version} -hfs-bless ${outroot}/${MACDIR} \
         -map ${inroot}/${configdir}/mapping \
         -no-desktop -allow-multidot -graft-points \
-        etc=${outroot}/etc \
         ${BOOTDIR}=${outroot}/${BOOTDIR} \
+        ${GRUBDIR}=${outroot}/${GRUBDIR} \
         ${NETBOOTDIR}=${outroot}/${NETBOOTDIR} \
         ${LIVEDIR}=${outroot}/${LIVEDIR}
 

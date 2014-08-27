@@ -1,0 +1,34 @@
+set default=0
+set timeout=5
+
+echo -e "\nWelcome to the @PRODUCT@ @VERSION@ installer!\n\n"
+
+for BITS in 32 64; do
+  if [ -d "/ppc/ppc${BITS}" ]; then
+    menuentry "Start @PRODUCT@ @VERSION@ (${BITS}-bit kernel)"  $BITS --class fedora --class gnu-linux --class gnu --class os {
+      linux /ppc/ppc${2}/vmlinuz @ROOT@ ro rd.live.image quiet
+      initrd /ppc/ppc${2}/initrd.img
+    }
+
+    menuentry "Test this media & start @PRODUCT@ @VERSION@  (${BITS}-bit kernel)" $BITS --class fedora --class gnu-linux --class  gnu --class os {
+      linux /ppc/ppc${2}/vmlinuz @ROOT@ rd.live.image rd.live.check ro quiet
+      initrd /ppc/ppc${2}/initrd.img
+      }
+
+    menuentry "Rescue a @PRODUCT@ system (${BITS}-bit kernel)" $BITS  --class fedora --class gnu-linux --class gnu --class os {
+      linux /ppc/ppc${2}/vmlinuz @ROOT@ rd.live.image rescue ro
+      initrd /ppc/ppc${2}/initrd.img
+      }
+  fi
+done
+
+submenu 'Other options...' {
+  menuentry 'Reboot' {
+    reboot
+  }
+
+  menuentry 'Exit to Open Firmware' {
+    exit
+  }
+}
+
