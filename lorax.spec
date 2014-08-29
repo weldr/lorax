@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.33
+Version:        19.6.34
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -94,6 +94,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Aug 29 2014 Brian C. Lane <bcl@redhat.com> 19.6.34-1
+- allow setting additional dracut parameters for DVD s390x installs (dan@danny.cz)
+  Resolves: rhbz#1132050
+
 * Thu Aug 28 2014 Brian C. Lane <bcl@redhat.com> 19.6.33-1
 - livemedia-creator: Update ppc64 live to use grub2 (bcl@redhat.com)
   Related: rhbz#1102318
