@@ -96,6 +96,8 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %changelog
 * Thu Aug 28 2014 Brian C. Lane <bcl@redhat.com> 19.6.33-1
 - livemedia-creator: Update ppc64 live to use grub2 (bcl@redhat.com)
+  Related: rhbz#1102318
+  Related: rhbz#1131199
 
 * Tue Aug 19 2014 Brian C. Lane <bcl@redhat.com> 19.6.32-1
 - Yaboot to grub2 conversion cleanup. (dwa@redhat.com)
@@ -108,6 +110,7 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 * Fri Aug 15 2014 Brian C. Lane <bcl@redhat.com> 19.6.31-1
 - Add efibootmgr to installpkg list for aarch64. (dmarlin@redhat.com)
   Resolves: rhbz#1130366
+
 * Tue Aug 12 2014 Brian C. Lane <bcl@redhat.com> 19.6.30-1
 - livemedia-creator: Cleanup temp yum files (bcl@redhat.com)
   Resolves: rhbz#1073502
@@ -119,6 +122,7 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
   Resolves: rhbz#1126009
 - Update grub2-efi.cfg for aarch64 to more closely match x86 (dmarlin@redhat.com)
   Resolves: rhbz#1089418
+
 * Fri Aug 08 2014 Brian C. Lane <bcl@redhat.com> 19.6.29-1
 - utf-8 encode yum actions before displaying them (#1072362) (bcl@redhat.com)
 - Use BOOTAA64.efi for AARCH64 bootloader filename (#1080113) (bcl@redhat.com)
@@ -139,12 +143,15 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
   Related: rhbz#1067746
 - Make lorax's installation of lockdown.efi conditional on its existence. (pjones@redhat.com)
   Resolves: rhbz#1071380
+
 * Wed Feb 26 2014 Brian C. Lane <bcl@redhat.com> 19.6.25-1
 - createrepo is needed by driver disks (bcl@redhat.com)
   Related: rhbz#1016004
+
 * Tue Feb 25 2014 Brian C. Lane <bcl@redhat.com> 19.6.24-1
 - Improve aarch64 UEFI support (dmarlin@redhat.com)
   Resolves: rhbz#1067671
+
 * Fri Feb 21 2014 Brian C. Lane <bcl@redhat.com> 19.6.23-1
 - livemedia-creator: Set the product and release version env variables (bcl@redhat.com)
   Resolves: rhbz#1067746
@@ -174,6 +181,7 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 - Don't activate default auto connections after switchroot (#1012511)
   (rvykydal@redhat.com)
   Related: rhbz#1012511
+
 * Fri Jan 24 2014 Brian C. Lane <bcl@redhat.com> 19.6.16-1
 - Activate anaconda-shell@.service on switch to empty VT (#980062)
   (wwoods@redhat.com)
