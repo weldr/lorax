@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.32
+Version:        19.6.33
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -94,6 +94,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Thu Aug 28 2014 Brian C. Lane <bcl@redhat.com> 19.6.33-1
+- livemedia-creator: Update ppc64 live to use grub2 (bcl@redhat.com)
+
 * Tue Aug 19 2014 Brian C. Lane <bcl@redhat.com> 19.6.32-1
 - Yaboot to grub2 conversion cleanup. (dwa@redhat.com)
   Related: rhbz#1131199
