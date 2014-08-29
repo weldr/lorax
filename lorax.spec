@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.20
+Version:        21.21
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -101,6 +101,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Thu Aug 28 2014 Brian C. Lane <bcl@redhat.com> 21.21-1
+- Revert "Require 32bit glibc on ppc64" (bcl@redhat.com)
+- livemedia-creator: Update ppc64 live to use grub2 (bcl@redhat.com)
+- livemedia-creator: Add ppc64 live creation support (#1102318)
+  (bcl@redhat.com)
+- Include /sbin/ldconfig from glibc. (dlehman@redhat.com)
+
 * Fri Aug 15 2014 Brian C. Lane <bcl@redhat.com> 21.20-1
 - Require 32bit glibc on ppc64 (bcl@redhat.com)
 - Add ipmitool and drivers (#1126009) (bcl@redhat.com)
