@@ -32,7 +32,7 @@ installpkg kernel
     installpkg grub2 grub2-tools biosdevname memtest86+ syslinux
     installpkg efibootmgr grub2-efi shim shim-unsigned
 %endif
-%if basearch in ("ppc", "ppc64"):
+%if basearch in ("ppc", "ppc64", "ppc64le"):
     installpkg grub2 grub2-tools fbset hfsutils kernel-bootwrapper ppc64-utils
 %endif
 %if basearch == "s390x":

@@ -35,6 +35,7 @@ templatemap = {
     'x86_64':  'x86.tmpl',
     'ppc':     'ppc.tmpl',
     'ppc64':   'ppc.tmpl',
+    'ppc64le': 'ppc.tmpl',
     's390':    's390.tmpl',
     's390x':   's390.tmpl',
     'aarch64': 'aarch64.tmpl',
@@ -216,7 +217,7 @@ class TreeBuilder(object):
             runcmd(cmd, root=self.vars.inroot)
 
             # ppc64 cannot boot images > 32MiB, check size and warn
-            if self.vars.arch.basearch == "ppc64" and os.path.exists(outfile):
+            if self.vars.arch.basearch in ("ppc64", "ppc64le") and os.path.exists(outfile):
                 st = os.stat(outfile)
                 if st.st_size > 32 * 1024 * 1024:
                     logging.warning("ppc64 initrd %s is > 32MiB", outfile)
