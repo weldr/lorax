@@ -54,7 +54,7 @@ REMOVE_PPC64_MODULES = "drm plymouth"
 class ArchData(DataHolder):
     lib64_arches = ("x86_64", "ppc64", "ppc64le", "s390x", "ia64", "aarch64")
     bcj_arch = dict(i386="x86", x86_64="x86",
-                    ppc="powerpc", ppc64="powerpc",
+                    ppc="powerpc", ppc64="powerpc", ppc64le="powerpc",
                     arm="arm", armhfp="arm")
 
     def __init__(self, buildarch):
@@ -314,7 +314,7 @@ class Lorax(BaseLoraxClass):
         dracut_args = ["--xz", "--install", "/.buildstamp"]
 
         # ppc64 cannot boot an initrd > 32MiB so remove some drivers
-        if self.arch.basearch == "ppc64":
+        if self.arch.basearch in ("ppc64", "ppc64le"):
             dracut_args.extend(["--omit-drivers", REMOVE_PPC64_DRIVERS])
             dracut_args.extend(["--omit", REMOVE_PPC64_MODULES])
 

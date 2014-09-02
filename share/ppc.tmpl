@@ -54,12 +54,12 @@ install ${configdir}/mapping ${BOOTDIR}
 install ${configdir}/magic ${BOOTDIR}
 
 ## NOTE: PPC is kind of funky. There's three possible "arch" setups here:
-## ppc, ppc64, and 'hybrid' (ppc userspace, both ppc & ppc64 kernels).
+## ppc, ppc64, ppc64le, and 'hybrid' (ppc userspace, both ppc & ppc64 kernels).
 
 ## Install kernel and bootloader config (in separate places for each arch)
 %for kernel in kernels:
     <%
-      bits = 64 if kernel.arch == "ppc64" else 32
+      bits = 64 if kernel.arch in ("ppc64", "ppc64le") else 32
       ## separate dirs/images for each arch
       KERNELDIR=BOOTDIR+"/ppc%s" % bits
       NETIMG=NETBOOTDIR+"/ppc%s.img" % bits
