@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.34
+Version:        19.6.35
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -94,6 +94,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Sep 03 2014 Brian C. Lane <bcl@redhat.com> 19.6.35-1
+- Add ppc64le arch (bcl@redhat.com)
+  Resolves: rhbz#1136490
+
 * Fri Aug 29 2014 Brian C. Lane <bcl@redhat.com> 19.6.34-1
 - allow setting additional dracut parameters for DVD s390x installs (dan@danny.cz)
   Resolves: rhbz#1132050
