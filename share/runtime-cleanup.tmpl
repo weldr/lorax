@@ -148,7 +148,7 @@ removefrom coreutils /usr/bin/expand /usr/bin/factor
 removefrom coreutils /usr/bin/fold /usr/bin/groups /usr/bin/hostid
 removefrom coreutils /usr/bin/install /usr/bin/join /usr/bin/logname
 removefrom coreutils /usr/bin/mkfifo /usr/bin/nl /usr/bin/nohup /usr/bin/nproc
-removefrom coreutils /usr/bin/od /usr/bin/paste /usr/bin/pathchk
+removefrom coreutils /usr/bin/paste /usr/bin/pathchk
 removefrom coreutils /usr/bin/pinky /usr/bin/pr /usr/bin/printenv
 removefrom coreutils /usr/bin/printf /usr/bin/ptx /usr/bin/runcon /usr/bin/seq
 removefrom coreutils /usr/bin/sha224sum /usr/bin/sha384sum
@@ -319,7 +319,7 @@ removefrom util-linux --allbut \
     /etc/mtab /etc/pam.d/login /etc/pam.d/remote \
     /usr/sbin/{agetty,blkid,blockdev,clock,fdisk,fsck,fstrim,hwclock,losetup} \
     /usr/sbin/{mkswap,nologin,sfdisk,swapoff,swapon,wipefs,partx} \
-    /usr/bin/logger
+    /usr/bin/{logger,hexdump}
 removefrom volume_key-libs /usr/share/locale/*
 removefrom wget /etc/* /usr/share/locale/*
 removefrom xorg-x11-drv-intel /usr/${libdir}/libI*
