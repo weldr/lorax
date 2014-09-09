@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.35
+Version:        19.6.36
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -94,6 +94,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Sep 09 2014 Brian C. Lane <bcl@redhat.com> 19.6.36-1
+- Add more tools for rescue mode (bcl@redhat.com)
+  Resolves: rhbz#1109785
+- Add kexec anaconda addon (bcl@redhat.com)
+  Resolves: rhbz#1116335
+
 * Wed Sep 03 2014 Brian C. Lane <bcl@redhat.com> 19.6.35-1
 - Add ppc64le arch (bcl@redhat.com)
   Resolves: rhbz#1136490
