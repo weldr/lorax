@@ -297,13 +297,16 @@ class Lorax(BaseLoraxClass):
 
         logger.info("rebuilding initramfs images")
         dracut_args = ["--xz", "--install", "/.buildstamp"]
+        anaconda_args = dracut_args + ["--add", "anaconda pollcdrom"]
 
         # ppc64 cannot boot an initrd > 32MiB so remove some drivers
         if self.arch.basearch in ("ppc64", "ppc64le"):
             dracut_args.extend(["--omit-drivers", REMOVE_PPC64_DRIVERS])
-            dracut_args.extend(["--omit", REMOVE_PPC64_MODULES])
 
-        anaconda_args = dracut_args + ["--add", "anaconda pollcdrom"]
+            # Only omit dracut modules from the initrd so that they're kept for
+            # upgrade.img
+            anaconda_args.extend(["--omit", REMOVE_PPC64_MODULES])
+
         treebuilder.rebuild_initrds(add_args=anaconda_args)
 
         if doupgrade:
