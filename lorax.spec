@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.21
+Version:        21.22
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -101,6 +101,15 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Mon Sep 15 2014 Brian C. Lane <bcl@redhat.com> 21.22-1
+- add fedora-repos-anaconda to runtime environment (awilliam@redhat.com)
+- Let the plymouth dracut module back into the ppc64 upgrade.img
+  (dshea@redhat.com)
+- Add more tools for rescue mode (#1109785) (bcl@redhat.com)
+- Add ppc64le arch (#1136490) (bcl@redhat.com)
+- allow setting additional dracut parameters for DVD s390x installs
+  (dan@danny.cz)
+
 * Thu Aug 28 2014 Brian C. Lane <bcl@redhat.com> 21.21-1
 - Revert "Require 32bit glibc on ppc64" (bcl@redhat.com)
 - livemedia-creator: Update ppc64 live to use grub2 (bcl@redhat.com)
