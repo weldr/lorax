@@ -103,7 +103,12 @@ append etc/depmod.d/dd.conf "search updates built-in"
 append etc/multipath.conf "defaults {\n\tfind_multipaths yes\n\tuser_friendly_names yes\n}\n"
 
 ## make lvm auto-activate
-remove etc/lvm/*
+remove etc/lvm/archive/*
+remove etc/lvm/archive
+remove etc/lvm/backup/*
+remove etc/lvm/backup
+remove etc/lvm/cache/*
+remove etc/lvm/cache
 append etc/lvm/lvm.conf "global {\n\tuse_lvmetad = 1\n}\n"
 
 ## TODO: we could run prelink here if we wanted?
