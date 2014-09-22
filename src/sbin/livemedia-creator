@@ -40,7 +40,7 @@ import re
 
 # Use pykickstart to calculate disk image size
 from pykickstart.parser import KickstartParser
-from pykickstart.version import makeVersion
+from pykickstart.version import makeVersion, RHEL7
 
 # Use Mako templates for appliance builder descriptions
 from mako.template import Template
@@ -973,7 +973,7 @@ if __name__ == '__main__':
 
     # Parse the kickstart
     if opts.ks:
-        ks_version = makeVersion()
+        ks_version = makeVersion(RHEL7)
         ks = KickstartParser( ks_version, errorsAreFatal=False, missingIncludeIsFatal=False )
         ks.readKickstart( opts.ks[0] )
 
