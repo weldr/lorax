@@ -50,12 +50,6 @@ def compress(command, rootdir, outfile, compression="xz", compressargs=["-9"]):
     # make compression run with multiple threads if possible
     if compression in ("xz", "lzma"):
         compressargs.insert(0, "-T%d" % multiprocessing.cpu_count())
-    elif compression == "gzip":
-        compression = "pigz"
-        compressargs.insert(0, "-p%d" % multiprocessing.cpu_count())
-    elif compression == "bzip2":
-        compression = "pbzip2"
-        compressargs.insert(0, "-p%d" % multiprocessing.cpu_count())
 
     logger.debug("find %s -print0 |%s | %s %s > %s", rootdir, " ".join(command),
                  compression, " ".join(compressargs), outfile)
