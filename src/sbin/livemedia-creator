@@ -640,6 +640,7 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
         # Install directly into ROOT_PATH, make sure it starts clean
         if os.path.exists(ROOT_PATH):
             shutil.rmtree(ROOT_PATH)
+        if not os.path.isdir(ROOT_PATH):
             os.mkdir(ROOT_PATH)
     else:
         args += ["--image", disk_img]
