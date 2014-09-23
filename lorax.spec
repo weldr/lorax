@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.37
+Version:        19.6.38
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -94,6 +94,24 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Sep 23 2014 Brian C. Lane <bcl@redhat.com> 19.6.38-1
+- livemedia-creator: Make sure ROOT_PATH exists (bcl@redhat.com)
+  Related: rhbz#1144140
+- livemedia-creator: Use RHEL7 version of kickstart (bcl@redhat.com)
+  Related: rhbz#1144140
+- RHEL7 doesn't include pigz or pbzip2 (bcl@redhat.com)
+  Related: rhbz#1144140
+- livemedia-creator: Add --no-recursion to mktar (bcl@redhat.com)
+  Related: rhbz#1144140
+- livemedia-creator: Add support for making tarfiles (bcl@redhat.com)
+  Resolves: rhbz#1144140
+- livemedia-creator: Check fsimage kickstart for single partition (bcl@redhat.com)
+  Related: rhbz#1144140
+- livemedia-creator: Copy fsimage if hardlink fails (bcl@redhat.com)
+  Related: rhbz#1144140
+- livemedia-creator: Make --make-fsimage work with virt-install (bcl@redhat.com)
+  Related: rhbz#1144140
+
 * Mon Sep 15 2014 Brian C. Lane <bcl@redhat.com> 19.6.37-1
 - Let the plymouth dracut module back into the ppc64 upgrade.img (dshea@redhat.com)
   Resolves: rhbz#1069671
