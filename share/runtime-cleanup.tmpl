@@ -61,7 +61,7 @@ removepkg xorg-x11-server-common yum-utils
 ## other removals
 remove /boot /home /media /opt /srv /tmp/*
 remove /usr/etc /usr/games /usr/local /usr/tmp
-remove /usr/share/doc /usr/share/info /usr/share/man /usr/share/gnome
+remove /usr/share/info /usr/share/man /usr/share/gnome
 remove /usr/share/mime/application /usr/share/mime/audio /usr/share/mime/image
 remove /usr/share/mime/inode /usr/share/mime/message /usr/share/mime/model
 remove /usr/share/mime/multipart /usr/share/mime/packages /usr/share/mime/text
@@ -337,6 +337,16 @@ removefrom redhat-logos /usr/share/{plymouth,backgrounds}*
 ## RHEL cleanups
 removefrom subscription-manager --allbut /etc/rhsm/* /usr/share/rhsm/* /var/log/rhsm/* \
     /etc/yum/pluginconf.d/product-id.conf /usr/lib/yum-plugins/product-id.py
+
+## Remove everything from /usr/share/doc except for anaconda's help files.
+%if exists(root+"/usr/share/doc/anaconda"):
+    move ${root}/usr/share/doc/anaconda ${root}/usr/
+    remove ${root}/usr/share/doc
+    mkdir ${root}/usr/share/doc
+    move ${root}/usr/anaconda ${root}/usr/share/doc/
+%else:
+    remove ${root}/usr/share/doc
+%endif
 
 ## cleanup_python_files()
 runcmd find ${root} -name "*.pyo" -type f -delete
