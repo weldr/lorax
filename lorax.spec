@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.22
+Version:        21.23
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -101,6 +101,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Sep 23 2014 Brian C. Lane <bcl@redhat.com> 21.23-1
+- livemedia-creator: Make sure ROOT_PATH exists (#1144140) (bcl@redhat.com)
+- livemedia-creator: Add --no-recursion to mktar (#1144140) (bcl@redhat.com)
+- Remove at-spi (dshea@redhat.com)
+
 * Mon Sep 15 2014 Brian C. Lane <bcl@redhat.com> 21.22-1
 - add fedora-repos-anaconda to runtime environment (awilliam@redhat.com)
 - Let the plymouth dracut module back into the ppc64 upgrade.img
