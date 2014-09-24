@@ -330,7 +330,14 @@ removefrom ${product.name}-logos /usr/share/icons/{Bluecurve,oxygen}/*
 removefrom ${product.name}-logos /usr/share/{firstboot,gnome-screensaver,kde4,pixmaps}/*
 
 ## Remove everything from /usr/share/doc except for anaconda's help files.
-runcmd find ${root}/usr/share/doc -depth -mindepth 1 -path ${root}/usr/share/doc/anaconda -prune -o -type d -print0 | xargs -0 rm -r
+%if exists(root+"/usr/share/doc/anaconda"):
+    move ${root}/usr/share/doc/anaconda ${root}/usr/
+    remove ${root}/usr/share/doc
+    mkdir ${root}/usr/share/doc
+    move ${root}/usr/anaconda ${root}/usr/share/doc/
+%else:
+    remove ${root}/usr/share/doc
+%endif
 
 ## cleanup_python_files()
 runcmd find ${root} -name "*.pyo" -type f -delete
