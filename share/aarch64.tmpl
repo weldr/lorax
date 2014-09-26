@@ -27,7 +27,7 @@ mkdir ${KERNELDIR}
 <% efiargs=""; efigraft="" %>
 %if exists("boot/efi/EFI/*/grubaa64.efi"):
     <%
-    efiarch = 'AARCH64'
+    efiarch = 'AA64'
     efigraft="EFI/BOOT={0}/EFI/BOOT".format(outroot)
     images = ["images/efiboot.img"]
     for img in images:

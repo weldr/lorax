@@ -1,5 +1,6 @@
 <%page args="configdir, KERNELDIR, efiarch, isolabel"/>
 <%
+from string import lower
 EFIBOOTDIR="EFI/BOOT"
 APPLE_EFI_ICON=inroot+"/usr/share/pixmaps/bootloader/fedora.icns"
 APPLE_EFI_DISKNAME=inroot+"/usr/share/pixmaps/bootloader/fedora-media.vol"
@@ -7,14 +8,9 @@ APPLE_EFI_DISKNAME=inroot+"/usr/share/pixmaps/bootloader/fedora-media.vol"
 
 mkdir ${EFIBOOTDIR}
 mkdir ${EFIBOOTDIR}/fonts/
-%if efiarch == 'AARCH64':
-install boot/efi/EFI/*/grubaa64.efi ${EFIBOOTDIR}/BOOTAA64.efi
-install boot/efi/EFI/*/grubaa64.efi ${EFIBOOTDIR}/grubaa64.efi
-%else:
-install boot/efi/EFI/*/shim.efi ${EFIBOOTDIR}/BOOT${efiarch}.efi
+install boot/efi/EFI/*/shim.efi ${EFIBOOTDIR}/BOOT${efiarch}.EFI
 install boot/efi/EFI/*/MokManager.efi ${EFIBOOTDIR}/
-install boot/efi/EFI/*/gcdx64.efi ${EFIBOOTDIR}/grubx64.efi
-%endif
+install boot/efi/EFI/*/gcd${efiarch|lower}.efi ${EFIBOOTDIR}/grub${efiarch|lower}.efi
 install boot/efi/EFI/*/fonts/unicode.pf2 ${EFIBOOTDIR}/fonts/
 %if exists("usr/share/shim/lockdown.efi"):
     install usr/share/shim/lockdown.efi ${EFIBOOTDIR}/
