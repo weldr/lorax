@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.38
+Version:        19.6.39
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -94,6 +94,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Sep 30 2014 Brian C. Lane <bcl@redhat.com> 19.6.39-1
+- Don't remove /usr/share/doc/anaconda. (clumens@redhat.com)
+  Resolves: rhbz#1147518
+- Stop removing libXt from the installation media. (clumens@redhat.com)
+  Related: rhbz#1147518
+- network: add support for bridge (#1075195) (rvykydal@redhat.com)
+  Related: rhbz#1075195
+
 * Tue Sep 23 2014 Brian C. Lane <bcl@redhat.com> 19.6.38-1
 - livemedia-creator: Make sure ROOT_PATH exists (bcl@redhat.com)
   Related: rhbz#1144140
