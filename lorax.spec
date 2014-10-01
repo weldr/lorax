@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.23
+Version:        21.24
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -101,6 +101,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Sep 30 2014 Brian C. Lane <bcl@redhat.com> 21.24-1
+- Rework how including /usr/share/doc/anaconda works. (clumens@redhat.com)
+- Don't remove /usr/share/doc/anaconda. (clumens@redhat.com)
+- Stop removing libXt from the installation media. (clumens@redhat.com)
+
 * Tue Sep 23 2014 Brian C. Lane <bcl@redhat.com> 21.23-1
 - livemedia-creator: Make sure ROOT_PATH exists (#1144140) (bcl@redhat.com)
 - livemedia-creator: Add --no-recursion to mktar (#1144140) (bcl@redhat.com)
