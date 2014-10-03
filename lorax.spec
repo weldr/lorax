@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.39
+Version:        19.6.40
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -94,6 +94,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Thu Oct 02 2014 Brian C. Lane <bcl@redhat.com> 19.6.40-1
+- Use shim on aarch64. (pjones@redhat.com)
+  Related: rhbz#1100048
+- Keep the /etc/lvm/profiles directory in the image (vpodzime@redhat.com)
+  Related: rhbz#869456
+
 * Tue Sep 30 2014 Brian C. Lane <bcl@redhat.com> 19.6.39-1
 - Don't remove /usr/share/doc/anaconda. (clumens@redhat.com)
   Resolves: rhbz#1147518
