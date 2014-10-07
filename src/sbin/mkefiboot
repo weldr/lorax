@@ -57,7 +57,7 @@ def macmunge(imgfile, product):
     # Get the inode number for the boot image and its parent directory
     with LoopDev(imgfile) as loopdev:
         with Mount(loopdev) as mnt:
-            shim = glob.glob(os.path.join(mnt, 'EFI/BOOT/BOOT*.efi'))[0]
+            shim = glob.glob(os.path.join(mnt, 'EFI/BOOT/BOOT*.EFI'))[0]
             loader = glob.glob(os.path.join(mnt,'EFI/BOOT/grub*.efi'))[0]
             config = glob.glob(os.path.join(mnt,'EFI/*/grub*.cfg'))[0]
             blessnode = os.stat(loader).st_ino
