@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.24
+Version:        21.25
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -101,6 +101,17 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Oct 07 2014 Brian C. Lane <bcl@redhat.com> 21.25-1
+- Libgailutil is required yelp, don't remove it (#1072033) (mkolman@redhat.com)
+- Revert "Don't remove /usr/share/doc/anaconda." (#1072033)
+  (mkolman@redhat.com)
+- Look for "BOOT${efiarch}.EFI" in mkefiboot as well. (pjones@redhat.com)
+- Make sure shim is actually in the package list on aarch64 as well.
+  (pjones@redhat.com)
+- Fix 'docs' typo in livemedia-creator manpage (#1149026) (bcl@redhat.com)
+- Keep the /etc/lvm/profiles directory in the image (vpodzime@redhat.com)
+- Use shim on aarch64. (pjones@redhat.com)
+
 * Tue Sep 30 2014 Brian C. Lane <bcl@redhat.com> 21.24-1
 - Rework how including /usr/share/doc/anaconda works. (clumens@redhat.com)
 - Don't remove /usr/share/doc/anaconda. (clumens@redhat.com)
