@@ -836,7 +836,18 @@ def make_image(opts, ks):
 
     try:
         if opts.no_virt:
-            novirt_install(opts, disk_img, disk_size, ks.handler.method.url)
+            method = ks.handler.method
+            if method.method == "url":
+                repo_url = method.url
+            elif method.method == "nfs":
+                if method.opts:
+                    repo_url = "nfs:%s:%s:%s" % (method.opts, method.server, method.dir)
+                else:
+                    repo_url = "nfs:%s:%s" % (method.server, method.dir)
+            else:
+                raise InstallError("Unsupported installation method: %s" % method.method)
+
+            novirt_install(opts, disk_img, disk_size, repo_url)
         else:
             install_log = os.path.abspath(os.path.dirname(opts.logfile))+"/virt-install.log"
             log.info("install_log = %s", install_log)
@@ -1115,8 +1126,8 @@ def main():
     # Make the disk or filesystem image
     if not opts.disk_image and not opts.fs_image:
         errors = []
-        if ks.handler.method.method != "url" and opts.no_virt:
-            errors.append("Only url install method is currently supported. Please "
+        if opts.no_virt and ks.handler.method.method not in ("url", "nfs"):
+            errors.append("Only url and nfs  install methods are currently supported. Please "
                           "fix your kickstart file." )
 
         if ks.handler.displaymode.displayMode is not None:
