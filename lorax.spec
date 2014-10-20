@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.25
+Version:        21.26
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -101,6 +101,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Mon Oct 20 2014 Brian C. Lane <bcl@redhat.com> 21.26-1
+- Use all upper case for shim in live/efi.tmpl (bcl@redhat.com)
+- livemedia-creator: Add nfs support for no-virt mode (#1121255)
+  (bcl@redhat.com)
+- Include /usr/bin/bugzilla in the installation environment.
+  (clumens@redhat.com)
+
 * Tue Oct 07 2014 Brian C. Lane <bcl@redhat.com> 21.25-1
 - Libgailutil is required yelp, don't remove it (#1072033) (mkolman@redhat.com)
 - Revert "Don't remove /usr/share/doc/anaconda." (#1072033)
