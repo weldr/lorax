@@ -111,4 +111,7 @@ remove etc/lvm/cache/*
 remove etc/lvm/cache
 append etc/lvm/lvm.conf "global {\n\tuse_lvmetad = 1\n}\n"
 
+## Record the package versions used to create the image
+runcmd chroot ${root} /bin/rpm -qa --pipe "tee /root/lorax-packages.log"
+
 ## TODO: we could run prelink here if we wanted?
