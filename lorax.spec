@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.43
+Version:        19.6.44
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Oct 22 2014 Brian C. Lane <bcl@redhat.com> 19.6.44-1
+- move image-minimizer to lorax (bcl@redhat.com)
+  Resolves: rhbz#1082642
 * Thu Oct 16 2014 Brian C. Lane <bcl@redhat.com> 19.6.43-1
 - Use all upper case for shim in live/efi.tmpl (bcl@redhat.com)
   Related: rhbz#1100048
