@@ -18,6 +18,10 @@ move ${PYTHONDIR}/site-packages/pyanaconda/sitecustomize.py ${PYTHONDIR}/site-pa
 ## move_repos()
 move etc/yum.repos.d etc/anaconda.repos.d
 
+## Setup mdadm config to turn off homehost
+remove etc/mdadm.conf
+append etc/mdadm.conf "HOMEHOST <ignore>\n"
+
 ## Configure systemd to start anaconda
 remove etc/systemd/system/default.target
 symlink /lib/systemd/system/anaconda.target etc/systemd/system/default.target
