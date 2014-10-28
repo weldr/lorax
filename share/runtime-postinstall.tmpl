@@ -121,6 +121,7 @@ remove etc/lvm/backup/*
 remove etc/lvm/backup
 remove etc/lvm/cache/*
 remove etc/lvm/cache
+remove etc/lvm/lvm.conf
 append etc/lvm/lvm.conf "global {\n\tuse_lvmetad = 1\n}\n"
 
 ## TODO: we could run prelink here if we wanted?
