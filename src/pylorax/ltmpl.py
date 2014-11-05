@@ -31,6 +31,7 @@ from sysutils import joinpaths, cpfile, mvfile, replace, remove
 from yumhelper import * # Lorax*Callback classes
 from base import DataHolder
 from pylorax.executils import runcmd, runcmd_output
+from pylorax.imgutils import mkcpio
 
 from mako.lookup import TemplateLookup
 from mako.exceptions import text_error_template
@@ -231,6 +232,23 @@ class LoraxTemplateRunner(object):
         '''
         for src in rglob(self._in(srcglob), fatal=True):
             cpfile(src, self._out(dest))
+
+    def installimg(self, srcdir, destfile):
+        '''
+        installimg SRCDIR DESTFILE
+          Create a compressed cpio archive of the contents of SRCDIR and place
+          it in DESTFILE.
+
+          If SRCDIR doesn't exist or is empty nothing is created.
+
+          Examples:
+            installimg ${LORAXDIR}/product/ images/product.img
+            installimg ${LORAXDIR}/updates/ images/updates.img
+        '''
+        if not os.path.isdir(self._in(srcdir)) or not os.listdir(self._in(srcdir)):
+            return
+        logger.info("Creating image file %s from contents of %s", self._out(destfile), self._in(srcdir))
+        mkcpio(self._in(srcdir), self._out(destfile))
 
     def mkdir(self, *dirs):
         '''
