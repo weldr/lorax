@@ -6,6 +6,7 @@ PXEBOOTDIR="images/pxeboot"
 BOOTDIR="isolinux"
 KERNELDIR=PXEBOOTDIR
 LIVEDIR="LiveOS"
+LORAXDIR="usr/share/lorax/"
 %>
 
 mkdir ${LIVEDIR}
@@ -78,6 +79,15 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
     <%include file="efi.tmpl" args="configdir=configdir, KERNELDIR=KERNELDIR, efiarch=efiarch, isolabel=isolabel"/>
 %endif
 
+# Create optional product.img and updates.img
+<% imggraft=""; images=["product", "updates"] %>
+%for img in images:
+    %if exists("%s/%s/" % (LORAXDIR, img)):
+        installimg ${LORAXDIR}/${img}/ images/${img}.img
+        <% imggraft += " images/{0}.img={1}/images/{0}.img".format(img, outroot) %>
+    %endif
+%endfor
+
 ## make boot.iso
 runcmd mkisofs -o ${outroot}/images/boot.iso \
        -b ${BOOTDIR}/isolinux.bin -c ${BOOTDIR}/boot.cat \
@@ -86,6 +96,6 @@ runcmd mkisofs -o ${outroot}/images/boot.iso \
        ${BOOTDIR}=${outroot}/${BOOTDIR} \
        ${KERNELDIR}=${outroot}/${KERNELDIR} \
        ${LIVEDIR}=${outroot}/${LIVEDIR} \
-       ${efigraft}
+       ${efigraft} ${imggraft}
 runcmd isohybrid ${efihybrid} ${outroot}/images/boot.iso
 treeinfo images-${basearch} boot.iso images/boot.iso
