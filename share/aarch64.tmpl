@@ -4,6 +4,7 @@ configdir="tmp/config_files/aarch64"
 PXEBOOTDIR="images/pxeboot"
 KERNELDIR=PXEBOOTDIR
 LIVEDIR="LiveOS"
+LORAXDIR="usr/share/lorax/"
 %>
 
 mkdir ${LIVEDIR}
@@ -36,4 +37,13 @@ mkdir ${KERNELDIR}
     %>
     <%include file="efi.tmpl" args="configdir=configdir, KERNELDIR=KERNELDIR, efiarch=efiarch, isolabel=isolabel"/>
 %endif
+
+# Create optional product.img and updates.img
+<% imggraft=""; images=["product", "updates"] %>
+%for img in images:
+    %if exists("%s/%s/" % (LORAXDIR, img)):
+        installimg ${LORAXDIR}/${img}/ images/${img}.img
+        <% imggraft += " images/{0}.img={1}/images/{0}.img".format(img, outroot) %>
+    %endif
+%endfor
 

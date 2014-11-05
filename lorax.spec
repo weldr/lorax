@@ -86,7 +86,7 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 %files
 %defattr(-,root,root,-)
-%doc COPYING AUTHORS README.livemedia-creator
+%doc COPYING AUTHORS README.livemedia-creator README.product
 %doc docs/*ks
 %{python_sitelib}/pylorax
 %{python_sitelib}/*.egg-info

@@ -4,6 +4,7 @@ configdir="tmp/config_files/ppc"
 BOOTDIR="ppc"
 GRUBDIR="boot/grub"
 LIVEDIR="LiveOS"
+LORAXDIR="usr/share/lorax/"
 
 ## NOTE: yaboot freaks out and stops parsing its config if it sees a '\',
 ## so we can't use the udev escape sequences in the root arg.
@@ -63,8 +64,17 @@ install ${configdir}/magic ${BOOTDIR}
     treeinfo images-${kernel.arch} zimage
 %endfor
 
-## make boot.iso
 mkdir images/
+# Create optional product.img and updates.img
+<% imggraft=""; images=["product", "updates"] %>
+%for img in images:
+    %if exists("%s/%s/" % (LORAXDIR, img)):
+        installimg ${LORAXDIR}/${img}/ images/${img}.img
+        <% imggraft += " images/{0}.img={1}/images/{0}.img".format(img, outroot) %>
+    %endif
+%endfor
+
+## make boot.iso
 runcmd mkisofs -v -U -J -R -T \
         -o ${outroot}/images/boot.iso \
         -part -hfs -r -l -sysid PPC \
@@ -75,7 +85,7 @@ runcmd mkisofs -v -U -J -R -T \
         -no-desktop -allow-multidot -graft-points \
         ${BOOTDIR}=${outroot}/${BOOTDIR} \
         ${GRUBDIR}=${outroot}/${GRUBDIR} \
-        ${LIVEDIR}=${outroot}/${LIVEDIR}
+        ${LIVEDIR}=${outroot}/${LIVEDIR} ${imggraft}
 
 %for kernel in kernels:
     treeinfo images-${kernel.arch} boot.iso images/boot.iso

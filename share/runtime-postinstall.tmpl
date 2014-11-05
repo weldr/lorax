@@ -119,4 +119,7 @@ append etc/lvm/lvm.conf "global {\n\tuse_lvmetad = 1\n}\n"
 ## Record the package versions used to create the image
 runcmd chroot ${root} /bin/rpm -qa --pipe "tee /root/lorax-packages.log"
 
+mkdir usr/share/lorax/product/run/install/product/pyanaconda/installclasses/
+append usr/share/lorax/product/run/install/product/pyanaconda/installclasses/custom.py "import logging\nlog = logging.getLogger('anaconda')\nlog.info('bcl was here')\n"
+
 ## TODO: we could run prelink here if we wanted?

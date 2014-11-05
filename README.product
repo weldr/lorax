@@ -1,0 +1,18 @@
+Lorax now supports creation of product.img and updates.img as part of the build
+process. This is implemented using the installimg command which will take the
+contents of a directory and create a compressed archive from it. The x86, ppc,
+ppc64le and aarch64 templates all look for /usr/share/lorax/product/ and
+/usr/share/lorax/updates/ directories while creating the final install tree. If
+there are files in those directories lorax will create images/product.img
+and/or images/updates.img
+
+These archives are just like an anaconda updates image -- they are copied over
+the top of the filesystem at boot time so that you can drop in files to add to
+or replace anything on the filesystem.
+
+Anaconda has several places that it looks for updates, the one for product.img
+is in /run/install/product.  For example, to add an installclass to Anaconda
+you would put your custom class here:
+
+/usr/share/lorax/product/run/install/product/pyanaconda/installclasses/custom.py
+

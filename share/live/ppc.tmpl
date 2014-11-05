@@ -6,6 +6,7 @@ GRUBDIR="boot/grub"
 LIVEDIR="LiveOS"
 MACDIR=BOOTDIR+"/mac"
 NETBOOTDIR="images/netboot"
+LORAXDIR="usr/share/lorax/"
 
 WRAPPER="usr/sbin/wrapper"
 WRAPPER_DATA="usr/"+libdir+"/kernel-wrapper"
@@ -80,6 +81,15 @@ install ${configdir}/magic ${BOOTDIR}
     %endif
 %endfor
 
+# Create optional product.img and updates.img
+<% imggraft=""; images=["product", "updates"] %>
+%for img in images:
+    %if exists("%s/%s/" % (LORAXDIR, img)):
+        installimg ${LORAXDIR}/${img}/ images/${img}.img
+        <% imggraft += " images/{0}.img={1}/images/{0}.img".format(img, outroot) %>
+    %endif
+%endfor
+
 ## make boot.iso
 runcmd mkisofs -o ${outroot}/images/boot.iso -chrp-boot -U \
         ${prepboot} -part -hfs -T -r -l -J \
@@ -91,7 +101,7 @@ runcmd mkisofs -o ${outroot}/images/boot.iso -chrp-boot -U \
         ${BOOTDIR}=${outroot}/${BOOTDIR} \
         ${GRUBDIR}=${outroot}/${GRUBDIR} \
         ${NETBOOTDIR}=${outroot}/${NETBOOTDIR} \
-        ${LIVEDIR}=${outroot}/${LIVEDIR}
+        ${LIVEDIR}=${outroot}/${LIVEDIR} ${imggraft}
 
 %for kernel in kernels:
     treeinfo images-${kernel.arch} boot.iso images/boot.iso
