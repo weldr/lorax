@@ -5,6 +5,7 @@ PXEBOOTDIR="images/pxeboot"
 BOOTDIR="boot"
 KERNELDIR=PXEBOOTDIR
 LIVEDIR="LiveOS"
+LORAXDIR="usr/share/lorax/"
 
 # different platforms use different kernel load addresses.
 # include a 'baseline' kernel for no 'flavor'.
@@ -69,6 +70,13 @@ mkdir ${KERNELDIR}
     %endif
 %endfor
 
+# Create optional product.img and updates.img
+<% images=["product", "updates"] %>
+%for img in images:
+    %if exists("%s/%s/" % (LORAXDIR, img)):
+        installimg ${LORAXDIR}/${img}/ images/${img}.img
+    %endif
+%endfor
 
 ## FIXME: ARM may need some extra boot config
 
