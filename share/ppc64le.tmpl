@@ -40,9 +40,7 @@ replace @PRODUCT@ '${product.name}'  ${GRUBDIR}/grub.cfg
 replace @VERSION@ ${product.version} ${GRUBDIR}/grub.cfg
 replace @ROOT@    "${rootarg}"       ${GRUBDIR}/grub.cfg
 
-## copy mapping and magic files needed for isos
 install ${configdir}/mapping ${BOOTDIR}
-install ${configdir}/magic ${BOOTDIR}
 
 ## Install kernel and bootloader config (in separate places for each arch)
 %for kernel in kernels:

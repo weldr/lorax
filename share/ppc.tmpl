@@ -50,9 +50,7 @@ replace @PRODUCT@ '${product.name}'  ${GRUBDIR}/grub.cfg
 replace @VERSION@ ${product.version} ${GRUBDIR}/grub.cfg
 replace @ROOT@    "${rootarg}"       ${GRUBDIR}/grub.cfg
 
-## copy mapping and magic files needed for isos
 install ${configdir}/mapping ${BOOTDIR}
-install ${configdir}/magic ${BOOTDIR}
 
 ## NOTE: PPC is kind of funky. There's three possible "arch" setups here:
 ## ppc, ppc64, ppc64le, and 'hybrid' (ppc userspace, both ppc & ppc64 kernels).
