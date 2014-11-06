@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.26
+Version:        21.27
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -101,6 +101,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Nov 05 2014 Brian C. Lane <bcl@redhat.com> 21.27-1
+- Remove the ppc magic file (bcl@redhat.com)
+- Update templates to use installimg for product and updates (bcl@redhat.com)
+- Add installimg command for use in the templates (bcl@redhat.com)
+- Setup mdadm to turn off homehost (#1156614) (bcl@redhat.com)
+- Don't include the stock lvm.conf. (#1157864) (dlehman@redhat.com)
+- Write list of packages to /root/lorax-packages.log (bcl@redhat.com)
+
 * Mon Oct 20 2014 Brian C. Lane <bcl@redhat.com> 21.26-1
 - Use all upper case for shim in live/efi.tmpl (bcl@redhat.com)
 - livemedia-creator: Add nfs support for no-virt mode (#1121255)
