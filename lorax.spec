@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.28
+Version:        21.29
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -101,6 +101,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Nov 19 2014 Brian C. Lane <bcl@redhat.com> 21.29-1
+- Remove diagnostic product.img test (#1165425) (bcl@redhat.com)
+
 * Thu Nov 06 2014 Brian C. Lane <bcl@redhat.com> 21.28-1
 - Add product.img support for arm templates (bcl@redhat.com)
 - Revert "add fedora-repos-anaconda to runtime environment" (bcl@redhat.com)
