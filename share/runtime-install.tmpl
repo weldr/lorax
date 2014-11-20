@@ -45,6 +45,12 @@ installpkg grubby
     installpkg lsscsi s390utils-base s390utils-cmsfs-fuse
 %endif
 
+## optional product.img or updates.img files
+log "Looking for extra lorax-product- packages..."
+-installpkg lorax-product-*
+log "Looking for extra lorax-updates- packages..."
+-installpkg lorax-updates-*
+
 ## yay, plymouth
 installpkg plymouth
 
