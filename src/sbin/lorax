@@ -119,6 +119,9 @@ def main(args):
     optional.add_option("-e", "--excludepkgs", default=[],
             action="append", metavar="STRING",
             help="package glob to exclude (may be listed multiple times)")
+    optional.add_option("-i", "--installpkgs", default=[],
+            action="append", metavar="STRING",
+            help="package glob to install before runtime-install.tmpl runs. (may be listed multiple times)")
     optional.add_option("--buildarch", default=None,
             help="build architecture", metavar="STRING")
     optional.add_option("--volid", default=None,
@@ -218,6 +221,7 @@ def main(args):
               opts.variant, opts.bugurl, opts.isfinal,
               workdir=tempdir, outputdir=outputdir, buildarch=opts.buildarch,
               volid=opts.volid, domacboot=opts.domacboot, doupgrade=opts.doupgrade,
+              installpkgs=opts.installpkgs,
               add_templates=opts.add_templates,
               add_template_vars=parsed_add_template_vars,
               add_arch_templates=opts.add_arch_templates,
