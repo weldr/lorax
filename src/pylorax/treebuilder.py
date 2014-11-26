@@ -68,6 +68,7 @@ def generate_module_info(moddir, outfile=None):
 class RuntimeBuilder(object):
     '''Builds the anaconda runtime image.'''
     def __init__(self, product, arch, yum, templatedir=None,
+                 installpkgs=None,
                  add_templates=None,
                  add_template_vars=None):
         root = yum.conf.installroot
@@ -81,6 +82,7 @@ class RuntimeBuilder(object):
                                            yum=yum, templatedir=templatedir)
         self.add_templates = add_templates or []
         self.add_template_vars = add_template_vars or {}
+        self._installpkgs = installpkgs or []
         self._runner.defaults = self.vars
 
     def _install_branding(self):
@@ -107,6 +109,8 @@ class RuntimeBuilder(object):
     def install(self):
         '''Install packages and do initial setup with runtime-install.tmpl'''
         self._install_branding()
+        if len(self._installpkgs) > 0:
+            self._runner.installpkg(*self._installpkgs)
         self._runner.run("runtime-install.tmpl")
         for tmpl in self.add_templates:
             self._runner.run(tmpl, **self.add_template_vars)
