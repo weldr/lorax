@@ -101,6 +101,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Dec 05 2014 Brian C. Lane <bcl@redhat.com> 22.0-1
+- aarch64 no longer needs explicit console setting (#1170412) (bcl@redhat.com)
+- Bump version to 22.0 (bcl@redhat.com)
+
 * Wed Dec 03 2014 Brian C. Lane <bcl@redhat.com> 21.31-1
 - Drop 32 bit for loop from ppc64 grub2 config (#1169878) (bcl@redhat.com)
 - gschemas: Fix typo button_laytout -> button_layout (walters@verbum.org)
