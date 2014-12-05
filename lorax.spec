@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.31
+Version:        22.0
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
