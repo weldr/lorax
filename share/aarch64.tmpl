@@ -47,3 +47,12 @@ mkdir ${KERNELDIR}
     %endif
 %endfor
 
+%if exists("boot/efi/EFI/*/grubaa64.efi"):
+## make boot.iso
+runcmd mkisofs -o ${outroot}/images/boot.iso \
+       ${efiargs} -R -J -V '${isolabel}' -T -graft-points \
+       ${KERNELDIR}=${outroot}/${KERNELDIR} \
+       ${LIVEDIR}=${outroot}/${LIVEDIR} \
+       ${efigraft} ${imggraft}
+treeinfo images-${basearch} boot.iso images/boot.iso
+%endif
