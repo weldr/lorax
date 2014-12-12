@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        22.0
+Version:        22.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -101,6 +101,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Dec 12 2014 Brian C. Lane <bcl@redhat.com> 22.1-1
+- Actually make boot.iso on aarch64. (pjones@redhat.com)
+- Add --includepkg argument (walters@verbum.org)
+
 * Fri Dec 05 2014 Brian C. Lane <bcl@redhat.com> 22.0-1
 - aarch64 no longer needs explicit console setting (#1170412) (bcl@redhat.com)
 - Bump version to 22.0 (bcl@redhat.com)
