@@ -91,10 +91,13 @@ installpkg python-imaging
 
 ## filesystem tools
 installpkg btrfs-progs jfsutils xfsprogs reiserfs-utils gfs2-utils ntfs-3g ntfsprogs
-installpkg python-volume_key volume_key
 installpkg system-storage-manager
 installpkg device-mapper-persistent-data
 installpkg xfsdump
+
+## needed for LUKS escrow
+installpkg python-volume_key volume_key
+installpkg python-nss
 
 ## SELinux support
 installpkg selinux-policy-targeted audit libsemanage-python
