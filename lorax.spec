@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.47
+Version:        19.6.48
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Dec 19 2014 Brian C. Lane <bcl@redhat.com> 19.6.48-1
+- aarch64 no longer needs explicit console setting (#1170413) (bcl@redhat.com)
+  Resolves: rhbz#1170413
+
 * Tue Dec 02 2014 Brian C. Lane <bcl@redhat.com> 19.6.47-1
 - Drop 32 bit for loop from ppc64 grub2 config (#1169878) (bcl@redhat.com)
   Resolves: rhbz#1169878
