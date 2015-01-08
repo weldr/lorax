@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.48
+Version:        19.6.49
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Jan 07 2015 Brian C. Lane <bcl@redhat.com> 19.6.49-1
+- runtime-cleanup.tmpl: keep virtio-rng (#1179000) (lersek@redhat.com)
+  Resolves: rhbz#1179000
 * Fri Dec 19 2014 Brian C. Lane <bcl@redhat.com> 19.6.48-1
 - aarch64 no longer needs explicit console setting (#1170413) (bcl@redhat.com)
   Resolves: rhbz#1170413
