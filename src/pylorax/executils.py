@@ -23,6 +23,7 @@
 import os, sys
 import subprocess
 import threading
+from time import sleep
 
 import logging
 log = logging.getLogger("pylorax")
@@ -66,7 +67,7 @@ class tee(threading.Thread):
 
 def execWithRedirect(command, argv, stdin = None, stdout = None,
                      stderr = None, root = None, preexec_fn=None, cwd=None,
-                     raise_err=False):
+                     raise_err=False, callback=None):
     """ Run an external program and redirect the output to a file.
         @param command The command to run.
         @param argv A list of arguments.
@@ -77,7 +78,11 @@ def execWithRedirect(command, argv, stdin = None, stdout = None,
         @param preexec_fn function to pass to Popen
         @param cwd working directory to pass to Popen
         @param raise_err raise CalledProcessError when the returncode is not 0
+        @param callback method to call while waiting for process to exit.
         @return The return code of command.
+
+        The callback is passed the Popen object. It should return False if
+        the polling loop should be exited.
     """
     def chroot ():
         os.chroot(root)
@@ -143,6 +148,9 @@ def execWithRedirect(command, argv, stdin = None, stdout = None,
                                 preexec_fn=preexec_fn, cwd=cwd,
                                 env=env)
 
+        if callback:
+            while callback(proc) and proc.poll() is None:
+                sleep(1)
         proc.wait()
         ret = proc.returncode
 

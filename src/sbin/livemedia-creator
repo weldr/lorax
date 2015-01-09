@@ -88,7 +88,7 @@ class LogRequestHandler(SocketServer.BaseRequestHandler):
         if self.server.log_path:
             self.fp = open(self.server.log_path, "w") # pylint: disable=attribute-defined-outside-init
         else:
-            print "no log_path specified"
+            self.fp = None
         self.request.settimeout(10)
 
     def handle(self):
@@ -107,8 +107,9 @@ class LogRequestHandler(SocketServer.BaseRequestHandler):
 
             try:
                 data = self.request.recv(4096)
-                self.fp.write(data)
-                self.fp.flush()
+                if self.fp:
+                    self.fp.write(data)
+                    self.fp.flush()
 
                 # check the data for errors and set error flag
                 # need to assemble it into lines so we can test for the error
@@ -130,7 +131,8 @@ class LogRequestHandler(SocketServer.BaseRequestHandler):
 
     def finish(self):
         self.request.close()
-        self.fp.close()
+        if self.fp:
+            self.fp.close()
 
     def iserror(self, line):
         """
@@ -193,7 +195,7 @@ class LogMonitor(object):
     This needs to be running before the virt-install runs, it expects
     there to be a listener on the port used for the virtio log port.
     """
-    def __init__(self, log_path, host="localhost", port=0):
+    def __init__(self, log_path=None, host="localhost", port=0):
         """
         Start a thread to monitor the logs.
 
@@ -203,6 +205,9 @@ class LogMonitor(object):
 
         If 0 is passed for the port the dynamically assigned port will be
         available as self.port
+
+        If log_path isn't set then it only monitors the logs, instead of
+        also writing them to disk.
         """
         self.server = LogServer(log_path, (host, port), LogRequestHandler)
         self.host, self.port = self.server.server_address
@@ -590,6 +595,23 @@ def make_livecd(opts, mount_dir, work_dir):
     return work_dir
 
 
+def novirt_log_check(log_check, proc):
+    """
+    Check to see if there has been an error in the logs
+
+    :param log_check: method to call to check for an error in the logs
+    :param proc: Popen object for the anaconda process
+    :returns: True if the process has been terminated
+
+    The log_check method should return a True if an error has been detected.
+    When an error is detected the process is terminated and this returns True
+    """
+    if log_check():
+        proc.terminate()
+        return True
+    return False
+
+
 def novirt_install(opts, disk_img, disk_size, repo_url):
     """
     Use Anaconda to install to a disk image
@@ -648,12 +670,16 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
         # Create the sparse image
         mksparse(disk_img, disk_size * 1024**2)
 
+    log_monitor = LogMonitor()
+    args += ["--remotelog", "%s:%s" % (log_monitor.host, log_monitor.port)]
+
     # Make sure anaconda has the right product and release
     os.environ["ANACONDA_PRODUCTNAME"] = opts.project
     os.environ["ANACONDA_PRODUCTVERSION"] = opts.releasever
     log.info("Running anaconda.")
     try:
-        execWithRedirect("anaconda", args, raise_err=True)
+        execWithRedirect("anaconda", args, raise_err=True,
+                         callback=lambda p: not novirt_log_check(log_monitor.server.log_check, p))
 
         # Make sure the new filesystem is correctly labeled
         args = ["-e", "/proc", "-e", "/sys", "-e", "/dev",
@@ -668,6 +694,8 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
         log.error("Running anaconda failed: %s", e)
         raise InstallError("novirt_install failed")
     finally:
+        log_monitor.shutdown()
+
         # Move the anaconda logs over to a log directory
         log_dir = os.path.abspath(os.path.dirname(opts.logfile))
         log_anaconda = joinpaths(log_dir, "anaconda")
