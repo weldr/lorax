@@ -16,5 +16,6 @@ you would put your custom class here:
 
 /usr/share/lorax/product/run/install/product/pyanaconda/installclasses/custom.py
 
-If the repository that lorax uses contains packages with lorax-product-* and/or
-lorax-updates-* provides it will add these packages to the image.
+If the packages containing the product/updates files are not included as part
+of normal dependencies you can add specific packages with the --installpkgs
+command or the installpkgs paramater of RuntimeBuilder.
