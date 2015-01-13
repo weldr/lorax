@@ -111,9 +111,6 @@ removefrom gtk2-engines --allbut /usr/${libdir}/*/libclearlooks.so \
                                  /usr/share/themes/Clearlooks/*
 removefrom gtk3 /usr/${libdir}/gtk-3.0/*/printbackends/*
 removefrom gtk3 /usr/share/themes/*
-## the Fedora icon theme inherits from Mist, so we need that
-removefrom gnome-themes --allbut /usr/share/icons/Mist/* \
-                                 /usr/share/themes/Clearlooks/*
 removefrom metacity --allbut /usr/bin/* /usr/${libdir}/* /etc/*
 
 ## filesystem tools
