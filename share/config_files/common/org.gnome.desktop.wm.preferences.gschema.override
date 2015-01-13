@@ -1,4 +1,0 @@
-[org.gnome.desktop.wm.preferences]
-	button-layout=':'
-	action-right-click-titlebar='none'
-	num-workspaces=1

@@ -88,11 +88,6 @@ replace "root:\*:" "root::" etc/shadow
 ## gconf settings
 gconfset /desktop/gnome/interface/accessibility bool true
 
-## Some settings are controlled by gsettings now.
-install ${configdir}/org.gnome.desktop.wm.keybindings.gschema.override usr/share/glib-2.0/schemas
-install ${configdir}/org.gnome.desktop.wm.preferences.gschema.override usr/share/glib-2.0/schemas
-runcmd chroot ${root} glib-compile-schemas /usr/share/glib-2.0/schemas
-
 move usr/libexec/anaconda/auditd sbin
 
 ## for compatibility with Ancient Anaconda Traditions
