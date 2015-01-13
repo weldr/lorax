@@ -558,6 +558,7 @@ def rebuild_initrds_for_live(opts, sys_root_dir, results_dir):
 
         new_initrd_path = joinpaths(results_dir, os.path.basename(kernel.initrd.path))
         shutil.move(joinpaths(sys_root_dir, outfile), new_initrd_path)
+        os.chmod(new_initrd_path, 0644)
         shutil.copy2(joinpaths(sys_root_dir, kernel.path), results_dir)
 
     os.unlink(joinpaths(sys_root_dir,"/proc/modules"))
