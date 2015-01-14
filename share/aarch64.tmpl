@@ -26,7 +26,7 @@ mkdir ${KERNELDIR}
 ## WHeeeeeeee, EFI.
 ## We could remove the basearch restriction someday..
 <% efiargs=""; efigraft="" %>
-%if exists("boot/efi/EFI/*/grubaa64.efi"):
+%if exists("boot/efi/EFI/*/gcdaa64.efi"):
     <%
     efiarch = 'AA64'
     efigraft="EFI/BOOT={0}/EFI/BOOT".format(outroot)
@@ -47,7 +47,7 @@ mkdir ${KERNELDIR}
     %endif
 %endfor
 
-%if exists("boot/efi/EFI/*/grubaa64.efi"):
+%if exists("boot/efi/EFI/*/gcdaa64.efi"):
 ## make boot.iso
 runcmd mkisofs -o ${outroot}/images/boot.iso \
        ${efiargs} -R -J -V '${isolabel}' -T -graft-points \
