@@ -846,11 +846,9 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
         log_anaconda = joinpaths(log_dir, "anaconda")
         if not os.path.isdir(log_anaconda):
             os.mkdir(log_anaconda)
-        for l in ["anaconda.log", "ifcfg.log", "program.log", "storage.log",
-                  "packaging.log", "yum.log"]:
-            if os.path.exists("/tmp/"+l):
-                shutil.copy2("/tmp/"+l, log_anaconda)
-                os.unlink("/tmp/"+l)
+        for l in glob.glob("/tmp/*log")+glob.glob("/tmp/anaconda-tb-*"):
+                shutil.copy2(l, log_anaconda)
+                os.unlink(l)
 
         if opts.make_iso or opts.make_fsimage:
             umount(ROOT_PATH)
