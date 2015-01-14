@@ -167,6 +167,10 @@ class LogRequestHandler(SocketServer.BaseRequestHandler):
 
 class LogServer(SocketServer.TCPServer):
     """A TCP Server that listens for log data"""
+
+    # Number of seconds to wait for a connection after startup
+    timeout = 60
+
     def __init__(self, log_path, *args, **kwargs):
         """
         Setup the log server
