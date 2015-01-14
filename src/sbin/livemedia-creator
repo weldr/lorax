@@ -1093,6 +1093,9 @@ def setup_logging(opts):
     :param opts: options passed to livemedia-creator
     :type opts: argparse options
     """
+    if not os.path.isdir(os.path.abspath(os.path.dirname(opts.logfile))):
+        os.makedirs(os.path.abspath(os.path.dirname(opts.logfile)))
+
     # Setup logging to console and to logfile
     log.setLevel(logging.DEBUG)
     pylorax_log.setLevel(logging.DEBUG)
