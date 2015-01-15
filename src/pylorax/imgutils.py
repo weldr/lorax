@@ -98,7 +98,7 @@ def mkrootfsimg(rootdir, outfile, label, size=2, sysroot=""):
     :param str rootdir: Root directory
     :param str outfile: Path of output image file
     :param str label: Filesystem label
-    :param int size: Size of the image, if None computed automatically
+    :param int size: Size of the image in GiB, if None computed automatically
     :param str sysroot: path to system (deployment) root relative to physical root
     """
     if size:

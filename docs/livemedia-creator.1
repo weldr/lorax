@@ -11,6 +11,7 @@ livemedia-creator [-h]
     [--fs-label FS_LABEL]
     [--qcow2] [--qcow2-arg QCOW2_ARGS]
     [--compression] [--compress-arg]
+    [--live-rootfs-size LIVE_ROOTFS_SIZE]
     [--keep-image] [--no-virt] [--proxy PROXY]
     [--anaconda-arg ANACONDA_ARGS]
     [--armplatform ARMPLATFORM] [--location LOCATION]
@@ -194,6 +195,11 @@ Path to template to use for appliance data.
 .TP
 \fB\-\-app\-file APP_FILE\fR
 Appliance template results file.
+
+.SH PXE\-LIVE ARGUMENTS:
+.TP
+\fB\-\-live\-rootfs\-size\fR
+Size of root filesystem of live image in GiB. By default approximate size of space used in root filesystem is used.
 
 .SH VIRT\-INSTALL ARGUMENTS:
 .TP

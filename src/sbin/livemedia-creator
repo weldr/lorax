@@ -1035,7 +1035,7 @@ def make_image(opts, ks):
     return disk_img
 
 
-def make_live_images(opts, work_dir, root_dir, rootfs_image=None):
+def make_live_images(opts, work_dir, root_dir, rootfs_image=None, size=None):
     """
     Create live images from direcory or rootfs image
 
@@ -1061,7 +1061,7 @@ def make_live_images(opts, work_dir, root_dir, rootfs_image=None):
             shutil.copy2(rootfs_image, joinpaths(liveos_dir, "rootfs.img"))
     else:
         log.info("Creating live rootfs image")
-        mkrootfsimg(root_dir, joinpaths(liveos_dir, "rootfs.img"), "LiveOS", size=None, sysroot=sys_root)
+        mkrootfsimg(root_dir, joinpaths(liveos_dir, "rootfs.img"), "LiveOS", size=size, sysroot=sys_root)
 
     log.info("Packing live rootfs image")
     add_pxe_args = []
@@ -1202,7 +1202,6 @@ def main():
                              help="Compression binary for make-tar. xz, lzma, gzip, and bzip2 are supported. xz is the default.")
     image_group.add_argument("--compress-arg", action="append", dest="compress_args", default=[],
                              help="Arguments to pass to compression. Pass once for each argument")
-
     # Group of arguments for appliance creation
     app_group = parser.add_argument_group("appliance arguments")
     app_group.add_argument("--app-name", default=None,
@@ -1235,6 +1234,11 @@ def main():
                                    "rebuilding the initramfs. Pass this "
                                    "once for each argument. NOTE: this "
                                    "overrides the default. (default: %s)" % (DRACUT_DEFAULT,))
+
+    # pxe to live arguments
+    pxelive_group = parser.add_argument_group("pxe to live arguments")
+    pxelive_group.add_argument("--live-rootfs-size", type=int, default=0,
+                                help="Size of root filesystem of live image in GiB")
 
     parser.add_argument("--title", default="Linux Live Media",
                         help="Substituted for @TITLE@ in bootloader config files")
@@ -1442,7 +1446,8 @@ def main():
                             mounted_sysroot_boot_dir = None
                             if opts.ostree:
                                 mounted_sysroot_boot_dir = mount_boot_part_over_root(img_mount)
-                            result_dir = make_live_images(opts, work_dir, img_mount.mount_dir)
+                            size = opts.live_rootfs_size or None
+                            result_dir = make_live_images(opts, work_dir, img_mount.mount_dir, size=size)
                         finally:
                             if mounted_sysroot_boot_dir:
                                 umount(mounted_sysroot_boot_dir)
