@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.49
+Version:        19.6.50
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Jan 14 2015 Brian C. Lane <bcl@redhat.com> 19.6.50-1
+- Use gcdaa64.efi and make boot.iso on aarch64 (pjones@redhat.com)
+  Resolves: rhbz#1174475
 * Wed Jan 07 2015 Brian C. Lane <bcl@redhat.com> 19.6.49-1
 - runtime-cleanup.tmpl: keep virtio-rng (#1179000) (lersek@redhat.com)
   Resolves: rhbz#1179000
