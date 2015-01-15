@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.49
+Version:        19.6.50
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,9 +99,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Jan 14 2015 Brian C. Lane <bcl@redhat.com> 19.6.50-1
+- Use gcdaa64.efi and make boot.iso on aarch64 (pjones@redhat.com)
+  Resolves: rhbz#1174475
+
 * Wed Jan 07 2015 Brian C. Lane <bcl@redhat.com> 19.6.49-1
 - runtime-cleanup.tmpl: keep virtio-rng (#1179000) (lersek@redhat.com)
   Resolves: rhbz#1179000
+
 * Fri Dec 19 2014 Brian C. Lane <bcl@redhat.com> 19.6.48-1
 - aarch64 no longer needs explicit console setting (#1170413) (bcl@redhat.com)
   Resolves: rhbz#1170413
@@ -120,9 +125,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 * Wed Oct 22 2014 Brian C. Lane <bcl@redhat.com> 19.6.44-1
 - move image-minimizer to lorax (bcl@redhat.com)
   Resolves: rhbz#1082642
+
 * Thu Oct 16 2014 Brian C. Lane <bcl@redhat.com> 19.6.43-1
 - Use all upper case for shim in live/efi.tmpl (bcl@redhat.com)
   Related: rhbz#1100048
+
 * Tue Oct 07 2014 Brian C. Lane <bcl@redhat.com> 19.6.42-1
 - Revert "Don't remove /usr/share/doc/anaconda." (mkolman@redhat.com)
   Related: rhbz#1072033
@@ -170,6 +177,7 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 * Mon Sep 15 2014 Brian C. Lane <bcl@redhat.com> 19.6.37-1
 - Let the plymouth dracut module back into the ppc64 upgrade.img (dshea@redhat.com)
   Resolves: rhbz#1069671
+
 * Tue Sep 09 2014 Brian C. Lane <bcl@redhat.com> 19.6.36-1
 - Add more tools for rescue mode (bcl@redhat.com)
   Resolves: rhbz#1109785
