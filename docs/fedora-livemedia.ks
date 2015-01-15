@@ -3,7 +3,7 @@ sshpw --username=root --plaintext randOmStrinGhERE
 # Firewall configuration
 firewall --enabled --service=mdns
 # Use network installation
-url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/20/x86_64/os/"
+url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/x86_64/os/"
 
 # X Window System configuration information
 xconfig  --startxonboot
@@ -34,7 +34,6 @@ zerombr
 # Partition clearing information
 clearpart --all
 # Disk partitioning information
-part biosboot --size=1
 part / --fstype="ext4" --size=4000
 part swap --size=1000
 

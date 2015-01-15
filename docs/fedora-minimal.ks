@@ -4,7 +4,7 @@ sshpw --username=root --plaintext randOmStrinGhERE
 # Firewall configuration
 firewall --enabled
 # Use network installation
-url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/20/x86_64/os/"
+url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/x86_64/os/"
 
 # Root password
 rootpw --plaintext removethispw
@@ -48,4 +48,8 @@ grub2
 shim
 syslinux
 -dracut-config-rescue
+
+# dracut needs these included
+dracut-network
+tar
 %end

@@ -19,13 +19,12 @@ rootpw --plaintext removethispw
 #
 zerombr
 clearpart --all
-part / --size 10000 --fstype ext4 --ondisk sda
-part biosboot --size=1
+part / --size 10000 --fstype ext4
 part swap --size=512
 
 #
 # Repositories
-url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/19/x86_64/os/"
+url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/x86_64/os/"
 
 #
 #
