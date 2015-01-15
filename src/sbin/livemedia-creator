@@ -66,7 +66,7 @@ except ImportError:
 
 # Default parameters for rebuilding initramfs, override with --dracut-args
 DRACUT_DEFAULT = ["--xz", "--add", "livenet dmsquash-live convertfs pollcdrom",
-                  "--omit", "plymouth", "--no-hostonly"]
+                  "--omit", "plymouth", "--no-hostonly", "--debug"]
 
 ROOT_PATH = "/mnt/sysimage/"
 RUNTIME = "images/install.img"
