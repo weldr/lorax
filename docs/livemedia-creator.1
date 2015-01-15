@@ -11,6 +11,7 @@ livemedia-creator [-h]
     [--fs-label FS_LABEL]
     [--compression] [--compress-arg]
     [--live-rootfs-size LIVE_ROOTFS_SIZE]
+    [--live-rootfs-keep-size LIVE_ROOTFS_KEEP_SIZE]
     [--keep-image] [--no-virt] [--proxy PROXY]
     [--anaconda-arg ANACONDA_ARGS]
     [--armplatform ARMPLATFORM] [--location LOCATION]
@@ -196,6 +197,10 @@ Appliance template results file.
 .TP
 \fB\-\-live\-rootfs\-size\fR
 Size of root filesystem of live image in GiB. By default approximate size of space used in root filesystem is used.
+
+.TP
+\fB\-\-live\-rootfs\-keep\-size\fR
+Keep the size of original root filesystem (rounded down to GiB) in live image
 
 .SH VIRT\-INSTALL ARGUMENTS:
 .TP
