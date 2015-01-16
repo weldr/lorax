@@ -41,6 +41,6 @@ mkdir ${KERNELDIR}
            ${efiargs} -R -J -V '${isolabel}' -T -graft-points \
            ${KERNELDIR}=${outroot}/${KERNELDIR} \
            ${LIVEDIR}=${outroot}/${LIVEDIR} \
-           ${efigraft} ${imggraft}
+           ${efigraft}
     treeinfo images-${basearch} boot.iso images/boot.iso
 %endif
