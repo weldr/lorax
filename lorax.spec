@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        22.1
+Version:        22.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -101,6 +101,31 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Jan 16 2015 Brian C. Lane <bcl@redhat.com> 22.2-1
+- Add --live-rootfs-keep-size option (rvykydal@redhat.com)
+- Add --live-rootfs-size option. (rvykydal@redhat.com)
+- livemedia-creator: Update example kickstarts (bcl@redhat.com)
+- livemedia-creator: Turn on debug output for dracut (bcl@redhat.com)
+- livemedia-creator: Copy all the logs from /tmp/ (bcl@redhat.com)
+- livemedia-creator: Create parent dirs for logfile path (bcl@redhat.com)
+- Remove fedora-icon-theme (dshea@redhat.com)
+- Remove fedora-gnome-theme (dshea@redhat.com)
+- Remove the GSettings overrides for metacity (dshea@redhat.com)
+- Remove gnome-python2-gconf (dshea@redhat.com)
+- --make-pxe-target: change permissions of regenerated initramrfs to 0644
+  (rvykydal@redhat.com)
+- Override services kickstart setting from interactive-defaults.ks
+  (rvykydal@redhat.com)
+- Use gcdaa64.efi on aarch64 (#1174475) (bcl@redhat.com)
+- livemedia-creator: add a timeout to the log monitor startup (bcl@redhat.com)
+- Add --make-pxe-live and --make-ostree-live (for Atomic) targets.
+  (rvykydal@redhat.com)
+- Revert "Install optional product and updates packages (#1155228)"
+  (bcl@redhat.com)
+- Add log monitoring to lmc --no-virt installation (bcl@redhat.com)
+- runtime-cleanup.tmpl: keep virtio-rng (#1179000) (lersek@redhat.com)
+- Install python-nss (vpodzime@redhat.com)
+
 * Fri Dec 12 2014 Brian C. Lane <bcl@redhat.com> 22.1-1
 - Actually make boot.iso on aarch64. (pjones@redhat.com)
 - Add --includepkg argument (walters@verbum.org)
