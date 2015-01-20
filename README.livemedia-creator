@@ -272,6 +272,78 @@ for installations of Atomic Host.  Example kickstart for such an installation
 using Atomic installer iso with local repo included in the image can be found
 in docs/rhel-atomic-pxe-live.ks.
 
+USING MOCK TO CREATE IMAGES
+---------------------------
+
+As of lorax version 22.2 you can use livemedia-creator and anaconda version
+22.15 inside of a mock chroot with --make-iso and --make-fsimage. Note that
+this requires bind mounting the host's /dev/ directory into the mock, which
+could be dangerous since it includes the host's drives. You can work around
+this by /dev/loopX nodes before running livemedia-creator. This example does
+not do that.
+
+On the host system:
+1. yum install -y mock
+
+2. Add a user to the mock group to use for running mock. eg. builder
+
+3. Edit the /etc/mock/site-defaults.cfg file to change:
+
+   config_opts['internal_dev_setup'] = False
+
+   The loop devices are needed for the installation, so it needs to mount the
+   host's /dev/ inside the mock.
+
+   This is fairly dangerous. I would recommend using a dedicated build host and
+   making sure you have backups just in case something goes wrong and it
+   modifies the host system.  You can avoid this if you setup the /dev/loopX
+   device nodes yourself.
+
+4. Create a new /etc/mock/ config file based on the rawhide one, or modify the
+   existing one so that the following options are setup:
+
+   config_opts['chroot_setup_cmd'] = 'install @buildsys-build anaconda-tui lorax'
+
+   # NOTE that this actually needs to be set in site-defaults.cfg
+   config_opts['internal_dev_setup'] = False
+
+   # Mount the relevant host paths inside the mock /dev/
+   config_opts['plugin_conf']['bind_mount_enable'] = True
+   config_opts['plugin_conf']['bind_mount_opts']['dirs'].append(('/dev','/dev/'))
+   config_opts['plugin_conf']['bind_mount_opts']['dirs'].append(('/dev/pts','/dev/pts/'))
+   config_opts['plugin_conf']['bind_mount_opts']['dirs'].append(('/dev/shm','/dev/shm/'))
+
+   # build results go into /home/builder/results/
+   config_opts['plugin_conf']['bind_mount_opts']['dirs'].append(('/home/builder/results','/results/'))
+
+The following steps are run as the builder user who is a member of the mock
+group.
+
+5. Make a directory for results matching the bind mount above
+   mkdir ~/results/
+
+6. Copy the example kickstarts
+   cp /usr/share/docs/lorax/*ks .
+
+7. Make sure tar and dracut-network are in the %packages section and that the
+   url points to the correct repo
+
+8. Init the mock
+   mock -r fedora-rawhide-x86_64 --init
+
+9. Copy the kickstart inside the mock
+   mock -r fedora-rawhide-x86_64 --copyin ./fedora-minimal.ks /root/
+
+10. Make a minimal iso:
+    mock -r fedora-rawhide-x86_64 --chroot -- livemedia-creator --no-virt \
+    --resultdir=/results/try-1 --logfile=/results/logs/try-1/try-1.log \
+    --make-iso --ks /root/fedora-minimal.ks
+
+Results will be in ./results/try-1 and logs under /results/logs/try-1/
+including anaconda logs and livemedia-creator logs. The new iso will be
+located at ~/results/try-1/images/boot.iso, and the ~/results/try-1/
+directory tree will also contain the vmlinuz, initrd, etc.
+
 
 DEBUGGING PROBLEMS
 ------------------
