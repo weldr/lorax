@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        22.2
+Version:        22.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -101,6 +101,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Jan 23 2015 Brian C. Lane <bcl@redhat.com> 22.3-1
+- livemedia-creator: Add documentation on using mock and livemedia-creator (bcl@redhat.com)
+- livemedia-creator: Bump default releasever to 22 (bcl@redhat.com)
+- Change console font to eurlatgr (myllynen@redhat.com)
+
 * Fri Jan 16 2015 Brian C. Lane <bcl@redhat.com> 22.2-1
 - Add --live-rootfs-keep-size option (rvykydal@redhat.com)
 - Add --live-rootfs-size option. (rvykydal@redhat.com)
