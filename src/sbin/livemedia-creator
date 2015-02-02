@@ -32,6 +32,7 @@ import subprocess
 import socket
 import threading
 import SocketServer
+import time
 from time import sleep
 import shutil
 import argparse
@@ -181,6 +182,9 @@ class LogServer(SocketServer.TCPServer):
         self.log_error = False
         self.error_line = ""
         self.log_path = log_path
+        self._timeout = kwargs.pop("timeout", None)
+        if self._timeout:
+            self._start_time = time.time()
         SocketServer.TCPServer.__init__(self, *args, **kwargs)
 
     def log_check(self):
@@ -190,7 +194,13 @@ class LogServer(SocketServer.TCPServer):
         :returns: True if there has been an error
         :rtype: bool
         """
-        return self.log_error
+        if self._timeout:
+            taking_too_long = time.time() > self._start_time + (self._timeout * 60)
+            if taking_too_long:
+                log.error("Canceling installation due to timeout")
+        else:
+            taking_too_long = False
+        return self.log_error or taking_too_long
 
 
 class LogMonitor(object):
@@ -200,7 +210,7 @@ class LogMonitor(object):
     This needs to be running before the virt-install runs, it expects
     there to be a listener on the port used for the virtio log port.
     """
-    def __init__(self, log_path=None, host="localhost", port=0):
+    def __init__(self, log_path=None, host="localhost", port=0, timeout=None):
         """
         Start a thread to monitor the logs.
 
@@ -214,7 +224,7 @@ class LogMonitor(object):
         If log_path isn't set then it only monitors the logs, instead of
         also writing them to disk.
         """
-        self.server = LogServer(log_path, (host, port), LogRequestHandler)
+        self.server = LogServer(log_path, (host, port), LogRequestHandler, timeout=timeout)
         self.host, self.port = self.server.server_address
         self.log_path = log_path
         self.server_thread = threading.Thread(target=self.server.handle_request)
@@ -389,7 +399,6 @@ class VirtualInstall(object):
 
         # TODO: If vnc has been passed, we should look up the port and print that
         # for the user at this point
-
         while dom.isActive() and not log_check():
             sys.stdout.write(".")
             sys.stdout.flush()
@@ -815,7 +824,7 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
         # Create the sparse image
         mksparse(disk_img, disk_size * 1024**2)
 
-    log_monitor = LogMonitor()
+    log_monitor = LogMonitor(timeout=opts.timeout)
     args += ["--remotelog", "%s:%s" % (log_monitor.host, log_monitor.port)]
 
     # Make sure anaconda has the right product and release
@@ -902,7 +911,7 @@ def virt_install(opts, install_log, disk_img, disk_size):
     image and then optionally, based on the opts passed, creates tarfile.
     """
     iso_mount = IsoMountpoint(opts.iso, opts.location)
-    log_monitor = LogMonitor(install_log)
+    log_monitor = LogMonitor(install_log, timeout=opts.timeout)
 
     kernel_args = ""
     if opts.kernel_args:
@@ -941,7 +950,11 @@ def virt_install(opts, install_log, disk_img, disk_size):
         iso_mount.umount()
 
     if log_monitor.server.log_check():
-        raise InstallError("virt_install failed on line: %s" % log_monitor.server.error_line)
+        if not log_monitor.server.error_line and opts.timeout:
+            msg = "virt_install failed due to timeout"
+        else:
+            msg = "virt_install failed on line: %s" % log_monitor.server.error_line
+        raise InstallError(msg)
 
     if opts.make_fsimage:
         make_fsimage(diskimg_path, disk_img, disk_size, label=opts.fs_label)
@@ -1252,6 +1265,8 @@ def main():
     parser.add_argument("--volid", default=None, help="volume id")
     parser.add_argument("--squashfs_args",
                         help="additional squashfs args")
+    parser.add_argument("--timeout", default=None, type=int,
+                        help="Cancel installer after X minutes")
 
     opts = parser.parse_args()
 
