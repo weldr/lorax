@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        22.3
+Version:        22.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -102,6 +102,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Feb 06 2015 Brian C. Lane <bcl@redhat.com> 22.4-1
+- livemedia-creator: Add --timeout option to cancel install after X minutes
+  (bcl@redhat.com)
+- network: add support for bridge (#1075195) (rvykydal@redhat.com)
+- Move url and source to github in specfile (bcl@redhat.com)
+- Use %%license in lorax.spec (bcl@redhat.com)
+
 * Fri Jan 23 2015 Brian C. Lane <bcl@redhat.com> 22.3-1
 - livemedia-creator: Add documentation on using mock and livemedia-creator (bcl@redhat.com)
 - livemedia-creator: Bump default releasever to 22 (bcl@redhat.com)
