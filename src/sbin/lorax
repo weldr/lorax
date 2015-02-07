@@ -87,54 +87,54 @@ def main(args):
     # required arguments for image creation
     required = OptionGroup(parser, "required arguments")
     required.add_option("-p", "--product", help="product name",
-            metavar="STRING")
+                        metavar="STRING")
     required.add_option("-v", "--version", help="version identifier",
-            metavar="STRING")
+                        metavar="STRING")
     required.add_option("-r", "--release", help="release information",
-            metavar="STRING")
+                        metavar="STRING")
     required.add_option("-s", "--source",
-            help="source repository (may be listed multiple times)",
-            metavar="REPOSITORY", action="append", default=[])
+                        help="source repository (may be listed multiple times)",
+                        metavar="REPOSITORY", action="append", default=[])
 
     # optional arguments
     optional = OptionGroup(parser, "optional arguments")
     optional.add_option("-m", "--mirrorlist",
-            help="mirrorlist repository (may be listed multiple times)",
-            metavar="REPOSITORY", action="append", default=[])
+                        help="mirrorlist repository (may be listed multiple times)",
+                        metavar="REPOSITORY", action="append", default=[])
     optional.add_option("-t", "--variant",
-            help="variant name", metavar="STRING")
+                        help="variant name", metavar="STRING")
     optional.add_option("-b", "--bugurl",
-            help="bug reporting URL for the product", metavar="URL",
-            default="your distribution provided bug reporting tool")
+                        help="bug reporting URL for the product", metavar="URL",
+                        default="your distribution provided bug reporting tool")
     optional.add_option("--isfinal", help="",
-            action="store_true", default=False, dest="isfinal")
+                        action="store_true", default=False, dest="isfinal")
     optional.add_option("-c", "--config", default="/etc/lorax/lorax.conf",
-            help="config file", metavar="STRING")
+                        help="config file", metavar="STRING")
     optional.add_option("--proxy", default=None,
-            help="repo proxy url:port", metavar="STRING")
+                        help="repo proxy url:port", metavar="STRING")
     optional.add_option("-i", "--installpkgs", default=[],
-            action="append", metavar="STRING",
-            help="package glob to install before runtime-install.tmpl runs. (may be listed multiple times)")
+                        action="append", metavar="STRING",
+                        help="package glob to install before runtime-install.tmpl runs. (may be listed multiple times)")
     optional.add_option("--buildarch", default=None,
-            help="build architecture", metavar="STRING")
+                        help="build architecture", metavar="STRING")
     optional.add_option("--volid", default=None,
-            help="volume id", metavar="STRING")
+                        help="volume id", metavar="STRING")
     optional.add_option("--macboot", help="",
-            action="store_true", default=True, dest="domacboot")
+                        action="store_true", default=True, dest="domacboot")
     optional.add_option("--nomacboot", help="",
-            action="store_false", dest="domacboot")
+                        action="store_false", dest="domacboot")
     optional.add_option("--noupgrade", help="",
-            action="store_false", default=True, dest="doupgrade")
+                        action="store_false", default=True, dest="doupgrade")
     optional.add_option("--logfile", default="./lorax.log",
-            help="Path to logfile")
+                        help="Path to logfile")
     optional.add_option("--tmp", default="/var/tmp",
-            help="Top level temporary directory" )
+                        help="Top level temporary directory" )
     optional.add_option("--add-template", dest="add_templates",
-            action="append", help="Additional template to execute",
-            default=[])
+                        action="append", help="Additional template to execute",
+                        default=[])
     optional.add_option("--add-template-var", dest="add_template_vars",
-            action="append", help="Set variable for additional templates",
-            default=[])
+                        action="append", help="Set variable for additional templates",
+                        default=[])
 
     # add the option groups to the parser
     parser.add_option_group(required)
@@ -142,7 +142,7 @@ def main(args):
 
     # add the show version option
     parser.add_option("-V", help="show program's version number and exit",
-            action="store_true", default=False, dest="showver")
+                      action="store_true", default=False, dest="showver")
 
     # parse the arguments
     opts, args = parser.parse_args()
