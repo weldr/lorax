@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 # test-parse-template - parse and print (but don't execute!) a Lorax Template.
 # Copyright (C) 2011  Red Hat, Inc.
 #

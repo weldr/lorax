@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 #
 # image-minimizer: removes files and packages on the filesystem
 #
