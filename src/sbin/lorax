@@ -129,6 +129,12 @@ def main(args):
                         help="Path to logfile")
     optional.add_option("--tmp", default="/var/tmp",
                         help="Top level temporary directory" )
+    optional.add_option("--cachedir", default=None,
+                        help="DNF cache directory. Default is a temporary dir.")
+    optional.add_option("--workdir", default=None,
+                        help="Work directory, overrides --tmp. Default is a temporary dir under /var/tmp")
+    optional.add_option("--force", default=False, action="store_true",
+                        help="Run even when the destination directory exists")
     optional.add_option("--add-template", dest="add_templates",
                         action="append", help="Additional template to execute",
                         default=[])
@@ -161,29 +167,41 @@ def main(args):
             or not opts.source or not outputdir:
         parser.error("missing one or more required arguments")
 
-    if os.path.exists(outputdir):
-        parser.error("output directory should not exist.")
+    if not opts.force and os.path.exists(outputdir):
+        parser.error("output directory %s should not exist." % outputdir)
 
     opts.logfile = os.path.abspath(opts.logfile)
+    if opts.cachedir:
+        opts.cachedir = os.path.abspath(opts.cachedir)
+    if opts.workdir:
+        opts.workdir = os.path.abspath(opts.workdir)
 
     setup_logging(opts)
 
-    tempfile.tempdir = opts.tmp
+    if not opts.workdir:
+        tempfile.tempdir = opts.tmp
 
-    # create the temporary directory for lorax
-    tempdir = tempfile.mkdtemp(prefix="lorax.", dir=tempfile.gettempdir())
+        # create the temporary directory for lorax
+        tempdir = tempfile.mkdtemp(prefix="lorax.", dir=tempfile.gettempdir())
+    else:
+        tempdir = opts.workdir
+        if not os.path.exists(tempdir):
+            os.makedirs(tempdir)
 
     installtree = os.path.join(tempdir, "installtree")
-    os.mkdir(installtree)
+    if not os.path.exists(installtree):
+        os.mkdir(installtree)
     dnftempdir = os.path.join(tempdir, "dnf")
-    os.mkdir(dnftempdir)
+    if not os.path.exists(dnftempdir):
+        os.mkdir(dnftempdir)
 
     dnfbase = get_dnf_base_object(installtree, opts.source, opts.mirrorlist,
-                                  dnftempdir, opts.proxy, opts.version)
+                                  dnftempdir, opts.proxy, opts.version, opts.cachedir)
 
     if dnfbase is None:
         print("error: unable to create the dnf base object", file=sys.stderr)
-        shutil.rmtree(tempdir)
+        if not opts.workdir:
+            shutil.rmtree(tempdir)
         sys.exit(1)
 
     parsed_add_template_vars = {}
@@ -207,7 +225,8 @@ def main(args):
 
 
 def get_dnf_base_object(installroot, repositories, mirrorlists=None,
-                        tempdir="/var/tmp", proxy=None, releasever="21"):
+                        tempdir="/var/tmp", proxy=None, releasever="21",
+                        cachedir=None):
     """ Create a dnf Base object and setup the repositories and installroot
 
         :param string installroot: Full path to the installroot
@@ -216,6 +235,10 @@ def get_dnf_base_object(installroot, repositories, mirrorlists=None,
         :param string tempdir: Path of temporary directory
         :param string proxy: http proxy to use when fetching packages
         :param string releasever: Release version to pass to dnf
+        :param string cachedir: Directory to use for caching packages
+
+        If tempdir is not set /var/tmp is used.
+        If cachedir is None a dnf.cache directory is created inside tmpdir
     """
     def sanitize_repo(repo):
         """Convert bare paths to file:/// URIs, and silently reject protocols unhandled by yum"""
@@ -236,7 +259,8 @@ def get_dnf_base_object(installroot, repositories, mirrorlists=None,
     repositories = filter(bool, repositories)
     mirrorlists = filter(bool, mirrorlists)
 
-    cachedir = os.path.join(tempdir, "dnf.cache")
+    if not cachedir:
+        cachedir = os.path.join(tempdir, "dnf.cache")
     if not os.path.isdir(cachedir):
         os.mkdir(cachedir)
 
