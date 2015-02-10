@@ -171,6 +171,8 @@ def main(args):
         parser.error("output directory %s should not exist." % outputdir)
 
     opts.logfile = os.path.abspath(opts.logfile)
+    if not os.path.exists(os.path.dirname(opts.logfile)):
+        os.makedirs(os.path.dirname(opts.logfile))
     if opts.cachedir:
         opts.cachedir = os.path.abspath(opts.cachedir)
     if opts.workdir:
@@ -214,6 +216,7 @@ def main(args):
     # run lorax
     lorax = pylorax.Lorax()
     lorax.configure(conf_file=opts.config)
+    lorax.conf.set("lorax", "logdir", os.path.dirname(opts.logfile))
     lorax.run(dnfbase, opts.product, opts.version, opts.release,
               opts.variant, opts.bugurl, opts.isfinal,
               workdir=tempdir, outputdir=outputdir, buildarch=opts.buildarch,

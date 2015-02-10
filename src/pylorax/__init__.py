@@ -87,6 +87,7 @@ class Lorax(BaseLoraxClass):
         self.conf.add_section("lorax")
         self.conf.set("lorax", "debug", "1")
         self.conf.set("lorax", "sharedir", "/usr/share/lorax")
+        self.conf.set("lorax", "logdir", "/var/log/lorax")
 
         self.conf.add_section("output")
         self.conf.set("output", "colors", "1")
@@ -179,7 +180,7 @@ class Lorax(BaseLoraxClass):
             os.makedirs(self.workdir)
 
         # set up log directory
-        logdir = '/var/log/lorax'
+        logdir = self.conf.get("lorax", "logdir")
         if not os.path.isdir(logdir):
             os.makedirs(logdir)
 
