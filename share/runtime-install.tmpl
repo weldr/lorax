@@ -3,7 +3,7 @@
 
 ## anaconda package
 installpkg anaconda anaconda-widgets
-installpkg kexec-tools-anaconda-addon
+
 ## anaconda deps that aren't in the RPM
 installpkg tmux
 installpkg firstboot
@@ -143,6 +143,10 @@ installpkg yum-langpacks
 
 ## RHEL packages
 installpkg subscription-manager
+
+## addons
+installpkg kexec-tools-anaconda-addon
+installpkg oscap-anaconda-addon
 
 ## actually install all the requested packages
 run_pkg_transaction
