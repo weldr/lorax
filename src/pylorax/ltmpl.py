@@ -556,22 +556,13 @@ class LoraxTemplateRunner(object):
         logger.info("Performing post-installation setup tasks")
         process.join()
 
-        # close down the base and re-init it to pick up changes
-        self.dbo.close()
-        del self.dbo
+        # Reset the package sack to pick up the installed packages
+        self.dbo.reset(repos=False)
+        self.dbo.fill_sack(load_system_repo=True, load_available_repos=False)
 
-        self.dbo = dnf.Base()
-        conf = self.dbo.conf
-        # Point inside the installroot
-        conf.installroot = self.outroot
-        conf.prepend_installroot('persistdir')
-        conf.debuglevel = 10
-        conf.errorlevel = 0
-        RELEASEVER = dnf.rpm.detect_releasever(self.dbo.conf.installroot)
-        self.dbo.conf.substitutions['releasever'] = RELEASEVER
-        self.dbo.read_all_repos()
-        self.dbo.fill_sack(load_system_repo=False)
-        self.dbo.read_comps()
+        # At this point dnf should know about the installed files. Double check that it really does.
+        if len(self._filelist("anaconda-core")) == 0:
+            raise Exception("Failed to reset dbo to installed package set")
 
     def removefrom(self, pkg, *globs):
         '''
