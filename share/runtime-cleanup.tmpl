@@ -27,7 +27,7 @@ removefrom dracut --allbut /usr/lib/dracut/modules.d/30convertfs/convertfs.sh \
 ## we don't run SELinux (not in enforcing, anyway)
 removepkg checkpolicy selinux-policy libselinux-utils
 ## anaconda has its own repo files
-removefrom fedora-release --allbut /etc/os-release
+removefrom fedora-release --allbut /etc/os-release /usr/lib/os-release
 removepkg fedora-release-rawhide
 ## no user accounts = no account management
 removepkg usermode usermode-gtk passwd shadow-utils
