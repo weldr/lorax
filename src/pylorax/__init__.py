@@ -36,7 +36,7 @@ import selinux
 from pylorax.base import BaseLoraxClass, DataHolder
 import pylorax.output as output
 
-import yum
+import dnf
 
 from pylorax.sysutils import joinpaths, remove, linktree
 from rpmUtils.arch import getBaseArch
@@ -87,6 +87,7 @@ class Lorax(BaseLoraxClass):
         self.conf.add_section("lorax")
         self.conf.set("lorax", "debug", "1")
         self.conf.set("lorax", "sharedir", "/usr/share/lorax")
+        self.conf.set("lorax", "logdir", "/var/log/lorax")
 
         self.conf.add_section("output")
         self.conf.set("output", "colors", "1")
@@ -95,9 +96,6 @@ class Lorax(BaseLoraxClass):
 
         self.conf.add_section("templates")
         self.conf.set("templates", "ramdisk", "ramdisk.ltmpl")
-
-        self.conf.add_section("yum")
-        self.conf.set("yum", "skipbroken", "0")
 
         self.conf.add_section("compression")
         self.conf.set("compression", "type", "xz")
@@ -149,7 +147,7 @@ class Lorax(BaseLoraxClass):
         fh.setLevel(logging.DEBUG)
         logger.addHandler(fh)
 
-    def run(self, ybo, product, version, release, variant="", bugurl="",
+    def run(self, dbo, product, version, release, variant="", bugurl="",
             isfinal=False, workdir=None, outputdir=None, buildarch=None, volid=None,
             domacboot=True, doupgrade=True, remove_temp=False,
             installpkgs=None,
@@ -182,7 +180,7 @@ class Lorax(BaseLoraxClass):
             os.makedirs(self.workdir)
 
         # set up log directory
-        logdir = '/var/log/lorax'
+        logdir = self.conf.get("lorax", "logdir")
         if not os.path.isdir(logdir):
             os.makedirs(logdir)
 
@@ -221,16 +219,16 @@ class Lorax(BaseLoraxClass):
             logger.critical("selinux must be disabled or in Permissive mode")
             sys.exit(1)
 
-        # do we have a proper yum base object?
-        logger.info("checking yum base object")
-        if not isinstance(ybo, yum.YumBase):
-            logger.critical("no yum base object")
+        # do we have a proper dnf base object?
+        logger.info("checking dnf base object")
+        if not isinstance(dbo, dnf.Base):
+            logger.critical("no dnf base object")
             sys.exit(1)
-        self.inroot = ybo.conf.installroot
+        self.inroot = dbo.conf.installroot
         logger.debug("using install root: {0}".format(self.inroot))
 
         if not buildarch:
-            buildarch = get_buildarch(ybo)
+            buildarch = get_buildarch(dbo)
 
         logger.info("setting up build architecture")
         self.arch = ArchData(buildarch)
@@ -253,15 +251,14 @@ class Lorax(BaseLoraxClass):
             sys.exit(1)
 
         templatedir = self.conf.get("lorax", "sharedir")
-        # NOTE: rb.root = ybo.conf.installroot (== self.inroot)
+        # NOTE: rb.root = dbo.conf.installroot (== self.inroot)
         rb = RuntimeBuilder(product=self.product, arch=self.arch,
-                            yum=ybo, templatedir=templatedir,
+                            dbo=dbo, templatedir=templatedir,
                             installpkgs=installpkgs,
                             add_templates=add_templates,
                             add_template_vars=add_template_vars)
 
         logger.info("installing runtime packages")
-        rb.yum.conf.skip_broken = self.conf.getboolean("yum", "skipbroken")
         rb.install()
 
         # write .buildstamp
@@ -306,6 +303,7 @@ class Lorax(BaseLoraxClass):
         rb.create_runtime(joinpaths(installroot,runtime),
                           compression=compression, compressargs=compressargs,
                           size=size)
+        rb.finished()
 
         logger.info("preparing to build output tree and boot images")
         treebuilder = TreeBuilder(product=self.product, arch=self.arch,
@@ -358,10 +356,12 @@ class Lorax(BaseLoraxClass):
             remove(self.workdir)
 
 
-def get_buildarch(ybo):
+def get_buildarch(dbo):
     # get architecture of the available anaconda package
     buildarch = None
-    for anaconda in ybo.doPackageLists(patterns=["anaconda"]).available:
+    q = dbo.sack.query()
+    a = q.available()
+    for anaconda in a.filter(name="anaconda"):
         if anaconda.arch != "src":
             buildarch = anaconda.arch
             break

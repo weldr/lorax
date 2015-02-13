@@ -28,15 +28,18 @@ from os.path import basename, isdir
 from subprocess import CalledProcessError
 
 from pylorax.sysutils import joinpaths, cpfile, mvfile, replace, remove
-from pylorax.yumhelper import LoraxDownloadCallback, LoraxTransactionCallback, LoraxRpmCallback
+from pylorax.dnfhelper import LoraxDownloadCallback, LoraxRpmCallback
 from pylorax.base import DataHolder
 from pylorax.executils import runcmd, runcmd_output
 from pylorax.imgutils import mkcpio
+import pylorax.output as output
 
 from mako.lookup import TemplateLookup
 from mako.exceptions import text_error_template
 import sys, traceback
 import struct
+import dnf
+import multiprocessing
 
 class LoraxTemplate(object):
     def __init__(self, directories=None):
@@ -108,7 +111,7 @@ class LoraxTemplateRunner(object):
     This class parses and executes Lorax templates. Sample usage:
 
       # install a bunch of packages
-      runner = LoraxTemplateRunner(inroot=rundir, outroot=rundir, yum=yum_obj)
+      runner = LoraxTemplateRunner(inroot=rundir, outroot=rundir, dbo=dnf_obj)
       runner.run("install-packages.ltmpl")
 
       # modify a runtime dir
@@ -145,11 +148,11 @@ class LoraxTemplateRunner(object):
 
     * Commands should raise exceptions for errors - don't use sys.exit()
     '''
-    def __init__(self, inroot, outroot, yum=None, fatalerrors=True,
+    def __init__(self, inroot, outroot, dbo=None, fatalerrors=True,
                                         templatedir=None, defaults=None):
         self.inroot = inroot
         self.outroot = outroot
-        self.yum = yum
+        self.dbo = dbo
         self.fatalerrors = fatalerrors
         self.templatedir = templatedir or "/usr/share/lorax"
         self.templatefile = None
@@ -166,8 +169,14 @@ class LoraxTemplateRunner(object):
         return joinpaths(self.inroot, path)
 
     def _filelist(self, *pkgs):
-        pkglist = self.yum.doPackageLists(pkgnarrow="installed", patterns=pkgs)
-        return set([f for pkg in pkglist.installed for f in pkg.filelist+pkg.ghostlist])
+        """ Return the list of files in the packages """
+        pkglist = []
+        for pkg_glob in pkgs:
+            pkglist += list(self.dbo.sack.query().installed().filter(name__glob=pkg_glob))
+
+        # dnf/hawkey doesn't make any distinction between file, dir or ghost like yum did
+        # so only return the files.
+        return set(f for pkg in pkglist for f in pkg.files if not os.path.isdir(self._out(f)))
 
     def _getsize(self, *files):
         return sum(os.path.getsize(self._out(f)) for f in files if os.path.isfile(self._out(f)))
@@ -447,9 +456,9 @@ class LoraxTemplateRunner(object):
             cmd = cmd[1:]
 
         try:
-            output = runcmd_output(cmd, cwd=cwd)
-            if output:
-                logger.debug('command output:\n%s', output)
+            stdout = runcmd_output(cmd, cwd=cwd)
+            if stdout:
+                logger.debug('command output:\n%s', stdout)
             logger.debug("command finished successfully")
         except CalledProcessError as e:
             if e.output:
@@ -471,10 +480,10 @@ class LoraxTemplateRunner(object):
 
         for p in pkgs:
             try:
-                self.yum.install(pattern=p)
+                self.dbo.install(p)
             except Exception as e: # pylint: disable=broad-except
                 # FIXME: save exception and re-raise after the loop finishes
-                logger.error("installpkg %s failed: %s",p,str(e))
+                logger.error("installpkg %s failed: %s", p, str(e))
                 if required:
                     raise
 
@@ -501,19 +510,59 @@ class LoraxTemplateRunner(object):
           Actually install all the packages requested by previous 'installpkg'
           commands.
         '''
-        self.yum.buildTransaction()
-        dl_callback = LoraxDownloadCallback()
-        self.yum.repos.setProgressBar(dl_callback)
-        self.yum.processTransaction(callback=LoraxTransactionCallback(dl_callback),
-                                    rpmDisplay=LoraxRpmCallback())
 
-        # verify if all packages that were supposed to be installed,
-        # are really installed
-        errs = [t.po for t in self.yum.tsInfo if not self.yum.rpmdb.contains(po=t.po)]
-        for po in errs:
-            logger.error("package '%s' was not installed", po)
+        def do_transaction(base, queue):
+            try:
+                display = LoraxRpmCallback(queue)
+                base.do_transaction(display=display)
+            except BaseException as e:
+                logger.error("The transaction process has ended abruptly: %s", e)
+                queue.put(('quit', str(e)))
 
-        self.yum.closeRpmDB()
+        try:
+            logger.info("Checking dependencies")
+            self.dbo.resolve()
+        except dnf.exceptions.DepsolveError as e:
+            logger.error("Dependency check failed: %s", e)
+            raise
+        logger.info("%d packages selected", len(self.dbo.transaction))
+        if len(self.dbo.transaction) == 0:
+            raise Exception("No packages in transaction")
+
+        pkgs_to_download = self.dbo.transaction.install_set
+        logger.info("Downloading packages")
+        progress = LoraxDownloadCallback()
+        try:
+            self.dbo.download_packages(pkgs_to_download, progress)
+        except dnf.exceptions.DownloadError as e:
+            logger.error("Failed to download the following packages: %s", e)
+            raise
+
+        logger.info("Preparing transaction from installation source")
+        queue = multiprocessing.Queue()
+        msgout = output.LoraxOutput()
+        process = multiprocessing.Process(target=do_transaction, args=(self.dbo, queue))
+        process.start()
+        (token, msg) = queue.get()
+        while token not in ('post', 'quit'):
+            if token == 'install':
+                logging.info("%s", msg)
+                msgout.writeline(msg)
+            (token, msg) = queue.get()
+        if token == 'quit':
+            logger.error("Transaction failed.")
+            raise Exception("Transaction failed")
+
+        logger.info("Performing post-installation setup tasks")
+        process.join()
+
+        # Reset the package sack to pick up the installed packages
+        self.dbo.reset(repos=False)
+        self.dbo.fill_sack(load_system_repo=True, load_available_repos=False)
+
+        # At this point dnf should know about the installed files. Double check that it really does.
+        if len(self._filelist("anaconda-core")) == 0:
+            raise Exception("Failed to reset dbo to installed package set")
 
     def removefrom(self, pkg, *globs):
         '''

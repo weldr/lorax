@@ -25,20 +25,16 @@ import logging
 log = logging.getLogger("lorax")
 program_log = logging.getLogger("program")
 pylorax_log = logging.getLogger("pylorax")
-yum_log = logging.getLogger("yum")
+dnf_log = logging.getLogger("dnf")
 
 
 import sys
 import os
 import tempfile
 from optparse import OptionParser, OptionGroup
-import ConfigParser
 import shutil
 
-import yum
-# This is a bit of a hack to short circuit yum's internal logging
-# handler setup.  We already set one up so we don't need it to run.
-yum.logginglevels._added_handlers = True
+import dnf
 import pylorax
 
 def setup_logging(opts):
@@ -67,12 +63,12 @@ def setup_logging(opts):
     fh.setLevel(logging.DEBUG)
     program_log.addHandler(fh)
 
-    # yum logging
-    yum_log.setLevel(logging.DEBUG)
-    logfile = os.path.abspath(os.path.dirname(opts.logfile))+"/yum.log"
+    # dnf logging
+    dnf_log.setLevel(logging.DEBUG)
+    logfile = os.path.abspath(os.path.dirname(opts.logfile))+"/dnf.log"
     fh = logging.FileHandler(filename=logfile, mode="w")
     fh.setLevel(logging.DEBUG)
-    yum_log.addHandler(fh)
+    dnf_log.addHandler(fh)
 
 
 def main(args):
@@ -91,57 +87,60 @@ def main(args):
     # required arguments for image creation
     required = OptionGroup(parser, "required arguments")
     required.add_option("-p", "--product", help="product name",
-            metavar="STRING")
+                        metavar="STRING")
     required.add_option("-v", "--version", help="version identifier",
-            metavar="STRING")
+                        metavar="STRING")
     required.add_option("-r", "--release", help="release information",
-            metavar="STRING")
+                        metavar="STRING")
     required.add_option("-s", "--source",
-            help="source repository (may be listed multiple times)",
-            metavar="REPOSITORY", action="append", default=[])
+                        help="source repository (may be listed multiple times)",
+                        metavar="REPOSITORY", action="append", default=[])
 
     # optional arguments
     optional = OptionGroup(parser, "optional arguments")
     optional.add_option("-m", "--mirrorlist",
-            help="mirrorlist repository (may be listed multiple times)",
-            metavar="REPOSITORY", action="append", default=[])
+                        help="mirrorlist repository (may be listed multiple times)",
+                        metavar="REPOSITORY", action="append", default=[])
     optional.add_option("-t", "--variant",
-            help="variant name", metavar="STRING")
+                        help="variant name", metavar="STRING")
     optional.add_option("-b", "--bugurl",
-            help="bug reporting URL for the product", metavar="URL",
-            default="your distribution provided bug reporting tool")
+                        help="bug reporting URL for the product", metavar="URL",
+                        default="your distribution provided bug reporting tool")
     optional.add_option("--isfinal", help="",
-            action="store_true", default=False, dest="isfinal")
+                        action="store_true", default=False, dest="isfinal")
     optional.add_option("-c", "--config", default="/etc/lorax/lorax.conf",
-            help="config file", metavar="STRING")
+                        help="config file", metavar="STRING")
     optional.add_option("--proxy", default=None,
-            help="repo proxy url:port", metavar="STRING")
-    optional.add_option("-e", "--excludepkgs", default=[],
-            action="append", metavar="STRING",
-            help="package glob to exclude (may be listed multiple times)")
+                        help="repo proxy url:port", metavar="STRING")
     optional.add_option("-i", "--installpkgs", default=[],
-            action="append", metavar="STRING",
-            help="package glob to install before runtime-install.tmpl runs. (may be listed multiple times)")
+                        action="append", metavar="STRING",
+                        help="package glob to install before runtime-install.tmpl runs. (may be listed multiple times)")
     optional.add_option("--buildarch", default=None,
-            help="build architecture", metavar="STRING")
+                        help="build architecture", metavar="STRING")
     optional.add_option("--volid", default=None,
-            help="volume id", metavar="STRING")
+                        help="volume id", metavar="STRING")
     optional.add_option("--macboot", help="",
-            action="store_true", default=True, dest="domacboot")
+                        action="store_true", default=True, dest="domacboot")
     optional.add_option("--nomacboot", help="",
-            action="store_false", dest="domacboot")
+                        action="store_false", dest="domacboot")
     optional.add_option("--noupgrade", help="",
-            action="store_false", default=True, dest="doupgrade")
+                        action="store_false", default=True, dest="doupgrade")
     optional.add_option("--logfile", default="./lorax.log",
-            help="Path to logfile")
+                        help="Path to logfile")
     optional.add_option("--tmp", default="/var/tmp",
-            help="Top level temporary directory" )
+                        help="Top level temporary directory" )
+    optional.add_option("--cachedir", default=None,
+                        help="DNF cache directory. Default is a temporary dir.")
+    optional.add_option("--workdir", default=None,
+                        help="Work directory, overrides --tmp. Default is a temporary dir under /var/tmp")
+    optional.add_option("--force", default=False, action="store_true",
+                        help="Run even when the destination directory exists")
     optional.add_option("--add-template", dest="add_templates",
-            action="append", help="Additional template to execute",
-            default=[])
+                        action="append", help="Additional template to execute",
+                        default=[])
     optional.add_option("--add-template-var", dest="add_template_vars",
-            action="append", help="Set variable for additional templates",
-            default=[])
+                        action="append", help="Set variable for additional templates",
+                        default=[])
 
     # add the option groups to the parser
     parser.add_option_group(required)
@@ -149,7 +148,7 @@ def main(args):
 
     # add the show version option
     parser.add_option("-V", help="show program's version number and exit",
-            action="store_true", default=False, dest="showver")
+                      action="store_true", default=False, dest="showver")
 
     # parse the arguments
     opts, args = parser.parse_args()
@@ -168,30 +167,43 @@ def main(args):
             or not opts.source or not outputdir:
         parser.error("missing one or more required arguments")
 
-    if os.path.exists(outputdir):
-        parser.error("output directory should not exist.")
+    if not opts.force and os.path.exists(outputdir):
+        parser.error("output directory %s should not exist." % outputdir)
 
     opts.logfile = os.path.abspath(opts.logfile)
+    if not os.path.exists(os.path.dirname(opts.logfile)):
+        os.makedirs(os.path.dirname(opts.logfile))
+    if opts.cachedir:
+        opts.cachedir = os.path.abspath(opts.cachedir)
+    if opts.workdir:
+        opts.workdir = os.path.abspath(opts.workdir)
 
     setup_logging(opts)
 
-    tempfile.tempdir = opts.tmp
+    if not opts.workdir:
+        tempfile.tempdir = opts.tmp
 
-    # create the temporary directory for lorax
-    tempdir = tempfile.mkdtemp(prefix="lorax.", dir=tempfile.gettempdir())
+        # create the temporary directory for lorax
+        tempdir = tempfile.mkdtemp(prefix="lorax.", dir=tempfile.gettempdir())
+    else:
+        tempdir = opts.workdir
+        if not os.path.exists(tempdir):
+            os.makedirs(tempdir)
 
-    # create the yumbase object
     installtree = os.path.join(tempdir, "installtree")
-    os.mkdir(installtree)
-    yumtempdir = os.path.join(tempdir, "yum")
-    os.mkdir(yumtempdir)
+    if not os.path.exists(installtree):
+        os.mkdir(installtree)
+    dnftempdir = os.path.join(tempdir, "dnf")
+    if not os.path.exists(dnftempdir):
+        os.mkdir(dnftempdir)
 
-    yb = get_yum_base_object(installtree, opts.source, opts.mirrorlist,
-                             yumtempdir, opts.proxy, opts.excludepkgs)
+    dnfbase = get_dnf_base_object(installtree, opts.source, opts.mirrorlist,
+                                  dnftempdir, opts.proxy, opts.version, opts.cachedir)
 
-    if yb is None:
-        print("error: unable to create the yumbase object", file=sys.stderr)
-        shutil.rmtree(tempdir)
+    if dnfbase is None:
+        print("error: unable to create the dnf base object", file=sys.stderr)
+        if not opts.workdir:
+            shutil.rmtree(tempdir)
         sys.exit(1)
 
     parsed_add_template_vars = {}
@@ -204,7 +216,8 @@ def main(args):
     # run lorax
     lorax = pylorax.Lorax()
     lorax.configure(conf_file=opts.config)
-    lorax.run(yb, opts.product, opts.version, opts.release,
+    lorax.conf.set("lorax", "logdir", os.path.dirname(opts.logfile))
+    lorax.run(dnfbase, opts.product, opts.version, opts.release,
               opts.variant, opts.bugurl, opts.isfinal,
               workdir=tempdir, outputdir=outputdir, buildarch=opts.buildarch,
               volid=opts.volid, domacboot=opts.domacboot, doupgrade=opts.doupgrade,
@@ -214,9 +227,22 @@ def main(args):
               remove_temp=True)
 
 
-def get_yum_base_object(installroot, repositories, mirrorlists=None,
-                        tempdir="/var/tmp", proxy=None, excludepkgs=None):
+def get_dnf_base_object(installroot, repositories, mirrorlists=None,
+                        tempdir="/var/tmp", proxy=None, releasever="21",
+                        cachedir=None):
+    """ Create a dnf Base object and setup the repositories and installroot
 
+        :param string installroot: Full path to the installroot
+        :param list repositories: List of repositories to use for the installation
+        :param list mirrorlist: List of mirrors to use
+        :param string tempdir: Path of temporary directory
+        :param string proxy: http proxy to use when fetching packages
+        :param string releasever: Release version to pass to dnf
+        :param string cachedir: Directory to use for caching packages
+
+        If tempdir is not set /var/tmp is used.
+        If cachedir is None a dnf.cache directory is created inside tmpdir
+    """
     def sanitize_repo(repo):
         """Convert bare paths to file:/// URIs, and silently reject protocols unhandled by yum"""
         if repo.startswith("/"):
@@ -227,7 +253,6 @@ def get_yum_base_object(installroot, repositories, mirrorlists=None,
             return None
 
     mirrorlists = mirrorlists or []
-    excludepkgs = excludepkgs or []
 
     # sanitize the repositories
     repositories = map(sanitize_repo, repositories)
@@ -237,78 +262,77 @@ def get_yum_base_object(installroot, repositories, mirrorlists=None,
     repositories = filter(bool, repositories)
     mirrorlists = filter(bool, mirrorlists)
 
-    cachedir = os.path.join(tempdir, "yum.cache")
+    if not cachedir:
+        cachedir = os.path.join(tempdir, "dnf.cache")
     if not os.path.isdir(cachedir):
         os.mkdir(cachedir)
 
-    yumconf = os.path.join(tempdir, "yum.conf")
-    c = ConfigParser.ConfigParser()
+    logdir = os.path.join(tempdir, "dnf.logs")
+    if not os.path.isdir(logdir):
+        os.mkdir(logdir)
 
-    # add the main section
-    section = "main"
-    data = {"cachedir": cachedir,
-            "keepcache": 0,
-            "gpgcheck": 0,
-            "plugins": 0,
-            "reposdir": "",
-            "tsflags": "nodocs"}
+    dnfbase = dnf.Base()
+    conf = dnfbase.conf
+    conf.logdir = logdir
+    conf.cachedir = cachedir
+
+    # Turn off logging to the console
+    conf.debuglevel = 10
+    conf.errorlevel = 0
+    dnfbase.logging.setup_from_dnf_conf(conf)
+
+    conf.releasever = releasever
+    conf.installroot = installroot
+    conf.prepend_installroot('persistdir')
+    conf.tsflags.append('nodocs')
 
     if proxy:
-        data["proxy"] = proxy
+        conf.proxy = proxy
 
-    if excludepkgs:
-        data["exclude"] = " ".join(excludepkgs)
-
-    c.add_section(section)
-    map(lambda (key, value): c.set(section, key, value), data.items())
-
-    # add the main repository - the first repository from list
-    section = "lorax-repo"
-    data = {"name": "lorax repo",
-            "baseurl": repositories[0],
-            "enabled": 1}
-
-    c.add_section(section)
-    map(lambda (key, value): c.set(section, key, value), data.items())
-
-    # add the extra repositories
-    for n, extra in enumerate(repositories[1:], start=1):
-        section = "lorax-extra-repo-{0:d}".format(n)
-        data = {"name": "lorax extra repo {0:d}".format(n),
-                "baseurl": extra,
-                "enabled": 1}
-
-        c.add_section(section)
-        map(lambda (key, value): c.set(section, key, value), data.items())
+    # add the repositories
+    for i, r in enumerate(repositories):
+        if "SRPM" in r or "srpm" in r:
+            log.info("Skipping source repo: %s" % r)
+            continue
+        repo_name = "lorax-repo-%d" % i
+        repo = dnf.repo.Repo(repo_name, cachedir)
+        repo.baseurl = [r]
+        if proxy:
+            repo.proxy = proxy
+        repo.enable()
+        dnfbase.repos.add(repo)
+        log.info("Added '%s': %s", repo_name, r)
+        log.info("Fetching metadata...")
+        try:
+            repo.load()
+        except dnf.exceptions.RepoError as e:
+            log.error("Error fetching metadata for %s: %s", repo_name, e)
+            return None
 
     # add the mirrorlists
-    for n, mirror in enumerate(mirrorlists, start=1):
-        section = "lorax-mirrorlist-{0:d}".format(n)
-        data = {"name": "lorax mirrorlist {0:d}".format(n),
-                "mirrorlist": mirror,
-                "enabled": 1 }
+    for i, r in enumerate(mirrorlists):
+        if "SRPM" in r or "srpm" in r:
+            log.info("Skipping source repo: %s" % r)
+            continue
+        repo_name = "lorax-mirrorlist-%d" % i
+        repo = dnf.repo.Repo(repo_name, cachedir)
+        repo.mirrorlist = r
+        if proxy:
+            repo.proxy = proxy
+        repo.enable()
+        dnfbase.repos.add(repo)
+        log.info("Added '%s': %s", repo_name, r)
+        log.info("Fetching metadata...")
+        try:
+            repo.load()
+        except dnf.exceptions.RepoError as e:
+            log.error("Error fetching metadata for %s: %s", repo_name, e)
+            return None
 
-        c.add_section(section)
-        map(lambda (key, value): c.set(section, key, value), data.items())
+    dnfbase.fill_sack(load_system_repo=False)
+    dnfbase.read_comps()
 
-    # write the yum configuration file
-    with open(yumconf, "w") as f:
-        c.write(f)
-
-    # create the yum base object
-    yb = yum.YumBase()
-
-    yb.preconf.fn = yumconf
-    yb.preconf.root = installroot
-    #yb.repos.setCacheDir(cachedir)
-
-    # Turn on as much yum logging as we can
-    yb.preconf.debuglevel = 6
-    yb.preconf.errorlevel = 6
-    yb.logger.setLevel(logging.DEBUG)
-    yb.verbose_logger.setLevel(logging.DEBUG)
-
-    return yb
+    return dnfbase
 
 
 if __name__ == "__main__":
