@@ -102,6 +102,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Thu Feb 12 2015 Brian C. Lane <bcl@redhat.com> 23.0-1
+- Bump version to 23.0 (bcl@redhat.com)
+- os-release moved to /usr/lib (#1191713) (bcl@redhat.com)
+- Use /usr/bin/python2 in scripts (bcl@redhat.com)
+- Add bridge-utils (#1188812) (bcl@redhat.com)
+
 * Fri Feb 06 2015 Brian C. Lane <bcl@redhat.com> 22.4-1
 - livemedia-creator: Add --timeout option to cancel install after X minutes
   (bcl@redhat.com)
