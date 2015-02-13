@@ -8,7 +8,11 @@ Summary:        Tool for creating the anaconda install images
 Group:          Applications/System
 License:        GPLv2+
 URL:            https://github.com/rhinstaller/lorax
-Source0:        https://github.com/rhinstaller/%{name}/archive/%{name}-${version}-%{release}.tar.gz
+# To generate Source0 do:
+# git clone https://github.com/rhinstaller/lorax
+# git checkout -b archive-branch lorax-%%{version}-%%{release}
+# tito build --tgz
+Source0:        %{name}-%{version}.tar.gz
 
 BuildRequires:  python2-devel
 
@@ -76,7 +80,7 @@ including live isos and disk images. It can use libvirtd for the install, or
 Anaconda's image install feature.
 
 %prep
-%setup -q
+%setup -q -n %{name}-%{version}
 
 %build
 
