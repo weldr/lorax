@@ -156,5 +156,8 @@ installpkg gdisk hexedit sg3_utils
 ## yum plugins
 installpkg yum-plugin-fastestmirror yum-langpacks
 
+## satisfy libnotify's desktop-notification-daemon with the least crazy option
+installpkg notification-daemon
+
 ## actually install all the requested packages
 run_pkg_transaction
