@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        23.0
+Version:        23.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -106,6 +106,16 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Feb 17 2015 Brian C. Lane <bcl@redhat.com> 23.1-1
+- Skip using srpm repos (bcl@redhat.com)
+- Drop the dnf Base object deletion code and use reset (bcl@redhat.com)
+- Get the log directory from the configfile (bcl@redhat.com)
+- lorax: Add --cachedir, --force and --workdir cmdline options (bcl@redhat.com)
+- Cleanup help alignment (bcl@redhat.com)
+- dnf: remove files from installed packages (bcl@redhat.com)
+- Switch lorax to use dnf instead of yum (bcl@redhat.com)
+- Fix Source0 for use with github (bcl@redhat.com)
+
 * Thu Feb 12 2015 Brian C. Lane <bcl@redhat.com> 23.0-1
 - Bump version to 23.0 (bcl@redhat.com)
 - os-release moved to /usr/lib (#1191713) (bcl@redhat.com)
