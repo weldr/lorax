@@ -37,7 +37,7 @@ Requires:       squashfs-tools >= 4.2
 Requires:       util-linux
 Requires:       xz
 Requires:       pigz
-Requires:       pykickstart
+Requires:       python-kickstart
 Requires:       dracut >= 030
 Requires:       dnf
 
