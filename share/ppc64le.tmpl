@@ -3,7 +3,7 @@
 configdir="tmp/config_files/ppc"
 BOOTDIR="ppc"
 GRUBDIR="boot/grub"
-LIVEDIR="LiveOS"
+STAGE2IMG="images/install.img"
 LORAXDIR="usr/share/lorax/"
 
 ## NOTE: yaboot freaks out and stops parsing its config if it sees a '\',
@@ -16,9 +16,9 @@ isolabel = ''.join(ch if ch.isalnum() else '_' for ch in isolabel)
 rootarg = ""
 %>
 
-mkdir ${LIVEDIR}
-install ${runtime_img} ${LIVEDIR}/squashfs.img
-treeinfo stage2 mainimage ${LIVEDIR}/squashfs.img
+mkdir images
+install ${runtime_img} ${STAGE2IMG}
+treeinfo stage2 mainimage ${STAGE2IMG}
 
 ## install the bootloaders
 ##   ppc/chrp: for normal PPC systems.
@@ -83,7 +83,7 @@ runcmd mkisofs -v -U -J -R -T \
         -no-desktop -allow-multidot -graft-points \
         ${BOOTDIR}=${outroot}/${BOOTDIR} \
         ${GRUBDIR}=${outroot}/${GRUBDIR} \
-        ${LIVEDIR}=${outroot}/${LIVEDIR} ${imggraft}
+        ${STAGE2IMG}=${outroot}/${STAGE2IMG} ${imggraft}
 
 %for kernel in kernels:
     treeinfo images-${kernel.arch} boot.iso images/boot.iso

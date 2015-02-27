@@ -1,11 +1,11 @@
-<%page args="kernels, runtime_img, basearch, outroot, product, isolabel"/>
+<%page args="kernels, runtime_img, runtime_base, basearch, outroot, product, isolabel"/>
 <%
 configdir="tmp/config_files/x86"
 SYSLINUXDIR="usr/share/syslinux"
 PXEBOOTDIR="images/pxeboot"
+STAGE2IMG="images/install.img"
 BOOTDIR="isolinux"
 KERNELDIR=PXEBOOTDIR
-LIVEDIR="LiveOS"
 LORAXDIR="usr/share/lorax/"
 
 ## Don't allow spaces or escape characters in the iso label
@@ -15,9 +15,9 @@ def valid_label(ch):
 isolabel = ''.join(ch if valid_label(ch) else '-' for ch in isolabel)
 %>
 
-mkdir ${LIVEDIR}
-install ${runtime_img} ${LIVEDIR}/squashfs.img
-treeinfo stage2 mainimage ${LIVEDIR}/squashfs.img
+mkdir images
+install ${runtime_img} ${STAGE2IMG}
+treeinfo stage2 mainimage images/${runtime_base}
 
 ## install bootloader and config files
 mkdir ${BOOTDIR}
@@ -102,9 +102,9 @@ runcmd mkisofs -o ${outroot}/images/boot.iso \
        -b ${BOOTDIR}/isolinux.bin -c ${BOOTDIR}/boot.cat \
        -boot-load-size 4 -boot-info-table -no-emul-boot \
        ${efiargs} -R -J -V '${isolabel}' -T -graft-points \
+       ${STAGE2IMG}=${outroot}/${STAGE2IMG} \
        ${BOOTDIR}=${outroot}/${BOOTDIR} \
        ${KERNELDIR}=${outroot}/${KERNELDIR} \
-       ${LIVEDIR}=${outroot}/${LIVEDIR} \
        ${efigraft} ${imggraft}
 runcmd isohybrid ${efihybrid} ${outroot}/images/boot.iso
 treeinfo images-${basearch} boot.iso images/boot.iso

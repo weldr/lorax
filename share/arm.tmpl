@@ -5,7 +5,7 @@ PXEBOOTDIR="images/pxeboot"
 DTBDIR="images/pxeboot/dtb"
 BOOTDIR="boot"
 KERNELDIR=PXEBOOTDIR
-LIVEDIR="LiveOS"
+STAGE2IMG="images/install.img"
 LORAXDIR="usr/share/lorax/"
 
 # different platforms use different kernel load addresses.
@@ -19,9 +19,9 @@ platforms = ""
 delimiter = ''
 %>
 
-mkdir ${LIVEDIR}
-install ${runtime_img} ${LIVEDIR}/squashfs.img
-treeinfo stage2 mainimage ${LIVEDIR}/squashfs.img
+mkdir images
+install ${runtime_img} ${STAGE2IMG}
+treeinfo stage2 mainimage ${STAGE2IMG}
 
 mkdir ${DTBDIR}
 install boot/dtb-*/*dtb  ${DTBDIR}/
