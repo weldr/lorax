@@ -3,13 +3,13 @@
 configdir="tmp/config_files/aarch64"
 PXEBOOTDIR="images/pxeboot"
 KERNELDIR=PXEBOOTDIR
-LIVEDIR="LiveOS"
+STAGE2IMG="images/install.img"
 LORAXDIR="usr/share/lorax/"
 %>
 
-mkdir ${LIVEDIR}
-install ${runtime_img} ${LIVEDIR}/squashfs.img
-treeinfo stage2 mainimage ${LIVEDIR}/squashfs.img
+mkdir images
+install ${runtime_img} ${STAGE2IMG}
+treeinfo stage2 mainimage ${STAGE2IMG}
 
 ## install kernels
 mkdir ${KERNELDIR}
@@ -52,7 +52,7 @@ mkdir ${KERNELDIR}
 runcmd mkisofs -o ${outroot}/images/boot.iso \
        ${efiargs} -R -J -V '${isolabel}' -T -graft-points \
        ${KERNELDIR}=${outroot}/${KERNELDIR} \
-       ${LIVEDIR}=${outroot}/${LIVEDIR} \
+       ${STAGE2IMG}=${outroot}/${STAGE2IMG} \
        ${efigraft} ${imggraft}
 treeinfo images-${basearch} boot.iso images/boot.iso
 %endif
