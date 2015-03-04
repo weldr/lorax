@@ -533,7 +533,63 @@ class LoraxTemplateRunner(object):
                              self._getsize(*remove)/1024, self._getsize(*filelist)/1024)
             self.remove(*remove)
         else:
-            logger.debug("%s: no files to remove!", cmd)
+            logger.debug("removefrom %s: no files to remove!", cmd)
+
+    def removekmod(self, *globs):
+        '''
+        removekmod GLOB [GLOB...] [--allbut] KEEPGLOB [KEEPGLOB...]
+          Remove all files and directories matching the given file globs from the kernel
+          modules directory.
+
+          If '--allbut' is used, all the files from the modules will be removed *except*
+          the ones which match the file globs. There must be at least one initial GLOB
+          to search and one KEEPGLOB to keep. The KEEPGLOB is expanded to be *KEEPGLOB*
+          so that it will match anywhere in the path.
+
+          This only removes files from under /lib/modules/*/kernel/
+
+          Examples:
+            removekmod sound drivers/media drivers/hwmon drivers/video
+            removekmod drivers/char --allbut virtio_console hw_random
+        '''
+        cmd = " ".join(globs)
+        if "--allbut" in globs:
+            idx = globs.index("--allbut")
+            if idx == 0:
+                raise ValueError("removekmod needs at least one GLOB before --allbut")
+
+            # Apply keepglobs anywhere they appear in the path
+            keepglobs = globs[idx+1:]
+            if len(keepglobs) == 0:
+                raise ValueError("removekmod needs at least one GLOB after --allbut")
+
+            globs = globs[:idx]
+        else:
+            # Nothing to keep
+            keepglobs = []
+
+        filelist = set()
+        for g in globs:
+            for top_dir in rglob(self._out("/lib/modules/*/kernel/"+g)):
+                for root, _dirs, files in os.walk(top_dir):
+                    filelist.update(root+"/"+f for f in files)
+
+        # Remove anything matching keepglobs from the list
+        matches = set()
+        for g in keepglobs:
+            globs_re = re.compile(fnmatch.translate("*"+g+"*"))
+            m = filter(globs_re.match, filelist)
+            if m:
+                matches.update(m)
+            else:
+                logger.debug("removekmod %s: no files matched!", g)
+        remove_files = filelist.difference(matches)
+
+        if remove_files:
+            logger.debug("removekmod: removing %d files", len(remove_files))
+            map(remove, remove_files)
+        else:
+            logger.debug("removekmod %s: no files to remove!", cmd)
 
     def createaddrsize(self, addr, src, dest):
         '''

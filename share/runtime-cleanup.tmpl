@@ -74,36 +74,21 @@ remove /var/lib/rpm/* /var/lib/yum
 remove /usr/share/icons/*/icon-theme.cache
 
 ## clean up kernel modules
-<%
-removekmods = """
-sound drivers/media drivers/hwmon drivers/video
-net/atm net/bluetooth net/sched net/sctp
-net/rds net/l2tp net/decnet net/netfilter net/ipv4 net/ipv6
-drivers/watchdog drivers/target drivers/rtc drivers/input/joystick
-drivers/bluetooth drivers/hid drivers/edac
-drivers/usb/serial drivers/usb/host drivers/usb/misc
-fs/ocfs2 fs/ceph fs/nfsd fs/ubifs fs/nilfs2
-arch/x86/kvm
-"""
-%>
-%for kmodpath in removekmods.split():
-    remove lib/modules/*/kernel/${kmodpath}
-%endfor
-remove lib/modules/*/{build,source,*.map}
+removekmod sound drivers/media drivers/hwmon drivers/video \
+           net/atm net/bluetooth net/sched net/sctp \
+           net/rds net/l2tp net/decnet net/netfilter net/ipv4 net/ipv6 \
+           drivers/watchdog drivers/target drivers/rtc drivers/input/joystick \
+           drivers/bluetooth drivers/hid drivers/edac \
+           drivers/usb/serial drivers/usb/host drivers/usb/misc \
+           fs/ocfs2 fs/ceph fs/nfsd fs/ubifs fs/nilfs2 \
+           arch/x86/kvm
 ## Need to keep virtio_console.ko and ipmi stuff in drivers/char
 ## Also keep virtio-rng so that the installer can get sufficient randomness for
 ## LUKS setup.
-runcmd chroot ${root} find /lib/modules \
-                        -regex ".*/kernel/drivers/char/.*" \
-                        \! -name virtio_console.ko\* \
-                        \! -name hw_random \
-                        \! -name virtio-rng.ko\* \
-                        \! -name ipmi\* \
-                        -delete
-runcmd chroot ${root} find /lib/modules \
-                        -regex ".*/kernel/drivers/staging/.*" \
-                        \! -name zram\* \
-                        -delete
+removekmod drivers/char --allbut virtio_console hw_random \
+                                  virtio-rng ipmi
+removekmod drivers/staging --allbut zram
+remove lib/modules/*/{build,source,*.map}
 ## NOTE: depmod gets re-run after cleanup finishes
 
 ## remove unused themes, theme engines, icons, etc.
