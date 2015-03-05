@@ -633,36 +633,29 @@ class LoraxTemplateRunner(object):
                 raise ValueError("removekmod needs at least one GLOB after --allbut")
 
             globs = globs[:idx]
-
-            # --allbut needs the full list of files to match keepglobs against, gather up every
-            # file under each glob pattern's results.
-            filelist = set()
-            for g in globs:
-                for top_dir in rglob(self._out("/lib/modules/*/kernel/"+g)):
-                    for root, _dirs, files in os.walk(top_dir):
-                        filelist.update(root+"/"+f for f in files)
-
-            # Remove anything matching keepglobs from the list
-            matches = set()
-            for g in keepglobs:
-                globs_re = re.compile(fnmatch.translate("*"+g+"*"))
-                m = filter(globs_re.match, filelist)
-                if m:
-                    matches.update(m)
-                else:
-                    logger.debug("removekmod %s: no files matched!", g)
-            remove_files = filelist.difference(matches)
         else:
-            # Gather glob matches, the full list isn't needed since it will recursively remove
-            # directory matches.
+            # Nothing to keep
             keepglobs = []
-            filelist = set()
-            for g in globs:
-                filelist.update(rglob(self._out("/lib/modules/*/kernel/"+g)))
-            remove_files = filelist
+
+        filelist = set()
+        for g in globs:
+            for top_dir in rglob(self._out("/lib/modules/*/kernel/"+g)):
+                for root, _dirs, files in os.walk(top_dir):
+                    filelist.update(root+"/"+f for f in files)
+
+        # Remove anything matching keepglobs from the list
+        matches = set()
+        for g in keepglobs:
+            globs_re = re.compile(fnmatch.translate("*"+g+"*"))
+            m = filter(globs_re.match, filelist)
+            if m:
+                matches.update(m)
+            else:
+                logger.debug("removekmod %s: no files matched!", g)
+        remove_files = filelist.difference(matches)
 
         if remove_files:
-            logger.debug("removekmod: %s", remove_files)
+            logger.debug("removekmod: removing %d files", len(remove_files))
             map(remove, remove_files)
         else:
             logger.debug("removekmod %s: no files to remove!", cmd)
