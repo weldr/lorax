@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        23.2
+Version:        23.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -106,6 +106,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Mar 06 2015 Brian C. Lane <bcl@redhat.com> 23.3-1
+- Turn off ldconfig (bcl@redhat.com)
+- Add removekmod template command (bcl@redhat.com)
+- Move stage2 to images/install.img (#815275) (bcl@redhat.com)
+
 * Fri Feb 27 2015 Brian C. Lane <bcl@redhat.com> 23.2-1
 - Update pykickstart requirement (bcl@redhat.com)
 - Explicitly install notification-daemon (dshea@redhat.com)
