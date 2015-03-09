@@ -241,8 +241,10 @@ class IsoMountpoint(object):
     """
     Mount the iso and check to make sure the vmlinuz and initrd.img files exist
 
-    Also check the iso for a LiveOS directory and set a flag and extract the
+    Also check the iso for a a stage2 image and set a flag and extract the
     iso's label.
+
+    stage2 can be either LiveOS/squashfs.img or images/install.img
     """
     def __init__(self, iso_path, initrd_path=None):
         """
@@ -255,7 +257,7 @@ class IsoMountpoint(object):
         initrd.img than the iso has. The iso is still used for stage2.
 
         self.kernel and self.initrd point to the kernel and initrd.
-        self.liveos is set to True if there is a LiveOS/ directory
+        self.stage2 is set to True if there is a stage2 image.
         self.repo is the path to the mounted iso if there is a /repodata dir.
         """
         self.label = None
@@ -274,7 +276,8 @@ class IsoMountpoint(object):
             self.repo = self.mount_dir
         else:
             self.repo = None
-        self.liveos = os.path.isdir(self.mount_dir+"/LiveOS")
+        self.stage2 = os.path.exists(self.mount_dir+"/LiveOS/squashfs.img") or \
+                      os.path.exists(self.mount_dir+"/images/install.img")
 
         try:
             for f in [self.kernel, self.initrd]:
@@ -360,7 +363,7 @@ class VirtualInstall(object):
         args.append("--disk")
         args.append(disk_opts)
 
-        if iso.liveos:
+        if iso.stage2:
             disk_opts = "path={0},device=cdrom,readonly=on,shareable=on".format(iso.iso_path)
             args.append("--disk")
             args.append(disk_opts)
@@ -370,7 +373,7 @@ class VirtualInstall(object):
             extra_args += " inst.cmdline"
         if kernel_args:
             extra_args += " "+kernel_args
-        if iso.liveos:
+        if iso.stage2:
             extra_args += " stage2=live:CDLABEL={0}".format(udev_escape(iso.label))
         args.append("--extra-args")
         args.append(extra_args)
