@@ -308,6 +308,21 @@ class IsoMountpoint(object):
                 return
 
 
+class FakeDNF(object):
+    """
+    A minimal DNF object suitable for passing to RuntimeBuilder
+
+    lmc uses RuntimeBuilder to run the arch specific iso creation
+    templates, so the the installroot config value is the important part of
+    this. Everything else should be a nop.
+    """
+    def __init__(self, conf):
+        self.conf = conf
+
+    def reset(self):
+        pass
+
+
 class VirtualInstall(object):
     """
     Run virt-install using an iso and a kickstart
@@ -550,8 +565,8 @@ def make_runtime(opts, mount_dir, work_dir):
     """
     kernel_arch = get_arch(mount_dir)
 
-    # Fake yum object
-    fake_yum = DataHolder(conf=DataHolder(installroot=mount_dir))
+    # Fake dnf  object
+    fake_dbo = FakeDNF(conf=DataHolder(installroot=mount_dir))
     # Fake arch with only basearch set
     arch = ArchData(kernel_arch)
     # TODO: Need to get release info from someplace...
@@ -562,7 +577,7 @@ def make_runtime(opts, mount_dir, work_dir):
     # symlink mount_dir/images to work_dir/images so we don't run out of space
     os.makedirs(joinpaths(work_dir, "images"))
 
-    rb = RuntimeBuilder(product, arch, fake_yum)
+    rb = RuntimeBuilder(product, arch, fake_dbo)
     log.info("Creating runtime")
     rb.create_runtime(joinpaths(work_dir, RUNTIME), size=None)
 
