@@ -39,7 +39,7 @@ Requires:       xz
 Requires:       pigz
 Requires:       python-kickstart
 Requires:       dracut >= 030
-Requires:       dnf
+Requires:       python-dnf
 
 %if 0%{?fedora}
 # Fedora specific deps
