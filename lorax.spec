@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        23.3
+Version:        23.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -106,6 +106,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Mar 13 2015 Brian C. Lane <bcl@redhat.com> 23.4-1
+- Require python-dnf so that we get the python2 version (bcl@redhat.com)
+- livemedia-creator: Fix up fake yum object for DNF change (bcl@redhat.com)
+- Update logic for stage2 detection on boot.iso (bcl@redhat.com)
+
 * Fri Mar 06 2015 Brian C. Lane <bcl@redhat.com> 23.3-1
 - Turn off ldconfig (bcl@redhat.com)
 - Add removekmod template command (bcl@redhat.com)
