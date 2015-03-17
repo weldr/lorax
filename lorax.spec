@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        22.5
+Version:        22.6
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -106,6 +106,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Mon Mar 16 2015 Brian C. Lane <bcl@redhat.com> 22.6-1
+- Don't erase /usr/lib/os.release.d (sgallagh@redhat.com)
+- Fix Source0 for use with github (bcl@redhat.com)
+
 * Thu Feb 12 2015 Brian C. Lane <bcl@redhat.com> 22.5-1
 - os-release moved to /usr/lib (#1191713) (bcl@redhat.com)
 - Use /usr/bin/python2 in scripts (bcl@redhat.com)
