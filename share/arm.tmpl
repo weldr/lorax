@@ -112,5 +112,12 @@ mkdir ${KERNELDIR}
 treeinfo ${basearch} platforms ${platforms}
 
 
+# Inherit iso-graft/ if it exists from external templates
+<%
+    import os
+    if os.path.exists(workdir + "/iso-graft"):
+        imggraft += " " + workdir + "/iso-graft"
+%>
+
 ## FIXME: ARM may need some extra boot config
 

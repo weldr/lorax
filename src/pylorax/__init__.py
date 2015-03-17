@@ -145,7 +145,10 @@ class Lorax(BaseLoraxClass):
             domacboot=False, doupgrade=True, remove_temp=False,
             size=2,
             add_templates=None,
-            add_template_vars=None):
+            add_template_vars=None,
+            add_arch_templates=None,
+            add_arch_template_vars=None,
+            template_tempdir=None):
 
         assert self._configured
 
@@ -298,7 +301,10 @@ class Lorax(BaseLoraxClass):
                                   inroot=installroot, outroot=self.outputdir,
                                   runtime=runtime, isolabel=isolabel,
                                   domacboot=domacboot, doupgrade=doupgrade,
-                                  templatedir=templatedir)
+                                  templatedir=templatedir,
+                                  add_templates=add_arch_templates,
+                                  add_template_vars=add_arch_template_vars,
+                                  workdir=self.workdir)
 
         logger.info("rebuilding initramfs images")
         dracut_args = ["--xz", "--install", "/.buildstamp"]
