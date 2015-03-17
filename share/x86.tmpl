@@ -97,6 +97,13 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
     %endif
 %endfor
 
+# Inherit iso-graft/ if it exists from external templates
+<%
+    import os
+    if os.path.exists(workdir + "/iso-graft"):
+        imggraft += " " + workdir + "/iso-graft"
+%>
+
 ## make boot.iso
 runcmd mkisofs -o ${outroot}/images/boot.iso \
        -b ${BOOTDIR}/isolinux.bin -c ${BOOTDIR}/boot.cat \

@@ -136,10 +136,16 @@ def main(args):
     optional.add_option("--force", default=False, action="store_true",
                         help="Run even when the destination directory exists")
     optional.add_option("--add-template", dest="add_templates",
-                        action="append", help="Additional template to execute",
+                        action="append", help="Additional template for runtime image",
                         default=[])
     optional.add_option("--add-template-var", dest="add_template_vars",
-                        action="append", help="Set variable for additional templates",
+                        action="append", help="Set variable for runtime image template",
+                        default=[])
+    optional.add_option("--add-arch-template", dest="add_arch_templates",
+                        action="append", help="Additional template for architecture-specific image",
+                        default=[])
+    optional.add_option("--add-arch-template-var", dest="add_arch_template_vars",
+                        action="append", help="Set variable for architecture-specific image",
                         default=[])
 
     # add the option groups to the parser
@@ -213,6 +219,13 @@ def main(args):
             raise ValueError("Missing '=' for key=value in " % kv)
         parsed_add_template_vars[k] = v
 
+    parsed_add_arch_template_vars = {}
+    for kv in opts.add_arch_template_vars:
+        k, t, v = kv.partition('=')
+        if t == '':
+            raise ValueError("Missing '=' for key=value in " % kv)
+        parsed_add_arch_template_vars[k] = v
+
     # run lorax
     lorax = pylorax.Lorax()
     lorax.configure(conf_file=opts.config)
@@ -224,6 +237,8 @@ def main(args):
               installpkgs=opts.installpkgs,
               add_templates=opts.add_templates,
               add_template_vars=parsed_add_template_vars,
+              add_arch_templates=opts.add_arch_templates,
+              add_arch_template_vars=parsed_add_arch_template_vars,
               remove_temp=True)
 
 
