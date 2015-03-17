@@ -172,16 +172,20 @@ class RuntimeBuilder(object):
 class TreeBuilder(object):
     '''Builds the arch-specific boot images.
     inroot should be the installtree root (the newly-built runtime dir)'''
-    def __init__(self, product, arch, inroot, outroot, runtime, isolabel, domacboot=True, doupgrade=True, templatedir=None):
+    def __init__(self, product, arch, inroot, outroot, runtime, isolabel, domacboot=True, doupgrade=True, templatedir=None, add_templates=None, add_template_vars=None, workdir=None):
+
         # NOTE: if you pass an arg named "runtime" to a mako template it'll
         # clobber some mako internal variables - hence "runtime_img".
         self.vars = DataHolder(arch=arch, product=product, runtime_img=runtime,
                                runtime_base=basename(runtime),
                                inroot=inroot, outroot=outroot,
                                basearch=arch.basearch, libdir=arch.libdir,
-                               isolabel=isolabel, udev=udev_escape, domacboot=domacboot, doupgrade=doupgrade)
+                               isolabel=isolabel, udev=udev_escape, domacboot=domacboot, doupgrade=doupgrade,
+                               workdir=workdir)
         self._runner = LoraxTemplateRunner(inroot, outroot, templatedir=templatedir)
         self._runner.defaults = self.vars
+        self.add_templates = add_templates or []
+        self.add_template_vars = add_template_vars or {}
         self.templatedir = templatedir
         self.treeinfo_data = None
 
@@ -230,6 +234,8 @@ class TreeBuilder(object):
 
     def build(self):
         templatefile = templatemap[self.vars.arch.basearch]
+        for tmpl in self.add_templates:
+            self._runner.run(tmpl, **self.add_template_vars)
         self._runner.run(templatefile, kernels=self.kernels)
         self.treeinfo_data = self._runner.results.treeinfo
         self.implantisomd5()

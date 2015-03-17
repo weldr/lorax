@@ -72,6 +72,13 @@ mkdir images/
     %endif
 %endfor
 
+# Inherit iso-graft/ if it exists from external templates
+<%
+    import os
+    if os.path.exists(workdir + "/iso-graft"):
+        imggraft += " " + workdir + "/iso-graft"
+%>
+
 ## make boot.iso
 runcmd mkisofs -v -U -J -R -T \
         -o ${outroot}/images/boot.iso \

@@ -123,5 +123,12 @@ treeinfo ${basearch} platforms ${platforms}
     %endif
 %endfor
 
+# Inherit iso-graft/ if it exists from external templates
+<%
+    import os
+    if os.path.exists(workdir + "/iso-graft"):
+        imggraft += " " + workdir + "/iso-graft"
+%>
+
 ## FIXME: ARM may need some extra boot config
 
