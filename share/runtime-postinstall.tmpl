@@ -41,8 +41,7 @@ systemctl disable systemd-readahead-collect.service \
 ## /usr/lib/systemd rather than /etc/systemd), so we have to mask them.
 systemctl mask fedora-configure.service fedora-loadmodules.service \
                fedora-autorelabel.service fedora-autorelabel-mark.service \
-               fedora-wait-storage.service media.mount \
-               ldconfig.service
+               fedora-wait-storage.service media.mount
 
 ## Make logind activate anaconda-shell@.service on switch to empty VT
 symlink anaconda-shell@.service lib/systemd/system/autovt@.service
