@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        22.6
+Version:        22.7
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -106,6 +106,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Mar 20 2015 Brian C. Lane <bcl@redhat.com> 22.7-1
+- Include ld.so.conf (#1204031) (bcl@redhat.com)
+- Keep logitech hid drivers (#1199770) (bcl@redhat.com)
+
 * Mon Mar 16 2015 Brian C. Lane <bcl@redhat.com> 22.6-1
 - Don't erase /usr/lib/os.release.d (sgallagh@redhat.com)
 - Fix Source0 for use with github (bcl@redhat.com)
