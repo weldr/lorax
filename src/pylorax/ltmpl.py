@@ -40,6 +40,7 @@ import sys, traceback
 import struct
 import dnf
 import multiprocessing
+import Queue
 
 class LoraxTemplate(object):
     def __init__(self, directories=None):
@@ -504,6 +505,25 @@ class LoraxTemplateRunner(object):
             else:
                 logger.debug("removepkg %s: no files to remove!", p)
 
+    def get_token_checked(self, process, queue):
+        """Try to get token from queue checking that process is still alive"""
+
+        try:
+            # wait at most a minute for the token
+            (token, msg) = queue.get(timeout=60)
+        except Queue.Empty:
+            if process.is_alive():
+                try:
+                    # process still alive, give it 2 minutes more
+                    (token, msg) = queue.get(timeout=120)
+                except Queue.Empty:
+                    # waited for 3 minutes and got nothing
+                    raise Exception("The transaction process got stuck somewhere (no message from it in 3 minutes)")
+            else:
+                raise Exception("The transaction process has ended abruptly")
+
+        return (token, msg)
+
     def run_pkg_transaction(self):
         '''
         run_pkg_transaction
@@ -543,12 +563,14 @@ class LoraxTemplateRunner(object):
         msgout = output.LoraxOutput()
         process = multiprocessing.Process(target=do_transaction, args=(self.dbo, queue))
         process.start()
-        (token, msg) = queue.get()
+        (token, msg) = self.get_token_checked(process, queue)
+
         while token not in ('post', 'quit'):
             if token == 'install':
                 logging.info("%s", msg)
                 msgout.writeline(msg)
-            (token, msg) = queue.get()
+            (token, msg) = self.get_token_checked(process, queue)
+
         if token == 'quit':
             logger.error("Transaction failed.")
             raise Exception("Transaction failed")
