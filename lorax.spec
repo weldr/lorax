@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        22.8
+Version:        22.9
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -106,6 +106,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Thu Apr 02 2015 Brian C. Lane <bcl@redhat.com> 22.9-1
+- Include cryptsetup in the image (#1208214) (bcl@redhat.com)
+
 * Fri Mar 27 2015 Brian C. Lane <bcl@redhat.com> 22.8-1
 - livemedia-creator: Clean up resultdir handling (bcl@redhat.com)
 - Add ability for external templates to graft content into boot.iso
