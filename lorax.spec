@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        23.7
+Version:        23.8
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -106,6 +106,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Thu Apr 02 2015 Brian C. Lane <bcl@redhat.com> 23.8-1
+- Include cryptsetup in the image (#1208214) (bcl@redhat.com)
+
 * Fri Mar 27 2015 Brian C. Lane <bcl@redhat.com> 23.7-1
 - Check that the transaction process is still alive (vpodzime@redhat.com)
 - livemedia-creator: Clean up resultdir handling (bcl@redhat.com)
