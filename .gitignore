@@ -1,2 +1,3 @@
 *.pyc
 src/pylorax/version.py*
+_build/
