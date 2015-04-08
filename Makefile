@@ -31,6 +31,9 @@ clean:
 tag:
 	git tag -f $(TAG)
 
+docs:
+	$(MAKE) -C docs apidoc
+
 archive:
 	@git archive --format=tar --prefix=$(PKGNAME)-$(VERSION)/ $(TAG) > $(PKGNAME)-$(VERSION).tar
 	@gzip $(PKGNAME)-$(VERSION).tar
