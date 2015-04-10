@@ -56,6 +56,7 @@ class LoraxTemplate(object):
         try:
             textbuf = template.render(**variables)
         except:
+            logger.error("Problem rendering %s (%s):", template_file, variables)
             logger.error(text_error_template().render())
             raise
 
