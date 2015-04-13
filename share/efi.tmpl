@@ -1,4 +1,4 @@
-<%page args="configdir, KERNELDIR, efiarch, isolabel"/>
+<%page args="configdir, KERNELDIR, efiarch32, efiarch64, isolabel"/>
 <%
 from string import lower
 EFIBOOTDIR="EFI/BOOT"
@@ -8,13 +8,20 @@ APPLE_EFI_DISKNAME=inroot+"/usr/share/pixmaps/bootloader/fedora-media.vol"
 
 mkdir ${EFIBOOTDIR}
 mkdir ${EFIBOOTDIR}/fonts/
-install boot/efi/EFI/*/shim.efi ${EFIBOOTDIR}/BOOT${efiarch}.EFI
-install boot/efi/EFI/*/MokManager.efi ${EFIBOOTDIR}/
-install boot/efi/EFI/*/gcd${efiarch|lower}.efi ${EFIBOOTDIR}/grub${efiarch|lower}.efi
-install boot/efi/EFI/*/fonts/unicode.pf2 ${EFIBOOTDIR}/fonts/
 %if exists("usr/share/shim/lockdown.efi"):
-    install usr/share/shim/lockdown.efi ${EFIBOOTDIR}/
+	install usr/share/shim/lockdown.efi ${EFIBOOTDIR}/
 %endif
+%if efiarch64:
+install boot/efi/EFI/*/shim${efiarch64|lower}.efi ${EFIBOOTDIR}/BOOT${efiarch64}.EFI
+install boot/efi/EFI/*/mm${efiarch64|lower}.efi ${EFIBOOTDIR}/
+install boot/efi/EFI/*/gcd${efiarch64|lower}.efi ${EFIBOOTDIR}/grub${efiarch64|lower}.efi
+%endif
+%if efiarch32:
+install boot/efi/EFI/*/shim${efiarch32|lower}.efi ${EFIBOOTDIR}/BOOT${efiarch32}.EFI
+install boot/efi/EFI/*/mm${efiarch32|lower}.efi ${EFIBOOTDIR}/
+install boot/efi/EFI/*/gcd${efiarch32|lower}.efi ${EFIBOOTDIR}/grub${efiarch32|lower}.efi
+%endif
+install boot/efi/EFI/*/fonts/unicode.pf2 ${EFIBOOTDIR}/fonts/
 
 ## actually make the EFI images
 ${make_efiboot("images/efiboot.img")}
@@ -50,9 +57,6 @@ ${make_efiboot("images/efiboot.img")}
         replace @ROOT@ inst.stage2=hd:LABEL=ANACONDA ${eficonf}
     %else:
         replace @ROOT@ 'inst.stage2=hd:LABEL=${isolabel|udev}' ${eficonf}
-    %endif
-    %if efiarch == 'IA32':
-        copy ${eficonf} ${EFIBOOTDIR}/BOOT.conf
     %endif
     runcmd mkefiboot ${args} ${outroot}/${EFIBOOTDIR} ${outroot}/${img}
     %if include_kernel:
