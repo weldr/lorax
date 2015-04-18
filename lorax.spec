@@ -102,9 +102,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 * Fri Apr 17 2015 Brian C. Lane <bcl@redhat.com> 19.6.52-1
 - Backport --make-ostree-live (rvykydal)
   Resolves: rhbz#1184021
+
 * Fri Jan 16 2015 Brian C. Lane <bcl@redhat.com> 19.6.51-1
 - Remove imggraft from aarch64.tmpl (bcl@redhat.com)
   Related: rhbz#1174475
+
 * Wed Jan 14 2015 Brian C. Lane <bcl@redhat.com> 19.6.50-1
 - Use gcdaa64.efi and make boot.iso on aarch64 (pjones@redhat.com)
   Resolves: rhbz#1174475
