@@ -4,6 +4,7 @@ configdir="tmp/config_files/s390"
 BOOTDIR="images"
 KERNELDIR=BOOTDIR
 INITRD_ADDRESS="0x02000000"
+LORAXDIR="usr/share/lorax/"
 # The assumption seems to be that there is only one s390 kernel, ever
 kernel = kernels[0]
 %>
@@ -31,3 +32,12 @@ createaddrsize ${INITRD_ADDRESS} ${outroot}/${BOOTDIR}/initrd.img ${outroot}/${B
 treeinfo images-${basearch} initrd.addrsize ${BOOTDIR}/initrd.addrsize
 treeinfo images-${basearch} generic.prm ${BOOTDIR}/generic.prm
 treeinfo images-${basearch} generic.ins generic.ins
+
+# Create optional product.img and updates.img
+<% imggraft=""; images=["product", "updates"] %>
+%for img in images:
+    %if exists("%s/%s/" % (LORAXDIR, img)):
+        installimg ${LORAXDIR}/${img}/ images/${img}.img
+        <% imggraft += " images/{0}.img={1}/images/{0}.img".format(img, outroot) %>
+    %endif
+%endfor
