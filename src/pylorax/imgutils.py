@@ -352,9 +352,9 @@ class PartitionMount(object):
             except CalledProcessError:
                 logger.debug(traceback.format_exc())
         if self.mount_dir:
-            logger.info("Partition mounted on {0} size={1}".format(self.mount_dir, self.mount_size))
+            logger.info("Partition mounted on %s size=%s", self.mount_dir, self.mount_size)
         else:
-            logger.debug("Unable to mount anything from {0}".format(self.disk_img))
+            logger.debug("Unable to mount anything from %s", self.disk_img)
             os.rmdir(mount_dir)
         return self
 

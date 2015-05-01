@@ -307,7 +307,7 @@ def get_dnf_base_object(installroot, repositories, mirrorlists=None,
     # add the repositories
     for i, r in enumerate(repositories):
         if "SRPM" in r or "srpm" in r:
-            log.info("Skipping source repo: %s" % r)
+            log.info("Skipping source repo: %s", r)
             continue
         repo_name = "lorax-repo-%d" % i
         repo = dnf.repo.Repo(repo_name, cachedir)
@@ -327,7 +327,7 @@ def get_dnf_base_object(installroot, repositories, mirrorlists=None,
     # add the mirrorlists
     for i, r in enumerate(mirrorlists):
         if "SRPM" in r or "srpm" in r:
-            log.info("Skipping source repo: %s" % r)
+            log.info("Skipping source repo: %s", r)
             continue
         repo_name = "lorax-mirrorlist-%d" % i
         repo = dnf.repo.Repo(repo_name, cachedir)

@@ -192,9 +192,6 @@ def main():
         sys.exit(e.code)
     except KeyboardInterrupt, e:
         print >> sys.stderr, "Aborted at user request"
-    except Exception, e:
-        print e
-        sys.exit(1)
 
 if __name__ == "__main__":
     main()
