@@ -50,7 +50,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Lorax'
-copyright = u'2015, Red Hat, Inc.'
+copyright = u'2015, Red Hat, Inc.'      # pylint: disable=redefined-builtin
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
