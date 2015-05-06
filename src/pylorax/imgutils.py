@@ -220,8 +220,8 @@ def copytree(src, dest, preserve=True):
     raises CalledProcessError if copy fails.'''
     logger.debug("copytree %s %s", src, dest)
     cp = ["cp", "-a"] if preserve else ["cp", "-R", "-L"]
-    cp += [".", os.path.abspath(dest)]
-    runcmd(cp, cwd=src)
+    cp += [join(src, "."), os.path.abspath(dest)]
+    runcmd(cp)
 
 def do_grafts(grafts, dest, preserve=True):
     '''Copy each of the items listed in grafts into dest.
