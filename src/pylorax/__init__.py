@@ -1,7 +1,7 @@
 #
 # __init__.py
 #
-# Copyright (C) 2010-2014  Red Hat, Inc.
+# Copyright (C) 2010-2015  Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ logger.addHandler(logging.NullHandler())
 
 import sys
 import os
-import ConfigParser
+import configparser
 import tempfile
 import locale
 from subprocess import CalledProcessError
@@ -39,7 +39,6 @@ import pylorax.output as output
 import dnf
 
 from pylorax.sysutils import joinpaths, remove, linktree
-from rpmUtils.arch import getBaseArch
 
 from pylorax.treebuilder import RuntimeBuilder, TreeBuilder
 from pylorax.buildstamp import BuildStamp
@@ -60,7 +59,7 @@ class ArchData(DataHolder):
     def __init__(self, buildarch):
         super(ArchData, self).__init__()
         self.buildarch = buildarch
-        self.basearch = getBaseArch(buildarch)
+        self.basearch = dnf.arch.basearch(buildarch)
         self.libdir = "lib64" if self.basearch in self.lib64_arches else "lib"
         self.bcj = self.bcj_arch.get(self.basearch)
 
@@ -81,7 +80,7 @@ class Lorax(BaseLoraxClass):
         locale.setlocale(locale.LC_ALL, 'C')
 
     def configure(self, conf_file="/etc/lorax/lorax.conf"):
-        self.conf = ConfigParser.SafeConfigParser()
+        self.conf = configparser.SafeConfigParser()
 
         # set defaults
         self.conf.add_section("lorax")
@@ -133,7 +132,7 @@ class Lorax(BaseLoraxClass):
 
         # remove some environmental variables that can cause problems with package scripts
         env_remove = ('DISPLAY', 'DBUS_SESSION_BUS_ADDRESS')
-        map(os.environ.pop, (k for k in env_remove if k in os.environ))
+        list(os.environ.pop(k) for k in env_remove if k in os.environ)
 
         self._configured = True
 

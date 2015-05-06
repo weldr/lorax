@@ -1,6 +1,6 @@
 # imgutils.py - utility functions/classes for building disk images
 #
-# Copyright (C) 2011-2014 Red Hat, Inc.
+# Copyright (C) 2011-2015 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ def compress(command, rootdir, outfile, compression="xz", compressargs=None):
     except OSError as e:
         logger.error(e)
         # Kill off any hanging processes
-        map(lambda p: p.kill(), (p for p in (find, archive, comp) if p))
+        list(p.kill() for p in (find, archive, comp) if p)
         return 1
 
 def mkcpio(rootdir, outfile, compression="xz", compressargs=None):
@@ -259,7 +259,7 @@ def estimate_size(rootdir, graft=None, fstype=None, blocksize=4096, overhead=128
         blocksize = 2048
         getsize = lambda f: os.stat(f).st_size # no symlinks, count as copies
     total = overhead*blocksize
-    dirlist = graft.values()
+    dirlist = list(graft.values())
     if rootdir:
         dirlist.append(rootdir)
     for root in dirlist:

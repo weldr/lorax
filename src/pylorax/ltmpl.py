@@ -1,7 +1,7 @@
 #
 # ltmpl.py
 #
-# Copyright (C) 2009-2014  Red Hat, Inc.
+# Copyright (C) 2009-2015  Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -40,7 +40,8 @@ import sys, traceback
 import struct
 import dnf
 import multiprocessing
-import Queue
+import queue
+import collections
 
 class LoraxTemplate(object):
     def __init__(self, directories=None):
@@ -62,17 +63,17 @@ class LoraxTemplate(object):
 
         # split, strip and remove empty lines
         lines = textbuf.splitlines()
-        lines = map(lambda line: line.strip(), lines)
-        lines = filter(lambda line: line, lines)
+        lines = [line.strip() for line in lines]
+        lines = [line for line in lines if line]
 
         # remove comments
-        lines = filter(lambda line: not line.startswith("#"), lines)
+        lines = [line for line in lines if not line.startswith("#")]
 
         # mako template now returns unicode strings
-        lines = map(lambda line: line.encode("utf8"), lines)
+        lines = [line.encode("utf8") for line in lines]
 
         # split with shlex and perform brace expansion
-        lines = map(split_and_expand, lines)
+        lines = [split_and_expand(line) for line in lines]
 
         return lines
 
@@ -184,7 +185,7 @@ class LoraxTemplateRunner(object):
         return sum(os.path.getsize(self._out(f)) for f in files if os.path.isfile(self._out(f)))
 
     def run(self, templatefile, **variables):
-        for k,v in self.defaults.items() + self.builtins.items():
+        for k,v in list(self.defaults.items()) + list(self.builtins.items()):
             variables.setdefault(k,v)
         logger.debug("executing %s with variables=%s", templatefile, variables)
         self.templatefile = templatefile
@@ -207,7 +208,7 @@ class LoraxTemplateRunner(object):
             try:
                 # grab the method named in cmd and pass it the given arguments
                 f = getattr(self, cmd, None)
-                if cmd[0] == '_' or cmd == 'run' or not callable(f):
+                if cmd[0] == '_' or cmd == 'run' or not isinstance(f, collections.Callable):
                     raise ValueError("unknown command %s" % cmd)
                 f(*args)
             except Exception: # pylint: disable=broad-except
@@ -506,18 +507,18 @@ class LoraxTemplateRunner(object):
             else:
                 logger.debug("removepkg %s: no files to remove!", p)
 
-    def get_token_checked(self, process, queue):
+    def get_token_checked(self, process, token_queue):
         """Try to get token from queue checking that process is still alive"""
 
         try:
             # wait at most a minute for the token
-            (token, msg) = queue.get(timeout=60)
-        except Queue.Empty:
+            (token, msg) = token_queue.get(timeout=60)
+        except queue.Empty:
             if process.is_alive():
                 try:
                     # process still alive, give it 2 minutes more
-                    (token, msg) = queue.get(timeout=120)
-                except Queue.Empty:
+                    (token, msg) = token_queue.get(timeout=120)
+                except queue.Empty:
                     # waited for 3 minutes and got nothing
                     raise Exception("The transaction process got stuck somewhere (no message from it in 3 minutes)")
             else:
@@ -532,13 +533,13 @@ class LoraxTemplateRunner(object):
           commands.
         '''
 
-        def do_transaction(base, queue):
+        def do_transaction(base, token_queue):
             try:
-                display = LoraxRpmCallback(queue)
+                display = LoraxRpmCallback(token_queue)
                 base.do_transaction(display=display)
             except BaseException as e:
                 logger.error("The transaction process has ended abruptly: %s", e)
-                queue.put(('quit', str(e)))
+                token_queue.put(('quit', str(e)))
 
         try:
             logger.info("Checking dependencies")
@@ -560,17 +561,17 @@ class LoraxTemplateRunner(object):
             raise
 
         logger.info("Preparing transaction from installation source")
-        queue = multiprocessing.Queue()
+        token_queue = multiprocessing.Queue()
         msgout = output.LoraxOutput()
-        process = multiprocessing.Process(target=do_transaction, args=(self.dbo, queue))
+        process = multiprocessing.Process(target=do_transaction, args=(self.dbo, token_queue))
         process.start()
-        (token, msg) = self.get_token_checked(process, queue)
+        (token, msg) = self.get_token_checked(process, token_queue)
 
         while token not in ('post', 'quit'):
             if token == 'install':
                 logging.info("%s", msg)
                 msgout.writeline(msg)
-            (token, msg) = self.get_token_checked(process, queue)
+            (token, msg) = self.get_token_checked(process, token_queue)
 
         if token == 'quit':
             logger.error("Transaction failed.")
@@ -608,7 +609,7 @@ class LoraxTemplateRunner(object):
         matches = set()
         for g in globs:
             globs_re = re.compile(fnmatch.translate(g))
-            m = filter(globs_re.match, filelist)
+            m = [f for f in filelist if globs_re.match(f)]
             if m:
                 matches.update(m)
             else:
@@ -670,7 +671,7 @@ class LoraxTemplateRunner(object):
         matches = set()
         for g in keepglobs:
             globs_re = re.compile(fnmatch.translate("*"+g+"*"))
-            m = filter(globs_re.match, filelist)
+            m = [f for f in filelist if globs_re.match(f)]
             if m:
                 matches.update(m)
             else:
@@ -679,7 +680,7 @@ class LoraxTemplateRunner(object):
 
         if remove_files:
             logger.debug("removekmod: removing %d files", len(remove_files))
-            map(remove, remove_files)
+            list(remove(f) for f in remove_files)
         else:
             logger.debug("removekmod %s: no files to remove!", cmd)
 
