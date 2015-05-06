@@ -1,7 +1,7 @@
 #
 # output.py
 #
-# Copyright (C) 2009-2014 Red Hat, Inc.
+# Copyright (C) 2009-2015 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

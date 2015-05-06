@@ -10,7 +10,7 @@ fi
 
 file_suffix="$(eval echo \$$#|sed s?/?_?g)"
 
-pylint_output="$(pylint \
+pylint_output="$(python3-pylint \
     --msg-template='{path}:{line}: {msg_id} {symbol} {msg}' \
     -r n --disable=C,R --rcfile=/dev/null \
     --dummy-variables-rgx=_ \

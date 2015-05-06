@@ -1,7 +1,7 @@
 #
 # executil.py - subprocess execution utility functions
 #
-# Copyright (C) 1999-2014
+# Copyright (C) 1999-2015
 # Red Hat, Inc.  All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -21,6 +21,7 @@
 #
 
 import os, sys
+import io
 import subprocess
 import threading
 from time import sleep
@@ -98,7 +99,7 @@ def execWithRedirect(command, argv, stdin = None, stdout = None,
             stdin = sys.stdin.fileno()
     elif isinstance(stdin, int):
         pass
-    elif stdin is None or not isinstance(stdin, file):
+    elif stdin is None or not isinstance(stdin, io.IOBase):
         stdin = sys.stdin.fileno()
 
     if isinstance(stdout, str):
@@ -106,7 +107,7 @@ def execWithRedirect(command, argv, stdin = None, stdout = None,
         stdoutclose = lambda : os.close(stdout)
     elif isinstance(stdout, int):
         pass
-    elif stdout is None or not isinstance(stdout, file):
+    elif stdout is None or not isinstance(stdout, io.IOBase):
         stdout = sys.stdout.fileno()
 
     if isinstance(stderr, str):
@@ -114,7 +115,7 @@ def execWithRedirect(command, argv, stdin = None, stdout = None,
         stderrclose = lambda : os.close(stderr)
     elif isinstance(stderr, int):
         pass
-    elif stderr is None or not isinstance(stderr, file):
+    elif stderr is None or not isinstance(stderr, io.IOBase):
         stderr = sys.stderr.fileno()
 
     program_log.info("Running... %s", " ".join([command] + argv))
@@ -220,7 +221,7 @@ def execWithCapture(command, argv, stdin = None, stderr = None, root=None,
             stdin = sys.stdin.fileno()
     elif isinstance(stdin, int):
         pass
-    elif stdin is None or not isinstance(stdin, file):
+    elif stdin is None or not isinstance(stdin, io.IOBase):
         stdin = sys.stdin.fileno()
 
     if isinstance(stderr, str):
@@ -228,7 +229,7 @@ def execWithCapture(command, argv, stdin = None, stderr = None, root=None,
         stderrclose = lambda : os.close(stderr)
     elif isinstance(stderr, int):
         pass
-    elif stderr is None or not isinstance(stderr, file):
+    elif stderr is None or not isinstance(stderr, io.IOBase):
         stderr = sys.stderr.fileno()
 
     program_log.info("Running... %s", " ".join([command] + argv))
@@ -253,10 +254,10 @@ def execWithCapture(command, argv, stdin = None, stderr = None, root=None,
         while True:
             (outStr, errStr) = proc.communicate()
             if outStr:
-                map(program_log.info, outStr.splitlines())
+                list(program_log.info(line) for line in outStr.splitlines())
                 rc += outStr
             if errStr:
-                map(program_log.error, errStr.splitlines())
+                list(program_log.error(line) for line in errStr.splitlines())
                 os.write(stderr, errStr)
 
             if proc.returncode is not None:
@@ -291,7 +292,7 @@ def execWithCallback(command, argv, stdin = None, stdout = None,
             stdin = sys.stdin.fileno()
     elif isinstance(stdin, int):
         pass
-    elif stdin is None or not isinstance(stdin, file):
+    elif stdin is None or not isinstance(stdin, io.IOBase):
         stdin = sys.stdin.fileno()
 
     if isinstance(stdout, str):
@@ -299,7 +300,7 @@ def execWithCallback(command, argv, stdin = None, stdout = None,
         stdoutclose = lambda : os.close(stdout)
     elif isinstance(stdout, int):
         pass
-    elif stdout is None or not isinstance(stdout, file):
+    elif stdout is None or not isinstance(stdout, io.IOBase):
         stdout = sys.stdout.fileno()
 
     if isinstance(stderr, str):
@@ -307,7 +308,7 @@ def execWithCallback(command, argv, stdin = None, stdout = None,
         stderrclose = lambda : os.close(stderr)
     elif isinstance(stderr, int):
         pass
-    elif stderr is None or not isinstance(stderr, file):
+    elif stderr is None or not isinstance(stderr, io.IOBase):
         stderr = sys.stderr.fileno()
 
     program_log.info("Running... %s", " ".join([command] + argv))
@@ -337,7 +338,7 @@ def execWithCallback(command, argv, stdin = None, stdout = None,
             s = os.read(p[0], 1)
         except OSError as e:
             if e.errno != 4:
-                map(program_log.info, log_output.splitlines())
+                list(program_log.info(line) for line in log_output.splitlines())
                 raise IOError(e.args)
 
         if echo:
@@ -359,7 +360,7 @@ def execWithCallback(command, argv, stdin = None, stdout = None,
         if len(s) < 1:
             break
 
-    map(program_log.info, log_output.splitlines())
+    list(program_log.info(line) for line in log_output.splitlines())
 
     log_errors = ''
     while 1:
@@ -367,7 +368,7 @@ def execWithCallback(command, argv, stdin = None, stdout = None,
             err = os.read(p_stderr[0], 128)
         except OSError as e:
             if e.errno != 4:
-                map(program_log.error, log_errors.splitlines())
+                list(program_log.error(line) for line in log_errors.splitlines())
                 raise IOError(e.args)
             break
         log_errors += err
@@ -375,7 +376,7 @@ def execWithCallback(command, argv, stdin = None, stdout = None,
             break
 
     os.write(stderr, log_errors)
-    map(program_log.error, log_errors.splitlines())
+    list(program_log.error(line) for line in log_errors.splitlines())
     os.close(p[0])
     os.close(p_stderr[0])
 

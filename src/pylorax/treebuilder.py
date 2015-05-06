@@ -1,6 +1,6 @@
 # treebuilder.py - handle arch-specific tree building stuff using templates
 #
-# Copyright (C) 2011-2014 Red Hat, Inc.
+# Copyright (C) 2011-2015 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -324,7 +324,7 @@ def findkernels(root="/", kdir="boot"):
 udev_blacklist=' !"$%&\'()*,/;<>?[\\]^`{|}~' # ASCII printable, minus whitelist
 udev_blacklist += ''.join(chr(i) for i in range(32)) # ASCII non-printable
 def udev_escape(label):
-    out = u''
+    out = ''
     for ch in label.decode('utf8'):
-        out += ch if ch not in udev_blacklist else u'\\x%02x' % ord(ch)
+        out += ch if ch not in udev_blacklist else '\\x%02x' % ord(ch)
     return out.encode('utf8')
