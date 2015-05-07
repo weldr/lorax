@@ -193,7 +193,7 @@ class TreeBuilder(object):
                                inroot=inroot, outroot=outroot,
                                basearch=arch.basearch, libdir=arch.libdir,
                                isolabel=isolabel, udev=udev_escape, domacboot=domacboot, doupgrade=doupgrade,
-                               workdir=workdir)
+                               workdir=workdir, lower=string_lower)
         self._runner = LoraxTemplateRunner(inroot, outroot, templatedir=templatedir)
         self._runner.defaults = self.vars
         self.add_templates = add_templates or []
@@ -325,6 +325,15 @@ udev_blacklist=' !"$%&\'()*,/;<>?[\\]^`{|}~' # ASCII printable, minus whitelist
 udev_blacklist += ''.join(chr(i) for i in range(32)) # ASCII non-printable
 def udev_escape(label):
     out = ''
-    for ch in label.decode('utf8'):
+    for ch in label:
         out += ch if ch not in udev_blacklist else '\\x%02x' % ord(ch)
-    return out.encode('utf8')
+    return out
+
+def string_lower(string):
+    """ Return a lowercase string.
+
+    :param string: String to lowercase
+
+    This is used as a filter in the templates.
+    """
+    return string.lower()

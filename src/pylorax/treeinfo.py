@@ -34,7 +34,7 @@ class TreeInfo(object):
         self.c = configparser.ConfigParser()
 
         section = "general"
-        data = {"timestamp": time.time(),
+        data = {"timestamp": str(time.time()),
                 "family": product,
                 "version": version,
                 "name": "%s-%s" % (product, version),

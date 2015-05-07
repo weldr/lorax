@@ -69,9 +69,6 @@ class LoraxTemplate(object):
         # remove comments
         lines = [line for line in lines if not line.startswith("#")]
 
-        # mako template now returns unicode strings
-        lines = [line.encode("utf8") for line in lines]
-
         # split with shlex and perform brace expansion
         lines = [split_and_expand(line) for line in lines]
 
@@ -302,7 +299,7 @@ class LoraxTemplateRunner(object):
             append /etc/resolv.conf ""
         '''
         with open(self._out(filename), "a") as fobj:
-            fobj.write(data.decode('string_escape')+"\n")
+            fobj.write(bytes(data, "utf8").decode('unicode_escape')+"\n")
 
     def treeinfo(self, section, key, *valuetoks):
         '''
@@ -431,10 +428,8 @@ class LoraxTemplateRunner(object):
     # TODO: add ssh-keygen, mkisofs(?), find, and other useful commands
     def runcmd(self, *cmdlist):
         '''
-        runcmd CMD [--chdir=DIR] [ARG ...]
+        runcmd CMD [ARG ...]
           Run the given command with the given arguments.
-          If "--chdir=DIR" is given, change to the named directory
-          before executing the command.
 
           NOTE: All paths given MUST be COMPLETE, ABSOLUTE PATHS to the file
           or files mentioned. ${root}/${inroot}/${outroot} are good for
@@ -451,15 +446,14 @@ class LoraxTemplateRunner(object):
                 remove ${f}
             %endfor
         '''
-        cwd = None
         cmd = cmdlist
         logger.debug('running command: %s', cmd)
         if cmd[0].startswith("--chdir="):
-            cwd = cmd[0].split('=',1)[1]
-            cmd = cmd[1:]
+            logger.error("--chdir is no longer supported for runcmd.")
+            raise ValueError("--chdir is no longer supported for runcmd.")
 
         try:
-            stdout = runcmd_output(cmd, cwd=cwd)
+            stdout = runcmd_output(cmd)
             if stdout:
                 logger.debug('command output:\n%s', stdout)
             logger.debug("command finished successfully")
