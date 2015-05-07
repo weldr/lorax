@@ -1,6 +1,6 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 # test-parse-template - parse and print (but don't execute!) a Lorax Template.
-# Copyright (C) 2011  Red Hat, Inc.
+# Copyright (C) 2011-2015  Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -46,14 +46,14 @@ def readtemplate(filename):
 if __name__ == '__main__':
     # check args
     if len(sys.argv) == 1:
-        print "usage: %s TEMPLATE [arg1=value1] [arg2=value2] ..."
+        print("usage: %s TEMPLATE [arg1=value1] [arg2=value2] ...")
 
     # read template
     templatefile = sys.argv[1]
-    print "parsing %s" % templatefile
+    print("parsing %s" % templatefile)
     t = readtemplate(templatefile)
     reqargs = get_args(t)
-    print "required args: %s" % ' '.join(reqargs)
+    print("required args: %s" % ' '.join(reqargs))
 
     # parse extra commandline args
     if len(sys.argv) > 2:
@@ -66,15 +66,15 @@ if __name__ == '__main__':
     for a in reqargs.difference(data):
         data[a] = a.upper()
 
-    print "rendering %s using values:" % templatefile
+    print("rendering %s using values:" % templatefile)
     for a in data:
-        print "  %s=%s" % (a,repr(data[a]))
+        print("  %s=%s" % (a,repr(data[a])))
 
     # render and print
     try:
         lines = t.render(**data).splitlines()
         for line in lines:
-            print line
+            print(line)
     except Exception:
-        print text_error_template().render()
+        print(text_error_template().render())
         raise SystemExit(1)
