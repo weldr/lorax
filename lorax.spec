@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        22.10
+Version:        22.11
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -106,6 +106,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Thu May 07 2015 Brian C. Lane <bcl@redhat.com> 22.11-1
+- Make sure openssh-clients is installed (#1219398) (bcl@redhat.com)
+
 * Wed Apr 29 2015 Brian C. Lane <bcl@redhat.com> 22.10-1
 - Add product.img support for s390 templates (dan@danny.cz)
 
