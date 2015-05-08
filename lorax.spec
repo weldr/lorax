@@ -14,7 +14,8 @@ URL:            https://github.com/rhinstaller/lorax
 # tito build --tgz
 Source0:        %{name}-%{version}.tar.gz
 
-BuildRequires:  python2-devel
+BuildRequires:  python3-devel
+BuildRequires:  python3-pocketlint >= 0.5
 
 Requires:       GConf2
 Requires:       cpio
@@ -29,24 +30,27 @@ Requires:       glibc
 Requires:       glibc-common
 Requires:       gzip
 Requires:       isomd5sum
-Requires:       libselinux-python
 Requires:       module-init-tools
 Requires:       parted
-Requires:       python-mako
 Requires:       squashfs-tools >= 4.2
 Requires:       util-linux
 Requires:       xz
 Requires:       pigz
-Requires:       python-kickstart
 Requires:       dracut >= 030
-Requires:       python-dnf
+
+# Python modules
+Requires:       libselinux-python3
+Requires:       python3-mako
+Requires:       python3-kickstart
+Requires:       python3-dnf
+
 
 %if 0%{?fedora}
 # Fedora specific deps
 Requires:       fedup-dracut
 Requires:       fedup-dracut-plymouth
 %ifarch x86_64
-Requires: hfsplus-tools
+Requires:       hfsplus-tools
 %endif
 %endif
 
@@ -79,6 +83,26 @@ It also includes livemedia-creator which is used to create bootable livemedia,
 including live isos and disk images. It can use libvirtd for the install, or
 Anaconda's image install feature.
 
+%package lmc-virt
+Summary:  livemedia-creator libvirt dependencies
+Requires: lorax = %{version}-%{release}
+Requires: libvirt-python3
+Requires: virt-install
+
+%description lmc-virt
+Additional dependencies required by livemedia-creator when using it with virt-install.
+
+%package lmc-novirt
+Summary:  livemedia-creator no-virt dependencies
+Requires: lorax = %{version}-%{release}
+Requires: anaconda-core
+Requires: anaconda-tui
+
+%description lmc-novirt
+Additional dependencies required by livemedia-creator when using it with --no-virt
+to run Anaconda.
+
+
 %prep
 %setup -q -n %{name}-%{version}
 
@@ -93,8 +117,8 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %license COPYING
 %doc AUTHORS docs/livemedia-creator.rst docs/product-images.rst
 %doc docs/*ks
-%{python_sitelib}/pylorax
-%{python_sitelib}/*.egg-info
+%{python3_sitelib}/pylorax
+%{python3_sitelib}/*.egg-info
 %{_sbindir}/lorax
 %{_sbindir}/mkefiboot
 %{_sbindir}/livemedia-creator
@@ -104,6 +128,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %dir %{_datadir}/lorax
 %{_datadir}/lorax/*
 %{_mandir}/man1/*.1*
+
+%files lmc-virt
+
+%files lmc-novirt
 
 %changelog
 * Thu Apr 02 2015 Brian C. Lane <bcl@redhat.com> 23.8-1
