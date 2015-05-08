@@ -154,8 +154,7 @@ class Lorax(BaseLoraxClass):
             add_templates=None,
             add_template_vars=None,
             add_arch_templates=None,
-            add_arch_template_vars=None,
-            template_tempdir=None):
+            add_arch_template_vars=None):
 
         assert self._configured
 
@@ -295,7 +294,7 @@ class Lorax(BaseLoraxClass):
         logger.info("creating the runtime image")
         runtime = "images/install.img"
         compression = self.conf.get("compression", "type")
-        compressargs = self.conf.get("compression", "args").split()
+        compressargs = self.conf.get("compression", "args").split()     # pylint: disable=no-member
         if self.conf.getboolean("compression", "bcj"):
             if self.arch.bcj:
                 compressargs += ["-Xbcj", self.arch.bcj]
