@@ -1,8 +1,8 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 #
 # Live Media Creator
 #
-# Copyright (C) 2011-2014  Red Hat, Inc.
+# Copyright (C) 2011-2015  Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ import tempfile
 import subprocess
 import socket
 import threading
-import SocketServer
+import socketserver
 import time
 from time import sleep
 import shutil
@@ -57,6 +57,7 @@ from pylorax.sysutils import joinpaths, remove
 from pylorax.imgutils import PartitionMount, mksparse, mkext4img, loop_detach
 from pylorax.imgutils import get_loop_name, dm_detach, mount, umount, Mount
 from pylorax.imgutils import mksquashfs, mkqcow2, mktar, mkrootfsimg
+from pylorax.imgutils import copytree
 from pylorax.executils import execWithRedirect, execWithCapture, runcmd
 
 # no-virt mode doesn't need libvirt, so make it optional
@@ -76,7 +77,7 @@ class InstallError(Exception):
     pass
 
 
-class LogRequestHandler(SocketServer.BaseRequestHandler):
+class LogRequestHandler(socketserver.BaseRequestHandler):
     """
     Handle monitoring and saving the logfiles from the virtual install
 
@@ -102,13 +103,14 @@ class LogRequestHandler(SocketServer.BaseRequestHandler):
 
         Loops until self.server.kill is True
         """
+        log.info("Processing logs from %s", self.client_address)
         line = ""
         while True:
             if self.server.kill:
                 break
 
             try:
-                data = self.request.recv(4096)
+                data = str(self.request.recv(4096), "utf8")
                 if self.fp:
                     self.fp.write(data)
                     self.fp.flush()
@@ -128,10 +130,12 @@ class LogRequestHandler(SocketServer.BaseRequestHandler):
 
             except socket.timeout:
                 pass
-            except Exception:       # pylint: disable=broad-except
+            except Exception as e:       # pylint: disable=broad-except
+                log.info("log processing killed by exception: %s", e)
                 break
 
     def finish(self):
+        log.info("Shutting down log processing")
         self.request.close()
         if self.fp:
             self.fp.close()
@@ -166,7 +170,7 @@ class LogRequestHandler(SocketServer.BaseRequestHandler):
                 return
 
 
-class LogServer(SocketServer.TCPServer):
+class LogServer(socketserver.TCPServer):
     """A TCP Server that listens for log data"""
 
     # Number of seconds to wait for a connection after startup
@@ -185,7 +189,7 @@ class LogServer(SocketServer.TCPServer):
         self._timeout = kwargs.pop("timeout", None)
         if self._timeout:
             self._start_time = time.time()
-        SocketServer.TCPServer.__init__(self, *args, **kwargs)
+        socketserver.TCPServer.__init__(self, *args, **kwargs)
 
     def log_check(self):
         """
@@ -421,7 +425,7 @@ class VirtualInstall(object):
             sys.stdout.write(".")
             sys.stdout.flush()
             sleep(10)
-        print
+        print()
 
         if log_check():
             log.info("Installation error detected. See logfile.")
@@ -639,7 +643,7 @@ def rebuild_initrds_for_live(opts, sys_root_dir, results_dir):
 
         new_initrd_path = joinpaths(results_dir, os.path.basename(kernel.initrd.path))
         shutil.move(joinpaths(sys_root_dir, outfile), new_initrd_path)
-        os.chmod(new_initrd_path, 0644)
+        os.chmod(new_initrd_path, 0o644)
         shutil.copy2(joinpaths(sys_root_dir, kernel.path), results_dir)
 
     os.unlink(joinpaths(sys_root_dir,"/proc/modules"))
@@ -711,7 +715,7 @@ def make_livecd(opts, mount_dir, work_dir):
     fullpath = joinpaths(mount_dir, configdir_path)
     if os.path.exists(fullpath):
         remove(fullpath)
-    shutil.copytree(configdir, fullpath)
+    copytree(configdir, fullpath)
 
     isolabel = opts.volid or "{0.name}-{0.version}-{1.basearch}".format(product, arch)
     if len(isolabel) > 32:
@@ -1308,12 +1312,6 @@ def main():
         errors.append("The results_dir (%s) should not exist, please delete or "
                       "move its contents" % opts.result_dir)
 
-    # Default to putting results into tmp
-    if not opts.result_dir:
-        opts.result_dir = opts.tmp
-    else:
-        os.makedirs(opts.result_dir)
-
     if opts.iso and not os.path.exists(opts.iso):
         errors.append("The iso %s is missing." % opts.iso)
 
@@ -1331,7 +1329,7 @@ def main():
         errors.append("the volume id cannot be longer than 32 characters")
 
     if is_install and not opts.no_virt and not libvirt:
-        errors.append("virt install requires libvirt-python to be installed.")
+        errors.append("virt install requires libvirt-python3 to be installed.")
 
     if is_install and not opts.no_virt \
        and not os.path.exists("/usr/bin/virt-install"):
@@ -1368,8 +1366,14 @@ def main():
         errors.append("You need to run this as root")
 
     if errors:
-        map(log.error, errors)
+        list(log.error(e) for e in errors)
         sys.exit(1)
+
+    # Default to putting results into tmp
+    if not opts.result_dir:
+        opts.result_dir = opts.tmp
+    else:
+        os.makedirs(opts.result_dir)
 
     # AMI image is just a fsimage with an AMI label
     if opts.make_ami:
@@ -1422,7 +1426,7 @@ def main():
                               "multiple partitions. swap is allowed but not used.")
 
         if errors:
-            map(log.error, errors)
+            list(log.error(e) for e in errors)
             sys.exit(1)
 
         # Make the image. Output of this is either a partitioned disk image or a fsimage
@@ -1498,7 +1502,7 @@ def main():
                                 umount(mounted_sysroot_boot_dir)
 
         if opts.result_dir != opts.tmp and result_dir:
-            shutil.copytree(result_dir, opts.result_dir)
+            copytree(result_dir, opts.result_dir)
             shutil.rmtree(result_dir)
 
     log.info("SUMMARY")
