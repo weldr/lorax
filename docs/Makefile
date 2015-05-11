@@ -6,7 +6,7 @@ SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 SPHINXAPIDOC  = sphinx-apidoc
 PAPER         =
-BUILDDIR      = _build
+BUILDDIR      = .
 SOURCEDIR     = ../src/
 MODULE_NAMES  = pylorax.rst modules.rst
 
@@ -18,7 +18,7 @@ endif
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
 PAPEROPT_letter = -D latex_paper_size=letter
-ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
+ALLSPHINXOPTS   = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 # the i18n builder cannot share the environment and doctrees with the others
 I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
@@ -49,12 +49,11 @@ help:
 	@echo "  linkcheck  to check all external links for integrity"
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
 
-clean:
-	rm -rf $(BUILDDIR)/*
-
 apidoc:
-	-rm $(addprefix ./, $(MODULE_NAMES))
-	$(SPHINXAPIDOC) -o . $(SOURCEDIR)
+	if [ -f /usr/bin/$(SPHINXAPIDOC) ]; then \
+		-rm $(addprefix ./, $(MODULE_NAMES))
+		$(SPHINXAPIDOC) -o . $(SOURCEDIR)
+	fi
 
 html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
