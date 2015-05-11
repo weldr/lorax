@@ -1,5 +1,5 @@
-src
-===
+pylorax
+=======
 
 .. toctree::
    :maxdepth: 4
