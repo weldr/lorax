@@ -1,41 +1,37 @@
 #version=DEVEL
-sshpw --username=root --plaintext randOmStrinGhERE
-# Firewall configuration
-firewall --enabled --service=mdns
-# Use network installation
-url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/x86_64/os/"
-
 # X Window System configuration information
 xconfig  --startxonboot
-# Root password
-rootpw --plaintext removethispw
-# Network information
-network  --bootproto=dhcp --onboot=on --activate
-# System authorization information
-auth --useshadow --enablemd5
-# System keyboard
-keyboard us
+# Keyboard layouts
+keyboard 'us'
+
+# System timezone
+timezone US/Eastern
 # System language
 lang en_US.UTF-8
+# Firewall configuration
+firewall --enabled --service=mdns
+url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/x86_64/os/"
+
+# System authorization information
+auth --useshadow --enablemd5
 # SELinux configuration
 selinux --enforcing
-# Installation logging level
-logging --level=info
-# Shutdown after installation
-shutdown
+
 # System services
 services --disabled="network,sshd" --enabled="NetworkManager"
-# System timezone
-timezone  US/Eastern
+
+# livemedia-creator modifications.
+shutdown
 # System bootloader configuration
 bootloader --location=mbr
-# Clear the Master Boot Record
-zerombr
-# Partition clearing information
-clearpart --all
+# Clear blank disks or all existing partitions
+clearpart --all --initlabel
+rootpw rootme
+
+
 # Disk partitioning information
-part / --fstype="ext4" --size=4000
-part swap --size=1000
+part / --fstype="ext4" --size=4096
+part / --size=6144
 
 %post
 # FIXME: it'd be better to get this installed from a package
@@ -46,6 +42,9 @@ cat > /etc/rc.d/init.d/livesys << EOF
 #
 # chkconfig: 345 00 99
 # description: Init script for live image.
+### BEGIN INIT INFO
+# X-Start-Before: display-manager
+### END INIT INFO
 
 . /etc/init.d/functions
 
@@ -62,16 +61,12 @@ exists() {
     \$*
 }
 
-touch /.liveimg-configured
-
-# mount live image
-if [ -b \`readlink -f /dev/live\` ]; then
-   mkdir -p /mnt/live
-   mount -o ro /dev/live /mnt/live 2>/dev/null || mount /dev/live /mnt/live
-fi
-
 livedir="LiveOS"
 for arg in \`cat /proc/cmdline\` ; do
+  if [ "\${arg##rd.live.dir=}" != "\${arg}" ]; then
+    livedir=\${arg##rd.live.dir=}
+    return
+  fi
   if [ "\${arg##live_dir=}" != "\${arg}" ]; then
     livedir=\${arg##live_dir=}
     return
@@ -85,8 +80,8 @@ if ! strstr "\`cat /proc/cmdline\`" noswap && [ -n "\$swaps" ] ; then
     action "Enabling swap partition \$s" swapon \$s
   done
 fi
-if ! strstr "\`cat /proc/cmdline\`" noswap && [ -f /mnt/live/\${livedir}/swap.img ] ; then
-  action "Enabling swap file" swapon /mnt/live/\${livedir}/swap.img
+if ! strstr "\`cat /proc/cmdline\`" noswap && [ -f /run/initramfs/live/\${livedir}/swap.img ] ; then
+  action "Enabling swap file" swapon /run/initramfs/live/\${livedir}/swap.img
 fi
 
 mountPersistentHome() {
@@ -101,8 +96,8 @@ mountPersistentHome() {
     mountopts="-t jffs2"
   elif [ ! -b "\$homedev" ]; then
     loopdev=\`losetup -f\`
-    if [ "\${homedev##/mnt/live}" != "\${homedev}" ]; then
-      action "Remounting live store r/w" mount -o remount,rw /mnt/live
+    if [ "\${homedev##/run/initramfs/live}" != "\${homedev}" ]; then
+      action "Remounting live store r/w" mount -o remount,rw /run/initramfs/live
     fi
     losetup \$loopdev \$homedev
     homedev=\$loopdev
@@ -136,21 +131,14 @@ findPersistentHome() {
 
 if strstr "\`cat /proc/cmdline\`" persistenthome= ; then
   findPersistentHome
-elif [ -e /mnt/live/\${livedir}/home.img ]; then
-  homedev=/mnt/live/\${livedir}/home.img
+elif [ -e /run/initramfs/live/\${livedir}/home.img ]; then
+  homedev=/run/initramfs/live/\${livedir}/home.img
 fi
 
 # if we have a persistent /home, then we want to go ahead and mount it
 if ! strstr "\`cat /proc/cmdline\`" nopersistenthome && [ -n "\$homedev" ] ; then
   action "Mounting persistent /home" mountPersistentHome
 fi
-
-# make it so that we don't do writing to the overlay for things which
-# are just tmpdirs/caches
-mount -t tmpfs -o mode=0755 varcacheyum /var/cache/yum
-mount -t tmpfs tmp /tmp
-mount -t tmpfs vartmp /var/tmp
-[ -x /sbin/restorecon ] && /sbin/restorecon /var/cache/yum /tmp /var/tmp >/dev/null 2>&1
 
 if [ -n "\$configdone" ]; then
   exit 0
@@ -159,70 +147,42 @@ fi
 # add fedora user with no passwd
 action "Adding live user" useradd \$USERADDARGS -c "Live System User" liveuser
 passwd -d liveuser > /dev/null
+usermod -aG wheel liveuser > /dev/null
+
+# Remove root password lock
+passwd -d root > /dev/null
 
 # turn off firstboot for livecd boots
-chkconfig --level 345 firstboot off 2>/dev/null
-# We made firstboot a native systemd service, so it can no longer be turned
-# off with chkconfig. It should be possible to turn it off with systemctl, but
-# that doesn't work right either. For now, this is good enough: the firstboot
-# service will start up, but this tells it not to run firstboot. I suspect the
-# other services 'disabled' below are not actually getting disabled properly,
-# with systemd, but we can look into that later. - AdamW 2010/08 F14Alpha
-echo "RUN_FIRSTBOOT=NO" > /etc/sysconfig/firstboot
+systemctl --no-reload disable firstboot-text.service 2> /dev/null || :
+systemctl --no-reload disable firstboot-graphical.service 2> /dev/null || :
+systemctl stop firstboot-text.service 2> /dev/null || :
+systemctl stop firstboot-graphical.service 2> /dev/null || :
 
-# don't start yum-updatesd for livecd boots
-chkconfig --level 345 yum-updatesd off 2>/dev/null
+# don't use prelink on a running live image
+sed -i 's/PRELINKING=yes/PRELINKING=no/' /etc/sysconfig/prelink &>/dev/null || :
 
 # turn off mdmonitor by default
-chkconfig --level 345 mdmonitor off 2>/dev/null
+systemctl --no-reload disable mdmonitor.service 2> /dev/null || :
+systemctl --no-reload disable mdmonitor-takeover.service 2> /dev/null || :
+systemctl stop mdmonitor.service 2> /dev/null || :
+systemctl stop mdmonitor-takeover.service 2> /dev/null || :
 
-# turn off setroubleshoot on the live image to preserve resources
-chkconfig --level 345 setroubleshoot off 2>/dev/null
-
-# don't do packagekit checking by default
-gconftool-2 --direct --config-source=xml:readwrite:/etc/gconf/gconf.xml.defaults -s -t string /apps/gnome-packagekit/update-icon/frequency_get_updates never >/dev/null
-gconftool-2 --direct --config-source=xml:readwrite:/etc/gconf/gconf.xml.defaults -s -t string /apps/gnome-packagekit/update-icon/frequency_get_upgrades never >/dev/null
-gconftool-2 --direct --config-source=xml:readwrite:/etc/gconf/gconf.xml.defaults -s -t string /apps/gnome-packagekit/update-icon/frequency_refresh_cache never >/dev/null
-gconftool-2 --direct --config-source=xml:readwrite:/etc/gconf/gconf.xml.defaults -s -t bool /apps/gnome-packagekit/update-icon/notify_available false >/dev/null
-gconftool-2 --direct --config-source=xml:readwrite:/etc/gconf/gconf.xml.defaults -s -t bool /apps/gnome-packagekit/update-icon/notify_distro_upgrades false >/dev/null
-gconftool-2 --direct --config-source=xml:readwrite:/etc/gconf/gconf.xml.defaults -s -t bool /apps/gnome-packagekit/enable_check_firmware false >/dev/null
-gconftool-2 --direct --config-source=xml:readwrite:/etc/gconf/gconf.xml.defaults -s -t bool /apps/gnome-packagekit/enable_check_hardware false >/dev/null
-gconftool-2 --direct --config-source=xml:readwrite:/etc/gconf/gconf.xml.defaults -s -t bool /apps/gnome-packagekit/enable_codec_helper false >/dev/null
-gconftool-2 --direct --config-source=xml:readwrite:/etc/gconf/gconf.xml.defaults -s -t bool /apps/gnome-packagekit/enable_font_helper false >/dev/null
-gconftool-2 --direct --config-source=xml:readwrite:/etc/gconf/gconf.xml.defaults -s -t bool /apps/gnome-packagekit/enable_mime_type_helper false >/dev/null
-
+# don't enable the gnome-settings-daemon packagekit plugin
+gsettings set org.gnome.software download-updates 'false' || :
 
 # don't start cron/at as they tend to spawn things which are
 # disk intensive that are painful on a live image
-chkconfig --level 345 crond off 2>/dev/null
-chkconfig --level 345 atd off 2>/dev/null
-chkconfig --level 345 anacron off 2>/dev/null
-chkconfig --level 345 readahead_early off 2>/dev/null
-chkconfig --level 345 readahead_later off 2>/dev/null
+systemctl --no-reload disable crond.service 2> /dev/null || :
+systemctl --no-reload disable atd.service 2> /dev/null || :
+systemctl stop crond.service 2> /dev/null || :
+systemctl stop atd.service 2> /dev/null || :
 
-# Stopgap fix for RH #217966; should be fixed in HAL instead
-touch /media/.hal-mtab
+# Mark things as configured
+touch /.liveimg-configured
 
-# workaround clock syncing on shutdown that we don't want (#297421)
-sed -i -e 's/hwclock/no-such-hwclock/g' /etc/rc.d/init.d/halt
-
-# and hack so that we eject the cd on shutdown if we're using a CD...
-if strstr "\`cat /proc/cmdline\`" CDLABEL= ; then
-  cat >> /sbin/halt.local << FOE
-#!/bin/bash
-# XXX: This often gets stuck during shutdown because /etc/init.d/halt
-#      (or something else still running) wants to read files from the block\
-#      device that was ejected.  Disable for now.  Bug #531924
-# we want to eject the cd on halt, but let's also try to avoid
-# io errors due to not being able to get files...
-#cat /sbin/halt > /dev/null
-#cat /sbin/reboot > /dev/null
-#/usr/sbin/eject -p -m \$(readlink -f /dev/live) >/dev/null 2>&1
-#echo "Please remove the CD from your drive and press Enter to finish restarting"
-#read -t 30 < /dev/console
-FOE
-chmod +x /sbin/halt.local
-fi
+# add static hostname to work around xauth bug
+# https://bugzilla.redhat.com/show_bug.cgi?id=679486
+echo "localhost" > /etc/hostname
 
 EOF
 
@@ -290,11 +250,26 @@ chmod 755 /etc/rc.d/init.d/livesys-late
 /sbin/restorecon /etc/rc.d/init.d/livesys-late
 /sbin/chkconfig --add livesys-late
 
+# enable tmpfs for /tmp
+systemctl enable tmp.mount
+
+# make it so that we don't do writing to the overlay for things which
+# are just tmpdirs/caches
+# note https://bugzilla.redhat.com/show_bug.cgi?id=1135475
+cat >> /etc/fstab << EOF
+vartmp   /var/tmp    tmpfs   defaults   0  0
+varcacheyum /var/cache/yum  tmpfs   mode=0755,context=system_u:object_r:rpm_var_cache_t:s0   0   0
+EOF
+
 # work around for poor key import UI in PackageKit
 rm -f /var/lib/rpm/__db*
-rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-fedora
+releasever=$(rpm -q --qf '%{version}\n' --whatprovides system-release)
+basearch=$(uname -i)
+rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch
 echo "Packages within this LiveCD"
 rpm -qa
+# Note that running rpm recreates the rpm db files which aren't needed or wanted
+rm -f /var/lib/rpm/__db*
 
 # go ahead and pre-make the man -k cache (#455968)
 /usr/bin/mandb
@@ -303,13 +278,21 @@ rpm -qa
 rm -f /core*
 
 # convince readahead not to collect
-rm -f /.readahead_collect
-touch /var/lib/readahead/early.sorted
+# FIXME: for systemd
+
+# forcibly regenerate fontconfig cache (so long as this live image has
+# fontconfig) - see #1169979
+if [ -x /usr/bin/fc-cache ] ; then
+   fc-cache -f
+fi
+
+echo 'File created by kickstart. See systemd-update-done.service(8).' \
+    | tee /etc/.updated >/var/.updated
 
 %end
 
 %post --nochroot
-cp $INSTALL_ROOT/usr/share/doc/*-release-*/GPL $LIVE_ROOT/GPL
+cp $INSTALL_ROOT/usr/share/licenses/*-release/* $LIVE_ROOT/
 
 # only works on x86, x86_64
 if [ "$(uname -i)" = "i386" -o "$(uname -i)" = "x86_64" ]; then
@@ -319,71 +302,102 @@ fi
 %end
 
 %post
-cat >> /etc/rc.d/init.d/livesys << EOF
-# disable screensaver locking
-gconftool-2 --direct --config-source=xml:readwrite:/etc/gconf/gconf.xml.defaults -s -t bool /apps/gnome-screensaver/lock_enabled false >/dev/null
-gconftool-2 --direct --config-source=xml:readwrite:/etc/gconf/gconf.xml.defaults -s -t bool /desktop/gnome/lockdown/disable_lock_screen true >/dev/null
 
-# set up timed auto-login for after 60 seconds
-cat >> /etc/gdm/custom.conf << FOE
+# This is a huge file and things work ok without it
+rm -f /usr/share/icons/HighContrast/icon-theme.cache
+
+cat >> /etc/rc.d/init.d/livesys << EOF
+
+
+# disable updates plugin
+cat >> /usr/share/glib-2.0/schemas/org.gnome.software.gschema.override << FOE
+[org.gnome.software]
+download-updates=false
+FOE
+
+# don't run gnome-initial-setup
+mkdir ~liveuser/.config
+touch ~liveuser/.config/gnome-initial-setup-done
+
+# make the installer show up
+if [ -f /usr/share/applications/liveinst.desktop ]; then
+  # Show harddisk install in shell dash
+  sed -i -e 's/NoDisplay=true/NoDisplay=false/' /usr/share/applications/liveinst.desktop ""
+  # need to move it to anaconda.desktop to make shell happy
+  mv /usr/share/applications/liveinst.desktop /usr/share/applications/anaconda.desktop
+
+  cat >> /usr/share/glib-2.0/schemas/org.gnome.shell.gschema.override << FOE
+[org.gnome.shell]
+favorite-apps=['firefox.desktop', 'evolution.desktop', 'rhythmbox.desktop', 'shotwell.desktop', 'org.gnome.Nautilus.desktop', 'anaconda.desktop']
+FOE
+
+  # Make the welcome screen show up
+  if [ -f /usr/share/anaconda/gnome/fedora-welcome.desktop ]; then
+    mkdir -p ~liveuser/.config/autostart
+    cp /usr/share/anaconda/gnome/fedora-welcome.desktop /usr/share/applications/
+    cp /usr/share/anaconda/gnome/fedora-welcome.desktop ~liveuser/.config/autostart/
+  fi
+
+  # Copy Anaconda branding in place
+  if [ -d /usr/share/lorax/product/usr/share/anaconda ]; then
+    cp -a /usr/share/lorax/product/* /
+  fi
+fi
+
+# rebuild schema cache with any overrides we installed
+glib-compile-schemas /usr/share/glib-2.0/schemas
+
+# set up auto-login
+cat > /etc/gdm/custom.conf << FOE
 [daemon]
 AutomaticLoginEnable=True
 AutomaticLogin=liveuser
 FOE
 
-# Show harddisk install on the desktop
-sed -i -e 's/NoDisplay=true/NoDisplay=false/' /usr/share/applications/liveinst.desktop
-mkdir /home/liveuser/Desktop
-cp /usr/share/applications/liveinst.desktop /home/liveuser/Desktop
-chown -R liveuser.liveuser /home/liveuser/Desktop
-chmod a+x /home/liveuser/Desktop/liveinst.desktop
-
-# But not trash and home
-gconftool-2 --direct --config-source=xml:readwrite:/etc/gconf/gconf.xml.defaults -s -t bool /apps/nautilus/desktop/trash_icon_visible false >/dev/null
-gconftool-2 --direct --config-source=xml:readwrite:/etc/gconf/gconf.xml.defaults -s -t bool /apps/nautilus/desktop/home_icon_visible false >/dev/null
-
 # Turn off PackageKit-command-not-found while uninstalled
-sed -i -e 's/^SoftwareSourceSearch=true/SoftwareSourceSearch=false/' /etc/PackageKit/CommandNotFound.conf
+if [ -f /etc/PackageKit/CommandNotFound.conf ]; then
+  sed -i -e 's/^SoftwareSourceSearch=true/SoftwareSourceSearch=false/' /etc/PackageKit/CommandNotFound.conf
+fi
 
-# Use the animated laughlin background by default
-gconftool-2 --direct --config-source=xml:readwrite:/etc/gconf/gconf.xml.defaults -t str -s /desktop/gnome/background/picture_filename /usr/share/backgrounds/laughlin/default-tod/laughlin.xml
+# make sure to set the right permissions and selinux contexts
+chown -R liveuser:liveuser /home/liveuser/
+restorecon -R /home/liveuser/
 
 EOF
-
-# Remove root password
-passwd -d root > /dev/null
-
-# fstab from the install won't match anything. remove it and let dracut
-# handle mounting.
-cat /dev/null > /etc/fstab
 
 %end
 
 %packages
-@admin-tools
-@standard
+@anaconda-tools
+@base-x
 @base-x
 @core
-@dial-up
+@core
 @fonts
-@gnome-desktop
-@graphical-internet
+@fonts
+@guest-desktop-agents
+@guest-desktop-agents
 @hardware-support
-@input-methods
-#@office
-#@printing
-#@sound-and-video
+@hardware-support
+@libreoffice
+@multimedia
+@multimedia
+@networkmanager-submodules
+@printing
+@printing
+@workstation-product
+aajohan-comfortaa-fonts
 anaconda
-isomd5sum
+fedora-productimg-workstation
 kernel
-laughlin-backgrounds-animated-gnome
 memtest86+
-nss-mdns
--ibus-pinyin-db-open-phrase
--smartmontools
+-@dial-up
+-@input-methods
+-@standard
+-gfs2-utils
+-reiserfs-utils
+
+dracut-config-generic
 grub2-efi
-grub2
-shim
-syslinux
 -dracut-config-rescue
 %end
