@@ -1,0 +1,424 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pylorax.executils &mdash; Lorax 23.8 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Lorax 23.8 documentation" href="../../index.html"/>
+        <link rel="up" title="pylorax" href="../pylorax.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="../../index.html" class="fa fa-home"> Lorax</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction to Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html#before-lorax">Before Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../lorax.html">lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../livemedia-creator.html">livemedia-creator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#quickstart">Quickstart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#how-iso-creation-works">How ISO creation works</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#kickstarts">Kickstarts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#anaconda-image-install-no-virt">Anaconda image install (no-virt)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#ami-images">AMI Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#appliance-creation">Appliance Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#filesystem-image-creation">Filesystem Image Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#tar-file-creation">TAR File Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#live-image-for-pxe-boot">Live Image for PXE Boot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#atomic-live-image-for-pxe-boot">Atomic Live Image for PXE Boot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#using-mock-to-create-images">Using Mock to Create Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#openstack-image-creation">OpenStack Image Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#docker-image-creation">Docker Image Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#debugging-problems">Debugging problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#hacking">Hacking</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../product-images.html">Product and Updates Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">pylorax</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../pylorax.html">pylorax package</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">Lorax</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+          <li><a href="../pylorax.html">pylorax</a> &raquo;</li>
+      
+    <li>pylorax.executils</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <h1>Source code for pylorax.executils</h1><div class="highlight"><pre>
+<span class="c">#</span>
+<span class="c"># executil.py - subprocess execution utility functions</span>
+<span class="c">#</span>
+<span class="c"># Copyright (C) 1999-2015</span>
+<span class="c"># Red Hat, Inc.  All rights reserved.</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the GNU General Public License as published by</span>
+<span class="c"># the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># This program is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c"># GNU General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License</span>
+<span class="c"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c">#</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">signal</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&quot;pylorax&quot;</span><span class="p">)</span>
+<span class="n">program_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&quot;program&quot;</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Lock</span>
+<span class="n">program_log_lock</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>
+
+<span class="n">_child_env</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="setenv"><a class="viewcode-back" href="../../pylorax.html#pylorax.executils.setenv">[docs]</a><span class="k">def</span> <span class="nf">setenv</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Set an environment variable to be used by child processes.</span>
+
+<span class="sd">        This method does not modify os.environ for the running process, which</span>
+<span class="sd">        is not thread-safe. If setenv has already been called for a particular</span>
+<span class="sd">        variable name, the old value is overwritten.</span>
+
+<span class="sd">        :param str name: The name of the environment variable</span>
+<span class="sd">        :param str value: The value of the environment variable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_child_env</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+</div>
+<div class="viewcode-block" id="augmentEnv"><a class="viewcode-back" href="../../pylorax.html#pylorax.executils.augmentEnv">[docs]</a><span class="k">def</span> <span class="nf">augmentEnv</span><span class="p">():</span>
+    <span class="n">env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_child_env</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">env</span>
+</div>
+<div class="viewcode-block" id="ExecProduct"><a class="viewcode-back" href="../../pylorax.html#pylorax.executils.ExecProduct">[docs]</a><span class="k">class</span> <span class="nc">ExecProduct</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rc</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rc</span> <span class="o">=</span> <span class="n">rc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">stdout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">stderr</span>
+</div>
+<div class="viewcode-block" id="startProgram"><a class="viewcode-back" href="../../pylorax.html#pylorax.executils.startProgram">[docs]</a><span class="k">def</span> <span class="nf">startProgram</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="n">stdin</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">STDOUT</span><span class="p">,</span>
+        <span class="n">env_prune</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">env_add</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">reset_handlers</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">reset_lang</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Start an external program and return the Popen object.</span>
+
+<span class="sd">        The root and reset_handlers arguments are handled by passing a</span>
+<span class="sd">        preexec_fn argument to subprocess.Popen, but an additional preexec_fn</span>
+<span class="sd">        can still be specified and will be run. The user preexec_fn will be run</span>
+<span class="sd">        last.</span>
+
+<span class="sd">        :param argv: The command to run and argument</span>
+<span class="sd">        :param root: The directory to chroot to before running command.</span>
+<span class="sd">        :param stdin: The file object to read stdin from.</span>
+<span class="sd">        :param stdout: The file object to write stdout to.</span>
+<span class="sd">        :param stderr: The file object to write stderr to.</span>
+<span class="sd">        :param env_prune: environment variables to remove before execution</span>
+<span class="sd">        :param env_add: environment variables to add before execution</span>
+<span class="sd">        :param reset_handlers: whether to reset to SIG_DFL any signal handlers set to SIG_IGN</span>
+<span class="sd">        :param reset_lang: whether to set the locale of the child process to C</span>
+<span class="sd">        :param kwargs: Additional parameters to pass to subprocess.Popen</span>
+<span class="sd">        :return: A Popen object for the running command.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">env_prune</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">env_prune</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c"># Check for and save a preexec_fn argument</span>
+    <span class="n">preexec_fn</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&quot;preexec_fn&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">preexec</span><span class="p">():</span>
+        <span class="c"># If a target root was specificed, chroot into it</span>
+        <span class="k">if</span> <span class="n">root</span> <span class="ow">and</span> <span class="n">root</span> <span class="o">!=</span> <span class="s">&#39;/&#39;</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chroot</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">)</span>
+
+        <span class="c"># Signal handlers set to SIG_IGN persist across exec. Reset</span>
+        <span class="c"># these to SIG_DFL if requested. In particular this will include the</span>
+        <span class="c"># SIGPIPE handler set by python.</span>
+        <span class="k">if</span> <span class="n">reset_handlers</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">signum</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">NSIG</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">signal</span><span class="o">.</span><span class="n">getsignal</span><span class="p">(</span><span class="n">signum</span><span class="p">)</span> <span class="o">==</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIG_IGN</span><span class="p">:</span>
+                    <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signum</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIG_DFL</span><span class="p">)</span>
+
+        <span class="c"># If the user specified an additional preexec_fn argument, run it</span>
+        <span class="k">if</span> <span class="n">preexec_fn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">preexec_fn</span><span class="p">()</span>
+
+    <span class="k">with</span> <span class="n">program_log_lock</span><span class="p">:</span>
+        <span class="n">program_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Running... </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="s">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">argv</span><span class="p">))</span>
+
+    <span class="n">env</span> <span class="o">=</span> <span class="n">augmentEnv</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">env_prune</span><span class="p">:</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">reset_lang</span><span class="p">:</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s">&quot;LC_ALL&quot;</span><span class="p">:</span> <span class="s">&quot;C&quot;</span><span class="p">})</span>
+
+    <span class="k">if</span> <span class="n">env_add</span><span class="p">:</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">env_add</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span>
+                            <span class="n">stdin</span><span class="o">=</span><span class="n">stdin</span><span class="p">,</span>
+                            <span class="n">stdout</span><span class="o">=</span><span class="n">stdout</span><span class="p">,</span>
+                            <span class="n">stderr</span><span class="o">=</span><span class="n">stderr</span><span class="p">,</span>
+                            <span class="n">close_fds</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                            <span class="n">preexec_fn</span><span class="o">=</span><span class="n">preexec</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+<span class="k">def</span> <span class="nf">_run_program</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="n">stdin</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">env_prune</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">log_output</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+        <span class="n">binary_output</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">filter_stderr</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">raise_err</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Run an external program, log the output and return it to the caller</span>
+<span class="sd">        :param argv: The command to run and argument</span>
+<span class="sd">        :param root: The directory to chroot to before running command.</span>
+<span class="sd">        :param stdin: The file object to read stdin from.</span>
+<span class="sd">        :param stdout: Optional file object to write the output to.</span>
+<span class="sd">        :param env_prune: environment variable to remove before execution</span>
+<span class="sd">        :param log_output: whether to log the output of command</span>
+<span class="sd">        :param binary_output: whether to treat the output of command as binary data</span>
+<span class="sd">        :param filter_stderr: whether to exclude the contents of stderr from the returned output</span>
+<span class="sd">        :param raise_err: whether to raise a CalledProcessError if the returncode is non-zero</span>
+<span class="sd">        :param callback: method to call while waiting for process to finish, passed Popen object</span>
+<span class="sd">        :return: The return code of the command and the output</span>
+<span class="sd">        :raises: OSError or CalledProcessError</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">filter_stderr</span><span class="p">:</span>
+            <span class="n">stderr</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">stderr</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">STDOUT</span>
+
+        <span class="n">proc</span> <span class="o">=</span> <span class="n">startProgram</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">stdin</span><span class="o">=</span><span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">stderr</span><span class="p">,</span>
+                            <span class="n">env_prune</span><span class="o">=</span><span class="n">env_prune</span><span class="p">,</span> <span class="n">universal_newlines</span><span class="o">=</span><span class="ow">not</span> <span class="n">binary_output</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">callback</span><span class="p">:</span>
+            <span class="k">while</span> <span class="n">callback</span><span class="p">(</span><span class="n">proc</span><span class="p">)</span> <span class="ow">and</span> <span class="n">proc</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="p">(</span><span class="n">output_string</span><span class="p">,</span> <span class="n">err_string</span><span class="p">)</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">output_string</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">binary_output</span><span class="p">:</span>
+                <span class="n">output_lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">output_string</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">output_string</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">:</span>
+                    <span class="n">output_string</span> <span class="o">=</span> <span class="n">output_string</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+                <span class="n">output_lines</span> <span class="o">=</span> <span class="n">output_string</span><span class="o">.</span><span class="n">splitlines</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">log_output</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">program_log_lock</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">output_lines</span><span class="p">:</span>
+                        <span class="n">program_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+            <span class="k">if</span> <span class="n">stdout</span><span class="p">:</span>
+                <span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output_string</span><span class="p">)</span>
+
+        <span class="c"># If stderr was filtered, log it separately</span>
+        <span class="k">if</span> <span class="n">filter_stderr</span> <span class="ow">and</span> <span class="n">err_string</span> <span class="ow">and</span> <span class="n">log_output</span><span class="p">:</span>
+            <span class="n">err_lines</span> <span class="o">=</span> <span class="n">err_string</span><span class="o">.</span><span class="n">splitlines</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">program_log_lock</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">err_lines</span><span class="p">:</span>
+                    <span class="n">program_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+    <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">program_log_lock</span><span class="p">:</span>
+            <span class="n">program_log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Error running </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="o">.</span><span class="n">strerror</span><span class="p">)</span>
+        <span class="k">raise</span>
+
+    <span class="k">with</span> <span class="n">program_log_lock</span><span class="p">:</span>
+        <span class="n">program_log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Return code: </span><span class="si">%d</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">proc</span><span class="o">.</span><span class="n">returncode</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">proc</span><span class="o">.</span><span class="n">returncode</span> <span class="ow">and</span> <span class="n">raise_err</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">returncode</span><span class="p">,</span> <span class="n">argv</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">returncode</span><span class="p">,</span> <span class="n">output_string</span><span class="p">)</span>
+
+<div class="viewcode-block" id="execWithRedirect"><a class="viewcode-back" href="../../pylorax.html#pylorax.executils.execWithRedirect">[docs]</a><span class="k">def</span> <span class="nf">execWithRedirect</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">argv</span><span class="p">,</span> <span class="n">stdin</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="n">env_prune</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                     <span class="n">log_output</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">binary_output</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">raise_err</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Run an external program and redirect the output to a file.</span>
+<span class="sd">        :param command: The command to run</span>
+<span class="sd">        :param argv: The argument list</span>
+<span class="sd">        :param stdin: The file object to read stdin from.</span>
+<span class="sd">        :param stdout: Optional file object to redirect stdout and stderr to.</span>
+<span class="sd">        :param root: The directory to chroot to before running command.</span>
+<span class="sd">        :param env_prune: environment variable to remove before execution</span>
+<span class="sd">        :param log_output: whether to log the output of command</span>
+<span class="sd">        :param binary_output: whether to treat the output of command as binary data</span>
+<span class="sd">        :param raise_err: whether to raise a CalledProcessError if the returncode is non-zero</span>
+<span class="sd">        :param callback: method to call while waiting for process to finish, passed Popen object</span>
+<span class="sd">        :return: The return code of the command</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">argv</span> <span class="o">=</span> <span class="p">[</span><span class="n">command</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_run_program</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="n">stdin</span><span class="o">=</span><span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">stdout</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">env_prune</span><span class="o">=</span><span class="n">env_prune</span><span class="p">,</span>
+            <span class="n">log_output</span><span class="o">=</span><span class="n">log_output</span><span class="p">,</span> <span class="n">binary_output</span><span class="o">=</span><span class="n">binary_output</span><span class="p">,</span> <span class="n">raise_err</span><span class="o">=</span><span class="n">raise_err</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="execWithCapture"><a class="viewcode-back" href="../../pylorax.html#pylorax.executils.execWithCapture">[docs]</a><span class="k">def</span> <span class="nf">execWithCapture</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">argv</span><span class="p">,</span> <span class="n">stdin</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="n">log_output</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">filter_stderr</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                    <span class="n">raise_err</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Run an external program and capture standard out and err.</span>
+<span class="sd">        :param command: The command to run</span>
+<span class="sd">        :param argv: The argument list</span>
+<span class="sd">        :param stdin: The file object to read stdin from.</span>
+<span class="sd">        :param root: The directory to chroot to before running command.</span>
+<span class="sd">        :param log_output: Whether to log the output of command</span>
+<span class="sd">        :param filter_stderr: Whether stderr should be excluded from the returned output</span>
+<span class="sd">        :param raise_err: whether to raise a CalledProcessError if the returncode is non-zero</span>
+<span class="sd">        :return: The output of the command</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">argv</span> <span class="o">=</span> <span class="p">[</span><span class="n">command</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_run_program</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="n">stdin</span><span class="o">=</span><span class="n">stdin</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">log_output</span><span class="o">=</span><span class="n">log_output</span><span class="p">,</span> <span class="n">filter_stderr</span><span class="o">=</span><span class="n">filter_stderr</span><span class="p">,</span>
+                        <span class="n">raise_err</span><span class="o">=</span><span class="n">raise_err</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="runcmd"><a class="viewcode-back" href="../../pylorax.html#pylorax.executils.runcmd">[docs]</a><span class="k">def</span> <span class="nf">runcmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; run execWithRedirect with raise_err=True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">kwargs</span><span class="p">[</span><span class="s">&quot;raise_err&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">return</span> <span class="n">execWithRedirect</span><span class="p">(</span><span class="n">cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cmd</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="runcmd_output"><a class="viewcode-back" href="../../pylorax.html#pylorax.executils.runcmd_output">[docs]</a><span class="k">def</span> <span class="nf">runcmd_output</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; run execWithCapture with raise_err=True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">kwargs</span><span class="p">[</span><span class="s">&quot;raise_err&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">return</span> <span class="n">execWithCapture</span><span class="p">(</span><span class="n">cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cmd</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Red Hat, Inc..
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'23.8',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

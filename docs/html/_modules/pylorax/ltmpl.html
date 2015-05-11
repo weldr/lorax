@@ -1,0 +1,902 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pylorax.ltmpl &mdash; Lorax 23.8 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Lorax 23.8 documentation" href="../../index.html"/>
+        <link rel="up" title="pylorax" href="../pylorax.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="../../index.html" class="fa fa-home"> Lorax</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction to Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html#before-lorax">Before Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../lorax.html">lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../livemedia-creator.html">livemedia-creator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#quickstart">Quickstart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#how-iso-creation-works">How ISO creation works</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#kickstarts">Kickstarts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#anaconda-image-install-no-virt">Anaconda image install (no-virt)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#ami-images">AMI Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#appliance-creation">Appliance Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#filesystem-image-creation">Filesystem Image Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#tar-file-creation">TAR File Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#live-image-for-pxe-boot">Live Image for PXE Boot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#atomic-live-image-for-pxe-boot">Atomic Live Image for PXE Boot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#using-mock-to-create-images">Using Mock to Create Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#openstack-image-creation">OpenStack Image Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#docker-image-creation">Docker Image Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#debugging-problems">Debugging problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#hacking">Hacking</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../product-images.html">Product and Updates Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">pylorax</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../pylorax.html">pylorax package</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">Lorax</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+          <li><a href="../pylorax.html">pylorax</a> &raquo;</li>
+      
+    <li>pylorax.ltmpl</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <h1>Source code for pylorax.ltmpl</h1><div class="highlight"><pre>
+<span class="c">#</span>
+<span class="c"># ltmpl.py</span>
+<span class="c">#</span>
+<span class="c"># Copyright (C) 2009-2015  Red Hat, Inc.</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the GNU General Public License as published by</span>
+<span class="c"># the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># This program is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c"># GNU General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License</span>
+<span class="c"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c">#</span>
+<span class="c"># Red Hat Author(s):  Martin Gracik &lt;mgracik@redhat.com&gt;</span>
+<span class="c">#                     Will Woods &lt;wwoods@redhat.com&gt;</span>
+<span class="c">#</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&quot;pylorax.ltmpl&quot;</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">shlex</span><span class="o">,</span> <span class="nn">fnmatch</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">basename</span><span class="p">,</span> <span class="n">isdir</span>
+<span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">CalledProcessError</span>
+
+<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="kn">import</span> <span class="n">joinpaths</span><span class="p">,</span> <span class="n">cpfile</span><span class="p">,</span> <span class="n">mvfile</span><span class="p">,</span> <span class="n">replace</span><span class="p">,</span> <span class="n">remove</span>
+<span class="kn">from</span> <span class="nn">pylorax.dnfhelper</span> <span class="kn">import</span> <span class="n">LoraxDownloadCallback</span><span class="p">,</span> <span class="n">LoraxRpmCallback</span>
+<span class="kn">from</span> <span class="nn">pylorax.base</span> <span class="kn">import</span> <span class="n">DataHolder</span>
+<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="kn">import</span> <span class="n">runcmd</span><span class="p">,</span> <span class="n">runcmd_output</span>
+<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">mkcpio</span>
+<span class="kn">import</span> <span class="nn">pylorax.output</span> <span class="kn">as</span> <span class="nn">output</span>
+
+<span class="kn">from</span> <span class="nn">mako.lookup</span> <span class="kn">import</span> <span class="n">TemplateLookup</span>
+<span class="kn">from</span> <span class="nn">mako.exceptions</span> <span class="kn">import</span> <span class="n">text_error_template</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">import</span> <span class="nn">dnf</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">queue</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+
+<div class="viewcode-block" id="LoraxTemplate"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplate">[docs]</a><span class="k">class</span> <span class="nc">LoraxTemplate</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directories</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">directories</span> <span class="o">=</span> <span class="n">directories</span> <span class="ow">or</span> <span class="p">[</span><span class="s">&quot;/usr/share/lorax&quot;</span><span class="p">]</span>
+        <span class="c"># we have to add [&quot;/&quot;] to the template lookup directories or the</span>
+        <span class="c"># file includes won&#39;t work properly for absolute paths</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">directories</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;/&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">directories</span>
+
+<div class="viewcode-block" id="LoraxTemplate.parse"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplate.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_file</span><span class="p">,</span> <span class="n">variables</span><span class="p">):</span>
+        <span class="n">lookup</span> <span class="o">=</span> <span class="n">TemplateLookup</span><span class="p">(</span><span class="n">directories</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">directories</span><span class="p">)</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="n">lookup</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="n">template_file</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">textbuf</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">variables</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Problem rendering </span><span class="si">%s</span><span class="s"> (</span><span class="si">%s</span><span class="s">):&quot;</span><span class="p">,</span> <span class="n">template_file</span><span class="p">,</span> <span class="n">variables</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">text_error_template</span><span class="p">()</span><span class="o">.</span><span class="n">render</span><span class="p">())</span>
+            <span class="k">raise</span>
+
+        <span class="c"># split, strip and remove empty lines</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">textbuf</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span> <span class="k">if</span> <span class="n">line</span><span class="p">]</span>
+
+        <span class="c"># remove comments</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;#&quot;</span><span class="p">)]</span>
+
+        <span class="c"># split with shlex and perform brace expansion</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">split_and_expand</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">lines</span>
+</div></div>
+<div class="viewcode-block" id="split_and_expand"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.split_and_expand">[docs]</a><span class="k">def</span> <span class="nf">split_and_expand</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">exp</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">exp</span> <span class="ow">in</span> <span class="n">brace_expand</span><span class="p">(</span><span class="n">word</span><span class="p">)]</span>
+</div>
+<div class="viewcode-block" id="brace_expand"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.brace_expand">[docs]</a><span class="k">def</span> <span class="nf">brace_expand</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="s">&#39;{&#39;</span> <span class="ow">in</span> <span class="n">s</span> <span class="ow">and</span> <span class="s">&#39;,&#39;</span> <span class="ow">in</span> <span class="n">s</span> <span class="ow">and</span> <span class="s">&#39;}&#39;</span> <span class="ow">in</span> <span class="n">s</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">s</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">right</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;}&#39;</span><span class="p">)</span>
+        <span class="n">left</span> <span class="o">=</span> <span class="n">s</span><span class="p">[:</span><span class="n">right</span><span class="p">]</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s">&#39;{&#39;</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="n">s</span><span class="p">[:</span><span class="n">left</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="n">left</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">right</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="n">right</span><span class="o">+</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="k">for</span> <span class="n">choice</span> <span class="ow">in</span> <span class="n">choices</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">alt</span> <span class="ow">in</span> <span class="n">brace_expand</span><span class="p">(</span><span class="n">prefix</span><span class="o">+</span><span class="n">choice</span><span class="o">+</span><span class="n">suffix</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">alt</span>
+</div>
+<div class="viewcode-block" id="rglob"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.rglob">[docs]</a><span class="k">def</span> <span class="nf">rglob</span><span class="p">(</span><span class="n">pathname</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="n">fatal</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">rootlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">pathname</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">f</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+            <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">f</span><span class="p">[</span><span class="n">rootlen</span><span class="p">:]</span> <span class="c"># remove the root to produce relative path</span>
+    <span class="k">if</span> <span class="n">fatal</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">seen</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s">&quot;nothing matching </span><span class="si">%s</span><span class="s"> in </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pathname</span><span class="p">,</span> <span class="n">root</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="rexists"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.rexists">[docs]</a><span class="k">def</span> <span class="nf">rexists</span><span class="p">(</span><span class="n">pathname</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">):</span>
+    <span class="c"># Generator is always True, even with no values;</span>
+    <span class="c"># bool(rglob(...)) won&#39;t work here.</span>
+    <span class="k">for</span> <span class="n">_path</span> <span class="ow">in</span> <span class="n">rglob</span><span class="p">(</span><span class="n">pathname</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">True</span>
+    <span class="k">return</span> <span class="bp">False</span>
+
+<span class="c"># TODO: operate inside an actual chroot for safety? Not that RPM bothers..</span></div>
+<div class="viewcode-block" id="LoraxTemplateRunner"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner">[docs]</a><span class="k">class</span> <span class="nc">LoraxTemplateRunner</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This class parses and executes Lorax templates. Sample usage:</span>
+
+<span class="sd">      # install a bunch of packages</span>
+<span class="sd">      runner = LoraxTemplateRunner(inroot=rundir, outroot=rundir, dbo=dnf_obj)</span>
+<span class="sd">      runner.run(&quot;install-packages.ltmpl&quot;)</span>
+
+<span class="sd">      # modify a runtime dir</span>
+<span class="sd">      runner = LoraxTemplateRunner(inroot=rundir, outroot=newrun)</span>
+<span class="sd">      runner.run(&quot;runtime-transmogrify.ltmpl&quot;)</span>
+
+<span class="sd">    NOTES:</span>
+
+<span class="sd">    * Parsing procedure is roughly:</span>
+<span class="sd">      1. Mako template expansion (on the whole file)</span>
+<span class="sd">      2. For each line of the result,</span>
+<span class="sd">        a. Whitespace splitting (using shlex.split())</span>
+<span class="sd">        b. Brace expansion (using brace_expand())</span>
+<span class="sd">        c. If the first token is the name of a function, call that function</span>
+<span class="sd">           with the rest of the line as arguments</span>
+
+<span class="sd">    * Parsing and execution are *separate* passes - so you can&#39;t use the result</span>
+<span class="sd">      of a command in an %if statement (or any other control statements)!</span>
+
+<span class="sd">    * Commands that run external programs (systemctl, gconfset) currently use</span>
+<span class="sd">      the *host*&#39;s copy of that program, which may cause problems if there&#39;s a</span>
+<span class="sd">      big enough difference between the host and the image you&#39;re modifying.</span>
+
+<span class="sd">    * The commands are not executed under a real chroot, so absolute symlinks</span>
+<span class="sd">      will point *outside* the inroot/outroot. Be careful with symlinks!</span>
+
+<span class="sd">    ADDING NEW COMMANDS:</span>
+
+<span class="sd">    * Each template command is just a method of the LoraxTemplateRunner</span>
+<span class="sd">      object - so adding a new command is as easy as adding a new function.</span>
+
+<span class="sd">    * Each function gets arguments that correspond to the rest of the tokens</span>
+<span class="sd">      on that line (after word splitting and brace expansion)</span>
+
+<span class="sd">    * Commands should raise exceptions for errors - don&#39;t use sys.exit()</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inroot</span><span class="p">,</span> <span class="n">outroot</span><span class="p">,</span> <span class="n">dbo</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fatalerrors</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                                        <span class="n">templatedir</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inroot</span> <span class="o">=</span> <span class="n">inroot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outroot</span> <span class="o">=</span> <span class="n">outroot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span> <span class="o">=</span> <span class="n">dbo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fatalerrors</span> <span class="o">=</span> <span class="n">fatalerrors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">templatedir</span> <span class="o">=</span> <span class="n">templatedir</span> <span class="ow">or</span> <span class="s">&quot;/usr/share/lorax&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">templatefile</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="c"># some builtin methods</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">builtins</span> <span class="o">=</span> <span class="n">DataHolder</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">rexists</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">inroot</span><span class="p">),</span>
+                                   <span class="n">glob</span><span class="o">=</span><span class="k">lambda</span> <span class="n">g</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">rglob</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">inroot</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span> <span class="o">=</span> <span class="n">defaults</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="n">DataHolder</span><span class="p">(</span><span class="n">treeinfo</span><span class="o">=</span><span class="nb">dict</span><span class="p">())</span> <span class="c"># just treeinfo for now</span>
+        <span class="c"># TODO: set up custom logger with a filter to add line info</span>
+
+    <span class="k">def</span> <span class="nf">_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outroot</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inroot</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_filelist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">pkgs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the list of files in the packages &quot;&quot;&quot;</span>
+        <span class="n">pkglist</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">pkg_glob</span> <span class="ow">in</span> <span class="n">pkgs</span><span class="p">:</span>
+            <span class="n">pkglist</span> <span class="o">+=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="o">.</span><span class="n">query</span><span class="p">()</span><span class="o">.</span><span class="n">installed</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">name__glob</span><span class="o">=</span><span class="n">pkg_glob</span><span class="p">))</span>
+
+        <span class="c"># dnf/hawkey doesn&#39;t make any distinction between file, dir or ghost like yum did</span>
+        <span class="c"># so only return the files.</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">f</span> <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">pkglist</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">pkg</span><span class="o">.</span><span class="n">files</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="n">f</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">_getsize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">files</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="n">f</span><span class="p">))</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="n">f</span><span class="p">)))</span>
+
+<div class="viewcode-block" id="LoraxTemplateRunner.run"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">templatefile</span><span class="p">,</span> <span class="o">**</span><span class="n">variables</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">builtins</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="n">variables</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;executing </span><span class="si">%s</span><span class="s"> with variables=</span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">templatefile</span><span class="p">,</span> <span class="n">variables</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">templatefile</span> <span class="o">=</span> <span class="n">templatefile</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">LoraxTemplate</span><span class="p">(</span><span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">templatedir</span><span class="p">])</span>
+        <span class="n">commands</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">templatefile</span><span class="p">,</span> <span class="n">variables</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_run</span><span class="p">(</span><span class="n">commands</span><span class="p">)</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_template</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;running </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">templatefile</span><span class="p">)</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">parsed_template</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;template line </span><span class="si">%i</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="s">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+            <span class="n">skiperror</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+            <span class="c"># Following Makefile convention, if the command is prefixed with</span>
+            <span class="c"># a dash (&#39;-&#39;), we&#39;ll ignore any errors on that line.</span>
+            <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;-&#39;</span><span class="p">):</span>
+                <span class="n">cmd</span> <span class="o">=</span> <span class="n">cmd</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+                <span class="n">skiperror</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c"># grab the method named in cmd and pass it the given arguments</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;_&#39;</span> <span class="ow">or</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s">&#39;run&#39;</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Callable</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;unknown command </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">cmd</span><span class="p">)</span>
+                <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span> <span class="c"># pylint: disable=broad-except</span>
+                <span class="k">if</span> <span class="n">skiperror</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;ignoring error&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;template command error in </span><span class="si">%s</span><span class="s">:&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">templatefile</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;  </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="s">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+                <span class="c"># format the exception traceback</span>
+                <span class="n">exclines</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exception</span><span class="p">(</span><span class="o">*</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span>
+                <span class="c"># skip the bit about &quot;ltmpl.py, in _run()&quot; - we know that</span>
+                <span class="n">exclines</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="c"># log the &quot;ErrorType: this is what happened&quot; line</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;  &quot;</span> <span class="o">+</span> <span class="n">exclines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                <span class="c"># and log the entire traceback to the debug log</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exclines</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;  &quot;</span> <span class="o">+</span> <span class="n">line</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fatalerrors</span><span class="p">:</span>
+                    <span class="k">raise</span>
+
+<div class="viewcode-block" id="LoraxTemplateRunner.install"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.install">[docs]</a>    <span class="k">def</span> <span class="nf">install</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">srcglob</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        install SRC DEST</span>
+<span class="sd">          Copy the given file (or files, if a glob is used) from the input</span>
+<span class="sd">          tree to the given destination in the output tree.</span>
+<span class="sd">          The path to DEST must exist in the output tree.</span>
+<span class="sd">          If DEST is a directory, SRC will be copied into that directory.</span>
+<span class="sd">          If DEST doesn&#39;t exist, SRC will be copied to a file with that name,</span>
+<span class="sd">          assuming the rest of the path exists.</span>
+<span class="sd">          This is pretty much like how the &#39;cp&#39; command works.</span>
+<span class="sd">          Examples:</span>
+<span class="sd">            install usr/share/myconfig/grub.conf /boot</span>
+<span class="sd">            install /usr/share/myconfig/grub.conf.in /boot/grub.conf</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">rglob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_in</span><span class="p">(</span><span class="n">srcglob</span><span class="p">),</span> <span class="n">fatal</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+            <span class="n">cpfile</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="n">dest</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="LoraxTemplateRunner.installimg"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.installimg">[docs]</a>    <span class="k">def</span> <span class="nf">installimg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">srcdir</span><span class="p">,</span> <span class="n">destfile</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        installimg SRCDIR DESTFILE</span>
+<span class="sd">          Create a compressed cpio archive of the contents of SRCDIR and place</span>
+<span class="sd">          it in DESTFILE.</span>
+
+<span class="sd">          If SRCDIR doesn&#39;t exist or is empty nothing is created.</span>
+
+<span class="sd">          Examples:</span>
+<span class="sd">            installimg ${LORAXDIR}/product/ images/product.img</span>
+<span class="sd">            installimg ${LORAXDIR}/updates/ images/updates.img</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_in</span><span class="p">(</span><span class="n">srcdir</span><span class="p">))</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_in</span><span class="p">(</span><span class="n">srcdir</span><span class="p">)):</span>
+            <span class="k">return</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Creating image file </span><span class="si">%s</span><span class="s"> from contents of </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="n">destfile</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_in</span><span class="p">(</span><span class="n">srcdir</span><span class="p">))</span>
+        <span class="n">mkcpio</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_in</span><span class="p">(</span><span class="n">srcdir</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="n">destfile</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="LoraxTemplateRunner.mkdir"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.mkdir">[docs]</a>    <span class="k">def</span> <span class="nf">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">dirs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        mkdir DIR [DIR ...]</span>
+<span class="sd">          Create the named DIR(s). Will create leading directories as needed.</span>
+<span class="sd">          Example:</span>
+<span class="sd">            mkdir /images</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">isdir</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="LoraxTemplateRunner.replace"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.replace">[docs]</a>    <span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pat</span><span class="p">,</span> <span class="n">repl</span><span class="p">,</span> <span class="o">*</span><span class="n">fileglobs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        replace PATTERN REPLACEMENT FILEGLOB [FILEGLOB ...]</span>
+<span class="sd">          Find-and-replace the given PATTERN (Python-style regex) with the given</span>
+<span class="sd">          REPLACEMENT string for each of the files listed.</span>
+<span class="sd">          Example:</span>
+<span class="sd">            replace @VERSION@ ${product.version} /boot/grub.conf /boot/isolinux.cfg</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">fileglobs</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">rglob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="n">g</span><span class="p">)):</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="n">replace</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">pat</span><span class="p">,</span> <span class="n">repl</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s">&quot;no files matched </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="s">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fileglobs</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="LoraxTemplateRunner.append"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        append FILE STRING</span>
+<span class="sd">          Append STRING (followed by a newline character) to FILE.</span>
+<span class="sd">          Python character escape sequences (&#39;\\n&#39;, &#39;\\t&#39;, etc.) will be</span>
+<span class="sd">          converted to the appropriate characters.</span>
+<span class="sd">          Examples:</span>
+<span class="sd">            append /etc/depmod.d/dd.conf &quot;search updates built-in&quot;</span>
+<span class="sd">            append /etc/resolv.conf &quot;&quot;</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="s">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fobj</span><span class="p">:</span>
+            <span class="n">fobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s">&quot;utf8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;unicode_escape&#39;</span><span class="p">)</span><span class="o">+</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="LoraxTemplateRunner.treeinfo"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.treeinfo">[docs]</a>    <span class="k">def</span> <span class="nf">treeinfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="o">*</span><span class="n">valuetoks</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        treeinfo SECTION KEY ARG [ARG ...]</span>
+<span class="sd">          Add an item to the treeinfo data store.</span>
+<span class="sd">          The given SECTION will have a new item added where</span>
+<span class="sd">          KEY = ARG ARG ...</span>
+<span class="sd">          Example:</span>
+<span class="sd">            treeinfo images-${kernel.arch} boot.iso images/boot.iso</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">section</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">treeinfo</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">treeinfo</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">treeinfo</span><span class="p">[</span><span class="n">section</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">valuetoks</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="LoraxTemplateRunner.installkernel"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.installkernel">[docs]</a>    <span class="k">def</span> <span class="nf">installkernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        installkernel SECTION SRC DEST</span>
+<span class="sd">          Install the kernel from SRC in the input tree to DEST in the output</span>
+<span class="sd">          tree, and then add an item to the treeinfo data store, in the named</span>
+<span class="sd">          SECTION, where &quot;kernel&quot; = DEST.</span>
+
+<span class="sd">          Equivalent to:</span>
+<span class="sd">            install SRC DEST</span>
+<span class="sd">            treeinfo SECTION kernel DEST</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeinfo</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="s">&quot;kernel&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="LoraxTemplateRunner.installinitrd"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.installinitrd">[docs]</a>    <span class="k">def</span> <span class="nf">installinitrd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        installinitrd SECTION SRC DEST</span>
+<span class="sd">          Same as installkernel, but for &quot;initrd&quot;.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s">&#39;644&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeinfo</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="s">&quot;initrd&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="LoraxTemplateRunner.installupgradeinitrd"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.installupgradeinitrd">[docs]</a>    <span class="k">def</span> <span class="nf">installupgradeinitrd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        installupgradeinitrd SECTION SRC DEST</span>
+<span class="sd">          Same as installkernel, but for &quot;upgrade&quot;.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s">&#39;644&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeinfo</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="s">&quot;upgrade&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="LoraxTemplateRunner.hardlink"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.hardlink">[docs]</a>    <span class="k">def</span> <span class="nf">hardlink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        hardlink SRC DEST</span>
+<span class="sd">          Create a hardlink at DEST which is linked to SRC.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="n">dest</span><span class="p">)):</span>
+            <span class="n">dest</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">basename</span><span class="p">(</span><span class="n">src</span><span class="p">))</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">link</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="n">src</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="n">dest</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="LoraxTemplateRunner.symlink"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.symlink">[docs]</a>    <span class="k">def</span> <span class="nf">symlink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        symlink SRC DEST</span>
+<span class="sd">          Create a symlink at DEST which points to SRC.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">rexists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="n">dest</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="n">dest</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="LoraxTemplateRunner.copy"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        copy SRC DEST</span>
+<span class="sd">          Copy SRC to DEST.</span>
+<span class="sd">          If DEST is a directory, SRC will be copied inside it.</span>
+<span class="sd">          If DEST doesn&#39;t exist, SRC will be copied to a file with</span>
+<span class="sd">          that name, if the path leading to it exists.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">cpfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="n">src</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="n">dest</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="LoraxTemplateRunner.move"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.move">[docs]</a>    <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        move SRC DEST</span>
+<span class="sd">          Move SRC to DEST.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">mvfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="n">src</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="n">dest</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="LoraxTemplateRunner.remove"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">fileglobs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        remove FILEGLOB [FILEGLOB ...]</span>
+<span class="sd">          Remove all the named files or directories.</span>
+<span class="sd">          Will *not* raise exceptions if the file(s) are not found.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">fileglobs</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">rglob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="n">g</span><span class="p">)):</span>
+                <span class="n">remove</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;removed </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="LoraxTemplateRunner.chmod"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.chmod">[docs]</a>    <span class="k">def</span> <span class="nf">chmod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fileglob</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        chmod FILEGLOB OCTALMODE</span>
+<span class="sd">          Change the mode of all the files matching FILEGLOB to OCTALMODE.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">rglob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="n">fileglob</span><span class="p">),</span> <span class="n">fatal</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+
+    <span class="c"># TODO: do we need a new command for gsettings?</span></div>
+<div class="viewcode-block" id="LoraxTemplateRunner.gconfset"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.gconfset">[docs]</a>    <span class="k">def</span> <span class="nf">gconfset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">keytype</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        gconfset PATH KEYTYPE VALUE [OUTFILE]</span>
+<span class="sd">          Set the given gconf PATH, with type KEYTYPE, to the given value.</span>
+<span class="sd">          OUTFILE defaults to /etc/gconf/gconf.xml.defaults if not given.</span>
+<span class="sd">          Example:</span>
+<span class="sd">            gconfset /apps/metacity/general/num_workspaces int 1</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">outfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="s">&quot;etc/gconf/gconf.xml.defaults&quot;</span><span class="p">)</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;gconftool-2&quot;</span><span class="p">,</span> <span class="s">&quot;--direct&quot;</span><span class="p">,</span>
+                    <span class="s">&quot;--config-source=xml:readwrite:</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">outfile</span><span class="p">,</span>
+                    <span class="s">&quot;--set&quot;</span><span class="p">,</span> <span class="s">&quot;--type&quot;</span><span class="p">,</span> <span class="n">keytype</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">value</span><span class="p">]</span>
+        <span class="n">runcmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="LoraxTemplateRunner.log"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.log">[docs]</a>    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        log MESSAGE</span>
+<span class="sd">          Emit the given log message. Be sure to put it in quotes!</span>
+<span class="sd">          Example:</span>
+<span class="sd">            log &quot;Reticulating splines, please wait...&quot;</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="c"># TODO: add ssh-keygen, mkisofs(?), find, and other useful commands</span></div>
+<div class="viewcode-block" id="LoraxTemplateRunner.runcmd"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.runcmd">[docs]</a>    <span class="k">def</span> <span class="nf">runcmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">cmdlist</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        runcmd CMD [ARG ...]</span>
+<span class="sd">          Run the given command with the given arguments.</span>
+
+<span class="sd">          NOTE: All paths given MUST be COMPLETE, ABSOLUTE PATHS to the file</span>
+<span class="sd">          or files mentioned. ${root}/${inroot}/${outroot} are good for</span>
+<span class="sd">          constructing these paths.</span>
+
+<span class="sd">          FURTHER NOTE: Please use this command only as a last resort!</span>
+<span class="sd">          Whenever possible, you should use the existing template commands.</span>
+<span class="sd">          If the existing commands don&#39;t do what you need, fix them!</span>
+
+<span class="sd">          Examples:</span>
+<span class="sd">            (this should be replaced with a &quot;find&quot; function)</span>
+<span class="sd">            runcmd find ${root} -name &quot;*.pyo&quot; -type f -delete</span>
+<span class="sd">            %for f in find(root, name=&quot;*.pyo&quot;):</span>
+<span class="sd">                remove ${f}</span>
+<span class="sd">            %endfor</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="n">cmdlist</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;running command: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;--chdir=&quot;</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;--chdir is no longer supported for runcmd.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;--chdir is no longer supported for runcmd.&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">stdout</span> <span class="o">=</span> <span class="n">runcmd_output</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">stdout</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;command output:</span><span class="se">\n</span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">stdout</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;command finished successfully&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;command output:</span><span class="se">\n</span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;command returned failure (</span><span class="si">%d</span><span class="s">)&#39;</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">returncode</span><span class="p">)</span>
+            <span class="k">raise</span>
+</div>
+<div class="viewcode-block" id="LoraxTemplateRunner.installpkg"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.installpkg">[docs]</a>    <span class="k">def</span> <span class="nf">installpkg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">pkgs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        installpkg [--required] PKGGLOB [PKGGLOB ...]</span>
+<span class="sd">          Request installation of all packages matching the given globs.</span>
+<span class="sd">          Note that this is just a *request* - nothing is *actually* installed</span>
+<span class="sd">          until the &#39;run_pkg_transaction&#39; command is given.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">required</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="n">pkgs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;--required&#39;</span><span class="p">:</span>
+            <span class="n">pkgs</span> <span class="o">=</span> <span class="n">pkgs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="n">required</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pkgs</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="c"># pylint: disable=broad-except</span>
+                <span class="c"># FIXME: save exception and re-raise after the loop finishes</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;installpkg </span><span class="si">%s</span><span class="s"> failed: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">required</span><span class="p">:</span>
+                    <span class="k">raise</span>
+</div>
+<div class="viewcode-block" id="LoraxTemplateRunner.removepkg"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.removepkg">[docs]</a>    <span class="k">def</span> <span class="nf">removepkg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">pkgs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        removepkg PKGGLOB [PKGGLOB...]</span>
+<span class="sd">          Delete the named package(s).</span>
+<span class="sd">          IMPLEMENTATION NOTES:</span>
+<span class="sd">            RPM scriptlets (%preun/%postun) are *not* run.</span>
+<span class="sd">            Files are deleted, but directories are left behind.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pkgs</span><span class="p">:</span>
+            <span class="n">filepaths</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filelist</span><span class="p">(</span><span class="n">p</span><span class="p">)]</span>
+            <span class="c"># TODO: also remove directories that aren&#39;t owned by anything else</span>
+            <span class="k">if</span> <span class="n">filepaths</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;removepkg </span><span class="si">%s</span><span class="s">: </span><span class="si">%i</span><span class="s">kb&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getsize</span><span class="p">(</span><span class="o">*</span><span class="n">filepaths</span><span class="p">)</span><span class="o">/</span><span class="mi">1024</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="o">*</span><span class="n">filepaths</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;removepkg </span><span class="si">%s</span><span class="s">: no files to remove!&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="LoraxTemplateRunner.get_token_checked"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.get_token_checked">[docs]</a>    <span class="k">def</span> <span class="nf">get_token_checked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">process</span><span class="p">,</span> <span class="n">token_queue</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Try to get token from queue checking that process is still alive&quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c"># wait at most a minute for the token</span>
+            <span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span> <span class="o">=</span> <span class="n">token_queue</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">queue</span><span class="o">.</span><span class="n">Empty</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">process</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c"># process still alive, give it 2 minutes more</span>
+                    <span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span> <span class="o">=</span> <span class="n">token_queue</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">queue</span><span class="o">.</span><span class="n">Empty</span><span class="p">:</span>
+                    <span class="c"># waited for 3 minutes and got nothing</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;The transaction process got stuck somewhere (no message from it in 3 minutes)&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;The transaction process has ended abruptly&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="LoraxTemplateRunner.run_pkg_transaction"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.run_pkg_transaction">[docs]</a>    <span class="k">def</span> <span class="nf">run_pkg_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        run_pkg_transaction</span>
+<span class="sd">          Actually install all the packages requested by previous &#39;installpkg&#39;</span>
+<span class="sd">          commands.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">def</span> <span class="nf">do_transaction</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">token_queue</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">display</span> <span class="o">=</span> <span class="n">LoraxRpmCallback</span><span class="p">(</span><span class="n">token_queue</span><span class="p">)</span>
+                <span class="n">base</span><span class="o">.</span><span class="n">do_transaction</span><span class="p">(</span><span class="n">display</span><span class="o">=</span><span class="n">display</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;The transaction process has ended abruptly: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                <span class="n">token_queue</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="s">&#39;quit&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Checking dependencies&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">dnf</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">DepsolveError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Dependency check failed: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+            <span class="k">raise</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%d</span><span class="s"> packages selected&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">transaction</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">transaction</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;No packages in transaction&quot;</span><span class="p">)</span>
+
+        <span class="n">pkgs_to_download</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">transaction</span><span class="o">.</span><span class="n">install_set</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Downloading packages&quot;</span><span class="p">)</span>
+        <span class="n">progress</span> <span class="o">=</span> <span class="n">LoraxDownloadCallback</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">download_packages</span><span class="p">(</span><span class="n">pkgs_to_download</span><span class="p">,</span> <span class="n">progress</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">dnf</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">DownloadError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Failed to download the following packages: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+            <span class="k">raise</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Preparing transaction from installation source&quot;</span><span class="p">)</span>
+        <span class="n">token_queue</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+        <span class="n">msgout</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">LoraxOutput</span><span class="p">()</span>
+        <span class="n">process</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">do_transaction</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="p">,</span> <span class="n">token_queue</span><span class="p">))</span>
+        <span class="n">process</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_token_checked</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="n">token_queue</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="n">token</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;post&#39;</span><span class="p">,</span> <span class="s">&#39;quit&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">token</span> <span class="o">==</span> <span class="s">&#39;install&#39;</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+                <span class="n">msgout</span><span class="o">.</span><span class="n">writeline</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_token_checked</span><span class="p">(</span><span class="n">process</span><span class="p">,</span> <span class="n">token_queue</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">token</span> <span class="o">==</span> <span class="s">&#39;quit&#39;</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Transaction failed.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Transaction failed&quot;</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Performing post-installation setup tasks&quot;</span><span class="p">)</span>
+        <span class="n">process</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+        <span class="c"># Reset the package sack to pick up the installed packages</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">repos</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">fill_sack</span><span class="p">(</span><span class="n">load_system_repo</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">load_available_repos</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="c"># At this point dnf should know about the installed files. Double check that it really does.</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_filelist</span><span class="p">(</span><span class="s">&quot;anaconda-core&quot;</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Failed to reset dbo to installed package set&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="LoraxTemplateRunner.removefrom"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.removefrom">[docs]</a>    <span class="k">def</span> <span class="nf">removefrom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkg</span><span class="p">,</span> <span class="o">*</span><span class="n">globs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        removefrom PKGGLOB [--allbut] FILEGLOB [FILEGLOB...]</span>
+<span class="sd">          Remove all files matching the given file globs from the package</span>
+<span class="sd">          (or packages) named.</span>
+<span class="sd">          If &#39;--allbut&#39; is used, all the files from the given package(s) will</span>
+<span class="sd">          be removed *except* the ones which match the file globs.</span>
+<span class="sd">          Examples:</span>
+<span class="sd">            removefrom usbutils /usr/bin/*</span>
+<span class="sd">            removefrom xfsprogs --allbut /sbin/*</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pkg</span><span class="p">,</span> <span class="s">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">globs</span><span class="p">))</span> <span class="c"># save for later logging</span>
+        <span class="n">keepmatches</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="n">globs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;--allbut&#39;</span><span class="p">:</span>
+            <span class="n">keepmatches</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">globs</span> <span class="o">=</span> <span class="n">globs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="c"># get pkg filelist and find files that match the globs</span>
+        <span class="n">filelist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filelist</span><span class="p">(</span><span class="n">pkg</span><span class="p">)</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">globs</span><span class="p">:</span>
+            <span class="n">globs_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">fnmatch</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">g</span><span class="p">))</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">filelist</span> <span class="k">if</span> <span class="n">globs_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">f</span><span class="p">)]</span>
+            <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+                <span class="n">matches</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;removefrom </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">: no files matched!&quot;</span><span class="p">,</span> <span class="n">pkg</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+        <span class="c"># are we removing the matches, or keeping only the matches?</span>
+        <span class="k">if</span> <span class="n">keepmatches</span><span class="p">:</span>
+            <span class="n">remove_files</span> <span class="o">=</span> <span class="n">filelist</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">remove_files</span> <span class="o">=</span> <span class="n">matches</span>
+        <span class="c"># remove the files</span>
+        <span class="k">if</span> <span class="n">remove_files</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;removefrom </span><span class="si">%s</span><span class="s">: removed </span><span class="si">%i</span><span class="s">/</span><span class="si">%i</span><span class="s"> files, </span><span class="si">%i</span><span class="s">kb/</span><span class="si">%i</span><span class="s">kb&quot;</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span>
+                             <span class="nb">len</span><span class="p">(</span><span class="n">remove_files</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">filelist</span><span class="p">),</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">_getsize</span><span class="p">(</span><span class="o">*</span><span class="n">remove_files</span><span class="p">)</span><span class="o">/</span><span class="mi">1024</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getsize</span><span class="p">(</span><span class="o">*</span><span class="n">filelist</span><span class="p">)</span><span class="o">/</span><span class="mi">1024</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="o">*</span><span class="n">remove_files</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;removefrom </span><span class="si">%s</span><span class="s">: no files to remove!&quot;</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="LoraxTemplateRunner.removekmod"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.removekmod">[docs]</a>    <span class="k">def</span> <span class="nf">removekmod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">globs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        removekmod GLOB [GLOB...] [--allbut] KEEPGLOB [KEEPGLOB...]</span>
+<span class="sd">          Remove all files and directories matching the given file globs from the kernel</span>
+<span class="sd">          modules directory.</span>
+
+<span class="sd">          If &#39;--allbut&#39; is used, all the files from the modules will be removed *except*</span>
+<span class="sd">          the ones which match the file globs. There must be at least one initial GLOB</span>
+<span class="sd">          to search and one KEEPGLOB to keep. The KEEPGLOB is expanded to be *KEEPGLOB*</span>
+<span class="sd">          so that it will match anywhere in the path.</span>
+
+<span class="sd">          This only removes files from under /lib/modules/*/kernel/</span>
+
+<span class="sd">          Examples:</span>
+<span class="sd">            removekmod sound drivers/media drivers/hwmon drivers/video</span>
+<span class="sd">            removekmod drivers/char --allbut virtio_console hw_random</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">globs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s">&quot;--allbut&quot;</span> <span class="ow">in</span> <span class="n">globs</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">globs</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s">&quot;--allbut&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;removekmod needs at least one GLOB before --allbut&quot;</span><span class="p">)</span>
+
+            <span class="c"># Apply keepglobs anywhere they appear in the path</span>
+            <span class="n">keepglobs</span> <span class="o">=</span> <span class="n">globs</span><span class="p">[</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">keepglobs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;removekmod needs at least one GLOB after --allbut&quot;</span><span class="p">)</span>
+
+            <span class="n">globs</span> <span class="o">=</span> <span class="n">globs</span><span class="p">[:</span><span class="n">idx</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># Nothing to keep</span>
+            <span class="n">keepglobs</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">filelist</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">globs</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">top_dir</span> <span class="ow">in</span> <span class="n">rglob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="s">&quot;/lib/modules/*/kernel/&quot;</span><span class="o">+</span><span class="n">g</span><span class="p">)):</span>
+                <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">top_dir</span><span class="p">):</span>
+                    <span class="n">filelist</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">root</span><span class="o">+</span><span class="s">&quot;/&quot;</span><span class="o">+</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">)</span>
+
+        <span class="c"># Remove anything matching keepglobs from the list</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">keepglobs</span><span class="p">:</span>
+            <span class="n">globs_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">fnmatch</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s">&quot;*&quot;</span><span class="o">+</span><span class="n">g</span><span class="o">+</span><span class="s">&quot;*&quot;</span><span class="p">))</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">filelist</span> <span class="k">if</span> <span class="n">globs_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">f</span><span class="p">)]</span>
+            <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+                <span class="n">matches</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;removekmod </span><span class="si">%s</span><span class="s">: no files matched!&quot;</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+        <span class="n">remove_files</span> <span class="o">=</span> <span class="n">filelist</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">remove_files</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;removekmod: removing </span><span class="si">%d</span><span class="s"> files&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">remove_files</span><span class="p">))</span>
+            <span class="nb">list</span><span class="p">(</span><span class="n">remove</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">remove_files</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;removekmod </span><span class="si">%s</span><span class="s">: no files to remove!&quot;</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="LoraxTemplateRunner.createaddrsize"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.createaddrsize">[docs]</a>    <span class="k">def</span> <span class="nf">createaddrsize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        createaddrsize INITRD_ADDRESS INITRD ADDRSIZE</span>
+<span class="sd">          Create the initrd.addrsize file required in LPAR boot process.</span>
+<span class="sd">          Examples:</span>
+<span class="sd">            createaddrsize ${INITRD_ADDRESS} ${outroot}/${BOOTDIR}/initrd.img ${outroot}/${BOOTDIR}/initrd.addrsize</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">addrsize</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s">&quot;wb&quot;</span><span class="p">)</span>
+        <span class="n">addrsize_data</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s">&quot;&gt;iiii&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">src</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span><span class="p">)</span>
+        <span class="n">addrsize</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">addrsize_data</span><span class="p">)</span>
+        <span class="n">addrsize</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="LoraxTemplateRunner.systemctl"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.systemctl">[docs]</a>    <span class="k">def</span> <span class="nf">systemctl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="o">*</span><span class="n">units</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        systemctl [enable|disable|mask] UNIT [UNIT...]</span>
+<span class="sd">          Enable, disable, or mask the given systemd units.</span>
+<span class="sd">          Examples:</span>
+<span class="sd">            systemctl disable lvm2-monitor.service</span>
+<span class="sd">            systemctl mask fedora-storage-init.service fedora-configure.service</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">cmd</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;enable&#39;</span><span class="p">,</span> <span class="s">&#39;disable&#39;</span><span class="p">,</span> <span class="s">&#39;mask&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;unsupported systemctl cmd: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">cmd</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">units</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;systemctl: no units given for </span><span class="si">%s</span><span class="s">, ignoring&quot;</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s">&quot;/run/systemd/system&quot;</span><span class="p">)</span> <span class="c"># XXX workaround for systemctl bug</span>
+        <span class="n">systemctl</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;systemctl&#39;</span><span class="p">,</span> <span class="s">&#39;--root&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outroot</span><span class="p">,</span> <span class="s">&#39;--no-reload&#39;</span><span class="p">,</span>
+                     <span class="s">&#39;--quiet&#39;</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)</span>
+        <span class="c"># XXX for some reason &#39;systemctl enable/disable&#39; always returns 1</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="n">systemctl</span> <span class="o">+</span> <span class="n">units</span>
+            <span class="n">runcmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">CalledProcessError</span><span class="p">:</span>
+            <span class="k">pass</span></div></div>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Red Hat, Inc..
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'23.8',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
