@@ -15,7 +15,7 @@ Contents:
    lorax
    livemedia-creator
    product-images
-   pylorax
+   modules
 
 
 Indices and tables
