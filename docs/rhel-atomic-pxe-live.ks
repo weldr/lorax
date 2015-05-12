@@ -2,10 +2,8 @@
 lang en_US.UTF-8
 keyboard us
 timezone America/New_York
-zerombr
 clearpart --all --initlabel
 rootpw --plaintext atomic
-network --bootproto=dhcp --device=link --activate
 
 # We are only able to install atomic with separate /boot partition currently
 part / --fstype="ext4" --size=6000
