@@ -253,6 +253,7 @@
 <span class="k">def</span> <span class="nf">_run_program</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="n">stdin</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">env_prune</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">log_output</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
         <span class="n">binary_output</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">filter_stderr</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">raise_err</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Run an external program, log the output and return it to the caller</span>
+
 <span class="sd">        :param argv: The command to run and argument</span>
 <span class="sd">        :param root: The directory to chroot to before running command.</span>
 <span class="sd">        :param stdin: The file object to read stdin from.</span>
@@ -320,6 +321,7 @@
 <div class="viewcode-block" id="execWithRedirect"><a class="viewcode-back" href="../../pylorax.html#pylorax.executils.execWithRedirect">[docs]</a><span class="k">def</span> <span class="nf">execWithRedirect</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">argv</span><span class="p">,</span> <span class="n">stdin</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="n">env_prune</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                      <span class="n">log_output</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">binary_output</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">raise_err</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Run an external program and redirect the output to a file.</span>
+
 <span class="sd">        :param command: The command to run</span>
 <span class="sd">        :param argv: The argument list</span>
 <span class="sd">        :param stdin: The file object to read stdin from.</span>
@@ -339,6 +341,7 @@
 <div class="viewcode-block" id="execWithCapture"><a class="viewcode-back" href="../../pylorax.html#pylorax.executils.execWithCapture">[docs]</a><span class="k">def</span> <span class="nf">execWithCapture</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">argv</span><span class="p">,</span> <span class="n">stdin</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="n">log_output</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">filter_stderr</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
                     <span class="n">raise_err</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Run an external program and capture standard out and err.</span>
+
 <span class="sd">        :param command: The command to run</span>
 <span class="sd">        :param argv: The argument list</span>
 <span class="sd">        :param stdin: The file object to read stdin from.</span>

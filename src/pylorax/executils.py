@@ -124,6 +124,7 @@ def startProgram(argv, root='/', stdin=None, stdout=subprocess.PIPE, stderr=subp
 def _run_program(argv, root='/', stdin=None, stdout=None, env_prune=None, log_output=True,
         binary_output=False, filter_stderr=False, raise_err=False, callback=None):
     """ Run an external program, log the output and return it to the caller
+
         :param argv: The command to run and argument
         :param root: The directory to chroot to before running command.
         :param stdin: The file object to read stdin from.
@@ -191,6 +192,7 @@ def _run_program(argv, root='/', stdin=None, stdout=None, env_prune=None, log_ou
 def execWithRedirect(command, argv, stdin=None, stdout=None, root='/', env_prune=None,
                      log_output=True, binary_output=False, raise_err=False, callback=None):
     """ Run an external program and redirect the output to a file.
+
         :param command: The command to run
         :param argv: The argument list
         :param stdin: The file object to read stdin from.
@@ -210,6 +212,7 @@ def execWithRedirect(command, argv, stdin=None, stdout=None, root='/', env_prune
 def execWithCapture(command, argv, stdin=None, root='/', log_output=True, filter_stderr=False,
                     raise_err=False, callback=None):
     """ Run an external program and capture standard out and err.
+
         :param command: The command to run
         :param argv: The argument list
         :param stdin: The file object to read stdin from.
