@@ -264,32 +264,56 @@
 <dl class="function">
 <dt id="pylorax.executils.execWithCapture">
 <tt class="descclassname">pylorax.executils.</tt><tt class="descname">execWithCapture</tt><big>(</big><em>command</em>, <em>argv</em>, <em>stdin=None</em>, <em>root='/'</em>, <em>log_output=True</em>, <em>filter_stderr=False</em>, <em>raise_err=False</em>, <em>callback=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/executils.html#execWithCapture"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.executils.execWithCapture" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run an external program and capture standard out and err.
-:param command: The command to run
-:param argv: The argument list
-:param stdin: The file object to read stdin from.
-:param root: The directory to chroot to before running command.
-:param log_output: Whether to log the output of command
-:param filter_stderr: Whether stderr should be excluded from the returned output
-:param raise_err: whether to raise a CalledProcessError if the returncode is non-zero
-:return: The output of the command</p>
+<dd><p>Run an external program and capture standard out and err.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>command</strong> &#8211; The command to run</li>
+<li><strong>argv</strong> &#8211; The argument list</li>
+<li><strong>stdin</strong> &#8211; The file object to read stdin from.</li>
+<li><strong>root</strong> &#8211; The directory to chroot to before running command.</li>
+<li><strong>log_output</strong> &#8211; Whether to log the output of command</li>
+<li><strong>filter_stderr</strong> &#8211; Whether stderr should be excluded from the returned output</li>
+<li><strong>raise_err</strong> &#8211; whether to raise a CalledProcessError if the returncode is non-zero</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The output of the command</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="pylorax.executils.execWithRedirect">
 <tt class="descclassname">pylorax.executils.</tt><tt class="descname">execWithRedirect</tt><big>(</big><em>command</em>, <em>argv</em>, <em>stdin=None</em>, <em>stdout=None</em>, <em>root='/'</em>, <em>env_prune=None</em>, <em>log_output=True</em>, <em>binary_output=False</em>, <em>raise_err=False</em>, <em>callback=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/executils.html#execWithRedirect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.executils.execWithRedirect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run an external program and redirect the output to a file.
-:param command: The command to run
-:param argv: The argument list
-:param stdin: The file object to read stdin from.
-:param stdout: Optional file object to redirect stdout and stderr to.
-:param root: The directory to chroot to before running command.
-:param env_prune: environment variable to remove before execution
-:param log_output: whether to log the output of command
-:param binary_output: whether to treat the output of command as binary data
-:param raise_err: whether to raise a CalledProcessError if the returncode is non-zero
-:param callback: method to call while waiting for process to finish, passed Popen object
-:return: The return code of the command</p>
+<dd><p>Run an external program and redirect the output to a file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>command</strong> &#8211; The command to run</li>
+<li><strong>argv</strong> &#8211; The argument list</li>
+<li><strong>stdin</strong> &#8211; The file object to read stdin from.</li>
+<li><strong>stdout</strong> &#8211; Optional file object to redirect stdout and stderr to.</li>
+<li><strong>root</strong> &#8211; The directory to chroot to before running command.</li>
+<li><strong>env_prune</strong> &#8211; environment variable to remove before execution</li>
+<li><strong>log_output</strong> &#8211; whether to log the output of command</li>
+<li><strong>binary_output</strong> &#8211; whether to treat the output of command as binary data</li>
+<li><strong>raise_err</strong> &#8211; whether to raise a CalledProcessError if the returncode is non-zero</li>
+<li><strong>callback</strong> &#8211; method to call while waiting for process to finish, passed Popen object</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The return code of the command</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -1197,7 +1221,7 @@ image is built with the filename &#8220;${prefix}-${kernel.version}.img&#8221;</
 <dd><p>Bases: <a class="reference internal" href="#pylorax.base.DataHolder" title="pylorax.base.DataHolder"><tt class="xref py py-class docutils literal"><span class="pre">pylorax.base.DataHolder</span></tt></a></p>
 <dl class="attribute">
 <dt id="pylorax.ArchData.bcj_arch">
-<tt class="descname">bcj_arch</tt><em class="property"> = {'x86_64': 'x86', 'ppc': 'powerpc', 'ppc64': 'powerpc', 'arm': 'arm', 'i386': 'x86', 'ppc64le': 'powerpc', 'armhfp': 'arm'}</em><a class="headerlink" href="#pylorax.ArchData.bcj_arch" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">bcj_arch</tt><em class="property"> = {'ppc': 'powerpc', 'ppc64le': 'powerpc', 'armhfp': 'arm', 'arm': 'arm', 'ppc64': 'powerpc', 'x86_64': 'x86', 'i386': 'x86'}</em><a class="headerlink" href="#pylorax.ArchData.bcj_arch" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
