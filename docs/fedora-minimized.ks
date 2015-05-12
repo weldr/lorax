@@ -8,8 +8,6 @@ url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/x86_
 
 # Root password
 rootpw --plaintext removethispw
-# Network information
-network  --bootproto=dhcp --onboot=on --activate
 # System authorization information
 auth --useshadow --enablemd5
 # System keyboard
@@ -26,10 +24,8 @@ shutdown
 timezone  US/Eastern
 # System bootloader configuration
 bootloader --location=mbr
-# Clear the Master Boot Record
-zerombr
 # Partition clearing information
-clearpart --all
+clearpart --all --initlabel
 # Disk partitioning information
 part / --fstype="ext4" --size=4000
 part swap --size=1000

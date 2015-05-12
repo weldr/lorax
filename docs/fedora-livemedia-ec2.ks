@@ -6,7 +6,6 @@ auth --useshadow --enablemd5
 selinux --enforcing
 firewall --service=ssh
 bootloader --location=none
-network --bootproto=dhcp --onboot=on --activate
 services --enabled=network,sshd,rsyslog
 shutdown
 
@@ -17,8 +16,7 @@ rootpw --plaintext removethispw
 # Define how large you want your rootfs to be
 # NOTE: S3-backed AMIs have a limit of 10G
 #
-zerombr
-clearpart --all
+clearpart --all --initlabel
 part / --size 10000 --fstype ext4
 part swap --size=512
 

@@ -23,10 +23,8 @@ shutdown
 timezone  US/Eastern
 # System bootloader configuration
 bootloader --disabled
-# Clear the Master Boot Record
-zerombr
 # Partition clearing information
-clearpart --all
+clearpart --all --initlabel
 # Disk partitioning information
 part / --fstype="ext4" --size=3000
 
