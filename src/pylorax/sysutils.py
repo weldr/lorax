@@ -1,7 +1,7 @@
 #
 # sysutils.py
 #
-# Copyright (C) 2009-2014 Red Hat, Inc.
+# Copyright (C) 2009-2015 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -43,8 +43,7 @@ def joinpaths(*args, **kwargs):
 
 
 def touch(fname):
-    with open(fname, "w") as _:
-        pass
+    open(fname, "w")
 
 
 def replace(fname, find, sub):

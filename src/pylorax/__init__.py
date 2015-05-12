@@ -1,7 +1,7 @@
 #
 # __init__.py
 #
-# Copyright (C) 2010-2014  Red Hat, Inc.
+# Copyright (C) 2010-2015  Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ logger.addHandler(logging.NullHandler())
 
 import sys
 import os
-import ConfigParser
+import configparser
 import tempfile
 import locale
 from subprocess import CalledProcessError
@@ -39,7 +39,6 @@ import pylorax.output as output
 import dnf
 
 from pylorax.sysutils import joinpaths, remove, linktree
-from rpmUtils.arch import getBaseArch
 
 from pylorax.treebuilder import RuntimeBuilder, TreeBuilder
 from pylorax.buildstamp import BuildStamp
@@ -60,7 +59,7 @@ class ArchData(DataHolder):
     def __init__(self, buildarch):
         super(ArchData, self).__init__()
         self.buildarch = buildarch
-        self.basearch = getBaseArch(buildarch)
+        self.basearch = dnf.arch.basearch(buildarch)
         self.libdir = "lib64" if self.basearch in self.lib64_arches else "lib"
         self.bcj = self.bcj_arch.get(self.basearch)
 
@@ -81,7 +80,7 @@ class Lorax(BaseLoraxClass):
         locale.setlocale(locale.LC_ALL, 'C')
 
     def configure(self, conf_file="/etc/lorax/lorax.conf"):
-        self.conf = ConfigParser.SafeConfigParser()
+        self.conf = configparser.SafeConfigParser()
 
         # set defaults
         self.conf.add_section("lorax")
@@ -133,7 +132,7 @@ class Lorax(BaseLoraxClass):
 
         # remove some environmental variables that can cause problems with package scripts
         env_remove = ('DISPLAY', 'DBUS_SESSION_BUS_ADDRESS')
-        map(os.environ.pop, (k for k in env_remove if k in os.environ))
+        list(os.environ.pop(k) for k in env_remove if k in os.environ)
 
         self._configured = True
 
@@ -155,8 +154,7 @@ class Lorax(BaseLoraxClass):
             add_templates=None,
             add_template_vars=None,
             add_arch_templates=None,
-            add_arch_template_vars=None,
-            template_tempdir=None):
+            add_arch_template_vars=None):
 
         assert self._configured
 
@@ -190,15 +188,15 @@ class Lorax(BaseLoraxClass):
         self.init_stream_logging()
         self.init_file_logging(logdir)
 
-        logger.debug("version is {0}".format(vernum))
-        logger.debug("using work directory {0.workdir}".format(self))
-        logger.debug("using log directory {0}".format(logdir))
+        logger.debug("version is %s", vernum)
+        logger.debug("using work directory %s", self.workdir)
+        logger.debug("using log directory %s", logdir)
 
         # set up output directory
         self.outputdir = outputdir or tempfile.mkdtemp(prefix="pylorax.out.")
         if not os.path.isdir(self.outputdir):
             os.makedirs(self.outputdir)
-        logger.debug("using output directory {0.outputdir}".format(self))
+        logger.debug("using output directory %s", self.outputdir)
 
         # do we have root privileges?
         logger.info("checking for root privileges")
@@ -228,7 +226,7 @@ class Lorax(BaseLoraxClass):
             logger.critical("no dnf base object")
             sys.exit(1)
         self.inroot = dbo.conf.installroot
-        logger.debug("using install root: {0}".format(self.inroot))
+        logger.debug("using install root: %s", self.inroot)
 
         if not buildarch:
             buildarch = get_buildarch(dbo)
@@ -246,8 +244,7 @@ class Lorax(BaseLoraxClass):
 
         # NOTE: if you change isolabel, you need to change pungi to match, or
         # the pungi images won't boot.
-        isolabel = volid or "{0.name}-{0.version}-{1.basearch}".format(self.product,
-                                                                       self.arch)
+        isolabel = volid or "%s-%s-%s" % (product, version, self.arch.basearch)
 
         if len(isolabel) > 32:
             logger.fatal("the volume id cannot be longer than 32 characters")
@@ -297,7 +294,7 @@ class Lorax(BaseLoraxClass):
         logger.info("creating the runtime image")
         runtime = "images/install.img"
         compression = self.conf.get("compression", "type")
-        compressargs = self.conf.get("compression", "args").split()
+        compressargs = self.conf.get("compression", "args").split()     # pylint: disable=no-member
         if self.conf.getboolean("compression", "bcj"):
             if self.arch.bcj:
                 compressargs += ["-Xbcj", self.arch.bcj]

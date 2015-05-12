@@ -1,3 +1,4 @@
 *.pyc
 src/pylorax/version.py*
 _build/
+tests/pylint/.pylint.d/

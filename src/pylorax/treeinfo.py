@@ -1,7 +1,7 @@
 #
 # treeinfo.py
 #
-# Copyright (C) 2010-2014 Red Hat, Inc.
+# Copyright (C) 2010-2015 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 import logging
 logger = logging.getLogger("pylorax.treeinfo")
 
-import ConfigParser
+import configparser
 import time
 
 
@@ -31,10 +31,10 @@ class TreeInfo(object):
     def __init__(self, product, version, variant, basearch,
                  packagedir=""):
 
-        self.c = ConfigParser.ConfigParser()
+        self.c = configparser.ConfigParser()
 
         section = "general"
-        data = {"timestamp": time.time(),
+        data = {"timestamp": str(time.time()),
                 "family": product,
                 "version": version,
                 "name": "%s-%s" % (product, version),
@@ -43,13 +43,13 @@ class TreeInfo(object):
                 "packagedir": packagedir}
 
         self.c.add_section(section)
-        map(lambda (key, value): self.c.set(section, key, value), data.items())
+        list(self.c.set(section, key, value) for key, value in data.items())
 
     def add_section(self, section, data):
         if not self.c.has_section(section):
             self.c.add_section(section)
 
-        map(lambda (key, value): self.c.set(section, key, value), data.items())
+        list(self.c.set(section, key, value) for key, value in data.items())
 
     def write(self, outfile):
         logger.info("writing .treeinfo file")

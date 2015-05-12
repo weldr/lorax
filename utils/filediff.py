@@ -2,7 +2,7 @@ import sys
 import os
 import magic
 import difflib
-import yum
+import yum          # pylint: disable=import-error
 import operator
 
 

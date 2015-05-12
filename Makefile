@@ -1,4 +1,4 @@
-PYTHON ?= /usr/bin/python
+PYTHON ?= /usr/bin/python3
 DESTDIR ?= /
 
 PKGNAME = lorax
@@ -23,7 +23,7 @@ install: all
 
 check:
 	@echo "*** Running pylint ***"
-	./tests/pylint/runpylint.sh
+	PYTHONPATH=$(PYTHONPATH):./src/ ./tests/pylint/runpylint.py
 
 clean:
 	-rm -rf build src/pylorax/version.py

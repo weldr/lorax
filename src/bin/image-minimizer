@@ -1,8 +1,8 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 #
 # image-minimizer: removes files and packages on the filesystem
 #
-# Copyright 2007-2014 Red Hat, Inc.
+# Copyright 2007-2015 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 import glob
-import optparse
+import argparse
 import os
 import sys
 import rpm
@@ -53,7 +53,7 @@ class ImageMinimizer:
     def add_pattern(self, files, pattern):
         globs = glob.glob(pattern)
         if self.verbose and len(globs) == 0:
-            print "%s file not found" % pattern
+            print("%s file not found" % pattern)
         for g in globs:
             if os.path.isdir(g):
                 self.add_directory(files, g)
@@ -63,7 +63,7 @@ class ImageMinimizer:
     def add_pattern_rpm(self, rpms, pattern):
         if self.ts is None:
             if self.prefix is None:
-                raise Exception ('Must specify installation root for droprpm/keeprpm')
+                raise Exception('Must specify installation root for droprpm/keeprpm')
             self.ts = rpm.TransactionSet(self.prefix)
         mi = self.ts.dbMatch()
         mi.pattern('name', rpm.RPMMIRE_GLOB, pattern)
@@ -72,7 +72,7 @@ class ImageMinimizer:
             not_found = False
             rpms.add(hdr['name'])
         if self.verbose and not_found:
-            print "%s package not found" % pattern
+            print("%s package not found" % pattern)
 
     # Parses each line in the ifle
     def parse_line(self, line):
@@ -107,7 +107,7 @@ class ImageMinimizer:
             elif command == 'droprpm':
                 self.add_pattern_rpm(self.drops_rpm, pattern)
             else:
-                raise Exception ('Unknown Command: ' + command)
+                raise Exception('Unknown Command: ' + command)
 
     def remove(self):
         for tag in sorted(self.drops, reverse=True):
@@ -116,34 +116,34 @@ class ImageMinimizer:
                 self.visited.add(tag)
             else:
                 if self.dryrun:
-                    print 'rm ' + tag
+                    print('rm ' + tag)
                 else:
                     if self.verbose:
-                        print 'rm ' + tag
+                        print('rm ' + tag)
                     os.remove(tag)
 
         #remove all empty directory. Every 8k counts!
         for d in sorted(self.visited, reverse=True):
             if len(os.listdir(d)) == 0:
                 if self.dryrun:
-                    print 'rm -rf ' + d
+                    print('rm -rf ' + d)
                 else:
                     if self.verbose:
-                        print 'rm -rf ' + d
+                        print('rm -rf ' + d)
                     os.rmdir(d)
 
     def remove_rpm(self):
 
         def runCallback(reason, amount, total, key, client_data):
             if self.verbose and reason == rpm.RPMCALLBACK_UNINST_STOP:
-                print key, "erased"
+                print(key, "erased")
 
         if len(self.drops_rpm) == 0:
             return
 
         for pkg in self.drops_rpm:
             if self.dryrun:
-                print "erasing ", pkg
+                print("erasing ", pkg)
             else:
                 self.ts.addErase(pkg)
         if not self.dryrun:
@@ -158,43 +158,35 @@ class ImageMinimizer:
 
 
 def parse_options():
-    usage = "usage: %prog [options] filename"
-    parser = optparse.OptionParser(usage=usage)
+    parser = argparse.ArgumentParser(description="Image Minimizer")
 
     parser.set_defaults(root=os.environ.get('INSTALL_ROOT', '/mnt/sysimage/'), dry_run=False)
 
-    parser.add_option("-i", "--installroot", type="string", dest="root",
+    parser.add_argument("-i", "--installroot", metavar="STRING", dest="root",
         help="Root path to prepend to all file patterns and installation root for RPM "
              "operations.  Defaults to INSTALL_ROOT or /mnt/sysimage/")
 
-    parser.add_option("--dryrun", action="store_true", dest="dryrun",
+    parser.add_argument("--dryrun", metavar="BOOL", action="store_true", dest="dryrun",
         help="If set, no filesystem changes are made.")
 
-    parser.add_option("-v", "--verbose", action="store_true", dest="verbose",
+    parser.add_argument("-v", "--verbose", metavar="BOOL", action="store_true", dest="verbose",
         help="Display every action as it is performed.")
 
-    (options, args) = parser.parse_args()
-    if len(args) == 0:
-        parser.print_help()
-        sys.exit(1)
+    parser.add_argument("filename", metavar="STRING", help="Filename to process")
 
-    return (options, args)
+    return parser.parse_args()
 
 
 def main():
     try:
-        (options, args) = parse_options()
-        filename = args[0]
-        minimizer = ImageMinimizer(filename, options.root, options.dryrun,
-                                    options.verbose)
+        args = parse_options()
+        minimizer = ImageMinimizer(args.filename, args.root, args.dryrun,
+                                   args.verbose)
         minimizer.filter()
-    except SystemExit, e:
+    except SystemExit as e:
         sys.exit(e.code)
-    except KeyboardInterrupt, e:
-        print >> sys.stderr, "Aborted at user request"
-    except Exception, e:
-        print e
-        sys.exit(1)
+    except KeyboardInterrupt as e:
+        print("Aborted at user request", file=sys.stderr)
 
 if __name__ == "__main__":
     main()

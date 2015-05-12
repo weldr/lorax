@@ -1,7 +1,7 @@
 #
 # base.py
 #
-# Copyright (C) 2009-2014 Red Hat, Inc.
+# Copyright (C) 2009-2015 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,10 +25,7 @@ import sys
 import pylorax.output as output
 
 
-class BaseLoraxClass(object):
-
-    __metaclass__ = ABCMeta
-
+class BaseLoraxClass(object, metaclass=ABCMeta):
     @abstractmethod
     def __init__(self):
         self.output = output.LoraxOutput()

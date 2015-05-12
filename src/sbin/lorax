@@ -1,8 +1,8 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 #
 # lorax
 #
-# Copyright (C) 2009-2014 Red Hat, Inc.
+# Copyright (C) 2009-2015 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,8 +19,6 @@
 #
 # Red Hat Author(s):  Martin Gracik <mgracik@redhat.com>
 #
-from __future__ import print_function
-
 import logging
 log = logging.getLogger("lorax")
 program_log = logging.getLogger("program")
@@ -31,7 +29,7 @@ dnf_log = logging.getLogger("dnf")
 import sys
 import os
 import tempfile
-from optparse import OptionParser, OptionGroup
+import argparse
 import shutil
 
 import dnf
@@ -80,91 +78,79 @@ def main(args):
         vernum = "devel"
 
     version = "{0}-{1}".format(os.path.basename(args[0]), vernum)
-    usage = "%prog -p PRODUCT -v VERSION -r RELEASE -s REPOSITORY OUTPUTDIR"
-
-    parser = OptionParser(usage=usage)
+    parser = argparse.ArgumentParser(description="Create the Anaconda boot.iso")
 
     # required arguments for image creation
-    required = OptionGroup(parser, "required arguments")
-    required.add_option("-p", "--product", help="product name",
-                        metavar="STRING")
-    required.add_option("-v", "--version", help="version identifier",
-                        metavar="STRING")
-    required.add_option("-r", "--release", help="release information",
-                        metavar="STRING")
-    required.add_option("-s", "--source",
-                        help="source repository (may be listed multiple times)",
-                        metavar="REPOSITORY", action="append", default=[])
+    required = parser.add_argument_group("required arguments")
+    required.add_argument("-p", "--product", help="product name", required=True, metavar="STRING")
+    required.add_argument("-v", "--version", help="version identifier", required=True, metavar="STRING")
+    required.add_argument("-r", "--release", help="release information", required=True, metavar="STRING")
+    required.add_argument("-s", "--source", help="source repository (may be listed multiple times)",
+                        metavar="REPOSITORY", action="append", default=[], required=True)
 
     # optional arguments
-    optional = OptionGroup(parser, "optional arguments")
-    optional.add_option("-m", "--mirrorlist",
+    optional = parser.add_argument_group("optional arguments")
+    optional.add_argument("-m", "--mirrorlist",
                         help="mirrorlist repository (may be listed multiple times)",
                         metavar="REPOSITORY", action="append", default=[])
-    optional.add_option("-t", "--variant",
+    optional.add_argument("-t", "--variant",
                         help="variant name", metavar="STRING")
-    optional.add_option("-b", "--bugurl",
+    optional.add_argument("-b", "--bugurl",
                         help="bug reporting URL for the product", metavar="URL",
                         default="your distribution provided bug reporting tool")
-    optional.add_option("--isfinal", help="",
+    optional.add_argument("--isfinal", help="",
                         action="store_true", default=False, dest="isfinal")
-    optional.add_option("-c", "--config", default="/etc/lorax/lorax.conf",
+    optional.add_argument("-c", "--config", default="/etc/lorax/lorax.conf",
                         help="config file", metavar="STRING")
-    optional.add_option("--proxy", default=None,
+    optional.add_argument("--proxy", default=None,
                         help="repo proxy url:port", metavar="STRING")
-    optional.add_option("-i", "--installpkgs", default=[],
+    optional.add_argument("-i", "--installpkgs", default=[],
                         action="append", metavar="STRING",
                         help="package glob to install before runtime-install.tmpl runs. (may be listed multiple times)")
-    optional.add_option("--buildarch", default=None,
+    optional.add_argument("--buildarch", default=None,
                         help="build architecture", metavar="STRING")
-    optional.add_option("--volid", default=None,
+    optional.add_argument("--volid", default=None,
                         help="volume id", metavar="STRING")
-    optional.add_option("--macboot", help="",
+    optional.add_argument("--macboot", help="",
                         action="store_true", default=True, dest="domacboot")
-    optional.add_option("--nomacboot", help="",
+    optional.add_argument("--nomacboot", help="",
                         action="store_false", dest="domacboot")
-    optional.add_option("--noupgrade", help="",
+    optional.add_argument("--noupgrade", help="",
                         action="store_false", default=True, dest="doupgrade")
-    optional.add_option("--logfile", default="./lorax.log",
+    optional.add_argument("--logfile", default="./lorax.log",
                         help="Path to logfile")
-    optional.add_option("--tmp", default="/var/tmp",
+    optional.add_argument("--tmp", default="/var/tmp",
                         help="Top level temporary directory" )
-    optional.add_option("--cachedir", default=None,
+    optional.add_argument("--cachedir", default=None,
                         help="DNF cache directory. Default is a temporary dir.")
-    optional.add_option("--workdir", default=None,
+    optional.add_argument("--workdir", default=None,
                         help="Work directory, overrides --tmp. Default is a temporary dir under /var/tmp")
-    optional.add_option("--force", default=False, action="store_true",
+    optional.add_argument("--force", default=False, action="store_true",
                         help="Run even when the destination directory exists")
-    optional.add_option("--add-template", dest="add_templates",
+    optional.add_argument("--add-template", dest="add_templates",
                         action="append", help="Additional template for runtime image",
                         default=[])
-    optional.add_option("--add-template-var", dest="add_template_vars",
+    optional.add_argument("--add-template-var", dest="add_template_vars",
                         action="append", help="Set variable for runtime image template",
                         default=[])
-    optional.add_option("--add-arch-template", dest="add_arch_templates",
+    optional.add_argument("--add-arch-template", dest="add_arch_templates",
                         action="append", help="Additional template for architecture-specific image",
                         default=[])
-    optional.add_option("--add-arch-template-var", dest="add_arch_template_vars",
+    optional.add_argument("--add-arch-template-var", dest="add_arch_template_vars",
                         action="append", help="Set variable for architecture-specific image",
                         default=[])
 
-    # add the option groups to the parser
-    parser.add_option_group(required)
-    parser.add_option_group(optional)
-
     # add the show version option
-    parser.add_option("-V", help="show program's version number and exit",
-                      action="store_true", default=False, dest="showver")
+    parser.add_argument("-V", help="show program's version number and exit",
+                      action="version", version=version)
+
+    parser.add_argument("outputdir", help="Output directory", metavar="STRING")
 
     # parse the arguments
-    opts, args = parser.parse_args()
-
-    if opts.showver:
-        print(version)
-        sys.exit(0)
+    opts = parser.parse_args()
 
     try:
-        outputdir = os.path.abspath(args[0])
+        outputdir = os.path.abspath(opts.outputdir)
     except IndexError:
         parser.error("missing one or more required arguments")
 
@@ -270,12 +256,12 @@ def get_dnf_base_object(installroot, repositories, mirrorlists=None,
     mirrorlists = mirrorlists or []
 
     # sanitize the repositories
-    repositories = map(sanitize_repo, repositories)
-    mirrorlists = map(sanitize_repo, mirrorlists)
+    repositories = list(sanitize_repo(r) for r in repositories)
+    mirrorlists = list(sanitize_repo(r) for r in mirrorlists)
 
     # remove invalid repositories
-    repositories = filter(bool, repositories)
-    mirrorlists = filter(bool, mirrorlists)
+    repositories = list(r for r in repositories if r)
+    mirrorlists = list(r for r in mirrorlists if r)
 
     if not cachedir:
         cachedir = os.path.join(tempdir, "dnf.cache")
@@ -307,7 +293,7 @@ def get_dnf_base_object(installroot, repositories, mirrorlists=None,
     # add the repositories
     for i, r in enumerate(repositories):
         if "SRPM" in r or "srpm" in r:
-            log.info("Skipping source repo: %s" % r)
+            log.info("Skipping source repo: %s", r)
             continue
         repo_name = "lorax-repo-%d" % i
         repo = dnf.repo.Repo(repo_name, cachedir)
@@ -327,7 +313,7 @@ def get_dnf_base_object(installroot, repositories, mirrorlists=None,
     # add the mirrorlists
     for i, r in enumerate(mirrorlists):
         if "SRPM" in r or "srpm" in r:
-            log.info("Skipping source repo: %s" % r)
+            log.info("Skipping source repo: %s", r)
             continue
         repo_name = "lorax-mirrorlist-%d" % i
         repo = dnf.repo.Repo(repo_name, cachedir)

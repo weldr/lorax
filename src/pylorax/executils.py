@@ -1,7 +1,7 @@
 #
 # executil.py - subprocess execution utility functions
 #
-# Copyright (C) 1999-2014
+# Copyright (C) 1999-2015
 # Red Hat, Inc.  All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -17,17 +17,38 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Author(s): Erik Troan <ewt@redhat.com>
-#
 
-import os, sys
+import os
 import subprocess
-import threading
+import signal
 from time import sleep
 
 import logging
 log = logging.getLogger("pylorax")
 program_log = logging.getLogger("program")
+
+from threading import Lock
+program_log_lock = Lock()
+
+_child_env = {}
+
+def setenv(name, value):
+    """ Set an environment variable to be used by child processes.
+
+        This method does not modify os.environ for the running process, which
+        is not thread-safe. If setenv has already been called for a particular
+        variable name, the old value is overwritten.
+
+        :param str name: The name of the environment variable
+        :param str value: The value of the environment variable
+    """
+
+    _child_env[name] = value
+
+def augmentEnv():
+    env = os.environ.copy()
+    env.update(_child_env)
+    return env
 
 class ExecProduct(object):
     def __init__(self, rc, stdout, stderr):
@@ -35,382 +56,175 @@ class ExecProduct(object):
         self.stdout = stdout
         self.stderr = stderr
 
-class tee(threading.Thread):
-    """ Python reimplementation of the shell tee process, so we can
-        feed the pipe output into two places at the same time
+def startProgram(argv, root='/', stdin=None, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+        env_prune=None, env_add=None, reset_handlers=True, reset_lang=True, **kwargs):
+    """ Start an external program and return the Popen object.
+
+        The root and reset_handlers arguments are handled by passing a
+        preexec_fn argument to subprocess.Popen, but an additional preexec_fn
+        can still be specified and will be run. The user preexec_fn will be run
+        last.
+
+        :param argv: The command to run and argument
+        :param root: The directory to chroot to before running command.
+        :param stdin: The file object to read stdin from.
+        :param stdout: The file object to write stdout to.
+        :param stderr: The file object to write stderr to.
+        :param env_prune: environment variables to remove before execution
+        :param env_add: environment variables to add before execution
+        :param reset_handlers: whether to reset to SIG_DFL any signal handlers set to SIG_IGN
+        :param reset_lang: whether to set the locale of the child process to C
+        :param kwargs: Additional parameters to pass to subprocess.Popen
+        :return: A Popen object for the running command.
     """
-    def __init__(self, inputdesc, outputdesc, logmethod, command):
-        threading.Thread.__init__(self)
-        self.inputdesc = os.fdopen(inputdesc, "r")
-        self.outputdesc = outputdesc
-        self.logmethod = logmethod
-        self.running = True
-        self.command = command
+    if env_prune is None:
+        env_prune = []
 
-    def run(self):
-        while self.running:
-            try:
-                data = self.inputdesc.readline()
-            except IOError:
-                self.logmethod("Can't read from pipe during a call to %s. "
-                               "(program terminated suddenly?)" % self.command)
-                break
-            if data == "":
-                self.running = False
-            else:
-                self.logmethod(data.rstrip('\n'))
-                os.write(self.outputdesc, data)
+    # Check for and save a preexec_fn argument
+    preexec_fn = kwargs.pop("preexec_fn", None)
 
-    def stop(self):
-        self.running = False
-        return self
+    def preexec():
+        # If a target root was specificed, chroot into it
+        if root and root != '/':
+            os.chroot(root)
+            os.chdir("/")
 
-def execWithRedirect(command, argv, stdin = None, stdout = None,
-                     stderr = None, root = None, preexec_fn=None, cwd=None,
-                     raise_err=False, callback=None):
-    """ Run an external program and redirect the output to a file.
-        @param command The command to run.
-        @param argv A list of arguments.
-        @param stdin The file descriptor to read stdin from.
-        @param stdout The file descriptor to redirect stdout to.
-        @param stderr The file descriptor to redirect stderr to.
-        @param root The directory to chroot to before running command.
-        @param preexec_fn function to pass to Popen
-        @param cwd working directory to pass to Popen
-        @param raise_err raise CalledProcessError when the returncode is not 0
-        @param callback method to call while waiting for process to exit.
-        @return The return code of command.
+        # Signal handlers set to SIG_IGN persist across exec. Reset
+        # these to SIG_DFL if requested. In particular this will include the
+        # SIGPIPE handler set by python.
+        if reset_handlers:
+            for signum in range(1, signal.NSIG):
+                if signal.getsignal(signum) == signal.SIG_IGN:
+                    signal.signal(signum, signal.SIG_DFL)
 
-        The callback is passed the Popen object. It should return False if
-        the polling loop should be exited.
+        # If the user specified an additional preexec_fn argument, run it
+        if preexec_fn is not None:
+            preexec_fn()
+
+    with program_log_lock:
+        program_log.info("Running... %s", " ".join(argv))
+
+    env = augmentEnv()
+    for var in env_prune:
+        env.pop(var, None)
+
+    if reset_lang:
+        env.update({"LC_ALL": "C"})
+
+    if env_add:
+        env.update(env_add)
+
+    return subprocess.Popen(argv,
+                            stdin=stdin,
+                            stdout=stdout,
+                            stderr=stderr,
+                            close_fds=True,
+                            preexec_fn=preexec, cwd=root, env=env, **kwargs)
+
+def _run_program(argv, root='/', stdin=None, stdout=None, env_prune=None, log_output=True,
+        binary_output=False, filter_stderr=False, raise_err=False, callback=None):
+    """ Run an external program, log the output and return it to the caller
+
+        :param argv: The command to run and argument
+        :param root: The directory to chroot to before running command.
+        :param stdin: The file object to read stdin from.
+        :param stdout: Optional file object to write the output to.
+        :param env_prune: environment variable to remove before execution
+        :param log_output: whether to log the output of command
+        :param binary_output: whether to treat the output of command as binary data
+        :param filter_stderr: whether to exclude the contents of stderr from the returned output
+        :param raise_err: whether to raise a CalledProcessError if the returncode is non-zero
+        :param callback: method to call while waiting for process to finish, passed Popen object
+        :return: The return code of the command and the output
+        :raises: OSError or CalledProcessError
     """
-    def chroot ():
-        os.chroot(root)
-
-    stdinclose = stdoutclose = stderrclose = lambda : None
-
-    argv = list(argv)
-    if isinstance(stdin, str):
-        if os.access(stdin, os.R_OK):
-            stdin = os.open(stdin, os.O_RDONLY)
-            stdinclose = lambda : os.close(stdin)
-        else:
-            stdin = sys.stdin.fileno()
-    elif isinstance(stdin, int):
-        pass
-    elif stdin is None or not isinstance(stdin, file):
-        stdin = sys.stdin.fileno()
-
-    if isinstance(stdout, str):
-        stdout = os.open(stdout, os.O_RDWR|os.O_CREAT)
-        stdoutclose = lambda : os.close(stdout)
-    elif isinstance(stdout, int):
-        pass
-    elif stdout is None or not isinstance(stdout, file):
-        stdout = sys.stdout.fileno()
-
-    if isinstance(stderr, str):
-        stderr = os.open(stderr, os.O_RDWR|os.O_CREAT)
-        stderrclose = lambda : os.close(stderr)
-    elif isinstance(stderr, int):
-        pass
-    elif stderr is None or not isinstance(stderr, file):
-        stderr = sys.stderr.fileno()
-
-    program_log.info("Running... %s", " ".join([command] + argv))
-
-    #prepare os pipes for feeding tee proceses
-    pstdout, pstdin = os.pipe()
-    perrout, perrin = os.pipe()
-
-    env = os.environ.copy()
-    env.update({"LC_ALL": "C"})
-
-    if root:
-        preexec_fn = chroot
-        cwd = root
-        program_log.info("chrooting into %s", cwd)
-    elif cwd:
-        program_log.info("chdiring into %s", cwd)
-
     try:
-        #prepare tee proceses
-        proc_std = tee(pstdout, stdout, program_log.info, command)
-        proc_err = tee(perrout, stderr, program_log.error, command)
+        if filter_stderr:
+            stderr = subprocess.PIPE
+        else:
+            stderr = subprocess.STDOUT
 
-        #start monitoring the outputs
-        proc_std.start()
-        proc_err.start()
-
-        proc = subprocess.Popen([command] + argv, stdin=stdin,
-                                stdout=pstdin,
-                                stderr=perrin,
-                                preexec_fn=preexec_fn, cwd=cwd,
-                                env=env)
+        proc = startProgram(argv, root=root, stdin=stdin, stdout=subprocess.PIPE, stderr=stderr,
+                            env_prune=env_prune, universal_newlines=not binary_output)
 
         if callback:
             while callback(proc) and proc.poll() is None:
                 sleep(1)
-        proc.wait()
-        ret = proc.returncode
 
-        #close the input ends of pipes so we get EOF in the tee processes
-        os.close(pstdin)
-        os.close(perrin)
+        (output_string, err_string) = proc.communicate()
+        if output_string:
+            if binary_output:
+                output_lines = [output_string]
+            else:
+                if output_string[-1] != "\n":
+                    output_string = output_string + "\n"
+                output_lines = output_string.splitlines(True)
 
-        #wait for the output to be written and destroy them
-        proc_std.join()
-        del proc_std
+            if log_output:
+                with program_log_lock:
+                    for line in output_lines:
+                        program_log.info(line.strip())
 
-        proc_err.join()
-        del proc_err
+            if stdout:
+                stdout.write(output_string)
 
-        stdinclose()
-        stdoutclose()
-        stderrclose()
+        # If stderr was filtered, log it separately
+        if filter_stderr and err_string and log_output:
+            err_lines = err_string.splitlines(True)
+
+            with program_log_lock:
+                for line in err_lines:
+                    program_log.info(line.strip())
+
     except OSError as e:
-        errstr = "Error running %s: %s" % (command, e.strerror)
-        log.error(errstr)
-        program_log.error(errstr)
-        #close the input ends of pipes so we get EOF in the tee processes
-        os.close(pstdin)
-        os.close(perrin)
-        proc_std.join()
-        proc_err.join()
+        with program_log_lock:
+            program_log.error("Error running %s: %s", argv[0], e.strerror)
+        raise
 
-        stdinclose()
-        stdoutclose()
-        stderrclose()
-        raise RuntimeError(errstr)
+    with program_log_lock:
+        program_log.debug("Return code: %d", proc.returncode)
 
-    if ret and raise_err:
-        raise subprocess.CalledProcessError(ret, [command]+argv)
-
-    return ret
-
-def execWithCapture(command, argv, stdin = None, stderr = None, root=None,
-                    preexec_fn=None, cwd=None, raise_err=False):
-    """ Run an external program and capture standard out.
-        @param command The command to run.
-        @param argv A list of arguments.
-        @param stdin The file descriptor to read stdin from.
-        @param stderr The file descriptor to redirect stderr to.
-        @param root The directory to chroot to before running command.
-        @param preexec_fn function to pass to Popen
-        @param cwd working directory to pass to Popen
-        @param raise_err raise CalledProcessError when the returncode is not 0
-        @return The output of command from stdout.
-    """
-    def chroot():
-        os.chroot(root)
-
-    def closefds ():
-        stdinclose()
-        stderrclose()
-
-    stdinclose = stderrclose = lambda : None
-    rc = ""
-    argv = list(argv)
-
-    if isinstance(stdin, str):
-        if os.access(stdin, os.R_OK):
-            stdin = os.open(stdin, os.O_RDONLY)
-            stdinclose = lambda : os.close(stdin)
-        else:
-            stdin = sys.stdin.fileno()
-    elif isinstance(stdin, int):
-        pass
-    elif stdin is None or not isinstance(stdin, file):
-        stdin = sys.stdin.fileno()
-
-    if isinstance(stderr, str):
-        stderr = os.open(stderr, os.O_RDWR|os.O_CREAT)
-        stderrclose = lambda : os.close(stderr)
-    elif isinstance(stderr, int):
-        pass
-    elif stderr is None or not isinstance(stderr, file):
-        stderr = sys.stderr.fileno()
-
-    program_log.info("Running... %s", " ".join([command] + argv))
-
-    env = os.environ.copy()
-    env.update({"LC_ALL": "C"})
-
-    if root:
-        preexec_fn = chroot
-        cwd = root
-        program_log.info("chrooting into %s", cwd)
-    elif cwd:
-        program_log.info("chdiring into %s", cwd)
-
-    try:
-        proc = subprocess.Popen([command] + argv, stdin=stdin,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE,
-                                preexec_fn=preexec_fn, cwd=cwd,
-                                env=env)
-
-        while True:
-            (outStr, errStr) = proc.communicate()
-            if outStr:
-                map(program_log.info, outStr.splitlines())
-                rc += outStr
-            if errStr:
-                map(program_log.error, errStr.splitlines())
-                os.write(stderr, errStr)
-
-            if proc.returncode is not None:
-                break
-    except OSError as e:
-        log.error("Error running %s: %s", command, e.strerror)
-        closefds()
-        raise RuntimeError("Error running %s: %s" % (command, e.strerror))
-
-    closefds()
     if proc.returncode and raise_err:
-        raise subprocess.CalledProcessError(proc.returncode, [command]+argv)
+        raise subprocess.CalledProcessError(proc.returncode, argv)
 
-    return rc
+    return (proc.returncode, output_string)
 
-def execWithCallback(command, argv, stdin = None, stdout = None,
-                     stderr = None, echo = True, callback = None,
-                     callback_data = None, root = '/'):
-    def closefds ():
-        stdinclose()
-        stdoutclose()
-        stderrclose()
+def execWithRedirect(command, argv, stdin=None, stdout=None, root='/', env_prune=None,
+                     log_output=True, binary_output=False, raise_err=False, callback=None):
+    """ Run an external program and redirect the output to a file.
 
-    stdinclose = stdoutclose = stderrclose = lambda : None
+        :param command: The command to run
+        :param argv: The argument list
+        :param stdin: The file object to read stdin from.
+        :param stdout: Optional file object to redirect stdout and stderr to.
+        :param root: The directory to chroot to before running command.
+        :param env_prune: environment variable to remove before execution
+        :param log_output: whether to log the output of command
+        :param binary_output: whether to treat the output of command as binary data
+        :param raise_err: whether to raise a CalledProcessError if the returncode is non-zero
+        :param callback: method to call while waiting for process to finish, passed Popen object
+        :return: The return code of the command
+    """
+    argv = [command] + list(argv)
+    return _run_program(argv, stdin=stdin, stdout=stdout, root=root, env_prune=env_prune,
+            log_output=log_output, binary_output=binary_output, raise_err=raise_err, callback=callback)[0]
 
-    argv = list(argv)
-    if isinstance(stdin, str):
-        if os.access(stdin, os.R_OK):
-            stdin = os.open(stdin, os.O_RDONLY)
-            stdinclose = lambda : os.close(stdin)
-        else:
-            stdin = sys.stdin.fileno()
-    elif isinstance(stdin, int):
-        pass
-    elif stdin is None or not isinstance(stdin, file):
-        stdin = sys.stdin.fileno()
+def execWithCapture(command, argv, stdin=None, root='/', log_output=True, filter_stderr=False,
+                    raise_err=False, callback=None):
+    """ Run an external program and capture standard out and err.
 
-    if isinstance(stdout, str):
-        stdout = os.open(stdout, os.O_RDWR|os.O_CREAT)
-        stdoutclose = lambda : os.close(stdout)
-    elif isinstance(stdout, int):
-        pass
-    elif stdout is None or not isinstance(stdout, file):
-        stdout = sys.stdout.fileno()
-
-    if isinstance(stderr, str):
-        stderr = os.open(stderr, os.O_RDWR|os.O_CREAT)
-        stderrclose = lambda : os.close(stderr)
-    elif isinstance(stderr, int):
-        pass
-    elif stderr is None or not isinstance(stderr, file):
-        stderr = sys.stderr.fileno()
-
-    program_log.info("Running... %s", " ".join([command] + argv))
-
-    p = os.pipe()
-    p_stderr = os.pipe()
-    childpid = os.fork()
-    if not childpid:
-        os.close(p[0])
-        os.close(p_stderr[0])
-        os.dup2(p[1], 1)
-        os.dup2(p_stderr[1], 2)
-        os.dup2(stdin, 0)
-        os.close(stdin)
-        os.close(p[1])
-        os.close(p_stderr[1])
-
-        os.execvp(command, [command] + argv)
-        os._exit(1)
-
-    os.close(p[1])
-    os.close(p_stderr[1])
-
-    log_output = ''
-    while 1:
-        try:
-            s = os.read(p[0], 1)
-        except OSError as e:
-            if e.errno != 4:
-                map(program_log.info, log_output.splitlines())
-                raise IOError(e.args)
-
-        if echo:
-            os.write(stdout, s)
-        log_output += s
-
-        if callback:
-            callback(s, callback_data=callback_data)
-
-        # break out early if the sub-process changes status.
-        # no need to flush the stream if the process has exited
-        try:
-            (pid, status) = os.waitpid(childpid,os.WNOHANG)
-            if pid != 0:
-                break
-        except OSError as e:
-            log.critical("exception from waitpid: %s %s", e.errno, e.strerror)
-
-        if len(s) < 1:
-            break
-
-    map(program_log.info, log_output.splitlines())
-
-    log_errors = ''
-    while 1:
-        try:
-            err = os.read(p_stderr[0], 128)
-        except OSError as e:
-            if e.errno != 4:
-                map(program_log.error, log_errors.splitlines())
-                raise IOError(e.args)
-            break
-        log_errors += err
-        if len(err) < 1:
-            break
-
-    os.write(stderr, log_errors)
-    map(program_log.error, log_errors.splitlines())
-    os.close(p[0])
-    os.close(p_stderr[0])
-
-    try:
-        #if we didn't already get our child's exit status above, do so now.
-        if not pid:
-            (pid, status) = os.waitpid(childpid, 0)
-    except OSError as e:
-        log.critical("exception from waitpid: %s %s", e.errno, e.strerror)
-
-    closefds()
-
-    rc = 1
-    if os.WIFEXITED(status):
-        rc = os.WEXITSTATUS(status)
-    return ExecProduct(rc, log_output , log_errors)
-
-def _pulseProgressCallback(data, callback_data=None):
-    if callback_data:
-        callback_data.pulse()
-
-def execWithPulseProgress(command, argv, stdin = None, stdout = None,
-                          stderr = None, echo = True, progress = None,
-                          root = '/'):
-    return execWithCallback(command, argv, stdin=stdin, stdout=stdout,
-                     stderr=stderr, echo=echo, callback=_pulseProgressCallback,
-                     callback_data=progress, root=root)
-
-## Run a shell.
-def execConsole():
-    try:
-        proc = subprocess.Popen(["/bin/sh"])
-        proc.wait()
-    except OSError as e:
-        raise RuntimeError("Error running /bin/sh: %s" % e.strerror)
+        :param command: The command to run
+        :param argv: The argument list
+        :param stdin: The file object to read stdin from.
+        :param root: The directory to chroot to before running command.
+        :param log_output: Whether to log the output of command
+        :param filter_stderr: Whether stderr should be excluded from the returned output
+        :param raise_err: whether to raise a CalledProcessError if the returncode is non-zero
+        :return: The output of the command
+    """
+    argv = [command] + list(argv)
+    return _run_program(argv, stdin=stdin, root=root, log_output=log_output, filter_stderr=filter_stderr,
+                        raise_err=raise_err, callback=callback)[1]
 
 def runcmd(cmd, **kwargs):
     """ run execWithRedirect with raise_err=True
@@ -423,4 +237,3 @@ def runcmd_output(cmd, **kwargs):
     """
     kwargs["raise_err"] = True
     return execWithCapture(cmd[0], cmd[1:], **kwargs)
-

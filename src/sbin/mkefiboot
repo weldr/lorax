@@ -1,7 +1,7 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 # mkefiboot - a tool to make EFI boot images
 #
-# Copyright (C) 2011-2014  Red Hat, Inc.
+# Copyright (C) 2011-2015  Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -145,9 +145,9 @@ def main():
     if os.getuid() > 0:
         parser.error("need root permissions")
     if opt.icon and not opt.imgtype == "apple":
-        print "Warning: --icon is only useful for Apple EFI images"
+        print("Warning: --icon is only useful for Apple EFI images")
     if opt.diskname and not opt.imgtype == "apple":
-        print "Warning: --diskname is only useful for Apple EFI images"
+        print("Warning: --diskname is only useful for Apple EFI images")
     # do the thing!
     if opt.imgtype == "apple":
         mkmacboot(opt.bootdir, opt.outfile, opt.label, opt.icon, opt.product,
