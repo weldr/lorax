@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        23.8
+Version:        23.9
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -134,6 +134,32 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %files lmc-novirt
 
 %changelog
+* Fri May 15 2015 Brian C. Lane <bcl@redhat.com> 23.9-1
+- Update execWith* docstrings (bcl@redhat.com)
+- livemedia-creator: Update example kickstarts (bcl@redhat.com)
+- Update fedora-livemedia.ks example (bcl@redhat.com)
+- Include html documentation under docs/html (bcl@redhat.com)
+- Switch documentation to python3 (bcl@redhat.com)
+- Create html documentation under docs/html/ (bcl@redhat.com)
+- livemedia-creator: Catch missing package errors (bcl@redhat.com)
+- Update spec for python3 and add subpackages for lmc (bcl@redhat.com)
+- Convert to using pocketlint for pylint rules (bcl@redhat.com)
+- Convert livemedia-creator to py3 (bcl@redhat.com)
+- Convert test-parse-template to py3 (bcl@redhat.com)
+- Update image-minimizer for py3 (bcl@redhat.com)
+- Change mkefiboot to py3 (bcl@redhat.com)
+- Additional python3 changes (bcl@redhat.com)
+- Update lorax for python3 and argparse (bcl@redhat.com)
+- Use the execWith* methods from Anaconda (bcl@redhat.com)
+- Convert pylorax to python3 (bcl@redhat.com)
+- Clean up some pylint warnings (bcl@redhat.com)
+- Make sure openssh-clients is installed (#1219398) (bcl@redhat.com)
+- Add product.img support for s390 templates (dan@danny.cz)
+- Add some more details about template rendering errors (bcl@redhat.com)
+- Mock more modules for RTD (bcl@redhat.com)
+- Mock the selinux package for RTD (bcl@redhat.com)
+- Added Sphinx Documentation (bcl@redhat.com)
+
 * Thu Apr 02 2015 Brian C. Lane <bcl@redhat.com> 23.8-1
 - Include cryptsetup in the image (#1208214) (bcl@redhat.com)
 
