@@ -1,0 +1,1332 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pylorax package &mdash; Lorax 23.8 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Lorax 23.8 documentation" href="index.html"/>
+        <link rel="up" title="pylorax" href="modules.html"/>
+        <link rel="prev" title="pylorax" href="modules.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> Lorax</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction to Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html#before-lorax">Before Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lorax.html">lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="livemedia-creator.html">livemedia-creator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#quickstart">Quickstart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#how-iso-creation-works">How ISO creation works</a></li>
+<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#kickstarts">Kickstarts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#anaconda-image-install-no-virt">Anaconda image install (no-virt)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#ami-images">AMI Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#appliance-creation">Appliance Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#filesystem-image-creation">Filesystem Image Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#tar-file-creation">TAR File Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#live-image-for-pxe-boot">Live Image for PXE Boot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#atomic-live-image-for-pxe-boot">Atomic Live Image for PXE Boot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#using-mock-to-create-images">Using Mock to Create Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#openstack-image-creation">OpenStack Image Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#docker-image-creation">Docker Image Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#debugging-problems">Debugging problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#hacking">Hacking</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="product-images.html">Product and Updates Images</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">pylorax</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="">pylorax package</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Lorax</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="modules.html">pylorax</a> &raquo;</li>
+      
+    <li>pylorax package</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/pylorax.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="pylorax-package">
+<h1>pylorax package<a class="headerlink" href="#pylorax-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pylorax.base">
+<span id="pylorax-base-module"></span><h2>pylorax.base module<a class="headerlink" href="#module-pylorax.base" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pylorax.base.BaseLoraxClass">
+<em class="property">class </em><tt class="descclassname">pylorax.base.</tt><tt class="descname">BaseLoraxClass</tt><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<dl class="method">
+<dt id="pylorax.base.BaseLoraxClass.pcritical">
+<tt class="descname">pcritical</tt><big>(</big><em>msg</em>, <em>fobj=&lt;_io.TextIOWrapper name='&lt;stdout&gt;' mode='w' encoding='UTF-8'&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.pcritical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.pcritical" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pylorax.base.BaseLoraxClass.pdebug">
+<tt class="descname">pdebug</tt><big>(</big><em>msg</em>, <em>fobj=&lt;_io.TextIOWrapper name='&lt;stdout&gt;' mode='w' encoding='UTF-8'&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.pdebug"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.pdebug" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pylorax.base.BaseLoraxClass.perror">
+<tt class="descname">perror</tt><big>(</big><em>msg</em>, <em>fobj=&lt;_io.TextIOWrapper name='&lt;stdout&gt;' mode='w' encoding='UTF-8'&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.perror"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.perror" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pylorax.base.BaseLoraxClass.pinfo">
+<tt class="descname">pinfo</tt><big>(</big><em>msg</em>, <em>fobj=&lt;_io.TextIOWrapper name='&lt;stdout&gt;' mode='w' encoding='UTF-8'&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.pinfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.pinfo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pylorax.base.BaseLoraxClass.pwarning">
+<tt class="descname">pwarning</tt><big>(</big><em>msg</em>, <em>fobj=&lt;_io.TextIOWrapper name='&lt;stdout&gt;' mode='w' encoding='UTF-8'&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.pwarning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.pwarning" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pylorax.base.DataHolder">
+<em class="property">class </em><tt class="descclassname">pylorax.base.</tt><tt class="descname">DataHolder</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#DataHolder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.DataHolder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.dict</span></tt></p>
+<dl class="method">
+<dt id="pylorax.base.DataHolder.copy">
+<tt class="descname">copy</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#DataHolder.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.DataHolder.copy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.buildstamp">
+<span id="pylorax-buildstamp-module"></span><h2>pylorax.buildstamp module<a class="headerlink" href="#module-pylorax.buildstamp" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pylorax.buildstamp.BuildStamp">
+<em class="property">class </em><tt class="descclassname">pylorax.buildstamp.</tt><tt class="descname">BuildStamp</tt><big>(</big><em>product</em>, <em>version</em>, <em>bugurl</em>, <em>isfinal</em>, <em>buildarch</em><big>)</big><a class="reference internal" href="_modules/pylorax/buildstamp.html#BuildStamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.buildstamp.BuildStamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<dl class="method">
+<dt id="pylorax.buildstamp.BuildStamp.write">
+<tt class="descname">write</tt><big>(</big><em>outfile</em><big>)</big><a class="reference internal" href="_modules/pylorax/buildstamp.html#BuildStamp.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.buildstamp.BuildStamp.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.decorators">
+<span id="pylorax-decorators-module"></span><h2>pylorax.decorators module<a class="headerlink" href="#module-pylorax.decorators" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pylorax.decorators.singleton">
+<tt class="descclassname">pylorax.decorators.</tt><tt class="descname">singleton</tt><big>(</big><em>cls</em><big>)</big><a class="reference internal" href="_modules/pylorax/decorators.html#singleton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.decorators.singleton" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.discinfo">
+<span id="pylorax-discinfo-module"></span><h2>pylorax.discinfo module<a class="headerlink" href="#module-pylorax.discinfo" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pylorax.discinfo.DiscInfo">
+<em class="property">class </em><tt class="descclassname">pylorax.discinfo.</tt><tt class="descname">DiscInfo</tt><big>(</big><em>release</em>, <em>basearch</em><big>)</big><a class="reference internal" href="_modules/pylorax/discinfo.html#DiscInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.discinfo.DiscInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<dl class="method">
+<dt id="pylorax.discinfo.DiscInfo.write">
+<tt class="descname">write</tt><big>(</big><em>outfile</em><big>)</big><a class="reference internal" href="_modules/pylorax/discinfo.html#DiscInfo.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.discinfo.DiscInfo.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.dnfhelper">
+<span id="pylorax-dnfhelper-module"></span><h2>pylorax.dnfhelper module<a class="headerlink" href="#module-pylorax.dnfhelper" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pylorax.dnfhelper.LoraxDownloadCallback">
+<em class="property">class </em><tt class="descclassname">pylorax.dnfhelper.</tt><tt class="descname">LoraxDownloadCallback</tt><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxDownloadCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxDownloadCallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.DownloadProgress</span></tt></p>
+<dl class="method">
+<dt id="pylorax.dnfhelper.LoraxDownloadCallback.end">
+<tt class="descname">end</tt><big>(</big><em>payload</em>, <em>status</em>, <em>err_msg</em><big>)</big><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxDownloadCallback.end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxDownloadCallback.end" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pylorax.dnfhelper.LoraxDownloadCallback.progress">
+<tt class="descname">progress</tt><big>(</big><em>payload</em>, <em>done</em><big>)</big><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxDownloadCallback.progress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxDownloadCallback.progress" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pylorax.dnfhelper.LoraxDownloadCallback.start">
+<tt class="descname">start</tt><big>(</big><em>total_files</em>, <em>total_size</em><big>)</big><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxDownloadCallback.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxDownloadCallback.start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pylorax.dnfhelper.LoraxRpmCallback">
+<em class="property">class </em><tt class="descclassname">pylorax.dnfhelper.</tt><tt class="descname">LoraxRpmCallback</tt><big>(</big><em>queue</em><big>)</big><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxRpmCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxRpmCallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.LoggingTransactionDisplay</span></tt></p>
+<dl class="method">
+<dt id="pylorax.dnfhelper.LoraxRpmCallback.event">
+<tt class="descname">event</tt><big>(</big><em>package</em>, <em>action</em>, <em>te_current</em>, <em>te_total</em>, <em>ts_current</em>, <em>ts_total</em><big>)</big><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxRpmCallback.event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxRpmCallback.event" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.executils">
+<span id="pylorax-executils-module"></span><h2>pylorax.executils module<a class="headerlink" href="#module-pylorax.executils" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pylorax.executils.ExecProduct">
+<em class="property">class </em><tt class="descclassname">pylorax.executils.</tt><tt class="descname">ExecProduct</tt><big>(</big><em>rc</em>, <em>stdout</em>, <em>stderr</em><big>)</big><a class="reference internal" href="_modules/pylorax/executils.html#ExecProduct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.executils.ExecProduct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.executils.augmentEnv">
+<tt class="descclassname">pylorax.executils.</tt><tt class="descname">augmentEnv</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pylorax/executils.html#augmentEnv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.executils.augmentEnv" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pylorax.executils.execWithCapture">
+<tt class="descclassname">pylorax.executils.</tt><tt class="descname">execWithCapture</tt><big>(</big><em>command</em>, <em>argv</em>, <em>stdin=None</em>, <em>root='/'</em>, <em>log_output=True</em>, <em>filter_stderr=False</em>, <em>raise_err=False</em>, <em>callback=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/executils.html#execWithCapture"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.executils.execWithCapture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run an external program and capture standard out and err.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>command</strong> &#8211; The command to run</li>
+<li><strong>argv</strong> &#8211; The argument list</li>
+<li><strong>stdin</strong> &#8211; The file object to read stdin from.</li>
+<li><strong>root</strong> &#8211; The directory to chroot to before running command.</li>
+<li><strong>log_output</strong> &#8211; Whether to log the output of command</li>
+<li><strong>filter_stderr</strong> &#8211; Whether stderr should be excluded from the returned output</li>
+<li><strong>raise_err</strong> &#8211; whether to raise a CalledProcessError if the returncode is non-zero</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The output of the command</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.executils.execWithRedirect">
+<tt class="descclassname">pylorax.executils.</tt><tt class="descname">execWithRedirect</tt><big>(</big><em>command</em>, <em>argv</em>, <em>stdin=None</em>, <em>stdout=None</em>, <em>root='/'</em>, <em>env_prune=None</em>, <em>log_output=True</em>, <em>binary_output=False</em>, <em>raise_err=False</em>, <em>callback=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/executils.html#execWithRedirect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.executils.execWithRedirect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run an external program and redirect the output to a file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>command</strong> &#8211; The command to run</li>
+<li><strong>argv</strong> &#8211; The argument list</li>
+<li><strong>stdin</strong> &#8211; The file object to read stdin from.</li>
+<li><strong>stdout</strong> &#8211; Optional file object to redirect stdout and stderr to.</li>
+<li><strong>root</strong> &#8211; The directory to chroot to before running command.</li>
+<li><strong>env_prune</strong> &#8211; environment variable to remove before execution</li>
+<li><strong>log_output</strong> &#8211; whether to log the output of command</li>
+<li><strong>binary_output</strong> &#8211; whether to treat the output of command as binary data</li>
+<li><strong>raise_err</strong> &#8211; whether to raise a CalledProcessError if the returncode is non-zero</li>
+<li><strong>callback</strong> &#8211; method to call while waiting for process to finish, passed Popen object</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The return code of the command</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.executils.runcmd">
+<tt class="descclassname">pylorax.executils.</tt><tt class="descname">runcmd</tt><big>(</big><em>cmd</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pylorax/executils.html#runcmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.executils.runcmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>run execWithRedirect with raise_err=True</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.executils.runcmd_output">
+<tt class="descclassname">pylorax.executils.</tt><tt class="descname">runcmd_output</tt><big>(</big><em>cmd</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pylorax/executils.html#runcmd_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.executils.runcmd_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>run execWithCapture with raise_err=True</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.executils.setenv">
+<tt class="descclassname">pylorax.executils.</tt><tt class="descname">setenv</tt><big>(</big><em>name</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/pylorax/executils.html#setenv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.executils.setenv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set an environment variable to be used by child processes.</p>
+<p>This method does not modify os.environ for the running process, which
+is not thread-safe. If setenv has already been called for a particular
+variable name, the old value is overwritten.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; The name of the environment variable</li>
+<li><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; The value of the environment variable</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.executils.startProgram">
+<tt class="descclassname">pylorax.executils.</tt><tt class="descname">startProgram</tt><big>(</big><em>argv</em>, <em>root='/'</em>, <em>stdin=None</em>, <em>stdout=-1</em>, <em>stderr=-2</em>, <em>env_prune=None</em>, <em>env_add=None</em>, <em>reset_handlers=True</em>, <em>reset_lang=True</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pylorax/executils.html#startProgram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.executils.startProgram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start an external program and return the Popen object.</p>
+<p>The root and reset_handlers arguments are handled by passing a
+preexec_fn argument to subprocess.Popen, but an additional preexec_fn
+can still be specified and will be run. The user preexec_fn will be run
+last.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>argv</strong> &#8211; The command to run and argument</li>
+<li><strong>root</strong> &#8211; The directory to chroot to before running command.</li>
+<li><strong>stdin</strong> &#8211; The file object to read stdin from.</li>
+<li><strong>stdout</strong> &#8211; The file object to write stdout to.</li>
+<li><strong>stderr</strong> &#8211; The file object to write stderr to.</li>
+<li><strong>env_prune</strong> &#8211; environment variables to remove before execution</li>
+<li><strong>env_add</strong> &#8211; environment variables to add before execution</li>
+<li><strong>reset_handlers</strong> &#8211; whether to reset to SIG_DFL any signal handlers set to SIG_IGN</li>
+<li><strong>reset_lang</strong> &#8211; whether to set the locale of the child process to C</li>
+<li><strong>kwargs</strong> &#8211; Additional parameters to pass to subprocess.Popen</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A Popen object for the running command.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.imgutils">
+<span id="pylorax-imgutils-module"></span><h2>pylorax.imgutils module<a class="headerlink" href="#module-pylorax.imgutils" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pylorax.imgutils.DMDev">
+<em class="property">class </em><tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">DMDev</tt><big>(</big><em>dev</em>, <em>size</em>, <em>name=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#DMDev"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.DMDev" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pylorax.imgutils.LoopDev">
+<em class="property">class </em><tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">LoopDev</tt><big>(</big><em>filename</em>, <em>size=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#LoopDev"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.LoopDev" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pylorax.imgutils.Mount">
+<em class="property">class </em><tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">Mount</tt><big>(</big><em>dev</em>, <em>opts=''</em>, <em>mnt=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#Mount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.Mount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pylorax.imgutils.PartitionMount">
+<em class="property">class </em><tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">PartitionMount</tt><big>(</big><em>disk_img</em>, <em>mount_ok=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#PartitionMount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.PartitionMount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<p>Mount a partitioned image file using kpartx</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.compress">
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">compress</tt><big>(</big><em>command</em>, <em>rootdir</em>, <em>outfile</em>, <em>compression='xz'</em>, <em>compressargs=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#compress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.compress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a compressed archive of the given rootdir.
+command is a list of the archiver commands to run
+compression should be &#8220;xz&#8221;, &#8220;gzip&#8221;, &#8220;lzma&#8221;, &#8220;bzip2&#8221;, or None.
+compressargs will be used on the compression commandline.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.copytree">
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">copytree</tt><big>(</big><em>src</em>, <em>dest</em>, <em>preserve=True</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#copytree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.copytree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy a tree of files using cp -a, thus preserving modes, timestamps,
+links, acls, sparse files, xattrs, selinux contexts, etc.
+If preserve is False, uses cp -R (useful for modeless filesystems)
+raises CalledProcessError if copy fails.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.dm_attach">
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">dm_attach</tt><big>(</big><em>dev</em>, <em>size</em>, <em>name=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#dm_attach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.dm_attach" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attach a devicemapper device to the given device, with the given size.
+If name is None, a random name will be chosen. Returns the device name.
+raises CalledProcessError if dmsetup fails.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.dm_detach">
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">dm_detach</tt><big>(</big><em>dev</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#dm_detach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.dm_detach" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detach the named devicemapper device. Returns False if dmsetup fails.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.do_grafts">
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">do_grafts</tt><big>(</big><em>grafts</em>, <em>dest</em>, <em>preserve=True</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#do_grafts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.do_grafts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy each of the items listed in grafts into dest.
+If the key ends with &#8216;/&#8217; it&#8217;s assumed to be a directory which should be
+created, otherwise just the leading directories will be created.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.estimate_size">
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">estimate_size</tt><big>(</big><em>rootdir</em>, <em>graft=None</em>, <em>fstype=None</em>, <em>blocksize=4096</em>, <em>overhead=128</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#estimate_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.estimate_size" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.get_loop_name">
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">get_loop_name</tt><big>(</big><em>path</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#get_loop_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.get_loop_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the loop device associated with the path.
+Raises RuntimeError if more than one loop is associated</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.loop_attach">
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">loop_attach</tt><big>(</big><em>outfile</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#loop_attach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.loop_attach" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attach a loop device to the given file. Return the loop device name.
+Raises CalledProcessError if losetup fails.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.loop_detach">
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">loop_detach</tt><big>(</big><em>loopdev</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#loop_detach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.loop_detach" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detach the given loop device. Return False on failure.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.mkbtrfsimg">
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">mkbtrfsimg</tt><big>(</big><em>rootdir</em>, <em>outfile</em>, <em>size=None</em>, <em>label=''</em>, <em>mountargs=''</em>, <em>graft=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#mkbtrfsimg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.mkbtrfsimg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.mkcpio">
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">mkcpio</tt><big>(</big><em>rootdir</em>, <em>outfile</em>, <em>compression='xz'</em>, <em>compressargs=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#mkcpio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.mkcpio" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.mkdosimg">
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">mkdosimg</tt><big>(</big><em>rootdir</em>, <em>outfile</em>, <em>size=None</em>, <em>label=''</em>, <em>mountargs='shortname=winnt</em>, <em>umask=0077'</em>, <em>graft=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#mkdosimg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.mkdosimg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.mkext4img">
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">mkext4img</tt><big>(</big><em>rootdir</em>, <em>outfile</em>, <em>size=None</em>, <em>label=''</em>, <em>mountargs=''</em>, <em>graft=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#mkext4img"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.mkext4img" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.mkfsimage">
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">mkfsimage</tt><big>(</big><em>fstype</em>, <em>rootdir</em>, <em>outfile</em>, <em>size=None</em>, <em>mkfsargs=None</em>, <em>mountargs=''</em>, <em>graft=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#mkfsimage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.mkfsimage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic filesystem image creation function.
+fstype should be a filesystem type - &#8220;mkfs.${fstype}&#8221; must exist.
+graft should be a dict: {&#8220;some/path/in/image&#8221;: &#8220;local/file/or/dir&#8221;};</p>
+<blockquote>
+<div>if the path ends with a &#8216;/&#8217; it&#8217;s assumed to be a directory.</div></blockquote>
+<p>Will raise CalledProcessError if something goes wrong.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.mkhfsimg">
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">mkhfsimg</tt><big>(</big><em>rootdir</em>, <em>outfile</em>, <em>size=None</em>, <em>label=''</em>, <em>mountargs=''</em>, <em>graft=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#mkhfsimg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.mkhfsimg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.mkqcow2">
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">mkqcow2</tt><big>(</big><em>outfile</em>, <em>size</em>, <em>options=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#mkqcow2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.mkqcow2" title="Permalink to this definition">¶</a></dt>
+<dd><p>use qemu-img to create a file of the given size.
+options is a list of options passed to qemu-img</p>
+<p>Default format is qcow2, override by passing &#8220;-f&#8221;, fmt
+in options.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.mkrootfsimg">
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">mkrootfsimg</tt><big>(</big><em>rootdir</em>, <em>outfile</em>, <em>label</em>, <em>size=2</em>, <em>sysroot=''</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#mkrootfsimg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.mkrootfsimg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make rootfs image from a directory</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>rootdir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; Root directory</li>
+<li><strong>outfile</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; Path of output image file</li>
+<li><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; Filesystem label</li>
+<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; Size of the image in GiB, if None computed automatically</li>
+<li><strong>sysroot</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; path to system (deployment) root relative to physical root</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.mksparse">
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">mksparse</tt><big>(</big><em>outfile</em>, <em>size</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#mksparse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.mksparse" title="Permalink to this definition">¶</a></dt>
+<dd><p>use os.ftruncate to create a sparse file of the given size.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.mksquashfs">
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">mksquashfs</tt><big>(</big><em>rootdir</em>, <em>outfile</em>, <em>compression='default'</em>, <em>compressargs=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#mksquashfs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.mksquashfs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a squashfs image containing the given rootdir.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.mktar">
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">mktar</tt><big>(</big><em>rootdir</em>, <em>outfile</em>, <em>compression='xz'</em>, <em>compressargs=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#mktar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.mktar" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.mount">
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">mount</tt><big>(</big><em>dev</em>, <em>opts=''</em>, <em>mnt=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#mount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.mount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mount the given device at the given mountpoint, using the given opts.
+opts should be a comma-separated string of mount options.
+if mnt is none, a temporary directory will be created and its path will be
+returned.
+raises CalledProcessError if mount fails.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.round_to_blocks">
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">round_to_blocks</tt><big>(</big><em>size</em>, <em>blocksize</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#round_to_blocks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.round_to_blocks" title="Permalink to this definition">¶</a></dt>
+<dd><p>If size isn&#8217;t a multiple of blocksize, round up to the next multiple</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.umount">
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">umount</tt><big>(</big><em>mnt</em>, <em>lazy=False</em>, <em>maxretry=3</em>, <em>retrysleep=1.0</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#umount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.umount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unmount the given mountpoint. If lazy is True, do a lazy umount (-l).
+If the mount was a temporary dir created by mount, it will be deleted.
+raises CalledProcessError if umount fails.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.ltmpl">
+<span id="pylorax-ltmpl-module"></span><h2>pylorax.ltmpl module<a class="headerlink" href="#module-pylorax.ltmpl" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pylorax.ltmpl.LoraxTemplate">
+<em class="property">class </em><tt class="descclassname">pylorax.ltmpl.</tt><tt class="descname">LoraxTemplate</tt><big>(</big><em>directories=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplate.parse">
+<tt class="descname">parse</tt><big>(</big><em>template_file</em>, <em>variables</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplate.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplate.parse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner">
+<em class="property">class </em><tt class="descclassname">pylorax.ltmpl.</tt><tt class="descname">LoraxTemplateRunner</tt><big>(</big><em>inroot</em>, <em>outroot</em>, <em>dbo=None</em>, <em>fatalerrors=True</em>, <em>templatedir=None</em>, <em>defaults=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<p>This class parses and executes Lorax templates. Sample usage:</p>
+<blockquote>
+<div><p># install a bunch of packages
+runner = LoraxTemplateRunner(inroot=rundir, outroot=rundir, dbo=dnf_obj)
+runner.run(&#8220;install-packages.ltmpl&#8221;)</p>
+<p># modify a runtime dir
+runner = LoraxTemplateRunner(inroot=rundir, outroot=newrun)
+runner.run(&#8220;runtime-transmogrify.ltmpl&#8221;)</p>
+</div></blockquote>
+<p>NOTES:</p>
+<ul>
+<li><p class="first">Parsing procedure is roughly:
+1. Mako template expansion (on the whole file)
+2. For each line of the result,</p>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li>Whitespace splitting (using shlex.split())</li>
+<li>Brace expansion (using brace_expand())</li>
+<li>If the first token is the name of a function, call that function
+with the rest of the line as arguments</li>
+</ol>
+</div></blockquote>
+</li>
+<li><p class="first">Parsing and execution are <em>separate</em> passes - so you can&#8217;t use the result
+of a command in an %if statement (or any other control statements)!</p>
+</li>
+<li><p class="first">Commands that run external programs (systemctl, gconfset) currently use
+the <em>host</em>&#8216;s copy of that program, which may cause problems if there&#8217;s a
+big enough difference between the host and the image you&#8217;re modifying.</p>
+</li>
+<li><p class="first">The commands are not executed under a real chroot, so absolute symlinks
+will point <em>outside</em> the inroot/outroot. Be careful with symlinks!</p>
+</li>
+</ul>
+<p>ADDING NEW COMMANDS:</p>
+<ul class="simple">
+<li>Each template command is just a method of the LoraxTemplateRunner
+object - so adding a new command is as easy as adding a new function.</li>
+<li>Each function gets arguments that correspond to the rest of the tokens
+on that line (after word splitting and brace expansion)</li>
+<li>Commands should raise exceptions for errors - don&#8217;t use sys.exit()</li>
+</ul>
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.append">
+<tt class="descname">append</tt><big>(</big><em>filename</em>, <em>data</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.append" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>append FILE STRING</dt>
+<dd><p class="first">Append STRING (followed by a newline character) to FILE.
+Python character escape sequences (&#8216;n&#8217;, &#8216;t&#8217;, etc.) will be
+converted to the appropriate characters.
+Examples:</p>
+<blockquote class="last">
+<div>append /etc/depmod.d/dd.conf &#8220;search updates built-in&#8221;
+append /etc/resolv.conf &#8220;&#8221;</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.chmod">
+<tt class="descname">chmod</tt><big>(</big><em>fileglob</em>, <em>mode</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.chmod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.chmod" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>chmod FILEGLOB OCTALMODE</dt>
+<dd>Change the mode of all the files matching FILEGLOB to OCTALMODE.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.copy">
+<tt class="descname">copy</tt><big>(</big><em>src</em>, <em>dest</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.copy" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>copy SRC DEST</dt>
+<dd>Copy SRC to DEST.
+If DEST is a directory, SRC will be copied inside it.
+If DEST doesn&#8217;t exist, SRC will be copied to a file with
+that name, if the path leading to it exists.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.createaddrsize">
+<tt class="descname">createaddrsize</tt><big>(</big><em>addr</em>, <em>src</em>, <em>dest</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.createaddrsize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.createaddrsize" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>createaddrsize INITRD_ADDRESS INITRD ADDRSIZE</dt>
+<dd><p class="first">Create the initrd.addrsize file required in LPAR boot process.
+Examples:</p>
+<blockquote class="last">
+<div>createaddrsize ${INITRD_ADDRESS} ${outroot}/${BOOTDIR}/initrd.img ${outroot}/${BOOTDIR}/initrd.addrsize</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.gconfset">
+<tt class="descname">gconfset</tt><big>(</big><em>path</em>, <em>keytype</em>, <em>value</em>, <em>outfile=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.gconfset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.gconfset" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>gconfset PATH KEYTYPE VALUE [OUTFILE]</dt>
+<dd><p class="first">Set the given gconf PATH, with type KEYTYPE, to the given value.
+OUTFILE defaults to /etc/gconf/gconf.xml.defaults if not given.
+Example:</p>
+<blockquote class="last">
+<div>gconfset /apps/metacity/general/num_workspaces int 1</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.get_token_checked">
+<tt class="descname">get_token_checked</tt><big>(</big><em>process</em>, <em>token_queue</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.get_token_checked"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.get_token_checked" title="Permalink to this definition">¶</a></dt>
+<dd><p>Try to get token from queue checking that process is still alive</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.hardlink">
+<tt class="descname">hardlink</tt><big>(</big><em>src</em>, <em>dest</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.hardlink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.hardlink" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>hardlink SRC DEST</dt>
+<dd>Create a hardlink at DEST which is linked to SRC.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.install">
+<tt class="descname">install</tt><big>(</big><em>srcglob</em>, <em>dest</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.install"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.install" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>install SRC DEST</dt>
+<dd><p class="first">Copy the given file (or files, if a glob is used) from the input
+tree to the given destination in the output tree.
+The path to DEST must exist in the output tree.
+If DEST is a directory, SRC will be copied into that directory.
+If DEST doesn&#8217;t exist, SRC will be copied to a file with that name,
+assuming the rest of the path exists.
+This is pretty much like how the &#8216;cp&#8217; command works.
+Examples:</p>
+<blockquote class="last">
+<div>install usr/share/myconfig/grub.conf /boot
+install /usr/share/myconfig/grub.conf.in /boot/grub.conf</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.installimg">
+<tt class="descname">installimg</tt><big>(</big><em>srcdir</em>, <em>destfile</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.installimg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.installimg" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>installimg SRCDIR DESTFILE</dt>
+<dd><p class="first">Create a compressed cpio archive of the contents of SRCDIR and place
+it in DESTFILE.</p>
+<p>If SRCDIR doesn&#8217;t exist or is empty nothing is created.</p>
+<dl class="last docutils">
+<dt>Examples:</dt>
+<dd>installimg ${LORAXDIR}/product/ images/product.img
+installimg ${LORAXDIR}/updates/ images/updates.img</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.installinitrd">
+<tt class="descname">installinitrd</tt><big>(</big><em>section</em>, <em>src</em>, <em>dest</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.installinitrd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.installinitrd" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>installinitrd SECTION SRC DEST</dt>
+<dd>Same as installkernel, but for &#8220;initrd&#8221;.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.installkernel">
+<tt class="descname">installkernel</tt><big>(</big><em>section</em>, <em>src</em>, <em>dest</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.installkernel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.installkernel" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>installkernel SECTION SRC DEST</dt>
+<dd><p class="first">Install the kernel from SRC in the input tree to DEST in the output
+tree, and then add an item to the treeinfo data store, in the named
+SECTION, where &#8220;kernel&#8221; = DEST.</p>
+<dl class="last docutils">
+<dt>Equivalent to:</dt>
+<dd>install SRC DEST
+treeinfo SECTION kernel DEST</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.installpkg">
+<tt class="descname">installpkg</tt><big>(</big><em>*pkgs</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.installpkg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.installpkg" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>installpkg [&#8211;required] PKGGLOB [PKGGLOB ...]</dt>
+<dd>Request installation of all packages matching the given globs.
+Note that this is just a <em>request</em> - nothing is <em>actually</em> installed
+until the &#8216;run_pkg_transaction&#8217; command is given.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.installupgradeinitrd">
+<tt class="descname">installupgradeinitrd</tt><big>(</big><em>section</em>, <em>src</em>, <em>dest</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.installupgradeinitrd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.installupgradeinitrd" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>installupgradeinitrd SECTION SRC DEST</dt>
+<dd>Same as installkernel, but for &#8220;upgrade&#8221;.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.log">
+<tt class="descname">log</tt><big>(</big><em>msg</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.log" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>log MESSAGE</dt>
+<dd><p class="first">Emit the given log message. Be sure to put it in quotes!
+Example:</p>
+<blockquote class="last">
+<div>log &#8220;Reticulating splines, please wait...&#8221;</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.mkdir">
+<tt class="descname">mkdir</tt><big>(</big><em>*dirs</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.mkdir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.mkdir" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>mkdir DIR [DIR ...]</dt>
+<dd><p class="first">Create the named DIR(s). Will create leading directories as needed.
+Example:</p>
+<blockquote class="last">
+<div>mkdir /images</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.move">
+<tt class="descname">move</tt><big>(</big><em>src</em>, <em>dest</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.move" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>move SRC DEST</dt>
+<dd>Move SRC to DEST.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.remove">
+<tt class="descname">remove</tt><big>(</big><em>*fileglobs</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.remove" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>remove FILEGLOB [FILEGLOB ...]</dt>
+<dd>Remove all the named files or directories.
+Will <em>not</em> raise exceptions if the file(s) are not found.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.removefrom">
+<tt class="descname">removefrom</tt><big>(</big><em>pkg</em>, <em>*globs</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.removefrom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.removefrom" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>removefrom PKGGLOB [&#8211;allbut] FILEGLOB [FILEGLOB...]</dt>
+<dd><p class="first">Remove all files matching the given file globs from the package
+(or packages) named.
+If &#8216;&#8211;allbut&#8217; is used, all the files from the given package(s) will
+be removed <em>except</em> the ones which match the file globs.
+Examples:</p>
+<blockquote class="last">
+<div>removefrom usbutils /usr/bin/*
+removefrom xfsprogs &#8211;allbut /sbin/*</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.removekmod">
+<tt class="descname">removekmod</tt><big>(</big><em>*globs</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.removekmod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.removekmod" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>removekmod GLOB [GLOB...] [&#8211;allbut] KEEPGLOB [KEEPGLOB...]</dt>
+<dd><p class="first">Remove all files and directories matching the given file globs from the kernel
+modules directory.</p>
+<p>If &#8216;&#8211;allbut&#8217; is used, all the files from the modules will be removed <em>except</em>
+the ones which match the file globs. There must be at least one initial GLOB
+to search and one KEEPGLOB to keep. The KEEPGLOB is expanded to be <em>KEEPGLOB</em>
+so that it will match anywhere in the path.</p>
+<p>This only removes files from under /lib/modules/<a href="#id1"><span class="problematic" id="id2">*</span></a>/kernel/</p>
+<dl class="last docutils">
+<dt>Examples:</dt>
+<dd>removekmod sound drivers/media drivers/hwmon drivers/video
+removekmod drivers/char &#8211;allbut virtio_console hw_random</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.removepkg">
+<tt class="descname">removepkg</tt><big>(</big><em>*pkgs</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.removepkg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.removepkg" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>removepkg PKGGLOB [PKGGLOB...]</dt>
+<dd><p class="first">Delete the named package(s).
+IMPLEMENTATION NOTES:</p>
+<blockquote class="last">
+<div>RPM scriptlets (%preun/%postun) are <em>not</em> run.
+Files are deleted, but directories are left behind.</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.replace">
+<tt class="descname">replace</tt><big>(</big><em>pat</em>, <em>repl</em>, <em>*fileglobs</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.replace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.replace" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>replace PATTERN REPLACEMENT FILEGLOB [FILEGLOB ...]</dt>
+<dd><p class="first">Find-and-replace the given PATTERN (Python-style regex) with the given
+REPLACEMENT string for each of the files listed.
+Example:</p>
+<blockquote class="last">
+<div>replace &#64;VERSION&#64; ${product.version} /boot/grub.conf /boot/isolinux.cfg</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.run">
+<tt class="descname">run</tt><big>(</big><em>templatefile</em>, <em>**variables</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.run_pkg_transaction">
+<tt class="descname">run_pkg_transaction</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.run_pkg_transaction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.run_pkg_transaction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Actually install all the packages requested by previous &#8216;installpkg&#8217;
+commands.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.runcmd">
+<tt class="descname">runcmd</tt><big>(</big><em>*cmdlist</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.runcmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.runcmd" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>runcmd CMD [ARG ...]</dt>
+<dd><p class="first">Run the given command with the given arguments.</p>
+<p>NOTE: All paths given MUST be COMPLETE, ABSOLUTE PATHS to the file
+or files mentioned. ${root}/${inroot}/${outroot} are good for
+constructing these paths.</p>
+<p>FURTHER NOTE: Please use this command only as a last resort!
+Whenever possible, you should use the existing template commands.
+If the existing commands don&#8217;t do what you need, fix them!</p>
+<dl class="last docutils">
+<dt>Examples:</dt>
+<dd><p class="first">(this should be replaced with a &#8220;find&#8221; function)
+runcmd find ${root} -name &#8220;<em>.pyo&#8221; -type f -delete
+%for f in find(root, name=&#8221;</em>.pyo&#8221;):</p>
+<blockquote>
+<div>remove ${f}</div></blockquote>
+<p class="last">%endfor</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.symlink">
+<tt class="descname">symlink</tt><big>(</big><em>target</em>, <em>dest</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.symlink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.symlink" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>symlink SRC DEST</dt>
+<dd>Create a symlink at DEST which points to SRC.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.systemctl">
+<tt class="descname">systemctl</tt><big>(</big><em>cmd</em>, <em>*units</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.systemctl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.systemctl" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>systemctl [enable|disable|mask] UNIT [UNIT...]</dt>
+<dd><p class="first">Enable, disable, or mask the given systemd units.
+Examples:</p>
+<blockquote class="last">
+<div>systemctl disable lvm2-monitor.service
+systemctl mask fedora-storage-init.service fedora-configure.service</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.ltmpl.LoraxTemplateRunner.treeinfo">
+<tt class="descname">treeinfo</tt><big>(</big><em>section</em>, <em>key</em>, <em>*valuetoks</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.treeinfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.treeinfo" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>treeinfo SECTION KEY ARG [ARG ...]</dt>
+<dd><p class="first">Add an item to the treeinfo data store.
+The given SECTION will have a new item added where
+KEY = ARG ARG ...
+Example:</p>
+<blockquote class="last">
+<div>treeinfo images-${kernel.arch} boot.iso images/boot.iso</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.ltmpl.brace_expand">
+<tt class="descclassname">pylorax.ltmpl.</tt><tt class="descname">brace_expand</tt><big>(</big><em>s</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#brace_expand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.brace_expand" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pylorax.ltmpl.rexists">
+<tt class="descclassname">pylorax.ltmpl.</tt><tt class="descname">rexists</tt><big>(</big><em>pathname</em>, <em>root=''</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#rexists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.rexists" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pylorax.ltmpl.rglob">
+<tt class="descclassname">pylorax.ltmpl.</tt><tt class="descname">rglob</tt><big>(</big><em>pathname</em>, <em>root='/'</em>, <em>fatal=False</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#rglob"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.rglob" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pylorax.ltmpl.split_and_expand">
+<tt class="descclassname">pylorax.ltmpl.</tt><tt class="descname">split_and_expand</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#split_and_expand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.split_and_expand" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.output">
+<span id="pylorax-output-module"></span><h2>pylorax.output module<a class="headerlink" href="#module-pylorax.output" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pylorax.sysutils">
+<span id="pylorax-sysutils-module"></span><h2>pylorax.sysutils module<a class="headerlink" href="#module-pylorax.sysutils" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pylorax.sysutils.joinpaths">
+<tt class="descclassname">pylorax.sysutils.</tt><tt class="descname">joinpaths</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pylorax/sysutils.html#joinpaths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.sysutils.joinpaths" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pylorax.sysutils.touch">
+<tt class="descclassname">pylorax.sysutils.</tt><tt class="descname">touch</tt><big>(</big><em>fname</em><big>)</big><a class="reference internal" href="_modules/pylorax/sysutils.html#touch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.sysutils.touch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pylorax.sysutils.replace">
+<tt class="descclassname">pylorax.sysutils.</tt><tt class="descname">replace</tt><big>(</big><em>fname</em>, <em>find</em>, <em>sub</em><big>)</big><a class="reference internal" href="_modules/pylorax/sysutils.html#replace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.sysutils.replace" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pylorax.sysutils.chown_">
+<tt class="descclassname">pylorax.sysutils.</tt><tt class="descname">chown_</tt><big>(</big><em>path</em>, <em>user=None</em>, <em>group=None</em>, <em>recursive=False</em><big>)</big><a class="reference internal" href="_modules/pylorax/sysutils.html#chown_"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.sysutils.chown_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pylorax.sysutils.chmod_">
+<tt class="descclassname">pylorax.sysutils.</tt><tt class="descname">chmod_</tt><big>(</big><em>path</em>, <em>mode</em>, <em>recursive=False</em><big>)</big><a class="reference internal" href="_modules/pylorax/sysutils.html#chmod_"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.sysutils.chmod_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pylorax.sysutils.remove">
+<tt class="descclassname">pylorax.sysutils.</tt><tt class="descname">remove</tt><big>(</big><em>target</em><big>)</big><a class="reference internal" href="_modules/pylorax/sysutils.html#remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.sysutils.remove" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pylorax.sysutils.linktree">
+<tt class="descclassname">pylorax.sysutils.</tt><tt class="descname">linktree</tt><big>(</big><em>src</em>, <em>dst</em><big>)</big><a class="reference internal" href="_modules/pylorax/sysutils.html#linktree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.sysutils.linktree" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.treebuilder">
+<span id="pylorax-treebuilder-module"></span><h2>pylorax.treebuilder module<a class="headerlink" href="#module-pylorax.treebuilder" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pylorax.treebuilder.RuntimeBuilder">
+<em class="property">class </em><tt class="descclassname">pylorax.treebuilder.</tt><tt class="descname">RuntimeBuilder</tt><big>(</big><em>product</em>, <em>arch</em>, <em>dbo</em>, <em>templatedir=None</em>, <em>installpkgs=None</em>, <em>add_templates=None</em>, <em>add_template_vars=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/treebuilder.html#RuntimeBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.RuntimeBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<p>Builds the anaconda runtime image.</p>
+<dl class="method">
+<dt id="pylorax.treebuilder.RuntimeBuilder.cleanup">
+<tt class="descname">cleanup</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pylorax/treebuilder.html#RuntimeBuilder.cleanup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.RuntimeBuilder.cleanup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove unneeded packages and files with runtime-cleanup.tmpl</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.treebuilder.RuntimeBuilder.create_runtime">
+<tt class="descname">create_runtime</tt><big>(</big><em>outfile='/var/tmp/squashfs.img'</em>, <em>compression='xz'</em>, <em>compressargs=None</em>, <em>size=2</em><big>)</big><a class="reference internal" href="_modules/pylorax/treebuilder.html#RuntimeBuilder.create_runtime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.RuntimeBuilder.create_runtime" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pylorax.treebuilder.RuntimeBuilder.finished">
+<tt class="descname">finished</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pylorax/treebuilder.html#RuntimeBuilder.finished"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.RuntimeBuilder.finished" title="Permalink to this definition">¶</a></dt>
+<dd><p>Done using RuntimeBuilder</p>
+<p>Close the dnf base object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.treebuilder.RuntimeBuilder.generate_module_data">
+<tt class="descname">generate_module_data</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pylorax/treebuilder.html#RuntimeBuilder.generate_module_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.RuntimeBuilder.generate_module_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pylorax.treebuilder.RuntimeBuilder.install">
+<tt class="descname">install</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pylorax/treebuilder.html#RuntimeBuilder.install"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.RuntimeBuilder.install" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install packages and do initial setup with runtime-install.tmpl</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.treebuilder.RuntimeBuilder.postinstall">
+<tt class="descname">postinstall</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pylorax/treebuilder.html#RuntimeBuilder.postinstall"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.RuntimeBuilder.postinstall" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do some post-install setup work with runtime-postinstall.tmpl</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.treebuilder.RuntimeBuilder.writepkglists">
+<tt class="descname">writepkglists</tt><big>(</big><em>pkglistdir</em><big>)</big><a class="reference internal" href="_modules/pylorax/treebuilder.html#RuntimeBuilder.writepkglists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.RuntimeBuilder.writepkglists" title="Permalink to this definition">¶</a></dt>
+<dd><p>debugging data: write out lists of package contents</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.treebuilder.RuntimeBuilder.writepkgsizes">
+<tt class="descname">writepkgsizes</tt><big>(</big><em>pkgsizefile</em><big>)</big><a class="reference internal" href="_modules/pylorax/treebuilder.html#RuntimeBuilder.writepkgsizes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.RuntimeBuilder.writepkgsizes" title="Permalink to this definition">¶</a></dt>
+<dd><p>debugging data: write a big list of pkg sizes</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pylorax.treebuilder.TreeBuilder">
+<em class="property">class </em><tt class="descclassname">pylorax.treebuilder.</tt><tt class="descname">TreeBuilder</tt><big>(</big><em>product</em>, <em>arch</em>, <em>inroot</em>, <em>outroot</em>, <em>runtime</em>, <em>isolabel</em>, <em>domacboot=True</em>, <em>doupgrade=True</em>, <em>templatedir=None</em>, <em>add_templates=None</em>, <em>add_template_vars=None</em>, <em>workdir=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/treebuilder.html#TreeBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.TreeBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<p>Builds the arch-specific boot images.
+inroot should be the installtree root (the newly-built runtime dir)</p>
+<dl class="method">
+<dt id="pylorax.treebuilder.TreeBuilder.build">
+<tt class="descname">build</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pylorax/treebuilder.html#TreeBuilder.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.TreeBuilder.build" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pylorax.treebuilder.TreeBuilder.copy_dracut_hooks">
+<tt class="descname">copy_dracut_hooks</tt><big>(</big><em>hooks</em><big>)</big><a class="reference internal" href="_modules/pylorax/treebuilder.html#TreeBuilder.copy_dracut_hooks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.TreeBuilder.copy_dracut_hooks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy the hook scripts in hooks into the installroot&#8217;s /tmp/
+and return a list of commands to pass to dracut when creating the
+initramfs</p>
+<p>hooks is a list of tuples with the name of the hook script and the
+target dracut hook directory
+(eg. [(&#8220;99anaconda-copy-ks.sh&#8221;, &#8220;/lib/dracut/hooks/pre-pivot&#8221;)])</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pylorax.treebuilder.TreeBuilder.dracut_hooks_path">
+<tt class="descname">dracut_hooks_path</tt><a class="reference internal" href="_modules/pylorax/treebuilder.html#TreeBuilder.dracut_hooks_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.TreeBuilder.dracut_hooks_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the path to the lorax dracut hooks scripts</p>
+<p>Use the configured share dir if it is setup,
+otherwise default to /usr/share/lorax/dracut_hooks</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.treebuilder.TreeBuilder.implantisomd5">
+<tt class="descname">implantisomd5</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pylorax/treebuilder.html#TreeBuilder.implantisomd5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.TreeBuilder.implantisomd5" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pylorax.treebuilder.TreeBuilder.kernels">
+<tt class="descname">kernels</tt><a class="reference internal" href="_modules/pylorax/treebuilder.html#TreeBuilder.kernels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.TreeBuilder.kernels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pylorax.treebuilder.TreeBuilder.rebuild_initrds">
+<tt class="descname">rebuild_initrds</tt><big>(</big><em>add_args=None</em>, <em>backup=''</em>, <em>prefix=''</em><big>)</big><a class="reference internal" href="_modules/pylorax/treebuilder.html#TreeBuilder.rebuild_initrds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.TreeBuilder.rebuild_initrds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rebuild all the initrds in the tree. If backup is specified, each
+initrd will be renamed with backup as a suffix before rebuilding.
+If backup is empty, the existing initrd files will be overwritten.
+If suffix is specified, the existing initrd is untouched and a new
+image is built with the filename &#8220;${prefix}-${kernel.version}.img&#8221;</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.treebuilder.findkernels">
+<tt class="descclassname">pylorax.treebuilder.</tt><tt class="descname">findkernels</tt><big>(</big><em>root='/'</em>, <em>kdir='boot'</em><big>)</big><a class="reference internal" href="_modules/pylorax/treebuilder.html#findkernels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.findkernels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pylorax.treebuilder.generate_module_info">
+<tt class="descclassname">pylorax.treebuilder.</tt><tt class="descname">generate_module_info</tt><big>(</big><em>moddir</em>, <em>outfile=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/treebuilder.html#generate_module_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.generate_module_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pylorax.treebuilder.string_lower">
+<tt class="descclassname">pylorax.treebuilder.</tt><tt class="descname">string_lower</tt><big>(</big><em>string</em><big>)</big><a class="reference internal" href="_modules/pylorax/treebuilder.html#string_lower"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.string_lower" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a lowercase string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>string</strong> &#8211; String to lowercase</td>
+</tr>
+</tbody>
+</table>
+<p>This is used as a filter in the templates.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.treebuilder.udev_escape">
+<tt class="descclassname">pylorax.treebuilder.</tt><tt class="descname">udev_escape</tt><big>(</big><em>label</em><big>)</big><a class="reference internal" href="_modules/pylorax/treebuilder.html#udev_escape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.udev_escape" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.treeinfo">
+<span id="pylorax-treeinfo-module"></span><h2>pylorax.treeinfo module<a class="headerlink" href="#module-pylorax.treeinfo" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pylorax.treeinfo.TreeInfo">
+<em class="property">class </em><tt class="descclassname">pylorax.treeinfo.</tt><tt class="descname">TreeInfo</tt><big>(</big><em>product</em>, <em>version</em>, <em>variant</em>, <em>basearch</em>, <em>packagedir=''</em><big>)</big><a class="reference internal" href="_modules/pylorax/treeinfo.html#TreeInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treeinfo.TreeInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<dl class="method">
+<dt id="pylorax.treeinfo.TreeInfo.add_section">
+<tt class="descname">add_section</tt><big>(</big><em>section</em>, <em>data</em><big>)</big><a class="reference internal" href="_modules/pylorax/treeinfo.html#TreeInfo.add_section"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treeinfo.TreeInfo.add_section" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pylorax.treeinfo.TreeInfo.write">
+<tt class="descname">write</tt><big>(</big><em>outfile</em><big>)</big><a class="reference internal" href="_modules/pylorax/treeinfo.html#TreeInfo.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treeinfo.TreeInfo.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pylorax">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pylorax" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pylorax.ArchData">
+<em class="property">class </em><tt class="descclassname">pylorax.</tt><tt class="descname">ArchData</tt><big>(</big><em>buildarch</em><big>)</big><a class="reference internal" href="_modules/pylorax.html#ArchData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ArchData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pylorax.base.DataHolder" title="pylorax.base.DataHolder"><tt class="xref py py-class docutils literal"><span class="pre">pylorax.base.DataHolder</span></tt></a></p>
+<dl class="attribute">
+<dt id="pylorax.ArchData.bcj_arch">
+<tt class="descname">bcj_arch</tt><em class="property"> = {'ppc': 'powerpc', 'ppc64le': 'powerpc', 'armhfp': 'arm', 'arm': 'arm', 'ppc64': 'powerpc', 'x86_64': 'x86', 'i386': 'x86'}</em><a class="headerlink" href="#pylorax.ArchData.bcj_arch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pylorax.ArchData.lib64_arches">
+<tt class="descname">lib64_arches</tt><em class="property"> = ('x86_64', 'ppc64', 'ppc64le', 's390x', 'ia64', 'aarch64')</em><a class="headerlink" href="#pylorax.ArchData.lib64_arches" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pylorax.Lorax">
+<em class="property">class </em><tt class="descclassname">pylorax.</tt><tt class="descname">Lorax</tt><a class="reference internal" href="_modules/pylorax.html#Lorax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.Lorax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pylorax.base.BaseLoraxClass" title="pylorax.base.BaseLoraxClass"><tt class="xref py py-class docutils literal"><span class="pre">pylorax.base.BaseLoraxClass</span></tt></a></p>
+<dl class="method">
+<dt id="pylorax.Lorax.configure">
+<tt class="descname">configure</tt><big>(</big><em>conf_file='/etc/lorax/lorax.conf'</em><big>)</big><a class="reference internal" href="_modules/pylorax.html#Lorax.configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.Lorax.configure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pylorax.Lorax.init_file_logging">
+<tt class="descname">init_file_logging</tt><big>(</big><em>logdir</em>, <em>logname='pylorax.log'</em><big>)</big><a class="reference internal" href="_modules/pylorax.html#Lorax.init_file_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.Lorax.init_file_logging" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pylorax.Lorax.init_stream_logging">
+<tt class="descname">init_stream_logging</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pylorax.html#Lorax.init_stream_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.Lorax.init_stream_logging" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pylorax.Lorax.run">
+<tt class="descname">run</tt><big>(</big><em>dbo</em>, <em>product</em>, <em>version</em>, <em>release</em>, <em>variant=''</em>, <em>bugurl=''</em>, <em>isfinal=False</em>, <em>workdir=None</em>, <em>outputdir=None</em>, <em>buildarch=None</em>, <em>volid=None</em>, <em>domacboot=True</em>, <em>doupgrade=True</em>, <em>remove_temp=False</em>, <em>installpkgs=None</em>, <em>size=2</em>, <em>add_templates=None</em>, <em>add_template_vars=None</em>, <em>add_arch_templates=None</em>, <em>add_arch_template_vars=None</em><big>)</big><a class="reference internal" href="_modules/pylorax.html#Lorax.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.Lorax.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.get_buildarch">
+<tt class="descclassname">pylorax.</tt><tt class="descname">get_buildarch</tt><big>(</big><em>dbo</em><big>)</big><a class="reference internal" href="_modules/pylorax.html#get_buildarch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.get_buildarch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="modules.html" class="btn btn-neutral" title="pylorax"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Red Hat, Inc..
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'23.8',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
