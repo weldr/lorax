@@ -237,14 +237,13 @@ class Lorax(BaseLoraxClass):
             logger.debug("self.arch.%s = %s", attr, getattr(self.arch,attr))
 
         logger.info("setting up build parameters")
-        product = DataHolder(name=product, version=version, release=release,
-                             variant=variant, bugurl=bugurl, isfinal=isfinal)
-        self.product = product
-        logger.debug("product data: %s", product)
+        self.product = DataHolder(name=product, version=version, release=release,
+                                 variant=variant, bugurl=bugurl, isfinal=isfinal)
+        logger.debug("product data: %s", self.product)
 
         # NOTE: if you change isolabel, you need to change pungi to match, or
         # the pungi images won't boot.
-        isolabel = volid or "%s-%s-%s" % (product, version, self.arch.basearch)
+        isolabel = volid or "%s-%s-%s" % (self.product.name, self.product.version, self.arch.basearch)
 
         if len(isolabel) > 32:
             logger.fatal("the volume id cannot be longer than 32 characters")
