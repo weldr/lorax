@@ -21,8 +21,6 @@
 #
 import logging
 log = logging.getLogger("livemedia-creator")
-program_log = logging.getLogger("program")
-pylorax_log = logging.getLogger("pylorax")
 
 import os
 import sys
@@ -44,7 +42,7 @@ from mako.template import Template
 from mako.exceptions import text_error_template
 
 # Use the Lorax treebuilder branch for iso creation
-from pylorax import ArchData
+from pylorax import ArchData, setup_logging
 from pylorax.base import DataHolder
 from pylorax.treebuilder import TreeBuilder, RuntimeBuilder, udev_escape
 from pylorax.treebuilder import findkernels
@@ -951,42 +949,6 @@ def make_live_images(opts, work_dir, root_dir, rootfs_image=None, size=None):
     return work_dir
 
 
-def setup_logging(opts):
-    """
-    Setup the various logs
-
-    :param opts: options passed to livemedia-creator
-    :type opts: argparse options
-    """
-    if not os.path.isdir(os.path.abspath(os.path.dirname(opts.logfile))):
-        os.makedirs(os.path.abspath(os.path.dirname(opts.logfile)))
-
-    # Setup logging to console and to logfile
-    log.setLevel(logging.DEBUG)
-    pylorax_log.setLevel(logging.DEBUG)
-
-    sh = logging.StreamHandler()
-    sh.setLevel(logging.INFO)
-    fmt = logging.Formatter("%(asctime)s: %(message)s")
-    sh.setFormatter(fmt)
-    log.addHandler(sh)
-    pylorax_log.addHandler(sh)
-
-    fh = logging.FileHandler(filename=opts.logfile, mode="w")
-    fh.setLevel(logging.DEBUG)
-    fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
-    fh.setFormatter(fmt)
-    log.addHandler(fh)
-    pylorax_log.addHandler(fh)
-
-    # External program output log
-    program_log.setLevel(logging.DEBUG)
-    logfile = os.path.abspath(os.path.dirname(opts.logfile))+"/program.log"
-    fh = logging.FileHandler(filename=logfile, mode="w")
-    fh.setLevel(logging.DEBUG)
-    program_log.addHandler(fh)
-
-
 def main():
     parser = argparse.ArgumentParser(description="Create Live Install Media",
                                      fromfile_prefix_chars="@")
@@ -1124,7 +1086,7 @@ def main():
 
     opts = parser.parse_args()
 
-    setup_logging(opts)
+    setup_logging(opts.logfile, log)
 
     log.debug( opts )
 

@@ -21,8 +21,6 @@
 #
 import logging
 log = logging.getLogger("lorax")
-program_log = logging.getLogger("program")
-pylorax_log = logging.getLogger("pylorax")
 dnf_log = logging.getLogger("dnf")
 
 
@@ -36,30 +34,7 @@ import dnf
 import pylorax
 
 def setup_logging(opts):
-    # Setup logging to console and to logfile
-    log.setLevel(logging.DEBUG)
-    pylorax_log.setLevel(logging.DEBUG)
-
-    sh = logging.StreamHandler()
-    sh.setLevel(logging.INFO)
-    fmt = logging.Formatter("%(asctime)s: %(message)s")
-    sh.setFormatter(fmt)
-    log.addHandler(sh)
-    pylorax_log.addHandler(sh)
-
-    fh = logging.FileHandler(filename=opts.logfile, mode="w")
-    fh.setLevel(logging.DEBUG)
-    fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
-    fh.setFormatter(fmt)
-    log.addHandler(fh)
-    pylorax_log.addHandler(fh)
-
-    # External program output log
-    program_log.setLevel(logging.DEBUG)
-    logfile = os.path.abspath(os.path.dirname(opts.logfile))+"/program.log"
-    fh = logging.FileHandler(filename=logfile, mode="w")
-    fh.setLevel(logging.DEBUG)
-    program_log.addHandler(fh)
+    pylorax.setup_logging(opts, log)
 
     # dnf logging
     dnf_log.setLevel(logging.DEBUG)

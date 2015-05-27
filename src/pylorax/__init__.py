@@ -25,6 +25,8 @@ import logging
 logger = logging.getLogger("pylorax")
 logger.addHandler(logging.NullHandler())
 
+program_log = logging.getLogger("program")
+
 import sys
 import os
 import configparser
@@ -372,3 +374,41 @@ def get_buildarch(dbo):
         sys.exit(1)
 
     return buildarch
+
+
+def setup_logging(logfile, theLogger):
+    """
+    Setup the various logs
+
+    :param logfile: filename to write the log to
+    :type logfile: string
+    :param theLogger: top-level logger
+    :type theLogger: logging.Logger
+    """
+    if not os.path.isdir(os.path.abspath(os.path.dirname(logfile))):
+        os.makedirs(os.path.abspath(os.path.dirname(logfile)))
+
+    # Setup logging to console and to logfile
+    logger.setLevel(logging.DEBUG)
+    theLogger.setLevel(logging.DEBUG)
+
+    sh = logging.StreamHandler()
+    sh.setLevel(logging.INFO)
+    fmt = logging.Formatter("%(asctime)s: %(message)s")
+    sh.setFormatter(fmt)
+    logger.addHandler(sh)
+    theLogger.addHandler(sh)
+
+    fh = logging.FileHandler(filename=logfile, mode="w")
+    fh.setLevel(logging.DEBUG)
+    fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
+    fh.setFormatter(fmt)
+    logger.addHandler(fh)
+    theLogger.addHandler(fh)
+
+    # External program output log
+    program_log.setLevel(logging.DEBUG)
+    f = os.path.abspath(os.path.dirname(logfile))+"/program.log"
+    fh = logging.FileHandler(filename=f, mode="w")
+    fh.setLevel(logging.DEBUG)
+    program_log.addHandler(fh)
