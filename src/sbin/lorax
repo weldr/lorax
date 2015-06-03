@@ -34,7 +34,7 @@ import dnf
 import pylorax
 
 def setup_logging(opts):
-    pylorax.setup_logging(opts, log)
+    pylorax.setup_logging(opts.logfile, log)
 
     # dnf logging
     dnf_log.setLevel(logging.DEBUG)
