@@ -80,7 +80,7 @@ sound drivers/media drivers/hwmon drivers/video
 net/atm net/bluetooth net/sched net/sctp
 net/rds net/l2tp net/decnet net/netfilter net/ipv4 net/ipv6
 drivers/watchdog drivers/target drivers/rtc drivers/input/joystick
-drivers/bluetooth drivers/hid drivers/edac drivers/staging
+drivers/bluetooth drivers/hid drivers/edac
 drivers/usb/serial drivers/usb/host drivers/usb/misc
 fs/ocfs2 fs/ceph fs/nfsd fs/ubifs fs/nilfs2
 arch/x86/kvm
@@ -99,6 +99,10 @@ runcmd chroot ${root} find /lib/modules \
                         \! -name hw_random \
                         \! -name virtio-rng.ko\* \
                         \! -name ipmi\* \
+                        -delete
+runcmd chroot ${root} find /lib/modules \
+                        -regex ".*/kernel/drivers/staging/.*" \
+                        \! -name zram\* \
                         -delete
 ## NOTE: depmod gets re-run after cleanup finishes
 
