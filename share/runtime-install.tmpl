@@ -6,7 +6,6 @@ installpkg anaconda anaconda-widgets
 installpkg kexec-tools-anaconda-addon
 ## anaconda deps that aren't in the RPM
 installpkg tmux
-installpkg iscsi-initiator-utils
 ## Other available payloads
 installpkg dnf
 installpkg rpm-ostree
@@ -78,11 +77,7 @@ installpkg xorg-x11-drivers xorg-x11-server-Xorg
 installpkg xorg-x11-server-utils xorg-x11-xauth
 installpkg dbus-x11 metacity gsettings-desktop-schemas
 installpkg nm-connection-editor
-installpkg gobject-introspection
 installpkg librsvg2
-installpkg polkit-desktop-policy
-installpkg gnome-keyring
-installpkg python-imaging
 
 ## filesystem tools
 installpkg btrfs-progs jfsutils xfsprogs reiserfs-utils gfs2-utils ntfs-3g ntfsprogs
@@ -91,14 +86,14 @@ installpkg device-mapper-persistent-data
 installpkg xfsdump
 
 ## needed for LUKS escrow
-installpkg python-volume_key volume_key
-installpkg python-nss
+installpkg volume_key
+installpkg nss-tools
 
 ## SELinux support
-installpkg selinux-policy-targeted audit libsemanage-python
+installpkg selinux-policy-targeted audit
 
 ## network tools/servers
-installpkg python-ethtool ethtool openssh-server nfs-utils openssh-clients
+installpkg ethtool openssh-server nfs-utils openssh-clients
 installpkg tigervnc-server-minimal
 %if basearch != "s390x":
 installpkg tigervnc-server-module
@@ -115,7 +110,7 @@ installpkg hdparm pcmciautils
 installpkg libmlx4 rdma
 
 ## translations & language packs
-installpkg yum-langpacks
+installpkg python3-dnf-langpacks
 
 ## fonts & themes
 installpkg bitmap-fangsongti-fonts
@@ -145,7 +140,6 @@ installpkg abattis-cantarell-fonts
 
 ## debugging/bug reporting tools
 installpkg gdb-gdbserver
-installpkg python-epdb
 installpkg libreport-plugin-bugzilla libreport-plugin-reportuploader
 installpkg fpaste
 
@@ -154,9 +148,6 @@ installpkg vim-minimal strace lsof dump xz less eject
 installpkg wget rsync rsh bind-utils ftp mtr vconfig
 installpkg icfg spice-vdagent
 installpkg gdisk hexedit sg3_utils
-
-## yum plugins
-installpkg yum-plugin-fastestmirror yum-langpacks
 
 ## satisfy libnotify's desktop-notification-daemon with the least crazy option
 installpkg notification-daemon
