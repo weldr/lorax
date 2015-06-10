@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        23.9
+Version:        23.10
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -134,6 +134,17 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %files lmc-novirt
 
 %changelog
+* Wed Jun 10 2015 Brian C. Lane <bcl@redhat.com> 23.10-1
+- Remove some stale entires from runtime-install (dshea@redhat.com)
+- Stop moving sitecustomize into site-packages (bcl@redhat.com)
+- Pass setup_logging the log file, not the whole opts structure.
+  (clumens@redhat.com)
+- Move IsoMountpoint into its own module. (clumens@redhat.com)
+- Move setup_logging into pylorax/__init__.py. (clumens@redhat.com)
+- Break all the log monitoring stuff from LMC out into its own module.
+  (clumens@redhat.com)
+- Fix bug with product DataHolder overwriting product string. (bcl@redhat.com)
+
 * Fri May 15 2015 Brian C. Lane <bcl@redhat.com> 23.9-1
 - Update execWith* docstrings (bcl@redhat.com)
 - livemedia-creator: Update example kickstarts (bcl@redhat.com)
