@@ -36,7 +36,8 @@ systemctl disable systemd-readahead-collect.service \
 ## /usr/lib/systemd rather than /etc/systemd), so we have to mask them.
 systemctl mask rhel-configure.service rhel-loadmodules.service \
                rhel-autorelabel.service rhel-autorelabel-mark.service \
-               rhel-wait-storage.service media.mount
+               rhel-wait-storage.service media.mount \
+               systemd-tmpfiles-clean.service systemd-tmpfiles-clean.timer
 
 ## Make logind activate anaconda-shell@.service on switch to empty VT
 symlink anaconda-shell@.service lib/systemd/system/autovt@.service
