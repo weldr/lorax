@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.53
+Version:        19.6.54
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Mon Jun 15 2015 Brian C. Lane <bcl@redhat.com> 19.6.54-1
+- Add removekmod template command (bcl@redhat.com)
+  Resolves: rhbz#1230356
+- Disable systemd-tmpfiles-clean (bcl@redhat.com)
+  Resolves: rhbz#1202545
+- Add bridge-utils (bcl@redhat.com)
+  Resolves: rhbz#1188812
+
 * Fri Jun 05 2015 Brian C. Lane <bcl@redhat.com> 19.6.53-1
 - Keep the zram kernel module (bcl@redhat.com)
 - Keep seq and getconf utilities in the image (vpodzime@redhat.com)
