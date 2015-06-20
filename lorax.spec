@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        23.10
+Version:        23.11
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -134,6 +134,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %files lmc-novirt
 
 %changelog
+* Fri Jun 19 2015 Brian C. Lane <bcl@redhat.com> 23.11-1
+- Disable systemd-tmpfiles-clean (#1202545) (bcl@redhat.com)
+
 * Wed Jun 10 2015 Brian C. Lane <bcl@redhat.com> 23.10-1
 - Remove some stale entires from runtime-install (dshea@redhat.com)
 - Stop moving sitecustomize into site-packages (bcl@redhat.com)
