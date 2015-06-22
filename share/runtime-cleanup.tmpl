@@ -45,6 +45,8 @@ removepkg logrotate
 remove /etc/logrotate.d
 ## anaconda needs this to do media check
 removefrom isomd5sum --allbut /usr/bin/checkisomd5
+## remove ntp keep only config file
+removefrom ntp --allbut /etc/ntp.conf
 
 ## various other things we remove to save space
 removepkg avahi-autoipd coreutils-libs dash db4-utils diffutils file
