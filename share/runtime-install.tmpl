@@ -13,7 +13,9 @@ installpkg rpm-ostree
 installpkg pigz
 
 ## kernel and firmware
-installpkg kernel
+## NOTE: Without explicitly including kernel-modules-extra dnf will choose kernel-debuginfo-*
+##       to satify a gfs2-utils kmod requirement
+installpkg kernel kernel-modules kernel-modules-extra
 installpkg grubby
 %if basearch != "s390x":
     installpkg *-firmware
