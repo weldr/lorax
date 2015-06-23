@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.54
+Version:        19.6.55
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,16 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Mon Jun 22 2015 Brian C. Lane <bcl@redhat.com> 19.6.55-1
+- Add ntp configuration file to installation (jkonecny@redhat.com)
+  Related: rhbz#1085013
+- livemedia-creator: Add option to create qcow2 disk images (bcl@redhat.com)
+  Resolves: rhbz#1210413
+- Add support for creating qcow2 images (bcl@redhat.com)
+  Related: rhbz#1210413
+- Install the oscap-anaconda-addon (vpodzime@redhat.com)
+  Resolves: rhbz#1190685
+
 * Mon Jun 15 2015 Brian C. Lane <bcl@redhat.com> 19.6.54-1
 - Add removekmod template command (bcl@redhat.com)
   Resolves: rhbz#1230356
