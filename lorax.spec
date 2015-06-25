@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.55
+Version:        19.6.56
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Thu Jun 25 2015 Brian C. Lane <bcl@redhat.com> 19.6.56-1
+- Add ability for external templates to graft content into boot.iso (walters@verbum.org)
+  Resolves: rhbz#1202278
+- Update templates to use installimg for product and updates (bcl@redhat.com)
+  Related: rhbz#1202278
+
 * Mon Jun 22 2015 Brian C. Lane <bcl@redhat.com> 19.6.55-1
 - Add ntp configuration file to installation (jkonecny@redhat.com)
   Related: rhbz#1085013
