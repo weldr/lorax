@@ -76,7 +76,7 @@ remove /var/lib/rpm/* /var/lib/yum
 remove /usr/share/icons/*/icon-theme.cache
 
 ## clean up kernel modules
-removekmod sound drivers/media drivers/hwmon drivers/video \
+removekmod sound drivers/media drivers/hwmon \
            net/atm net/bluetooth net/sched net/sctp \
            net/rds net/l2tp net/decnet net/netfilter net/ipv4 net/ipv6 \
            drivers/watchdog drivers/target drivers/rtc drivers/input/joystick \
@@ -90,6 +90,7 @@ removekmod sound drivers/media drivers/hwmon drivers/video \
 removekmod drivers/char --allbut virtio_console hw_random \
                                   virtio-rng ipmi
 removekmod drivers/staging --allbut zram
+removekmod drivers/video --allbut hyperv_fb
 remove lib/modules/*/{build,source,*.map}
 ## NOTE: depmod gets re-run after cleanup finishes
 
