@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        23.11
+Version:        23.12
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -134,6 +134,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %files lmc-novirt
 
 %changelog
+* Fri Jun 26 2015 Brian C. Lane <bcl@redhat.com> 23.12-1
+- Explicitly add kernel-modules and kernel-modules-extra (bcl@redhat.com)
+
 * Fri Jun 19 2015 Brian C. Lane <bcl@redhat.com> 23.11-1
 - Disable systemd-tmpfiles-clean (#1202545) (bcl@redhat.com)
 
