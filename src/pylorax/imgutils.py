@@ -248,7 +248,7 @@ def round_to_blocks(size, blocksize):
     return size
 
 # TODO: move filesystem data outside this function
-def estimate_size(rootdir, graft=None, fstype=None, blocksize=4096, overhead=128):
+def estimate_size(rootdir, graft=None, fstype=None, blocksize=4096, overhead=256):
     graft = graft or {}
     getsize = lambda f: os.lstat(f).st_size
     if fstype == "btrfs":
