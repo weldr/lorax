@@ -68,6 +68,22 @@ pylorax.ltmpl module
     :undoc-members:
     :show-inheritance:
 
+pylorax.monitor module
+----------------------
+
+.. automodule:: pylorax.monitor
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pylorax.mount module
+--------------------
+
+.. automodule:: pylorax.mount
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 pylorax.output module
 ---------------------
 
