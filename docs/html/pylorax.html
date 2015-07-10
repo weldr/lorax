@@ -5,16 +5,16 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax package &mdash; Lorax 23.8 documentation</title>
+  <title>pylorax package &mdash; Lorax 23.12 documentation</title>
   
 
   
   
 
   
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 
   
   
@@ -30,12 +30,12 @@
   
 
   
-    <link rel="top" title="Lorax 23.8 documentation" href="index.html"/>
+    <link rel="top" title="Lorax 23.12 documentation" href="index.html"/>
         <link rel="up" title="pylorax" href="modules.html"/>
         <link rel="prev" title="pylorax" href="modules.html"/> 
 
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+  <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
@@ -47,8 +47,14 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-nav-search">
         
-          <a href="index.html" class="fa fa-home"> Lorax</a>
+
         
+          <a href="index.html" class="icon icon-home"> Lorax
+        
+
+        
+        </a>
+
         
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -57,6 +63,8 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+
+        
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
@@ -87,7 +95,25 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="product-images.html">Product and Updates Images</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">pylorax</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="">pylorax package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">pylorax package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pylorax.base">pylorax.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pylorax.buildstamp">pylorax.buildstamp module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pylorax.decorators">pylorax.decorators module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pylorax.discinfo">pylorax.discinfo module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pylorax.dnfhelper">pylorax.dnfhelper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pylorax.executils">pylorax.executils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pylorax.imgutils">pylorax.imgutils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pylorax.ltmpl">pylorax.ltmpl module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pylorax.monitor">pylorax.monitor module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pylorax.mount">pylorax.mount module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pylorax.output">pylorax.output module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pylorax.sysutils">pylorax.sysutils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pylorax.treebuilder">pylorax.treebuilder module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pylorax.treeinfo">pylorax.treeinfo module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pylorax">Module contents</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -119,7 +145,9 @@
     <li>pylorax package</li>
       <li class="wy-breadcrumbs-aside">
         
-          <a href="_sources/pylorax.txt" rel="nofollow"> View page source</a>
+          
+            <a href="_sources/pylorax.txt" rel="nofollow"> View page source</a>
+          
         
       </li>
   </ul>
@@ -452,7 +480,7 @@ created, otherwise just the leading directories will be created.</p>
 
 <dl class="function">
 <dt id="pylorax.imgutils.estimate_size">
-<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">estimate_size</tt><big>(</big><em>rootdir</em>, <em>graft=None</em>, <em>fstype=None</em>, <em>blocksize=4096</em>, <em>overhead=128</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#estimate_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.estimate_size" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">estimate_size</tt><big>(</big><em>rootdir</em>, <em>graft=None</em>, <em>fstype=None</em>, <em>blocksize=4096</em>, <em>overhead=256</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#estimate_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.estimate_size" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -1014,6 +1042,123 @@ Example:</p>
 <dd></dd></dl>
 
 </div>
+<div class="section" id="module-pylorax.monitor">
+<span id="pylorax-monitor-module"></span><h2>pylorax.monitor module<a class="headerlink" href="#module-pylorax.monitor" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pylorax.monitor.LogMonitor">
+<em class="property">class </em><tt class="descclassname">pylorax.monitor.</tt><tt class="descname">LogMonitor</tt><big>(</big><em>log_path=None</em>, <em>host='localhost'</em>, <em>port=0</em>, <em>timeout=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/monitor.html#LogMonitor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.monitor.LogMonitor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<p>Setup a server to monitor the logs output by the installation</p>
+<p>This needs to be running before the virt-install runs, it expects
+there to be a listener on the port used for the virtio log port.</p>
+<dl class="method">
+<dt id="pylorax.monitor.LogMonitor.shutdown">
+<tt class="descname">shutdown</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pylorax/monitor.html#LogMonitor.shutdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.monitor.LogMonitor.shutdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Force shutdown of the monitoring thread</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pylorax.monitor.LogRequestHandler">
+<em class="property">class </em><tt class="descclassname">pylorax.monitor.</tt><tt class="descname">LogRequestHandler</tt><big>(</big><em>request</em>, <em>client_address</em>, <em>server</em><big>)</big><a class="reference internal" href="_modules/pylorax/monitor.html#LogRequestHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.monitor.LogRequestHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">socketserver.BaseRequestHandler</span></tt></p>
+<p>Handle monitoring and saving the logfiles from the virtual install</p>
+<p>Incoming data is written to self.server.log_path and each line is checked
+for patterns that would indicate that the installation failed.
+self.server.log_error is set True when this happens.</p>
+<dl class="method">
+<dt id="pylorax.monitor.LogRequestHandler.finish">
+<tt class="descname">finish</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pylorax/monitor.html#LogRequestHandler.finish"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.monitor.LogRequestHandler.finish" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pylorax.monitor.LogRequestHandler.handle">
+<tt class="descname">handle</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pylorax/monitor.html#LogRequestHandler.handle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.monitor.LogRequestHandler.handle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write incoming data to a logfile and check for errors</p>
+<p>Split incoming data into lines and check for any Tracebacks or other
+errors that indicate that the install failed.</p>
+<p>Loops until self.server.kill is True</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.monitor.LogRequestHandler.iserror">
+<tt class="descname">iserror</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/pylorax/monitor.html#LogRequestHandler.iserror"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.monitor.LogRequestHandler.iserror" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check a line to see if it contains an error indicating installation failure</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; log line to check for failure</td>
+</tr>
+</tbody>
+</table>
+<p>If the line contains IGNORED it will be skipped.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.monitor.LogRequestHandler.setup">
+<tt class="descname">setup</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pylorax/monitor.html#LogRequestHandler.setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.monitor.LogRequestHandler.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start writing to self.server.log_path</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pylorax.monitor.LogServer">
+<em class="property">class </em><tt class="descclassname">pylorax.monitor.</tt><tt class="descname">LogServer</tt><big>(</big><em>log_path</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pylorax/monitor.html#LogServer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.monitor.LogServer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">socketserver.TCPServer</span></tt></p>
+<p>A TCP Server that listens for log data</p>
+<dl class="method">
+<dt id="pylorax.monitor.LogServer.log_check">
+<tt class="descname">log_check</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pylorax/monitor.html#LogServer.log_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.monitor.LogServer.log_check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check to see if an error has been found in the log</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if there has been an error</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pylorax.monitor.LogServer.timeout">
+<tt class="descname">timeout</tt><em class="property"> = 60</em><a class="headerlink" href="#pylorax.monitor.LogServer.timeout" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.mount">
+<span id="pylorax-mount-module"></span><h2>pylorax.mount module<a class="headerlink" href="#module-pylorax.mount" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pylorax.mount.IsoMountpoint">
+<em class="property">class </em><tt class="descclassname">pylorax.mount.</tt><tt class="descname">IsoMountpoint</tt><big>(</big><em>iso_path</em>, <em>initrd_path=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/mount.html#IsoMountpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.mount.IsoMountpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<p>Mount the iso and check to make sure the vmlinuz and initrd.img files exist</p>
+<p>Also check the iso for a a stage2 image and set a flag and extract the
+iso&#8217;s label.</p>
+<p>stage2 can be either LiveOS/squashfs.img or images/install.img</p>
+<dl class="method">
+<dt id="pylorax.mount.IsoMountpoint.get_iso_label">
+<tt class="descname">get_iso_label</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pylorax/mount.html#IsoMountpoint.get_iso_label"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.mount.IsoMountpoint.get_iso_label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the iso&#8217;s label using isoinfo</p>
+<p>Sets self.label if one is found</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.mount.IsoMountpoint.umount">
+<tt class="descname">umount</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pylorax/mount.html#IsoMountpoint.umount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.mount.IsoMountpoint.umount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unmount the iso</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-pylorax.output">
 <span id="pylorax-output-module"></span><h2>pylorax.output module<a class="headerlink" href="#module-pylorax.output" title="Permalink to this headline">¶</a></h2>
 </div>
@@ -1221,7 +1366,7 @@ image is built with the filename &#8220;${prefix}-${kernel.version}.img&#8221;</
 <dd><p>Bases: <a class="reference internal" href="#pylorax.base.DataHolder" title="pylorax.base.DataHolder"><tt class="xref py py-class docutils literal"><span class="pre">pylorax.base.DataHolder</span></tt></a></p>
 <dl class="attribute">
 <dt id="pylorax.ArchData.bcj_arch">
-<tt class="descname">bcj_arch</tt><em class="property"> = {'ppc': 'powerpc', 'ppc64le': 'powerpc', 'armhfp': 'arm', 'arm': 'arm', 'ppc64': 'powerpc', 'x86_64': 'x86', 'i386': 'x86'}</em><a class="headerlink" href="#pylorax.ArchData.bcj_arch" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">bcj_arch</tt><em class="property"> = {'ppc64': 'powerpc', 'arm': 'arm', 'x86_64': 'x86', 'ppc64le': 'powerpc', 'ppc': 'powerpc', 'armhfp': 'arm', 'i386': 'x86'}</em><a class="headerlink" href="#pylorax.ArchData.bcj_arch" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1262,6 +1407,24 @@ image is built with the filename &#8220;${prefix}-${kernel.version}.img&#8221;</
 <tt class="descclassname">pylorax.</tt><tt class="descname">get_buildarch</tt><big>(</big><em>dbo</em><big>)</big><a class="reference internal" href="_modules/pylorax.html#get_buildarch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.get_buildarch" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="function">
+<dt id="pylorax.setup_logging">
+<tt class="descclassname">pylorax.</tt><tt class="descname">setup_logging</tt><big>(</big><em>logfile</em>, <em>theLogger</em><big>)</big><a class="reference internal" href="_modules/pylorax.html#setup_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.setup_logging" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup the various logs</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>logfile</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.4)"><em>string</em></a>) &#8211; filename to write the log to</li>
+<li><strong>theLogger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.4)"><em>logging.Logger</em></a>) &#8211; top-level logger</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 </div>
 
@@ -1272,7 +1435,7 @@ image is built with the filename &#8220;${prefix}-${kernel.version}.img&#8221;</
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="modules.html" class="btn btn-neutral" title="pylorax"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="modules.html" class="btn btn-neutral" title="pylorax" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1284,10 +1447,10 @@ image is built with the filename &#8220;${prefix}-${kernel.version}.img&#8221;</
         &copy; Copyright 2015, Red Hat, Inc..
     </p>
   </div>
-
   Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-  
+
 </footer>
+
         </div>
       </div>
 
@@ -1302,7 +1465,7 @@ image is built with the filename &#8220;${prefix}-${kernel.version}.img&#8221;</
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'23.8',
+            VERSION:'23.12',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
