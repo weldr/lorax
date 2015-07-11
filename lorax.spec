@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        23.12
+Version:        23.13
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -134,6 +134,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %files lmc-novirt
 
 %changelog
+* Fri Jul 10 2015 Brian C. Lane <bcl@redhat.com> 23.13-1
+- Add a bit more overhead to the root filesystem size (bcl@redhat.com)
+- network: turn slaves autoconnection on (rvykydal@redhat.com)
+- Keep hyperv_fb driver in the image (#834791) (bcl@redhat.com)
+
 * Fri Jun 26 2015 Brian C. Lane <bcl@redhat.com> 23.12-1
 - Explicitly add kernel-modules and kernel-modules-extra (bcl@redhat.com)
 
