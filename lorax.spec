@@ -101,6 +101,7 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %changelog
 * Tue Jul 14 2015 Brian C. Lane <bcl@redhat.com> 19.6.59-1
 - Add installimg command for use in the templates (bcl@redhat.com)
+  Related: rhbz#1202278
 
 * Tue Jun 30 2015 Brian C. Lane <bcl@redhat.com> 19.6.58-1
 - Keep hyperv_fb driver in the image (bcl@redhat.com)
