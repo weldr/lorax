@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.58
+Version:        19.6.59
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Jul 14 2015 Brian C. Lane <bcl@redhat.com> 19.6.59-1
+- Add installimg command for use in the templates (bcl@redhat.com)
+
 * Tue Jun 30 2015 Brian C. Lane <bcl@redhat.com> 19.6.58-1
 - Keep hyperv_fb driver in the image (bcl@redhat.com)
   Resolves: rhbz#834791
