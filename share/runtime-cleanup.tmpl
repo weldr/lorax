@@ -26,6 +26,11 @@ removefrom dracut --allbut /usr/lib/dracut/modules.d/30convertfs/convertfs.sh \
                   /usr/lib/dracut/dracut-initramfs-restore
 ## we don't run SELinux (not in enforcing, anyway)
 removepkg checkpolicy selinux-policy libselinux-utils
+
+## selinux checks for the /etc/selinux/config file's existance
+## The removepkg above removes it, create an empty one. See rhbz#1243168
+append etc/selinux/config ""
+
 ## anaconda has its own repo files
 removefrom fedora-release --allbut /etc/os-release /usr/lib/os-release \
                                    /usr/lib/os.release.d/*
