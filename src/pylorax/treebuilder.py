@@ -23,12 +23,14 @@ logger = logging.getLogger("pylorax.treebuilder")
 import os, re
 from os.path import basename
 from shutil import copytree, copy2
+from pathlib import Path
+import itertools
 
 from pylorax.sysutils import joinpaths, remove
 from pylorax.base import DataHolder
 from pylorax.ltmpl import LoraxTemplateRunner
 import pylorax.imgutils as imgutils
-from pylorax.executils import runcmd, runcmd_output
+from pylorax.executils import runcmd, runcmd_output, execWithCapture
 
 templatemap = {
     'i386':    'x86.tmpl',
@@ -142,6 +144,54 @@ class RuntimeBuilder(object):
     def cleanup(self):
         '''Remove unneeded packages and files with runtime-cleanup.tmpl'''
         self._runner.run("runtime-cleanup.tmpl")
+
+    def verify(self):
+        '''Ensure that contents of the installroot can run'''
+        status = True
+
+        ELF_MAGIC = b'\x7fELF'
+
+        # Iterate over all files in /usr/bin and /usr/sbin
+        # For ELF files, gather them into a list and we'll check them all at
+        # the end. For files with a #!, check them as we go
+        elf_files = []
+        usr_bin = Path(self.vars.root + '/usr/bin')
+        usr_sbin = Path(self.vars.root + '/usr/sbin')
+        for path in (str(x) for x in itertools.chain(usr_bin.iterdir(), usr_sbin.iterdir()) \
+                     if x.is_file()):
+            with open(path, "rb") as f:
+                magic = f.read(4)
+                if magic == ELF_MAGIC:
+                    # Save the path, minus the chroot prefix
+                    elf_files.append(path[len(self.vars.root):])
+                elif magic[:2] == b'#!':
+                    # Reopen the file as text and read the first line.
+                    # Open as latin-1 so that stray 8-bit characters don't make
+                    # things blow up. We only really care about ASCII parts.
+                    with open(path, "rt", encoding="latin-1") as f_text:
+                        # Remove the #!, split on space, and take the first part
+                        shabang = f_text.readline()[2:].split()[0]
+
+                    # Does the path exist?
+                    if not os.path.exists(self.vars.root + shabang):
+                        logger.error('%s, needed by %s, does not exist', shabang, path)
+                        status = False
+
+        # Now, run ldd on all the ELF files
+        # Just run ldd once on everything so it isn't logged a million times.
+        # At least one thing in the list isn't going to be a dynamic executable,
+        # so use execWithCapture to ignore the exit code.
+        filename = ''
+        for line in execWithCapture('ldd', elf_files, root=self.vars.root,
+                log_output=False, filter_stderr=True).split('\n'):
+            if line and not line[0].isspace():
+                # New filename header, strip the : at the end and save
+                filename = line[:-1]
+            elif 'not found' in line:
+                logger.error('%s, needed by %s, not found', line.split()[0], filename)
+                status = False
+
+        return status
 
     def writepkgsizes(self, pkgsizefile):
         '''debugging data: write a big list of pkg sizes'''

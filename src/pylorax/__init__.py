@@ -156,7 +156,8 @@ class Lorax(BaseLoraxClass):
             add_templates=None,
             add_template_vars=None,
             add_arch_templates=None,
-            add_arch_template_vars=None):
+            add_arch_template_vars=None,
+            verify=True):
 
         assert self._configured
 
@@ -288,6 +289,13 @@ class Lorax(BaseLoraxClass):
 
         logger.info("cleaning unneeded files")
         rb.cleanup()
+
+        if verify:
+            logger.info("verifying the installroot")
+            if not rb.verify():
+                sys.exit(1)
+        else:
+            logger.info("Skipping verify")
 
         if self.debug:
             rb.writepkgsizes(joinpaths(logdir, "final-pkgsizes.txt"))
