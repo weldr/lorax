@@ -114,6 +114,8 @@ def main(args):
     optional.add_argument("--add-arch-template-var", dest="add_arch_template_vars",
                         action="append", help="Set variable for architecture-specific image",
                         default=[])
+    optional.add_argument("--noverify", action="store_false", default=True, dest="verify",
+                        help="Do not verify the install root")
 
     # add the show version option
     parser.add_argument("-V", help="show program's version number and exit",
@@ -200,7 +202,7 @@ def main(args):
               add_template_vars=parsed_add_template_vars,
               add_arch_templates=opts.add_arch_templates,
               add_arch_template_vars=parsed_add_arch_template_vars,
-              remove_temp=True)
+              remove_temp=True, verify=opts.verify)
 
 
 def get_dnf_base_object(installroot, repositories, mirrorlists=None,
