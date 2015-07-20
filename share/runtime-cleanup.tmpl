@@ -10,7 +10,8 @@ remove usr/share/i18n
     removepkg perl*
 %endif
 ## no sound support, thanks
-removepkg alsa* flac gstreamer-tools libsndfile pulseaudio* sound-theme-freedesktop
+## ...except alsa-libs, which are needed by spice-vdagent
+removepkg alsa-*firmware* flac gstreamer-tools libsndfile pulseaudio* sound-theme-freedesktop
 removepkg midisport-firmware
 ## no fancy video, either
 removepkg libcrystalhd crystalhd-firmware ivtv-firmware cx18-firmware
