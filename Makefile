@@ -50,3 +50,5 @@ local:
 	@dir=$$PWD; cd /var/tmp; tar --gzip -cSpf $$dir/$(PKGNAME)-$(VERSION).tar.gz $(PKGNAME)-$(VERSION)
 	@rm -rf /var/tmp/$(PKGNAME)-$(VERSION)
 	@echo "The archive is in $(PKGNAME)-$(VERSION).tar.gz"
+
+ci: check
