@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        23.13
+Version:        23.14
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -134,6 +134,16 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %files lmc-novirt
 
 %changelog
+* Tue Jul 21 2015 Brian C. Lane <bcl@redhat.com> 23.14-1
+- Add a new makefile target that does everything needed for jenkins.
+  (clumens@redhat.com)
+- Revert "Revert "Turn off ldconfig"" (dshea@redhat.com)
+- Add back libraries needed by spice-vdagent (dshea@redhat.com)
+- Remove some junk that didn't work anyway (dshea@redhat.com)
+- Add a verification step to Lorax.run. (dshea@redhat.com)
+- Create an empty selinux config file (#1243168) (bcl@redhat.com)
+- Update Lorax documentation - 23.13 (bcl@redhat.com)
+
 * Fri Jul 10 2015 Brian C. Lane <bcl@redhat.com> 23.13-1
 - Add a bit more overhead to the root filesystem size (bcl@redhat.com)
 - network: turn slaves autoconnection on (rvykydal@redhat.com)
