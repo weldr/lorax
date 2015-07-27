@@ -122,7 +122,8 @@ def startProgram(argv, root='/', stdin=None, stdout=subprocess.PIPE, stderr=subp
                             preexec_fn=preexec, cwd=root, env=env, **kwargs)
 
 def _run_program(argv, root='/', stdin=None, stdout=None, env_prune=None, log_output=True,
-        binary_output=False, filter_stderr=False, raise_err=False, callback=None):
+        binary_output=False, filter_stderr=False, raise_err=False, callback=None,
+        env_add=None, reset_handlers=True, reset_lang=True):
     """ Run an external program, log the output and return it to the caller
 
         :param argv: The command to run and argument
@@ -145,7 +146,8 @@ def _run_program(argv, root='/', stdin=None, stdout=None, env_prune=None, log_ou
             stderr = subprocess.STDOUT
 
         proc = startProgram(argv, root=root, stdin=stdin, stdout=subprocess.PIPE, stderr=stderr,
-                            env_prune=env_prune, universal_newlines=not binary_output)
+                            env_prune=env_prune, universal_newlines=not binary_output,
+                            env_add=env_add, reset_handlers=reset_handlers, reset_lang=reset_lang)
 
         if callback:
             while callback(proc) and proc.poll() is None:
@@ -190,7 +192,8 @@ def _run_program(argv, root='/', stdin=None, stdout=None, env_prune=None, log_ou
     return (proc.returncode, output_string)
 
 def execWithRedirect(command, argv, stdin=None, stdout=None, root='/', env_prune=None,
-                     log_output=True, binary_output=False, raise_err=False, callback=None):
+                     log_output=True, binary_output=False, raise_err=False, callback=None,
+                     env_add=None, reset_handlers=True, reset_lang=True):
     """ Run an external program and redirect the output to a file.
 
         :param command: The command to run
@@ -207,10 +210,11 @@ def execWithRedirect(command, argv, stdin=None, stdout=None, root='/', env_prune
     """
     argv = [command] + list(argv)
     return _run_program(argv, stdin=stdin, stdout=stdout, root=root, env_prune=env_prune,
-            log_output=log_output, binary_output=binary_output, raise_err=raise_err, callback=callback)[0]
+            log_output=log_output, binary_output=binary_output, raise_err=raise_err, callback=callback,
+            env_add=env_add, reset_handlers=reset_handlers, reset_lang=reset_lang)[0]
 
 def execWithCapture(command, argv, stdin=None, root='/', log_output=True, filter_stderr=False,
-                    raise_err=False, callback=None):
+                    raise_err=False, callback=None, env_add=None, reset_handlers=True, reset_lang=True):
     """ Run an external program and capture standard out and err.
 
         :param command: The command to run
@@ -224,7 +228,8 @@ def execWithCapture(command, argv, stdin=None, root='/', log_output=True, filter
     """
     argv = [command] + list(argv)
     return _run_program(argv, stdin=stdin, root=root, log_output=log_output, filter_stderr=filter_stderr,
-                        raise_err=raise_err, callback=callback)[1]
+                        raise_err=raise_err, callback=callback, env_add=env_add,
+                        reset_handlers=reset_handlers, reset_lang=reset_lang)[1]
 
 def runcmd(cmd, **kwargs):
     """ run execWithRedirect with raise_err=True

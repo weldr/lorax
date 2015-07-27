@@ -614,7 +614,8 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
     os.environ["ANACONDA_PRODUCTVERSION"] = opts.releasever
     log.info("Running anaconda.")
     try:
-        execWithRedirect("anaconda", args, raise_err=True,
+        execWithRedirect("anaconda", args, raise_err=True, reset_lang=False,
+                         env_add={"ANACONDA_PRODUCTNAME": opts.project, "ANACONDA_PRODUCTVERSION": opts.releasever},
                          callback=lambda p: not novirt_log_check(log_monitor.server.log_check, p))
 
         # Make sure the new filesystem is correctly labeled
