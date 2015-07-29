@@ -51,7 +51,7 @@ from pylorax.imgutils import PartitionMount, mksparse, mkext4img, loop_detach
 from pylorax.imgutils import get_loop_name, dm_detach, mount, umount, Mount
 from pylorax.imgutils import mksquashfs, mkqcow2, mktar, mkrootfsimg
 from pylorax.imgutils import copytree
-from pylorax.executils import execWithRedirect, runcmd
+from pylorax.executils import execWithRedirect, execReadlines, runcmd
 from pylorax.monitor import LogMonitor
 from pylorax.mount import IsoMountpoint
 
@@ -610,13 +610,13 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
     args += ["--remotelog", "%s:%s" % (log_monitor.host, log_monitor.port)]
 
     # Make sure anaconda has the right product and release
-    os.environ["ANACONDA_PRODUCTNAME"] = opts.project
-    os.environ["ANACONDA_PRODUCTVERSION"] = opts.releasever
     log.info("Running anaconda.")
     try:
-        execWithRedirect("anaconda", args, raise_err=True, reset_lang=False,
-                         env_add={"ANACONDA_PRODUCTNAME": opts.project, "ANACONDA_PRODUCTVERSION": opts.releasever},
-                         callback=lambda p: not novirt_log_check(log_monitor.server.log_check, p))
+        for line in execReadlines("anaconda", args, reset_lang=False,
+                                  env_add={"ANACONDA_PRODUCTNAME": opts.project,
+                                           "ANACONDA_PRODUCTVERSION": opts.releasever},
+                                  callback=lambda p: not novirt_log_check(log_monitor.server.log_check, p)):
+            log.info(line)
 
         # Make sure the new filesystem is correctly labeled
         args = ["-e", "/proc", "-e", "/sys", "-e", "/dev",
@@ -627,11 +627,14 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
             with PartitionMount(disk_img) as img_mount:
                 if img_mount and img_mount.mount_dir:
                     execWithRedirect("setfiles", args, root=img_mount.mount_dir)
-    except subprocess.CalledProcessError as e:
+    except (subprocess.CalledProcessError, OSError) as e:
         log.error("Running anaconda failed: %s", e)
         raise InstallError("novirt_install failed")
     finally:
         log_monitor.shutdown()
+
+        # If anaconda failed there may be things needing cleanup
+        execWithRedirect("anaconda-cleanup", [])
 
         # Move the anaconda logs over to a log directory
         log_dir = os.path.abspath(os.path.dirname(opts.logfile))
@@ -642,11 +645,7 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
             shutil.copy2(l, log_anaconda)
             os.unlink(l)
 
-        if opts.make_iso or opts.make_fsimage:
-            umount(ROOT_PATH)
-        else:
-            # If anaconda failed the disk image may still be in use by dm
-            execWithRedirect("anaconda-cleanup", [])
+        if not opts.make_iso and not opts.make_fsimage:
             dm_name = os.path.splitext(os.path.basename(disk_img))[0]
             dm_path = "/dev/mapper/"+dm_name
             if os.path.exists(dm_path):
