@@ -134,6 +134,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %files lmc-novirt
 
 %changelog
+* Thu Jul 30 2015 Brian C. Lane <bcl@redhat.com> 24.0-1
+- Bump version to 24.0 (bcl@redhat.com)
+- Use execReadlines in livemedia-creator (bcl@redhat.com)
+- Add execReadlines to executils. (bcl@redhat.com)
+- Add reset_lang argument to everything in executils. (bcl@redhat.com)
+
 * Tue Jul 21 2015 Brian C. Lane <bcl@redhat.com> 23.14-1
 - Add a new makefile target that does everything needed for jenkins.
   (clumens@redhat.com)
