@@ -22,7 +22,7 @@ part swap --size=512
 
 #
 # Repositories
-url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/x86_64/os/"
+url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/23/x86_64/os/"
 
 #
 #

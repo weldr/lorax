@@ -10,7 +10,7 @@ timezone US/Eastern
 lang en_US.UTF-8
 # Firewall configuration
 firewall --enabled --service=mdns
-url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/x86_64/os/"
+url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/23/x86_64/os/"
 
 # System authorization information
 auth --useshadow --enablemd5
