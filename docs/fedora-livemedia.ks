@@ -397,6 +397,7 @@ memtest86+
 -gfs2-utils
 -reiserfs-utils
 
+dracut-live
 dracut-config-generic
 grub2-efi
 -dracut-config-rescue
