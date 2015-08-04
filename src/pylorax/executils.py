@@ -195,7 +195,8 @@ def _run_program(argv, root='/', stdin=None, stdout=None, env_prune=None, log_ou
         program_log.debug("Return code: %d", proc.returncode)
 
     if proc.returncode and raise_err:
-        raise subprocess.CalledProcessError(proc.returncode, argv)
+        output = output_string or "" + err_string or ""
+        raise subprocess.CalledProcessError(proc.returncode, argv, output)
 
     return (proc.returncode, output_string)
 
