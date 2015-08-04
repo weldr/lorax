@@ -62,6 +62,7 @@ install ${configdir}/sysctl.conf etc/sysctl.d/anaconda.conf
 install ${configdir}/spice-vdagentd etc/sysconfig
 mkdir etc/NetworkManager/conf.d
 install ${configdir}/91-anaconda-autoconnect-slaves.conf etc/NetworkManager/conf.d
+install ${configdir}/vconsole.conf etc
 
 ## set up sshd
 install ${configdir}/sshd_config.anaconda etc/ssh
