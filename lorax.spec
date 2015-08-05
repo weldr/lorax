@@ -2,7 +2,7 @@
 
 Name:           lorax
 Version:        19.6.59
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
@@ -99,6 +99,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Aug 05 2015 Brian C. Lane <bcl@redhat.com> 19.6.59-2
+- Fix chronyd not working in the installation (jkonecny)
+  Related: rhbz#1085013
+
 * Tue Jul 14 2015 Brian C. Lane <bcl@redhat.com> 19.6.59-1
 - Add installimg command for use in the templates (bcl@redhat.com)
   Related: rhbz#1202278
