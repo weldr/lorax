@@ -1,9 +1,9 @@
 import re
 from tito.common import run_command
-from tito.tagger import ReleaseTagger
+from tito.tagger import VersionTagger
 
 
-class LoraxRHELTagger(ReleaseTagger):
+class LoraxRHELTagger(VersionTagger):
     """
     Tagger which is based on ReleaseTagger and use Red Hat Enterprise Linux
     format of Changelog:
