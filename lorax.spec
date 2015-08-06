@@ -1,8 +1,8 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.59
-Release:        2%{?dist}
+Version:        19.6.60
+Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
@@ -99,6 +99,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Aug 05 2015 Brian C. Lane <bcl@redhat.com> 19.6.60-1
+- Fix tito tagger to bump version, not release (bcl)
+  Related: rhbz#1085013
+
 * Wed Aug 05 2015 Brian C. Lane <bcl@redhat.com> 19.6.59-2
 - Fix chronyd not working in the installation (jkonecny)
   Related: rhbz#1085013
