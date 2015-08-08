@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        23.15
+Version:        23.16
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -134,6 +134,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %files lmc-novirt
 
 %changelog
+* Fri Aug 07 2015 Brian C. Lane <bcl@redhat.com> 23.16-1
+- some of the PowerPC utilities (powerpc-utils and fbset) need perl too
+  (pbrobinson@gmail.com)
+- Add a default vconsole.conf to the boot.iso (#1250260) (bcl@redhat.com)
+- Return the output from failed commands in CalledProcessError (bcl@redhat.com)
+- Add dracut-live for livemedia kickstart example (bcl@redhat.com)
+
 * Thu Jul 30 2015 Brian C. Lane <bcl@redhat.com> 23.15-1
 - livemedia-creator: Bump default releasevere to 23 (bcl@redhat.com)
 - Use execReadlines in livemedia-creator (bcl@redhat.com)
