@@ -416,7 +416,7 @@ class KernelInfo(object):
 
 def make_appliance(disk_img, name, template, outfile, networks=None, ram=1024,
                    vcpus=1, arch=None, title="Linux", project="Linux",
-                   releasever="7.0"):
+                   releasever="7"):
     """
     Generate an appliance description file
 
@@ -1116,7 +1116,7 @@ if __name__ == '__main__':
                          help="Substituted for @TITLE@ in bootloader config files" )
     parser.add_argument( "--project", default="Red Hat Enterprise Linux",
                          help="substituted for @PROJECT@ in bootloader config files" )
-    parser.add_argument( "--releasever", default="7.0",
+    parser.add_argument( "--releasever", default="7",
                          help="substituted for @VERSION@ in bootloader config files" )
     parser.add_argument( "--volid", default=None, help="volume id")
     parser.add_argument( "--squashfs_args",
