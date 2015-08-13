@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.60
+Version:        19.6.61
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Aug 12 2015 Brian C. Lane <bcl@redhat.com> 19.6.61-1
+- Add lldptool (rvykydal)
+  Related: rhbz#1085325
+
 * Wed Aug 05 2015 Brian C. Lane <bcl@redhat.com> 19.6.60-1
 - Fix tito tagger to bump version, not release (bcl)
   Related: rhbz#1085013
