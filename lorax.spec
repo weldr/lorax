@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.61
+Version:        19.6.62
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Sun Aug 16 2015 Brian C. Lane <bcl@redhat.com> 19.6.62-1
+- Change default releasever to 7 (bcl)
+- Resolves: rhbz#1253242
+
 * Wed Aug 12 2015 Brian C. Lane <bcl@redhat.com> 19.6.61-1
 - Add lldptool (rvykydal)
   Related: rhbz#1085325
