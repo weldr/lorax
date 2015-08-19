@@ -54,11 +54,6 @@ install ${configdir}/mapping ${BOOTDIR}
     installkernel images-${kernel.arch} ${kernel.path} ${KERNELDIR}/vmlinuz
     installinitrd images-${kernel.arch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
 
-    %if doupgrade:
-        ## upgrade image
-        installupgradeinitrd images-${kernel.arch} ${kernel.upgrade.path} ${KERNELDIR}/upgrade.img
-    %endif
-
     treeinfo images-${kernel.arch} zimage
 %endfor
 
