@@ -57,11 +57,8 @@ installpkg plymouth
 ## extra dracut modules
 installpkg anaconda-dracut dracut-network dracut-config-generic
 
-## fedup-dracut handles upgrades
-installpkg fedup-dracut fedup-dracut-plymouth
-## install other fedup scripts, if there are any. It's OK if there aren't.
-log "Looking for extra fedup-dracut packages..."
--installpkg *-fedup-dracut
+## rescue needs this
+installpkg cryptsetup
 
 ## rpcbind or portmap needed by dracut nfs module
 installpkg rpcbind
