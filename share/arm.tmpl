@@ -36,22 +36,6 @@ mkdir ${KERNELDIR}
         platforms = platforms + delimiter + kernel.flavor
         delimiter = ','
 %>
-
-        %if doupgrade:
-            ## install upgrade image
-            installupgradeinitrd images-${kernel.flavor}-${basearch} ${kernel.upgrade.path} ${KERNELDIR}/upgrade-${kernel.flavor}.img
-
-            runcmd mkimage \
-                 -A arm -O linux -T ramdisk -C none \
-                 -a 0 -e 0 \
-                 -n "${product.name} ${product.version} ${kernel.flavor} ${kernel.arch}" \
-                 -d ${outroot}/${KERNELDIR}/upgrade-${kernel.flavor}.img \
-                    ${outroot}/${KERNELDIR}/uUpgrade-${kernel.flavor}
-
-            treeinfo images-${kernel.flavor}-${basearch} uupgrade ${KERNELDIR}/uUpgrade-${kernel.flavor}
-
-        %endif
-
         ## create U-Boot wrapped images
 
         runcmd mkimage \
@@ -74,21 +58,6 @@ mkdir ${KERNELDIR}
     %else:
         installkernel images-${basearch} ${kernel.path} ${KERNELDIR}/vmlinuz
         installinitrd images-${basearch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
-
-        %if doupgrade:
-            ## install upgrade image
-            installupgradeinitrd images-${basearch} ${kernel.upgrade.path} ${KERNELDIR}/upgrade.img
-
-	    runcmd mkimage \
-                -A arm -O linux -T ramdisk -C none \
-                -a 0 -e 0 \
-                -n "${product.name} ${product.version} ${kernel.flavor} ${kernel.arch}" \
-                -d ${outroot}/${KERNELDIR}/upgrade.img \
-                   ${outroot}/${KERNELDIR}/uUpgrade
-
-            treeinfo images-${basearch} uupgrade ${KERNELDIR}/uUpgrade
-
-        %endif
 
         ## create U-Boot wrapped images
 
@@ -131,4 +100,3 @@ treeinfo ${basearch} platforms ${platforms}
 %>
 
 ## FIXME: ARM may need some extra boot config
-
