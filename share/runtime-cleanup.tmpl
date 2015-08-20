@@ -37,8 +37,13 @@ append etc/selinux/config ""
 removefrom fedora-release --allbut /etc/os-release /usr/lib/os-release \
                                    /usr/lib/os.release.d/*
 removepkg fedora-release-rawhide
-## no user accounts = no account management
-removepkg usermode usermode-gtk passwd shadow-utils
+
+## keep enough of shadow-utils to create accounts
+removefrom shadow-utils --allbut /usr/bin/chage /usr/sbin/chpasswd \
+                        /usr/sbin/groupadd /usr/sbin/useradd
+
+## remove other account management tools
+removepkg usermode usermode-gtk passwd
 ## no services to turn on/off (keep the /etc/init.d link though)
 removefrom chkconfig --allbut /etc/init.d
 ## Miscellanous unnecessary gpg program
