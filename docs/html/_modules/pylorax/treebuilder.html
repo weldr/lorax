@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.treebuilder &mdash; Lorax 23.12 documentation</title>
+  <title>pylorax.treebuilder &mdash; Lorax 24.1 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Lorax 23.12 documentation" href="../../index.html"/>
+    <link rel="top" title="Lorax 24.1 documentation" href="../../index.html"/>
         <link rel="up" title="pylorax" href="../pylorax.html"/> 
 
   
@@ -180,12 +180,14 @@
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">basename</span>
 <span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="n">copytree</span><span class="p">,</span> <span class="n">copy2</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
 
 <span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="kn">import</span> <span class="n">joinpaths</span><span class="p">,</span> <span class="n">remove</span>
 <span class="kn">from</span> <span class="nn">pylorax.base</span> <span class="kn">import</span> <span class="n">DataHolder</span>
 <span class="kn">from</span> <span class="nn">pylorax.ltmpl</span> <span class="kn">import</span> <span class="n">LoraxTemplateRunner</span>
 <span class="kn">import</span> <span class="nn">pylorax.imgutils</span> <span class="kn">as</span> <span class="nn">imgutils</span>
-<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="kn">import</span> <span class="n">runcmd</span><span class="p">,</span> <span class="n">runcmd_output</span>
+<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="kn">import</span> <span class="n">runcmd</span><span class="p">,</span> <span class="n">runcmd_output</span><span class="p">,</span> <span class="n">execWithCapture</span>
 
 <span class="n">templatemap</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s">&#39;i386&#39;</span><span class="p">:</span>    <span class="s">&#39;x86.tmpl&#39;</span><span class="p">,</span>
@@ -299,6 +301,54 @@
 <div class="viewcode-block" id="RuntimeBuilder.cleanup"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.cleanup">[docs]</a>    <span class="k">def</span> <span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Remove unneeded packages and files with runtime-cleanup.tmpl&#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s">&quot;runtime-cleanup.tmpl&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="RuntimeBuilder.verify"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.verify">[docs]</a>    <span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Ensure that contents of the installroot can run&#39;&#39;&#39;</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="n">ELF_MAGIC</span> <span class="o">=</span> <span class="n">b</span><span class="s">&#39;</span><span class="se">\x7f</span><span class="s">ELF&#39;</span>
+
+        <span class="c"># Iterate over all files in /usr/bin and /usr/sbin</span>
+        <span class="c"># For ELF files, gather them into a list and we&#39;ll check them all at</span>
+        <span class="c"># the end. For files with a #!, check them as we go</span>
+        <span class="n">elf_files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">usr_bin</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="s">&#39;/usr/bin&#39;</span><span class="p">)</span>
+        <span class="n">usr_sbin</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="s">&#39;/usr/sbin&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="n">usr_bin</span><span class="o">.</span><span class="n">iterdir</span><span class="p">(),</span> <span class="n">usr_sbin</span><span class="o">.</span><span class="n">iterdir</span><span class="p">())</span> \
+                     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">is_file</span><span class="p">()):</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">magic</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">magic</span> <span class="o">==</span> <span class="n">ELF_MAGIC</span><span class="p">:</span>
+                    <span class="c"># Save the path, minus the chroot prefix</span>
+                    <span class="n">elf_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span><span class="p">):])</span>
+                <span class="k">elif</span> <span class="n">magic</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="n">b</span><span class="s">&#39;#!&#39;</span><span class="p">:</span>
+                    <span class="c"># Reopen the file as text and read the first line.</span>
+                    <span class="c"># Open as latin-1 so that stray 8-bit characters don&#39;t make</span>
+                    <span class="c"># things blow up. We only really care about ASCII parts.</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">&quot;rt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s">&quot;latin-1&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f_text</span><span class="p">:</span>
+                        <span class="c"># Remove the #!, split on space, and take the first part</span>
+                        <span class="n">shabang</span> <span class="o">=</span> <span class="n">f_text</span><span class="o">.</span><span class="n">readline</span><span class="p">()[</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+                    <span class="c"># Does the path exist?</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="n">shabang</span><span class="p">):</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">, needed by </span><span class="si">%s</span><span class="s">, does not exist&#39;</span><span class="p">,</span> <span class="n">shabang</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+                        <span class="n">status</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="c"># Now, run ldd on all the ELF files</span>
+        <span class="c"># Just run ldd once on everything so it isn&#39;t logged a million times.</span>
+        <span class="c"># At least one thing in the list isn&#39;t going to be a dynamic executable,</span>
+        <span class="c"># so use execWithCapture to ignore the exit code.</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">execWithCapture</span><span class="p">(</span><span class="s">&#39;ldd&#39;</span><span class="p">,</span> <span class="n">elf_files</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+                <span class="n">log_output</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">filter_stderr</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">line</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isspace</span><span class="p">():</span>
+                <span class="c"># New filename header, strip the : at the end and save</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="n">line</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="s">&#39;not found&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">, needed by </span><span class="si">%s</span><span class="s">, not found&#39;</span><span class="p">,</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">filename</span><span class="p">)</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="k">return</span> <span class="n">status</span>
 </div>
 <div class="viewcode-block" id="RuntimeBuilder.writepkgsizes"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.writepkgsizes">[docs]</a>    <span class="k">def</span> <span class="nf">writepkgsizes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkgsizefile</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;debugging data: write a big list of pkg sizes&#39;&#39;&#39;</span>
@@ -525,7 +575,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'23.12',
+            VERSION:'24.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

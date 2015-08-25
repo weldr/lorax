@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax package &mdash; Lorax 23.12 documentation</title>
+  <title>pylorax package &mdash; Lorax 24.1 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Lorax 23.12 documentation" href="index.html"/>
+    <link rel="top" title="Lorax 24.1 documentation" href="index.html"/>
         <link rel="up" title="pylorax" href="modules.html"/>
         <link rel="prev" title="pylorax" href="modules.html"/> 
 
@@ -290,8 +290,48 @@
 <dd></dd></dl>
 
 <dl class="function">
+<dt id="pylorax.executils.execReadlines">
+<tt class="descclassname">pylorax.executils.</tt><tt class="descname">execReadlines</tt><big>(</big><em>command</em>, <em>argv</em>, <em>stdin=None</em>, <em>root='/'</em>, <em>env_prune=None</em>, <em>filter_stderr=False</em>, <em>callback=&lt;function &lt;lambda&gt; at 0x7f21026ac048&gt;</em>, <em>env_add=None</em>, <em>reset_handlers=True</em>, <em>reset_lang=True</em><big>)</big><a class="reference internal" href="_modules/pylorax/executils.html#execReadlines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.executils.execReadlines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute an external command and return the line output of the command
+in real-time.</p>
+<p>This method assumes that there is a reasonably low delay between the
+end of output and the process exiting. If the child process closes
+stdout and then keeps on truckin&#8217; there will be problems.</p>
+<dl class="docutils">
+<dt>NOTE/WARNING: UnicodeDecodeError will be raised if the output of the</dt>
+<dd>external command can&#8217;t be decoded as UTF-8.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>command</strong> &#8211; The command to run</li>
+<li><strong>argv</strong> &#8211; The argument list</li>
+<li><strong>stdin</strong> &#8211; The file object to read stdin from.</li>
+<li><strong>stdout</strong> &#8211; Optional file object to redirect stdout and stderr to.</li>
+<li><strong>root</strong> &#8211; The directory to chroot to before running command.</li>
+<li><strong>env_prune</strong> &#8211; environment variable to remove before execution</li>
+<li><strong>filter_stderr</strong> &#8211; Whether stderr should be excluded from the returned output</li>
+<li><strong>callback</strong> &#8211; method to call while waiting for process to finish, passed Popen object</li>
+<li><strong>env_add</strong> &#8211; environment variables to add before execution</li>
+<li><strong>reset_handlers</strong> &#8211; whether to reset to SIG_DFL any signal handlers set to SIG_IGN</li>
+<li><strong>reset_lang</strong> &#8211; whether to set the locale of the child process to C</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Iterator of the lines from the command</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Output from the file is not logged to program.log
+This returns an iterator with the lines from the command until it has finished</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="pylorax.executils.execWithCapture">
-<tt class="descclassname">pylorax.executils.</tt><tt class="descname">execWithCapture</tt><big>(</big><em>command</em>, <em>argv</em>, <em>stdin=None</em>, <em>root='/'</em>, <em>log_output=True</em>, <em>filter_stderr=False</em>, <em>raise_err=False</em>, <em>callback=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/executils.html#execWithCapture"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.executils.execWithCapture" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">pylorax.executils.</tt><tt class="descname">execWithCapture</tt><big>(</big><em>command</em>, <em>argv</em>, <em>stdin=None</em>, <em>root='/'</em>, <em>log_output=True</em>, <em>filter_stderr=False</em>, <em>raise_err=False</em>, <em>callback=None</em>, <em>env_add=None</em>, <em>reset_handlers=True</em>, <em>reset_lang=True</em><big>)</big><a class="reference internal" href="_modules/pylorax/executils.html#execWithCapture"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.executils.execWithCapture" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run an external program and capture standard out and err.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -304,7 +344,10 @@
 <li><strong>root</strong> &#8211; The directory to chroot to before running command.</li>
 <li><strong>log_output</strong> &#8211; Whether to log the output of command</li>
 <li><strong>filter_stderr</strong> &#8211; Whether stderr should be excluded from the returned output</li>
-<li><strong>raise_err</strong> &#8211; whether to raise a CalledProcessError if the returncode is non-zero</li>
+<li><strong>callback</strong> &#8211; method to call while waiting for process to finish, passed Popen object</li>
+<li><strong>env_add</strong> &#8211; environment variables to add before execution</li>
+<li><strong>reset_handlers</strong> &#8211; whether to reset to SIG_DFL any signal handlers set to SIG_IGN</li>
+<li><strong>reset_lang</strong> &#8211; whether to set the locale of the child process to C</li>
 </ul>
 </td>
 </tr>
@@ -317,7 +360,7 @@
 
 <dl class="function">
 <dt id="pylorax.executils.execWithRedirect">
-<tt class="descclassname">pylorax.executils.</tt><tt class="descname">execWithRedirect</tt><big>(</big><em>command</em>, <em>argv</em>, <em>stdin=None</em>, <em>stdout=None</em>, <em>root='/'</em>, <em>env_prune=None</em>, <em>log_output=True</em>, <em>binary_output=False</em>, <em>raise_err=False</em>, <em>callback=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/executils.html#execWithRedirect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.executils.execWithRedirect" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">pylorax.executils.</tt><tt class="descname">execWithRedirect</tt><big>(</big><em>command</em>, <em>argv</em>, <em>stdin=None</em>, <em>stdout=None</em>, <em>root='/'</em>, <em>env_prune=None</em>, <em>log_output=True</em>, <em>binary_output=False</em>, <em>raise_err=False</em>, <em>callback=None</em>, <em>env_add=None</em>, <em>reset_handlers=True</em>, <em>reset_lang=True</em><big>)</big><a class="reference internal" href="_modules/pylorax/executils.html#execWithRedirect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.executils.execWithRedirect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run an external program and redirect the output to a file.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -334,6 +377,9 @@
 <li><strong>binary_output</strong> &#8211; whether to treat the output of command as binary data</li>
 <li><strong>raise_err</strong> &#8211; whether to raise a CalledProcessError if the returncode is non-zero</li>
 <li><strong>callback</strong> &#8211; method to call while waiting for process to finish, passed Popen object</li>
+<li><strong>env_add</strong> &#8211; environment variables to add before execution</li>
+<li><strong>reset_handlers</strong> &#8211; whether to reset to SIG_DFL any signal handlers set to SIG_IGN</li>
+<li><strong>reset_lang</strong> &#8211; whether to set the locale of the child process to C</li>
 </ul>
 </td>
 </tr>
@@ -400,6 +446,7 @@ last.</p>
 <li><strong>reset_handlers</strong> &#8211; whether to reset to SIG_DFL any signal handlers set to SIG_IGN</li>
 <li><strong>reset_lang</strong> &#8211; whether to set the locale of the child process to C</li>
 <li><strong>kwargs</strong> &#8211; Additional parameters to pass to subprocess.Popen</li>
+<li><strong>preexec_fn</strong> &#8211; A function to run before execution starts.</li>
 </ul>
 </td>
 </tr>
@@ -1243,6 +1290,12 @@ iso&#8217;s label.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pylorax.treebuilder.RuntimeBuilder.verify">
+<tt class="descname">verify</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pylorax/treebuilder.html#RuntimeBuilder.verify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.RuntimeBuilder.verify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure that contents of the installroot can run</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="pylorax.treebuilder.RuntimeBuilder.writepkglists">
 <tt class="descname">writepkglists</tt><big>(</big><em>pkglistdir</em><big>)</big><a class="reference internal" href="_modules/pylorax/treebuilder.html#RuntimeBuilder.writepkglists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.RuntimeBuilder.writepkglists" title="Permalink to this definition">¶</a></dt>
 <dd><p>debugging data: write out lists of package contents</p>
@@ -1366,7 +1419,7 @@ image is built with the filename &#8220;${prefix}-${kernel.version}.img&#8221;</
 <dd><p>Bases: <a class="reference internal" href="#pylorax.base.DataHolder" title="pylorax.base.DataHolder"><tt class="xref py py-class docutils literal"><span class="pre">pylorax.base.DataHolder</span></tt></a></p>
 <dl class="attribute">
 <dt id="pylorax.ArchData.bcj_arch">
-<tt class="descname">bcj_arch</tt><em class="property"> = {'ppc64': 'powerpc', 'arm': 'arm', 'x86_64': 'x86', 'ppc64le': 'powerpc', 'ppc': 'powerpc', 'armhfp': 'arm', 'i386': 'x86'}</em><a class="headerlink" href="#pylorax.ArchData.bcj_arch" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">bcj_arch</tt><em class="property"> = {'i386': 'x86', 'arm': 'arm', 'ppc64': 'powerpc', 'ppc': 'powerpc', 'armhfp': 'arm', 'x86_64': 'x86', 'ppc64le': 'powerpc'}</em><a class="headerlink" href="#pylorax.ArchData.bcj_arch" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1397,7 +1450,7 @@ image is built with the filename &#8220;${prefix}-${kernel.version}.img&#8221;</
 
 <dl class="method">
 <dt id="pylorax.Lorax.run">
-<tt class="descname">run</tt><big>(</big><em>dbo</em>, <em>product</em>, <em>version</em>, <em>release</em>, <em>variant=''</em>, <em>bugurl=''</em>, <em>isfinal=False</em>, <em>workdir=None</em>, <em>outputdir=None</em>, <em>buildarch=None</em>, <em>volid=None</em>, <em>domacboot=True</em>, <em>doupgrade=True</em>, <em>remove_temp=False</em>, <em>installpkgs=None</em>, <em>size=2</em>, <em>add_templates=None</em>, <em>add_template_vars=None</em>, <em>add_arch_templates=None</em>, <em>add_arch_template_vars=None</em><big>)</big><a class="reference internal" href="_modules/pylorax.html#Lorax.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.Lorax.run" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">run</tt><big>(</big><em>dbo</em>, <em>product</em>, <em>version</em>, <em>release</em>, <em>variant=''</em>, <em>bugurl=''</em>, <em>isfinal=False</em>, <em>workdir=None</em>, <em>outputdir=None</em>, <em>buildarch=None</em>, <em>volid=None</em>, <em>domacboot=True</em>, <em>doupgrade=True</em>, <em>remove_temp=False</em>, <em>installpkgs=None</em>, <em>size=2</em>, <em>add_templates=None</em>, <em>add_template_vars=None</em>, <em>add_arch_templates=None</em>, <em>add_arch_template_vars=None</em>, <em>verify=True</em><big>)</big><a class="reference internal" href="_modules/pylorax.html#Lorax.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.Lorax.run" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1465,7 +1518,7 @@ image is built with the filename &#8220;${prefix}-${kernel.version}.img&#8221;</
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'23.12',
+            VERSION:'24.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
