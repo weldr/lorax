@@ -14,11 +14,6 @@ for BITS in 32 64; do
       linux /ppc/ppc${2}/vmlinuz @ROOT@ rd.live.image rd.live.check ro quiet
       initrd /ppc/ppc${2}/initrd.img
       }
-
-    menuentry "Rescue a @PRODUCT@ system (${BITS}-bit kernel)" $BITS  --class fedora --class gnu-linux --class gnu --class os {
-      linux /ppc/ppc${2}/vmlinuz @ROOT@ rd.live.image rescue ro
-      initrd /ppc/ppc${2}/initrd.img
-      }
   fi
 done
 
