@@ -25,6 +25,7 @@ livemedia-creator [-h]
     [--dracut-arg DRACUT_ARGS] [--title TITLE]
     [--project PROJECT] [--releasever RELEASEVER]
     [--volid VOLID] [--squashfs_args SQUASHFS_ARGS]
+    [--timeout TIMEOUT]
 
 .SH DESCRIPTION
 livemedia-creator uses Anaconda, kickstart and Lorax to create bootable media
@@ -183,6 +184,10 @@ volume id
 .TP
 \fB\-\-squashfs_args SQUASHFS_ARGS\fR
 additional squashfs args
+
+.TP
+\fB\-\-timeout TIMEOUT\fR
+Cancel installer after X minutes
 
 .SH APPLIANCE ARGUMENTS:
 .TP
