@@ -791,7 +791,12 @@ def make_image(opts, ks):
 
     Use virt-install or anaconda to install to a disk image.
     """
-    disk_size = 2 + sum(p.size for p in ks.handler.partition.partitions)
+    # Disk size for a filesystem image should only be the size of /
+    # to prevent surprises when using the same kickstart for different installations.
+    if opts.no_virt and (opts.make_iso or opts.make_fsimage):
+        disk_size = 2 + sum(p.size for p in ks.handler.partition.partitions if p.mountpoint == "/")
+    else:
+        disk_size = 2 + sum(p.size for p in ks.handler.partition.partitions)
     log.info("disk_size = %sMiB", disk_size)
 
     if opts.image_name:
