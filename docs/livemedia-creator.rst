@@ -149,9 +149,13 @@ changes. Here are the steps I used to convert the Fedora XFCE spin.
     there is no /etc/fstab
 
 11. Don't delete initramfs files from /boot in %post
-12. Have dracut-config-generic, grub-efi, memtest86+ and syslinux in the package
-    list.
-13. Omit dracut-config-rescue from the %package list: ``-dracut-config-rescue``
+12. When creating live iso's you need to have, at least, these packages in the %package section::
+    dracut-config-generic
+    dracut-live
+    -dracut-config-rescue
+    grub-efi
+    memtest86+
+    syslinux
 
 One drawback to using virt-install is that it pulls the packages from
 the repo each time you run it. To speed things up you either need a local
@@ -163,7 +167,7 @@ you pass it to livemedia-creator like this:
 You also need to use a specific mirror instead of mirrormanager so that the
 packages will get cached, so your kickstart url would look like:
 
-    ``url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/17/x86_64/os/"``
+    ``url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/x86_64/os/"``
 
 You can also add an update repo, but don't name it updates. Add --proxy to
 it as well.
@@ -335,11 +339,11 @@ Using Mock to Create Images
 ---------------------------
 
 As of lorax version 22.2 you can use livemedia-creator and anaconda version
-22.15 inside of a mock chroot with --make-iso and --make-fsimage. Note that
-this requires bind mounting the host's /dev/ directory into the mock, which
-could be dangerous since it includes the host's drives. You can work around
-this by /dev/loopX nodes before running livemedia-creator. This example does
-not do that.
+22.15 inside of a mock chroot with --make-iso and --make-fsimage.
+
+.. note::
+    As of mock 1.2.12 you no longer need to bind mount ``/dev/``, loop devices are setup
+    as part of the standard mock ``/dev/`` creation.
 
 On the host system:
 
@@ -347,54 +351,36 @@ On the host system:
 
 2. Add a user to the mock group to use for running mock. eg. builder
 
-3. Edit the /etc/mock/site-defaults.cfg file to change:
-
-   ``config_opts['internal_dev_setup'] = False``
-
-   The loop devices are needed for the installation, so it needs to mount the
-   host's /dev/ inside the mock.
-
-   This is fairly dangerous. I would recommend using a dedicated build host and
-   making sure you have backups just in case something goes wrong and it
-   modifies the host system.  You can avoid this if you setup the /dev/loopX
-   device nodes yourself.
-
-4. Create a new /etc/mock/ config file based on the rawhide one, or modify the
+3. Create a new /etc/mock/ config file based on the rawhide one, or modify the
    existing one so that the following options are setup::
 
        config_opts['chroot_setup_cmd'] = 'install @buildsys-build anaconda-tui lorax'
 
-       # NOTE that this actually needs to be set in site-defaults.cfg
-       config_opts['internal_dev_setup'] = False
-
-       # Mount the relevant host paths inside the mock /dev/
-       config_opts['plugin_conf']['bind_mount_enable'] = True
-       config_opts['plugin_conf']['bind_mount_opts']['dirs'].append(('/dev','/dev/'))
-       config_opts['plugin_conf']['bind_mount_opts']['dirs'].append(('/dev/pts','/dev/pts/'))
-       config_opts['plugin_conf']['bind_mount_opts']['dirs'].append(('/dev/shm','/dev/shm/'))
-
        # build results go into /home/builder/results/
        config_opts['plugin_conf']['bind_mount_opts']['dirs'].append(('/home/builder/results','/results/'))
+
+   If you are creating images for a branched release of Fedora you should also enable
+   the updates-testing repository so that you get the latest builds in your mock chroot.
 
 The following steps are run as the builder user who is a member of the mock
 group.
 
-5. Make a directory for results matching the bind mount above
+4. Make a directory for results matching the bind mount above
    ``mkdir ~/results/``
 
-6. Copy the example kickstarts
+5. Copy the example kickstarts
    ``cp /usr/share/docs/lorax/*ks .``
 
-7. Make sure tar and dracut-network are in the %packages section and that the
+6. Make sure tar and dracut-network are in the %packages section and that the
    ``url points to the correct repo``
 
-8. Init the mock
+7. Init the mock
    ``mock -r fedora-rawhide-x86_64 --init``
 
-9. Copy the kickstart inside the mock
+8. Copy the kickstart inside the mock
    ``mock -r fedora-rawhide-x86_64 --copyin ./fedora-minimal.ks /root/``
 
-10. Make a minimal iso::
+9. Make a minimal iso::
 
         mock -r fedora-rawhide-x86_64 --chroot -- livemedia-creator --no-virt \
         --resultdir=/results/try-1 --logfile=/results/logs/try-1/try-1.log \
