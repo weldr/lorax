@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        23.16
+Version:        23.17
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -134,6 +134,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %files lmc-novirt
 
 %changelog
+* Thu Aug 27 2015 Brian C. Lane <bcl@redhat.com> 23.17-1
+- Add enough of shadow-utils to create new user accounts. (dshea@redhat.com)
+
 * Fri Aug 07 2015 Brian C. Lane <bcl@redhat.com> 23.16-1
 - some of the PowerPC utilities (powerpc-utils and fbset) need perl too
   (pbrobinson@gmail.com)
