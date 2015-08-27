@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.62
+Version:        19.6.63
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Thu Aug 27 2015 Brian C. Lane <bcl@redhat.com> 19.6.63-1
+- Replace the metacity theme file. (dshea)
+  Related: rhbz#1231856
+
 * Sun Aug 16 2015 Brian C. Lane <bcl@redhat.com> 19.6.62-1
 - Change default releasever to 7 (bcl)
 - Resolves: rhbz#1253242
