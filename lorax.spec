@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.63
+Version:        19.6.64
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Mon Aug 31 2015 Brian C. Lane <bcl@redhat.com> 19.6.64-1
+- Fix metacity theme path (bcl)
+  Related: rhbz#1231856
+- Run spice-vdagentd without systemd-logind integration (dshea)
+  Related: rhbz#1169991
+
 * Thu Aug 27 2015 Brian C. Lane <bcl@redhat.com> 19.6.63-1
 - Replace the metacity theme file. (dshea)
   Related: rhbz#1231856
