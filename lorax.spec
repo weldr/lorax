@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        24.1
+Version:        24.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -132,6 +132,19 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %files lmc-novirt
 
 %changelog
+* Mon Aug 31 2015 Brian C. Lane <bcl@redhat.com> 24.2-1
+- drop fedup-dracut and friends (wwoods@redhat.com)
+- don't build upgrade.img anymore (wwoods@redhat.com)
+- livemedia-creator: no-virt fsimage should only use / size from ks
+  (bcl@redhat.com)
+- Update lmc docs for new mock (bcl@redhat.com)
+- No longer offer a rescue boot menu option on liveinst (#1256061).
+  (clumens@redhat.com)
+- document --timeout in livemedia-creator man page (atodorov@redhat.com)
+- Add enough of shadow-utils to create new user accounts. (dshea@redhat.com)
+- Update Lorax documentation - 24.1 (bcl@redhat.com)
+- Add lldptool (#1085325) (rvykydal@redhat.com)
+
 * Fri Aug 07 2015 Brian C. Lane <bcl@redhat.com> 24.1-1
 - some of the PowerPC utilities (powerpc-utils and fbset) need perl too
   (pbrobinson@gmail.com)
