@@ -38,6 +38,9 @@ part swap --size=1000
 %post
 # Remove root password
 passwd -d root > /dev/null
+
+# Remove random-seed
+rm /var/lib/systemd/random-seed
 %end
 
 %packages
