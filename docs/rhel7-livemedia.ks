@@ -308,6 +308,8 @@ rm -f /core*
 rm -f /.readahead_collect
 touch /var/lib/readahead/early.sorted
 
+# Remove random-seed
+rm /var/lib/systemd/random-seed
 %end
 
 %post --nochroot
