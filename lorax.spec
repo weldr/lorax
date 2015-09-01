@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.64
+Version:        19.6.65
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Sep 01 2015 Brian C. Lane <bcl@redhat.com> 19.6.65-1
+- Don't include early microcode in initramfs (bcl)
+- Resolves: rhbz#1258498
+
 * Mon Aug 31 2015 Brian C. Lane <bcl@redhat.com> 19.6.64-1
 - Fix metacity theme path (bcl)
   Related: rhbz#1231856
