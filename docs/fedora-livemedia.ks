@@ -289,6 +289,8 @@ fi
 echo 'File created by kickstart. See systemd-update-done.service(8).' \
     | tee /etc/.updated >/var/.updated
 
+# Remove random-seed
+rm /var/lib/systemd/random-seed
 %end
 
 %post --nochroot
