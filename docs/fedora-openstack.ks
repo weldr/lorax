@@ -32,6 +32,11 @@ clearpart --all
 # Disk partitioning information
 part / --fstype="ext4" --size=3000
 
+%post
+# Remove random-seed
+rm /var/lib/systemd/random-seed
+%end
+
 %packages
 @core
 kernel

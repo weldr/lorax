@@ -115,3 +115,7 @@ passwd -d root > /dev/null
 
 %end
 
+%post
+# Remove random-seed
+rm /var/lib/systemd/random-seed
+%end
