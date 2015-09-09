@@ -85,23 +85,23 @@ class LoraxDownloadCallback(dnf.callback.DownloadProgress):
         self.total_size = total_size
 
 
-class LoraxRpmCallback(dnf.callback.LoggingTransactionDisplay):
-    def __init__(self, queue):
+class LoraxRpmCallback(dnf.callback.TransactionProgress):
+    def __init__(self):
         super(LoraxRpmCallback, self).__init__()
-        self._queue = queue
         self._last_ts = None
-        self.cnt = 0
 
-    def event(self, package, action, te_current, te_total, ts_current, ts_total):
-        if action == self.PKG_INSTALL and te_current == 0:
+    def progress(self, package, action, ti_done, ti_total, ts_done, ts_total):
+        if action == self.PKG_INSTALL:
             # do not report same package twice
-            if self._last_ts == ts_current:
+            if self._last_ts == ts_done:
                 return
-            self._last_ts = ts_current
+            self._last_ts = ts_done
 
-            msg = '(%d/%d) %s.%s' % \
-                (ts_current, ts_total, package.name, package.arch)
-            self.cnt += 1
-            self._queue.put(('install', msg))
+            msg = '(%d/%d) %s.%s' % (ts_done, ts_total, package.name, package.arch)
+            logger.info(msg)
         elif action == self.TRANS_POST:
-            self._queue.put(('post', None))
+            msg = "Performing post-installation setup tasks"
+            logger.info(msg)
+
+    def error(self, err_msg):
+        logger.warning(err_msg)

@@ -32,15 +32,12 @@ from pylorax.dnfhelper import LoraxDownloadCallback, LoraxRpmCallback
 from pylorax.base import DataHolder
 from pylorax.executils import runcmd, runcmd_output
 from pylorax.imgutils import mkcpio
-import pylorax.output as output
 
 from mako.lookup import TemplateLookup
 from mako.exceptions import text_error_template
 import sys, traceback
 import struct
 import dnf
-import multiprocessing
-import queue
 import collections
 
 class LoraxTemplate(object):
@@ -501,40 +498,12 @@ class LoraxTemplateRunner(object):
             else:
                 logger.debug("removepkg %s: no files to remove!", p)
 
-    def get_token_checked(self, process, token_queue):
-        """Try to get token from queue checking that process is still alive"""
-
-        try:
-            # wait at most a minute for the token
-            (token, msg) = token_queue.get(timeout=60)
-        except queue.Empty:
-            if process.is_alive():
-                try:
-                    # process still alive, give it 2 minutes more
-                    (token, msg) = token_queue.get(timeout=120)
-                except queue.Empty:
-                    # waited for 3 minutes and got nothing
-                    raise Exception("The transaction process got stuck somewhere (no message from it in 3 minutes)")
-            else:
-                raise Exception("The transaction process has ended abruptly")
-
-        return (token, msg)
-
     def run_pkg_transaction(self):
         '''
         run_pkg_transaction
           Actually install all the packages requested by previous 'installpkg'
           commands.
         '''
-
-        def do_transaction(base, token_queue):
-            try:
-                display = LoraxRpmCallback(token_queue)
-                base.do_transaction(display=display)
-            except BaseException as e:
-                logger.error("The transaction process has ended abruptly: %s", e)
-                token_queue.put(('quit', str(e)))
-
         try:
             logger.info("Checking dependencies")
             self.dbo.resolve()
@@ -555,24 +524,12 @@ class LoraxTemplateRunner(object):
             raise
 
         logger.info("Preparing transaction from installation source")
-        token_queue = multiprocessing.Queue()
-        msgout = output.LoraxOutput()
-        process = multiprocessing.Process(target=do_transaction, args=(self.dbo, token_queue))
-        process.start()
-        (token, msg) = self.get_token_checked(process, token_queue)
-
-        while token not in ('post', 'quit'):
-            if token == 'install':
-                logging.info("%s", msg)
-                msgout.writeline(msg)
-            (token, msg) = self.get_token_checked(process, token_queue)
-
-        if token == 'quit':
-            logger.error("Transaction failed.")
-            raise Exception("Transaction failed")
-
-        logger.info("Performing post-installation setup tasks")
-        process.join()
+        try:
+            display = LoraxRpmCallback()
+            self.dbo.do_transaction(display=display)
+        except BaseException as e:
+            logger.error("The transaction process has ended abruptly: %s", e)
+            raise
 
         # Reset the package sack to pick up the installed packages
         self.dbo.reset(repos=False)
