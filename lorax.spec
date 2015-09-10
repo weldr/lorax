@@ -42,7 +42,7 @@ Requires:       dracut >= 030
 Requires:       libselinux-python3
 Requires:       python3-mako
 Requires:       python3-kickstart
-Requires:       python3-dnf
+Requires:       python3-dnf >= 1.1.0
 
 
 %if 0%{?fedora}
