@@ -259,6 +259,7 @@ def get_dnf_base_object(installroot, repositories, mirrorlists=None,
     conf.errorlevel = 0
     dnfbase.logging.setup_from_dnf_conf(conf)
 
+    conf.install_weak_deps = False
     conf.releasever = releasever
     conf.installroot = installroot
     conf.prepend_installroot('persistdir')
