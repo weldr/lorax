@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        23.17
+Version:        23.18
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -132,6 +132,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %files lmc-novirt
 
 %changelog
+* Fri Sep 11 2015 Brian C. Lane <bcl@redhat.com> 23.18-1
+- Add a font that supports Urdu characters (#1004717) (bcl@redhat.com)
+- livemedia-creator: Remove random-seed from images (#1258986) (bcl@redhat.com)
+- drop fedup-dracut and friends (wwoods@redhat.com)
+- don't build upgrade.img anymore (wwoods@redhat.com)
+
 * Thu Aug 27 2015 Brian C. Lane <bcl@redhat.com> 23.17-1
 - Add enough of shadow-utils to create new user accounts. (dshea@redhat.com)
 
