@@ -105,6 +105,7 @@ class LogRequestHandler(socketserver.BaseRequestHandler):
                         "insufficient disk space:",
                         "error populating transaction after",
                         "traceback script(s) have been run",
+                        "crashed on signal",
                         "packaging: Missed: NoSuchPackage"]
         re_tests =     [r"packaging: base repo .* not valid",
                         r"packaging: .* requires .*"]
