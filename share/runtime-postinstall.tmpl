@@ -79,7 +79,6 @@ replace "root:\*:" "root::" etc/shadow
 ## s390-specific setup
 %if basearch in ("s390", "s390x"):
     ## generate ssh keys
-    runcmd ssh-keygen -q -C "" -N "" -t rsa1 -f ${root}/etc/ssh/ssh_host_key
     runcmd ssh-keygen -q -C "" -N "" -t rsa  -f ${root}/etc/ssh/ssh_host_rsa_key
     runcmd ssh-keygen -q -C "" -N "" -t dsa  -f ${root}/etc/ssh/ssh_host_dsa_key
     chmod etc/ssh/ssh_host*_key 600
