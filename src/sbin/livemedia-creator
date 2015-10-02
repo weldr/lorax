@@ -567,11 +567,12 @@ def rebuild_initrds_for_live(opts, sys_root_dir, results_dir):
 
     os.unlink(joinpaths(sys_root_dir,"/proc/modules"))
 
-def create_pxe_config(template, images_dir, live_image_name, add_args = None):
+def create_pxe_config(template, images_dir, destname, live_image_name, add_args = None):
     """
     Create template for pxe to live configuration
 
     :param str images_dir: Path of directory with images to be used
+    :param str destname: Basename of target file to generate
     :param str live_image_name: Name of live rootfs image file
     :param list add_args: Arguments to be added to initrd= pxe config
     """
@@ -596,7 +597,7 @@ def create_pxe_config(template, images_dir, live_image_name, add_args = None):
         log.error(text_error_template().render())
         raise
 
-    with open (joinpaths(images_dir, "PXE_CONFIG"), "w") as f:
+    with open (joinpaths(images_dir, destname), "w") as f:
         f.write(result)
 
 def make_livecd(opts, mount_dir, work_dir):
@@ -953,8 +954,9 @@ def make_live_images(opts, work_dir, root_dir, rootfs_image=None, size=None):
 
     if opts.ostree:
         add_pxe_args.append("ostree=/%s" % sys_root)
-    template = joinpaths(opts.lorax_templates, "pxe-live/pxe-config.tmpl")
-    create_pxe_config(template, work_dir, live_image_name, add_pxe_args)
+    for template,dest in [("pxe-config.tmpl", "PXE_CONFIG"),
+                          ("ipxe-config.tmpl", "ipxe-config.txt")]:
+        create_pxe_config(joinpaths(opts.lorax_templates, "pxe-live/" + template), work_dir, dest, live_image_name, add_pxe_args)
 
     return work_dir
 
