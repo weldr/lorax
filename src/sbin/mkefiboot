@@ -40,8 +40,8 @@ def mkmacboot(bootdir, outfile, label, icon=None, product='Generic',
         graft['.VolumeIcon.icns'] = icon
     if diskname and os.path.exists(diskname):
         graft['EFI/BOOT/.disk_label'] = diskname
-    # everything winds up bein there twice...
-    size = estimate_size(bootdir, graft=graft) * 2
+    # shim and grub2 are in 2 places so double the estimate
+    size = estimate_size(None, graft=graft) * 2
     mkhfsimg(None, outfile, label=label, graft=graft, size=size)
     macmunge(outfile, product)
 
@@ -81,9 +81,13 @@ def macmunge(imgfile, product):
 </dict>
 </plist>
 ''' % (product,))
+            # NOTE: OSX won't boot if we hardlink to /EFI/BOOT and grub2
+            # can't read the config file if we hardlink the other direction
+            # So copy the files.
             shutil.copy(shim, os.path.join(sysdir,'boot.efi'))
             shutil.copy(loader, sysdir)
             shutil.copy(config, sysdir)
+
     # format data properly (big-endian UInt32)
     nodedata = struct.pack(">i", blessnode)
     dirdata = struct.pack(">i", dirnode)
