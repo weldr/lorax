@@ -42,7 +42,7 @@ systemctl mask fedora-configure.service fedora-loadmodules.service \
                fedora-autorelabel.service fedora-autorelabel-mark.service \
                fedora-wait-storage.service media.mount \
                systemd-tmpfiles-clean.service systemd-tmpfiles-clean.timer \
-               ldconfig.service
+               ldconfig.service systemd-tmpfiles-setup.service
 
 ## Make logind activate anaconda-shell@.service on switch to empty VT
 symlink anaconda-shell@.service lib/systemd/system/autovt@.service
