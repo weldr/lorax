@@ -44,6 +44,12 @@ systemctl mask fedora-configure.service fedora-loadmodules.service \
                systemd-tmpfiles-clean.service systemd-tmpfiles-clean.timer \
                ldconfig.service
 
+## Remove the more terrible parts of systemd-tmpfiles.
+## etc.conf is written with the assumption that /etc/ is empty, which is
+## ridiculous, and it also creates a broken /etc/resolv.conf, which breaks
+## networking.
+remove usr/lib/tmpfiles.d/etc.conf
+
 ## Make logind activate anaconda-shell@.service on switch to empty VT
 symlink anaconda-shell@.service lib/systemd/system/autovt@.service
 replace "#ReserveVT=6" "ReserveVT=2" etc/systemd/logind.conf
