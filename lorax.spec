@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        24.2
+Version:        24.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -132,6 +132,21 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %files lmc-novirt
 
 %changelog
+* Tue Oct 06 2015 Brian C. Lane <bcl@redhat.com> 24.3-1
+- Do not let systemd-tmpfiles set up /etc on boot (dshea@redhat.com)
+- Fix the concatenation of error output. (dshea@redhat.com)
+- Add findmnt command (jkonecny@redhat.com)
+- Reduce the size of macboot.img (#952747) (bcl@redhat.com)
+- rsa1 keys are not supported any more by our openssh (dan@danny.cz)
+- Look for crashes from the anaconda signal handler. (dshea@redhat.com)
+- Include gdb in the boot.iso (dshea@redhat.com)
+- Do not install weak deps in boot.iso (bcl@redhat.com)
+- Require correct dnf version for API changes (bcl@redhat.com)
+- Drop multiprocessing for do_transaction (#1208296) (bcl@redhat.com)
+- Add a font that supports Urdu characters (#1004717) (bcl@redhat.com)
+- livemedia-creator: Remove random-seed from images (#1258986) (bcl@redhat.com)
+- Don't include early microcode in initramfs (#1258498) (bcl@redhat.com)
+
 * Mon Aug 31 2015 Brian C. Lane <bcl@redhat.com> 24.2-1
 - drop fedup-dracut and friends (wwoods@redhat.com)
 - don't build upgrade.img anymore (wwoods@redhat.com)
