@@ -198,7 +198,7 @@ removefrom glibc /${libdir}/libSegFault* /${libdir}/libanl*
 removefrom glibc /${libdir}/libcidn* /${libdir}/libnss_compat*
 removefrom glibc /${libdir}/libnss_hesiod* /${libdir}/libnss_nis*
 # python-pyudev uses ctypes.util.find_library, which uses /sbin/ldconfig
-removefrom glibc /${libdir}/libthread* /${libdir}/rtkaio* /sbin/sln
+removefrom glibc /${libdir}/rtkaio* /sbin/sln
 removefrom glibc /usr/libexec/* /usr/sbin/*
 removefrom glibc-common /etc/* /usr/bin/catchsegv /usr/bin/gencat
 removefrom glibc-common /usr/bin/getent
