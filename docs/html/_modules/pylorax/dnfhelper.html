@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.dnfhelper &mdash; Lorax 24.1 documentation</title>
+  <title>pylorax.dnfhelper &mdash; Lorax 24.3 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Lorax 24.1 documentation" href="../../index.html"/>
+    <link rel="top" title="Lorax 24.3 documentation" href="../../index.html"/>
         <link rel="up" title="pylorax" href="../pylorax.html"/> 
 
   
@@ -242,26 +242,26 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">total_size</span> <span class="o">=</span> <span class="n">total_size</span>
 
 </div></div>
-<div class="viewcode-block" id="LoraxRpmCallback"><a class="viewcode-back" href="../../pylorax.html#pylorax.dnfhelper.LoraxRpmCallback">[docs]</a><span class="k">class</span> <span class="nc">LoraxRpmCallback</span><span class="p">(</span><span class="n">dnf</span><span class="o">.</span><span class="n">callback</span><span class="o">.</span><span class="n">LoggingTransactionDisplay</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
+<div class="viewcode-block" id="LoraxRpmCallback"><a class="viewcode-back" href="../../pylorax.html#pylorax.dnfhelper.LoraxRpmCallback">[docs]</a><span class="k">class</span> <span class="nc">LoraxRpmCallback</span><span class="p">(</span><span class="n">dnf</span><span class="o">.</span><span class="n">callback</span><span class="o">.</span><span class="n">TransactionProgress</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">LoraxRpmCallback</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span> <span class="o">=</span> <span class="n">queue</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_ts</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span>
 
-<div class="viewcode-block" id="LoraxRpmCallback.event"><a class="viewcode-back" href="../../pylorax.html#pylorax.dnfhelper.LoraxRpmCallback.event">[docs]</a>    <span class="k">def</span> <span class="nf">event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">package</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">te_current</span><span class="p">,</span> <span class="n">te_total</span><span class="p">,</span> <span class="n">ts_current</span><span class="p">,</span> <span class="n">ts_total</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">PKG_INSTALL</span> <span class="ow">and</span> <span class="n">te_current</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<div class="viewcode-block" id="LoraxRpmCallback.progress"><a class="viewcode-back" href="../../pylorax.html#pylorax.dnfhelper.LoraxRpmCallback.progress">[docs]</a>    <span class="k">def</span> <span class="nf">progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">package</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">ti_done</span><span class="p">,</span> <span class="n">ti_total</span><span class="p">,</span> <span class="n">ts_done</span><span class="p">,</span> <span class="n">ts_total</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">PKG_INSTALL</span><span class="p">:</span>
             <span class="c"># do not report same package twice</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_ts</span> <span class="o">==</span> <span class="n">ts_current</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_ts</span> <span class="o">==</span> <span class="n">ts_done</span><span class="p">:</span>
                 <span class="k">return</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_last_ts</span> <span class="o">=</span> <span class="n">ts_current</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_ts</span> <span class="o">=</span> <span class="n">ts_done</span>
 
-            <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;(</span><span class="si">%d</span><span class="s">/</span><span class="si">%d</span><span class="s">) </span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> \
-                <span class="p">(</span><span class="n">ts_current</span><span class="p">,</span> <span class="n">ts_total</span><span class="p">,</span> <span class="n">package</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">package</span><span class="o">.</span><span class="n">arch</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cnt</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="s">&#39;install&#39;</span><span class="p">,</span> <span class="n">msg</span><span class="p">))</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;(</span><span class="si">%d</span><span class="s">/</span><span class="si">%d</span><span class="s">) </span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ts_done</span><span class="p">,</span> <span class="n">ts_total</span><span class="p">,</span> <span class="n">package</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">package</span><span class="o">.</span><span class="n">arch</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">TRANS_POST</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="s">&#39;post&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">))</span></div></div>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Performing post-installation setup tasks&quot;</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="LoraxRpmCallback.error"><a class="viewcode-back" href="../../pylorax.html#pylorax.dnfhelper.LoraxRpmCallback.error">[docs]</a>    <span class="k">def</span> <span class="nf">error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">err_msg</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
@@ -293,7 +293,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'24.1',
+            VERSION:'24.3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

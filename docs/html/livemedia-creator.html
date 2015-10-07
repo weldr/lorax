@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>livemedia-creator &mdash; Lorax 24.1 documentation</title>
+  <title>livemedia-creator &mdash; Lorax 24.3 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Lorax 24.1 documentation" href="index.html"/>
+    <link rel="top" title="Lorax 24.3 documentation" href="index.html"/>
         <link rel="next" title="Product and Updates Images" href="product-images.html"/>
         <link rel="prev" title="lorax" href="lorax.html"/> 
 
@@ -290,10 +290,13 @@ there is no /etc/fstab</p>
 </li>
 <li><p class="first">Don&#8217;t delete initramfs files from /boot in %post</p>
 </li>
-<li><p class="first">Have dracut-config-generic, grub-efi, memtest86+ and syslinux in the package
-list.</p>
-</li>
-<li><p class="first">Omit dracut-config-rescue from the %package list: <tt class="docutils literal"><span class="pre">-dracut-config-rescue</span></tt></p>
+<li><p class="first">When creating live iso&#8217;s you need to have, at least, these packages in the %package section::
+dracut-config-generic
+dracut-live
+-dracut-config-rescue
+grub-efi
+memtest86+
+syslinux</p>
 </li>
 </ol>
 <p>One drawback to using virt-install is that it pulls the packages from
@@ -305,7 +308,7 @@ you pass it to livemedia-creator like this:</p>
 <p>You also need to use a specific mirror instead of mirrormanager so that the
 packages will get cached, so your kickstart url would look like:</p>
 <blockquote>
-<div><tt class="docutils literal"><span class="pre">url</span> <span class="pre">--url=&quot;http://dl.fedoraproject.org/pub/fedora/linux/development/17/x86_64/os/&quot;</span></tt></div></blockquote>
+<div><tt class="docutils literal"><span class="pre">url</span> <span class="pre">--url=&quot;http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/x86_64/os/&quot;</span></tt></div></blockquote>
 <p>You can also add an update repo, but don&#8217;t name it updates. Add &#8211;proxy to
 it as well.</p>
 </div>
@@ -437,48 +440,33 @@ in docs/rhel-atomic-pxe-live.ks.</p>
 <div class="section" id="using-mock-to-create-images">
 <h2>Using Mock to Create Images<a class="headerlink" href="#using-mock-to-create-images" title="Permalink to this headline">¶</a></h2>
 <p>As of lorax version 22.2 you can use livemedia-creator and anaconda version
-22.15 inside of a mock chroot with &#8211;make-iso and &#8211;make-fsimage. Note that
-this requires bind mounting the host&#8217;s /dev/ directory into the mock, which
-could be dangerous since it includes the host&#8217;s drives. You can work around
-this by /dev/loopX nodes before running livemedia-creator. This example does
-not do that.</p>
+22.15 inside of a mock chroot with &#8211;make-iso and &#8211;make-fsimage.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">As of mock 1.2.12 you no longer need to bind mount <tt class="docutils literal"><span class="pre">/dev/</span></tt>, loop devices are setup
+as part of the standard mock <tt class="docutils literal"><span class="pre">/dev/</span></tt> creation.</p>
+</div>
 <p>On the host system:</p>
 <ol class="arabic">
 <li><p class="first">yum install -y mock</p>
 </li>
 <li><p class="first">Add a user to the mock group to use for running mock. eg. builder</p>
 </li>
-<li><p class="first">Edit the /etc/mock/site-defaults.cfg file to change:</p>
-<p><tt class="docutils literal"><span class="pre">config_opts['internal_dev_setup']</span> <span class="pre">=</span> <span class="pre">False</span></tt></p>
-<p>The loop devices are needed for the installation, so it needs to mount the
-host&#8217;s /dev/ inside the mock.</p>
-<p>This is fairly dangerous. I would recommend using a dedicated build host and
-making sure you have backups just in case something goes wrong and it
-modifies the host system.  You can avoid this if you setup the /dev/loopX
-device nodes yourself.</p>
-</li>
 <li><p class="first">Create a new /etc/mock/ config file based on the rawhide one, or modify the
 existing one so that the following options are setup:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">config_opts</span><span class="p">[</span><span class="s">&#39;chroot_setup_cmd&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;install @buildsys-build anaconda-tui lorax&#39;</span>
-
-<span class="c"># NOTE that this actually needs to be set in site-defaults.cfg</span>
-<span class="n">config_opts</span><span class="p">[</span><span class="s">&#39;internal_dev_setup&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
-
-<span class="c"># Mount the relevant host paths inside the mock /dev/</span>
-<span class="n">config_opts</span><span class="p">[</span><span class="s">&#39;plugin_conf&#39;</span><span class="p">][</span><span class="s">&#39;bind_mount_enable&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
-<span class="n">config_opts</span><span class="p">[</span><span class="s">&#39;plugin_conf&#39;</span><span class="p">][</span><span class="s">&#39;bind_mount_opts&#39;</span><span class="p">][</span><span class="s">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;/dev&#39;</span><span class="p">,</span><span class="s">&#39;/dev/&#39;</span><span class="p">))</span>
-<span class="n">config_opts</span><span class="p">[</span><span class="s">&#39;plugin_conf&#39;</span><span class="p">][</span><span class="s">&#39;bind_mount_opts&#39;</span><span class="p">][</span><span class="s">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;/dev/pts&#39;</span><span class="p">,</span><span class="s">&#39;/dev/pts/&#39;</span><span class="p">))</span>
-<span class="n">config_opts</span><span class="p">[</span><span class="s">&#39;plugin_conf&#39;</span><span class="p">][</span><span class="s">&#39;bind_mount_opts&#39;</span><span class="p">][</span><span class="s">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;/dev/shm&#39;</span><span class="p">,</span><span class="s">&#39;/dev/shm/&#39;</span><span class="p">))</span>
 
 <span class="c"># build results go into /home/builder/results/</span>
 <span class="n">config_opts</span><span class="p">[</span><span class="s">&#39;plugin_conf&#39;</span><span class="p">][</span><span class="s">&#39;bind_mount_opts&#39;</span><span class="p">][</span><span class="s">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;/home/builder/results&#39;</span><span class="p">,</span><span class="s">&#39;/results/&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
+<p>If you are creating images for a branched release of Fedora you should also enable
+the updates-testing repository so that you get the latest builds in your mock chroot.</p>
 </li>
 </ol>
 <p>The following steps are run as the builder user who is a member of the mock
 group.</p>
-<ol class="arabic" start="5">
+<ol class="arabic" start="4">
 <li><p class="first">Make a directory for results matching the bind mount above
 <tt class="docutils literal"><span class="pre">mkdir</span> <span class="pre">~/results/</span></tt></p>
 </li>
@@ -623,7 +611,7 @@ report bugs against the lorax component.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'24.1',
+            VERSION:'24.3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

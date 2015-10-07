@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax &mdash; Lorax 24.1 documentation</title>
+  <title>pylorax &mdash; Lorax 24.3 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Lorax 24.1 documentation" href="../index.html"/>
+    <link rel="top" title="Lorax 24.3 documentation" href="../index.html"/>
         <link rel="up" title="Module code" href="index.html"/> 
 
   
@@ -480,7 +480,7 @@
                                   <span class="n">workdir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">workdir</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;rebuilding initramfs images&quot;</span><span class="p">)</span>
-        <span class="n">dracut_args</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;--xz&quot;</span><span class="p">,</span> <span class="s">&quot;--install&quot;</span><span class="p">,</span> <span class="s">&quot;/.buildstamp&quot;</span><span class="p">]</span>
+        <span class="n">dracut_args</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;--xz&quot;</span><span class="p">,</span> <span class="s">&quot;--install&quot;</span><span class="p">,</span> <span class="s">&quot;/.buildstamp&quot;</span><span class="p">,</span> <span class="s">&quot;--no-early-microcode&quot;</span><span class="p">]</span>
         <span class="n">anaconda_args</span> <span class="o">=</span> <span class="n">dracut_args</span> <span class="o">+</span> <span class="p">[</span><span class="s">&quot;--add&quot;</span><span class="p">,</span> <span class="s">&quot;anaconda pollcdrom&quot;</span><span class="p">]</span>
 
         <span class="c"># ppc64 cannot boot an initrd &gt; 32MiB so remove some drivers</span>
@@ -492,21 +492,6 @@
             <span class="n">anaconda_args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s">&quot;--omit&quot;</span><span class="p">,</span> <span class="n">REMOVE_PPC64_MODULES</span><span class="p">])</span>
 
         <span class="n">treebuilder</span><span class="o">.</span><span class="n">rebuild_initrds</span><span class="p">(</span><span class="n">add_args</span><span class="o">=</span><span class="n">anaconda_args</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">doupgrade</span><span class="p">:</span>
-            <span class="c"># Build upgrade.img. It&#39;d be nice if these could coexist in the same</span>
-            <span class="c"># image, but that would increase the size of the anaconda initramfs,</span>
-            <span class="c"># which worries some people (esp. PPC tftpboot). So they&#39;re separate.</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="c"># If possible, use the &#39;fedup&#39; plymouth theme</span>
-                <span class="n">themes</span> <span class="o">=</span> <span class="n">runcmd_output</span><span class="p">([</span><span class="s">&#39;plymouth-set-default-theme&#39;</span><span class="p">,</span> <span class="s">&#39;--list&#39;</span><span class="p">],</span>
-                                       <span class="n">root</span><span class="o">=</span><span class="n">installroot</span><span class="p">)</span>
-                <span class="k">if</span> <span class="s">&#39;fedup&#39;</span> <span class="ow">in</span> <span class="n">themes</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;PLYMOUTH_THEME_NAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;fedup&#39;</span>
-            <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
-                <span class="k">pass</span>
-            <span class="n">upgrade_args</span> <span class="o">=</span> <span class="n">dracut_args</span> <span class="o">+</span> <span class="p">[</span><span class="s">&quot;--add&quot;</span><span class="p">,</span> <span class="s">&quot;system-upgrade&quot;</span><span class="p">]</span>
-            <span class="n">treebuilder</span><span class="o">.</span><span class="n">rebuild_initrds</span><span class="p">(</span><span class="n">add_args</span><span class="o">=</span><span class="n">upgrade_args</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s">&quot;upgrade&quot;</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;populating output tree and building boot images&quot;</span><span class="p">)</span>
         <span class="n">treebuilder</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
@@ -606,7 +591,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'24.1',
+            VERSION:'24.3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

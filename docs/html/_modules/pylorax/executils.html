@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.executils &mdash; Lorax 24.1 documentation</title>
+  <title>pylorax.executils &mdash; Lorax 24.3 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Lorax 24.1 documentation" href="../../index.html"/>
+    <link rel="top" title="Lorax 24.3 documentation" href="../../index.html"/>
         <link rel="up" title="pylorax" href="../pylorax.html"/> 
 
   
@@ -352,7 +352,7 @@
         <span class="n">program_log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Return code: </span><span class="si">%d</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">proc</span><span class="o">.</span><span class="n">returncode</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">proc</span><span class="o">.</span><span class="n">returncode</span> <span class="ow">and</span> <span class="n">raise_err</span><span class="p">:</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="n">output_string</span> <span class="ow">or</span> <span class="s">&quot;&quot;</span> <span class="o">+</span> <span class="n">err_string</span> <span class="ow">or</span> <span class="s">&quot;&quot;</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="p">(</span><span class="n">output_string</span> <span class="ow">or</span> <span class="s">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">err_string</span> <span class="ow">or</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">returncode</span><span class="p">,</span> <span class="n">argv</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="p">(</span><span class="n">proc</span><span class="o">.</span><span class="n">returncode</span><span class="p">,</span> <span class="n">output_string</span><span class="p">)</span>
@@ -531,7 +531,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'24.1',
+            VERSION:'24.3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
