@@ -32,6 +32,8 @@ import shutil
 import argparse
 import hashlib
 import glob
+import json
+from math import ceil
 
 # Use pykickstart to calculate disk image size
 from pykickstart.parser import KickstartParser
@@ -440,6 +442,41 @@ def create_pxe_config(template, images_dir, live_image_name, add_args = None):
     with open (joinpaths(images_dir, "PXE_CONFIG"), "w") as f:
         f.write(result)
 
+
+def create_vagrant_metadata(path, size=0):
+    """ Create a default Vagrant metadata.json file
+
+    :param str path: Path to metadata.json file
+    :param int size: Disk size in MiB
+    """
+    metadata = { "provider":"libvirt", "format":"qcow2", "virtual_size": ceil(size / 1024) }
+    with open(path, "wt") as f:
+        json.dump(metadata, f, indent=4)
+
+
+def update_vagrant_metadata(path, size):
+    """ Update the Vagrant metadata.json file
+
+    :param str path: Path to metadata.json file
+    :param int size: Disk size in MiB
+
+    This function makes sure that the provider, format and virtual size of the
+    metadata file are set correctly. All other values are left untouched.
+    """
+    with open(path, "rt") as f:
+        try:
+            metadata = json.load(f)
+        except ValueError as e:
+            log.error("Problem reading metadata file %s: %s", path, e)
+            return
+
+    metadata["provider"] = "libvirt"
+    metadata["format"] = "qcow2"
+    metadata["virtual_size"] = ceil(size / 1024)
+    with open(path, "wt") as f:
+        json.dump(metadata, f, indent=4)
+
+
 def make_livecd(opts, mount_dir, work_dir):
     """
     Take the content from the disk image and make a livecd out of it
@@ -673,6 +710,12 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
         qcow2_img = tempfile.mktemp(prefix="disk", suffix=".img")
         execWithRedirect("qemu-img", ["convert"] + qcow2_args + [disk_img, qcow2_img], raise_err=True)
         execWithRedirect("mv", ["-f", qcow2_img, disk_img], raise_err=True)
+
+        if opts.make_vagrant:
+            pass
+
+            # tar the qcow2 file and optional json files
+
     elif opts.make_tar:
         compress_args = []
         for arg in opts.compress_args:
@@ -786,6 +829,25 @@ def virt_install(opts, install_log, disk_img, disk_size):
                 rc = mktar(img_mount.temp_dir, disk_img, opts.compression, compress_args)
         os.unlink(diskimg_path)
 
+        if rc:
+            raise InstallError("virt_install failed")
+    elif opts.make_vagrant:
+        compress_args = []
+        for arg in opts.compress_args:
+            compress_args += arg.split(" ", 1)
+
+        vagrant_dir = tempfile.mkdtemp()
+        metadata_path = joinpaths(vagrant_dir, "metadata.json")
+        execWithRedirect("mv", ["-f", disk_img, joinpaths(vagrant_dir, "box.img")], raise_err=True)
+        if opts.vagrant_metadata:
+            shutil.copy2(opts.vagrant_metadata, metadata_path)
+        else:
+            create_vagrant_metadata(metadata_path)
+        update_vagrant_metadata(metadata_path, disk_size)
+        if opts.vagrantfile:
+            shutil.copy2(opts.vagrantfile, joinpaths(vagrant_dir, "vagrantfile"))
+
+        rc = mktar(vagrant_dir, disk_img, opts.compression, compress_args, selinux=False)
         if rc:
             raise InstallError("virt_install failed")
 
@@ -943,6 +1005,8 @@ def main():
                         help="Build a live pxe boot squashfs image of Atomic Host")
     action.add_argument("--make-oci", action="store_true",
                         help="Build an Open Container Initiative image")
+    action.add_argument("--make-vagrant", action="store_true",
+                        help="Build a Vagrant Box image")
 
     parser.add_argument("--iso", type=os.path.abspath,
                         help="Anaconda installation .iso path to use for virt-install")
@@ -1050,6 +1114,13 @@ def main():
     oci_group.add_argument("--oci-runtime",
                               help="runtime.json OCI configuration file")
 
+    # Vagrant specific commands
+    vagrant_group = parser.add_argument_group("Vagrant arguments")
+    vagrant_group.add_argument("--vagrant-metadata",
+                               help="optional metadata.json file")
+    vagrant_group.add_argument("--vagrantfile",
+                               help="optional vagrantfile")
+
     parser.add_argument("--title", default="Linux Live Media",
                         help="Substituted for @TITLE@ in bootloader config files")
     parser.add_argument("--project", default="Linux",
@@ -1122,6 +1193,10 @@ def main():
     if opts.image_name and os.path.exists(joinpaths(opts.result_dir, opts.image_name)):
         errors.append("The disk image to be created should not exist.")
 
+    # Vagrant creates a qcow2 inside a tar, turn on qcow2
+    if opts.make_vagrant:
+        opts.qcow2 = True
+
     if opts.qcow2 and not os.path.exists("/usr/bin/qemu-img"):
         errors.append("qcow2 requires the qemu-img utility to be installed.")
 
@@ -1150,7 +1225,7 @@ def main():
         list(log.error(e) for e in errors)
         sys.exit(1)
 
-    # Default to putting results into tmp
+    # Default to putting results under tmp
     if not opts.result_dir:
         opts.result_dir = opts.tmp
     else:
@@ -1173,7 +1248,11 @@ def main():
             opts.image_name = "bundle.tar.xz"
         if opts.compression == "xz" and not opts.compress_args:
             opts.compress_args = ["-9"]
-
+    elif opts.make_vagrant:
+        if not opts.image_name:
+            opts.image_name = "vagrant.tar.xz"
+        if opts.compression == "xz" and not opts.compress_args:
+            opts.compress_args = ["-9"]
 
     if opts.app_file:
         opts.app_file = joinpaths(opts.result_dir, opts.app_file)
