@@ -27,6 +27,7 @@ import sys
 import traceback
 import multiprocessing
 from time import sleep
+import shutil
 
 from pylorax.sysutils import cpfile
 from pylorax.executils import execWithRedirect, execWithCapture
@@ -305,17 +306,30 @@ class Mount(object):
 
 class PartitionMount(object):
     """ Mount a partitioned image file using kpartx """
-    def __init__(self, disk_img, mount_ok=None):
+    def __init__(self, disk_img, mount_ok=None, submount=None):
         """
-        disk_img is the full path to a partitioned disk image
-        mount_ok is a function that is passed the mount point and
-        returns True if it should be mounted.
+        :param str disk_img: The full path to a partitioned disk image
+        :param mount_ok: A function that is passed the mount point and
+                         returns True if it should be mounted.
+        :param str submount: Directory inside mount_dir to mount at
+
+        If mount_ok is not set it will look for /etc/passwd
+
+        If the partition is found it will be mounted under a temporary
+        directory and self.temp_dir set to it. If submount is passed it will be
+        created and mounted there instead, with self.mount_dir set to point to
+        it. self.mount_dev is set to the loop device, and self.mount_size is
+        set to the size of the partition.
+
+        When no subdir is passed self.temp_dir and self.mount_dir will be the same.
         """
         self.mount_dev = None
         self.mount_size = None
         self.mount_dir = None
         self.disk_img = disk_img
         self.mount_ok = mount_ok
+        self.submount = submount
+        self.temp_dir = None
 
         # Default is to mount partition with /etc/passwd
         if not self.mount_ok:
@@ -339,7 +353,12 @@ class PartitionMount(object):
 
     def __enter__(self):
         # Mount the device selected by mount_ok, if possible
-        mount_dir = tempfile.mkdtemp()
+        self.temp_dir = tempfile.mkdtemp()
+        if self.submount:
+            mount_dir = os.path.normpath(os.path.sep.join([self.temp_dir, self.submount]))
+            os.makedirs(mount_dir, mode=0o755, exist_ok=True)
+        else:
+            mount_dir = self.temp_dir
         for dev, size in self.loop_devices:
             try:
                 mount( "/dev/mapper/"+dev, mnt=mount_dir )
@@ -355,14 +374,16 @@ class PartitionMount(object):
             logger.info("Partition mounted on %s size=%s", self.mount_dir, self.mount_size)
         else:
             logger.debug("Unable to mount anything from %s", self.disk_img)
-            os.rmdir(mount_dir)
+            os.rmdir(self.temp_dir)
+            self.temp_dir = None
         return self
 
     def __exit__(self, exc_type, exc_value, tracebk):
-        if self.mount_dir:
-            umount( self.mount_dir )
-            os.rmdir(self.mount_dir)
+        if self.temp_dir:
+            umount(self.mount_dir)
+            shutil.rmtree(self.temp_dir)
             self.mount_dir = None
+            self.temp_dir = None
         execWithRedirect("kpartx", ["-d", "-s", self.disk_img])
 
 
