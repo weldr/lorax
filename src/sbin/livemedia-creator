@@ -709,7 +709,7 @@ def virt_install(opts, install_log, disk_img, disk_size):
 
         mkqcow2(disk_img, disk_size*1024**2, qcow2_args)
 
-    if opts.make_fsimage or opts.make_tar:
+    if opts.make_fsimage or opts.make_tar or opts.make_oci:
         diskimg_path = tempfile.mktemp(prefix="disk", suffix=".img")
     else:
         diskimg_path = disk_img
@@ -749,6 +749,22 @@ def virt_install(opts, install_log, disk_img, disk_size):
         with PartitionMount(diskimg_path) as img_mount:
             if img_mount and img_mount.mount_dir:
                 rc = mktar(img_mount.mount_dir, disk_img, opts.compression, compress_args)
+        os.unlink(diskimg_path)
+
+        if rc:
+            raise InstallError("virt_install failed")
+    elif opts.make_oci:
+        # An OCI image places the filesystem under /rootfs/ and adds the json files at the top
+        # And then creates a tar of the whole thing.
+        compress_args = []
+        for arg in opts.compress_args:
+            compress_args += arg.split(" ", 1)
+
+        with PartitionMount(diskimg_path, submount="rootfs") as img_mount:
+            if img_mount and img_mount.temp_dir:
+                shutil.copy2(opts.oci_config, img_mount.temp_dir)
+                shutil.copy2(opts.oci_runtime, img_mount.temp_dir)
+                rc = mktar(img_mount.temp_dir, disk_img, opts.compression, compress_args)
         os.unlink(diskimg_path)
 
         if rc:
@@ -906,6 +922,8 @@ def main():
                         help="Build a live pxe boot squashfs image")
     action.add_argument("--make-ostree-live", action="store_true",
                         help="Build a live pxe boot squashfs image of Atomic Host")
+    action.add_argument("--make-oci", action="store_true",
+                        help="Build an Open Container Initiative image")
 
     parser.add_argument("--iso", type=os.path.abspath,
                         help="Anaconda installation .iso path to use for virt-install")
@@ -1006,6 +1024,12 @@ def main():
     pxelive_group.add_argument("--live-rootfs-keep-size", action="store_true",
                                 help="Keep the original size of root filesystem in live image")
 
+    # OCI specific commands
+    oci_group = parser.add_argument_group("OCI arguments")
+    oci_group.add_argument("--oci-config",
+                              help="config.json OCI configuration file")
+    oci_group.add_argument("--oci-runtime",
+                              help="runtime.json OCI configuration file")
 
     parser.add_argument("--title", default="Linux Live Media",
                         help="Substituted for @TITLE@ in bootloader config files")
@@ -1091,6 +1115,9 @@ def main():
     if opts.make_tar and opts.qcow2:
         errors.append("qcow2 cannot be used to make a tar.")
 
+    if opts.make_oci and not (opts.oci_config and opts.oci_runtime):
+        errors.append("--make-oci requires --oci-config and --oci-runtime")
+
     if os.getuid() != 0:
         errors.append("You need to run this as root")
 
@@ -1116,6 +1143,12 @@ def main():
             opts.image_name = "root.tar.xz"
         if opts.compression == "xz" and not opts.compress_args:
             opts.compress_args = ["-9"]
+    elif opts.make_oci:
+        if not opts.image_name:
+            opts.image_name = "bundle.tar.xz"
+        if opts.compression == "xz" and not opts.compress_args:
+            opts.compress_args = ["-9"]
+
 
     if opts.app_file:
         opts.app_file = joinpaths(opts.result_dir, opts.app_file)
