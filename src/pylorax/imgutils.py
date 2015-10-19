@@ -80,10 +80,13 @@ def mkcpio(rootdir, outfile, compression="xz", compressargs=None):
     return compress(["cpio", "--null", "--quiet", "-H", "newc", "-o"],
                     rootdir, outfile, compression, compressargs)
 
-def mktar(rootdir, outfile, compression="xz", compressargs=None):
+def mktar(rootdir, outfile, compression="xz", compressargs=None, selinux=True):
     compressargs = compressargs or ["-9"]
-    return compress(["tar", "--no-recursion", "--selinux", "--acls", "--xattrs", "-cf-", "--null", "-T-"],
-                    rootdir, outfile, compression, compressargs)
+    tar_cmd = ["tar", "--no-recursion"]
+    if selinux:
+        tar_cmd += ["--selinux", "--acls", "--xattrs"]
+    tar_cmd += ["-cf-", "--null", "-T-"]
+    return compress(tar_cmd, rootdir, outfile, compression, compressargs)
 
 def mksquashfs(rootdir, outfile, compression="default", compressargs=None):
     '''Make a squashfs image containing the given rootdir.'''
