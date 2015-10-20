@@ -563,6 +563,7 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
     or tarfile.
     """
     import selinux
+    dirinstall_path = ROOT_PATH
 
     # Set selinux to Permissive if it is Enforcing
     selinux_enforcing = False
@@ -589,17 +590,22 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
         args += ["--dirinstall"]
 
         mkext4img(None, disk_img, label=opts.fs_label, size=disk_size * 1024**2)
-        if not os.path.isdir(ROOT_PATH):
-            os.mkdir(ROOT_PATH)
-        mount(disk_img, opts="loop", mnt=ROOT_PATH)
-    elif opts.make_tar:
-        args += ["--dirinstall"]
+        if not os.path.isdir(dirinstall_path):
+            os.mkdir(dirinstall_path)
+        mount(disk_img, opts="loop", mnt=dirinstall_path)
+    elif opts.make_tar or opts.make_oci:
+        # Install under dirinstall_path, make sure it starts clean
+        if os.path.exists(dirinstall_path):
+            shutil.rmtree(dirinstall_path)
 
-        # Install directly into ROOT_PATH, make sure it starts clean
-        if os.path.exists(ROOT_PATH):
-            shutil.rmtree(ROOT_PATH)
-        if not os.path.isdir(ROOT_PATH):
-            os.mkdir(ROOT_PATH)
+        if opts.make_oci:
+            # OCI installs under /rootfs/
+            dirinstall_path = joinpaths(dirinstall_path, "rootfs")
+            args += ["--dirinstall", dirinstall_path]
+        else:
+            args += ["--dirinstall"]
+
+        os.makedirs(dirinstall_path)
     else:
         args += ["--image", disk_img]
 
@@ -619,14 +625,14 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
             log.info(line)
 
         # Make sure the new filesystem is correctly labeled
-        args = ["-e", "/proc", "-e", "/sys", "-e", "/dev",
-                "/etc/selinux/targeted/contexts/files/file_contexts", "/"]
-        if opts.make_iso or opts.make_fsimage or opts.make_tar:
-            execWithRedirect("setfiles", args, root=ROOT_PATH)
+        setfiles_args = ["-e", "/proc", "-e", "/sys", "-e", "/dev",
+                         "/etc/selinux/targeted/contexts/files/file_contexts", "/"]
+        if "--dirinstall" in args:
+            execWithRedirect("setfiles", setfiles_args, root=dirinstall_path)
         else:
             with PartitionMount(disk_img) as img_mount:
                 if img_mount and img_mount.mount_dir:
-                    execWithRedirect("setfiles", args, root=img_mount.mount_dir)
+                    execWithRedirect("setfiles", setfiles_args, root=img_mount.mount_dir)
     except (subprocess.CalledProcessError, OSError) as e:
         log.error("Running anaconda failed: %s", e)
         raise InstallError("novirt_install failed")
@@ -672,8 +678,21 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
         for arg in opts.compress_args:
             compress_args += arg.split(" ", 1)
 
+        rc = mktar(dirinstall_path, disk_img, opts.compression, compress_args)
+        shutil.rmtree(dirinstall_path)
+
+        if rc:
+            raise InstallError("novirt_install mktar failed: rc=%s" % rc)
+    elif opts.make_oci:
+        # An OCI image places the filesystem under /rootfs/ and adds the json files at the top
+        # And then creates a tar of the whole thing.
+        compress_args = []
+        for arg in opts.compress_args:
+            compress_args += arg.split(" ", 1)
+
+        shutil.copy2(opts.oci_config, ROOT_PATH)
+        shutil.copy2(opts.oci_runtime, ROOT_PATH)
         rc = mktar(ROOT_PATH, disk_img, opts.compression, compress_args)
-        shutil.rmtree(ROOT_PATH)
 
         if rc:
             raise InstallError("novirt_install mktar failed: rc=%s" % rc)
@@ -1117,6 +1136,12 @@ def main():
 
     if opts.make_oci and not (opts.oci_config and opts.oci_runtime):
         errors.append("--make-oci requires --oci-config and --oci-runtime")
+
+    if opts.make_oci and not os.path.exists(opts.oci_config):
+        errors.append("oci % file is missing" % opts.oci_config)
+
+    if opts.make_oci and not os.path.exists(opts.oci_runtime):
+        errors.append("oci % file is missing" % opts.oci_runtime)
 
     if os.getuid() != 0:
         errors.append("You need to run this as root")
