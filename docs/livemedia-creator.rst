@@ -436,6 +436,24 @@ And then run bash inside of it:
     ``sudo docker run -i -t fedora-root /bin/bash``
 
 
+Open Container Initiative Image Creation
+----------------------------------------
+
+The OCI is a new specification that is still being worked on. You can read more about it at
+`the Open Container Initiative website <https://www.opencontainers.org/>`. You can create
+OCI images using the following command::
+
+    sudo livemedia-creator --make-oci --oci-config /path/to/config.json --oci-runtime /path/to/runtime.json \
+    --iso=/path/to/boot.iso --ks=/path/to/fedora-minimal.ks
+
+You must provide the config.json and runtime.json files to be included in the bundle,
+their specifications can be found `on the OCI github project <https://github.com/opencontainers/specs>`
+output will be in the results directory with a default name of bundle.tar.xz
+
+This will work with ``--no-virt`` and inside a mock since it doesn't use any
+partitioned disk images.
+
+
 Debugging problems
 ------------------
 
