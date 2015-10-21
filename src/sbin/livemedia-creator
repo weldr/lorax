@@ -698,6 +698,7 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
         if selinux_enforcing:
             selinux.security_setenforce(1)
 
+    # qcow2 is used by bare qcow2 images and by Vagrant
     if opts.qcow2:
         log.info("Converting %s to qcow2", disk_img)
         qcow2_args = []
@@ -709,13 +710,30 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
             qcow2_args.extend(["-O", "qcow2"])
         qcow2_img = tempfile.mktemp(prefix="disk", suffix=".img")
         execWithRedirect("qemu-img", ["convert"] + qcow2_args + [disk_img, qcow2_img], raise_err=True)
-        execWithRedirect("mv", ["-f", qcow2_img, disk_img], raise_err=True)
+        if not opts.make_vagrant:
+            execWithRedirect("mv", ["-f", qcow2_img, disk_img], raise_err=True)
+        else:
+            # Take the new qcow2 image and package it up for Vagrant
+            compress_args = []
+            for arg in opts.compress_args:
+                compress_args += arg.split(" ", 1)
 
-        if opts.make_vagrant:
-            pass
+            vagrant_dir = tempfile.mkdtemp()
+            metadata_path = joinpaths(vagrant_dir, "metadata.json")
+            execWithRedirect("mv", ["-f", qcow2_img, joinpaths(vagrant_dir, "box.img")], raise_err=True)
+            if opts.vagrant_metadata:
+                shutil.copy2(opts.vagrant_metadata, metadata_path)
+            else:
+                create_vagrant_metadata(metadata_path)
+            update_vagrant_metadata(metadata_path, disk_size)
+            if opts.vagrantfile:
+                shutil.copy2(opts.vagrantfile, joinpaths(vagrant_dir, "vagrantfile"))
 
-            # tar the qcow2 file and optional json files
-
+            log.info("Creating Vagrant image")
+            rc = mktar(vagrant_dir, disk_img, opts.compression, compress_args, selinux=False)
+            if rc:
+                raise InstallError("novirt_install mktar failed: rc=%s" % rc)
+            shutil.rmtree(vagrant_dir)
     elif opts.make_tar:
         compress_args = []
         for arg in opts.compress_args:
@@ -850,6 +868,7 @@ def virt_install(opts, install_log, disk_img, disk_size):
         rc = mktar(vagrant_dir, disk_img, opts.compression, compress_args, selinux=False)
         if rc:
             raise InstallError("virt_install failed")
+        shutil.rmtree(vagrant_dir)
 
 
 def make_squashfs(disk_img, work_dir, compression="xz"):
@@ -1217,6 +1236,9 @@ def main():
 
     if opts.make_oci and not os.path.exists(opts.oci_runtime):
         errors.append("oci % file is missing" % opts.oci_runtime)
+
+    if opts.make_vagrant and opts.vagrant_metadata and not os.path.exists(opts.vagrant_metadata):
+        errors.append("Vagrant metadata file %s is missing" % opts.vagrant_metadata)
 
     if os.getuid() != 0:
         errors.append("You need to run this as root")
