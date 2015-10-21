@@ -454,6 +454,31 @@ This will work with ``--no-virt`` and inside a mock since it doesn't use any
 partitioned disk images.
 
 
+Vagrant Image Creation
+----------------------
+
+`Vagrant <https://www.vagrantup.com/>` images can be created using the following command::
+
+    sudo livemedia-creator --make-vagrant --vagrant-metadata /path/to/metadata.json \
+    --iso=/path/to/boot.iso --ks=/path/to/fedora-vagrant.ks
+
+The image created is a `vagrant-libvirt
+<https://github.com/pradels/vagrant-libvirt>` provider image and needs to have
+vagrant setup with libvirt before you can use it.
+
+The ``--vagrant-metadata`` file is optional, it will create a minimal one by
+default, and if one is passed it will make sure the disk size  is setup
+correctly. If you pass a ``--vagrant-vagrantfile`` it will be included in the
+image verbatim. By default no vagrantfile is created.
+
+There is an example Vagrant kickstart file in the docs directory that sets up
+the vagrant user with the default insecure SSH pubkey and a few useful
+utilities.
+
+This also works with ``--no-virt``, but will not work inside a mock due to its
+use of partitioned disk images and qcow2.
+
+
 Debugging problems
 ------------------
 
