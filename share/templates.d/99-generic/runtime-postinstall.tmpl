@@ -72,6 +72,7 @@ install ${configdir}/spice-vdagentd etc/sysconfig
 mkdir etc/NetworkManager/conf.d
 install ${configdir}/91-anaconda-autoconnect-slaves.conf etc/NetworkManager/conf.d
 install ${configdir}/vconsole.conf etc
+install ${configdir}/92-anaconda-loglevel-debug.conf etc/NetworkManager/conf.d
 
 ## set up sshd
 install ${configdir}/sshd_config.anaconda etc/ssh
