@@ -1363,7 +1363,7 @@ def main():
             work_dir = tempfile.mkdtemp()
             log.info("working dir is %s", work_dir)
 
-            if (opts.fs_image or opts.no_virt) and not opts.disk_image:
+            if opts.fs_image and not opts.disk_image:
                 # Create pxe live images from a filesystem image
                 disk_img = opts.fs_image or disk_img
                 with Mount(disk_img, opts="loop") as mnt_dir:
