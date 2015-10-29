@@ -116,6 +116,8 @@ def main(args):
                         default=[])
     optional.add_argument("--noverify", action="store_false", default=True, dest="verify",
                         help="Do not verify the install root")
+    optional.add_argument("--sharedir", metavar="SHAREDIR", type=os.path.abspath,
+                          help="Directory containing all the templates. Overrides config file sharedir")
 
     # add the show version option
     parser.add_argument("-V", help="show program's version number and exit",
@@ -146,6 +148,8 @@ def main(args):
         opts.cachedir = os.path.abspath(opts.cachedir)
     if opts.workdir:
         opts.workdir = os.path.abspath(opts.workdir)
+    if opts.sharedir and not os.path.isdir(opts.sharedir):
+        parser.error("sharedir %s doesn't exist." % opts.sharedir)
 
     setup_logging(opts)
 
@@ -193,6 +197,11 @@ def main(args):
     lorax = pylorax.Lorax()
     lorax.configure(conf_file=opts.config)
     lorax.conf.set("lorax", "logdir", os.path.dirname(opts.logfile))
+
+    # Override the config file's template sharedir
+    if opts.sharedir:
+        lorax.conf.set("lorax", "sharedir", opts.sharedir)
+
     lorax.run(dnfbase, opts.product, opts.version, opts.release,
               opts.variant, opts.bugurl, opts.isfinal,
               workdir=tempdir, outputdir=outputdir, buildarch=opts.buildarch,
