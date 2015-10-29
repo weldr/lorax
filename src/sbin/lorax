@@ -57,9 +57,9 @@ def main(args):
 
     # required arguments for image creation
     required = parser.add_argument_group("required arguments")
-    required.add_argument("-p", "--product", help="product name", required=True, metavar="STRING")
-    required.add_argument("-v", "--version", help="version identifier", required=True, metavar="STRING")
-    required.add_argument("-r", "--release", help="release information", required=True, metavar="STRING")
+    required.add_argument("-p", "--product", help="product name", required=True, metavar="PRODUCT")
+    required.add_argument("-v", "--version", help="version identifier", required=True, metavar="VERSION")
+    required.add_argument("-r", "--release", help="release information", required=True, metavar="RELEASE")
     required.add_argument("-s", "--source", help="source repository (may be listed multiple times)",
                         metavar="REPOSITORY", action="append", default=[], required=True)
 
@@ -69,36 +69,36 @@ def main(args):
                         help="mirrorlist repository (may be listed multiple times)",
                         metavar="REPOSITORY", action="append", default=[])
     optional.add_argument("-t", "--variant",
-                        help="variant name", metavar="STRING")
+                        help="variant name", metavar="VARIANT")
     optional.add_argument("-b", "--bugurl",
                         help="bug reporting URL for the product", metavar="URL",
                         default="your distribution provided bug reporting tool")
     optional.add_argument("--isfinal", help="",
                         action="store_true", default=False, dest="isfinal")
     optional.add_argument("-c", "--config", default="/etc/lorax/lorax.conf",
-                        help="config file", metavar="STRING")
+                        help="config file", metavar="CONFIGFILE")
     optional.add_argument("--proxy", default=None,
-                        help="repo proxy url:port", metavar="STRING")
+                          help="repo proxy url:port", metavar="HOST")
     optional.add_argument("-i", "--installpkgs", default=[],
-                        action="append", metavar="STRING",
+                        action="append", metavar="PACKAGE",
                         help="package glob to install before runtime-install.tmpl runs. (may be listed multiple times)")
     optional.add_argument("--buildarch", default=None,
-                        help="build architecture", metavar="STRING")
+                        help="build architecture", metavar="ARCH")
     optional.add_argument("--volid", default=None,
-                        help="volume id", metavar="STRING")
+                        help="volume id", metavar="VOLID")
     optional.add_argument("--macboot", help="",
                         action="store_true", default=True, dest="domacboot")
     optional.add_argument("--nomacboot", help="",
                         action="store_false", dest="domacboot")
     optional.add_argument("--noupgrade", help="",
                         action="store_false", default=True, dest="doupgrade")
-    optional.add_argument("--logfile", default="./lorax.log",
+    optional.add_argument("--logfile", default="./lorax.log", type=os.path.abspath,
                         help="Path to logfile")
     optional.add_argument("--tmp", default="/var/tmp",
                         help="Top level temporary directory" )
-    optional.add_argument("--cachedir", default=None,
+    optional.add_argument("--cachedir", default=None, type=os.path.abspath,
                         help="DNF cache directory. Default is a temporary dir.")
-    optional.add_argument("--workdir", default=None,
+    optional.add_argument("--workdir", default=None, type=os.path.abspath,
                         help="Work directory, overrides --tmp. Default is a temporary dir under /var/tmp")
     optional.add_argument("--force", default=False, action="store_true",
                         help="Run even when the destination directory exists")
@@ -123,31 +123,16 @@ def main(args):
     parser.add_argument("-V", help="show program's version number and exit",
                       action="version", version=version)
 
-    parser.add_argument("outputdir", help="Output directory", metavar="STRING")
+    parser.add_argument("outputdir", help="Output directory", metavar="OUTPUTDIR", type=os.path.abspath)
 
     # parse the arguments
     opts = parser.parse_args()
 
-    try:
-        outputdir = os.path.abspath(opts.outputdir)
-    except IndexError:
-        parser.error("missing one or more required arguments")
+    if not opts.force and os.path.exists(opts.outputdir):
+        parser.error("output directory %s should not exist." % opts.outputdir)
 
-    # check for the required arguments
-    if not opts.product or not opts.version or not opts.release \
-            or not opts.source or not outputdir:
-        parser.error("missing one or more required arguments")
-
-    if not opts.force and os.path.exists(outputdir):
-        parser.error("output directory %s should not exist." % outputdir)
-
-    opts.logfile = os.path.abspath(opts.logfile)
     if not os.path.exists(os.path.dirname(opts.logfile)):
         os.makedirs(os.path.dirname(opts.logfile))
-    if opts.cachedir:
-        opts.cachedir = os.path.abspath(opts.cachedir)
-    if opts.workdir:
-        opts.workdir = os.path.abspath(opts.workdir)
     if opts.sharedir and not os.path.isdir(opts.sharedir):
         parser.error("sharedir %s doesn't exist." % opts.sharedir)
 
@@ -204,7 +189,7 @@ def main(args):
 
     lorax.run(dnfbase, opts.product, opts.version, opts.release,
               opts.variant, opts.bugurl, opts.isfinal,
-              workdir=tempdir, outputdir=outputdir, buildarch=opts.buildarch,
+              workdir=tempdir, outputdir=opts.outputdir, buildarch=opts.buildarch,
               volid=opts.volid, domacboot=opts.domacboot, doupgrade=opts.doupgrade,
               installpkgs=opts.installpkgs,
               add_templates=opts.add_templates,
