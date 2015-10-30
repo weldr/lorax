@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        21.33
+Version:        21.34
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Oct 30 2015 Brian C. Lane <bcl@redhat.com> 21.34-1
+- drop fedup-dracut and friends (wwoods@redhat.com)
+
 * Fri Dec 12 2014 Brian C. Lane <bcl@redhat.com> 21.33-1
 - Actually make boot.iso on aarch64. (pjones@redhat.com)
 
