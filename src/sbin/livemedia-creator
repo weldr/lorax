@@ -69,6 +69,8 @@ DRACUT_DEFAULT = ["--xz", "--add", "livenet dmsquash-live convertfs pollcdrom",
 
 ROOT_PATH = "/mnt/sysimage/"
 RUNTIME = "images/install.img"
+UEFI_FIRMWARE="loader={0}/OVMF_CODE.fd,loader_ro=yes,loader_type=pflash,nvram_template={0}/OVMF_VARS.fd"
+
 
 class InstallError(Exception):
     pass
@@ -96,7 +98,7 @@ class VirtualInstall(object):
     def __init__(self, iso, ks_paths, disk_img, img_size=2048,
                  kernel_args=None, memory=1024, vnc=None, arch=None,
                  log_check=None, virtio_host="127.0.0.1", virtio_port=6080,
-                 qcow2=False):
+                 qcow2=False, boot_uefi=False, ovmf_path=None):
         """
         Start the installation
 
@@ -115,6 +117,8 @@ class VirtualInstall(object):
         :param str virtio_host: Hostname to connect virtio log to
         :param int virtio_port: Port to connect virtio log to
         :param bool qcow2: Set to True if disk_img is a qcow2
+        :param bool boot_uefi: Use OVMF to boot the VM in UEFI mode
+        :param str ovmf_path: Path to the OVMF firmware
         """
         self.virt_name = "LiveOS-"+str(uuid.uuid4())
         # add --graphics none later
@@ -171,6 +175,10 @@ class VirtualInstall(object):
         if arch:
             args.append("--arch")
             args.append(arch)
+
+        if boot_uefi and ovmf_path:
+            args.append("--boot")
+            args.append(UEFI_FIRMWARE.format(ovmf_path))
 
         log.info("Running virt-install.")
         try:
@@ -800,7 +808,8 @@ def virt_install(opts, install_log, disk_img, disk_size):
                                log_check = log_monitor.server.log_check,
                                virtio_host = log_monitor.host,
                                virtio_port = log_monitor.port,
-                               qcow2=opts.qcow2)
+                               qcow2=opts.qcow2, boot_uefi=opts.virt_uefi,
+                               ovmf_path=opts.ovmf_path)
 
         virt.destroy()
         log_monitor.shutdown()
@@ -1110,6 +1119,10 @@ def main():
                             help="Passed to --arch command")
     virt_group.add_argument("--kernel-args",
                             help="Additional argument to pass to the installation kernel")
+    virt_group.add_argument("--ovmf-path", default="/usr/share/OVMF/",
+                            help="Path to OVMF firmware")
+    virt_group.add_argument("--virt-uefi", action="store_true", default=False,
+                            help="Use OVMF firmware to boot the VM in UEFI mode")
 
     # dracut arguments
     dracut_group = parser.add_argument_group("dracut arguments")
@@ -1239,6 +1252,9 @@ def main():
 
     if opts.make_vagrant and opts.vagrant_metadata and not os.path.exists(opts.vagrant_metadata):
         errors.append("Vagrant metadata file %s is missing" % opts.vagrant_metadata)
+
+    if opts.virt_uefi and not os.path.isdir(opts.ovmf_path):
+        errors.append("The OVMF firmware is missing from %s" % opts.ovmf_path)
 
     if os.getuid() != 0:
         errors.append("You need to run this as root")
