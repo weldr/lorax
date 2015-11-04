@@ -24,6 +24,7 @@ livemedia-creator [-h]
     [--dracut-arg DRACUT_ARGS] [--title TITLE]
     [--project PROJECT] [--releasever RELEASEVER]
     [--volid VOLID] [--squashfs_args SQUASHFS_ARGS]
+    [--virt-uefi] [--ovmf-path OVMF_PATH]
 
 .SH DESCRIPTION
 livemedia-creator uses Anaconda, kickstart and Lorax to create bootable media
@@ -222,6 +223,15 @@ Passed to --arch command
 .TP
 \fB\-\-kernel\-args KERNEL_ARGS\fR
 Additional argument to pass to the installation kernel
+
+.TP
+\fB\-\-virt\-uefi\fR
+Boot the virtual machine in UEFI mode. Requires OVMF_CODE.fd and OVMF_VARS.fd
+
+.TP
+\fB\-\-ovmf\-path\fR
+Path to OVMF_CODE.fd and OVMF_VARS.fd. Defaults to /usr/share/OVMF/, the UEFI
+firmware files need to be installed manually, they are not shipped with RHEL.
 
 .SH DRACUT ARGUMENTS:
 .TP
