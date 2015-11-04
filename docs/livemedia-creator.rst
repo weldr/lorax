@@ -200,6 +200,12 @@ Example cmdline:
 
 ``sudo livemedia-creator --make-iso --no-virt --ks=./fedora-livemedia.ks``
 
+.. note::
+    Using no-virt to create a partitioned disk image (eg. --make-disk or
+    --make-vagrant) will only create disks usable on the host platform (BIOS
+    or UEFI). You can create BIOS partitioned disk images on UEFI by using
+    virt.
+
 
 AMI Images
 ----------
@@ -399,7 +405,7 @@ OpenStack supports partitioned disk images so ``--make-disk`` can be used to
 create images for importing into glance, OpenStack's image storage component.
 You need to have access to an OpenStack provider that allows image uploads, or
 setup your own using the instructions from the `RDO Project
-<https://www.rdoproject.org/Quickstart>`.
+<https://www.rdoproject.org/Quickstart>`_.
 
 The example kickstart, fedora-openstack.ks, is only slightly different than the
 fedora-minimal.ks one.  It adds the cloud-init and cloud-utils-growpart
@@ -440,14 +446,14 @@ Open Container Initiative Image Creation
 ----------------------------------------
 
 The OCI is a new specification that is still being worked on. You can read more about it at
-`the Open Container Initiative website <https://www.opencontainers.org/>`. You can create
+`the Open Container Initiative website <https://www.opencontainers.org/>`_. You can create
 OCI images using the following command::
 
     sudo livemedia-creator --make-oci --oci-config /path/to/config.json --oci-runtime /path/to/runtime.json \
     --iso=/path/to/boot.iso --ks=/path/to/fedora-minimal.ks
 
 You must provide the config.json and runtime.json files to be included in the bundle,
-their specifications can be found `on the OCI github project <https://github.com/opencontainers/specs>`
+their specifications can be found `on the OCI github project <https://github.com/opencontainers/specs>`_
 output will be in the results directory with a default name of bundle.tar.xz
 
 This will work with ``--no-virt`` and inside a mock since it doesn't use any
@@ -457,13 +463,13 @@ partitioned disk images.
 Vagrant Image Creation
 ----------------------
 
-`Vagrant <https://www.vagrantup.com/>` images can be created using the following command::
+`Vagrant <https://www.vagrantup.com/>`_ images can be created using the following command::
 
     sudo livemedia-creator --make-vagrant --vagrant-metadata /path/to/metadata.json \
     --iso=/path/to/boot.iso --ks=/path/to/fedora-vagrant.ks
 
 The image created is a `vagrant-libvirt
-<https://github.com/pradels/vagrant-libvirt>` provider image and needs to have
+<https://github.com/pradels/vagrant-libvirt>`_ provider image and needs to have
 vagrant setup with libvirt before you can use it.
 
 The ``--vagrant-metadata`` file is optional, it will create a minimal one by
@@ -477,6 +483,40 @@ utilities.
 
 This also works with ``--no-virt``, but will not work inside a mock due to its
 use of partitioned disk images and qcow2.
+
+
+Creating UEFI disk images with virt
+-----------------------------------
+
+Partitioned disk images can only be created for the same platform as the host system (BIOS or
+UEFI). You can use virt to create BIOS images on UEFI systems, and it is also possible
+to create UEFI images on BIOS systems using OVMF. You first need to setup your system with
+the OVMF firmware. The details can be `found here linux-kvm OVMF page <http://www.linux-kvm.org/page/OVMF>`_
+but it amounts to:
+
+1. Download the firmware.repo from `Gerd Hoffmann <https://www.kraxel.org/repos/>`_ and install it
+   in /etc/yum.repos.d/
+
+2. Install the edk2.git-ovmf-x64 package
+
+3. Copy /usr/share/edk2.git/ovmf-x64/OVMF_CODE-pure-efi.fd to /usr/share/OVMF/OVMF_CODE.fd
+
+4. Copy /usr/share/edk2.git/ovmf-x64/OVMF_VARS-pure-efi.fd to /usr/share/OVMF/OVMF_VARS.fd
+
+Now you can run livemedia-creator with ``--virt-uefi`` to boot and install using UEFI::
+
+    sudo livemedia-creator --make-disk --virt-uefi --iso=/path/to/boot.iso \
+    --ks=/path/to/fedora-minimal.ks
+
+Make sure that the kickstart you are using creates a /boot/efi partition by including this::
+
+    part /boot/efi --fstype="efi" --size=500
+
+.. note::
+    When using the resulting image with the current version of OVMF (edk2.git-ovmf-x64-0-20151103.b1295.ge5cffca)
+    it will not boot automatically because there is a problem with the fallback path.
+    You can boot it by entering the UEFI shell and running EFI/fedora/shim.efi and
+    then using efibootmgr to setup the correct boot entry.
 
 
 Debugging problems
