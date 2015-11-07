@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        24.4
+Version:        24.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -132,6 +132,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %files lmc-novirt
 
 %changelog
+* Fri Nov 06 2015 Brian C. Lane <bcl@redhat.com> 24.5-1
+- Add --virt-uefi to boot the VM using OVMF (bcl@redhat.com)
+- Enable gtk inspector. (dshea@redhat.com)
+- lorax: Improve argument parsing and help (bcl@redhat.com)
+- lorax: Add --sharedir to override configuration path (bcl@redhat.com)
+
 * Wed Oct 28 2015 Brian C. Lane <bcl@redhat.com> 24.4-1
 - livemedia-creator: Allow novirt ostree partitioned images (#1273199)
   (bcl@redhat.com)
