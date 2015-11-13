@@ -96,7 +96,7 @@ class VirtualInstall(object):
     Run virt-install using an iso and a kickstart
     """
     def __init__(self, iso, ks_paths, disk_img, img_size=2048,
-                 kernel_args=None, memory=1024, vnc=None, arch=None,
+                 kernel_args=None, memory=1024, vcpus=None, vnc=None, arch=None,
                  log_check=None, virtio_host="127.0.0.1", virtio_port=6080,
                  qcow2=False, boot_uefi=False, ovmf_path=None):
         """
@@ -110,6 +110,7 @@ class VirtualInstall(object):
         :param int img_size: The image size, in MiB, to create if it doesn't exist
         :param str kernel_args: Extra kernel arguments to pass on the kernel cmdline
         :param int memory: Amount of RAM to assign to the virt, in MiB
+        :param int vcpus: Number of virtual cpus
         :param str vnc: Arguments to pass to virt-install --graphics
         :param str arch: Optional architecture to use in the virt
         :param log_check: Method that returns True if the installation fails
@@ -175,6 +176,10 @@ class VirtualInstall(object):
         if arch:
             args.append("--arch")
             args.append(arch)
+
+        if vcpus:
+            args.append("--vcpus")
+            args.append(str(vcpus))
 
         if boot_uefi and ovmf_path:
             args.append("--boot")
@@ -804,7 +809,7 @@ def virt_install(opts, install_log, disk_img, disk_size):
 
     try:
         virt = VirtualInstall(iso_mount, opts.ks, diskimg_path, disk_size,
-                               kernel_args, opts.ram, opts.vnc, opts.arch,
+                               kernel_args, opts.ram, opts.vcpus, opts.vnc, opts.arch,
                                log_check = log_monitor.server.log_check,
                                virtio_host = log_monitor.host,
                                virtio_port = log_monitor.port,
@@ -1111,7 +1116,7 @@ def main():
         virt_group = parser.add_argument_group("virt-install arguments")
     virt_group.add_argument("--ram", metavar="MEMORY", type=int, default=1024,
                             help="Memory to allocate for installer in megabytes.")
-    virt_group.add_argument("--vcpus", default=1,
+    virt_group.add_argument("--vcpus", type=int, default=None,
                             help="Passed to --vcpus command")
     virt_group.add_argument("--vnc",
                             help="Passed to --graphics command")
@@ -1374,7 +1379,7 @@ def main():
                 networks = ks.handler.network.network
             make_appliance(opts.disk_image or disk_img, opts.app_name,
                            opts.app_template, opts.app_file, networks, opts.ram,
-                           opts.vcpus, opts.arch, opts.title, opts.project, opts.releasever)
+                           opts.vcpus or 1, opts.arch, opts.title, opts.project, opts.releasever)
         elif opts.make_pxe_live:
             work_dir = tempfile.mkdtemp()
             log.info("working dir is %s", work_dir)
