@@ -38,6 +38,7 @@ from math import ceil
 # Use pykickstart to calculate disk image size
 from pykickstart.parser import KickstartParser
 from pykickstart.version import makeVersion
+from pykickstart.constants import KS_SHUTDOWN
 
 # Use Mako templates for appliance builder descriptions
 from mako.template import Template
@@ -1337,6 +1338,9 @@ def main():
             if not part_ok or ks.handler.autopart.seen:
                 errors.append("Filesystem images must use a single / part, not autopart or "
                               "multiple partitions. swap is allowed but not used.")
+
+        if not opts.no_virt and ks.handler.reboot.action != KS_SHUTDOWN:
+            errors.append("The kickstart must include shutdown when using virt installation.")
 
         if errors:
             list(log.error(e) for e in errors)
