@@ -61,7 +61,9 @@ def main(args):
     required.add_argument("-v", "--version", help="version identifier", required=True, metavar="VERSION")
     required.add_argument("-r", "--release", help="release information", required=True, metavar="RELEASE")
     required.add_argument("-s", "--source", help="source repository (may be listed multiple times)",
-                        metavar="REPOSITORY", action="append", default=[], required=True)
+                        metavar="REPOSITORY", action="append", default=[])
+    required.add_argument("--repo", help="source dnf repository file", type=os.path.abspath,
+                          dest="repos", metavar="REPOSITORY", action="append", default=[])
 
     # optional arguments
     optional = parser.add_argument_group("optional arguments")
@@ -118,6 +120,10 @@ def main(args):
                         help="Do not verify the install root")
     optional.add_argument("--sharedir", metavar="SHAREDIR", type=os.path.abspath,
                           help="Directory containing all the templates. Overrides config file sharedir")
+    optional.add_argument("--enablerepo", action="append", default=[], dest="enablerepos",
+                          metavar="[repo]", help="Names of repos to enable")
+    optional.add_argument("--disablerepo", action="append", default=[], dest="disablerepos",
+                          metavar="[repo]", help="Names of repos to disable")
 
     # add the show version option
     parser.add_argument("-V", help="show program's version number and exit",
@@ -127,6 +133,9 @@ def main(args):
 
     # parse the arguments
     opts = parser.parse_args()
+
+    if not opts.source and not opts.repos:
+        parser.error("--source, --repo, or both are required.")
 
     if not opts.force and os.path.exists(opts.outputdir):
         parser.error("output directory %s should not exist." % opts.outputdir)
@@ -155,7 +164,8 @@ def main(args):
     if not os.path.exists(dnftempdir):
         os.mkdir(dnftempdir)
 
-    dnfbase = get_dnf_base_object(installtree, opts.source, opts.mirrorlist,
+    dnfbase = get_dnf_base_object(installtree, opts.source, opts.mirrorlist, opts.repos,
+                                  opts.enablerepos, opts.disablerepos,
                                   dnftempdir, opts.proxy, opts.version, opts.cachedir)
 
     if dnfbase is None:
@@ -199,13 +209,16 @@ def main(args):
               remove_temp=True, verify=opts.verify)
 
 
-def get_dnf_base_object(installroot, repositories, mirrorlists=None,
+def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
+                        enablerepos=None, disablerepos=None,
                         tempdir="/var/tmp", proxy=None, releasever="21",
                         cachedir=None):
     """ Create a dnf Base object and setup the repositories and installroot
 
         :param string installroot: Full path to the installroot
-        :param list repositories: List of repositories to use for the installation
+        :param list sources: List of source repo urls to use for the installation
+        :param list enablerepos: List of repo names to enable
+        :param list disablerepos: List of repo names to disable
         :param list mirrorlist: List of mirrors to use
         :param string tempdir: Path of temporary directory
         :param string proxy: http proxy to use when fetching packages
@@ -227,11 +240,11 @@ def get_dnf_base_object(installroot, repositories, mirrorlists=None,
     mirrorlists = mirrorlists or []
 
     # sanitize the repositories
-    repositories = list(sanitize_repo(r) for r in repositories)
+    sources = list(sanitize_repo(r) for r in sources)
     mirrorlists = list(sanitize_repo(r) for r in mirrorlists)
 
     # remove invalid repositories
-    repositories = list(r for r in repositories if r)
+    sources = list(r for r in sources if r)
     mirrorlists = list(r for r in mirrorlists if r)
 
     if not cachedir:
@@ -262,8 +275,18 @@ def get_dnf_base_object(installroot, repositories, mirrorlists=None,
     if proxy:
         conf.proxy = proxy
 
-    # add the repositories
-    for i, r in enumerate(repositories):
+    # Add .repo files
+    if repos:
+        reposdir = os.path.join(tempdir, "dnf.repos")
+        if not os.path.isdir(reposdir):
+            os.mkdir(reposdir)
+        for r in repos:
+            shutil.copy2(r, reposdir)
+        conf.reposdir = [reposdir]
+        dnfbase.read_all_repos()
+
+    # add the sources
+    for i, r in enumerate(sources):
         if "SRPM" in r or "srpm" in r:
             log.info("Skipping source repo: %s", r)
             continue
@@ -301,6 +324,24 @@ def get_dnf_base_object(installroot, repositories, mirrorlists=None,
         except dnf.exceptions.RepoError as e:
             log.error("Error fetching metadata for %s: %s", repo_name, e)
             return None
+
+    # Enable repos listed on the cmdline
+    for r in enablerepos:
+        repolist = dnfbase.repos.get_matching(r)
+        if not repolist:
+            log.warning("%s is an unknown repo, not enabling it", r)
+        else:
+            repolist.enable()
+            log.info("Enabled repo %s", r)
+
+    # Disable repos listed on the cmdline
+    for r in disablerepos:
+        repolist = dnfbase.repos.get_matching(r)
+        if not repolist:
+            log.warning("%s is an unknown repo, not disabling it", r)
+        else:
+            repolist.disable()
+            log.info("Disabled repo %s", r)
 
     dnfbase.fill_sack(load_system_repo=False)
     dnfbase.read_comps()
