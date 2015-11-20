@@ -843,6 +843,8 @@ def virt_install(opts, install_log, disk_img, disk_size):
         with PartitionMount(diskimg_path) as img_mount:
             if img_mount and img_mount.mount_dir:
                 rc = mktar(img_mount.mount_dir, disk_img, opts.compression, compress_args)
+            else:
+                rc = 1
         os.unlink(diskimg_path)
 
         if rc:
@@ -859,6 +861,8 @@ def virt_install(opts, install_log, disk_img, disk_size):
                 shutil.copy2(opts.oci_config, img_mount.temp_dir)
                 shutil.copy2(opts.oci_runtime, img_mount.temp_dir)
                 rc = mktar(img_mount.temp_dir, disk_img, opts.compression, compress_args)
+            else:
+                rc = 1
         os.unlink(diskimg_path)
 
         if rc:
