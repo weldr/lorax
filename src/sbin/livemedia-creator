@@ -65,7 +65,7 @@ except ImportError:
     libvirt = None
 
 # Default parameters for rebuilding initramfs, override with --dracut-args
-DRACUT_DEFAULT = ["--xz", "--add", "livenet dmsquash-live convertfs pollcdrom",
+DRACUT_DEFAULT = ["--xz", "--add", "livenet dmsquash-live convertfs pollcdrom qemu qemu-net",
                   "--omit", "plymouth", "--no-hostonly", "--debug", "--no-early-microcode"]
 
 ROOT_PATH = "/mnt/sysimage/"

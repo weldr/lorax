@@ -326,7 +326,7 @@ class Lorax(BaseLoraxClass):
 
         logger.info("rebuilding initramfs images")
         dracut_args = ["--xz", "--install", "/.buildstamp", "--no-early-microcode"]
-        anaconda_args = dracut_args + ["--add", "anaconda pollcdrom"]
+        anaconda_args = dracut_args + ["--add", "anaconda pollcdrom qemu qemu-net"]
 
         # ppc64 cannot boot an initrd > 32MiB so remove some drivers
         if self.arch.basearch in ("ppc64", "ppc64le"):
