@@ -1328,6 +1328,10 @@ def main():
             errors.append("Only url and nfs install methods are currently supported. Please "
                           "fix your kickstart file." )
 
+        if ks.handler.method.method in ("url", "nfs") and not ks.handler.network.seen:
+            errors.append("The kickstart must activate networking if "
+                          "the url or nfs install method is used.")
+
         if ks.handler.displaymode.displayMode is not None:
             errors.append("The kickstart must not set a display mode (text, cmdline, "
                           "graphical), this will interfere with livemedia-creator.")
