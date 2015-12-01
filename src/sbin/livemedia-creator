@@ -141,6 +141,7 @@ class VirtualInstall(object):
             args.append(ks)
 
         disk_opts = "path={0}".format(disk_img)
+        disk_opts += ",cache=unsafe"
         if qcow2:
             disk_opts += ",format=qcow2"
         else:
