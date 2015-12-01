@@ -1325,7 +1325,7 @@ def main():
     if not opts.disk_image and not opts.fs_image:
         errors = []
         if opts.no_virt and ks.handler.method.method not in ("url", "nfs"):
-            errors.append("Only url and nfs  install methods are currently supported. Please "
+            errors.append("Only url and nfs install methods are currently supported. Please "
                           "fix your kickstart file." )
 
         if ks.handler.displaymode.displayMode is not None:
