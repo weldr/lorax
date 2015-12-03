@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        24.5
+Version:        24.6
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -133,6 +133,24 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %files lmc-novirt
 
 %changelog
+* Wed Dec 02 2015 Brian C. Lane <bcl@redhat.com> 24.6-1
+- livemedia-creator: Raise an error if url is used without networking
+  (fabiand@fedoraproject.org)
+- livemedia-creator: Fix a small typo (fabiand@fedoraproject.org)
+- livemedia-creator: Use discard during installation
+  (fabiand@fedoraproject.org)
+- livemedia-creator: Use cache=unsafe for the installation disk
+  (fabiand@fedoraproject.org)
+- Remove requires for pocketlint as it is not used in build process
+  (bcl@redhat.com)
+- Include qemu modules in the initrd (bcl@redhat.com)
+- livemedia-creator: Check kickstart for shutdown (#1207959) (bcl@redhat.com)
+- livemedia-creator: Correctly handle not mounting image (bcl@redhat.com)
+- livemedia-creator: Use hd:LABEL for stage2 iso (bcl@redhat.com)
+- Add support for .repo files (#1264058) (bcl@redhat.com)
+- livemedia-creator: Actually pass vcpus to virt-install (bcl@redhat.com)
+- paste is needed by os-prober (#1275105) (bcl@redhat.com)
+
 * Fri Nov 06 2015 Brian C. Lane <bcl@redhat.com> 24.5-1
 - Add --virt-uefi to boot the VM using OVMF (bcl@redhat.com)
 - Enable gtk inspector. (dshea@redhat.com)
