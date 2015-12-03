@@ -1,3 +1,5 @@
+# NOTE: This specfile is generated from upstream at https://github.com/rhinstaller/lorax
+# NOTE: Please submit changes as a pull request
 %define debug_package %{nil}
 
 Name:           lorax
@@ -15,7 +17,6 @@ URL:            https://github.com/rhinstaller/lorax
 Source0:        %{name}-%{version}.tar.gz
 
 BuildRequires:  python3-devel
-BuildRequires:  python3-pocketlint >= 0.5
 
 Requires:       GConf2
 Requires:       cpio
