@@ -141,6 +141,7 @@ class VirtualInstall(object):
             args.append(ks)
 
         disk_opts = "path={0}".format(disk_img)
+        disk_opts += ",cache=unsafe,discard=unmap"
         if qcow2:
             disk_opts += ",format=qcow2"
         else:
@@ -1324,8 +1325,12 @@ def main():
     if not opts.disk_image and not opts.fs_image:
         errors = []
         if opts.no_virt and ks.handler.method.method not in ("url", "nfs"):
-            errors.append("Only url and nfs  install methods are currently supported. Please "
+            errors.append("Only url and nfs install methods are currently supported. Please "
                           "fix your kickstart file." )
+
+        if ks.handler.method.method == "url" and not ks.handler.network.seen:
+            errors.append("The kickstart must activate networking if "
+                          "the url install method is used.")
 
         if ks.handler.displaymode.displayMode is not None:
             errors.append("The kickstart must not set a display mode (text, cmdline, "
