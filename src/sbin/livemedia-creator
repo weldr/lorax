@@ -929,7 +929,9 @@ def make_image(opts, ks):
     """
     # Disk size for a filesystem image should only be the size of /
     # to prevent surprises when using the same kickstart for different installations.
-    if opts.no_virt and (opts.make_iso or opts.make_fsimage):
+    if opts.disk_size:
+        disk_size = 1024 * opts.disk_size
+    elif opts.no_virt and (opts.make_iso or opts.make_fsimage):
         disk_size = 2 + sum(p.size for p in ks.handler.partition.partitions if p.mountpoint == "/")
     else:
         disk_size = 2 + sum(p.size for p in ks.handler.partition.partitions)
@@ -1090,6 +1092,8 @@ def main():
     image_group = parser.add_argument_group("disk/fs image arguments")
     image_group.add_argument("--disk-image", type=os.path.abspath,
                              help="Path to existing disk image to use for creating final image.")
+    image_group.add_argument("--disk-size",
+                             help="Size of the disk image to use, in GiB.")
     image_group.add_argument("--keep-image", action="store_true",
                              help="Keep raw disk image after .iso creation")
     image_group.add_argument("--fs-image", type=os.path.abspath,
