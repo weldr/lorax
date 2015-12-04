@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>livemedia-creator &mdash; Lorax 24.3 documentation</title>
+  <title>livemedia-creator &mdash; Lorax 24.6 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Lorax 24.3 documentation" href="index.html"/>
+    <link rel="top" title="Lorax 24.6 documentation" href="index.html"/>
         <link rel="next" title="Product and Updates Images" href="product-images.html"/>
         <link rel="prev" title="lorax" href="lorax.html"/> 
 
@@ -89,6 +89,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#using-mock-to-create-images">Using Mock to Create Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#openstack-image-creation">OpenStack Image Creation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#docker-image-creation">Docker Image Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#open-container-initiative-image-creation">Open Container Initiative Image Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#vagrant-image-creation">Vagrant Image Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-uefi-disk-images-with-virt">Creating UEFI disk images with virt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#debugging-problems">Debugging problems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#hacking">Hacking</a></li>
 </ul>
@@ -333,6 +336,13 @@ afford to lose all data from.</li>
 the current directory or in the directory used for &#8211;logfile</p>
 <p>Example cmdline:</p>
 <p><tt class="docutils literal"><span class="pre">sudo</span> <span class="pre">livemedia-creator</span> <span class="pre">--make-iso</span> <span class="pre">--no-virt</span> <span class="pre">--ks=./fedora-livemedia.ks</span></tt></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Using no-virt to create a partitioned disk image (eg. &#8211;make-disk or
+&#8211;make-vagrant) will only create disks usable on the host platform (BIOS
+or UEFI). You can create BIOS partitioned disk images on UEFI by using
+virt.</p>
+</div>
 </div>
 <div class="section" id="ami-images">
 <h2>AMI Images<a class="headerlink" href="#ami-images" title="Permalink to this headline">¶</a></h2>
@@ -500,8 +510,7 @@ directory tree will also contain the vmlinuz, initrd, etc.</p>
 <p>OpenStack supports partitioned disk images so <tt class="docutils literal"><span class="pre">--make-disk</span></tt> can be used to
 create images for importing into glance, OpenStack&#8217;s image storage component.
 You need to have access to an OpenStack provider that allows image uploads, or
-setup your own using the instructions from the <cite>RDO Project
-&lt;https://www.rdoproject.org/Quickstart&gt;</cite>.</p>
+setup your own using the instructions from the <a class="reference external" href="https://www.rdoproject.org/Quickstart">RDO Project</a>.</p>
 <p>The example kickstart, fedora-openstack.ks, is only slightly different than the
 fedora-minimal.ks one.  It adds the cloud-init and cloud-utils-growpart
 packages. OpenStack supports setting up the image using cloud-init, and
@@ -530,6 +539,71 @@ fedora-docker.ks example kickstart which removes the requirement for core files 
 <p>And then run bash inside of it:</p>
 <blockquote>
 <div><tt class="docutils literal"><span class="pre">sudo</span> <span class="pre">docker</span> <span class="pre">run</span> <span class="pre">-i</span> <span class="pre">-t</span> <span class="pre">fedora-root</span> <span class="pre">/bin/bash</span></tt></div></blockquote>
+</div>
+<div class="section" id="open-container-initiative-image-creation">
+<h2>Open Container Initiative Image Creation<a class="headerlink" href="#open-container-initiative-image-creation" title="Permalink to this headline">¶</a></h2>
+<p>The OCI is a new specification that is still being worked on. You can read more about it at
+<a class="reference external" href="https://www.opencontainers.org/">the Open Container Initiative website</a>. You can create
+OCI images using the following command:</p>
+<div class="highlight-python"><div class="highlight"><pre>sudo livemedia-creator --make-oci --oci-config /path/to/config.json --oci-runtime /path/to/runtime.json \
+--iso=/path/to/boot.iso --ks=/path/to/fedora-minimal.ks
+</pre></div>
+</div>
+<p>You must provide the config.json and runtime.json files to be included in the bundle,
+their specifications can be found <a class="reference external" href="https://github.com/opencontainers/specs">on the OCI github project</a>
+output will be in the results directory with a default name of bundle.tar.xz</p>
+<p>This will work with <tt class="docutils literal"><span class="pre">--no-virt</span></tt> and inside a mock since it doesn&#8217;t use any
+partitioned disk images.</p>
+</div>
+<div class="section" id="vagrant-image-creation">
+<h2>Vagrant Image Creation<a class="headerlink" href="#vagrant-image-creation" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://www.vagrantup.com/">Vagrant</a> images can be created using the following command:</p>
+<div class="highlight-python"><div class="highlight"><pre>sudo livemedia-creator --make-vagrant --vagrant-metadata /path/to/metadata.json \
+--iso=/path/to/boot.iso --ks=/path/to/fedora-vagrant.ks
+</pre></div>
+</div>
+<p>The image created is a <a class="reference external" href="https://github.com/pradels/vagrant-libvirt">vagrant-libvirt</a> provider image and needs to have
+vagrant setup with libvirt before you can use it.</p>
+<p>The <tt class="docutils literal"><span class="pre">--vagrant-metadata</span></tt> file is optional, it will create a minimal one by
+default, and if one is passed it will make sure the disk size  is setup
+correctly. If you pass a <tt class="docutils literal"><span class="pre">--vagrant-vagrantfile</span></tt> it will be included in the
+image verbatim. By default no vagrantfile is created.</p>
+<p>There is an example Vagrant kickstart file in the docs directory that sets up
+the vagrant user with the default insecure SSH pubkey and a few useful
+utilities.</p>
+<p>This also works with <tt class="docutils literal"><span class="pre">--no-virt</span></tt>, but will not work inside a mock due to its
+use of partitioned disk images and qcow2.</p>
+</div>
+<div class="section" id="creating-uefi-disk-images-with-virt">
+<h2>Creating UEFI disk images with virt<a class="headerlink" href="#creating-uefi-disk-images-with-virt" title="Permalink to this headline">¶</a></h2>
+<p>Partitioned disk images can only be created for the same platform as the host system (BIOS or
+UEFI). You can use virt to create BIOS images on UEFI systems, and it is also possible
+to create UEFI images on BIOS systems using OVMF. You first need to setup your system with
+the OVMF firmware. The details can be <a class="reference external" href="http://www.linux-kvm.org/page/OVMF">found here linux-kvm OVMF page</a>
+but it amounts to:</p>
+<ol class="arabic simple">
+<li>Download the firmware.repo from <a class="reference external" href="https://www.kraxel.org/repos/">Gerd Hoffmann</a> and install it
+in /etc/yum.repos.d/</li>
+<li>Install the edk2.git-ovmf-x64 package</li>
+<li>Copy /usr/share/edk2.git/ovmf-x64/OVMF_CODE-pure-efi.fd to /usr/share/OVMF/OVMF_CODE.fd</li>
+<li>Copy /usr/share/edk2.git/ovmf-x64/OVMF_VARS-pure-efi.fd to /usr/share/OVMF/OVMF_VARS.fd</li>
+</ol>
+<p>Now you can run livemedia-creator with <tt class="docutils literal"><span class="pre">--virt-uefi</span></tt> to boot and install using UEFI:</p>
+<div class="highlight-python"><div class="highlight"><pre>sudo livemedia-creator --make-disk --virt-uefi --iso=/path/to/boot.iso \
+--ks=/path/to/fedora-minimal.ks
+</pre></div>
+</div>
+<p>Make sure that the kickstart you are using creates a /boot/efi partition by including this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">part</span> <span class="o">/</span><span class="n">boot</span><span class="o">/</span><span class="n">efi</span> <span class="o">--</span><span class="n">fstype</span><span class="o">=</span><span class="s">&quot;efi&quot;</span> <span class="o">--</span><span class="n">size</span><span class="o">=</span><span class="mi">500</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">When using the resulting image with the current version of OVMF (edk2.git-ovmf-x64-0-20151103.b1295.ge5cffca)
+it will not boot automatically because there is a problem with the fallback path.
+You can boot it by entering the UEFI shell and running EFI/fedora/shim.efi and
+then using efibootmgr to setup the correct boot entry.</p>
+</div>
 </div>
 <div class="section" id="debugging-problems">
 <h2>Debugging problems<a class="headerlink" href="#debugging-problems" title="Permalink to this headline">¶</a></h2>
@@ -611,7 +685,7 @@ report bugs against the lorax component.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'24.3',
+            VERSION:'24.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

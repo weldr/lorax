@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax package &mdash; Lorax 24.3 documentation</title>
+  <title>pylorax package &mdash; Lorax 24.6 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Lorax 24.3 documentation" href="index.html"/>
+    <link rel="top" title="Lorax 24.6 documentation" href="index.html"/>
         <link rel="up" title="pylorax" href="modules.html"/>
         <link rel="prev" title="pylorax" href="modules.html"/> 
 
@@ -89,6 +89,9 @@
 <li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#using-mock-to-create-images">Using Mock to Create Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#openstack-image-creation">OpenStack Image Creation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#docker-image-creation">Docker Image Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#open-container-initiative-image-creation">Open Container Initiative Image Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#vagrant-image-creation">Vagrant Image Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#creating-uefi-disk-images-with-virt">Creating UEFI disk images with virt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#debugging-problems">Debugging problems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#hacking">Hacking</a></li>
 </ul>
@@ -296,7 +299,7 @@
 
 <dl class="function">
 <dt id="pylorax.executils.execReadlines">
-<tt class="descclassname">pylorax.executils.</tt><tt class="descname">execReadlines</tt><big>(</big><em>command</em>, <em>argv</em>, <em>stdin=None</em>, <em>root='/'</em>, <em>env_prune=None</em>, <em>filter_stderr=False</em>, <em>callback=&lt;function &lt;lambda&gt; at 0x7feb4d341400&gt;</em>, <em>env_add=None</em>, <em>reset_handlers=True</em>, <em>reset_lang=True</em><big>)</big><a class="reference internal" href="_modules/pylorax/executils.html#execReadlines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.executils.execReadlines" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">pylorax.executils.</tt><tt class="descname">execReadlines</tt><big>(</big><em>command</em>, <em>argv</em>, <em>stdin=None</em>, <em>root='/'</em>, <em>env_prune=None</em>, <em>filter_stderr=False</em>, <em>callback=&lt;function &lt;lambda&gt; at 0x7fdc67952d08&gt;</em>, <em>env_add=None</em>, <em>reset_handlers=True</em>, <em>reset_lang=True</em><big>)</big><a class="reference internal" href="_modules/pylorax/executils.html#execReadlines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.executils.execReadlines" title="Permalink to this definition">¶</a></dt>
 <dd><p>Execute an external command and return the line output of the command
 in real-time.</p>
 <p>This method assumes that there is a reasonably low delay between the
@@ -485,7 +488,7 @@ last.</p>
 
 <dl class="class">
 <dt id="pylorax.imgutils.PartitionMount">
-<em class="property">class </em><tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">PartitionMount</tt><big>(</big><em>disk_img</em>, <em>mount_ok=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#PartitionMount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.PartitionMount" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">PartitionMount</tt><big>(</big><em>disk_img</em>, <em>mount_ok=None</em>, <em>submount=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#PartitionMount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.PartitionMount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
 <p>Mount a partitioned image file using kpartx</p>
 </dd></dl>
@@ -635,7 +638,7 @@ in options.</p>
 
 <dl class="function">
 <dt id="pylorax.imgutils.mktar">
-<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">mktar</tt><big>(</big><em>rootdir</em>, <em>outfile</em>, <em>compression='xz'</em>, <em>compressargs=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#mktar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.mktar" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">pylorax.imgutils.</tt><tt class="descname">mktar</tt><big>(</big><em>rootdir</em>, <em>outfile</em>, <em>compression='xz'</em>, <em>compressargs=None</em>, <em>selinux=True</em><big>)</big><a class="reference internal" href="_modules/pylorax/imgutils.html#mktar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.mktar" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -1418,7 +1421,7 @@ image is built with the filename &#8220;${prefix}-${kernel.version}.img&#8221;</
 <dd><p>Bases: <a class="reference internal" href="#pylorax.base.DataHolder" title="pylorax.base.DataHolder"><tt class="xref py py-class docutils literal"><span class="pre">pylorax.base.DataHolder</span></tt></a></p>
 <dl class="attribute">
 <dt id="pylorax.ArchData.bcj_arch">
-<tt class="descname">bcj_arch</tt><em class="property"> = {'ppc64': 'powerpc', 'i386': 'x86', 'ppc': 'powerpc', 'ppc64le': 'powerpc', 'x86_64': 'x86', 'arm': 'arm', 'armhfp': 'arm'}</em><a class="headerlink" href="#pylorax.ArchData.bcj_arch" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">bcj_arch</tt><em class="property"> = {'armhfp': 'arm', 'i386': 'x86', 'arm': 'arm', 'ppc': 'powerpc', 'x86_64': 'x86', 'ppc64': 'powerpc', 'ppc64le': 'powerpc'}</em><a class="headerlink" href="#pylorax.ArchData.bcj_arch" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1517,7 +1520,7 @@ image is built with the filename &#8220;${prefix}-${kernel.version}.img&#8221;</
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'24.3',
+            VERSION:'24.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
