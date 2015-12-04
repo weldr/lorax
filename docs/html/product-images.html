@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Product and Updates Images &mdash; Lorax 24.3 documentation</title>
+  <title>Product and Updates Images &mdash; Lorax 24.6 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Lorax 24.3 documentation" href="index.html"/>
+    <link rel="top" title="Lorax 24.6 documentation" href="index.html"/>
         <link rel="next" title="pylorax" href="modules.html"/>
         <link rel="prev" title="livemedia-creator" href="livemedia-creator.html"/> 
 
@@ -89,6 +89,9 @@
 <li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#using-mock-to-create-images">Using Mock to Create Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#openstack-image-creation">OpenStack Image Creation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#docker-image-creation">Docker Image Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#open-container-initiative-image-creation">Open Container Initiative Image Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#vagrant-image-creation">Vagrant Image Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#creating-uefi-disk-images-with-virt">Creating UEFI disk images with virt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#debugging-problems">Debugging problems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#hacking">Hacking</a></li>
 </ul>
@@ -156,12 +159,15 @@
   <div class="section" id="product-and-updates-images">
 <h1>Product and Updates Images<a class="headerlink" href="#product-and-updates-images" title="Permalink to this headline">¶</a></h1>
 <p>Lorax now supports creation of product.img and updates.img as part of the build
-process. This is implemented using the installimg command which will take the
-contents of a directory and create a compressed archive from it. The x86, ppc,
-ppc64le and aarch64 templates all look for /usr/share/lorax/product/ and
-/usr/share/lorax/updates/ directories while creating the final install tree. If
-there are files in those directories lorax will create images/product.img
-and/or images/updates.img</p>
+process. This is implemented using the installimg template command which will
+take the contents of a directory and create a compressed archive from it. The
+directory must be created by one of the packages installed by
+runtime-install.tmpl or by passing <tt class="docutils literal"><span class="pre">--installpkgs</span> <span class="pre">&lt;pkgname&gt;</span></tt> to lorax at
+runtime.  The x86, ppc, ppc64le and aarch64 templates all look for
+/usr/share/lorax/product/ and /usr/share/lorax/updates/ directories in the
+install chroot while creating the final install tree. If there are files in
+those directories lorax will create images/product.img and/or
+images/updates.img</p>
 <p>These archives are just like an anaconda updates image &#8211; their contents are
 copied over the top of the filesystem at boot time so that you can drop in
 files to add to or replace anything on the filesystem.</p>
@@ -213,7 +219,7 @@ command or the installpkgs paramater of <a class="reference internal" href="pylo
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'24.3',
+            VERSION:'24.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

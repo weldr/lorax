@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.imgutils &mdash; Lorax 24.3 documentation</title>
+  <title>pylorax.imgutils &mdash; Lorax 24.6 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Lorax 24.3 documentation" href="../../index.html"/>
+    <link rel="top" title="Lorax 24.6 documentation" href="../../index.html"/>
         <link rel="up" title="pylorax" href="../pylorax.html"/> 
 
   
@@ -88,6 +88,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#using-mock-to-create-images">Using Mock to Create Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#openstack-image-creation">OpenStack Image Creation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#docker-image-creation">Docker Image Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#open-container-initiative-image-creation">Open Container Initiative Image Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#vagrant-image-creation">Vagrant Image Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#creating-uefi-disk-images-with-virt">Creating UEFI disk images with virt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#debugging-problems">Debugging problems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../livemedia-creator.html#hacking">Hacking</a></li>
 </ul>
@@ -184,6 +187,7 @@
 <span class="kn">import</span> <span class="nn">traceback</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span>
 <span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
 
 <span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="kn">import</span> <span class="n">cpfile</span>
 <span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="kn">import</span> <span class="n">execWithRedirect</span><span class="p">,</span> <span class="n">execWithCapture</span>
@@ -236,10 +240,13 @@
     <span class="k">return</span> <span class="n">compress</span><span class="p">([</span><span class="s">&quot;cpio&quot;</span><span class="p">,</span> <span class="s">&quot;--null&quot;</span><span class="p">,</span> <span class="s">&quot;--quiet&quot;</span><span class="p">,</span> <span class="s">&quot;-H&quot;</span><span class="p">,</span> <span class="s">&quot;newc&quot;</span><span class="p">,</span> <span class="s">&quot;-o&quot;</span><span class="p">],</span>
                     <span class="n">rootdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="mktar"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.mktar">[docs]</a><span class="k">def</span> <span class="nf">mktar</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s">&quot;xz&quot;</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="mktar"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.mktar">[docs]</a><span class="k">def</span> <span class="nf">mktar</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s">&quot;xz&quot;</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">selinux</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
     <span class="n">compressargs</span> <span class="o">=</span> <span class="n">compressargs</span> <span class="ow">or</span> <span class="p">[</span><span class="s">&quot;-9&quot;</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">compress</span><span class="p">([</span><span class="s">&quot;tar&quot;</span><span class="p">,</span> <span class="s">&quot;--no-recursion&quot;</span><span class="p">,</span> <span class="s">&quot;--selinux&quot;</span><span class="p">,</span> <span class="s">&quot;--acls&quot;</span><span class="p">,</span> <span class="s">&quot;--xattrs&quot;</span><span class="p">,</span> <span class="s">&quot;-cf-&quot;</span><span class="p">,</span> <span class="s">&quot;--null&quot;</span><span class="p">,</span> <span class="s">&quot;-T-&quot;</span><span class="p">],</span>
-                    <span class="n">rootdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="p">)</span>
+    <span class="n">tar_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;tar&quot;</span><span class="p">,</span> <span class="s">&quot;--no-recursion&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">selinux</span><span class="p">:</span>
+        <span class="n">tar_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s">&quot;--selinux&quot;</span><span class="p">,</span> <span class="s">&quot;--acls&quot;</span><span class="p">,</span> <span class="s">&quot;--xattrs&quot;</span><span class="p">]</span>
+    <span class="n">tar_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s">&quot;-cf-&quot;</span><span class="p">,</span> <span class="s">&quot;--null&quot;</span><span class="p">,</span> <span class="s">&quot;-T-&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">compress</span><span class="p">(</span><span class="n">tar_cmd</span><span class="p">,</span> <span class="n">rootdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="mksquashfs"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.mksquashfs">[docs]</a><span class="k">def</span> <span class="nf">mksquashfs</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s">&quot;default&quot;</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Make a squashfs image containing the given rootdir.&#39;&#39;&#39;</span>
@@ -462,17 +469,30 @@
 </div>
 <div class="viewcode-block" id="PartitionMount"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.PartitionMount">[docs]</a><span class="k">class</span> <span class="nc">PartitionMount</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Mount a partitioned image file using kpartx &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">mount_ok</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">mount_ok</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">submount</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        disk_img is the full path to a partitioned disk image</span>
-<span class="sd">        mount_ok is a function that is passed the mount point and</span>
-<span class="sd">        returns True if it should be mounted.</span>
+<span class="sd">        :param str disk_img: The full path to a partitioned disk image</span>
+<span class="sd">        :param mount_ok: A function that is passed the mount point and</span>
+<span class="sd">                         returns True if it should be mounted.</span>
+<span class="sd">        :param str submount: Directory inside mount_dir to mount at</span>
+
+<span class="sd">        If mount_ok is not set it will look for /etc/passwd</span>
+
+<span class="sd">        If the partition is found it will be mounted under a temporary</span>
+<span class="sd">        directory and self.temp_dir set to it. If submount is passed it will be</span>
+<span class="sd">        created and mounted there instead, with self.mount_dir set to point to</span>
+<span class="sd">        it. self.mount_dev is set to the loop device, and self.mount_size is</span>
+<span class="sd">        set to the size of the partition.</span>
+
+<span class="sd">        When no subdir is passed self.temp_dir and self.mount_dir will be the same.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mount_dev</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mount_size</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">disk_img</span> <span class="o">=</span> <span class="n">disk_img</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mount_ok</span> <span class="o">=</span> <span class="n">mount_ok</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">submount</span> <span class="o">=</span> <span class="n">submount</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temp_dir</span> <span class="o">=</span> <span class="bp">None</span>
 
         <span class="c"># Default is to mount partition with /etc/passwd</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_ok</span><span class="p">:</span>
@@ -496,7 +516,12 @@
 
     <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c"># Mount the device selected by mount_ok, if possible</span>
-        <span class="n">mount_dir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temp_dir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">submount</span><span class="p">:</span>
+            <span class="n">mount_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">temp_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">submount</span><span class="p">]))</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">mount_dir</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="mi">0</span><span class="n">o755</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mount_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">temp_dir</span>
         <span class="k">for</span> <span class="n">dev</span><span class="p">,</span> <span class="n">size</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loop_devices</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">mount</span><span class="p">(</span> <span class="s">&quot;/dev/mapper/&quot;</span><span class="o">+</span><span class="n">dev</span><span class="p">,</span> <span class="n">mnt</span><span class="o">=</span><span class="n">mount_dir</span> <span class="p">)</span>
@@ -512,14 +537,16 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Partition mounted on </span><span class="si">%s</span><span class="s"> size=</span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_size</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Unable to mount anything from </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">disk_img</span><span class="p">)</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">rmdir</span><span class="p">(</span><span class="n">mount_dir</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">rmdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">temp_dir</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">temp_dir</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">tracebk</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">:</span>
-            <span class="n">umount</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span> <span class="p">)</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">rmdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">temp_dir</span><span class="p">:</span>
+            <span class="n">umount</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">temp_dir</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">temp_dir</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="n">execWithRedirect</span><span class="p">(</span><span class="s">&quot;kpartx&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;-d&quot;</span><span class="p">,</span> <span class="s">&quot;-s&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">disk_img</span><span class="p">])</span>
 
 
@@ -603,7 +630,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'24.3',
+            VERSION:'24.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
