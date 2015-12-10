@@ -6,12 +6,6 @@ BOOTDIR="boot"
 KERNELDIR=PXEBOOTDIR
 LIVEDIR="LiveOS"
 LORAXDIR="usr/share/lorax/"
-
-# different platforms use different kernel load addresses.
-# include a 'baseline' kernel for no 'flavor'.
-kernelAddress = { 'baseline' : '0x00008000',
-                  'lpae'     : '0x00008000',
-                }
 %>
 
 mkdir ${LIVEDIR}
@@ -25,44 +19,12 @@ mkdir ${KERNELDIR}
         installkernel images-${kernel.flavor}-${basearch} ${kernel.path} ${KERNELDIR}/vmlinuz-${kernel.flavor}
         installinitrd images-${kernel.flavor}-${basearch} ${kernel.initrd.path} ${KERNELDIR}/initrd-${kernel.flavor}.img
 
-        # create U-Boot wrapped images
-
-        runcmd mkimage \
-             -A arm -O linux -T ramdisk -C none \
-             -a 0 -e 0 \
-             -n "${product.name} ${product.version} ${kernel.flavor} ${kernel.arch}" \
-             -d ${outroot}/${KERNELDIR}/initrd-${kernel.flavor}.img \
-                ${outroot}/${KERNELDIR}/uInitrd-${kernel.flavor}
-
-        runcmd mkimage \
-             -A arm -O linux -T kernel -C none \
-             -a ${kernelAddress[kernel.flavor]} -e ${kernelAddress[kernel.flavor]} \
-             -n "${product.name} ${product.version} ${kernel.flavor} ${kernel.arch}" \
-             -d ${outroot}/${KERNELDIR}/vmlinuz-${kernel.flavor} \
-                ${outroot}/${KERNELDIR}/uImage-${kernel.flavor}
-
         treeinfo images-${kernel.flavor}-${basearch} uimage ${KERNELDIR}/uImage-${kernel.flavor}
         treeinfo images-${kernel.flavor}-${basearch} uinitrd ${KERNELDIR}/uInitrd-${kernel.flavor}
 
     %else:
         installkernel images-${basearch} ${kernel.path} ${KERNELDIR}/vmlinuz
         installinitrd images-${basearch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
-
-        # create U-Boot wrapped images
-
-        runcmd mkimage \
-             -A arm -O linux -T ramdisk -C none \
-             -a 0 -e 0 \
-             -n "${product.name} ${product.version} ${kernel.arch}" \
-             -d ${outroot}/${KERNELDIR}/initrd.img \
-                ${outroot}/${KERNELDIR}/uInitrd
-
-        runcmd mkimage \
-             -A arm -O linux -T kernel -C none \
-             -a ${kernelAddress['baseline']} -e ${kernelAddress['baseline']} \
-             -n "${product.name} ${product.version} ${kernel.arch}" \
-             -d ${outroot}/${KERNELDIR}/vmlinuz \
-                ${outroot}/${KERNELDIR}/uImage
 
         treeinfo images-${basearch} uimage ${KERNELDIR}/uImage
         treeinfo images-${basearch} uinitrd ${KERNELDIR}/uInitrd
