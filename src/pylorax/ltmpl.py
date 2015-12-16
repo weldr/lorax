@@ -178,6 +178,38 @@ class LoraxTemplateRunner(object):
     def _getsize(self, *files):
         return sum(os.path.getsize(self._out(f)) for f in files if os.path.isfile(self._out(f)))
 
+    def _write_debuginfo_log(self):
+        """
+        Write a list of debuginfo packages to /root/debug-pkgs.log
+
+        If lorax is called with a debug repo find the corresponding debuginfo package
+        names and write them to /root/debubg-pkgs.log on the boot.iso
+        """
+        # If any of the repos are debug repos then find the debuginfo packages
+        # and write their NVR's to a logfile for later use.
+        for repo in self.dbo.repos:
+            repo = self.dbo.repos[repo]
+            if any(True for url in repo.baseurl if "debug" in url):
+                break
+            if repo.metalink and "debug" in repo.metalink:
+                break
+            if repo.mirrorlist and "debug" in repo.mirrorlist:
+                break
+        else:
+            return
+
+        available = self.dbo.sack.query().available()
+        debug_pkgs = []
+        for p in list(self.dbo.transaction.install_set):
+            if available.filter(name=p.name+"-debuginfo"):
+                debug_pkgs += ["{0.name}-debuginfo-{0.epoch}:{0.version}-{0.release}".format(p)]
+
+        os.makedirs(self._out("root/"), exist_ok=True)
+        with open(self._out("root/debug-pkgs.log"), "w") as f:
+            for pkg in debug_pkgs:
+                f.write("%s\n" % pkg)
+
+
     def run(self, templatefile, **variables):
         for k,v in list(self.defaults.items()) + list(self.builtins.items()):
             variables.setdefault(k,v)
@@ -513,6 +545,9 @@ class LoraxTemplateRunner(object):
         logger.info("%d packages selected", len(self.dbo.transaction))
         if len(self.dbo.transaction) == 0:
             raise Exception("No packages in transaction")
+
+        # If a debug repo has been included, write out a list of debuginfo packages
+        self._write_debuginfo_log()
 
         pkgs_to_download = self.dbo.transaction.install_set
         logger.info("Downloading packages")
