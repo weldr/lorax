@@ -15,13 +15,6 @@ class LoraxLintConfig(PocketLintConfig):
                               ]
 
     @property
-    def disabledOptions(self):
-        return [ "I0011",           # Locally disabling %s
-                 "W0511",           # FIXME/TODO/XXX
-                 "W0141",           # Used builtin function %s
-               ]
-
-    @property
     def pylintPlugins(self):
         retval = super(LoraxLintConfig, self).pylintPlugins
         # Not using threads so we can skip these

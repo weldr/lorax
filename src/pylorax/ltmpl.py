@@ -185,8 +185,6 @@ class LoraxTemplateRunner(object):
         If lorax is called with a debug repo find the corresponding debuginfo package
         names and write them to /root/debubg-pkgs.log on the boot.iso
         """
-        # If any of the repos are debug repos then find the debuginfo packages
-        # and write their NVR's to a logfile for later use.
         for repo in self.dbo.repos:
             repo = self.dbo.repos[repo]
             if any(True for url in repo.baseurl if "debug" in url):
@@ -196,6 +194,7 @@ class LoraxTemplateRunner(object):
             if repo.mirrorlist and "debug" in repo.mirrorlist:
                 break
         else:
+            # No debug repos
             return
 
         available = self.dbo.sack.query().available()

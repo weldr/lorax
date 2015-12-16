@@ -532,7 +532,7 @@ def make_livecd(opts, mount_dir, work_dir):
     isolabel = opts.volid or "{0.name}-{0.version}-{1.basearch}".format(product, arch)
     if len(isolabel) > 32:
         isolabel = isolabel[:32]
-        log.warn("Truncating isolabel to 32 chars: %s", isolabel)
+        log.warning("Truncating isolabel to 32 chars: %s", isolabel)
 
     tb = TreeBuilder(product=product, arch=arch, domacboot=opts.domacboot,
                      inroot=mount_dir, outroot=work_dir,

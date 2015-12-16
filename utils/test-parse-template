@@ -34,8 +34,8 @@ data.basearch = data.arch.basearch
 data.libdir = data.arch.libdir
 
 def get_args(template):
-    argspec = inspect.getargspec(template.module.render_body)
-    return set(argspec.args[1:]) # skip "context"
+    sig = inspect.signature(template.module.render_body)
+    return set(list(sig.parameters)[1:]) # skip "context"
 
 def readtemplate(filename):
     parser = LoraxTemplate(directories=['.'])
