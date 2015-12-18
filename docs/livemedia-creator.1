@@ -9,7 +9,7 @@ livemedia-creator [-h]
     [--fs-image FS_IMAGE] [--ks KS]
     [--image-name IMAGE_NAME] [--image-only]
     [--fs-label FS_LABEL]
-    [--qcow2] [--qcow2-arg QCOW2_ARGS]
+    [--image-type IMAGE_TYPE] [--qemu-arg QEMU_ARGS]
     [--compression] [--compress-arg]
     [--live-rootfs-size LIVE_ROOTFS_SIZE]
     [--live-rootfs-keep-size LIVE_ROOTFS_KEEP_SIZE]
@@ -94,11 +94,11 @@ Path to disk image to use for creating final image
 Path to existing filesystem image to use for creating final image.
 
 .TP
-\fB\-\-qcow2\fR
-Create qcow2 image instead of raw sparse image when making disk images.
+\fB\-\-image-type IMAGE_TYPE\fR
+Create a qemu-img image instead of raw sparse image when making disk images. See qemu-img --help for a list of supported types.
 
 .TP
-\fB\-\-qcow2\-arg\fR
+\fB\-\-qemu\-arg\fR
 Arguments to pass to qemu-img. Pass once for each argument
 
 .TP
