@@ -133,6 +133,15 @@ def mkqcow2(outfile, size, options=None):
        Default format is qcow2, override by passing "-f", fmt
        in options.
     '''
+    mkqemu_img(outfile, size, options)
+
+def mkqemu_img(outfile, size, options=None):
+    '''use qemu-img to create a file of the given size.
+       options is a list of options passed to qemu-img
+
+       Default format is qcow2, override by passing "-f", fmt
+       in options.
+    '''
     options = options or []
     if "-f" not in options:
         options.extend(["-f", "qcow2"])
