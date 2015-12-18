@@ -287,10 +287,10 @@ The created image can be imported into libvirt using:
 
     ``virt-image appliance.xml``
 
-You can also create qcow2 appliance images using ``--qcow2``, for example::
+You can also create qcow2 appliance images using ``--image-type=qcow2``, for example::
 
     sudo livemedia-creator --make-appliance --iso=/path/to/boot.iso --ks=./docs/fedora-minimal.ks \
-    --qcow2 --app-file=minimal-test.xml --image-name=minimal-test.img
+    --image-type=qcow2 --app-file=minimal-test.xml --image-name=minimal-test.img
 
 
 Filesystem Image Creation
@@ -414,10 +414,10 @@ cloud-utils-growpart will grow the image to fit the instance's disk size.
 
 Create a qcow2 image using the kickstart like this:
 
-    ``sudo livemedia-creator --make-disk --iso=/path/to/boot.iso --ks=/path/to/fedora-openstack.ks --qcow2``
+    ``sudo livemedia-creator --make-disk --iso=/path/to/boot.iso --ks=/path/to/fedora-openstack.ks --image-type=qcow2``
 
 .. note::
-    On the RHEL7 version of lmc ``--qcow2`` isn't supported. You can only create a bare partitioned disk image.
+    On the RHEL7 version of lmc ``--image-type`` isn't supported. You can only create a bare partitioned disk image.
 
 Import the resulting disk image into the OpenStack system, either via the web UI, or glance on the cmdline::
 
