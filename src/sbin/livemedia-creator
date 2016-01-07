@@ -1052,6 +1052,9 @@ def main():
 
     parser.add_argument("--iso", type=os.path.abspath,
                         help="Anaconda installation .iso path to use for virt-install")
+    parser.add_argument("--iso-only", action="store_true",
+                        help="Remove all iso creation artifacts except the boot.iso, "
+                             "combine with --image-name to rename the boot.iso")
     parser.add_argument("--ks", action="append", type=os.path.abspath,
                         help="Kickstart file defining the install.")
     parser.add_argument("--image-only", action="store_true",
@@ -1074,7 +1077,8 @@ def main():
 
     parser.add_argument("--logfile", default="./livemedia.log",
                         type=os.path.abspath,
-                        help="Path to logfile")
+                        help="Name and path for primary logfile, other logs will "
+                             "be created in the same directory.")
     parser.add_argument("--lorax-templates", default="/usr/share/lorax/",
                         type=os.path.abspath,
                         help="Path to mako templates for lorax")
@@ -1205,6 +1209,10 @@ def main():
         errors.append("The results_dir (%s) should not exist, please delete or "
                       "move its contents" % opts.result_dir)
 
+    # Default to putting results under tmp
+    if not opts.result_dir:
+        opts.result_dir = opts.tmp
+
     if opts.iso and not os.path.exists(opts.iso):
         errors.append("The iso %s is missing." % opts.iso)
 
@@ -1285,10 +1293,7 @@ def main():
         list(log.error(e) for e in errors)
         sys.exit(1)
 
-    # Default to putting results under tmp
-    if not opts.result_dir:
-        opts.result_dir = opts.tmp
-    else:
+    if not os.path.exists(opts.result_dir):
         os.makedirs(opts.result_dir)
 
     # AMI image is just a fsimage with an AMI label
@@ -1390,6 +1395,18 @@ def main():
                         make_runtime(opts, img_mount.mount_dir, work_dir)
                         result_dir = make_livecd(opts, img_mount.mount_dir, work_dir)
 
+            # --iso-only removes the extra build artifacts, keeping only the boot.iso
+            if opts.iso_only and result_dir:
+                boot_iso = joinpaths(result_dir, "images/boot.iso")
+                if not os.path.exists(boot_iso):
+                    log.error("%s is missing, skipping --iso-only.", boot_iso)
+                else:
+                    iso_dir = tempfile.mkdtemp(prefix="lmc-result-")
+                    dest_file = joinpaths(iso_dir, opts.image_name or "boot.iso")
+                    shutil.move(boot_iso, dest_file)
+                    shutil.rmtree(result_dir)
+                    result_dir = iso_dir
+
             # cleanup the mess
             # cleanup work_dir?
             if disk_img and not (opts.keep_image or opts.disk_image or opts.fs_image):
@@ -1435,8 +1452,9 @@ def main():
                                 umount(mounted_sysroot_boot_dir)
 
         if opts.result_dir != opts.tmp and result_dir:
-            copytree(result_dir, opts.result_dir)
+            copytree(result_dir, opts.result_dir, preserve=False)
             shutil.rmtree(result_dir)
+            result_dir = None
 
     log.info("SUMMARY")
     log.info("-------")
@@ -1445,7 +1463,7 @@ def main():
         log.info("Disk image is at %s", disk_img)
     if opts.make_appliance:
         log.info("Appliance description is in %s", opts.app_file)
-    log.info("Results are in %s", opts.result_dir)
+    log.info("Results are in %s", result_dir or opts.result_dir)
 
     sys.exit( 0 )
 

@@ -101,6 +101,12 @@ Currently the standard lorax templates are used to make a bootable iso, but
 it should be possible to modify them to output other results. They are
 written using the Mako template system which is very flexible.
 
+.. note::
+    The output from --make-iso includes the artifacts used to create the boot.iso;
+    the kernel, initrd, the squashfs filesystem, etc. If you only want the
+    boot.iso you can pass ``--iso-only`` and the other files will be removed. You
+    can also name the iso by using ``--image-name my-live.iso``.
+
 
 Kickstarts
 ----------

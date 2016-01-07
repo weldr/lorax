@@ -5,7 +5,7 @@ livemedia-creator \- Create live install media
 .SH SYNOPSIS
 livemedia-creator [-h]
     (--make-iso | --make-disk | --make-fsimage | --make-appliance | --make-ami | --make-tar | --make-pxe-live | --make-ostree-live)
-    [--iso ISO] [--disk-image DISK_IMAGE]
+    [--iso ISO] [--iso-only] [--disk-image DISK_IMAGE]
     [--fs-image FS_IMAGE] [--ks KS]
     [--image-name IMAGE_NAME] [--image-only]
     [--fs-label FS_LABEL]
@@ -84,6 +84,10 @@ Build a live pxe boot squashfs image of Atomic Host
 .TP
 \fB\-\-iso ISO\fR
 Anaconda installation .iso path to use for virt-install
+
+.TP
+\fB\-\-iso-only\fR
+Remove all iso creation artifacts except the boot.iso, combine with --image-name to rename the boot.iso
 
 .TP
 \fB\-\-disk\-image DISK_IMAGE\fR
