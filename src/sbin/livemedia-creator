@@ -563,7 +563,7 @@ def mount_boot_part_over_root(img_mount):
     """
     root_dir = img_mount.mount_dir
     is_boot_part = lambda dir: os.path.exists(dir+"/loader.0")
-    tmp_mount_dir = tempfile.mkdtemp()
+    tmp_mount_dir = tempfile.mkdtemp(prefix="lmc-tmpdir-")
     sys_root = find_ostree_root(root_dir)
     sysroot_boot_dir = None
     for dev, _size in img_mount.loop_devices:
@@ -723,7 +723,7 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
         # convert the image to the selected format
         if "-O" not in qemu_args:
             qemu_args.extend(["-O", opts.image_type])
-        qemu_img = tempfile.mktemp(prefix="disk", suffix=".img")
+        qemu_img = tempfile.mktemp(prefix="lmc-disk-", suffix=".img")
         execWithRedirect("qemu-img", ["convert"] + qemu_args + [disk_img, qemu_img], raise_err=True)
         if not opts.make_vagrant:
             execWithRedirect("mv", ["-f", qemu_img, disk_img], raise_err=True)
@@ -733,7 +733,7 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
             for arg in opts.compress_args:
                 compress_args += arg.split(" ", 1)
 
-            vagrant_dir = tempfile.mkdtemp()
+            vagrant_dir = tempfile.mkdtemp(prefix="lmc-tmpdir-")
             metadata_path = joinpaths(vagrant_dir, "metadata.json")
             execWithRedirect("mv", ["-f", qemu_img, joinpaths(vagrant_dir, "box.img")], raise_err=True)
             if opts.vagrant_metadata:
@@ -807,7 +807,7 @@ def virt_install(opts, install_log, disk_img, disk_size):
         mkqemu_img(disk_img, disk_size*1024**2, qemu_args)
 
     if opts.make_fsimage or opts.make_tar or opts.make_oci:
-        diskimg_path = tempfile.mktemp(prefix="disk", suffix=".img")
+        diskimg_path = tempfile.mktemp(prefix="lmc-disk-", suffix=".img")
     else:
         diskimg_path = disk_img
 
@@ -876,7 +876,7 @@ def virt_install(opts, install_log, disk_img, disk_size):
         for arg in opts.compress_args:
             compress_args += arg.split(" ", 1)
 
-        vagrant_dir = tempfile.mkdtemp()
+        vagrant_dir = tempfile.mkdtemp(prefix="lmc-tmpdir-")
         metadata_path = joinpaths(vagrant_dir, "metadata.json")
         execWithRedirect("mv", ["-f", disk_img, joinpaths(vagrant_dir, "box.img")], raise_err=True)
         if opts.vagrant_metadata:
@@ -941,7 +941,7 @@ def make_image(opts, ks):
     if opts.image_name:
         disk_img = joinpaths(opts.result_dir, opts.image_name)
     else:
-        disk_img = tempfile.mktemp(prefix="disk", suffix=".img", dir=opts.result_dir)
+        disk_img = tempfile.mktemp(prefix="lmc-disk-", suffix=".img", dir=opts.result_dir)
     log.info("disk_img = %s", disk_img)
 
     try:
@@ -1377,7 +1377,7 @@ def main():
     if not opts.image_only:
         result_dir = None
         if opts.make_iso:
-            work_dir = tempfile.mkdtemp()
+            work_dir = tempfile.mkdtemp(prefix="lmc-work-")
             log.info("working dir is %s", work_dir)
 
             if (opts.fs_image or opts.no_virt) and not opts.disk_image:
@@ -1422,7 +1422,7 @@ def main():
                            opts.app_template, opts.app_file, networks, opts.ram,
                            opts.vcpus or 1, opts.arch, opts.title, opts.project, opts.releasever)
         elif opts.make_pxe_live:
-            work_dir = tempfile.mkdtemp()
+            work_dir = tempfile.mkdtemp(prefix="lmc-work-")
             log.info("working dir is %s", work_dir)
 
             if opts.fs_image and not opts.disk_image:
