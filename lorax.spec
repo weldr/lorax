@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        24.6
+Version:        24.7
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -134,6 +134,24 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %files lmc-novirt
 
 %changelog
+* Fri Jan 08 2016 Brian C. Lane <bcl@redhat.com> 24.7-1
+- Add kpartx to Requires (bcl@redhat.com)
+- Prefix temporary files and directories with lmc- (bcl@redhat.com)
+- Add --iso-only option to --make-iso (bcl@redhat.com)
+- livemedia-creator: Fix calculation of disk_size in some cases
+  (logans@cottsay.net)
+- docs: Update documentation for livemedia-creator (bcl@redhat.com)
+- livemedia-creator: Add --image-type and --qemu-args options (bcl@redhat.com)
+- pylorax: Add mkqemu_img function, alias mkqcow2 to it. (bcl@redhat.com)
+- Update things to make pylint 1.5.1 happy (bcl@redhat.com)
+- Write a list of debuginfo packages to /root/debug-pkgs.log (#1068675)
+  (bcl@redhat.com)
+- Also remove uboot from live arm.tmpl (bcl@redhat.com)
+- no longer make u-boot wrapped kernels (dennis@ausil.us)
+- Fix chronyd not working in the installation (#1288905) (jkonecny@redhat.com)
+- Update Lorax documentation - 24.6 (bcl@redhat.com)
+- Update docs for product.img (bcl@redhat.com)
+
 * Wed Dec 02 2015 Brian C. Lane <bcl@redhat.com> 24.6-1
 - livemedia-creator: Raise an error if url is used without networking
   (fabiand@fedoraproject.org)
