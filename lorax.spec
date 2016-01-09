@@ -38,6 +38,7 @@ Requires:       util-linux
 Requires:       xz
 Requires:       pigz
 Requires:       dracut >= 030
+Requires:       kpartx
 
 # Python modules
 Requires:       libselinux-python3
