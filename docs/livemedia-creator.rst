@@ -105,7 +105,7 @@ written using the Mako template system which is very flexible.
     The output from --make-iso includes the artifacts used to create the boot.iso;
     the kernel, initrd, the squashfs filesystem, etc. If you only want the
     boot.iso you can pass ``--iso-only`` and the other files will be removed. You
-    can also name the iso by using ``--image-name my-live.iso``.
+    can also name the iso by using ``--iso-name my-live.iso``.
 
 
 Kickstarts

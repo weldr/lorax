@@ -1054,7 +1054,9 @@ def main():
                         help="Anaconda installation .iso path to use for virt-install")
     parser.add_argument("--iso-only", action="store_true",
                         help="Remove all iso creation artifacts except the boot.iso, "
-                             "combine with --image-name to rename the boot.iso")
+                             "combine with --iso-name to rename the boot.iso")
+    parser.add_argument("--iso-name", default=None,
+                        help="Name of output iso file for --iso-only. Default is boot.iso")
     parser.add_argument("--ks", action="append", type=os.path.abspath,
                         help="Kickstart file defining the install.")
     parser.add_argument("--image-only", action="store_true",
@@ -1402,7 +1404,7 @@ def main():
                     log.error("%s is missing, skipping --iso-only.", boot_iso)
                 else:
                     iso_dir = tempfile.mkdtemp(prefix="lmc-result-")
-                    dest_file = joinpaths(iso_dir, opts.image_name or "boot.iso")
+                    dest_file = joinpaths(iso_dir, opts.iso_name or "boot.iso")
                     shutil.move(boot_iso, dest_file)
                     shutil.rmtree(result_dir)
                     result_dir = iso_dir
