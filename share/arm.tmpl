@@ -30,17 +30,9 @@ mkdir ${KERNELDIR}
         platforms = platforms + delimiter + kernel.flavor
         delimiter = ','
 %>
-
-        treeinfo images-${kernel.flavor}-${basearch} uimage ${KERNELDIR}/uImage-${kernel.flavor}
-        treeinfo images-${kernel.flavor}-${basearch} uinitrd ${KERNELDIR}/uInitrd-${kernel.flavor}
-
     %else:
         installkernel images-${basearch} ${kernel.path} ${KERNELDIR}/vmlinuz
         installinitrd images-${basearch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
-
-        treeinfo images-${basearch} uimage ${KERNELDIR}/uImage
-        treeinfo images-${basearch} uinitrd ${KERNELDIR}/uInitrd
-
     %endif
 %endfor
 
