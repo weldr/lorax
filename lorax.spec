@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        24.7
+Version:        24.8
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -134,6 +134,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %files lmc-novirt
 
 %changelog
+* Tue Jan 12 2016 Brian C. Lane <bcl@redhat.com> 24.8-1
+- Make arm .treeinfo match reality (dennis@ausil.us)
+- Add --iso-name to use with --iso-only (bcl@redhat.com)
+
 * Fri Jan 08 2016 Brian C. Lane <bcl@redhat.com> 24.7-1
 - Add kpartx to Requires (bcl@redhat.com)
 - Prefix temporary files and directories with lmc- (bcl@redhat.com)
