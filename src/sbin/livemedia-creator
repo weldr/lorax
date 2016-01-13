@@ -893,7 +893,7 @@ def virt_install(opts, install_log, disk_img, disk_size):
         shutil.rmtree(vagrant_dir)
 
 
-def make_squashfs(disk_img, work_dir, compression="xz"):
+def make_squashfs(disk_img, work_dir, compression="xz", compressargs=None):
     """
     Create a squashfs image of an unpartitioned filesystem disk image
 
@@ -904,6 +904,11 @@ def make_squashfs(disk_img, work_dir, compression="xz"):
     Take disk_img and put it into LiveOS/rootfs.img and squashfs this
     tree into work_dir+images/install.img
     """
+    # Make sure free blocks are actually zeroed so it will compress
+    rc = execWithRedirect("/usr/sbin/fsck.ext4", ["-y", "-f", "-E", "discard", disk_img])
+    if rc != 0:
+        log.warning("Problem zeroing free blocks of %s", disk_img)
+
     liveos_dir = joinpaths(work_dir, "runtime/LiveOS")
     os.makedirs(liveos_dir)
     os.makedirs(os.path.dirname(joinpaths(work_dir, RUNTIME)))
@@ -913,7 +918,7 @@ def make_squashfs(disk_img, work_dir, compression="xz"):
         shutil.copy2(disk_img, joinpaths(liveos_dir, "rootfs.img"))
 
     mksquashfs(joinpaths(work_dir, "runtime"),
-               joinpaths(work_dir, RUNTIME), compression)
+               joinpaths(work_dir, RUNTIME), compression, compressargs)
     remove(joinpaths(work_dir, "runtime"))
 
 
@@ -995,6 +1000,11 @@ def make_live_images(opts, work_dir, root_dir, rootfs_image=None, size=None):
     os.makedirs(liveos_dir)
 
     if rootfs_image:
+        # Make sure free blocks are actually zeroed so it will compress
+        rc = execWithRedirect("/usr/sbin/fsck.ext4", ["-y", "-f", "-E", "discard", rootfs_image])
+        if rc != 0:
+            log.warning("Problem zeroing free blocks of %s", rootfs_image)
+
         rc = execWithRedirect("/bin/ln", [rootfs_image, joinpaths(liveos_dir, "rootfs.img")])
         if rc != 0:
             shutil.copy2(rootfs_image, joinpaths(liveos_dir, "rootfs.img"))
@@ -1386,7 +1396,15 @@ def main():
                 # Create iso from a filesystem image
                 disk_img = opts.fs_image or disk_img
 
-                make_squashfs(disk_img, work_dir)
+                compression = opts.compression or "xz"
+                if not opts.compress_args:
+                    arch = ArchData(opts.arch or os.uname().machine)
+                    if arch.bcj:
+                        compressargs = ["-Xbcj", arch.bcj]
+                    else:
+                        log.info("no BCJ filter for arch %s", arch.basearch)
+
+                make_squashfs(disk_img, work_dir, compression, compressargs)
                 with Mount(disk_img, opts="loop") as mount_dir:
                     result_dir = make_livecd(opts, mount_dir, work_dir)
             else:

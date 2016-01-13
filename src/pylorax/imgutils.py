@@ -437,7 +437,7 @@ def mkdosimg(rootdir, outfile, size=None, label="", mountargs="shortname=winnt,u
 def mkext4img(rootdir, outfile, size=None, label="", mountargs="", graft=None):
     graft = graft or {}
     mkfsimage("ext4", rootdir, outfile, size, mountargs=mountargs,
-              mkfsargs=["-L", label, "-b", "1024", "-m", "0"], graft=graft)
+              mkfsargs=["-L", label, "-b", "4096", "-m", "0"], graft=graft)
 
 def mkbtrfsimg(rootdir, outfile, size=None, label="", mountargs="", graft=None):
     graft = graft or {}
