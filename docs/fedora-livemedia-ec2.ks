@@ -36,6 +36,9 @@ pciutils
 bash
 coreutils
 kernel
+# Make sure that DNF doesn't pull in debug kernel to satisfy kmod() requires
+kernel-modules
+kernel-modules-extra
 
 e2fsprogs
 passwd

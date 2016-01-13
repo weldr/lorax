@@ -392,6 +392,10 @@ aajohan-comfortaa-fonts
 anaconda
 fedora-productimg-workstation
 kernel
+# Make sure that DNF doesn't pull in debug kernel to satisfy kmod() requires
+kernel-modules
+kernel-modules-extra
+
 memtest86+
 -@dial-up
 -@input-methods
