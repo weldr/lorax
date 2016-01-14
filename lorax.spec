@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        24.8
+Version:        24.9
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -134,6 +134,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %files lmc-novirt
 
 %changelog
+* Wed Jan 13 2016 Brian C. Lane <bcl@redhat.com> 24.9-1
+- livemedia-creator: Add kernel-modules and kernel-modules-extra to examples
+  (bcl@redhat.com)
+- livemedia-creator: Make sure the rootfs.img can be compressed
+  (bcl@redhat.com)
+
 * Tue Jan 12 2016 Brian C. Lane <bcl@redhat.com> 24.8-1
 - Make arm .treeinfo match reality (dennis@ausil.us)
 - Add --iso-name to use with --iso-only (bcl@redhat.com)
