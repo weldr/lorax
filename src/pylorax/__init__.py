@@ -34,6 +34,7 @@ import tempfile
 import locale
 from subprocess import CalledProcessError
 import selinux
+from glob import glob
 
 from pylorax.base import BaseLoraxClass, DataHolder
 import pylorax.output as output
@@ -77,6 +78,7 @@ class Lorax(BaseLoraxClass):
         self.inroot = None
         self.debug = False
         self.outputdir = None
+        self._templatedir = None
 
         # set locale to C
         locale.setlocale(locale.LC_ALL, 'C')
@@ -137,6 +139,24 @@ class Lorax(BaseLoraxClass):
         list(os.environ.pop(k) for k in env_remove if k in os.environ)
 
         self._configured = True
+
+    @property
+    def templatedir(self):
+        """Find the template directory.
+
+        Pick the first directory under sharedir/templates.d/ if it exists.
+        Otherwise use the sharedir
+        """
+        if not self._templatedir:
+            templatedir = self.conf.get("lorax", "sharedir")
+            if os.path.isdir(joinpaths(templatedir, "templates.d")):
+                try:
+                    templatedir = sorted(glob(joinpaths(templatedir, "templates.d", "*")))[0]
+                except IndexError:
+                    pass
+            logger.info("Using templatedir %s", templatedir)
+            self._templatedir = templatedir
+        return self._templatedir
 
     def init_stream_logging(self):
         sh = logging.StreamHandler()
@@ -252,10 +272,9 @@ class Lorax(BaseLoraxClass):
             logger.fatal("the volume id cannot be longer than 32 characters")
             sys.exit(1)
 
-        templatedir = self.conf.get("lorax", "sharedir")
         # NOTE: rb.root = dbo.conf.installroot (== self.inroot)
         rb = RuntimeBuilder(product=self.product, arch=self.arch,
-                            dbo=dbo, templatedir=templatedir,
+                            dbo=dbo, templatedir=self.templatedir,
                             installpkgs=installpkgs,
                             add_templates=add_templates,
                             add_template_vars=add_template_vars)
@@ -319,7 +338,7 @@ class Lorax(BaseLoraxClass):
                                   inroot=installroot, outroot=self.outputdir,
                                   runtime=runtime, isolabel=isolabel,
                                   domacboot=domacboot, doupgrade=doupgrade,
-                                  templatedir=templatedir,
+                                  templatedir=self.templatedir,
                                   add_templates=add_arch_templates,
                                   add_template_vars=add_arch_template_vars,
                                   workdir=self.workdir)
