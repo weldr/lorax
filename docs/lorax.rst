@@ -49,8 +49,10 @@ To drive these processes Lorax uses a custom template system, based on `Mako
 templates <http://www.makotemplates.org/>`_ with the addition of custom
 commands (documented in :class:`pylorax.ltmpl.LoraxTemplateRunner`). Mako
 supports ``%if/%endif`` blocks as well as free-form python code inside ``<%
-%>`` tags and variable substitution with ``${}``. The templates are shipped
-with lorax in /usr/share/lorax/ and use the ``.tmpl`` extension.
+%>`` tags and variable substitution with ``${}``. The default templates are
+shipped with lorax in ``/usr/share/lorax/templates.d/99-generic/`` and use the
+``.tmpl`` extension.
+
 
 runtime-install.tmpl
 ~~~~~~~~~~~~~~~~~~~~
@@ -114,10 +116,21 @@ iso creation
 
 The iso creation is handled by another set of templates. The one used depends
 on the architecture that the iso is being created for. They are also stored in
-``/usr/share/lorax/`` and are named after the arch, like ``x86.tmpl`` and
-``aarch64.tmpl``. They handle creation of the tree, copying configuration
-template files, configuration variable substitution, treeinfo metadata (via the
-:func:`treeinfo <pylorax.ltmpl.LoraxTemplateRunner.treeinfo>` template
-command). Kernel and initrd are copied from the installroot to their final
-locations and then mkisofs is run to create the boot.iso
+``/usr/share/lorax/templates.d/99-generic`` and are named after the arch, like
+``x86.tmpl`` and ``aarch64.tmpl``. They handle creation of the tree, copying
+configuration template files, configuration variable substitution, treeinfo
+metadata (via the :func:`treeinfo <pylorax.ltmpl.LoraxTemplateRunner.treeinfo>`
+template command). Kernel and initrd are copied from the installroot to their
+final locations and then mkisofs is run to create the boot.iso
+
+
+Custom Templates
+----------------
+
+The default set of templates and configuration files from the lorax-generic-templates package
+are shipped in the ``/usr/share/lorax/templates.d/99-generic/`` directory. You can
+make a copy of them and place them into another directory under ``templates.d``
+and they will be used instead if their sort order is below all other directories. This
+allows multiple packages to ship lorax templates without conflict. You can (and probably
+should) select the specific template directory by passing ``--sharedir`` to lorax.
 

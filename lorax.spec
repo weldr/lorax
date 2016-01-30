@@ -18,6 +18,8 @@ Source0:        %{name}-%{version}.tar.gz
 
 BuildRequires:  python3-devel
 
+Requires:       lorax-templates
+
 Requires:       GConf2
 Requires:       cpio
 Requires:       device-mapper
@@ -102,6 +104,14 @@ Requires: anaconda-tui
 Additional dependencies required by livemedia-creator when using it with --no-virt
 to run Anaconda.
 
+%package templates-generic
+Summary:  Generic build templates for lorax and livemedia-creator
+Requires: lorax = %{version}-%{release}
+Provides: lorax-templates
+
+%description templates-generic
+Lorax templates for creating the boot.iso and live isos are placed in
+/usr/share/lorax/templates.d/99-generic
 
 %prep
 %setup -q -n %{name}-%{version}
@@ -126,12 +136,15 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %dir %{_sysconfdir}/lorax
 %config(noreplace) %{_sysconfdir}/lorax/lorax.conf
 %dir %{_datadir}/lorax
-%{_datadir}/lorax/*
 %{_mandir}/man1/*.1*
 
 %files lmc-virt
 
 %files lmc-novirt
+
+%files templates-generic
+%{_datadir}/lorax/templates.d/*
+
 
 %changelog
 * Wed Jan 13 2016 Brian C. Lane <bcl@redhat.com> 24.9-1
