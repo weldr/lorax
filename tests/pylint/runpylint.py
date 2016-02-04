@@ -17,9 +17,8 @@ class LoraxLintConfig(PocketLintConfig):
     @property
     def pylintPlugins(self):
         retval = super(LoraxLintConfig, self).pylintPlugins
-        # Not using threads so we can skip these
+        # Not using threads so we can skip this
         retval.remove("pocketlint.checkers.environ")
-        retval.remove("pocketlint.checkers.eintr")
         # No markup used
         retval.remove("pocketlint.checkers.markup")
         return retval
