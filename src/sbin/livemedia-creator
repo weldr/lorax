@@ -45,7 +45,7 @@ from mako.template import Template
 from mako.exceptions import text_error_template
 
 # Use the Lorax treebuilder branch for iso creation
-from pylorax import ArchData, setup_logging
+from pylorax import ArchData, setup_logging, find_templates
 from pylorax.base import DataHolder
 from pylorax.treebuilder import TreeBuilder, RuntimeBuilder, udev_escape
 from pylorax.treebuilder import findkernels
@@ -1091,7 +1091,7 @@ def main():
                         type=os.path.abspath,
                         help="Name and path for primary logfile, other logs will "
                              "be created in the same directory.")
-    parser.add_argument("--lorax-templates", default="/usr/share/lorax/",
+    parser.add_argument("--lorax-templates", default=None,
                         type=os.path.abspath,
                         help="Path to mako templates for lorax")
     parser.add_argument("--tmp", default="/var/tmp", type=os.path.abspath,
@@ -1205,6 +1205,9 @@ def main():
 
     log.debug( opts )
 
+    # Find the lorax templates
+    opts.lorax_templates = find_templates(opts.lorax_templates or "/usr/share/lorax")
+
     # Check for invalid combinations of options, print all the errors and exit.
     errors = []
     if not opts.disk_image and not opts.fs_image and not opts.ks:
@@ -1213,7 +1216,7 @@ def main():
     if opts.ks and not os.path.exists(opts.ks[0]):
         errors.append("kickstart file (%s) is missing." % opts.ks[0])
 
-    if opts.make_iso and not os.path.exists( opts.lorax_templates):
+    if opts.make_iso and not os.path.exists(opts.lorax_templates):
         errors.append("The lorax templates directory (%s) doesn't "
                       "exist." % opts.lorax_templates)
 

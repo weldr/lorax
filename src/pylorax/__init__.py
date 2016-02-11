@@ -148,14 +148,8 @@ class Lorax(BaseLoraxClass):
         Otherwise use the sharedir
         """
         if not self._templatedir:
-            templatedir = self.conf.get("lorax", "sharedir")
-            if os.path.isdir(joinpaths(templatedir, "templates.d")):
-                try:
-                    templatedir = sorted(glob(joinpaths(templatedir, "templates.d", "*")))[0]
-                except IndexError:
-                    pass
-            logger.info("Using templatedir %s", templatedir)
-            self._templatedir = templatedir
+            self._templatedir = find_templates(self.conf.get("lorax", "sharedir"))
+            logger.info("Using templatedir %s", self._templatedir)
         return self._templatedir
 
     def init_stream_logging(self):
@@ -424,3 +418,23 @@ def setup_logging(logfile, theLogger):
     fh = logging.FileHandler(filename=f, mode="w")
     fh.setLevel(logging.DEBUG)
     program_log.addHandler(fh)
+
+
+def find_templates(templatedir="/usr/share/lorax"):
+    """ Find the templates to use.
+
+    :param str templatedir: Top directory to search for templates
+    :returns: Path to templates
+    :rtype: str
+
+    If there is a templates.d directory under templatedir the
+    lowest numbered directory entry is returned.
+
+    eg. /usr/share/lorax/templates.d/99-generic/
+    """
+    if os.path.isdir(joinpaths(templatedir, "templates.d")):
+        try:
+            templatedir = sorted(glob(joinpaths(templatedir, "templates.d", "*")))[0]
+        except IndexError:
+            pass
+    return templatedir
