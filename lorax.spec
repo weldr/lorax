@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        24.9
+Version:        24.10
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -147,6 +147,17 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Fri Feb 12 2016 Brian C. Lane <bcl@redhat.com> 24.10-1
+- Add rng-tools and start rngd.service by default (#1258516) (bcl@redhat.com)
+- livemedia-creator: Stop passing --repo to anaconda (#1304802)
+  (bcl@redhat.com)
+- livemedia-creator: Add /usr/share/lorax/templates.d/ support (bcl@redhat.com)
+- Move templates to /usr/share/lorax/templates.d/99-generic (bcl@redhat.com)
+- Add check for templates.d in the sharedir (bcl@redhat.com)
+- Add documentation for the lorax command and templates (bcl@redhat.com)
+- Remove the removal of the eintr checker, which has been removed
+  (dshea@redhat.com)
+
 * Wed Jan 13 2016 Brian C. Lane <bcl@redhat.com> 24.9-1
 - livemedia-creator: Add kernel-modules and kernel-modules-extra to examples
   (bcl@redhat.com)
