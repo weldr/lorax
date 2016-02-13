@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>lorax &mdash; Lorax 24.6 documentation</title>
+  <title>Lorax &mdash; Lorax 24.10 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Lorax 24.6 documentation" href="index.html"/>
+    <link rel="top" title="Lorax 24.10 documentation" href="index.html"/>
         <link rel="next" title="livemedia-creator" href="livemedia-creator.html"/>
         <link rel="prev" title="Introduction to Lorax" href="intro.html"/> 
 
@@ -45,17 +45,27 @@
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-nav-search">
-        
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
 
-        
-          <a href="index.html" class="icon icon-home"> Lorax
-        
+          
+            <a href="index.html" class="icon icon-home"> Lorax
+          
 
-        
-        </a>
+          
+          </a>
 
-        
+          
+            
+            
+              <div class="version">
+                24.10
+              </div>
+            
+          
+
+          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -64,67 +74,38 @@
   </form>
 </div>
 
-        
-      </div>
+          
+        </div>
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
-          
-              <ul class="current">
+            
+            
+                <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction to Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro.html#before-lorax">Before Lorax</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">lorax</a></li>
-<li class="toctree-l1"><a class="reference internal" href="livemedia-creator.html">livemedia-creator</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#quickstart">Quickstart</a></li>
-<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#how-iso-creation-works">How ISO creation works</a></li>
-<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#kickstarts">Kickstarts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#anaconda-image-install-no-virt">Anaconda image install (no-virt)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#ami-images">AMI Images</a></li>
-<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#appliance-creation">Appliance Creation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#filesystem-image-creation">Filesystem Image Creation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#tar-file-creation">TAR File Creation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#live-image-for-pxe-boot">Live Image for PXE Boot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#atomic-live-image-for-pxe-boot">Atomic Live Image for PXE Boot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#using-mock-to-create-images">Using Mock to Create Images</a></li>
-<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#openstack-image-creation">OpenStack Image Creation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#docker-image-creation">Docker Image Creation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#open-container-initiative-image-creation">Open Container Initiative Image Creation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#vagrant-image-creation">Vagrant Image Creation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#creating-uefi-disk-images-with-virt">Creating UEFI disk images with virt</a></li>
-<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#debugging-problems">Debugging problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="livemedia-creator.html#hacking">Hacking</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Lorax</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#quickstart">Quickstart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-it-works">How it works</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#runtime-install-tmpl">runtime-install.tmpl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#runtime-postinstall-tmpl">runtime-postinstall.tmpl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#runtime-cleanup-tmpl">runtime-cleanup.tmpl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-squashfs-filesystem">The squashfs filesystem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#iso-creation">iso creation</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#custom-templates">Custom Templates</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="livemedia-creator.html">livemedia-creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="product-images.html">Product and Updates Images</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">pylorax</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pylorax.html">pylorax package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pylorax.html#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylorax.html#module-pylorax.base">pylorax.base module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylorax.html#module-pylorax.buildstamp">pylorax.buildstamp module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylorax.html#module-pylorax.decorators">pylorax.decorators module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylorax.html#module-pylorax.discinfo">pylorax.discinfo module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylorax.html#module-pylorax.dnfhelper">pylorax.dnfhelper module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylorax.html#module-pylorax.executils">pylorax.executils module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylorax.html#module-pylorax.imgutils">pylorax.imgutils module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylorax.html#module-pylorax.ltmpl">pylorax.ltmpl module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylorax.html#module-pylorax.monitor">pylorax.monitor module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylorax.html#module-pylorax.mount">pylorax.mount module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylorax.html#module-pylorax.output">pylorax.output module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylorax.html#module-pylorax.sysutils">pylorax.sysutils module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylorax.html#module-pylorax.treebuilder">pylorax.treebuilder module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylorax.html#module-pylorax.treeinfo">pylorax.treeinfo module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pylorax.html#module-pylorax">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">pylorax</a></li>
 </ul>
 
+            
           
-        
+        </div>
       </div>
-      &nbsp;
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
@@ -139,11 +120,17 @@
       
       <div class="wy-nav-content">
         <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>lorax</li>
+    <li>Lorax</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -154,14 +141,135 @@
   </ul>
   <hr/>
 </div>
-          <div role="main" class="document">
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <div class="section" id="lorax">
-<h1>lorax<a class="headerlink" href="#lorax" title="Permalink to this headline">¶</a></h1>
-<p>The lorax script executes the templates and create the boot.iso</p>
+<h1>Lorax<a class="headerlink" href="#lorax" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Authors:</th><td class="field-body">Brian C. Lane &lt;<a class="reference external" href="mailto:bcl&#37;&#52;&#48;redhat&#46;com">bcl<span>&#64;</span>redhat<span>&#46;</span>com</a>&gt;</td>
+</tr>
+</tbody>
+</table>
+<p>&#8220;I am the Lorax.  I speak for the trees [and images].&#8221;</p>
+<p>The <a class="reference external" href="https://github.com/rhinstaller/lorax">lorax</a> tool is used to create the
+<a class="reference external" href="https://github.com/rhinstaller/anaconda">Anaconda</a> installer boot.iso as
+well as the basic release tree, and .treeinfo metadata file. Its dependencies
+are fairly light-weight because it needs to be able to run in a mock chroot
+environment. It is best to run lorax from the same release as is being targeted
+because the templates may have release specific logic in them. eg. Use the
+rawhide version to build the boot.iso for rawhide, along with the rawhide
+repositories.</p>
+<div class="section" id="quickstart">
+<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
+<p>Run this as root to create a boot.iso in <tt class="docutils literal"><span class="pre">./results/</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre>dnf install lorax
+setenforce 0
+lorax -p Fedora -v 23 -r 23 \
+-s http://dl.fedoraproject.org/pub/fedora/linux/releases/23/Everything/x86_64/os/ \
+-s http://dl.fedoraproject.org/pub/fedora/linux/updates/23/x86_64/ \
+./results/
+setenforce 1
+</pre></div>
+</div>
+<p>You can add your own repos with <tt class="docutils literal"><span class="pre">-s</span></tt> and packages with higher NVRs will
+override the ones in the distribution repositories.</p>
+<p>Under <tt class="docutils literal"><span class="pre">./results/</span></tt> will be the release tree files: .discinfo, .treeinfo, everything that
+goes onto the boot.iso, the pxeboot directory, and the boot.iso under <tt class="docutils literal"><span class="pre">./images/</span></tt>.</p>
+</div>
+<div class="section" id="how-it-works">
+<h2>How it works<a class="headerlink" href="#how-it-works" title="Permalink to this headline">¶</a></h2>
+<p>Lorax uses <a class="reference external" href="https://github.com/rpm-software-management/dnf">dnf</a> to install
+packages into a temporary directory, sets up configuration files, it then
+removes unneeded files to save space, and creates a squashfs filesystem of the
+files.  The iso is then built using a generic initramfs and the kernel from the
+selected repositories.</p>
+<p>To drive these processes Lorax uses a custom template system, based on <a class="reference external" href="http://www.makotemplates.org/">Mako
+templates</a> with the addition of custom
+commands (documented in <a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner" title="pylorax.ltmpl.LoraxTemplateRunner"><tt class="xref py py-class docutils literal"><span class="pre">pylorax.ltmpl.LoraxTemplateRunner</span></tt></a>). Mako
+supports <tt class="docutils literal"><span class="pre">%if/%endif</span></tt> blocks as well as free-form python code inside <tt class="docutils literal"><span class="pre">&lt;%</span>
+<span class="pre">%&gt;</span></tt> tags and variable substitution with <tt class="docutils literal"><span class="pre">${}</span></tt>. The default templates are
+shipped with lorax in <tt class="docutils literal"><span class="pre">/usr/share/lorax/templates.d/99-generic/</span></tt> and use the
+<tt class="docutils literal"><span class="pre">.tmpl</span></tt> extension.</p>
+<div class="section" id="runtime-install-tmpl">
+<h3>runtime-install.tmpl<a class="headerlink" href="#runtime-install-tmpl" title="Permalink to this headline">¶</a></h3>
+<p>The <tt class="docutils literal"><span class="pre">runtime-install.tmpl</span></tt> template lists packages to be installed using the
+<tt class="docutils literal"><span class="pre">installpkg</span></tt> command.  This template is fairly simple, installing common packages and
+architecture specific packages. It must end with the <tt class="docutils literal"><span class="pre">run_pkg_transaction</span></tt>
+command which tells dnf to download and install the packages.</p>
+</div>
+<div class="section" id="runtime-postinstall-tmpl">
+<h3>runtime-postinstall.tmpl<a class="headerlink" href="#runtime-postinstall-tmpl" title="Permalink to this headline">¶</a></h3>
+<p>The <tt class="docutils literal"><span class="pre">runtime-postinstall.tmpl</span></tt> template is where the system configuration
+happens. The installer environment is similar to a normal running system, but
+needs some special handling. Configuration files are setup, systemd is told to
+start the anaconda.target instead of a default system target, and a number of
+unneeded services are disabled, some of which can interfere with the
+installation. A number of template commands are used here:</p>
+<ul class="simple">
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.append" title="pylorax.ltmpl.LoraxTemplateRunner.append"><tt class="xref py py-func docutils literal"><span class="pre">append</span></tt></a> to add text to a file.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.chmod" title="pylorax.ltmpl.LoraxTemplateRunner.chmod"><tt class="xref py py-func docutils literal"><span class="pre">chmod</span></tt></a> changes the file&#8217;s mode.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.gconfset" title="pylorax.ltmpl.LoraxTemplateRunner.gconfset"><tt class="xref py py-func docutils literal"><span class="pre">gconfset</span></tt></a> runs gconfset.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.install" title="pylorax.ltmpl.LoraxTemplateRunner.install"><tt class="xref py py-func docutils literal"><span class="pre">install</span></tt></a> to install a file into the installroot.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.mkdir" title="pylorax.ltmpl.LoraxTemplateRunner.mkdir"><tt class="xref py py-func docutils literal"><span class="pre">mkdir</span></tt></a> makes a new directory.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.move" title="pylorax.ltmpl.LoraxTemplateRunner.move"><tt class="xref py py-func docutils literal"><span class="pre">move</span></tt></a> to move a file into the installroot</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.replace" title="pylorax.ltmpl.LoraxTemplateRunner.replace"><tt class="xref py py-func docutils literal"><span class="pre">replace</span></tt></a> does text substitution in a file</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.remove" title="pylorax.ltmpl.LoraxTemplateRunner.remove"><tt class="xref py py-func docutils literal"><span class="pre">remove</span></tt></a> deletes a file</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.runcmd" title="pylorax.ltmpl.LoraxTemplateRunner.runcmd"><tt class="xref py py-func docutils literal"><span class="pre">runcmd</span></tt></a> run arbitrary commands.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.symlink" title="pylorax.ltmpl.LoraxTemplateRunner.symlink"><tt class="xref py py-func docutils literal"><span class="pre">symlink</span></tt></a> creates a symlink</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.systemctl" title="pylorax.ltmpl.LoraxTemplateRunner.systemctl"><tt class="xref py py-func docutils literal"><span class="pre">systemctl</span></tt></a> runs systemctl in the installroot</li>
+</ul>
+</div>
+<div class="section" id="runtime-cleanup-tmpl">
+<h3>runtime-cleanup.tmpl<a class="headerlink" href="#runtime-cleanup-tmpl" title="Permalink to this headline">¶</a></h3>
+<p>The <tt class="docutils literal"><span class="pre">runtime-cleanup.tmpl</span></tt> template is used to remove files that aren&#8217;t strictly needed
+by the installation environment. In addition to the <tt class="docutils literal"><span class="pre">remove</span></tt> template command it uses:</p>
+<ul class="simple">
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.removepkg" title="pylorax.ltmpl.LoraxTemplateRunner.removepkg"><tt class="xref py py-func docutils literal"><span class="pre">removepkg</span></tt></a>
+remove all of a specific package&#8217;s contents. A package may be pulled in as a dependency, but
+not really used. eg. sound support.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.removefrom" title="pylorax.ltmpl.LoraxTemplateRunner.removefrom"><tt class="xref py py-func docutils literal"><span class="pre">removefrom</span></tt></a>
+Removes some files from a package. A file glob can be used, or the &#8211;allbut option to
+remove everything except a select few.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.removekmod" title="pylorax.ltmpl.LoraxTemplateRunner.removekmod"><tt class="xref py py-func docutils literal"><span class="pre">removekmod</span></tt></a>
+Removes kernel modules</li>
+</ul>
+</div>
+<div class="section" id="the-squashfs-filesystem">
+<h3>The squashfs filesystem<a class="headerlink" href="#the-squashfs-filesystem" title="Permalink to this headline">¶</a></h3>
+<p>After <tt class="docutils literal"><span class="pre">runtime-*.tmpl</span></tt> templates have finished their work lorax creates an
+empty ext4 filesystem, copies the remaining files to it, and makes a squashfs
+filesystem of it. This file is the / of the boot.iso&#8217;s installer environment
+and is what is in the LiveOS/squashfs.img file on the iso.</p>
+</div>
+<div class="section" id="iso-creation">
+<h3>iso creation<a class="headerlink" href="#iso-creation" title="Permalink to this headline">¶</a></h3>
+<p>The iso creation is handled by another set of templates. The one used depends
+on the architecture that the iso is being created for. They are also stored in
+<tt class="docutils literal"><span class="pre">/usr/share/lorax/templates.d/99-generic</span></tt> and are named after the arch, like
+<tt class="docutils literal"><span class="pre">x86.tmpl</span></tt> and <tt class="docutils literal"><span class="pre">aarch64.tmpl</span></tt>. They handle creation of the tree, copying
+configuration template files, configuration variable substitution, treeinfo
+metadata (via the <a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.treeinfo" title="pylorax.ltmpl.LoraxTemplateRunner.treeinfo"><tt class="xref py py-func docutils literal"><span class="pre">treeinfo</span></tt></a>
+template command). Kernel and initrd are copied from the installroot to their
+final locations and then mkisofs is run to create the boot.iso</p>
+</div>
+</div>
+<div class="section" id="custom-templates">
+<h2>Custom Templates<a class="headerlink" href="#custom-templates" title="Permalink to this headline">¶</a></h2>
+<p>The default set of templates and configuration files from the lorax-generic-templates package
+are shipped in the <tt class="docutils literal"><span class="pre">/usr/share/lorax/templates.d/99-generic/</span></tt> directory. You can
+make a copy of them and place them into another directory under <tt class="docutils literal"><span class="pre">templates.d</span></tt>
+and they will be used instead if their sort order is below all other directories. This
+allows multiple packages to ship lorax templates without conflict. You can (and probably
+should) select the specific template directory by passing <tt class="docutils literal"><span class="pre">--sharedir</span></tt> to lorax.</p>
+</div>
 </div>
 
 
+           </div>
           </div>
           <footer>
   
@@ -180,9 +288,10 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2015, Red Hat, Inc..
+
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -200,7 +309,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'24.6',
+            VERSION:'24.10',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
