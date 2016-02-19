@@ -26,7 +26,7 @@ installpkg grubby
 
 ## arch-specific packages (bootloaders etc.)
 %if basearch == "aarch64":
-    installpkg efibootmgr grub2-efi grubby shim shim-unsigned
+    installpkg efibootmgr grub2-efi grub2-efi-modules grubby shim shim-unsigned
 %endif
 %if basearch in ("arm", "armhfp"):
     installpkg kernel-lpae
@@ -36,7 +36,7 @@ installpkg grubby
     installpkg kernel-PAE gpart
 %endif
 %if basearch == "x86_64":
-    installpkg efibootmgr grub2-efi shim shim-unsigned
+    installpkg efibootmgr grub2-efi grub2-efi-modules shim shim-unsigned
 %endif
 %if basearch in ("i386", "x86_64"):
     installpkg grub2 grub2-tools memtest86+ syslinux syslinux-nonlinux
