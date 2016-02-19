@@ -90,7 +90,7 @@ removekmod sound drivers/media drivers/hwmon \
 removekmod drivers/char --allbut virtio_console hw_random \
                                   virtio-rng ipmi
 removekmod drivers/staging --allbut zram
-removekmod drivers/video --allbut hyperv_fb
+removekmod drivers/video --allbut hyperv_fb syscopyarea sysfillrect sysimgblt
 remove lib/modules/*/{build,source,*.map}
 ## NOTE: depmod gets re-run after cleanup finishes
 
