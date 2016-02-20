@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        24.11
+Version:        24.12
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -147,6 +147,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Fri Feb 19 2016 Brian C. Lane <bcl@redhat.com> 24.12-1
+- Put the NM loglevel config in the right place. (bcl@redhat.com)
+
 * Fri Feb 19 2016 Brian C. Lane <bcl@redhat.com> 24.11-1
 - configure NetworkManager to loglevel=DEBUG (#1274647) (rvykydal@redhat.com)
 - New lorax documentation - 24.10 (bcl@redhat.com)
