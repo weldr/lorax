@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        24.10
+Version:        24.11
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -147,6 +147,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Fri Feb 19 2016 Brian C. Lane <bcl@redhat.com> 24.11-1
+- configure NetworkManager to loglevel=DEBUG (#1274647) (rvykydal@redhat.com)
+- New lorax documentation - 24.10 (bcl@redhat.com)
+
 * Fri Feb 12 2016 Brian C. Lane <bcl@redhat.com> 24.10-1
 - Add rng-tools and start rngd.service by default (#1258516) (bcl@redhat.com)
 - livemedia-creator: Stop passing --repo to anaconda (#1304802)
