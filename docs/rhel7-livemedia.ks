@@ -361,6 +361,7 @@ cat /dev/null > /etc/fstab
 %end
 
 %packages
+@anaconda-tools
 @core
 @fonts
 @x11
@@ -370,9 +371,6 @@ anaconda
 isomd5sum
 kernel
 memtest86+
-grub2-efi
-grub2
-shim
 syslinux
 -dracut-config-rescue
 %end
