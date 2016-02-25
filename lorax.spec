@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        24.12
+Version:        24.13
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -147,6 +147,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Thu Feb 25 2016 Brian C. Lane <bcl@redhat.com> 24.13-1
+- templates: Reinstate gpgme-pthread.so for ostree (walters@verbum.org)
+- Include grub2-efi-modules on the boot.iso (#1277227) (bcl@redhat.com)
+- Keep modules needed for ast video driver support (#1272658) (bcl@redhat.com)
+
 * Fri Feb 19 2016 Brian C. Lane <bcl@redhat.com> 24.12-1
 - Put the NM loglevel config in the right place. (bcl@redhat.com)
 
