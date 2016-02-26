@@ -24,6 +24,9 @@ installpkg grubby
     installpkg b43-openfwwf
 %endif
 
+## install all of the glibc langpacks since otherwise we get no locales
+installpkg glibc-all-langpacks
+
 ## arch-specific packages (bootloaders etc.)
 %if basearch == "aarch64":
     installpkg efibootmgr grub2-efi grub2-efi-modules grubby shim shim-unsigned
