@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.66
+Version:        19.6.67
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,34 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Mar 01 2016 Brian C. Lane <bcl@redhat.com> 19.6.67-1
+- templates: Reinstate gpgme-pthread.so for ostree (walters)
+- Resolves: rhbz#1311793
+- Add rng-tools and start rngd.service by default (bcl)
+- Resolves: rhbz#1258516
+- Add (bcl)
+- Resolves: rhbz#1269891
+- Include grub2-efi-modules on the boot.iso (bcl)
+- Resolves: rhbz#1277227
+- Keep modules needed for ast video driver support (bcl)
+- Resolves: rhbz#1272658
+- configure NetworkManager to loglevel=DEBUG (rvykydal)
+- Resolves: rhbz#1274647
+- Update docs for product.img (bcl)
+- Resolves: rhbz#1272361
+- paste is needed by os-prober (bcl)
+- Resolves: rhbz#1275105
+- Keep libthread so that gdb will work correctly (bcl)
+- Resolves: rhbz#1269055
+- Add --installpkgs argument (walters)
+- Resolves: rhbz#1272222
+- livemedia-creator: Clean up resultdir handling (bcl)
+- Resolves: rhbz#1290552
+- https is a sane package source URL scheme (walters)
+- Resolves: rhbz#1292680
+- Add product.img support for s390 templates (dan)
+- Resolves: rhbz#1272359
+
 * Wed Sep 02 2015 Brian C. Lane <bcl@redhat.com> 19.6.66-1
 - livemedia-creator: Remove random-seed from images (bcl)
   Resolves: rhbz#1258986
