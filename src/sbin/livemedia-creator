@@ -318,7 +318,7 @@ def get_arch(mount_dir):
 
 def make_appliance(disk_img, name, template, outfile, networks=None, ram=1024,
                    vcpus=1, arch=None, title="Linux", project="Linux",
-                   releasever="7.0"):
+                   releasever="25"):
     """
     Generate an appliance description file
 
@@ -332,7 +332,7 @@ def make_appliance(disk_img, name, template, outfile, networks=None, ram=1024,
     :param str arch: CPU architecture. Default is 'x86_64'
     :param str title: Title, passed to template. Default is 'Linux'
     :param str project: Project, passed to template. Default is 'Linux'
-    :param str releasever: Release version, passed to template. Default is 17
+    :param str releasever: Release version, passed to template. Default is 25
     """
     if not (disk_img and template and outfile):
         return None
@@ -1234,7 +1234,7 @@ def main():
                         help="Substituted for @TITLE@ in bootloader config files")
     parser.add_argument("--project", default="Linux",
                         help="substituted for @PROJECT@ in bootloader config files")
-    parser.add_argument("--releasever", default="24",
+    parser.add_argument("--releasever", default="25",
                         help="substituted for @VERSION@ in bootloader config files")
     parser.add_argument("--volid", default=None, help="volume id")
     parser.add_argument("--squashfs_args",
