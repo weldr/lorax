@@ -153,6 +153,8 @@ def _run_program(argv, root='/', stdin=None, stdout=None, env_prune=None, log_ou
                             env_prune=env_prune, universal_newlines=not binary_output,
                             env_add=env_add, reset_handlers=reset_handlers, reset_lang=reset_lang)
 
+        output_string = None
+        err_string = None
         if callback:
             while callback(proc) and proc.poll() is None:
                 try:
