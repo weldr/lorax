@@ -10,28 +10,27 @@ timezone US/Eastern
 lang en_US.UTF-8
 # Firewall configuration
 firewall --enabled --service=mdns
-url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/x86_64/os/"
+url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/Everything/x86_64/os/"
+# Network information
+network  --bootproto=dhcp --device=link --activate
 
 # System authorization information
-auth --useshadow --enablemd5
+auth --useshadow --passalgo=sha512
 # SELinux configuration
 selinux --enforcing
 
 # System services
-services --disabled="network,sshd" --enabled="NetworkManager"
+services --disabled="network,sshd" --enabled="NetworkManager,ModemManager"
 
 # livemedia-creator modifications.
 shutdown
 # System bootloader configuration
-bootloader --location=mbr
+bootloader --location=none
 # Clear blank disks or all existing partitions
 clearpart --all --initlabel
 rootpw rootme
-
-
 # Disk partitioning information
-part / --fstype="ext4" --size=4096
-part / --size=6144
+part / --size=6656
 
 %post
 # FIXME: it'd be better to get this installed from a package
@@ -177,6 +176,9 @@ systemctl --no-reload disable atd.service 2> /dev/null || :
 systemctl stop crond.service 2> /dev/null || :
 systemctl stop atd.service 2> /dev/null || :
 
+# Don't sync the system clock when running live (RHBZ #1018162)
+sed -i 's/rtcsync//' /etc/chrony.conf
+
 # Mark things as configured
 touch /.liveimg-configured
 
@@ -258,7 +260,6 @@ systemctl enable tmp.mount
 # note https://bugzilla.redhat.com/show_bug.cgi?id=1135475
 cat >> /etc/fstab << EOF
 vartmp   /var/tmp    tmpfs   defaults   0  0
-varcacheyum /var/cache/yum  tmpfs   mode=0755,context=system_u:object_r:rpm_var_cache_t:s0   0   0
 EOF
 
 # work around for poor key import UI in PackageKit
@@ -280,12 +281,6 @@ rm -f /core*
 # convince readahead not to collect
 # FIXME: for systemd
 
-# forcibly regenerate fontconfig cache (so long as this live image has
-# fontconfig) - see #1169979
-if [ -x /usr/bin/fc-cache ] ; then
-   fc-cache -f
-fi
-
 echo 'File created by kickstart. See systemd-update-done.service(8).' \
     | tee /etc/.updated >/var/.updated
 
@@ -304,9 +299,6 @@ fi
 %end
 
 %post
-
-# This is a huge file and things work ok without it
-rm -f /usr/share/icons/HighContrast/icon-theme.cache
 
 cat >> /etc/rc.d/init.d/livesys << EOF
 
@@ -372,39 +364,34 @@ EOF
 %packages
 @anaconda-tools
 @base-x
-@base-x
 @core
-@core
-@fonts
+@firefox
 @fonts
 @guest-desktop-agents
-@guest-desktop-agents
-@hardware-support
 @hardware-support
 @libreoffice
 @multimedia
-@multimedia
 @networkmanager-submodules
-@printing
 @printing
 @workstation-product
 aajohan-comfortaa-fonts
 anaconda
+dracut-config-generic
+dracut-live
 fedora-productimg-workstation
+glibc-all-langpacks
+grub2-efi
 kernel
 # Make sure that DNF doesn't pull in debug kernel to satisfy kmod() requires
 kernel-modules
 kernel-modules-extra
-
 memtest86+
+syslinux
 -@dial-up
 -@input-methods
 -@standard
+-dracut-config-rescue
 -gfs2-utils
 -reiserfs-utils
 
-dracut-live
-dracut-config-generic
-grub2-efi
--dracut-config-rescue
 %end
