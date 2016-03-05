@@ -281,6 +281,7 @@ def estimate_size(rootdir, graft=None, fstype=None, blocksize=4096, overhead=256
                 total += round_to_blocks(getsize(join(top,f)), blocksize)
     if fstype == "btrfs":
         total = max(256*1024*1024, total) # btrfs minimum size: 256MB
+    logger.info("Size of %s block %s fs at %s estimated to be %s", blocksize, fstype, rootdir, total)
     return total
 
 ######## Execution contexts - use with the 'with' statement ##############
