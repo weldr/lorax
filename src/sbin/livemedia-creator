@@ -358,7 +358,7 @@ def make_fsimage(diskimage, fsimage, img_size=None, label="Anaconda"):
         mkext4img(img_mount.mount_dir, fsimage, size=img_size, label=label)
 
 
-def make_runtime(opts, mount_dir, work_dir):
+def make_runtime(opts, mount_dir, work_dir, size=None):
     """
     Make the squashfs image from a directory
 
@@ -366,6 +366,7 @@ def make_runtime(opts, mount_dir, work_dir):
     :type opts: argparse options
     :param str mount_dir: Directory tree to compress
     :param str work_dir: Output compressed image to work_dir+images/install.img
+    :param int size: Size of disk image, in GiB
     """
     kernel_arch = get_arch(mount_dir)
 
@@ -384,7 +385,7 @@ def make_runtime(opts, mount_dir, work_dir):
     rb = RuntimeBuilder(product, arch, fake_dbo)
     compression, compressargs = squashfs_args(opts)
     log.info("Creating runtime")
-    rb.create_runtime(joinpaths(work_dir, RUNTIME), size=None,
+    rb.create_runtime(joinpaths(work_dir, RUNTIME), size=size,
                       compression=compression, compressargs=compressargs)
 
 def rebuild_initrds_for_live(opts, sys_root_dir, results_dir):
@@ -971,6 +972,24 @@ def make_squashfs(opts, disk_img, work_dir):
     remove(joinpaths(work_dir, "runtime"))
     return True
 
+def calculate_disk_size(opts, ks):
+    """ Calculate the disk size from the kickstart
+
+    :param opts: options passed to livemedia-creator
+    :type opts: argparse options
+    :param str ks: Path to the kickstart to use for the installation
+
+    Use virt-install or anaconda to install to a disk image.
+    """
+    # Disk size for a filesystem image should only be the size of /
+    # to prevent surprises when using the same kickstart for different installations.
+    unique_partitions = dict((p.mountpoint, p) for p in ks.handler.partition.partitions)
+    if opts.no_virt and (opts.make_iso or opts.make_fsimage):
+        disk_size = 2 + sum(p.size for p in unique_partitions.values() if p.mountpoint == "/")
+    else:
+        disk_size = 2 + sum(p.size for p in unique_partitions.values())
+    log.info("Using disk size of %sMiB", disk_size)
+    return disk_size
 
 def make_image(opts, ks):
     """
@@ -982,23 +1001,14 @@ def make_image(opts, ks):
     :returns: Path of the image created
     :rtype: str
 
-    Use virt-install or anaconda to install to a disk image.
+    Use virt-install+boot.iso or anaconda to install to a disk image.
     """
-    # Disk size for a filesystem image should only be the size of /
-    # to prevent surprises when using the same kickstart for different installations.
-    unique_partitions = dict((p.mountpoint, p) for p in ks.handler.partition.partitions)
-    if opts.no_virt and (opts.make_iso or opts.make_fsimage):
-        disk_size = 2 + sum(p.size for p in unique_partitions.values() if p.mountpoint == "/")
-    else:
-        disk_size = 2 + sum(p.size for p in unique_partitions.values())
-    log.info("disk_size = %sMiB", disk_size)
-
     if opts.image_name:
         disk_img = joinpaths(opts.result_dir, opts.image_name)
     else:
         disk_img = tempfile.mktemp(prefix="lmc-disk-", suffix=".img", dir=opts.result_dir)
     log.info("disk_img = %s", disk_img)
-
+    disk_size = calculate_disk_size(opts, ks)
     try:
         if opts.no_virt:
             novirt_install(opts, disk_img, disk_size)
@@ -1476,7 +1486,7 @@ def main():
                 disk_img = opts.disk_image or disk_img
                 with PartitionMount(disk_img) as img_mount:
                     if img_mount and img_mount.mount_dir:
-                        make_runtime(opts, img_mount.mount_dir, work_dir)
+                        make_runtime(opts, img_mount.mount_dir, work_dir, calculate_disk_size(opts, ks))
                         result_dir = make_livecd(opts, img_mount.mount_dir, work_dir)
 
             # --iso-only removes the extra build artifacts, keeping only the boot.iso
