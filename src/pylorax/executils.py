@@ -192,7 +192,7 @@ def _run_program(argv, root='/', stdin=None, stdout=None, env_prune=None, log_ou
         raise
 
     with program_log_lock:
-        program_log.debug("Return code: %d", proc.returncode)
+        program_log.debug("Return code: %s", proc.returncode)
 
     if proc.returncode and raise_err:
         output = (output_string or "") + (err_string or "")
