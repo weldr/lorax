@@ -62,7 +62,7 @@ class ArchData(DataHolder):
     def __init__(self, buildarch):
         super(ArchData, self).__init__()
         self.buildarch = buildarch
-        self.basearch = dnf.arch.basearch(buildarch)
+        self.basearch = dnf.rpm.basearch(buildarch)
         self.libdir = "lib64" if self.basearch in self.lib64_arches else "lib"
         self.bcj = self.bcj_arch.get(self.basearch)
 
