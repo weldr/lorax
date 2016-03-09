@@ -954,14 +954,21 @@ def make_squashfs(disk_img, work_dir, compression="xz", compressargs=None):
     :param str disk_img: Path to the unpartitioned filesystem disk image
     :param str work_dir: Output compressed image to work_dir+images/install.img
     :param str compression: Compression type to use
+    :returns: True if squashfs creation was successful. False if there was an error.
+    :rtype: bool
 
     Take disk_img and put it into LiveOS/rootfs.img and squashfs this
     tree into work_dir+images/install.img
+
+    fsck.ext4 is run on the disk image to make sure there are no errors and to zero
+    out any deleted blocks to make it compress better. If this fails for any reason
+    it will return False and log the error.
     """
     # Make sure free blocks are actually zeroed so it will compress
     rc = execWithRedirect("/usr/sbin/fsck.ext4", ["-y", "-f", "-E", "discard", disk_img])
     if rc != 0:
-        log.warning("Problem zeroing free blocks of %s", disk_img)
+        log.error("Problem zeroing free blocks of %s", disk_img)
+        return False
 
     liveos_dir = joinpaths(work_dir, "runtime/LiveOS")
     os.makedirs(liveos_dir)
@@ -974,6 +981,7 @@ def make_squashfs(disk_img, work_dir, compression="xz", compressargs=None):
     mksquashfs(joinpaths(work_dir, "runtime"),
                joinpaths(work_dir, RUNTIME), compression, compressargs)
     remove(joinpaths(work_dir, "runtime"))
+    return True
 
 def calculate_disk_size(opts, ks):
     """ Calculate the disk size from the kickstart
@@ -1039,8 +1047,12 @@ def make_live_images(opts, work_dir, root_dir, rootfs_image=None, size=None):
     :param str work_dir: Directory for storing results
     :param str root_dir: Root directory of live filesystem tree
     :param str rootfs_image: Path to live rootfs image to be used
-    :returns: Path of directory with created images
+    :returns: Path of directory with created images or None
     :rtype: str
+
+    fsck.ext4 is run on the rootfs_image to make sure there are no errors and to zero
+    out any deleted blocks to make it compress better. If this fails for any reason
+    it will return None and log the error.
     """
     sys_root = ""
     if opts.ostree:
@@ -1054,7 +1066,8 @@ def make_live_images(opts, work_dir, root_dir, rootfs_image=None, size=None):
         # Make sure free blocks are actually zeroed so it will compress
         rc = execWithRedirect("/usr/sbin/fsck.ext4", ["-y", "-f", "-E", "discard", rootfs_image])
         if rc != 0:
-            log.warning("Problem zeroing free blocks of %s", rootfs_image)
+            log.error("Problem zeroing free blocks of %s", rootfs_image)
+            return None
 
         rc = execWithRedirect("/bin/ln", [rootfs_image, joinpaths(liveos_dir, "rootfs.img")])
         if rc != 0:
@@ -1456,7 +1469,10 @@ def main():
                     else:
                         log.info("no BCJ filter for arch %s", arch.basearch)
 
-                make_squashfs(disk_img, work_dir, compression, compressargs)
+                if not make_squashfs(disk_img, work_dir, compression, compressargs):
+                    log.error("squashfs.img creation failed")
+                    sys.exit(1)
+
                 with Mount(disk_img, opts="loop") as mount_dir:
                     result_dir = make_livecd(opts, mount_dir, work_dir)
             else:
@@ -1522,6 +1538,9 @@ def main():
                         finally:
                             if mounted_sysroot_boot_dir:
                                 umount(mounted_sysroot_boot_dir)
+            if result_dir is None:
+                log.error("Creating live image failed.")
+                sys.exit(1)
 
         if opts.result_dir != opts.tmp and result_dir:
             copytree(result_dir, opts.result_dir, preserve=False)
