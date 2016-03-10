@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        25.0
+Version:        25.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -147,6 +147,22 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Wed Mar 09 2016 Brian C. Lane <bcl@redhat.com> 25.1-1
+- Change location of basearch to dnf.rpm.basearch (#1312087) (bcl@redhat.com)
+- livemedia-creator: Change fsck.ext4 discard failures to errors
+  (bcl@redhat.com)
+- pylorax: proc.returncode can be None (bcl@redhat.com)
+- livemedia-creator: Create runtime using kickstart partition size
+  (bcl@redhat.com)
+- livemedia-creator: Update kickstarts for rawhide (bcl@redhat.com)
+- pylorax: Fix undefind strings on subprocess crash (bcl@redhat.com)
+- Keep /usr/bin/xrdb (#1241724) (dshea@redhat.com)
+- Install the libblockdev-lvm-dbus plugin (#1264816) (vpodzime@redhat.com)
+- livemedia-creator: Bump default releasever to 25 (bcl@redhat.com)
+- Add docker-anaconda-addon (bcl@redhat.com)
+- livemedia-creator: Use qemu instead of virt-install (bcl@redhat.com)
+- Bump version to 25.0 (bcl@redhat.com)
+
 * Tue Mar 01 2016 Brian C. Lane <bcl@redhat.com> 24.14-1
 - Add glibc-all-langpacks (#1312607) (dshea@redhat.com)
 
