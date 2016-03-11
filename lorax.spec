@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        24.14
+Version:        24.15
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -147,6 +147,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Fri Mar 11 2016 Brian C. Lane <bcl@redhat.com> 24.15-1
+- pylorax: proc.returncode can be None (bcl@redhat.com)
+- Change location of basearch to dnf.rpm.basearch (#1312087) (bcl@redhat.com)
+- livemedia-creator: Change fsck.ext4 discard failures to errors (#1315541)
+  (bcl@redhat.com)
+- Install the libblockdev-lvm-dbus plugin (#1264816) (vpodzime@redhat.com)
+
 * Tue Mar 01 2016 Brian C. Lane <bcl@redhat.com> 24.14-1
 - Add glibc-all-langpacks (#1312607) (dshea@redhat.com)
 
