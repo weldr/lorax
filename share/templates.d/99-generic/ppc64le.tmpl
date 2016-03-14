@@ -16,6 +16,16 @@ isolabel = ''.join(ch if ch.isalnum() else '_' for ch in isolabel)
 rootarg = ""
 %>
 
+## Test ${runtime_img} to see if udf is needed
+<%
+    import os
+    from pylorax.sysutils import joinpaths
+    if os.stat(joinpaths(outroot, runtime_img)).st_size >= 4*1024**3:
+        udfargs = "-allow-limited-size"
+    else:
+        udfargs = ""
+%>
+
 mkdir images
 install ${runtime_img} ${STAGE2IMG}
 treeinfo stage2 mainimage ${STAGE2IMG}
@@ -82,7 +92,7 @@ runcmd mkisofs -v -U -J -R -T \
         -volset "${product.version}" -volset-size 1 -volset-seqno 1 \
         -hfs-volid ${product.version} \
         -chrp-boot -map ${inroot}/${configdir}/mapping \
-        -no-desktop -allow-multidot -graft-points \
+        -no-desktop -allow-multidot ${udfargs} -graft-points \
         ${BOOTDIR}=${outroot}/${BOOTDIR} \
         ${GRUBDIR}=${outroot}/${GRUBDIR} \
         ${STAGE2IMG}=${outroot}/${STAGE2IMG} ${imggraft}
