@@ -15,6 +15,16 @@ def valid_label(ch):
 isolabel = ''.join(ch if valid_label(ch) else '-' for ch in isolabel)
 %>
 
+## Test ${runtime_img} to see if udf is needed
+<%
+    import os
+    from pylorax.sysutils import joinpaths
+    if os.stat(joinpaths(outroot, runtime_img)).st_size >= 4*1024**3:
+        udfargs = "-allow-limited-size"
+    else:
+        udfargs = ""
+%>
+
 mkdir ${LIVEDIR}
 install ${runtime_img} ${LIVEDIR}/squashfs.img
 treeinfo stage2 mainimage ${LIVEDIR}/squashfs.img
@@ -87,7 +97,8 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
 runcmd mkisofs -o ${outroot}/images/boot.iso \
        -b ${BOOTDIR}/isolinux.bin -c ${BOOTDIR}/boot.cat \
        -boot-load-size 4 -boot-info-table -no-emul-boot \
-       ${efiargs} -R -J -V '${isolabel}' -T -graft-points \
+       ${efiargs} -R -J -V '${isolabel}' -T ${udfargs} \
+       -graft-points \
        ${BOOTDIR}=${outroot}/${BOOTDIR} \
        ${KERNELDIR}=${outroot}/${KERNELDIR} \
        ${LIVEDIR}=${outroot}/${LIVEDIR} \
