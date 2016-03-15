@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        25.1
+Version:        25.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -147,6 +147,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Tue Mar 15 2016 Brian C. Lane <bcl@redhat.com> 25.2-1
+- Not all arches currently have docker (#1317632) (pbrobinson@gmail.com)
+
 * Wed Mar 09 2016 Brian C. Lane <bcl@redhat.com> 25.1-1
 - Change location of basearch to dnf.rpm.basearch (#1312087) (bcl@redhat.com)
 - livemedia-creator: Change fsck.ext4 discard failures to errors
