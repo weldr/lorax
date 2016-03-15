@@ -340,3 +340,21 @@ runcmd find ${root} -name "*.pyc" -type f -exec ln -sf /dev/null {} \;
 ## NOTE: Excluding /etc/mtab which links to /proc/self/mounts for systemd
 runcmd chroot ${root} find -L /etc /usr -xdev -type l -and \! -name "mtab" \
                 -printf "removing broken symbolic link %p -> %l\n" -delete
+
+## Clean up some of the mess pulled in by webkitgtk via yelp
+## libwebkit2gtk links to a handful of libraries in gstreamer and
+## gstreamer-plugins-base. Remove the rest of them.
+removefrom gstreamer1 --allbut /usr/${libdir}/libgstbase-1.0.* \
+                               /usr/${libdir}/libgstreamer-1.0.*
+removefrom gstreamer1-plugins-base --allbut \
+        /usr/${libdir}/libgst{app,audio,fft,pbutils,tag,video}-1.0.*
+
+## We have enough geoip libraries, thanks
+removepkg geoclue2
+
+## And remove the packages that those extra libraries pulled in
+removepkg cdparanoia-libs opus libtheora libvisual flac-libs gsm avahi-glib avahi-libs \
+          ModemManager-glib
+
+## metacity requires libvorbis and libvorbisfile, but enc/dec are no longer needed
+removefrom libvorbis --allbut /usr/${libdir}/libvorbisfile.* /usr/${libdir}/libvorbis.*
