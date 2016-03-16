@@ -20,7 +20,13 @@ installpkg pigz
 installpkg kernel kernel-modules kernel-modules-extra
 installpkg grubby
 %if basearch != "s390x":
-    installpkg *-firmware
+    ## skip the firmware for sound, video, and scanners, none of which will
+    ## do much good for the installer. Also skip uhd-firmware which is not
+    ## even a kernel firmware package.
+    installpkg *-firmware --except alsa* --except midisport-firmware \
+                          --except crystalhd-firmware --except ivtv-firmware \
+                          --except cx18-firmware --except iscan-firmware \
+                          --except uhd-firmware
     installpkg b43-openfwwf
 %endif
 
