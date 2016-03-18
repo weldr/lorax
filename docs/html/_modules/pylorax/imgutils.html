@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.imgutils &mdash; Lorax 24.10 documentation</title>
+  <title>pylorax.imgutils &mdash; Lorax 25.2 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Lorax 24.10 documentation" href="../../index.html"/>
+    <link rel="top" title="Lorax 25.2 documentation" href="../../index.html"/>
         <link rel="up" title="pylorax" href="../pylorax.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                24.10
+                25.2
               </div>
             
           
@@ -417,6 +417,7 @@
                 <span class="n">total</span> <span class="o">+=</span> <span class="n">round_to_blocks</span><span class="p">(</span><span class="n">getsize</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">top</span><span class="p">,</span><span class="n">f</span><span class="p">)),</span> <span class="n">blocksize</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">fstype</span> <span class="o">==</span> <span class="s">&quot;btrfs&quot;</span><span class="p">:</span>
         <span class="n">total</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">256</span><span class="o">*</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">,</span> <span class="n">total</span><span class="p">)</span> <span class="c"># btrfs minimum size: 256MB</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Size of </span><span class="si">%s</span><span class="s"> block </span><span class="si">%s</span><span class="s"> fs at </span><span class="si">%s</span><span class="s"> estimated to be </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">blocksize</span><span class="p">,</span> <span class="n">fstype</span><span class="p">,</span> <span class="n">rootdir</span><span class="p">,</span> <span class="n">total</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">total</span>
 
 <span class="c">######## Execution contexts - use with the &#39;with&#39; statement ##############</span>
@@ -617,7 +618,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'24.10',
+            VERSION:'25.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

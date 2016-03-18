@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>livemedia-creator &mdash; Lorax 24.10 documentation</title>
+  <title>livemedia-creator &mdash; Lorax 25.2 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Lorax 24.10 documentation" href="index.html"/>
+    <link rel="top" title="Lorax 25.2 documentation" href="index.html"/>
         <link rel="next" title="Product and Updates Images" href="product-images.html"/>
         <link rel="prev" title="Lorax" href="lorax.html"/> 
 
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                24.10
+                25.2
               </div>
             
           
@@ -86,6 +86,7 @@
 <li class="toctree-l1"><a class="reference internal" href="intro.html#before-lorax">Before Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lorax.html">Lorax</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">livemedia-creator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#livemedia-creator-cmdline-arguments">livemedia-creator cmdline arguments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#quickstart">Quickstart</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#how-iso-creation-works">How ISO creation works</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#kickstarts">Kickstarts</a></li>
@@ -96,7 +97,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#tar-file-creation">TAR File Creation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#live-image-for-pxe-boot">Live Image for PXE Boot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#atomic-live-image-for-pxe-boot">Atomic Live Image for PXE Boot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#using-mock-to-create-images">Using Mock to Create Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-mock-and-no-virt-to-create-images">Using Mock and &#8211;no-virt to Create Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-mock-and-qemu-to-create-images">Using Mock and qemu to Create Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#openstack-image-creation">OpenStack Image Creation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#docker-image-creation">Docker Image Creation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#open-container-initiative-image-creation">Open Container Initiative Image Creation</a></li>
@@ -168,27 +170,278 @@ same install path as a normal system installation. It can be used to make live
 isos, bootable (partitioned) disk images, tarfiles, and filesystem images for
 use with virtualization and container solutions like libvirt, docker, and
 OpenStack.</p>
-<p>The general idea is to use virt-install with kickstart and an Anaconda boot.iso
-to install into a disk image and then use the disk image to create the bootable
+<p>The general idea is to use qemu with kickstart and an Anaconda boot.iso to
+install into a disk image and then use the disk image to create the bootable
 media.</p>
 <p>livemedia-creator &#8211;help will describe all of the options available. At the
 minimum you need:</p>
 <p><tt class="docutils literal"><span class="pre">--make-iso</span></tt> to create a final bootable .iso or one of the other <tt class="docutils literal"><span class="pre">--make-*</span></tt> options.</p>
-<p><tt class="docutils literal"><span class="pre">--iso</span></tt> to specify the Anaconda install media to use with virt-install</p>
+<p><tt class="docutils literal"><span class="pre">--iso</span></tt> to specify the Anaconda install media to use with qemu.</p>
 <p><tt class="docutils literal"><span class="pre">--ks</span></tt> to select the kickstart file describing what to install.</p>
-<p>To use livemedia-creator with virt-install you will need to install the
-following packages, as well as have libvirtd setup correctly.</p>
-<ul class="simple">
-<li><tt class="docutils literal"><span class="pre">virt-install</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">libvirt-python</span></tt></li>
-</ul>
+<p>To use livemedia-creator with virtualization you will need to have qemu installed.</p>
 <p>If you are going to be using Anaconda directly, with <tt class="docutils literal"><span class="pre">--no-virt</span></tt> mode, make sure
-you have the anaconda package installed. You can use the anaconda-tui package
-to save a bit of space on the build system.</p>
+you have the anaconda-tui package installed.</p>
 <p>Conventions used in this document:</p>
 <p><tt class="docutils literal"><span class="pre">lmc</span></tt> is an abbreviation for livemedia-creator.</p>
 <p><tt class="docutils literal"><span class="pre">builder</span></tt> is the system where livemedia-creator is being run</p>
 <p><tt class="docutils literal"><span class="pre">image</span></tt> is the disk image being created by running livemedia-creator</p>
+<div class="section" id="livemedia-creator-cmdline-arguments">
+<h2>livemedia-creator cmdline arguments<a class="headerlink" href="#livemedia-creator-cmdline-arguments" title="Permalink to this headline">¶</a></h2>
+<p>Create Live Install Media</p>
+<pre class="literal-block">
+usage: livemedia-creator [-h]
+                         (--make-iso | --make-disk | --make-fsimage | --make-appliance | --make-ami | --make-tar | --make-pxe-live | --make-ostree-live | --make-oci | --make-vagrant)
+                         [--iso ISO] [--iso-only] [--iso-name ISO_NAME]
+                         [--ks KS] [--image-only] [--no-virt] [--proxy PROXY]
+                         [--anaconda-arg ANACONDA_ARGS]
+                         [--armplatform ARMPLATFORM] [--location LOCATION]
+                         [--logfile LOGFILE]
+                         [--lorax-templates LORAX_TEMPLATES] [--tmp TMP]
+                         [--resultdir RESULT_DIR] [--macboot] [--nomacboot]
+                         [--disk-image DISK_IMAGE] [--keep-image]
+                         [--fs-image FS_IMAGE] [--image-name IMAGE_NAME]
+                         [--fs-label FS_LABEL] [--image-type IMAGE_TYPE]
+                         [--qemu-arg QEMU_ARGS] [--qcow2]
+                         [--qcow2-arg QEMU_ARGS] [--compression COMPRESSION]
+                         [--compress-arg COMPRESS_ARGS] [--app-name APP_NAME]
+                         [--app-template APP_TEMPLATE] [--app-file APP_FILE]
+                         [--ram MEMORY] [--vcpus VCPUS] [--vnc VNC]
+                         [--arch ARCH] [--kernel-args KERNEL_ARGS]
+                         [--ovmf-path OVMF_PATH] [--virt-uefi] [--no-kvm]
+                         [--dracut-arg DRACUT_ARGS]
+                         [--live-rootfs-size LIVE_ROOTFS_SIZE]
+                         [--live-rootfs-keep-size] [--oci-config OCI_CONFIG]
+                         [--oci-runtime OCI_RUNTIME]
+                         [--vagrant-metadata VAGRANT_METADATA]
+                         [--vagrantfile VAGRANTFILE] [--title TITLE]
+                         [--project PROJECT] [--releasever RELEASEVER]
+                         [--volid VOLID] [--squashfs_args SQUASHFS_ARGS]
+                         [--timeout TIMEOUT]
+</pre>
+<dl class="docutils">
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--make-iso=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Build a live iso</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--make-disk=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Build a partitioned disk image</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--make-fsimage=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Build a filesystem image</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--make-appliance=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Build an appliance image and XML description</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--make-ami=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Build an ami image</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--make-tar=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Build a tar of the root filesystem</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--make-pxe-live=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Build a live pxe boot squashfs image</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--make-ostree-live=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Build a live pxe boot squashfs image of Atomic Host</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--make-oci=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Build an Open Container Initiative image</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--make-vagrant=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Build a Vagrant Box image</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--iso</span></kbd></td>
+<td>Anaconda installation .iso path to use for qemu</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--iso-only=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Remove all iso creation artifacts except the boot.iso, combine with &#8211;iso-name to rename the boot.iso</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--iso-name</span></kbd></td>
+<td>Name of output iso file for &#8211;iso-only. Default is boot.iso</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--ks</span></kbd></td>
+<td>Kickstart file defining the install.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--image-only=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Exit after creating fs/disk image.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--no-virt=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Run anaconda directly on host instead of using qemu</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--proxy</span></kbd></td>
+<td>proxy URL to use for the install</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--anaconda-arg</span></kbd></td>
+<td>Additional argument to pass to anaconda (no-virt mode). Pass once for each argument</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--armplatform</span></kbd></td>
+<td>the platform to use when creating images for ARM, i.e., highbank, mvebu, omap, tegra, etc.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--location</span></kbd></td>
+<td>location of iso directory tree with initrd.img and vmlinuz. Used to run qemu with a newer initrd than the iso.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--logfile=./livemedia.log</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Name and path for primary logfile, other logs will be created in the same directory.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--lorax-templates</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Path to mako templates for lorax</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--tmp=/var/tmp</span></kbd></td>
+<td>Top level temporary directory</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--resultdir</span></kbd></td>
+<td>Directory to copy the resulting images and iso into. Defaults to the temporary working directory</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--macboot=True</span></kbd></td>
+<td>Undocumented</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--nomacboot=True</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Undocumented</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--disk-image</span></kbd></td>
+<td>Path to existing disk image to use for creating final image.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--keep-image=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Keep raw disk image after .iso creation</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--fs-image</span></kbd></td>
+<td>Path to existing filesystem image to use for creating final image.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--image-name</span></kbd></td>
+<td>Name of output file to create. Used for tar, fs and disk image. Default is a random name.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--fs-label=Anaconda</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Label to set on fsimage, default is &#8216;Anaconda&#8217;</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--image-type</span></kbd></td>
+<td>Create an image with qemu-img. See qemu-img &#8211;help for supported formats.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--qemu-arg=[]</span></kbd></td>
+<td>Arguments to pass to qemu-img. Pass once for each argument, they will be used for ALL calls to qemu-img.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--qcow2=False</span></kbd></td>
+<td>Create qcow2 image instead of raw sparse image when making disk images.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--qcow2-arg=[]</span></kbd></td>
+<td>Arguments to pass to qemu-img. Pass once for each argument, they will be used for ALL calls to qemu-img.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--compression=xz</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Compression binary for make-tar. xz, lzma, gzip, and bzip2 are supported. xz is the default.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--compress-arg=[]</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Arguments to pass to compression. Pass once for each argument</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--app-name</span></kbd></td>
+<td>Name of appliance to pass to template</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--app-template</span></kbd></td>
+<td>Path to template to use for appliance data.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--app-file=appliance.xml</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Appliance template results file.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--ram=1024</span></kbd></td>
+<td>Memory to allocate for installer in megabytes.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--vcpus</span></kbd></td>
+<td>Passed to qemu -smp command</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--vnc</span></kbd></td>
+<td>Passed to qemu -display command. eg. vnc=127.0.0.1:5, default is to choose the first unused vnc port.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--arch</span></kbd></td>
+<td>System arch to build for. Used to select qemu-system-* command. Defaults to qemu-system-&lt;arch&gt;</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--kernel-args</span></kbd></td>
+<td>Additional argument to pass to the installation kernel</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--ovmf-path=/usr/share/OVMF/</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Path to OVMF firmware</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--virt-uefi=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Use OVMF firmware to boot the VM in UEFI mode</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--no-kvm=False</span></kbd></td>
+<td>Skip using kvm with qemu even if it is available.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--dracut-arg</span></kbd></td>
+<td>Argument to pass to dracut when rebuilding the initramfs. Pass this once for each argument. NOTE: this overrides the default. (default: )</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--live-rootfs-size=0</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Size of root filesystem of live image in GiB</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--live-rootfs-keep-size=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Keep the original size of root filesystem in live image</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--oci-config</span></kbd></td>
+<td>config.json OCI configuration file</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--oci-runtime</span></kbd></td>
+<td>runtime.json OCI configuration file</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--vagrant-metadata</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>optional metadata.json file</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--vagrantfile</span></kbd></td>
+<td>optional vagrantfile</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--title=Linux Live Media</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Substituted for &#64;TITLE&#64; in bootloader config files</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--project=Linux</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>substituted for &#64;PROJECT&#64; in bootloader config files</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--releasever=25</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>substituted for &#64;VERSION&#64; in bootloader config files</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--volid</span></kbd></td>
+<td>volume id</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--squashfs_args</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>additional squashfs args</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--timeout</span></kbd></td>
+<td>Cancel installer after X minutes</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
 <div class="section" id="quickstart">
 <h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
 <p>Run this to create a bootable live iso:</p>
@@ -202,8 +455,8 @@ to save a bit of space on the build system.</p>
 --ks=./docs/fedora-livemedia.ks --lorax-templates=./share/
 </pre></div>
 </div>
-<p>If you want to watch the install you can pass <tt class="docutils literal"><span class="pre">--vnc</span> <span class="pre">vnc</span></tt> and use a vnc client
-to connect to localhost:0</p>
+<p>You can observe the installation using vnc. The logs will show what port was
+chosen, or you can use a specific port by passing it. eg. <tt class="docutils literal"><span class="pre">--vnc</span> <span class="pre">vnc:127.0.0.1:5</span></tt></p>
 <p>This is usually a good idea when testing changes to the kickstart. lmc tries
 to monitor the logs for fatal errors, but may not catch everything.</p>
 </div>
@@ -214,27 +467,26 @@ as its output, and the boot media creation which uses the image as its input.
 Normally you would run both stages, but it is possible to stop after the
 install stage, by using <tt class="docutils literal"><span class="pre">--image-only</span></tt>, or to skip the install stage and use
 a previously created disk image by passing <tt class="docutils literal"><span class="pre">--disk-image</span></tt> or <tt class="docutils literal"><span class="pre">--fs-image</span></tt></p>
-<p>When creating an iso virt-install boots using the passed Anaconda installer iso
+<p>When creating an iso qemu boots using the passed Anaconda installer iso
 and installs the system based on the kickstart. The <tt class="docutils literal"><span class="pre">%post</span></tt> section of the
 kickstart is used to customize the installed system in the same way that
 current spin-kickstarts do.</p>
 <p>livemedia-creator monitors the install process for problems by watching the
 install logs. They are written to the current directory or to the base
 directory specified by the &#8211;logfile command. You can also monitor the install
-by passing <tt class="docutils literal"><span class="pre">--vnc</span> <span class="pre">vnc</span></tt> and using a vnc client. This is recommended when first
-modifying a kickstart, since there are still places where Anaconda may get
-stuck without the log monitor catching it.</p>
+by using a vnc client. This is recommended when first modifying a kickstart,
+since there are still places where Anaconda may get stuck without the log
+monitor catching it.</p>
 <p>The output from this process is a partitioned disk image. kpartx can be used
 to mount and examine it when there is a problem with the install. It can also
 be booted using kvm.</p>
 <p>When creating an iso the disk image&#8217;s / partition is copied into a formatted
-disk image which is then used as the input to lorax for creation of the final
-media.</p>
-<p>The final image is created by lorax, using the templates in /usr/share/lorax/
-or the directory specified by <tt class="docutils literal"><span class="pre">--lorax-templates</span></tt></p>
-<p>Currently the standard lorax templates are used to make a bootable iso, but
-it should be possible to modify them to output other results. They are
-written using the Mako template system which is very flexible.</p>
+filesystem image which is then used as the input to lorax for creation of the
+final media.</p>
+<p>The final image is created by lorax, using the templates in /usr/share/lorax/live/
+or the live directory below the directory specified by <tt class="docutils literal"><span class="pre">--lorax-templates</span></tt>. The
+templates are written using the Mako template system with some extra commands
+added by lorax.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">The output from &#8211;make-iso includes the artifacts used to create the boot.iso;
@@ -305,24 +557,24 @@ memtest86+
 syslinux</p>
 </li>
 </ol>
-<p>One drawback to using virt-install is that it pulls the packages from
-the repo each time you run it. To speed things up you either need a local
-mirror of the packages, or you can use a caching proxy. When using a proxy
-you pass it to livemedia-creator like this:</p>
+<p>One drawback to using qemu is that it pulls the packages from the repo each
+time you run it. To speed things up you either need a local mirror of the
+packages, or you can use a caching proxy. When using a proxy you pass it to
+livemedia-creator like this:</p>
 <blockquote>
 <div><tt class="docutils literal"><span class="pre">--proxy=http://proxy.yourdomain.com:3128</span></tt></div></blockquote>
 <p>You also need to use a specific mirror instead of mirrormanager so that the
 packages will get cached, so your kickstart url would look like:</p>
 <blockquote>
 <div><tt class="docutils literal"><span class="pre">url</span> <span class="pre">--url=&quot;http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/x86_64/os/&quot;</span></tt></div></blockquote>
-<p>You can also add an update repo, but don&#8217;t name it updates. Add &#8211;proxy to
-it as well.</p>
+<p>You can also add an update repo, but don&#8217;t name it updates. Add &#8211;proxy to it
+as well.</p>
 </div>
 <div class="section" id="anaconda-image-install-no-virt">
 <h2>Anaconda image install (no-virt)<a class="headerlink" href="#anaconda-image-install-no-virt" title="Permalink to this headline">¶</a></h2>
-<p>You can create images without using virt-install by passing <tt class="docutils literal"><span class="pre">--no-virt</span></tt> on the
-cmdline. This will use Anaconda&#8217;s directory install feature to handle the install.
-There are a couple of things to keep in mind when doing this:</p>
+<p>You can create images without using qemu by passing <tt class="docutils literal"><span class="pre">--no-virt</span></tt> on the
+cmdline. This will use Anaconda&#8217;s directory install feature to handle the
+install.  There are a couple of things to keep in mind when doing this:</p>
 <ol class="arabic simple">
 <li>It will be most reliable when building images for the same release that the
 host is running. Because Anaconda has expectations about the system it is
@@ -415,9 +667,9 @@ from <tt class="docutils literal"><span class="pre">--releasever</span></tt></p>
 </div>
 <div class="section" id="filesystem-image-creation">
 <h2>Filesystem Image Creation<a class="headerlink" href="#filesystem-image-creation" title="Permalink to this headline">¶</a></h2>
-<p>livemedia-creator can be used to create un-partitined filesystem images using the
-<tt class="docutils literal"><span class="pre">--make-fsimage</span></tt> option. As of version 21.8 this works with both virt-install and no-virt modes
-of operation. Previously it was only available with no-virt.</p>
+<p>livemedia-creator can be used to create un-partitined filesystem images using
+the <tt class="docutils literal"><span class="pre">--make-fsimage</span></tt> option. As of version 21.8 this works with both qemu and
+no-virt modes of operation. Previously it was only available with no-virt.</p>
 <p>Kickstarts should have a single / partition with no extra mountpoints.</p>
 <blockquote>
 <div><tt class="docutils literal"><span class="pre">livemedia-creator</span> <span class="pre">--make-fsimage</span> <span class="pre">--iso=/path/to/boot.iso</span> <span class="pre">--ks=./docs/fedora-minimal.ks</span></tt></div></blockquote>
@@ -450,8 +702,8 @@ for installations of Atomic Host.  Example kickstart for such an installation
 using Atomic installer iso with local repo included in the image can be found
 in docs/rhel-atomic-pxe-live.ks.</p>
 </div>
-<div class="section" id="using-mock-to-create-images">
-<h2>Using Mock to Create Images<a class="headerlink" href="#using-mock-to-create-images" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="using-mock-and-no-virt-to-create-images">
+<h2>Using Mock and &#8211;no-virt to Create Images<a class="headerlink" href="#using-mock-and-no-virt-to-create-images" title="Permalink to this headline">¶</a></h2>
 <p>As of lorax version 22.2 you can use livemedia-creator and anaconda version
 22.15 inside of a mock chroot with &#8211;make-iso and &#8211;make-fsimage.</p>
 <div class="admonition note">
@@ -507,6 +759,65 @@ group.</p>
 including anaconda logs and livemedia-creator logs. The new iso will be
 located at ~/results/try-1/images/boot.iso, and the ~/results/try-1/
 directory tree will also contain the vmlinuz, initrd, etc.</p>
+</div>
+<div class="section" id="using-mock-and-qemu-to-create-images">
+<h2>Using Mock and qemu to Create Images<a class="headerlink" href="#using-mock-and-qemu-to-create-images" title="Permalink to this headline">¶</a></h2>
+<p>Version 25.0 of livemedia-creator switches to using qemu for virtualization.
+This allows creation of all image types, and use of the KVM on the host if
+/dev/kvm is present in the mock environment.</p>
+<p>On the host system:</p>
+<ol class="arabic">
+<li><p class="first">yum install -y mock</p>
+</li>
+<li><p class="first">Add a user to the mock group to use for running mock. eg. builder</p>
+</li>
+<li><p class="first">Create a new /etc/mock/ config file based on the rawhide one, or modify the
+existing one so that the following options are setup:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">config_opts</span><span class="p">[</span><span class="s">&#39;chroot_setup_cmd&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;install @buildsys-build lorax qemu&#39;</span>
+
+<span class="c"># build results go into /home/builder/results/</span>
+<span class="n">config_opts</span><span class="p">[</span><span class="s">&#39;plugin_conf&#39;</span><span class="p">][</span><span class="s">&#39;bind_mount_opts&#39;</span><span class="p">][</span><span class="s">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;/home/builder/results&#39;</span><span class="p">,</span><span class="s">&#39;/results/&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>If you are creating images for a branched release of Fedora you should also enable
+the updates-testing repository so that you get the latest builds in your mock chroot.</p>
+</li>
+</ol>
+<p>The following steps are run as the builder user who is a member of the mock
+group.</p>
+<ol class="arabic" start="4">
+<li><p class="first">Make a directory for results matching the bind mount above
+<tt class="docutils literal"><span class="pre">mkdir</span> <span class="pre">~/results/</span></tt></p>
+</li>
+<li><p class="first">Copy the example kickstarts
+<tt class="docutils literal"><span class="pre">cp</span> <span class="pre">/usr/share/docs/lorax/*ks</span> <span class="pre">.</span></tt></p>
+</li>
+<li><p class="first">Make sure tar and dracut-network are in the %packages section and that the
+<tt class="docutils literal"><span class="pre">url</span> <span class="pre">points</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">correct</span> <span class="pre">repo</span></tt></p>
+</li>
+<li><p class="first">Init the mock
+<tt class="docutils literal"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">fedora-rawhide-x86_64</span> <span class="pre">--init</span></tt></p>
+</li>
+<li><p class="first">Copy the kickstart inside the mock
+<tt class="docutils literal"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">fedora-rawhide-x86_64</span> <span class="pre">--copyin</span> <span class="pre">./fedora-minimal.ks</span> <span class="pre">/root/</span></tt></p>
+</li>
+<li><p class="first">Copy the Anaconda boot.iso inside the mock
+<tt class="docutils literal"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">fedora-rawhide-x86_64</span> <span class="pre">--copyin</span> <span class="pre">./boot.iso</span> <span class="pre">/root/</span></tt></p>
+</li>
+<li><p class="first">Make a minimal iso:</p>
+<div class="highlight-python"><div class="highlight"><pre>mock -r fedora-rawhide-x86_64 --chroot -- livemedia-creator \
+--resultdir=/results/try-1 --logfile=/results/logs/try-1/try-1.log \
+--make-iso --ks /root/fedora-minimal.ks --iso /root/boot.iso
+</pre></div>
+</div>
+</li>
+</ol>
+<p>Results will be in ./results/try-1 and logs under /results/logs/try-1/
+including anaconda logs and livemedia-creator logs. The new iso will be
+located at ~/results/try-1/images/boot.iso, and the ~/results/try-1/
+directory tree will also contain the vmlinuz, initrd, etc.</p>
+<p>This will run qemu without kvm support, which is going to be very slow. You can
+add <tt class="docutils literal"><span class="pre">mknod</span> <span class="pre">/dev/kvm</span> <span class="pre">c</span> <span class="pre">10</span> <span class="pre">232;</span></tt> to create the device node before running lmc.</p>
 </div>
 <div class="section" id="openstack-image-creation">
 <h2>OpenStack Image Creation<a class="headerlink" href="#openstack-image-creation" title="Permalink to this headline">¶</a></h2>
@@ -610,27 +921,23 @@ then using efibootmgr to setup the correct boot entry.</p>
 </div>
 <div class="section" id="debugging-problems">
 <h2>Debugging problems<a class="headerlink" href="#debugging-problems" title="Permalink to this headline">¶</a></h2>
-<p>Sometimes an installation will get stuck. When using virt-install the logs will
+<p>Sometimes an installation will get stuck. When using qemu the logs will
 be written to ./virt-install.log and most of the time any problems that happen
 will be near the end of the file. lmc tries to detect common errors and will
 cancel the installation when they happen. But not everything can be caught.
-When creating a new kickstart it is helpful to use the <tt class="docutils literal"><span class="pre">--vnc</span> <span class="pre">vnc</span></tt> command so
-that you can monitor the installation as it happens, and if it gets stuck
-without lmc detecting the problem you can switch to tty1 and examine the system
-directly.</p>
-<p>If it does get stuck the best way to cancel is to use virsh to destroy the domain.</p>
-<ol class="arabic simple">
-<li>Use <tt class="docutils literal"><span class="pre">sudo</span> <span class="pre">virsh</span> <span class="pre">list</span></tt> to show the name of the virt. It will start with LiveOS and contain a UUID.</li>
-<li>Run <tt class="docutils literal"><span class="pre">sudo</span> <span class="pre">virsh</span> <span class="pre">destroy</span> <span class="pre">&lt;name&gt;</span></tt> to destroy the domain.</li>
-<li>Wait 20 seconds or so for lmc to detect that the domain vanished. It should handle cleanup.</li>
-</ol>
+When creating a new kickstart it is helpful to use vnc so that you can monitor
+the installation as it happens, and if it gets stuck without lmc detecting the
+problem you can switch to tty1 and examine the system directly.</p>
+<p>If it does get stuck the best way to cancel is to use kill -9 on the qemu pid,
+lmc will detect that the process died and cleanup.</p>
 <p>If lmc didn&#8217;t handle the cleanup for some reason you can do this:
-1. <tt class="docutils literal"><span class="pre">sudo</span> <span class="pre">virsh</span> <span class="pre">undefine</span> <span class="pre">&lt;name&gt;</span></tt>
-2. <tt class="docutils literal"><span class="pre">sudo</span> <span class="pre">umount</span> <span class="pre">/tmp/tmpXXXX</span></tt> to unmount the iso from its mountpoint.
-3. <tt class="docutils literal"><span class="pre">sudo</span> <span class="pre">rm</span> <span class="pre">-rf</span> <span class="pre">/tmp/tmpXXXX</span></tt>
-4. <tt class="docutils literal"><span class="pre">sudo</span> <span class="pre">rm</span> <span class="pre">/var/tmp/diskXXXXX</span></tt> to remove the disk image.</p>
-<p>The logs from the virt-install run are stored in virt-install.log,
-logs from livemedia-creator are in livemedia.log and program.log</p>
+1. <tt class="docutils literal"><span class="pre">sudo</span> <span class="pre">umount</span> <span class="pre">/tmp/lmc-XXXX</span></tt> to unmount the iso from its mountpoint.
+2. <tt class="docutils literal"><span class="pre">sudo</span> <span class="pre">rm</span> <span class="pre">-rf</span> <span class="pre">/tmp/lmc-XXXX</span></tt>
+3. <tt class="docutils literal"><span class="pre">sudo</span> <span class="pre">rm</span> <span class="pre">/var/tmp/lmc-disk-XXXXX</span></tt> to remove the disk image.</p>
+<p>Note that lmc uses the lmc- prefix for all of its temporary files and
+directories to make it easier to find and clean up leftovers.</p>
+<p>The logs from the qemu run are stored in virt-install.log, logs from
+livemedia-creator are in livemedia.log and program.log</p>
 <p>You can add <tt class="docutils literal"><span class="pre">--image-only</span></tt> to skip the .iso creation and examine the resulting
 disk image. Or you can pass <tt class="docutils literal"><span class="pre">--keep-image</span></tt> to keep it around after the iso has
 been created.</p>
@@ -690,7 +997,7 @@ report bugs against the lorax component.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'24.10',
+            VERSION:'25.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
