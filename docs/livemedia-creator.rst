@@ -39,6 +39,11 @@ Conventions used in this document:
 ``image`` is the disk image being created by running livemedia-creator
 
 
+.. argparse::
+   :ref: livemedia-creator.get_parser
+   :prog: livemedia-creator
+
+
 Quickstart
 ----------
 

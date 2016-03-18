@@ -16,6 +16,11 @@ rawhide version to build the boot.iso for rawhide, along with the rawhide
 repositories.
 
 
+.. argparse::
+   :ref: lorax.get_parser
+   :prog: lorax
+
+
 Quickstart
 ----------
 
