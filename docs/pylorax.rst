@@ -20,6 +20,14 @@ pylorax.buildstamp module
     :undoc-members:
     :show-inheritance:
 
+pylorax.cmdline module
+----------------------
+
+.. automodule:: pylorax.cmdline
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 pylorax.decorators module
 -------------------------
 

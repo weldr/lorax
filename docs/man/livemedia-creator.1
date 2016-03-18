@@ -1,0 +1,1020 @@
+.\" Man page generated from reStructuredText.
+.
+.TH "LIVEMEDIA-CREATOR" "1" "March 18, 2016" "25.2" "Lorax"
+.SH NAME
+livemedia-creator \- Live Media Creator Documentation
+.
+.nr rst2man-indent-level 0
+.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.INDENT 0.0
+.TP
+.B Authors
+Brian C. Lane <\fI\%bcl@redhat.com\fP>
+.UNINDENT
+.sp
+livemedia\-creator uses \fI\%Anaconda\fP,
+\fI\%kickstart\fP and \fI\%Lorax\fP to create bootable media that use the
+same install path as a normal system installation. It can be used to make live
+isos, bootable (partitioned) disk images, tarfiles, and filesystem images for
+use with virtualization and container solutions like libvirt, docker, and
+OpenStack.
+.sp
+The general idea is to use qemu with kickstart and an Anaconda boot.iso to
+install into a disk image and then use the disk image to create the bootable
+media.
+.sp
+livemedia\-creator \-\-help will describe all of the options available. At the
+minimum you need:
+.sp
+\fB\-\-make\-iso\fP to create a final bootable .iso or one of the other \fB\-\-make\-*\fP options.
+.sp
+\fB\-\-iso\fP to specify the Anaconda install media to use with qemu.
+.sp
+\fB\-\-ks\fP to select the kickstart file describing what to install.
+.sp
+To use livemedia\-creator with virtualization you will need to have qemu installed.
+.sp
+If you are going to be using Anaconda directly, with \fB\-\-no\-virt\fP mode, make sure
+you have the anaconda\-tui package installed.
+.sp
+Conventions used in this document:
+.sp
+\fBlmc\fP is an abbreviation for livemedia\-creator.
+.sp
+\fBbuilder\fP is the system where livemedia\-creator is being run
+.sp
+\fBimage\fP is the disk image being created by running livemedia\-creator
+.SH LIVEMEDIA-CREATOR CMDLINE ARGUMENTS
+.sp
+Create Live Install Media
+
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+usage: livemedia\-creator [\-h]
+                         (\-\-make\-iso | \-\-make\-disk | \-\-make\-fsimage | \-\-make\-appliance | \-\-make\-ami | \-\-make\-tar | \-\-make\-pxe\-live | \-\-make\-ostree\-live | \-\-make\-oci | \-\-make\-vagrant)
+                         [\-\-iso ISO] [\-\-iso\-only] [\-\-iso\-name ISO_NAME]
+                         [\-\-ks KS] [\-\-image\-only] [\-\-no\-virt] [\-\-proxy PROXY]
+                         [\-\-anaconda\-arg ANACONDA_ARGS]
+                         [\-\-armplatform ARMPLATFORM] [\-\-location LOCATION]
+                         [\-\-logfile LOGFILE]
+                         [\-\-lorax\-templates LORAX_TEMPLATES] [\-\-tmp TMP]
+                         [\-\-resultdir RESULT_DIR] [\-\-macboot] [\-\-nomacboot]
+                         [\-\-disk\-image DISK_IMAGE] [\-\-keep\-image]
+                         [\-\-fs\-image FS_IMAGE] [\-\-image\-name IMAGE_NAME]
+                         [\-\-fs\-label FS_LABEL] [\-\-image\-type IMAGE_TYPE]
+                         [\-\-qemu\-arg QEMU_ARGS] [\-\-qcow2]
+                         [\-\-qcow2\-arg QEMU_ARGS] [\-\-compression COMPRESSION]
+                         [\-\-compress\-arg COMPRESS_ARGS] [\-\-app\-name APP_NAME]
+                         [\-\-app\-template APP_TEMPLATE] [\-\-app\-file APP_FILE]
+                         [\-\-ram MEMORY] [\-\-vcpus VCPUS] [\-\-vnc VNC]
+                         [\-\-arch ARCH] [\-\-kernel\-args KERNEL_ARGS]
+                         [\-\-ovmf\-path OVMF_PATH] [\-\-virt\-uefi] [\-\-no\-kvm]
+                         [\-\-dracut\-arg DRACUT_ARGS]
+                         [\-\-live\-rootfs\-size LIVE_ROOTFS_SIZE]
+                         [\-\-live\-rootfs\-keep\-size] [\-\-oci\-config OCI_CONFIG]
+                         [\-\-oci\-runtime OCI_RUNTIME]
+                         [\-\-vagrant\-metadata VAGRANT_METADATA]
+                         [\-\-vagrantfile VAGRANTFILE] [\-\-title TITLE]
+                         [\-\-project PROJECT] [\-\-releasever RELEASEVER]
+                         [\-\-volid VOLID] [\-\-squashfs_args SQUASHFS_ARGS]
+                         [\-\-timeout TIMEOUT]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B Options:
+.INDENT 7.0
+.TP
+.B \-\-make\-iso=False
+Build a live iso
+.TP
+.B \-\-make\-disk=False
+Build a partitioned disk image
+.TP
+.B \-\-make\-fsimage=False
+Build a filesystem image
+.TP
+.B \-\-make\-appliance=False
+Build an appliance image and XML description
+.TP
+.B \-\-make\-ami=False
+Build an ami image
+.TP
+.B \-\-make\-tar=False
+Build a tar of the root filesystem
+.TP
+.B \-\-make\-pxe\-live=False
+Build a live pxe boot squashfs image
+.TP
+.B \-\-make\-ostree\-live=False
+Build a live pxe boot squashfs image of Atomic Host
+.TP
+.B \-\-make\-oci=False
+Build an Open Container Initiative image
+.TP
+.B \-\-make\-vagrant=False
+Build a Vagrant Box image
+.TP
+.B \-\-iso
+Anaconda installation .iso path to use for qemu
+.TP
+.B \-\-iso\-only=False
+Remove all iso creation artifacts except the boot.iso, combine with \-\-iso\-name to rename the boot.iso
+.TP
+.B \-\-iso\-name
+Name of output iso file for \-\-iso\-only. Default is boot.iso
+.TP
+.B \-\-ks
+Kickstart file defining the install.
+.TP
+.B \-\-image\-only=False
+Exit after creating fs/disk image.
+.TP
+.B \-\-no\-virt=False
+Run anaconda directly on host instead of using qemu
+.TP
+.B \-\-proxy
+proxy URL to use for the install
+.TP
+.B \-\-anaconda\-arg
+Additional argument to pass to anaconda (no\-virt mode). Pass once for each argument
+.TP
+.B \-\-armplatform
+the platform to use when creating images for ARM, i.e., highbank, mvebu, omap, tegra, etc.
+.TP
+.B \-\-location
+location of iso directory tree with initrd.img and vmlinuz. Used to run qemu with a newer initrd than the iso.
+.TP
+.B \-\-logfile=./livemedia.log
+Name and path for primary logfile, other logs will be created in the same directory.
+.TP
+.B \-\-lorax\-templates
+Path to mako templates for lorax
+.TP
+.B \-\-tmp=/var/tmp
+Top level temporary directory
+.TP
+.B \-\-resultdir
+Directory to copy the resulting images and iso into. Defaults to the temporary working directory
+.TP
+.B \-\-macboot=True
+Undocumented
+.TP
+.B \-\-nomacboot=True
+Undocumented
+.TP
+.B \-\-disk\-image
+Path to existing disk image to use for creating final image.
+.TP
+.B \-\-keep\-image=False
+Keep raw disk image after .iso creation
+.TP
+.B \-\-fs\-image
+Path to existing filesystem image to use for creating final image.
+.TP
+.B \-\-image\-name
+Name of output file to create. Used for tar, fs and disk image. Default is a random name.
+.TP
+.B \-\-fs\-label=Anaconda
+Label to set on fsimage, default is \(aqAnaconda\(aq
+.TP
+.B \-\-image\-type
+Create an image with qemu\-img. See qemu\-img \-\-help for supported formats.
+.TP
+.B \-\-qemu\-arg=[]
+Arguments to pass to qemu\-img. Pass once for each argument, they will be used for ALL calls to qemu\-img.
+.TP
+.B \-\-qcow2=False
+Create qcow2 image instead of raw sparse image when making disk images.
+.TP
+.B \-\-qcow2\-arg=[]
+Arguments to pass to qemu\-img. Pass once for each argument, they will be used for ALL calls to qemu\-img.
+.TP
+.B \-\-compression=xz
+Compression binary for make\-tar. xz, lzma, gzip, and bzip2 are supported. xz is the default.
+.TP
+.B \-\-compress\-arg=[]
+Arguments to pass to compression. Pass once for each argument
+.TP
+.B \-\-app\-name
+Name of appliance to pass to template
+.TP
+.B \-\-app\-template
+Path to template to use for appliance data.
+.TP
+.B \-\-app\-file=appliance.xml
+Appliance template results file.
+.TP
+.B \-\-ram=1024
+Memory to allocate for installer in megabytes.
+.TP
+.B \-\-vcpus
+Passed to qemu \-smp command
+.TP
+.B \-\-vnc
+Passed to qemu \-display command. eg. vnc=127.0.0.1:5, default is to choose the first unused vnc port.
+.TP
+.B \-\-arch
+System arch to build for. Used to select qemu\-system\-* command. Defaults to qemu\-system\-<arch>
+.TP
+.B \-\-kernel\-args
+Additional argument to pass to the installation kernel
+.TP
+.B \-\-ovmf\-path=/usr/share/OVMF/
+Path to OVMF firmware
+.TP
+.B \-\-virt\-uefi=False
+Use OVMF firmware to boot the VM in UEFI mode
+.TP
+.B \-\-no\-kvm=False
+Skip using kvm with qemu even if it is available.
+.TP
+.B \-\-dracut\-arg
+Argument to pass to dracut when rebuilding the initramfs. Pass this once for each argument. NOTE: this overrides the default. (default: )
+.TP
+.B \-\-live\-rootfs\-size=0
+Size of root filesystem of live image in GiB
+.TP
+.B \-\-live\-rootfs\-keep\-size=False
+Keep the original size of root filesystem in live image
+.TP
+.B \-\-oci\-config
+config.json OCI configuration file
+.TP
+.B \-\-oci\-runtime
+runtime.json OCI configuration file
+.TP
+.B \-\-vagrant\-metadata
+optional metadata.json file
+.TP
+.B \-\-vagrantfile
+optional vagrantfile
+.TP
+.B \-\-title=Linux Live Media
+Substituted for @TITLE@ in bootloader config files
+.TP
+.B \-\-project=Linux
+substituted for @PROJECT@ in bootloader config files
+.TP
+.B \-\-releasever=25
+substituted for @VERSION@ in bootloader config files
+.TP
+.B \-\-volid
+volume id
+.TP
+.B \-\-squashfs_args
+additional squashfs args
+.TP
+.B \-\-timeout
+Cancel installer after X minutes
+.UNINDENT
+.UNINDENT
+.SH QUICKSTART
+.sp
+Run this to create a bootable live iso:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+sudo livemedia\-creator \-\-make\-iso \e
+\-\-iso=/extra/iso/boot.iso \-\-ks=./docs/fedora\-livemedia.ks
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+You can run it directly from the lorax git repo like this:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+sudo PATH=./src/sbin/:$PATH PYTHONPATH=./src/ ./src/sbin/livemedia\-creator \e
+\-\-make\-iso \-\-iso=/extra/iso/boot.iso \e
+\-\-ks=./docs/fedora\-livemedia.ks \-\-lorax\-templates=./share/
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+You can observe the installation using vnc. The logs will show what port was
+chosen, or you can use a specific port by passing it. eg. \fB\-\-vnc vnc:127.0.0.1:5\fP
+.sp
+This is usually a good idea when testing changes to the kickstart. lmc tries
+to monitor the logs for fatal errors, but may not catch everything.
+.SH HOW ISO CREATION WORKS
+.sp
+There are 2 stages, the install stage which produces a disk or filesystem image
+as its output, and the boot media creation which uses the image as its input.
+Normally you would run both stages, but it is possible to stop after the
+install stage, by using \fB\-\-image\-only\fP, or to skip the install stage and use
+a previously created disk image by passing \fB\-\-disk\-image\fP or \fB\-\-fs\-image\fP
+.sp
+When creating an iso qemu boots using the passed Anaconda installer iso
+and installs the system based on the kickstart. The \fB%post\fP section of the
+kickstart is used to customize the installed system in the same way that
+current spin\-kickstarts do.
+.sp
+livemedia\-creator monitors the install process for problems by watching the
+install logs. They are written to the current directory or to the base
+directory specified by the \-\-logfile command. You can also monitor the install
+by using a vnc client. This is recommended when first modifying a kickstart,
+since there are still places where Anaconda may get stuck without the log
+monitor catching it.
+.sp
+The output from this process is a partitioned disk image. kpartx can be used
+to mount and examine it when there is a problem with the install. It can also
+be booted using kvm.
+.sp
+When creating an iso the disk image\(aqs / partition is copied into a formatted
+filesystem image which is then used as the input to lorax for creation of the
+final media.
+.sp
+The final image is created by lorax, using the templates in /usr/share/lorax/live/
+or the live directory below the directory specified by \fB\-\-lorax\-templates\fP\&. The
+templates are written using the Mako template system with some extra commands
+added by lorax.
+.sp
+\fBNOTE:\fP
+.INDENT 0.0
+.INDENT 3.5
+The output from \-\-make\-iso includes the artifacts used to create the boot.iso;
+the kernel, initrd, the squashfs filesystem, etc. If you only want the
+boot.iso you can pass \fB\-\-iso\-only\fP and the other files will be removed. You
+can also name the iso by using \fB\-\-iso\-name my\-live.iso\fP\&.
+.UNINDENT
+.UNINDENT
+.SH KICKSTARTS
+.sp
+The docs/ directory includes several example kickstarts, one to create a live
+desktop iso using GNOME, and another to create a minimal disk image. When
+creating your own kickstarts you should start with the minimal example, it
+includes several needed packages that are not always included by dependencies.
+.sp
+Or you can use existing spin kickstarts to create live media with a few
+changes. Here are the steps I used to convert the Fedora XFCE spin.
+.INDENT 0.0
+.IP 1. 4
+Flatten the xfce kickstart using ksflatten
+.IP 2. 4
+Add zerombr so you don\(aqt get the disk init dialog
+.IP 3. 4
+Add clearpart \-\-all
+.IP 4. 4
+Add swap partition
+.IP 5. 4
+bootloader target
+.IP 6. 4
+Add shutdown to the kickstart
+.IP 7. 4
+Add network \-\-bootproto=dhcp \-\-activate to activate the network
+This works for F16 builds but for F15 and before you need to pass
+something on the cmdline that activate the network, like sshd:
+.INDENT 4.0
+.INDENT 3.5
+\fBlivemedia\-creator \-\-kernel\-args="sshd"\fP
+.UNINDENT
+.UNINDENT
+.IP 8. 4
+Add a root password:
+.INDENT 4.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+rootpw rootme
+network \-\-bootproto=dhcp \-\-activate
+zerombr
+clearpart \-\-all
+bootloader \-\-location=mbr
+part swap \-\-size=512
+shutdown
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.IP 9. 4
+In the livesys script section of the %post remove the root password. This
+really depends on how the spin wants to work. You could add the live user
+that you create to the %wheel group so that sudo works if you wanted to.
+.INDENT 4.0
+.INDENT 3.5
+\fBpasswd \-d root > /dev/null\fP
+.UNINDENT
+.UNINDENT
+.IP 10. 4
+Remove /etc/fstab in %post, dracut handles mounting the rootfs
+.sp
+\fBcat /dev/null > /dev/fstab\fP
+.sp
+Do this only for live iso\(aqs, the filesystem will be mounted read only if
+there is no /etc/fstab
+.IP 11. 4
+Don\(aqt delete initramfs files from /boot in %post
+.IP 12. 4
+When creating live iso\(aqs you need to have, at least, these packages in the %package section::
+dracut\-config\-generic
+dracut\-live
+\-dracut\-config\-rescue
+grub\-efi
+memtest86+
+syslinux
+.UNINDENT
+.sp
+One drawback to using qemu is that it pulls the packages from the repo each
+time you run it. To speed things up you either need a local mirror of the
+packages, or you can use a caching proxy. When using a proxy you pass it to
+livemedia\-creator like this:
+.INDENT 0.0
+.INDENT 3.5
+\fB\-\-proxy=http://proxy.yourdomain.com:3128\fP
+.UNINDENT
+.UNINDENT
+.sp
+You also need to use a specific mirror instead of mirrormanager so that the
+packages will get cached, so your kickstart url would look like:
+.INDENT 0.0
+.INDENT 3.5
+\fBurl \-\-url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/x86_64/os/"\fP
+.UNINDENT
+.UNINDENT
+.sp
+You can also add an update repo, but don\(aqt name it updates. Add \-\-proxy to it
+as well.
+.SH ANACONDA IMAGE INSTALL (NO-VIRT)
+.sp
+You can create images without using qemu by passing \fB\-\-no\-virt\fP on the
+cmdline. This will use Anaconda\(aqs directory install feature to handle the
+install.  There are a couple of things to keep in mind when doing this:
+.INDENT 0.0
+.IP 1. 3
+It will be most reliable when building images for the same release that the
+host is running. Because Anaconda has expectations about the system it is
+running under you may encounter strange bugs if you try to build newer or
+older releases.
+.IP 2. 3
+Make sure selinux is set to permissive or disabled. It won\(aqt install
+correctly with selinux set to enforcing yet.
+.IP 3. 3
+It may totally trash your host. So far I haven\(aqt had this happen, but the
+possibility exists that a bug in Anaconda could result in it operating on
+real devices. I recommend running it in a virt or on a system that you can
+afford to lose all data from.
+.UNINDENT
+.sp
+The logs from anaconda will be placed in an ./anaconda/ directory in either
+the current directory or in the directory used for \-\-logfile
+.sp
+Example cmdline:
+.sp
+\fBsudo livemedia\-creator \-\-make\-iso \-\-no\-virt \-\-ks=./fedora\-livemedia.ks\fP
+.sp
+\fBNOTE:\fP
+.INDENT 0.0
+.INDENT 3.5
+Using no\-virt to create a partitioned disk image (eg. \-\-make\-disk or
+\-\-make\-vagrant) will only create disks usable on the host platform (BIOS
+or UEFI). You can create BIOS partitioned disk images on UEFI by using
+virt.
+.UNINDENT
+.UNINDENT
+.SH AMI IMAGES
+.sp
+Amazon EC2 images can be created by using the \-\-make\-ami switch and an appropriate
+kickstart file. All of the work to customize the image is handled by the kickstart.
+The example currently included was modified from the cloud\-kickstarts version so
+that it would work with livemedia\-creator.
+.sp
+Example cmdline:
+.sp
+\fBsudo livemedia\-creator \-\-make\-ami \-\-iso=/path/to/boot.iso \-\-ks=./docs/fedora\-livemedia\-ec2.ks\fP
+.sp
+This will produce an ami\-root.img file in the working directory.
+.sp
+At this time I have not tested the image with EC2. Feedback would be welcome.
+.SH APPLIANCE CREATION
+.sp
+livemedia\-creator can now replace appliance\-tools by using the \-\-make\-appliance
+switch. This will create the partitioned disk image and an XML file that can be
+used with virt\-image to setup a virtual system.
+.sp
+The XML is generated using the Mako template from
+/usr/share/lorax/appliance/libvirt.xml You can use a different template by
+passing \fB\-\-app\-template <template path>\fP
+.sp
+Documentation on the Mako template system can be found at the \fI\%Mako site\fP
+.sp
+The name of the final output XML is appliance.xml, this can be changed with
+\fB\-\-app\-file <file path>\fP
+.sp
+The following variables are passed to the template:
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.TP
+.B \fBdisks\fP
+A list of disk_info about each disk.
+Each entry has the following attributes:
+.INDENT 7.0
+.INDENT 3.5
+\fBname\fP
+base name of the disk image file
+.sp
+\fBformat\fP
+"raw"
+.sp
+\fBchecksum_type\fP
+"sha256"
+.sp
+\fBchecksum\fP
+sha256 checksum of the disk image
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.sp
+\fBname\fP
+Name of appliance, from \-\-app\-name argument
+.sp
+\fBarch\fP
+Architecture
+.sp
+\fBmemory\fP
+Memory in KB (from \fB\-\-ram\fP)
+.sp
+\fBvcpus\fP
+from \fB\-\-vcpus\fP
+.sp
+\fBnetworks\fP
+list of networks from the kickstart or []
+.sp
+\fBtitle\fP
+from \fB\-\-title\fP
+.sp
+\fBproject\fP
+from \fB\-\-project\fP
+.sp
+\fBreleasever\fP
+from \fB\-\-releasever\fP
+.UNINDENT
+.UNINDENT
+.sp
+The created image can be imported into libvirt using:
+.INDENT 0.0
+.INDENT 3.5
+\fBvirt\-image appliance.xml\fP
+.UNINDENT
+.UNINDENT
+.sp
+You can also create qcow2 appliance images using \fB\-\-image\-type=qcow2\fP, for example:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+sudo livemedia\-creator \-\-make\-appliance \-\-iso=/path/to/boot.iso \-\-ks=./docs/fedora\-minimal.ks \e
+\-\-image\-type=qcow2 \-\-app\-file=minimal\-test.xml \-\-image\-name=minimal\-test.img
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SH FILESYSTEM IMAGE CREATION
+.sp
+livemedia\-creator can be used to create un\-partitined filesystem images using
+the \fB\-\-make\-fsimage\fP option. As of version 21.8 this works with both qemu and
+no\-virt modes of operation. Previously it was only available with no\-virt.
+.sp
+Kickstarts should have a single / partition with no extra mountpoints.
+.INDENT 0.0
+.INDENT 3.5
+\fBlivemedia\-creator \-\-make\-fsimage \-\-iso=/path/to/boot.iso \-\-ks=./docs/fedora\-minimal.ks\fP
+.UNINDENT
+.UNINDENT
+.sp
+You can name the output image with \fB\-\-image\-name\fP and set a label on the filesystem with \fB\-\-fs\-label\fP
+.SH TAR FILE CREATION
+.sp
+The \fB\-\-make\-tar\fP command can be used to create a tar of the root filesystem. By
+default it is compressed using xz, but this can be changed using the
+\fB\-\-compression\fP and \fB\-\-compress\-arg\fP options. This option works with both virt and
+no\-virt install methods.
+.sp
+As with \fB\-\-make\-fsimage\fP the kickstart should be limited to a single / partition.
+.sp
+For example:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+livemedia\-creator \-\-make\-tar \-\-iso=/path/to/boot.iso \-\-ks=./docs/fedora\-minimal.ks \e
+\-\-image\-name=fedora\-root.tar.xz
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SH LIVE IMAGE FOR PXE BOOT
+.sp
+The \fB\-\-make\-pxe\-live\fP command will produce squashfs image containing live root
+filesystem that can be used for pxe boot. Directory with results will contain
+the live image, kernel image, initrd image and template of pxe configuration
+for the images.
+.SH ATOMIC LIVE IMAGE FOR PXE BOOT
+.sp
+The \fB\-\-make\-ostree\-live\fP command will produce the same result as \fB\-\-make\-pxe\-live\fP
+for installations of Atomic Host.  Example kickstart for such an installation
+using Atomic installer iso with local repo included in the image can be found
+in docs/rhel\-atomic\-pxe\-live.ks.
+.SH USING MOCK AND --NO-VIRT TO CREATE IMAGES
+.sp
+As of lorax version 22.2 you can use livemedia\-creator and anaconda version
+22.15 inside of a mock chroot with \-\-make\-iso and \-\-make\-fsimage.
+.sp
+\fBNOTE:\fP
+.INDENT 0.0
+.INDENT 3.5
+As of mock 1.2.12 you no longer need to bind mount \fB/dev/\fP, loop devices are setup
+as part of the standard mock \fB/dev/\fP creation.
+.UNINDENT
+.UNINDENT
+.sp
+On the host system:
+.INDENT 0.0
+.IP 1. 3
+yum install \-y mock
+.IP 2. 3
+Add a user to the mock group to use for running mock. eg. builder
+.IP 3. 3
+Create a new /etc/mock/ config file based on the rawhide one, or modify the
+existing one so that the following options are setup:
+.INDENT 3.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+config_opts[\(aqchroot_setup_cmd\(aq] = \(aqinstall @buildsys\-build anaconda\-tui lorax\(aq
+
+# build results go into /home/builder/results/
+config_opts[\(aqplugin_conf\(aq][\(aqbind_mount_opts\(aq][\(aqdirs\(aq].append((\(aq/home/builder/results\(aq,\(aq/results/\(aq))
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+If you are creating images for a branched release of Fedora you should also enable
+the updates\-testing repository so that you get the latest builds in your mock chroot.
+.UNINDENT
+.sp
+The following steps are run as the builder user who is a member of the mock
+group.
+.INDENT 0.0
+.IP 4. 3
+Make a directory for results matching the bind mount above
+\fBmkdir ~/results/\fP
+.IP 5. 3
+Copy the example kickstarts
+\fBcp /usr/share/docs/lorax/*ks .\fP
+.IP 6. 3
+Make sure tar and dracut\-network are in the %packages section and that the
+\fBurl points to the correct repo\fP
+.IP 7. 3
+Init the mock
+\fBmock \-r fedora\-rawhide\-x86_64 \-\-init\fP
+.IP 8. 3
+Copy the kickstart inside the mock
+\fBmock \-r fedora\-rawhide\-x86_64 \-\-copyin ./fedora\-minimal.ks /root/\fP
+.IP 9. 3
+Make a minimal iso:
+.INDENT 3.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+mock \-r fedora\-rawhide\-x86_64 \-\-chroot \-\- livemedia\-creator \-\-no\-virt \e
+\-\-resultdir=/results/try\-1 \-\-logfile=/results/logs/try\-1/try\-1.log \e
+\-\-make\-iso \-\-ks /root/fedora\-minimal.ks
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.sp
+Results will be in ./results/try\-1 and logs under /results/logs/try\-1/
+including anaconda logs and livemedia\-creator logs. The new iso will be
+located at ~/results/try\-1/images/boot.iso, and the ~/results/try\-1/
+directory tree will also contain the vmlinuz, initrd, etc.
+.SH USING MOCK AND QEMU TO CREATE IMAGES
+.sp
+Version 25.0 of livemedia\-creator switches to using qemu for virtualization.
+This allows creation of all image types, and use of the KVM on the host if
+/dev/kvm is present in the mock environment.
+.sp
+On the host system:
+.INDENT 0.0
+.IP 1. 3
+yum install \-y mock
+.IP 2. 3
+Add a user to the mock group to use for running mock. eg. builder
+.IP 3. 3
+Create a new /etc/mock/ config file based on the rawhide one, or modify the
+existing one so that the following options are setup:
+.INDENT 3.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+config_opts[\(aqchroot_setup_cmd\(aq] = \(aqinstall @buildsys\-build lorax qemu\(aq
+
+# build results go into /home/builder/results/
+config_opts[\(aqplugin_conf\(aq][\(aqbind_mount_opts\(aq][\(aqdirs\(aq].append((\(aq/home/builder/results\(aq,\(aq/results/\(aq))
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+If you are creating images for a branched release of Fedora you should also enable
+the updates\-testing repository so that you get the latest builds in your mock chroot.
+.UNINDENT
+.sp
+The following steps are run as the builder user who is a member of the mock
+group.
+.INDENT 0.0
+.IP 4. 3
+Make a directory for results matching the bind mount above
+\fBmkdir ~/results/\fP
+.IP 5. 3
+Copy the example kickstarts
+\fBcp /usr/share/docs/lorax/*ks .\fP
+.IP 6. 3
+Make sure tar and dracut\-network are in the %packages section and that the
+\fBurl points to the correct repo\fP
+.IP 7. 3
+Init the mock
+\fBmock \-r fedora\-rawhide\-x86_64 \-\-init\fP
+.IP 8. 3
+Copy the kickstart inside the mock
+\fBmock \-r fedora\-rawhide\-x86_64 \-\-copyin ./fedora\-minimal.ks /root/\fP
+.IP 9. 3
+Copy the Anaconda boot.iso inside the mock
+\fBmock \-r fedora\-rawhide\-x86_64 \-\-copyin ./boot.iso /root/\fP
+.IP 10. 3
+Make a minimal iso:
+.INDENT 3.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+mock \-r fedora\-rawhide\-x86_64 \-\-chroot \-\- livemedia\-creator \e
+\-\-resultdir=/results/try\-1 \-\-logfile=/results/logs/try\-1/try\-1.log \e
+\-\-make\-iso \-\-ks /root/fedora\-minimal.ks \-\-iso /root/boot.iso
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.sp
+Results will be in ./results/try\-1 and logs under /results/logs/try\-1/
+including anaconda logs and livemedia\-creator logs. The new iso will be
+located at ~/results/try\-1/images/boot.iso, and the ~/results/try\-1/
+directory tree will also contain the vmlinuz, initrd, etc.
+.sp
+This will run qemu without kvm support, which is going to be very slow. You can
+add \fBmknod /dev/kvm c 10 232;\fP to create the device node before running lmc.
+.SH OPENSTACK IMAGE CREATION
+.sp
+OpenStack supports partitioned disk images so \fB\-\-make\-disk\fP can be used to
+create images for importing into glance, OpenStack\(aqs image storage component.
+You need to have access to an OpenStack provider that allows image uploads, or
+setup your own using the instructions from the \fI\%RDO Project\fP\&.
+.sp
+The example kickstart, fedora\-openstack.ks, is only slightly different than the
+fedora\-minimal.ks one.  It adds the cloud\-init and cloud\-utils\-growpart
+packages. OpenStack supports setting up the image using cloud\-init, and
+cloud\-utils\-growpart will grow the image to fit the instance\(aqs disk size.
+.sp
+Create a qcow2 image using the kickstart like this:
+.INDENT 0.0
+.INDENT 3.5
+\fBsudo livemedia\-creator \-\-make\-disk \-\-iso=/path/to/boot.iso \-\-ks=/path/to/fedora\-openstack.ks \-\-image\-type=qcow2\fP
+.UNINDENT
+.UNINDENT
+.sp
+\fBNOTE:\fP
+.INDENT 0.0
+.INDENT 3.5
+On the RHEL7 version of lmc \fB\-\-image\-type\fP isn\(aqt supported. You can only create a bare partitioned disk image.
+.UNINDENT
+.UNINDENT
+.sp
+Import the resulting disk image into the OpenStack system, either via the web UI, or glance on the cmdline:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+glance image\-create \-\-name "fedora\-openstack" \-\-is\-public true \-\-disk\-format qcow2 \e
+\-\-container\-format bare \-\-file ./fedora\-openstack.qcow2
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+If qcow2 wasn\(aqt used then \fB\-\-disk\-format\fP should be set to raw.
+.SH DOCKER IMAGE CREATION
+.sp
+Use lmc to create a tarfile as described in the \fI\%TAR File Creation\fP section, but substitute the
+fedora\-docker.ks example kickstart which removes the requirement for core files and the kernel.
+.sp
+You can then import the tarfile into docker like this (as root):
+.INDENT 0.0
+.INDENT 3.5
+\fBcat /var/tmp/fedora\-root.tar.xz | docker import \- fedora\-root\fP
+.UNINDENT
+.UNINDENT
+.sp
+And then run bash inside of it:
+.INDENT 0.0
+.INDENT 3.5
+\fBsudo docker run \-i \-t fedora\-root /bin/bash\fP
+.UNINDENT
+.UNINDENT
+.SH OPEN CONTAINER INITIATIVE IMAGE CREATION
+.sp
+The OCI is a new specification that is still being worked on. You can read more about it at
+\fI\%the Open Container Initiative website\fP\&. You can create
+OCI images using the following command:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+sudo livemedia\-creator \-\-make\-oci \-\-oci\-config /path/to/config.json \-\-oci\-runtime /path/to/runtime.json \e
+\-\-iso=/path/to/boot.iso \-\-ks=/path/to/fedora\-minimal.ks
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+You must provide the config.json and runtime.json files to be included in the bundle,
+their specifications can be found \fI\%on the OCI github project\fP
+output will be in the results directory with a default name of bundle.tar.xz
+.sp
+This will work with \fB\-\-no\-virt\fP and inside a mock since it doesn\(aqt use any
+partitioned disk images.
+.SH VAGRANT IMAGE CREATION
+.sp
+\fI\%Vagrant\fP images can be created using the following command:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+sudo livemedia\-creator \-\-make\-vagrant \-\-vagrant\-metadata /path/to/metadata.json \e
+\-\-iso=/path/to/boot.iso \-\-ks=/path/to/fedora\-vagrant.ks
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+The image created is a \fI\%vagrant\-libvirt\fP provider image and needs to have
+vagrant setup with libvirt before you can use it.
+.sp
+The \fB\-\-vagrant\-metadata\fP file is optional, it will create a minimal one by
+default, and if one is passed it will make sure the disk size  is setup
+correctly. If you pass a \fB\-\-vagrant\-vagrantfile\fP it will be included in the
+image verbatim. By default no vagrantfile is created.
+.sp
+There is an example Vagrant kickstart file in the docs directory that sets up
+the vagrant user with the default insecure SSH pubkey and a few useful
+utilities.
+.sp
+This also works with \fB\-\-no\-virt\fP, but will not work inside a mock due to its
+use of partitioned disk images and qcow2.
+.SH CREATING UEFI DISK IMAGES WITH VIRT
+.sp
+Partitioned disk images can only be created for the same platform as the host system (BIOS or
+UEFI). You can use virt to create BIOS images on UEFI systems, and it is also possible
+to create UEFI images on BIOS systems using OVMF. You first need to setup your system with
+the OVMF firmware. The details can be \fI\%found here linux\-kvm OVMF page\fP
+but it amounts to:
+.INDENT 0.0
+.IP 1. 3
+Download the firmware.repo from \fI\%Gerd Hoffmann\fP and install it
+in /etc/yum.repos.d/
+.IP 2. 3
+Install the edk2.git\-ovmf\-x64 package
+.IP 3. 3
+Copy /usr/share/edk2.git/ovmf\-x64/OVMF_CODE\-pure\-efi.fd to /usr/share/OVMF/OVMF_CODE.fd
+.IP 4. 3
+Copy /usr/share/edk2.git/ovmf\-x64/OVMF_VARS\-pure\-efi.fd to /usr/share/OVMF/OVMF_VARS.fd
+.UNINDENT
+.sp
+Now you can run livemedia\-creator with \fB\-\-virt\-uefi\fP to boot and install using UEFI:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+sudo livemedia\-creator \-\-make\-disk \-\-virt\-uefi \-\-iso=/path/to/boot.iso \e
+\-\-ks=/path/to/fedora\-minimal.ks
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+Make sure that the kickstart you are using creates a /boot/efi partition by including this:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+part /boot/efi \-\-fstype="efi" \-\-size=500
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+\fBNOTE:\fP
+.INDENT 0.0
+.INDENT 3.5
+When using the resulting image with the current version of OVMF (edk2.git\-ovmf\-x64\-0\-20151103.b1295.ge5cffca)
+it will not boot automatically because there is a problem with the fallback path.
+You can boot it by entering the UEFI shell and running EFI/fedora/shim.efi and
+then using efibootmgr to setup the correct boot entry.
+.UNINDENT
+.UNINDENT
+.SH DEBUGGING PROBLEMS
+.sp
+Sometimes an installation will get stuck. When using qemu the logs will
+be written to ./virt\-install.log and most of the time any problems that happen
+will be near the end of the file. lmc tries to detect common errors and will
+cancel the installation when they happen. But not everything can be caught.
+When creating a new kickstart it is helpful to use vnc so that you can monitor
+the installation as it happens, and if it gets stuck without lmc detecting the
+problem you can switch to tty1 and examine the system directly.
+.sp
+If it does get stuck the best way to cancel is to use kill \-9 on the qemu pid,
+lmc will detect that the process died and cleanup.
+.sp
+If lmc didn\(aqt handle the cleanup for some reason you can do this:
+1. \fBsudo umount /tmp/lmc\-XXXX\fP to unmount the iso from its mountpoint.
+2. \fBsudo rm \-rf /tmp/lmc\-XXXX\fP
+3. \fBsudo rm /var/tmp/lmc\-disk\-XXXXX\fP to remove the disk image.
+.sp
+Note that lmc uses the lmc\- prefix for all of its temporary files and
+directories to make it easier to find and clean up leftovers.
+.sp
+The logs from the qemu run are stored in virt\-install.log, logs from
+livemedia\-creator are in livemedia.log and program.log
+.sp
+You can add \fB\-\-image\-only\fP to skip the .iso creation and examine the resulting
+disk image. Or you can pass \fB\-\-keep\-image\fP to keep it around after the iso has
+been created.
+.sp
+Cleaning up aborted \fB\-\-no\-virt\fP installs can sometimes be accomplished by
+running the \fBanaconda\-cleanup\fP script. As of Fedora 18 anaconda is
+multi\-threaded and it can sometimes become stuck and refuse to exit. When this
+happens you can usually clean up by first killing the anaconda process then
+running \fBanaconda\-cleanup\fP\&.
+.SH HACKING
+.sp
+Development on this will take place as part of the lorax project, and on the
+anaconda\-devel\-list mailing list, and \fI\%on github\fP
+.sp
+Feedback, enhancements and bugs are welcome.  You can use \fI\%bugzilla\fP to
+report bugs against the lorax component.
+.SH AUTHOR
+Anaconda Team
+.SH COPYRIGHT
+2015, Red Hat, Inc.
+.\" Generated by docutils manpage writer.
+.
