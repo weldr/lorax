@@ -16,6 +16,14 @@ rawhide version to build the boot.iso for rawhide, along with the rawhide
 repositories.
 
 
+lorax cmdline arguments
+-----------------------
+
+.. argparse::
+   :ref: pylorax.cmdline.lorax_parser
+   :prog: lorax
+
+
 Quickstart
 ----------
 

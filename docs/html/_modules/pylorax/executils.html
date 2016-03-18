@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.executils &mdash; Lorax 24.10 documentation</title>
+  <title>pylorax.executils &mdash; Lorax 25.2 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Lorax 24.10 documentation" href="../../index.html"/>
+    <link rel="top" title="Lorax 25.2 documentation" href="../../index.html"/>
         <link rel="up" title="pylorax" href="../pylorax.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                24.10
+                25.2
               </div>
             
           
@@ -289,6 +289,8 @@
                             <span class="n">env_prune</span><span class="o">=</span><span class="n">env_prune</span><span class="p">,</span> <span class="n">universal_newlines</span><span class="o">=</span><span class="ow">not</span> <span class="n">binary_output</span><span class="p">,</span>
                             <span class="n">env_add</span><span class="o">=</span><span class="n">env_add</span><span class="p">,</span> <span class="n">reset_handlers</span><span class="o">=</span><span class="n">reset_handlers</span><span class="p">,</span> <span class="n">reset_lang</span><span class="o">=</span><span class="n">reset_lang</span><span class="p">)</span>
 
+        <span class="n">output_string</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">err_string</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="k">if</span> <span class="n">callback</span><span class="p">:</span>
             <span class="k">while</span> <span class="n">callback</span><span class="p">(</span><span class="n">proc</span><span class="p">)</span> <span class="ow">and</span> <span class="n">proc</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
@@ -328,7 +330,7 @@
         <span class="k">raise</span>
 
     <span class="k">with</span> <span class="n">program_log_lock</span><span class="p">:</span>
-        <span class="n">program_log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Return code: </span><span class="si">%d</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">proc</span><span class="o">.</span><span class="n">returncode</span><span class="p">)</span>
+        <span class="n">program_log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Return code: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">proc</span><span class="o">.</span><span class="n">returncode</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">proc</span><span class="o">.</span><span class="n">returncode</span> <span class="ow">and</span> <span class="n">raise_err</span><span class="p">:</span>
         <span class="n">output</span> <span class="o">=</span> <span class="p">(</span><span class="n">output_string</span> <span class="ow">or</span> <span class="s">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">err_string</span> <span class="ow">or</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
@@ -512,7 +514,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'24.10',
+            VERSION:'25.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
