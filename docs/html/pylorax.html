@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax package &mdash; Lorax 24.10 documentation</title>
+  <title>pylorax package &mdash; Lorax 25.2 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Lorax 24.10 documentation" href="index.html"/>
+    <link rel="top" title="Lorax 25.2 documentation" href="index.html"/>
         <link rel="up" title="pylorax" href="modules.html"/>
         <link rel="prev" title="pylorax" href="modules.html"/> 
 
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                24.10
+                25.2
               </div>
             
           
@@ -92,6 +92,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.base">pylorax.base module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.buildstamp">pylorax.buildstamp module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pylorax.cmdline">pylorax.cmdline module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.decorators">pylorax.decorators module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.discinfo">pylorax.discinfo module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.dnfhelper">pylorax.dnfhelper module</a></li>
@@ -219,6 +220,21 @@
 </dd></dl>
 
 </div>
+<div class="section" id="module-pylorax.cmdline">
+<span id="pylorax-cmdline-module"></span><h2>pylorax.cmdline module<a class="headerlink" href="#module-pylorax.cmdline" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pylorax.cmdline.lmc_parser">
+<tt class="descclassname">pylorax.cmdline.</tt><tt class="descname">lmc_parser</tt><big>(</big><em>dracut_default=''</em><big>)</big><a class="reference internal" href="_modules/pylorax/cmdline.html#lmc_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.cmdline.lmc_parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a ArgumentParser object for live-media-creator.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.cmdline.lorax_parser">
+<tt class="descclassname">pylorax.cmdline.</tt><tt class="descname">lorax_parser</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pylorax/cmdline.html#lorax_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.cmdline.lorax_parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the ArgumentParser for lorax</p>
+</dd></dl>
+
+</div>
 <div class="section" id="module-pylorax.decorators">
 <span id="pylorax-decorators-module"></span><h2>pylorax.decorators module<a class="headerlink" href="#module-pylorax.decorators" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
@@ -296,7 +312,7 @@
 
 <dl class="function">
 <dt id="pylorax.executils.execReadlines">
-<tt class="descclassname">pylorax.executils.</tt><tt class="descname">execReadlines</tt><big>(</big><em>command</em>, <em>argv</em>, <em>stdin=None</em>, <em>root='/'</em>, <em>env_prune=None</em>, <em>filter_stderr=False</em>, <em>callback=&lt;function &lt;lambda&gt; at 0x7f043d1fd2f0&gt;</em>, <em>env_add=None</em>, <em>reset_handlers=True</em>, <em>reset_lang=True</em><big>)</big><a class="reference internal" href="_modules/pylorax/executils.html#execReadlines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.executils.execReadlines" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">pylorax.executils.</tt><tt class="descname">execReadlines</tt><big>(</big><em>command</em>, <em>argv</em>, <em>stdin=None</em>, <em>root='/'</em>, <em>env_prune=None</em>, <em>filter_stderr=False</em>, <em>callback=&lt;function &lt;lambda&gt; at 0x7fe613605488&gt;</em>, <em>env_add=None</em>, <em>reset_handlers=True</em>, <em>reset_lang=True</em><big>)</big><a class="reference internal" href="_modules/pylorax/executils.html#execReadlines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.executils.execReadlines" title="Permalink to this definition">¶</a></dt>
 <dd><p>Execute an external command and return the line output of the command
 in real-time.</p>
 <p>This method assumes that there is a reasonably low delay between the
@@ -1117,7 +1133,7 @@ there to be a listener on the port used for the virtio log port.</p>
 <dl class="class">
 <dt id="pylorax.monitor.LogRequestHandler">
 <em class="property">class </em><tt class="descclassname">pylorax.monitor.</tt><tt class="descname">LogRequestHandler</tt><big>(</big><em>request</em>, <em>client_address</em>, <em>server</em><big>)</big><a class="reference internal" href="_modules/pylorax/monitor.html#LogRequestHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.monitor.LogRequestHandler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">socketserver.BaseRequestHandler</span></tt></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/socketserver.html#socketserver.BaseRequestHandler" title="(in Python v3.5)"><tt class="xref py py-class docutils literal"><span class="pre">socketserver.BaseRequestHandler</span></tt></a></p>
 <p>Handle monitoring and saving the logfiles from the virtual install</p>
 <p>Incoming data is written to self.server.log_path and each line is checked
 for patterns that would indicate that the installation failed.
@@ -1162,7 +1178,7 @@ errors that indicate that the install failed.</p>
 <dl class="class">
 <dt id="pylorax.monitor.LogServer">
 <em class="property">class </em><tt class="descclassname">pylorax.monitor.</tt><tt class="descname">LogServer</tt><big>(</big><em>log_path</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pylorax/monitor.html#LogServer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.monitor.LogServer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">socketserver.TCPServer</span></tt></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/socketserver.html#socketserver.TCPServer" title="(in Python v3.5)"><tt class="xref py py-class docutils literal"><span class="pre">socketserver.TCPServer</span></tt></a></p>
 <p>A TCP Server that listens for log data</p>
 <dl class="method">
 <dt id="pylorax.monitor.LogServer.log_check">
@@ -1427,7 +1443,7 @@ image is built with the filename &#8220;${prefix}-${kernel.version}.img&#8221;</
 <dd><p>Bases: <a class="reference internal" href="#pylorax.base.DataHolder" title="pylorax.base.DataHolder"><tt class="xref py py-class docutils literal"><span class="pre">pylorax.base.DataHolder</span></tt></a></p>
 <dl class="attribute">
 <dt id="pylorax.ArchData.bcj_arch">
-<tt class="descname">bcj_arch</tt><em class="property"> = {'ppc': 'powerpc', 'armhfp': 'arm', 'x86_64': 'x86', 'arm': 'arm', 'i386': 'x86', 'ppc64': 'powerpc', 'ppc64le': 'powerpc'}</em><a class="headerlink" href="#pylorax.ArchData.bcj_arch" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">bcj_arch</tt><em class="property"> = {'i386': 'x86', 'armhfp': 'arm', 'arm': 'arm', 'ppc64le': 'powerpc', 'x86_64': 'x86', 'ppc64': 'powerpc', 'ppc': 'powerpc'}</em><a class="headerlink" href="#pylorax.ArchData.bcj_arch" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1557,7 +1573,7 @@ lowest numbered directory entry is returned.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'24.10',
+            VERSION:'25.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

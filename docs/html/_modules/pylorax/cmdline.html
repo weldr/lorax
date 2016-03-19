@@ -1,0 +1,483 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pylorax.cmdline &mdash; Lorax 25.2 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Lorax 25.2 documentation" href="../../index.html"/>
+        <link rel="up" title="pylorax" href="../pylorax.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Lorax
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                25.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction to Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html#before-lorax">Before Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../lorax.html">Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../livemedia-creator.html">livemedia-creator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../product-images.html">Product and Updates Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">pylorax</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">Lorax</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+          <li><a href="../pylorax.html">pylorax</a> &raquo;</li>
+      
+    <li>pylorax.cmdline</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pylorax.cmdline</h1><div class="highlight"><pre>
+<span class="c">#</span>
+<span class="c"># cmdline.py</span>
+<span class="c">#</span>
+<span class="c"># Copyright (C) 2016  Red Hat, Inc.</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the GNU General Public License as published by</span>
+<span class="c"># the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># This program is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c"># GNU General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License</span>
+<span class="c"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c">#</span>
+<span class="c"># Red Hat Author(s):  Brian C. Lane &lt;bcl@redhat.com&gt;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+
+<div class="viewcode-block" id="lorax_parser"><a class="viewcode-back" href="../../pylorax.html#pylorax.cmdline.lorax_parser">[docs]</a><span class="k">def</span> <span class="nf">lorax_parser</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot; Return the ArgumentParser for lorax&quot;&quot;&quot;</span>
+
+    <span class="c"># get lorax version</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">pylorax</span> <span class="kn">import</span> <span class="n">version</span>
+        <span class="n">vernum</span> <span class="o">=</span> <span class="n">version</span><span class="o">.</span><span class="n">num</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="n">vernum</span> <span class="o">=</span> <span class="s">&quot;devel&quot;</span>
+
+    <span class="n">version</span> <span class="o">=</span> <span class="s">&quot;{0}-{1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">vernum</span><span class="p">)</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s">&quot;Create the Anaconda boot.iso&quot;</span><span class="p">)</span>
+
+    <span class="c"># required arguments for image creation</span>
+    <span class="n">required</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s">&quot;required arguments&quot;</span><span class="p">)</span>
+    <span class="n">required</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;-p&quot;</span><span class="p">,</span> <span class="s">&quot;--product&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;product name&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;PRODUCT&quot;</span><span class="p">)</span>
+    <span class="n">required</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;-v&quot;</span><span class="p">,</span> <span class="s">&quot;--version&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;version identifier&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;VERSION&quot;</span><span class="p">)</span>
+    <span class="n">required</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;-r&quot;</span><span class="p">,</span> <span class="s">&quot;--release&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;release information&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;RELEASE&quot;</span><span class="p">)</span>
+    <span class="n">required</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;-s&quot;</span><span class="p">,</span> <span class="s">&quot;--source&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;source repository (may be listed multiple times)&quot;</span><span class="p">,</span>
+                        <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;REPOSITORY&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;append&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[])</span>
+    <span class="n">required</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--repo&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;source dnf repository file&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">,</span>
+                          <span class="n">dest</span><span class="o">=</span><span class="s">&quot;repos&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;REPOSITORY&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;append&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[])</span>
+
+    <span class="c"># optional arguments</span>
+    <span class="n">optional</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s">&quot;optional arguments&quot;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;-m&quot;</span><span class="p">,</span> <span class="s">&quot;--mirrorlist&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;mirrorlist repository (may be listed multiple times)&quot;</span><span class="p">,</span>
+                        <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;REPOSITORY&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;append&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[])</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;-t&quot;</span><span class="p">,</span> <span class="s">&quot;--variant&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;variant name&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;VARIANT&quot;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;-b&quot;</span><span class="p">,</span> <span class="s">&quot;--bugurl&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;bug reporting URL for the product&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;URL&quot;</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="s">&quot;your distribution provided bug reporting tool&quot;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--isfinal&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">,</span>
+                        <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;isfinal&quot;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;-c&quot;</span><span class="p">,</span> <span class="s">&quot;--config&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">&quot;/etc/lorax/lorax.conf&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;config file&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;CONFIGFILE&quot;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--proxy&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                          <span class="n">help</span><span class="o">=</span><span class="s">&quot;repo proxy url:port&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;HOST&quot;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;-i&quot;</span><span class="p">,</span> <span class="s">&quot;--installpkgs&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
+                        <span class="n">action</span><span class="o">=</span><span class="s">&quot;append&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;PACKAGE&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;package glob to install before runtime-install.tmpl runs. (may be listed multiple times)&quot;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--buildarch&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;build architecture&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;ARCH&quot;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--volid&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;volume id&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;VOLID&quot;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--macboot&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">,</span>
+                        <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;domacboot&quot;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--nomacboot&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">,</span>
+                        <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_false&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;domacboot&quot;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--noupgrade&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">,</span>
+                        <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_false&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;doupgrade&quot;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--logfile&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">&quot;./lorax.log&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Path to logfile&quot;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--tmp&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">&quot;/var/tmp&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Top level temporary directory&quot;</span> <span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--cachedir&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;DNF cache directory. Default is a temporary dir.&quot;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--workdir&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Work directory, overrides --tmp. Default is a temporary dir under /var/tmp&quot;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--force&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Run even when the destination directory exists&quot;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--add-template&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;add_templates&quot;</span><span class="p">,</span>
+                        <span class="n">action</span><span class="o">=</span><span class="s">&quot;append&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;Additional template for runtime image&quot;</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="p">[])</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--add-template-var&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;add_template_vars&quot;</span><span class="p">,</span>
+                        <span class="n">action</span><span class="o">=</span><span class="s">&quot;append&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;Set variable for runtime image template&quot;</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="p">[])</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--add-arch-template&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;add_arch_templates&quot;</span><span class="p">,</span>
+                        <span class="n">action</span><span class="o">=</span><span class="s">&quot;append&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;Additional template for architecture-specific image&quot;</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="p">[])</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--add-arch-template-var&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;add_arch_template_vars&quot;</span><span class="p">,</span>
+                        <span class="n">action</span><span class="o">=</span><span class="s">&quot;append&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;Set variable for architecture-specific image&quot;</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="p">[])</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--noverify&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_false&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;verify&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Do not verify the install root&quot;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--sharedir&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;SHAREDIR&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">,</span>
+                          <span class="n">help</span><span class="o">=</span><span class="s">&quot;Directory containing all the templates. Overrides config file sharedir&quot;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--enablerepo&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;append&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[],</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;enablerepos&quot;</span><span class="p">,</span>
+                          <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;[repo]&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;Names of repos to enable&quot;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--disablerepo&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;append&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[],</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;disablerepos&quot;</span><span class="p">,</span>
+                          <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;[repo]&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;Names of repos to disable&quot;</span><span class="p">)</span>
+
+    <span class="c"># add the show version option</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;-V&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;show program&#39;s version number and exit&quot;</span><span class="p">,</span>
+                      <span class="n">action</span><span class="o">=</span><span class="s">&quot;version&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;outputdir&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;Output directory&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;OUTPUTDIR&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">parser</span>
+
+</div>
+<div class="viewcode-block" id="lmc_parser"><a class="viewcode-back" href="../../pylorax.html#pylorax.cmdline.lmc_parser">[docs]</a><span class="k">def</span> <span class="nf">lmc_parser</span><span class="p">(</span><span class="n">dracut_default</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Return a ArgumentParser object for live-media-creator.&quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s">&quot;Create Live Install Media&quot;</span><span class="p">,</span>
+                                     <span class="n">fromfile_prefix_chars</span><span class="o">=</span><span class="s">&quot;@&quot;</span><span class="p">)</span>
+
+    <span class="c"># These are mutually exclusive, one is required</span>
+    <span class="n">action</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">action</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--make-iso&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Build a live iso&quot;</span><span class="p">)</span>
+    <span class="n">action</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--make-disk&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Build a partitioned disk image&quot;</span><span class="p">)</span>
+    <span class="n">action</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--make-fsimage&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Build a filesystem image&quot;</span><span class="p">)</span>
+    <span class="n">action</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--make-appliance&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Build an appliance image and XML description&quot;</span><span class="p">)</span>
+    <span class="n">action</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--make-ami&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Build an ami image&quot;</span><span class="p">)</span>
+    <span class="n">action</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--make-tar&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Build a tar of the root filesystem&quot;</span><span class="p">)</span>
+    <span class="n">action</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--make-pxe-live&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Build a live pxe boot squashfs image&quot;</span><span class="p">)</span>
+    <span class="n">action</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--make-ostree-live&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Build a live pxe boot squashfs image of Atomic Host&quot;</span><span class="p">)</span>
+    <span class="n">action</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--make-oci&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Build an Open Container Initiative image&quot;</span><span class="p">)</span>
+    <span class="n">action</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--make-vagrant&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Build a Vagrant Box image&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--iso&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Anaconda installation .iso path to use for qemu&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--iso-only&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Remove all iso creation artifacts except the boot.iso, &quot;</span>
+                             <span class="s">&quot;combine with --iso-name to rename the boot.iso&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--iso-name&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Name of output iso file for --iso-only. Default is boot.iso&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--ks&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;append&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Kickstart file defining the install.&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--image-only&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Exit after creating fs/disk image.&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--no-virt&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Run anaconda directly on host instead of using qemu&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--proxy&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;proxy URL to use for the install&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--anaconda-arg&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;append&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;anaconda_args&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Additional argument to pass to anaconda (no-virt &quot;</span>
+                             <span class="s">&quot;mode). Pass once for each argument&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--armplatform&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;the platform to use when creating images for ARM, &quot;</span>
+                             <span class="s">&quot;i.e., highbank, mvebu, omap, tegra, etc.&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--location&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;location of iso directory tree with initrd.img &quot;</span>
+                             <span class="s">&quot;and vmlinuz. Used to run qemu with a newer initrd &quot;</span>
+                             <span class="s">&quot;than the iso.&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--logfile&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">&quot;./livemedia.log&quot;</span><span class="p">,</span>
+                        <span class="nb">type</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Name and path for primary logfile, other logs will &quot;</span>
+                             <span class="s">&quot;be created in the same directory.&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--lorax-templates&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                        <span class="nb">type</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Path to mako templates for lorax&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--tmp&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">&quot;/var/tmp&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Top level temporary directory&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--resultdir&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;result_dir&quot;</span><span class="p">,</span>
+                        <span class="nb">type</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Directory to copy the resulting images and iso into. &quot;</span>
+                             <span class="s">&quot;Defaults to the temporary working directory&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--macboot&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                        <span class="n">dest</span><span class="o">=</span><span class="s">&quot;domacboot&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--nomacboot&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_false&quot;</span><span class="p">,</span>
+                        <span class="n">dest</span><span class="o">=</span><span class="s">&quot;domacboot&quot;</span><span class="p">)</span>
+
+    <span class="n">image_group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s">&quot;disk/fs image arguments&quot;</span><span class="p">)</span>
+    <span class="n">image_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--disk-image&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">,</span>
+                             <span class="n">help</span><span class="o">=</span><span class="s">&quot;Path to existing disk image to use for creating final image.&quot;</span><span class="p">)</span>
+    <span class="n">image_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--keep-image&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span>
+                             <span class="n">help</span><span class="o">=</span><span class="s">&quot;Keep raw disk image after .iso creation&quot;</span><span class="p">)</span>
+    <span class="n">image_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--fs-image&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">,</span>
+                             <span class="n">help</span><span class="o">=</span><span class="s">&quot;Path to existing filesystem image to use for creating final image.&quot;</span><span class="p">)</span>
+    <span class="n">image_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--image-name&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                             <span class="n">help</span><span class="o">=</span><span class="s">&quot;Name of output file to create. Used for tar, fs and disk image. Default is a random name.&quot;</span><span class="p">)</span>
+    <span class="n">image_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--fs-label&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">&quot;Anaconda&quot;</span><span class="p">,</span>
+                             <span class="n">help</span><span class="o">=</span><span class="s">&quot;Label to set on fsimage, default is &#39;Anaconda&#39;&quot;</span><span class="p">)</span>
+    <span class="n">image_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--image-type&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                             <span class="n">help</span><span class="o">=</span><span class="s">&quot;Create an image with qemu-img. See qemu-img --help for supported formats.&quot;</span><span class="p">)</span>
+    <span class="n">image_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--qemu-arg&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;append&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;qemu_args&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
+                             <span class="n">help</span><span class="o">=</span><span class="s">&quot;Arguments to pass to qemu-img. Pass once for each argument, they will be used for ALL calls to qemu-img.&quot;</span><span class="p">)</span>
+    <span class="n">image_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--qcow2&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span>
+                             <span class="n">help</span><span class="o">=</span><span class="s">&quot;Create qcow2 image instead of raw sparse image when making disk images.&quot;</span><span class="p">)</span>
+    <span class="n">image_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--qcow2-arg&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;append&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;qemu_args&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
+                             <span class="n">help</span><span class="o">=</span><span class="s">&quot;Arguments to pass to qemu-img. Pass once for each argument, they will be used for ALL calls to qemu-img.&quot;</span><span class="p">)</span>
+    <span class="n">image_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--compression&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">&quot;xz&quot;</span><span class="p">,</span>
+                             <span class="n">help</span><span class="o">=</span><span class="s">&quot;Compression binary for make-tar. xz, lzma, gzip, and bzip2 are supported. xz is the default.&quot;</span><span class="p">)</span>
+    <span class="n">image_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--compress-arg&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;append&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;compress_args&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
+                             <span class="n">help</span><span class="o">=</span><span class="s">&quot;Arguments to pass to compression. Pass once for each argument&quot;</span><span class="p">)</span>
+    <span class="c"># Group of arguments for appliance creation</span>
+    <span class="n">app_group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s">&quot;appliance arguments&quot;</span><span class="p">)</span>
+    <span class="n">app_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--app-name&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                           <span class="n">help</span><span class="o">=</span><span class="s">&quot;Name of appliance to pass to template&quot;</span><span class="p">)</span>
+    <span class="n">app_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--app-template&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                           <span class="n">help</span><span class="o">=</span><span class="s">&quot;Path to template to use for appliance data.&quot;</span><span class="p">)</span>
+    <span class="n">app_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--app-file&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">&quot;appliance.xml&quot;</span><span class="p">,</span>
+                           <span class="n">help</span><span class="o">=</span><span class="s">&quot;Appliance template results file.&quot;</span><span class="p">)</span>
+
+    <span class="c"># Group of arguments to pass to qemu</span>
+    <span class="n">virt_group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s">&quot;qemu arguments&quot;</span><span class="p">)</span>
+    <span class="n">virt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--ram&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;MEMORY&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s">&quot;Memory to allocate for installer in megabytes.&quot;</span><span class="p">)</span>
+    <span class="n">virt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--vcpus&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s">&quot;Passed to qemu -smp command&quot;</span><span class="p">)</span>
+    <span class="n">virt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--vnc&quot;</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s">&quot;Passed to qemu -display command. eg. vnc=127.0.0.1:5, default is to &quot;</span>
+                                 <span class="s">&quot;choose the first unused vnc port.&quot;</span><span class="p">)</span>
+    <span class="n">virt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--arch&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s">&quot;System arch to build for. Used to select qemu-system-* command. &quot;</span>
+                                 <span class="s">&quot;Defaults to qemu-system-&lt;arch&gt;&quot;</span><span class="p">)</span>
+    <span class="n">virt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--kernel-args&quot;</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s">&quot;Additional argument to pass to the installation kernel&quot;</span><span class="p">)</span>
+    <span class="n">virt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--ovmf-path&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">&quot;/usr/share/OVMF/&quot;</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s">&quot;Path to OVMF firmware&quot;</span><span class="p">)</span>
+    <span class="n">virt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--virt-uefi&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s">&quot;Use OVMF firmware to boot the VM in UEFI mode&quot;</span><span class="p">)</span>
+    <span class="n">virt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--no-kvm&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s">&quot;Skip using kvm with qemu even if it is available.&quot;</span><span class="p">)</span>
+
+    <span class="c"># dracut arguments</span>
+    <span class="n">dracut_group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s">&quot;dracut arguments&quot;</span><span class="p">)</span>
+    <span class="n">dracut_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--dracut-arg&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;append&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;dracut_args&quot;</span><span class="p">,</span>
+                              <span class="n">help</span><span class="o">=</span><span class="s">&quot;Argument to pass to dracut when &quot;</span>
+                                   <span class="s">&quot;rebuilding the initramfs. Pass this &quot;</span>
+                                   <span class="s">&quot;once for each argument. NOTE: this &quot;</span>
+                                   <span class="s">&quot;overrides the default. (default: </span><span class="si">%s</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="n">dracut_default</span><span class="p">)</span>
+
+    <span class="c"># pxe to live arguments</span>
+    <span class="n">pxelive_group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s">&quot;pxe to live arguments&quot;</span><span class="p">)</span>
+    <span class="n">pxelive_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--live-rootfs-size&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                <span class="n">help</span><span class="o">=</span><span class="s">&quot;Size of root filesystem of live image in GiB&quot;</span><span class="p">)</span>
+    <span class="n">pxelive_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--live-rootfs-keep-size&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span>
+                                <span class="n">help</span><span class="o">=</span><span class="s">&quot;Keep the original size of root filesystem in live image&quot;</span><span class="p">)</span>
+
+    <span class="c"># OCI specific commands</span>
+    <span class="n">oci_group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s">&quot;OCI arguments&quot;</span><span class="p">)</span>
+    <span class="n">oci_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--oci-config&quot;</span><span class="p">,</span>
+                              <span class="n">help</span><span class="o">=</span><span class="s">&quot;config.json OCI configuration file&quot;</span><span class="p">)</span>
+    <span class="n">oci_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--oci-runtime&quot;</span><span class="p">,</span>
+                              <span class="n">help</span><span class="o">=</span><span class="s">&quot;runtime.json OCI configuration file&quot;</span><span class="p">)</span>
+
+    <span class="c"># Vagrant specific commands</span>
+    <span class="n">vagrant_group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s">&quot;Vagrant arguments&quot;</span><span class="p">)</span>
+    <span class="n">vagrant_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--vagrant-metadata&quot;</span><span class="p">,</span>
+                               <span class="n">help</span><span class="o">=</span><span class="s">&quot;optional metadata.json file&quot;</span><span class="p">)</span>
+    <span class="n">vagrant_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--vagrantfile&quot;</span><span class="p">,</span>
+                               <span class="n">help</span><span class="o">=</span><span class="s">&quot;optional vagrantfile&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--title&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">&quot;Linux Live Media&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Substituted for @TITLE@ in bootloader config files&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--project&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">&quot;Linux&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;substituted for @PROJECT@ in bootloader config files&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--releasever&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">&quot;25&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;substituted for @VERSION@ in bootloader config files&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--volid&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;volume id&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--squashfs_args&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;additional squashfs args&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--timeout&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Cancel installer after X minutes&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">parser</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Red Hat, Inc..
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'25.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

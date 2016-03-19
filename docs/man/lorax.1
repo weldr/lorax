@@ -1,0 +1,305 @@
+.\" Man page generated from reStructuredText.
+.
+.TH "LORAX" "1" "March 18, 2016" "25.2" "Lorax"
+.SH NAME
+lorax \- Lorax Documentation
+.
+.nr rst2man-indent-level 0
+.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.INDENT 0.0
+.TP
+.B Authors
+Brian C. Lane <\fI\%bcl@redhat.com\fP>
+.UNINDENT
+.sp
+"I am the Lorax.  I speak for the trees [and images]."
+.sp
+The \fI\%lorax\fP tool is used to create the
+\fI\%Anaconda\fP installer boot.iso as
+well as the basic release tree, and .treeinfo metadata file. Its dependencies
+are fairly light\-weight because it needs to be able to run in a mock chroot
+environment. It is best to run lorax from the same release as is being targeted
+because the templates may have release specific logic in them. eg. Use the
+rawhide version to build the boot.iso for rawhide, along with the rawhide
+repositories.
+.SH LORAX CMDLINE ARGUMENTS
+.sp
+Create the Anaconda boot.iso
+
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+usage: lorax [\-h] \-p PRODUCT \-v VERSION \-r RELEASE [\-s REPOSITORY]
+             [\-\-repo REPOSITORY] [\-m REPOSITORY] [\-t VARIANT] [\-b URL]
+             [\-\-isfinal] [\-c CONFIGFILE] [\-\-proxy HOST] [\-i PACKAGE]
+             [\-\-buildarch ARCH] [\-\-volid VOLID] [\-\-macboot] [\-\-nomacboot]
+             [\-\-noupgrade] [\-\-logfile LOGFILE] [\-\-tmp TMP]
+             [\-\-cachedir CACHEDIR] [\-\-workdir WORKDIR] [\-\-force]
+             [\-\-add\-template ADD_TEMPLATES]
+             [\-\-add\-template\-var ADD_TEMPLATE_VARS]
+             [\-\-add\-arch\-template ADD_ARCH_TEMPLATES]
+             [\-\-add\-arch\-template\-var ADD_ARCH_TEMPLATE_VARS] [\-\-noverify]
+             [\-\-sharedir SHAREDIR] [\-\-enablerepo [repo]]
+             [\-\-disablerepo [repo]] [\-V]
+             OUTPUTDIR
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B Positional arguments:
+.INDENT 7.0
+.TP
+.Boutputdir
+Output directory
+.UNINDENT
+.TP
+.B Options:
+.INDENT 7.0
+.TP
+.B \-p\fP,\fB  \-\-product
+product name
+.TP
+.B \-v\fP,\fB  \-\-version
+version identifier
+.TP
+.B \-r\fP,\fB  \-\-release
+release information
+.TP
+.B \-s=[]\fP,\fB  \-\-source=[]
+source repository (may be listed multiple times)
+.TP
+.B \-\-repo=[]
+source dnf repository file
+.TP
+.B \-m=[]\fP,\fB  \-\-mirrorlist=[]
+mirrorlist repository (may be listed multiple times)
+.TP
+.B \-t\fP,\fB  \-\-variant
+variant name
+.TP
+.B \-b=your distribution provided bug reporting tool\fP,\fB  \-\-bugurl=your distribution provided bug reporting tool
+bug reporting URL for the product
+.TP
+.B \-\-isfinal=False
+Undocumented
+.TP
+.B \-c=/etc/lorax/lorax.conf\fP,\fB  \-\-config=/etc/lorax/lorax.conf
+config file
+.TP
+.B \-\-proxy
+repo proxy url:port
+.TP
+.B \-i=[]\fP,\fB  \-\-installpkgs=[]
+package glob to install before runtime\-install.tmpl runs. (may be listed multiple times)
+.TP
+.B \-\-buildarch
+build architecture
+.TP
+.B \-\-volid
+volume id
+.TP
+.B \-\-macboot=True
+Undocumented
+.TP
+.B \-\-nomacboot=True
+Undocumented
+.TP
+.B \-\-noupgrade=True
+Undocumented
+.TP
+.B \-\-logfile=./lorax.log
+Path to logfile
+.TP
+.B \-\-tmp=/var/tmp
+Top level temporary directory
+.TP
+.B \-\-cachedir
+DNF cache directory. Default is a temporary dir.
+.TP
+.B \-\-workdir
+Work directory, overrides \-\-tmp. Default is a temporary dir under /var/tmp
+.TP
+.B \-\-force=False
+Run even when the destination directory exists
+.TP
+.B \-\-add\-template=[]
+Additional template for runtime image
+.TP
+.B \-\-add\-template\-var=[]
+Set variable for runtime image template
+.TP
+.B \-\-add\-arch\-template=[]
+Additional template for architecture\-specific image
+.TP
+.B \-\-add\-arch\-template\-var=[]
+Set variable for architecture\-specific image
+.TP
+.B \-\-noverify=True
+Do not verify the install root
+.TP
+.B \-\-sharedir
+Directory containing all the templates. Overrides config file sharedir
+.TP
+.B \-\-enablerepo=[]
+Names of repos to enable
+.TP
+.B \-\-disablerepo=[]
+Names of repos to disable
+.TP
+.B \-V
+show program\(aqs version number and exit
+.UNINDENT
+.UNINDENT
+.SH QUICKSTART
+.sp
+Run this as root to create a boot.iso in \fB\&./results/\fP:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+dnf install lorax
+setenforce 0
+lorax \-p Fedora \-v 23 \-r 23 \e
+\-s http://dl.fedoraproject.org/pub/fedora/linux/releases/23/Everything/x86_64/os/ \e
+\-s http://dl.fedoraproject.org/pub/fedora/linux/updates/23/x86_64/ \e
+\&./results/
+setenforce 1
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+You can add your own repos with \fB\-s\fP and packages with higher NVRs will
+override the ones in the distribution repositories.
+.sp
+Under \fB\&./results/\fP will be the release tree files: .discinfo, .treeinfo, everything that
+goes onto the boot.iso, the pxeboot directory, and the boot.iso under \fB\&./images/\fP\&.
+.SH HOW IT WORKS
+.sp
+Lorax uses \fI\%dnf\fP to install
+packages into a temporary directory, sets up configuration files, it then
+removes unneeded files to save space, and creates a squashfs filesystem of the
+files.  The iso is then built using a generic initramfs and the kernel from the
+selected repositories.
+.sp
+To drive these processes Lorax uses a custom template system, based on \fI\%Mako
+templates\fP with the addition of custom
+commands (documented in \fBpylorax.ltmpl.LoraxTemplateRunner\fP). Mako
+supports \fB%if/%endif\fP blocks as well as free\-form python code inside \fB<%
+%>\fP tags and variable substitution with \fB${}\fP\&. The default templates are
+shipped with lorax in \fB/usr/share/lorax/templates.d/99\-generic/\fP and use the
+\fB\&.tmpl\fP extension.
+.SS runtime\-install.tmpl
+.sp
+The \fBruntime\-install.tmpl\fP template lists packages to be installed using the
+\fBinstallpkg\fP command.  This template is fairly simple, installing common packages and
+architecture specific packages. It must end with the \fBrun_pkg_transaction\fP
+command which tells dnf to download and install the packages.
+.SS runtime\-postinstall.tmpl
+.sp
+The \fBruntime\-postinstall.tmpl\fP template is where the system configuration
+happens. The installer environment is similar to a normal running system, but
+needs some special handling. Configuration files are setup, systemd is told to
+start the anaconda.target instead of a default system target, and a number of
+unneeded services are disabled, some of which can interfere with the
+installation. A number of template commands are used here:
+.INDENT 0.0
+.IP \(bu 2
+\fBappend\fP to add text to a file.
+.IP \(bu 2
+\fBchmod\fP changes the file\(aqs mode.
+.IP \(bu 2
+\fBgconfset\fP runs gconfset.
+.IP \(bu 2
+\fBinstall\fP to install a file into the installroot.
+.IP \(bu 2
+\fBmkdir\fP makes a new directory.
+.IP \(bu 2
+\fBmove\fP to move a file into the installroot
+.IP \(bu 2
+\fBreplace\fP does text substitution in a file
+.IP \(bu 2
+\fBremove\fP deletes a file
+.IP \(bu 2
+\fBruncmd\fP run arbitrary commands.
+.IP \(bu 2
+\fBsymlink\fP creates a symlink
+.IP \(bu 2
+\fBsystemctl\fP runs systemctl in the installroot
+.UNINDENT
+.SS runtime\-cleanup.tmpl
+.sp
+The \fBruntime\-cleanup.tmpl\fP template is used to remove files that aren\(aqt strictly needed
+by the installation environment. In addition to the \fBremove\fP template command it uses:
+.INDENT 0.0
+.IP \(bu 2
+\fBremovepkg\fP
+remove all of a specific package\(aqs contents. A package may be pulled in as a dependency, but
+not really used. eg. sound support.
+.IP \(bu 2
+\fBremovefrom\fP
+Removes some files from a package. A file glob can be used, or the \-\-allbut option to
+remove everything except a select few.
+.IP \(bu 2
+\fBremovekmod\fP
+Removes kernel modules
+.UNINDENT
+.SS The squashfs filesystem
+.sp
+After \fBruntime\-*.tmpl\fP templates have finished their work lorax creates an
+empty ext4 filesystem, copies the remaining files to it, and makes a squashfs
+filesystem of it. This file is the / of the boot.iso\(aqs installer environment
+and is what is in the LiveOS/squashfs.img file on the iso.
+.SS iso creation
+.sp
+The iso creation is handled by another set of templates. The one used depends
+on the architecture that the iso is being created for. They are also stored in
+\fB/usr/share/lorax/templates.d/99\-generic\fP and are named after the arch, like
+\fBx86.tmpl\fP and \fBaarch64.tmpl\fP\&. They handle creation of the tree, copying
+configuration template files, configuration variable substitution, treeinfo
+metadata (via the \fBtreeinfo\fP
+template command). Kernel and initrd are copied from the installroot to their
+final locations and then mkisofs is run to create the boot.iso
+.SH CUSTOM TEMPLATES
+.sp
+The default set of templates and configuration files from the lorax\-generic\-templates package
+are shipped in the \fB/usr/share/lorax/templates.d/99\-generic/\fP directory. You can
+make a copy of them and place them into another directory under \fBtemplates.d\fP
+and they will be used instead if their sort order is below all other directories. This
+allows multiple packages to ship lorax templates without conflict. You can (and probably
+should) select the specific template directory by passing \fB\-\-sharedir\fP to lorax.
+.SH AUTHOR
+Anaconda Team
+.SH COPYRIGHT
+2015, Red Hat, Inc.
+.\" Generated by docutils manpage writer.
+.

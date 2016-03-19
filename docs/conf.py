@@ -33,7 +33,8 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
-    'sphinx.ext.coverage'
+    'sphinx.ext.coverage',
+    'sphinxarg.ext'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -242,8 +243,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'Lorax', u'Lorax Documentation',
-     [u'Anaconda Team'], 1)
+    ('lorax', 'lorax', u'Lorax Documentation', [u'Anaconda Team'], 1),
+    ('livemedia-creator', 'livemedia-creator', u'Live Media Creator Documentation', [u'Anaconda Team'], 1)
 ]
 
 # If true, show URL addresses after external links.

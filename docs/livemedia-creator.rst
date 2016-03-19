@@ -39,6 +39,14 @@ Conventions used in this document:
 ``image`` is the disk image being created by running livemedia-creator
 
 
+livemedia-creator cmdline arguments
+-----------------------------------
+
+.. argparse::
+   :ref: pylorax.cmdline.lmc_parser
+   :prog: livemedia-creator
+
+
 Quickstart
 ----------
 

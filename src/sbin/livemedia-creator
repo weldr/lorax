@@ -27,7 +27,6 @@ import sys
 import tempfile
 import subprocess
 import shutil
-import argparse
 import hashlib
 import glob
 import json
@@ -56,6 +55,7 @@ from pylorax.imgutils import copytree, mkcpio
 from pylorax.executils import execWithRedirect, execReadlines, runcmd
 from pylorax.monitor import LogMonitor
 from pylorax.mount import IsoMountpoint
+from pylorax.cmdline import lmc_parser
 
 # Default parameters for rebuilding initramfs, override with --dracut-args
 DRACUT_DEFAULT = ["--xz", "--add", "livenet dmsquash-live convertfs pollcdrom qemu qemu-net",
@@ -1098,172 +1098,7 @@ def make_live_images(opts, work_dir, root_dir, rootfs_image=None, size=None):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Create Live Install Media",
-                                     fromfile_prefix_chars="@")
-
-    # These are mutually exclusive, one is required
-    action = parser.add_mutually_exclusive_group(required=True)
-    action.add_argument("--make-iso", action="store_true",
-                        help="Build a live iso")
-    action.add_argument("--make-disk", action="store_true",
-                        help="Build a partitioned disk image")
-    action.add_argument("--make-fsimage", action="store_true",
-                        help="Build a filesystem image")
-    action.add_argument("--make-appliance", action="store_true",
-                        help="Build an appliance image and XML description")
-    action.add_argument("--make-ami", action="store_true",
-                        help="Build an ami image")
-    action.add_argument("--make-tar", action="store_true",
-                        help="Build a tar of the root filesystem")
-    action.add_argument("--make-pxe-live", action="store_true",
-                        help="Build a live pxe boot squashfs image")
-    action.add_argument("--make-ostree-live", action="store_true",
-                        help="Build a live pxe boot squashfs image of Atomic Host")
-    action.add_argument("--make-oci", action="store_true",
-                        help="Build an Open Container Initiative image")
-    action.add_argument("--make-vagrant", action="store_true",
-                        help="Build a Vagrant Box image")
-
-    parser.add_argument("--iso", type=os.path.abspath,
-                        help="Anaconda installation .iso path to use for qemu")
-    parser.add_argument("--iso-only", action="store_true",
-                        help="Remove all iso creation artifacts except the boot.iso, "
-                             "combine with --iso-name to rename the boot.iso")
-    parser.add_argument("--iso-name", default=None,
-                        help="Name of output iso file for --iso-only. Default is boot.iso")
-    parser.add_argument("--ks", action="append", type=os.path.abspath,
-                        help="Kickstart file defining the install.")
-    parser.add_argument("--image-only", action="store_true",
-                        help="Exit after creating fs/disk image.")
-
-    parser.add_argument("--no-virt", action="store_true",
-                        help="Run anaconda directly on host instead of using qemu")
-    parser.add_argument("--proxy",
-                        help="proxy URL to use for the install")
-    parser.add_argument("--anaconda-arg", action="append", dest="anaconda_args",
-                        help="Additional argument to pass to anaconda (no-virt "
-                             "mode). Pass once for each argument")
-    parser.add_argument("--armplatform",
-                        help="the platform to use when creating images for ARM, "
-                             "i.e., highbank, mvebu, omap, tegra, etc.")
-    parser.add_argument("--location", default=None, type=os.path.abspath,
-                        help="location of iso directory tree with initrd.img "
-                             "and vmlinuz. Used to run qemu with a newer initrd "
-                             "than the iso.")
-
-    parser.add_argument("--logfile", default="./livemedia.log",
-                        type=os.path.abspath,
-                        help="Name and path for primary logfile, other logs will "
-                             "be created in the same directory.")
-    parser.add_argument("--lorax-templates", default=None,
-                        type=os.path.abspath,
-                        help="Path to mako templates for lorax")
-    parser.add_argument("--tmp", default="/var/tmp", type=os.path.abspath,
-                        help="Top level temporary directory")
-    parser.add_argument("--resultdir", default=None, dest="result_dir",
-                        type=os.path.abspath,
-                        help="Directory to copy the resulting images and iso into. "
-                             "Defaults to the temporary working directory")
-
-    parser.add_argument("--macboot", action="store_true", default=True,
-                        dest="domacboot")
-    parser.add_argument("--nomacboot", action="store_false",
-                        dest="domacboot")
-
-    image_group = parser.add_argument_group("disk/fs image arguments")
-    image_group.add_argument("--disk-image", type=os.path.abspath,
-                             help="Path to existing disk image to use for creating final image.")
-    image_group.add_argument("--keep-image", action="store_true",
-                             help="Keep raw disk image after .iso creation")
-    image_group.add_argument("--fs-image", type=os.path.abspath,
-                             help="Path to existing filesystem image to use for creating final image.")
-    image_group.add_argument("--image-name", default=None,
-                             help="Name of output file to create. Used for tar, fs and disk image. Default is a random name.")
-    image_group.add_argument("--fs-label", default="Anaconda",
-                             help="Label to set on fsimage, default is 'Anaconda'")
-    image_group.add_argument("--image-type", default=None,
-                             help="Create an image with qemu-img. See qemu-img --help for supported formats.")
-    image_group.add_argument("--qemu-arg", action="append", dest="qemu_args", default=[],
-                             help="Arguments to pass to qemu-img. Pass once for each argument, they will be used for ALL calls to qemu-img.")
-    image_group.add_argument("--qcow2", action="store_true",
-                             help="Create qcow2 image instead of raw sparse image when making disk images.")
-    image_group.add_argument("--qcow2-arg", action="append", dest="qemu_args", default=[],
-                             help="Arguments to pass to qemu-img. Pass once for each argument, they will be used for ALL calls to qemu-img.")
-    image_group.add_argument("--compression", default="xz",
-                             help="Compression binary for make-tar. xz, lzma, gzip, and bzip2 are supported. xz is the default.")
-    image_group.add_argument("--compress-arg", action="append", dest="compress_args", default=[],
-                             help="Arguments to pass to compression. Pass once for each argument")
-    # Group of arguments for appliance creation
-    app_group = parser.add_argument_group("appliance arguments")
-    app_group.add_argument("--app-name", default=None,
-                           help="Name of appliance to pass to template")
-    app_group.add_argument("--app-template", default=None,
-                           help="Path to template to use for appliance data.")
-    app_group.add_argument("--app-file", default="appliance.xml",
-                           help="Appliance template results file.")
-
-    # Group of arguments to pass to qemu
-    virt_group = parser.add_argument_group("qemu arguments")
-    virt_group.add_argument("--ram", metavar="MEMORY", type=int, default=1024,
-                            help="Memory to allocate for installer in megabytes.")
-    virt_group.add_argument("--vcpus", type=int, default=None,
-                            help="Passed to qemu -smp command")
-    virt_group.add_argument("--vnc",
-                            help="Passed to qemu -display command. eg. vnc=127.0.0.1:5, default is to "
-                                 "choose the first unused vnc port.")
-    virt_group.add_argument("--arch", default=None,
-                            help="System arch to build for. Used to select qemu-system-* command. "
-                                 "Defaults to qemu-system-<arch>")
-    virt_group.add_argument("--kernel-args",
-                            help="Additional argument to pass to the installation kernel")
-    virt_group.add_argument("--ovmf-path", default="/usr/share/OVMF/",
-                            help="Path to OVMF firmware")
-    virt_group.add_argument("--virt-uefi", action="store_true", default=False,
-                            help="Use OVMF firmware to boot the VM in UEFI mode")
-    virt_group.add_argument("--no-kvm", action="store_true", default=False,
-                            help="Skip using kvm with qemu even if it is available.")
-
-    # dracut arguments
-    dracut_group = parser.add_argument_group("dracut arguments")
-    dracut_group.add_argument("--dracut-arg", action="append", dest="dracut_args",
-                              help="Argument to pass to dracut when "
-                                   "rebuilding the initramfs. Pass this "
-                                   "once for each argument. NOTE: this "
-                                   "overrides the default. (default: %s)" % (DRACUT_DEFAULT,))
-
-    # pxe to live arguments
-    pxelive_group = parser.add_argument_group("pxe to live arguments")
-    pxelive_group.add_argument("--live-rootfs-size", type=int, default=0,
-                                help="Size of root filesystem of live image in GiB")
-    pxelive_group.add_argument("--live-rootfs-keep-size", action="store_true",
-                                help="Keep the original size of root filesystem in live image")
-
-    # OCI specific commands
-    oci_group = parser.add_argument_group("OCI arguments")
-    oci_group.add_argument("--oci-config",
-                              help="config.json OCI configuration file")
-    oci_group.add_argument("--oci-runtime",
-                              help="runtime.json OCI configuration file")
-
-    # Vagrant specific commands
-    vagrant_group = parser.add_argument_group("Vagrant arguments")
-    vagrant_group.add_argument("--vagrant-metadata",
-                               help="optional metadata.json file")
-    vagrant_group.add_argument("--vagrantfile",
-                               help="optional vagrantfile")
-
-    parser.add_argument("--title", default="Linux Live Media",
-                        help="Substituted for @TITLE@ in bootloader config files")
-    parser.add_argument("--project", default="Linux",
-                        help="substituted for @PROJECT@ in bootloader config files")
-    parser.add_argument("--releasever", default="25",
-                        help="substituted for @VERSION@ in bootloader config files")
-    parser.add_argument("--volid", default=None, help="volume id")
-    parser.add_argument("--squashfs_args",
-                        help="additional squashfs args")
-    parser.add_argument("--timeout", default=None, type=int,
-                        help="Cancel installer after X minutes")
-
+    parser = lmc_parser()
     opts = parser.parse_args()
 
     setup_logging(opts.logfile, log)
