@@ -978,6 +978,8 @@ def calculate_disk_size(opts, ks):
     :param opts: options passed to livemedia-creator
     :type opts: argparse options
     :param str ks: Path to the kickstart to use for the installation
+    :returns: Disk size in MiB
+    :rtype: int
 
     Use virt-install or anaconda to install to a disk image.
     """
@@ -1486,7 +1488,7 @@ def main():
                 disk_img = opts.disk_image or disk_img
                 with PartitionMount(disk_img) as img_mount:
                     if img_mount and img_mount.mount_dir:
-                        make_runtime(opts, img_mount.mount_dir, work_dir, calculate_disk_size(opts, ks))
+                        make_runtime(opts, img_mount.mount_dir, work_dir, calculate_disk_size(opts, ks)/1024.0)
                         result_dir = make_livecd(opts, img_mount.mount_dir, work_dir)
 
             # --iso-only removes the extra build artifacts, keeping only the boot.iso
