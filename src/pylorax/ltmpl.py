@@ -493,7 +493,7 @@ class LoraxTemplateRunner(object):
 
     def installpkg(self, *pkgs):
         '''
-        installpkg [--required] PKGGLOB [PKGGLOB ...]
+        installpkg [--required] PKGGLOB [PKGGLOB ...] [--except PKGGLOB [--except PKGGLOB ...]]
           Request installation of all packages matching the given globs.
           Note that this is just a *request* - nothing is *actually* installed
           until the 'run_pkg_transaction' command is given.
@@ -503,9 +503,35 @@ class LoraxTemplateRunner(object):
             pkgs = pkgs[1:]
             required = True
 
+        excludes = []
+        while '--except' in pkgs:
+            idx = pkgs.index('--except')
+            if len(pkgs) == idx+1:
+                raise ValueError("installpkg needs an argument after --except")
+
+            excludes.append(pkgs[idx+1])
+            pkgs = pkgs[:idx] + pkgs[idx+2:]
+
         for p in pkgs:
             try:
-                self.dbo.install(p)
+                # Start by using Subject to generate a package query, which will
+                # give us a query object similar to what dbo.install would select,
+                # minus the handling for multilib. This query may contain
+                # multiple arches. Pull the package names out of that, filter any
+                # that match the excludes patterns, and pass those names back to
+                # dbo.install to do the actual, arch and version and multilib
+                # aware, package selction.
+
+                # dnf queries don't have a concept of negative globs which is why
+                # the filtering is done the hard way.
+
+                pkgnames = {pkg.name for pkg in dnf.subject.Subject(p).get_best_query(self.dbo.sack)}
+
+                for exclude in excludes:
+                    pkgnames = {pkgname for pkgname in pkgnames if not fnmatch.fnmatch(pkgname, exclude)}
+
+                for pkgname in pkgnames:
+                    self.dbo.install(pkgname)
             except Exception as e: # pylint: disable=broad-except
                 # FIXME: save exception and re-raise after the loop finishes
                 logger.error("installpkg %s failed: %s", p, str(e))

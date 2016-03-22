@@ -11,11 +11,7 @@ remove usr/share/i18n
     removepkg perl*
 %endif
 ## no sound support, thanks
-## ...except alsa-libs, which are needed by spice-vdagent
-removepkg alsa-*firmware* flac gstreamer-tools libsndfile pulseaudio* sound-theme-freedesktop
-removepkg midisport-firmware
-## no fancy video, either
-removepkg libcrystalhd crystalhd-firmware ivtv-firmware cx18-firmware
+removepkg flac gstreamer-tools libsndfile pulseaudio* sound-theme-freedesktop
 ## we don't create new initramfs/bootloader conf inside anaconda
 ## (that happens inside the target system after we install dracut/grubby)
 removepkg dracut-network grubby anaconda-dracut
@@ -48,8 +44,6 @@ removepkg usermode usermode-gtk passwd
 removefrom chkconfig --allbut /etc/init.d
 ## Miscellanous unnecessary gpg program
 removepkg pinentry
-## no printer/scanner support in anaconda
-removepkg cups-libs iscan-firmware
 ## no storage device monitoring
 removepkg device-mapper-event dmraid-events sgpio
 ## no notifications in anaconda
@@ -86,7 +80,9 @@ remove /usr/share/mime/multipart /usr/share/mime/packages /usr/share/mime/text
 remove /usr/share/mime/video /usr/share/mime/x-content /usr/share/mime/x-epoc
 remove /var/db /var/games /var/tmp /var/yp /var/nis /var/opt /var/local
 remove /var/mail /var/spool /var/preserve /var/report
-remove /var/lib/rpm/* /var/lib/yum
+remove /var/lib/rpm/* /var/lib/yum /var/lib/dnf
+## clean up the files created by various '> /dev/null's
+remove /dev/*
 
 ## icons cache
 remove /usr/share/icons/*/icon-theme.cache
@@ -340,3 +336,21 @@ runcmd find ${root} -name "*.pyc" -type f -exec ln -sf /dev/null {} \;
 ## NOTE: Excluding /etc/mtab which links to /proc/self/mounts for systemd
 runcmd chroot ${root} find -L /etc /usr -xdev -type l -and \! -name "mtab" \
                 -printf "removing broken symbolic link %p -> %l\n" -delete
+
+## Clean up some of the mess pulled in by webkitgtk via yelp
+## libwebkit2gtk links to a handful of libraries in gstreamer and
+## gstreamer-plugins-base. Remove the rest of them.
+removefrom gstreamer1 --allbut /usr/${libdir}/libgstbase-1.0.* \
+                               /usr/${libdir}/libgstreamer-1.0.*
+removefrom gstreamer1-plugins-base --allbut \
+        /usr/${libdir}/libgst{app,audio,fft,pbutils,tag,video}-1.0.*
+
+## We have enough geoip libraries, thanks
+removepkg geoclue2
+
+## And remove the packages that those extra libraries pulled in
+removepkg cdparanoia-libs opus libtheora libvisual flac-libs gsm avahi-glib avahi-libs \
+          ModemManager-glib
+
+## metacity requires libvorbis and libvorbisfile, but enc/dec are no longer needed
+removefrom libvorbis --allbut /usr/${libdir}/libvorbisfile.* /usr/${libdir}/libvorbis.*
