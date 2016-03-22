@@ -2,7 +2,7 @@
 #
 # image-minimizer: removes files and packages on the filesystem
 #
-# Copyright 2007-2015 Red Hat, Inc.
+# Copyright 2007-2016 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ class ImageMinimizer:
         not_found = True
         for hdr in mi:
             not_found = False
-            rpms.add(hdr['name'])
+            rpms.add(hdr['name'].decode("utf8"))
         if self.verbose and not_found:
             print("%s package not found" % pattern)
 
@@ -115,37 +115,31 @@ class ImageMinimizer:
             if os.path.isdir(tag):
                 self.visited.add(tag)
             else:
-                if self.dryrun:
-                    print('rm ' + tag)
-                else:
-                    if self.verbose:
-                        print('rm ' + tag)
+                if self.dryrun or self.verbose:
+                    print("rm %s" % tag)
+                if not self.dryrun:
                     os.remove(tag)
 
         #remove all empty directory. Every 8k counts!
         for d in sorted(self.visited, reverse=True):
             if len(os.listdir(d)) == 0:
-                if self.dryrun:
-                    print('rm -rf ' + d)
-                else:
-                    if self.verbose:
-                        print('rm -rf ' + d)
+                if self.dryrun or self.verbose:
+                    print("rm -rf %s" % d)
+                if not self.dryrun:
                     os.rmdir(d)
 
     def remove_rpm(self):
-
         def runCallback(reason, amount, total, key, client_data):
             if self.verbose and reason == rpm.RPMCALLBACK_UNINST_STOP:
-                print(key, "erased")
+                print("%s erased" % key)
 
         if len(self.drops_rpm) == 0:
             return
 
         for pkg in self.drops_rpm:
-            if self.dryrun:
-                print("erasing ", pkg)
-            else:
-                self.ts.addErase(pkg)
+            if self.verbose:
+                print("erasing: %s " % pkg)
+            self.ts.addErase(pkg)
         if not self.dryrun:
             # skip ts.check(), equivalent to --nodeps
             self.ts.run(runCallback, "erase")
@@ -166,10 +160,10 @@ def parse_options():
         help="Root path to prepend to all file patterns and installation root for RPM "
              "operations.  Defaults to INSTALL_ROOT or /mnt/sysimage/")
 
-    parser.add_argument("--dryrun", metavar="BOOL", action="store_true", dest="dryrun",
+    parser.add_argument("--dryrun", action="store_true", dest="dryrun",
         help="If set, no filesystem changes are made.")
 
-    parser.add_argument("-v", "--verbose", metavar="BOOL", action="store_true", dest="verbose",
+    parser.add_argument("-v", "--verbose", action="store_true", dest="verbose",
         help="Display every action as it is performed.")
 
     parser.add_argument("filename", metavar="STRING", help="Filename to process")
@@ -186,7 +180,7 @@ def main():
     except SystemExit as e:
         sys.exit(e.code)
     except KeyboardInterrupt as e:
-        print("Aborted at user request", file=sys.stderr)
+        print("Aborted at user request")
 
 if __name__ == "__main__":
     main()
