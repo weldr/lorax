@@ -4,12 +4,14 @@ sshpw --username=root --plaintext randOmStrinGhERE
 # Firewall configuration
 firewall --enabled
 # Use network installation
-url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/x86_64/os/"
+url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/Everything/x86_64/os/"
+# Network information
+network  --bootproto=dhcp --device=link --activate
 
 # Root password
 rootpw --plaintext removethispw
 # System authorization information
-auth --useshadow --enablemd5
+auth --useshadow --passalgo=sha512
 # System keyboard
 keyboard --xlayouts=us --vckeymap=us
 # System language
