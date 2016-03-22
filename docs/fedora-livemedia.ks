@@ -286,6 +286,10 @@ echo 'File created by kickstart. See systemd-update-done.service(8).' \
 
 # Remove random-seed
 rm /var/lib/systemd/random-seed
+
+# Remove the rescue kernel and image to save space
+# Installation will recreate these on the target
+rm -f /boot/*-rescue*
 %end
 
 %post --nochroot
@@ -374,6 +378,7 @@ EOF
 @networkmanager-submodules
 @printing
 @workstation-product
+gnome-terminal
 aajohan-comfortaa-fonts
 anaconda
 dracut-config-generic
@@ -390,7 +395,6 @@ syslinux
 -@dial-up
 -@input-methods
 -@standard
--dracut-config-rescue
 -gfs2-utils
 -reiserfs-utils
 
