@@ -291,6 +291,10 @@ echo 'File created by kickstart. See systemd-update-done.service(8).' \
 
 # Remove random-seed
 rm /var/lib/systemd/random-seed
+
+# Remove the rescue kernel and image to save space
+# Installation will recreate these on the target
+rm -f /boot/*-rescue*
 %end
 
 %post --nochroot
@@ -388,6 +392,7 @@ EOF
 @printing
 @printing
 @workstation-product
+gnome-terminal
 aajohan-comfortaa-fonts
 anaconda
 fedora-productimg-workstation
