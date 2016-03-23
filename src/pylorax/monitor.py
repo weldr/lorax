@@ -103,6 +103,7 @@ class LogRequestHandler(socketserver.BaseRequestHandler):
                         "Out of memory:",
                         "Call Trace:",
                         "insufficient disk space:",
+                        "Not enough disk space to download the packages",
                         "error populating transaction after",
                         "traceback script(s) have been run",
                         "crashed on signal",
