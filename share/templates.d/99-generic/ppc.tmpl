@@ -27,7 +27,7 @@ rootarg = ""
 <%
     import os
     from pylorax.sysutils import joinpaths
-    if os.stat(joinpaths(outroot, runtime_img)).st_size >= 4*1024**3:
+    if os.stat(joinpaths(inroot, runtime_img)).st_size >= 4*1024**3:
         udfargs = "-allow-limited-size"
     else:
         udfargs = ""
