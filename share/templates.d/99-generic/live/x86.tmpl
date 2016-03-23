@@ -1,4 +1,4 @@
-<%page args="kernels, runtime_img, basearch, outroot, product, isolabel"/>
+<%page args="kernels, runtime_img, basearch, inroot, outroot, product, isolabel"/>
 <%
 configdir="tmp/config_files/x86"
 SYSLINUXDIR="usr/share/syslinux"
@@ -19,7 +19,7 @@ isolabel = ''.join(ch if valid_label(ch) else '-' for ch in isolabel)
 <%
     import os
     from pylorax.sysutils import joinpaths
-    if os.stat(joinpaths(outroot, runtime_img)).st_size >= 4*1024**3:
+    if os.stat(joinpaths(inroot, runtime_img)).st_size >= 4*1024**3:
         udfargs = "-allow-limited-size"
     else:
         udfargs = ""
