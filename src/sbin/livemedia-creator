@@ -32,6 +32,7 @@ import glob
 import json
 from math import ceil
 import socket
+import selinux
 
 # Use pykickstart to calculate disk image size
 from pykickstart.parser import KickstartParser
@@ -663,20 +664,12 @@ def novirt_install(opts, disk_img, disk_size):
     :param str disk_img: The full path to the disk image to be created
     :param int disk_size: The size of the disk_img in MiB
 
-    This method makes sure SELinux is permissive during the install, runs anaconda
-    to create the image and then based on the opts passed create a qemu disk image
-    or tarfile.
+    This method runs anaconda to create the image and then based on the opts
+    passed create a qemu disk image or tarfile.
     """
-    import selinux
     dirinstall_path = ROOT_PATH
 
-    # Set selinux to Permissive if it is Enforcing
-    selinux_enforcing = False
-    if selinux.is_selinux_enabled() and selinux.security_getenforce():
-        selinux_enforcing = True
-        selinux.security_setenforce(0)
-
-    # Clean up /tmp/ from previous runs to prevent stale info from being used
+        # Clean up /tmp/ from previous runs to prevent stale info from being used
     for path in ["/tmp/yum.repos.d/", "/tmp/yum.cache/"]:
         if os.path.isdir(path):
             shutil.rmtree(path)
@@ -762,9 +755,6 @@ def novirt_install(opts, disk_img, disk_size):
             if os.path.exists(dm_path):
                 dm_detach(dm_path)
                 loop_detach(get_loop_name(disk_img))
-
-        if selinux_enforcing:
-            selinux.security_setenforce(1)
 
     # qemu disk image is used by bare qcow2 images and by Vagrant
     if opts.image_type:
@@ -1152,6 +1142,10 @@ def main():
     if is_install and opts.no_virt \
        and not os.path.exists("/usr/sbin/anaconda"):
         errors.append("no-virt requires anaconda to be installed.")
+
+    if is_install and opts.no_virt:
+        if selinux.is_selinux_enabled() and selinux.security_getenforce():
+            errors.append("selinux must be disabled or in Permissive mode.")
 
     if opts.make_appliance and not opts.app_template:
         opts.app_template = joinpaths(opts.lorax_templates,
