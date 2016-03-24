@@ -74,7 +74,7 @@ mkdir ${KERNELDIR}
 <% images=["product", "updates"] %>
 %for img in images:
     %if exists("%s/%s/" % (LORAXDIR, img)):
-        installimg ${LORAXDIR}/${img}/ images/${img}.img
+        installimg --xz -9 --memlimit-compress=3700MiB ${LORAXDIR}/${img}/ images/${img}.img
     %endif
 %endfor
 

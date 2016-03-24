@@ -77,10 +77,14 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
 %endif
 
 # Create optional product.img and updates.img
-<% imggraft=""; images=["product", "updates"] %>
+<% imggraft=""; images=["product", "updates"]; compressargs=None; %>
+%if basearch == 'i386':
+    # Limit the amount of memory xz uses on i386
+    <% compressargs="--xz -9 --memlimit-compress=3700MiB" %>
+%endif
 %for img in images:
     %if exists("%s/%s/" % (LORAXDIR, img)):
-        installimg ${LORAXDIR}/${img}/ images/${img}.img
+        installimg ${compressargs} ${LORAXDIR}/${img}/ images/${img}.img
         <% imggraft += " images/{0}.img={1}/images/{0}.img".format(img, outroot) %>
     %endif
 %endfor
