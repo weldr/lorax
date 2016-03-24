@@ -271,9 +271,9 @@ class LoraxTemplateRunner(object):
         for src in rglob(self._in(srcglob), fatal=True):
             cpfile(src, self._out(dest))
 
-    def installimg(self, srcdir, destfile):
+    def installimg(self, *args):
         '''
-        installimg SRCDIR DESTFILE
+        installimg [--xz|--gzip|--bzip2|--lzma] [-ARG|--ARG=OPTION] SRCDIR DESTFILE
           Create a compressed cpio archive of the contents of SRCDIR and place
           it in DESTFILE.
 
@@ -282,11 +282,35 @@ class LoraxTemplateRunner(object):
           Examples:
             installimg ${LORAXDIR}/product/ images/product.img
             installimg ${LORAXDIR}/updates/ images/updates.img
+            installimg --xz -6 ${LORAXDIR}/updates/ images/updates.img
+            installimg --xz -9 --memlimit-compress=3700MiB ${LORAXDIR}/updates/ images/updates.img
+
+          Optionally use a different compression type and override the default args
+          passed to it. The default is xz -9
         '''
+        COMPRESSORS = ("--xz", "--gzip", "--bzip2", "--lzma")
+        if len(args) < 2:
+            raise ValueError("Not enough args for installimg.")
+
+        srcdir = args[-2]
+        destfile = args[-1]
         if not os.path.isdir(self._in(srcdir)) or not os.listdir(self._in(srcdir)):
             return
+
+        compression = "xz"
+        compressargs = []
+        if args[0] in COMPRESSORS:
+            compression = args[0][2:]
+
+        for arg in args[1:-2]:
+            if arg.startswith('-'):
+                compressargs.append(arg)
+            else:
+                raise ValueError("Argument is missing -")
+
         logger.info("Creating image file %s from contents of %s", self._out(destfile), self._in(srcdir))
-        mkcpio(self._in(srcdir), self._out(destfile))
+        logger.debug("Using %s %s compression", compression, compressargs or "")
+        mkcpio(self._in(srcdir), self._out(destfile), compression=compression, compressargs=compressargs)
 
     def mkdir(self, *dirs):
         '''
