@@ -316,6 +316,21 @@ def get_arch(mount_dir):
         return "i386"
     return kernels[0].arch
 
+def squashfs_args(opts):
+    """ Returns the compression type and args to use when making squashfs
+
+    :param opts: ArgumentParser object with compression and compressopts
+    :returns: tuple of compression type and args
+    :rtype: tuple
+    """
+    compression = opts.compression or "xz"
+    arch = ArchData(opts.arch or os.uname().machine)
+    if compression == "xz" and arch.bcj:
+        compressargs = ["-Xbcj", arch.bcj]
+    else:
+        compressargs = []
+    return (compression, compressargs)
+
 
 def make_appliance(disk_img, name, template, outfile, networks=None, ram=1024,
                    vcpus=1, arch=None, title="Linux", project="Linux",
@@ -414,8 +429,10 @@ def make_runtime(opts, mount_dir, work_dir, size=None):
     os.makedirs(joinpaths(work_dir, "images"))
 
     rb = RuntimeBuilder(product, arch, fake_dbo)
+    compression, compressargs = squashfs_args(opts)
     log.info("Creating runtime")
-    rb.create_runtime(joinpaths(work_dir, RUNTIME), size=size)
+    rb.create_runtime(joinpaths(work_dir, RUNTIME), size=size,
+                      compression=compression, compressargs=compressargs)
 
 def rebuild_initrds_for_live(opts, sys_root_dir, results_dir):
     """
@@ -937,7 +954,7 @@ def virt_install(opts, install_log, disk_img, disk_size):
         shutil.rmtree(vagrant_dir)
 
 
-def make_squashfs(disk_img, work_dir, compression="xz", compressargs=None):
+def make_squashfs(opts, disk_img, work_dir):
     """
     Create a squashfs image of an unpartitioned filesystem disk image
 
@@ -968,6 +985,7 @@ def make_squashfs(disk_img, work_dir, compression="xz", compressargs=None):
     if rc != 0:
         shutil.copy2(disk_img, joinpaths(liveos_dir, "rootfs.img"))
 
+    compression, compressargs = squashfs_args(opts)
     mksquashfs(joinpaths(work_dir, "runtime"),
                joinpaths(work_dir, RUNTIME), compression, compressargs)
     remove(joinpaths(work_dir, "runtime"))
@@ -1070,10 +1088,9 @@ def make_live_images(opts, work_dir, root_dir, rootfs_image=None, size=None):
     log.info("Packing live rootfs image")
     add_pxe_args = []
     live_image_name = "live-rootfs.squashfs.img"
-    mksquashfs(squashfs_root_dir,
-                joinpaths(work_dir, live_image_name),
-                opts.compression,
-                opts.compress_args)
+    compression, compressargs = squashfs_args(opts)
+    mksquashfs(squashfs_root_dir, joinpaths(work_dir, live_image_name),
+               compression, compressargs)
 
     remove(squashfs_root_dir)
 
@@ -1291,15 +1308,7 @@ def main():
                 # Create iso from a filesystem image
                 disk_img = opts.fs_image or disk_img
 
-                compression = opts.compression or "xz"
-                if not opts.compress_args:
-                    arch = ArchData(opts.arch or os.uname().machine)
-                    if arch.bcj:
-                        compressargs = ["-Xbcj", arch.bcj]
-                    else:
-                        log.info("no BCJ filter for arch %s", arch.basearch)
-
-                if not make_squashfs(disk_img, work_dir, compression, compressargs):
+                if not make_squashfs(opts, disk_img, work_dir):
                     log.error("squashfs.img creation failed")
                     sys.exit(1)
 
