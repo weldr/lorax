@@ -964,6 +964,22 @@ def setup_logging(opts):
     log.setLevel(logging.DEBUG)
     pylorax_log.setLevel(logging.DEBUG)
 
+
+def default_image_name(compression, basename):
+    """ Return a default image name with the correct suffix for the compression type.
+
+    :param str compression: Compression type
+    :param str basename: Base filename
+    :returns: basename with compression suffix
+
+    If the compression is unknown it defaults to xz
+    """
+    SUFFIXES = {"xz": ".xz", "gzip": ".gz", "bzip2": ".bz2", "lzma": ".lzma"}
+    return basename + SUFFIXES.get(compression, ".xz")
+
+
+def main():
+
     sh = logging.StreamHandler()
     sh.setLevel(logging.INFO)
     fmt = logging.Formatter("%(asctime)s: %(message)s")
@@ -1213,7 +1229,7 @@ if __name__ == '__main__':
             opts.fs_label = "AMI"
     elif opts.make_tar:
         if not opts.image_name:
-            opts.image_name = "root.tar.xz"
+            opts.image_name = default_image_name(opts.compression, "root.tar")
         if opts.compression == "xz" and not opts.compress_args:
             opts.compress_args = ["-9"]
 
