@@ -1105,6 +1105,19 @@ def make_live_images(opts, work_dir, root_dir, rootfs_image=None, size=None):
     return work_dir
 
 
+def default_image_name(compression, basename):
+    """ Return a default image name with the correct suffix for the compression type.
+
+    :param str compression: Compression type
+    :param str basename: Base filename
+    :returns: basename with compression suffix
+
+    If the compression is unknown it defaults to xz
+    """
+    SUFFIXES = {"xz": ".xz", "gzip": ".gz", "bzip2": ".bz2", "lzma": ".lzma"}
+    return basename + SUFFIXES.get(compression, ".xz")
+
+
 def main():
     parser = lmc_parser()
     opts = parser.parse_args()
@@ -1229,17 +1242,17 @@ def main():
             opts.fs_label = "AMI"
     elif opts.make_tar:
         if not opts.image_name:
-            opts.image_name = "root.tar.xz"
+            opts.image_name = default_image_name(opts.compression, "root.tar")
         if opts.compression == "xz" and not opts.compress_args:
             opts.compress_args = ["-9"]
     elif opts.make_oci:
         if not opts.image_name:
-            opts.image_name = "bundle.tar.xz"
+            opts.image_name = default_image_name(opts.compression, "bundle.tar")
         if opts.compression == "xz" and not opts.compress_args:
             opts.compress_args = ["-9"]
     elif opts.make_vagrant:
         if not opts.image_name:
-            opts.image_name = "vagrant.tar.xz"
+            opts.image_name = default_image_name(opts.compression, "vagrant.tar")
         if opts.compression == "xz" and not opts.compress_args:
             opts.compress_args = ["-9"]
 
