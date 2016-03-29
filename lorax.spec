@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        24.15
+Version:        24.16
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -147,6 +147,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Mon Mar 28 2016 Brian C. Lane <bcl@redhat.com> 24.16-1
+- livemedia-creator: Update example kickstarts (bcl@redhat.com)
+- image-minimizer: Fix argument parsing (bcl@redhat.com)
+- livemedia-creator: Check selinux state and exit (bcl@redhat.com)
+- livemedia-creator: Catch dnf download error (bcl@redhat.com)
+- templates: Fix runtime_img check (bcl@redhat.com)
+- Create UDF iso when stage2 is >= 4GiB (#1312158) (bcl@redhat.com)
+
 * Fri Mar 11 2016 Brian C. Lane <bcl@redhat.com> 24.15-1
 - pylorax: proc.returncode can be None (bcl@redhat.com)
 - Change location of basearch to dnf.rpm.basearch (#1312087) (bcl@redhat.com)
