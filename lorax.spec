@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        22.13
+Version:        22.14
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -104,6 +104,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Mar 29 2016 Brian C. Lane <bcl@redhat.com> 22.14-1
+- don't build upgrade.img anymore (wwoods@redhat.com)
+- templates: On 32 bit systems limit the amount of memory xz uses
+  (bcl@redhat.com)
+- ltmpl: Add compressor selection and argument passing to installimg
+  (bcl@redhat.com)
+
 * Fri Oct 30 2015 Brian C. Lane <bcl@redhat.com> 22.13-1
 - drop fedup-dracut and friends (wwoods@redhat.com)
 
