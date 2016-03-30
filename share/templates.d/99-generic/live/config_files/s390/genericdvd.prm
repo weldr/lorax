@@ -1,0 +1,1 @@
+ro ramdisk_size=40000 cio_ignore=all,!condev rd.cmdline=ask
