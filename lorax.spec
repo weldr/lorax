@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.67
+Version:        19.6.68
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Mar 30 2016 Brian C. Lane <bcl@redhat.com> 19.6.68-1
+- livemedia-creator: Use correct suffix on default image names (bcl)
+  Resolves: rhbz#1318958
+- Fix livemedia-creator manpage (bcl)
+  Resolves: rhbz#1318952
+
 * Tue Mar 01 2016 Brian C. Lane <bcl@redhat.com> 19.6.67-1
 - templates: Reinstate gpgme-pthread.so for ostree (walters)
 - Resolves: rhbz#1311793
