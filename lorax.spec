@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        25.2
+Version:        25.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -147,6 +147,33 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Wed Mar 30 2016 Brian C. Lane <bcl@redhat.com> 25.3-1
+- livemedia-creator: Use correct suffix on default image names (#1318958)
+  (bcl@redhat.com)
+- livemedia-creator: Pass -Xbcj to mksquashfs (bcl@redhat.com)
+- templates: On 32 bit systems limit the amount of memory xz uses
+  (bcl@redhat.com)
+- ltmpl: Add compressor selection and argument passing to installimg
+  (bcl@redhat.com)
+- livemedia-creator: Update example kickstarts (bcl@redhat.com)
+- image-minimizer: Fix argument parsing (bcl@redhat.com)
+- livemedia-creator: Check selinux state and exit (bcl@redhat.com)
+- livemedia-creator: Catch dnf download error (bcl@redhat.com)
+- templates: Fix runtime_img check (bcl@redhat.com)
+- Remove gnome-icon-theme (dshea@redhat.com)
+- Exclude unused firmware from package selection. (dshea@redhat.com)
+- Add a means of excluding packages from a glob (dshea@redhat.com)
+- Clean up /dev. (dshea@redhat.com)
+- Remove /var/lib/dnf (dshea@redhat.com)
+- Remove a bunch of stuff pulled in by webkitgtk (dshea@redhat.com)
+- lorax-lmc-virt now uses qemu not libvirt and virt-install (bcl@redhat.com)
+- New lorax documentation - 25.2 (bcl@redhat.com)
+- Use Sphinx to generate manpages (bcl@redhat.com)
+- livemedia-creator: Use sphinx-argparse to document args (bcl@redhat.com)
+- Move argument parsers into pylorax.cmdline (bcl@redhat.com)
+- livemedia-creator: Fix off by 1024 error (bcl@redhat.com)
+- Create UDF iso when stage2 is >= 4GiB (#1312158) (bcl@redhat.com)
+
 * Tue Mar 15 2016 Brian C. Lane <bcl@redhat.com> 25.2-1
 - Not all arches currently have docker (#1317632) (pbrobinson@gmail.com)
 
