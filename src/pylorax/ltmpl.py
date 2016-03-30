@@ -26,6 +26,7 @@ logger = logging.getLogger("pylorax.ltmpl")
 import os, re, glob, shlex, fnmatch
 from os.path import basename, isdir
 from subprocess import CalledProcessError
+import shutil
 
 from pylorax.sysutils import joinpaths, cpfile, mvfile, replace, remove
 from pylorax.dnfhelper import LoraxDownloadCallback, LoraxRpmCallback
@@ -269,7 +270,10 @@ class LoraxTemplateRunner(object):
             install /usr/share/myconfig/grub.conf.in /boot/grub.conf
         '''
         for src in rglob(self._in(srcglob), fatal=True):
-            cpfile(src, self._out(dest))
+            try:
+                cpfile(src, self._out(dest))
+            except shutil.Error as e:
+                logger.error(e)
 
     def installimg(self, *args):
         '''
@@ -424,7 +428,10 @@ class LoraxTemplateRunner(object):
           If DEST doesn't exist, SRC will be copied to a file with
           that name, if the path leading to it exists.
         '''
-        cpfile(self._out(src), self._out(dest))
+        try:
+            cpfile(self._out(src), self._out(dest))
+        except shutil.Error as e:
+            logger.error(e)
 
     def move(self, src, dest):
         '''
