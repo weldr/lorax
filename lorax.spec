@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        24.16
+Version:        24.17
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -147,6 +147,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Tue Mar 29 2016 Brian C. Lane <bcl@redhat.com> 24.17-1
+- livemedia-creator: Pass -Xbcj to mksquashfs (bcl@redhat.com)
+- templates: On 32 bit systems limit the amount of memory xz uses
+  (bcl@redhat.com)
+- ltmpl: Add compressor selection and argument passing to installimg
+  (bcl@redhat.com)
+
 * Mon Mar 28 2016 Brian C. Lane <bcl@redhat.com> 24.16-1
 - livemedia-creator: Update example kickstarts (bcl@redhat.com)
 - image-minimizer: Fix argument parsing (bcl@redhat.com)
