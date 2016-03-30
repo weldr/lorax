@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        23.19
+Version:        23.20
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -132,6 +132,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %files lmc-novirt
 
 %changelog
+* Tue Mar 29 2016 Brian C. Lane <bcl@redhat.com> 23.20-1
+- templates: Reinstate gpgme-pthread.so for ostree (walters@verbum.org)
+- templates: On 32 bit systems limit the amount of memory xz uses
+  (bcl@redhat.com)
+- ltmpl: Add compressor selection and argument passing to installimg
+  (bcl@redhat.com)
+
 * Fri Mar 11 2016 Brian C. Lane <bcl@redhat.com> 23.19-1
 - pylorax: proc.returncode can be None (bcl@redhat.com)
 - Change location of basearch to dnf.rpm.basearch (#1312087) (bcl@redhat.com)
