@@ -548,6 +548,23 @@ def novirt_log_check(log_check, proc):
     return False
 
 
+def anaconda_cleanup(dirinstall_path):
+    """
+    Cleanup any leftover mounts from anaconda
+
+    :param str dirinstall_path: Path where anaconda mounts things
+
+    If anaconda crashes it may leave things mounted under this path. It will
+    typically be set to /mnt/sysimage/
+    """
+    dirinstall_path = os.path.abspath(dirinstall_path)
+    # unmount filesystems
+    for mounted in reversed(open("/proc/mounts").readlines()):
+        (_device, mountpoint, _rest) = mounted.split(" ", 2)
+        if mountpoint.startswith(dirinstall_path):
+            umount(mountpoint)
+
+
 def novirt_install(opts, disk_img, disk_size, repo_url):
     """
     Use Anaconda to install to a disk image
@@ -633,8 +650,8 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
     finally:
         log_monitor.shutdown()
 
-        # If anaconda failed there may be things needing cleanup
-        execWithRedirect("anaconda-cleanup", [])
+        # Make sure any leftover anaconda mounts have been cleaned up
+        anaconda_cleanup(dirinstall_path)
 
         # Move the anaconda logs over to a log directory
         log_dir = os.path.abspath(os.path.dirname(opts.logfile))
