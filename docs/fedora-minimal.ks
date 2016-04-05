@@ -4,7 +4,7 @@ sshpw --username=root --plaintext randOmStrinGhERE
 # Firewall configuration
 firewall --enabled
 # Use network installation
-url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/23/x86_64/os/"
+url --url="https://dl.fedoraproject.org/pub/fedora/linux/releases/23/Everything/x86_64/os/"
 
 # Root password
 rootpw --plaintext removethispw
