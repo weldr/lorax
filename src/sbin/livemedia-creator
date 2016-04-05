@@ -1404,6 +1404,12 @@ def main():
         ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
         ks.readKickstart(opts.ks[0])
 
+    # live iso usually needs dracut-live so warn the user if it is missing
+    if opts.ks and opts.make_iso:
+        if "dracut-live" not in ks.handler.packages.packageList:
+            log.error("dracut-live package is missing from the kickstart.")
+            sys.exit(1)
+
     # Make the disk or filesystem image
     if not opts.disk_image and not opts.fs_image:
         errors = []
