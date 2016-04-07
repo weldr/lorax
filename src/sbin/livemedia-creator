@@ -651,7 +651,7 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
         log_monitor.shutdown()
 
         # Make sure any leftover anaconda mounts have been cleaned up
-        anaconda_cleanup(dirinstall_path)
+        anaconda_cleanup(ROOT_PATH)
 
         # Move the anaconda logs over to a log directory
         log_dir = os.path.abspath(os.path.dirname(opts.logfile))
