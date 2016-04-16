@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.68
+Version:        19.6.69
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Apr 15 2016 Brian C. Lane <bcl@redhat.com> 19.6.69-1
+- Remove Metacity override and theme (bcl)
+  Resolves: rhbz#1324890
+- Copying same file shouldn't crash (bcl)
+  Resolves: rhbz#1269213
+
 * Wed Mar 30 2016 Brian C. Lane <bcl@redhat.com> 19.6.68-1
 - livemedia-creator: Use correct suffix on default image names (bcl)
   Resolves: rhbz#1318958
