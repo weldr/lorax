@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        23.20
+Version:        23.21
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -132,6 +132,15 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %files lmc-novirt
 
 %changelog
+* Mon Apr 18 2016 Brian C. Lane <bcl@redhat.com> 23.21-1
+- livemedia-creator: Make sure make-iso kickstart includes dracut-live
+  (bcl@redhat.com)
+- livemedia_creator: dirinstall_path is ROOT_PATH (bcl@redhat.com)
+- livemedia-creator: Simplify cleanup for no-virt (bcl@redhat.com)
+- image-minimizer: Fix argument parsing (bcl@redhat.com)
+- livemedia-creator: Update ks examples to point to F23 release repo
+  (bcl@redhat.com)
+
 * Tue Mar 29 2016 Brian C. Lane <bcl@redhat.com> 23.20-1
 - templates: Reinstate gpgme-pthread.so for ostree (walters@verbum.org)
 - templates: On 32 bit systems limit the amount of memory xz uses
