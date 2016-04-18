@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        24.17
+Version:        24.18
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -147,6 +147,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Mon Apr 18 2016 Brian C. Lane <bcl@redhat.com> 24.18-1
+- livemedia-creator: Make sure make-iso kickstart includes dracut-live
+  (bcl@redhat.com)
+- livemedia-creator: Simplify cleanup for no-virt (bcl@redhat.com)
+- Copying same file shouldn't crash (#1269213) (bcl@redhat.com)
+- livemedia-creator: Use correct suffix on default image names (#1318958)
+  (bcl@redhat.com)
+
 * Tue Mar 29 2016 Brian C. Lane <bcl@redhat.com> 24.17-1
 - livemedia-creator: Pass -Xbcj to mksquashfs (bcl@redhat.com)
 - templates: On 32 bit systems limit the amount of memory xz uses
