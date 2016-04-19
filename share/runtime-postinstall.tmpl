@@ -66,6 +66,7 @@ install ${configdir}/92-anaconda-loglevel-debug.conf etc/NetworkManager/conf.d
 %if exists(root+"/etc/selinux/targeted"):
     install ${configdir}/selinux.config etc/selinux/config
 %endif
+install ${configdir}/vconsole.conf etc
 
 ## set up sshd
 install ${configdir}/sshd_config.anaconda etc/ssh
