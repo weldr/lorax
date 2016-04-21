@@ -663,7 +663,7 @@ def novirt_install(opts, disk_img, disk_size):
     if opts.armplatform:
         args += ["--armplatform", opts.armplatform]
 
-    if opts.make_iso or opts.make_fsimage:
+    if opts.make_iso or opts.make_fsimage or opts.make_pxe_live:
         # Make a blank fs image
         args += ["--dirinstall"]
 
@@ -729,7 +729,7 @@ def novirt_install(opts, disk_img, disk_size):
             shutil.copy2(l, log_anaconda)
             os.unlink(l)
 
-        if not opts.make_iso and not opts.make_fsimage:
+        if not opts.make_iso and not opts.make_fsimage and not opts.make_pxe_live:
             dm_name = os.path.splitext(os.path.basename(disk_img))[0]
             dm_path = "/dev/mapper/"+dm_name
             if os.path.exists(dm_path):
@@ -1492,7 +1492,7 @@ def main():
             work_dir = tempfile.mkdtemp(prefix="lmc-work-")
             log.info("working dir is %s", work_dir)
 
-            if opts.fs_image and not opts.disk_image:
+            if opts.fs_image or opts.no_virt:
                 # Create pxe live images from a filesystem image
                 disk_img = opts.fs_image or disk_img
                 with Mount(disk_img, opts="loop") as mnt_dir:
