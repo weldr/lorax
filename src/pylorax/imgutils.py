@@ -198,7 +198,7 @@ def mount(dev, opts="", mnt=None):
     runcmd(cmd)
     return mnt
 
-def umount(mnt,  lazy=False, maxretry=3, retrysleep=1.0):
+def umount(mnt,  lazy=False, maxretry=3, retrysleep=1.0, delete=True):
     '''Unmount the given mountpoint. If lazy is True, do a lazy umount (-l).
     If the mount was a temporary dir created by mount, it will be deleted.
     raises CalledProcessError if umount fails.'''
@@ -221,7 +221,7 @@ def umount(mnt,  lazy=False, maxretry=3, retrysleep=1.0):
             sleep(retrysleep)
         else:
             break
-    if 'lorax.imgutils' in mnt:
+    if delete and 'lorax.imgutils' in mnt:
         os.rmdir(mnt)
         logger.debug("remove tmp mountdir %s", mnt)
     return (rv == 0)
