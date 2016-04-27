@@ -297,7 +297,8 @@ def find_ostree_root(phys_root):
     :raise Exception: More than one deployment roots were found
     """
     ostree_root = ""
-    ostree_sysroots = glob.glob(joinpaths(phys_root, "ostree/boot.0/*/*/0"))
+    ostree_sysroots = glob.glob(joinpaths(phys_root, "ostree/boot.?/*/*/0"))
+    log.debug("ostree_sysroots = %s", ostree_sysroots)
     if ostree_sysroots:
         if len(ostree_sysroots) > 1:
             raise Exception("Too many deployment roots found: %s" % ostree_sysroots)
@@ -455,8 +456,9 @@ def rebuild_initrds_for_live(opts, sys_root_dir, results_dir):
 
     kdir = "boot"
     if opts.ostree:
-        kernels_dir = glob.glob(joinpaths(sys_root_dir, "boot/ostree/*"))[0]
-        kdir = os.path.relpath(kernels_dir, sys_root_dir)
+        kernels_dir = glob.glob(joinpaths(sys_root_dir, "boot/ostree/*"))
+        if kernels_dir:
+            kdir = os.path.relpath(kernels_dir[0], sys_root_dir)
 
     kernels = [kernel for kernel in findkernels(sys_root_dir, kdir)
                if hasattr(kernel, "initrd")]
@@ -636,7 +638,6 @@ def mount_boot_part_over_root(img_mount):
     root_dir = img_mount.mount_dir
     is_boot_part = lambda dir: os.path.exists(dir+"/loader.0")
     tmp_mount_dir = tempfile.mkdtemp(prefix="lmc-tmpdir-")
-    sys_root = find_ostree_root(root_dir)
     sysroot_boot_dir = None
     for dev, _size in img_mount.loop_devices:
         if dev is img_mount.mount_dev:
@@ -645,7 +646,7 @@ def mount_boot_part_over_root(img_mount):
             mount("/dev/mapper/"+dev, mnt=tmp_mount_dir)
             if is_boot_part(tmp_mount_dir):
                 umount(tmp_mount_dir)
-                sysroot_boot_dir = joinpaths(joinpaths(root_dir, sys_root), "boot")
+                sysroot_boot_dir = joinpaths(root_dir, "boot")
                 mount("/dev/mapper/"+dev, mnt=sysroot_boot_dir)
                 break
             else:
@@ -1122,6 +1123,7 @@ def make_live_images(opts, work_dir, disk_img):
                 finally:
                     if mounted_sysroot_boot_dir:
                         umount(mounted_sysroot_boot_dir)
+    log.debug("sys_root = %s", sys_root)
 
     # Make sure free blocks are actually zeroed so it will compress
     rc = execWithRedirect("/usr/sbin/fsck.ext4", ["-y", "-f", "-E", "discard", rootfs_img])
@@ -1135,11 +1137,15 @@ def make_live_images(opts, work_dir, disk_img):
     compression, compressargs = squashfs_args(opts)
     mksquashfs(squashfs_root_dir, joinpaths(work_dir, live_image_name), compression, compressargs)
 
-    remove(squashfs_root_dir)
-
     log.info("Rebuilding initramfs for live")
-    with Mount(disk_img, opts="loop") as mnt_dir:
-        rebuild_initrds_for_live(opts, joinpaths(mnt_dir, sys_root), work_dir)
+    with Mount(rootfs_img, opts="loop") as mnt_dir:
+        try:
+            mount(joinpaths(mnt_dir, "boot"), opts="bind", mnt=joinpaths(mnt_dir, sys_root, "boot"))
+            rebuild_initrds_for_live(opts, joinpaths(mnt_dir, sys_root), work_dir)
+        finally:
+            umount(joinpaths(mnt_dir, sys_root, "boot"), delete=False)
+
+    remove(squashfs_root_dir)
 
     if opts.ostree:
         add_pxe_args.append("ostree=/%s" % sys_root)
