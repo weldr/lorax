@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        25.4
+Version:        25.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -147,6 +147,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Fri Apr 29 2016 Brian C. Lane <bcl@redhat.com> 25.5-1
+- Add example kickstart for Atomic PXE live no-virt (bcl@redhat.com)
+- Update ostree boot handling (bcl@redhat.com)
+- pylorax: Add delete option to umount (bcl@redhat.com)
+- Refactor PXE live creation code (bcl@redhat.com)
+- Change --make-pxe-live --no-virt use a fsimage (bcl@redhat.com)
+- Allow ostreesetup kickstart (bcl@redhat.com)
+
 * Mon Apr 18 2016 Brian C. Lane <bcl@redhat.com> 25.4-1
 - livemedia-creator: Make sure make-iso kickstart includes dracut-live
   (bcl@redhat.com)
