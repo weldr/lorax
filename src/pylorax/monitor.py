@@ -107,7 +107,8 @@ class LogRequestHandler(socketserver.BaseRequestHandler):
                         "error populating transaction after",
                         "traceback script(s) have been run",
                         "crashed on signal",
-                        "packaging: Missed: NoSuchPackage"]
+                        "packaging: Missed: NoSuchPackage",
+                        "The following error occurred while installing.  This is a fatal error"]
         re_tests =     [r"packaging: base repo .* not valid",
                         r"packaging: .* requires .*"]
         for t in simple_tests:
