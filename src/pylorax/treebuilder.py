@@ -261,28 +261,35 @@ class TreeBuilder(object):
         If backup is empty, the existing initrd files will be overwritten.
         If suffix is specified, the existing initrd is untouched and a new
         image is built with the filename "${prefix}-${kernel.version}.img"
+
+        If the initrd doesn't exist its name will be created based on the
+        name of the kernel.
         '''
         add_args = add_args or []
         dracut = ["dracut", "--nomdadmconf", "--nolvmconf"] + add_args
         if not backup:
             dracut.append("--force")
 
-        kernels = [kernel for kernel in self.kernels if hasattr(kernel, "initrd")]
-        if not kernels:
-            raise Exception("No initrds found, cannot rebuild_initrds")
+        if not self.kernels:
+            raise Exception("No kernels found, cannot rebuild_initrds")
 
         # Hush some dracut warnings. TODO: bind-mount proc in place?
         open(joinpaths(self.vars.inroot,"/proc/modules"),"w")
-        for kernel in kernels:
+        for kernel in self.kernels:
             if prefix:
-                idir = os.path.dirname(kernel.initrd.path)
+                idir = os.path.dirname(kernel.path)
                 outfile = joinpaths(idir, prefix+'-'+kernel.version+'.img')
-            else:
+            elif hasattr(kernel, "initrd"):
+                # If there is an existing initrd, use that
                 outfile = kernel.initrd.path
+            else:
+                # Construct an initrd from the kernel name
+                outfile = kernel.path.replace("vmlinuz-", "initrd-") + ".img"
             logger.info("rebuilding %s", outfile)
             if backup:
                 initrd = joinpaths(self.vars.inroot, outfile)
-                os.rename(initrd, initrd + backup)
+                if os.path.exists(initrd):
+                    os.rename(initrd, initrd + backup)
             cmd = dracut + [outfile, kernel.version]
             runcmd(cmd, root=self.vars.inroot)
 
