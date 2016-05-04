@@ -55,7 +55,10 @@ class DataHolder(dict):
             self[attr] = value
 
     def __getattr__(self, attr):
-        return self[attr]
+        if attr in self:
+            return self[attr]
+        else:
+            raise AttributeError
 
     def __setattr__(self, attr, value):
         self[attr] = value
