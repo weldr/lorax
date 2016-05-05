@@ -460,8 +460,7 @@ def rebuild_initrds_for_live(opts, sys_root_dir, results_dir):
         if kernels_dir:
             kdir = os.path.relpath(kernels_dir[0], sys_root_dir)
 
-    kernels = [kernel for kernel in findkernels(sys_root_dir, kdir)
-               if hasattr(kernel, "initrd")]
+    kernels = [kernel for kernel in findkernels(sys_root_dir, kdir)]
     if not kernels:
         raise Exception("No initrds found, cannot rebuild_initrds")
 
@@ -483,20 +482,27 @@ def rebuild_initrds_for_live(opts, sys_root_dir, results_dir):
         if not os.path.isdir(tmp_dir):
             os.mkdir(tmp_dir)
 
+    # Write the new initramfs directly to the results directory
+    os.mkdir(joinpaths(sys_root_dir, "results"))
+    mount(results_dir, opts="bind", mnt=joinpaths(sys_root_dir, "results"))
+    # Dracut runs out of space inside the minimal rootfs image
+    mount("/var/tmp", opts="bind", mnt=joinpaths(sys_root_dir, "var/tmp"))
     for kernel in kernels:
-        outfile = kernel.initrd.path + ".live"
+        if hasattr(kernel, "initrd"):
+            outfile = os.path.basename(kernel.initrd.path)
+        else:
+            # Construct an initrd from the kernel name
+            outfile = os.path.basename(kernel.path.replace("vmlinuz-", "initrd-") + ".img")
         log.info("rebuilding %s", outfile)
 
         kver = kernel.version
 
-        cmd = dracut + [outfile, kver]
+        cmd = dracut + ["/results/"+outfile, kver]
         runcmd(cmd, root=sys_root_dir)
 
-        new_initrd_path = joinpaths(results_dir, os.path.basename(kernel.initrd.path))
-        shutil.move(joinpaths(sys_root_dir, outfile), new_initrd_path)
-        os.chmod(new_initrd_path, 0o644)
         shutil.copy2(joinpaths(sys_root_dir, kernel.path), results_dir)
-
+    umount(joinpaths(sys_root_dir, "var/tmp"), delete=False)
+    umount(joinpaths(sys_root_dir, "results"), delete=False)
     os.unlink(joinpaths(sys_root_dir,"/proc/modules"))
 
 def create_pxe_config(template, images_dir, live_image_name, add_args = None):
