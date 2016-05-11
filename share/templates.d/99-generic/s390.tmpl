@@ -40,6 +40,7 @@ treeinfo images-${basearch} generic.ins generic.ins
 %for img in images:
     %if exists("%s/%s/" % (LORAXDIR, img)):
         installimg ${LORAXDIR}/${img}/ images/${img}.img
+        treeinfo images-${basearch} ${img}.img images/${img}.img
         <% imggraft += " images/{0}.img={1}/images/{0}.img".format(img, outroot) %>
     %endif
 %endfor

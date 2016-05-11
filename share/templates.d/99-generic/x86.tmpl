@@ -13,6 +13,8 @@ def valid_label(ch):
     return ch.isalnum() or ch == '_'
 
 isolabel = ''.join(ch if valid_label(ch) else '-' for ch in isolabel)
+
+from os.path import basename
 %>
 
 ## Test ${runtime_img} to see if udf is needed
@@ -78,11 +80,15 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
     images = ["images/efiboot.img"]
     if domacboot:
         images.append("images/macboot.img")
-    for img in images:
+    %>
+    %for img in images:
+        <%
         efiargs += " -eltorito-alt-boot -e {0} -no-emul-boot".format(img)
         efigraft += " {0}={1}/{0}".format(img,outroot)
-    efihybrid = "--uefi --mac" if domacboot else "--uefi"
-    %>
+        %>
+        treeinfo images-${basearch} ${img|basename} ${img}
+    %endfor
+    <% efihybrid = "--uefi --mac" if domacboot else "--uefi" %>
     <%include file="efi.tmpl" args="configdir=configdir, KERNELDIR=KERNELDIR, efiarch=efiarch, isolabel=isolabel"/>
 %endif
 
@@ -95,6 +101,7 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
 %for img in images:
     %if exists("%s/%s/" % (LORAXDIR, img)):
         installimg ${compressargs} ${LORAXDIR}/${img}/ images/${img}.img
+        treeinfo images-${basearch} ${img}.img images/${img}.img
         <% imggraft += " images/{0}.img={1}/images/{0}.img".format(img, outroot) %>
     %endif
 %endfor
