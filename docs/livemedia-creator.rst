@@ -70,10 +70,11 @@ to monitor the logs for fatal errors, but may not catch everything.
 
 
 Overview
-----------------------
+---------
 First, lmc boots the passed ISO image containing Anaconda in a virtual machine
-with qemu. This step can be skipped with the ``--no-virt`` to use the system
-lmc is running on (which must have anaconda-tui installed) instead.
+with qemu. This serves as a reproducable environment for creating the new image.
+This step can be skipped with the :ref:`--no-virt option <no-virt>` to use the
+system lmc is running on instead.
 
 The virtual machine (or host system if ``--no-virt`` is used) runs Anaconda
 with the Kickstart file provided to lmc by the ``--ks`` option to create a new
@@ -180,6 +181,7 @@ packages will get cached, so your kickstart url would look like:
 You can also add an update repo, but don't name it updates. Add --proxy to it
 as well.
 
+.. _no-virt:
 
 Anaconda image install (no-virt)
 --------------------------------
