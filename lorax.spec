@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        25.5
+Version:        25.6
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -147,6 +147,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Fri May 13 2016 Brian C. Lane <bcl@redhat.com> 25.6-1
+- Add efi, product, and updates image paths to treeinfo (bcl@redhat.com)
+- livemedia-creator: Update make-pxe-live to support missing initramfs
+  (bcl@redhat.com)
+- Rebuild initramfs if it is missing (bcl@redhat.com)
+- Add a new error to the log monitor. (bcl@redhat.com)
+- Fix DataHolder to handle hasattr (bcl@redhat.com)
+
 * Fri Apr 29 2016 Brian C. Lane <bcl@redhat.com> 25.5-1
 - Add example kickstart for Atomic PXE live no-virt (bcl@redhat.com)
 - Update ostree boot handling (bcl@redhat.com)
