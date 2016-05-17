@@ -89,6 +89,7 @@ Anaconda's image install feature.
 Summary:  livemedia-creator libvirt dependencies
 Requires: lorax = %{version}-%{release}
 Requires: qemu
+Requires: edk2-ovmf
 Recommends: qemu-kvm
 
 %description lmc-virt

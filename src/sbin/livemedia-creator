@@ -64,7 +64,6 @@ DRACUT_DEFAULT = ["--xz", "--add", "livenet dmsquash-live convertfs pollcdrom qe
 
 ROOT_PATH = "/mnt/sysimage/"
 RUNTIME = "images/install.img"
-UEFI_FIRMWARE="loader={0}/OVMF_CODE.fd,loader_ro=yes,loader_type=pflash,nvram_template={0}/OVMF_VARS.fd"
 
 
 class InstallError(Exception):
@@ -248,7 +247,12 @@ class QEMUInstall(object):
 
         if boot_uefi and ovmf_path:
             qemu_cmd += ["-drive", "file=%s/OVMF_CODE.fd,if=pflash,format=raw,unit=0,readonly=on" % ovmf_path]
-            qemu_cmd += ["-drive", "file=%sOVMF_VARS.fd,if=pflash,format=raw,unit=1" % ovmf_path]
+
+            # Make a copy of the OVMF_VARS.fd for this run
+            ovmf_vars = tempfile.mktemp(prefix="lmc-OVMF_VARS-", suffix=".fd")
+            shutil.copy2(joinpaths(ovmf_path, "/OVMF_VARS.fd"), ovmf_vars)
+
+            qemu_cmd += ["-drive", "file=%s,if=pflash,format=raw,unit=1" % ovmf_vars]
 
         log.info("Running qemu")
         log.debug(qemu_cmd)
@@ -265,6 +269,8 @@ class QEMUInstall(object):
             raise InstallError("QEMUInstall failed")
         finally:
             os.unlink(qemu_initrd)
+            if boot_uefi and ovmf_path:
+                os.unlink(ovmf_vars)
 
         if log_check():
             log.error("Installation error detected. See logfile for details.")
@@ -1278,6 +1284,10 @@ def main():
 
     if opts.virt_uefi and not os.path.isdir(opts.ovmf_path):
         errors.append("The OVMF firmware is missing from %s" % opts.ovmf_path)
+    elif opts.virt_uefi and os.path.isdir(opts.ovmf_path):
+        for f in ["OVMF_CODE.fd", "OVMF_VARS.fd"]:
+            if not os.path.exists(joinpaths(opts.ovmf_path, f)):
+                errors.append("OVMF firmware file %s is missing from %s" % (f, opts.ovmf_path))
 
     if os.getuid() != 0:
         errors.append("You need to run this as root")

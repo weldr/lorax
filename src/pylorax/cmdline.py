@@ -235,7 +235,7 @@ def lmc_parser(dracut_default=""):
                                  "Defaults to qemu-system-<arch>")
     virt_group.add_argument("--kernel-args",
                             help="Additional argument to pass to the installation kernel")
-    virt_group.add_argument("--ovmf-path", default="/usr/share/OVMF/",
+    virt_group.add_argument("--ovmf-path", default="/usr/share/edk2/ovmf/",
                             help="Path to OVMF firmware")
     virt_group.add_argument("--virt-uefi", action="store_true", default=False,
                             help="Use OVMF firmware to boot the VM in UEFI mode")
