@@ -71,7 +71,6 @@ DRACUT_DEFAULT = ["--xz", "--add", "livenet dmsquash-live convertfs pollcdrom qe
 
 ROOT_PATH = "/mnt/sysimage/"
 RUNTIME = "images/install.img"
-UEFI_FIRMWARE="loader={0}/OVMF_CODE.fd,loader_ro=yes,loader_type=pflash,nvram_template={0}/OVMF_VARS.fd"
 
 
 class InstallError(Exception):
@@ -186,13 +185,21 @@ class VirtualInstall(object):
 
         if boot_uefi and ovmf_path:
             args.append("--boot")
-            args.append(UEFI_FIRMWARE.format(ovmf_path))
+
+            # Make a copy of the OVMF_VARS.fd for this run
+            ovmf_vars = tempfile.mktemp(prefix="lmc-OVMF_VARS-", suffix=".fd")
+            shutil.copy2(joinpaths(ovmf_path, "/OVMF_VARS.fd"), ovmf_vars)
+
+            args.append("loader=%s/OVMF_CODE.fd,loader_ro=yes,loader_type=pflash,nvram_template=%s" % (ovmf_path, ovmf_vars))
 
         log.info("Running virt-install.")
         try:
             execWithRedirect("virt-install", args, raise_err=True)
         except subprocess.CalledProcessError as e:
             raise InstallError("Problem starting virtual install: %s" % e)
+        finally:
+            if boot_uefi and ovmf_path:
+                os.unlink(ovmf_vars)
 
         conn = libvirt.openReadOnly(None)
         dom = conn.lookupByName(self.virt_name)
@@ -1191,7 +1198,7 @@ def main():
                             help="Passed to --arch command")
     virt_group.add_argument("--kernel-args",
                             help="Additional argument to pass to the installation kernel")
-    virt_group.add_argument("--ovmf-path", default="/usr/share/OVMF/",
+    virt_group.add_argument("--ovmf-path", default="/usr/share/edk2/ovmf/",
                             help="Path to OVMF firmware")
     virt_group.add_argument("--virt-uefi", action="store_true", default=False,
                             help="Use OVMF firmware to boot the VM in UEFI mode")

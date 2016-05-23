@@ -90,6 +90,7 @@ Summary:  livemedia-creator libvirt dependencies
 Requires: lorax = %{version}-%{release}
 Requires: libvirt-python3
 Requires: virt-install
+Requires: edk2-ovmf
 
 %description lmc-virt
 Additional dependencies required by livemedia-creator when using it with virt-install.
