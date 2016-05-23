@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>livemedia-creator &mdash; Lorax 25.2 documentation</title>
+  <title>livemedia-creator &mdash; Lorax 25.6 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Lorax 25.2 documentation" href="index.html"/>
+    <link rel="top" title="Lorax 25.6 documentation" href="index.html"/>
         <link rel="next" title="Product and Updates Images" href="product-images.html"/>
         <link rel="prev" title="Lorax" href="lorax.html"/> 
 
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                25.2
+                25.6
               </div>
             
           
@@ -381,7 +381,7 @@ usage: livemedia-creator [-h]
 <kbd><span class="option">--kernel-args</span></kbd></td>
 <td>Additional argument to pass to the installation kernel</td></tr>
 <tr><td class="option-group" colspan="2">
-<kbd><span class="option">--ovmf-path=/usr/share/OVMF/</span></kbd></td>
+<kbd><span class="option">--ovmf-path=/usr/share/edk2/ovmf/</span></kbd></td>
 </tr>
 <tr><td>&nbsp;</td><td>Path to OVMF firmware</td></tr>
 <tr><td class="option-group" colspan="2">
@@ -445,12 +445,12 @@ usage: livemedia-creator [-h]
 <div class="section" id="quickstart">
 <h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
 <p>Run this to create a bootable live iso:</p>
-<div class="highlight-python"><div class="highlight"><pre>sudo livemedia-creator --make-iso \
+<div class="highlight-python"><div class="highlight"><pre><span></span>sudo livemedia-creator --make-iso \
 --iso=/extra/iso/boot.iso --ks=./docs/fedora-livemedia.ks
 </pre></div>
 </div>
 <p>You can run it directly from the lorax git repo like this:</p>
-<div class="highlight-python"><div class="highlight"><pre>sudo PATH=./src/sbin/:$PATH PYTHONPATH=./src/ ./src/sbin/livemedia-creator \
+<div class="highlight-python"><div class="highlight"><pre><span></span>sudo PATH=./src/sbin/:$PATH PYTHONPATH=./src/ ./src/sbin/livemedia-creator \
 --make-iso --iso=/extra/iso/boot.iso \
 --ks=./docs/fedora-livemedia.ks --lorax-templates=./share/
 </pre></div>
@@ -524,7 +524,7 @@ something on the cmdline that activate the network, like sshd:</p>
 </div></blockquote>
 </li>
 <li><p class="first">Add a root password:</p>
-<div class="highlight-python"><div class="highlight"><pre>rootpw rootme
+<div class="highlight-python"><div class="highlight"><pre><span></span>rootpw rootme
 network --bootproto=dhcp --activate
 zerombr
 clearpart --all
@@ -660,7 +660,7 @@ from <tt class="docutils literal"><span class="pre">--releasever</span></tt></p>
 <blockquote>
 <div><tt class="docutils literal"><span class="pre">virt-image</span> <span class="pre">appliance.xml</span></tt></div></blockquote>
 <p>You can also create qcow2 appliance images using <tt class="docutils literal"><span class="pre">--image-type=qcow2</span></tt>, for example:</p>
-<div class="highlight-python"><div class="highlight"><pre>sudo livemedia-creator --make-appliance --iso=/path/to/boot.iso --ks=./docs/fedora-minimal.ks \
+<div class="highlight-python"><div class="highlight"><pre><span></span>sudo livemedia-creator --make-appliance --iso=/path/to/boot.iso --ks=./docs/fedora-minimal.ks \
 --image-type=qcow2 --app-file=minimal-test.xml --image-name=minimal-test.img
 </pre></div>
 </div>
@@ -683,7 +683,7 @@ default it is compressed using xz, but this can be changed using the
 no-virt install methods.</p>
 <p>As with <tt class="docutils literal"><span class="pre">--make-fsimage</span></tt> the kickstart should be limited to a single / partition.</p>
 <p>For example:</p>
-<div class="highlight-python"><div class="highlight"><pre>livemedia-creator --make-tar --iso=/path/to/boot.iso --ks=./docs/fedora-minimal.ks \
+<div class="highlight-python"><div class="highlight"><pre><span></span>livemedia-creator --make-tar --iso=/path/to/boot.iso --ks=./docs/fedora-minimal.ks \
 --image-name=fedora-root.tar.xz
 </pre></div>
 </div>
@@ -701,6 +701,9 @@ for the images.</p>
 for installations of Atomic Host.  Example kickstart for such an installation
 using Atomic installer iso with local repo included in the image can be found
 in docs/rhel-atomic-pxe-live.ks.</p>
+<p>The PXE images can also be created with <tt class="docutils literal"><span class="pre">--no-virt</span></tt> by using the example
+kickstart in docs/fedora-atomic-pxe-live-novirt.ks. This also works inside the
+mock environment.</p>
 </div>
 <div class="section" id="using-mock-and-no-virt-to-create-images">
 <h2>Using Mock and &#8211;no-virt to Create Images<a class="headerlink" href="#using-mock-and-no-virt-to-create-images" title="Permalink to this headline">¶</a></h2>
@@ -719,10 +722,10 @@ as part of the standard mock <tt class="docutils literal"><span class="pre">/dev
 </li>
 <li><p class="first">Create a new /etc/mock/ config file based on the rawhide one, or modify the
 existing one so that the following options are setup:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">config_opts</span><span class="p">[</span><span class="s">&#39;chroot_setup_cmd&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;install @buildsys-build anaconda-tui lorax&#39;</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">config_opts</span><span class="p">[</span><span class="s1">&#39;chroot_setup_cmd&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;install @buildsys-build anaconda-tui lorax&#39;</span>
 
-<span class="c"># build results go into /home/builder/results/</span>
-<span class="n">config_opts</span><span class="p">[</span><span class="s">&#39;plugin_conf&#39;</span><span class="p">][</span><span class="s">&#39;bind_mount_opts&#39;</span><span class="p">][</span><span class="s">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;/home/builder/results&#39;</span><span class="p">,</span><span class="s">&#39;/results/&#39;</span><span class="p">))</span>
+<span class="c1"># build results go into /home/builder/results/</span>
+<span class="n">config_opts</span><span class="p">[</span><span class="s1">&#39;plugin_conf&#39;</span><span class="p">][</span><span class="s1">&#39;bind_mount_opts&#39;</span><span class="p">][</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;/home/builder/results&#39;</span><span class="p">,</span><span class="s1">&#39;/results/&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>If you are creating images for a branched release of Fedora you should also enable
@@ -748,7 +751,7 @@ group.</p>
 <tt class="docutils literal"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">fedora-rawhide-x86_64</span> <span class="pre">--copyin</span> <span class="pre">./fedora-minimal.ks</span> <span class="pre">/root/</span></tt></p>
 </li>
 <li><p class="first">Make a minimal iso:</p>
-<div class="highlight-python"><div class="highlight"><pre>mock -r fedora-rawhide-x86_64 --chroot -- livemedia-creator --no-virt \
+<div class="highlight-python"><div class="highlight"><pre><span></span>mock -r fedora-rawhide-x86_64 --chroot -- livemedia-creator --no-virt \
 --resultdir=/results/try-1 --logfile=/results/logs/try-1/try-1.log \
 --make-iso --ks /root/fedora-minimal.ks
 </pre></div>
@@ -773,10 +776,10 @@ This allows creation of all image types, and use of the KVM on the host if
 </li>
 <li><p class="first">Create a new /etc/mock/ config file based on the rawhide one, or modify the
 existing one so that the following options are setup:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">config_opts</span><span class="p">[</span><span class="s">&#39;chroot_setup_cmd&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;install @buildsys-build lorax qemu&#39;</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">config_opts</span><span class="p">[</span><span class="s1">&#39;chroot_setup_cmd&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;install @buildsys-build lorax qemu&#39;</span>
 
-<span class="c"># build results go into /home/builder/results/</span>
-<span class="n">config_opts</span><span class="p">[</span><span class="s">&#39;plugin_conf&#39;</span><span class="p">][</span><span class="s">&#39;bind_mount_opts&#39;</span><span class="p">][</span><span class="s">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;/home/builder/results&#39;</span><span class="p">,</span><span class="s">&#39;/results/&#39;</span><span class="p">))</span>
+<span class="c1"># build results go into /home/builder/results/</span>
+<span class="n">config_opts</span><span class="p">[</span><span class="s1">&#39;plugin_conf&#39;</span><span class="p">][</span><span class="s1">&#39;bind_mount_opts&#39;</span><span class="p">][</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;/home/builder/results&#39;</span><span class="p">,</span><span class="s1">&#39;/results/&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>If you are creating images for a branched release of Fedora you should also enable
@@ -805,7 +808,7 @@ group.</p>
 <tt class="docutils literal"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">fedora-rawhide-x86_64</span> <span class="pre">--copyin</span> <span class="pre">./boot.iso</span> <span class="pre">/root/</span></tt></p>
 </li>
 <li><p class="first">Make a minimal iso:</p>
-<div class="highlight-python"><div class="highlight"><pre>mock -r fedora-rawhide-x86_64 --chroot -- livemedia-creator \
+<div class="highlight-python"><div class="highlight"><pre><span></span>mock -r fedora-rawhide-x86_64 --chroot -- livemedia-creator \
 --resultdir=/results/try-1 --logfile=/results/logs/try-1/try-1.log \
 --make-iso --ks /root/fedora-minimal.ks --iso /root/boot.iso
 </pre></div>
@@ -837,7 +840,7 @@ cloud-utils-growpart will grow the image to fit the instance&#8217;s disk size.<
 <p class="last">On the RHEL7 version of lmc <tt class="docutils literal"><span class="pre">--image-type</span></tt> isn&#8217;t supported. You can only create a bare partitioned disk image.</p>
 </div>
 <p>Import the resulting disk image into the OpenStack system, either via the web UI, or glance on the cmdline:</p>
-<div class="highlight-python"><div class="highlight"><pre>glance image-create --name &quot;fedora-openstack&quot; --is-public true --disk-format qcow2 \
+<div class="highlight-python"><div class="highlight"><pre><span></span>glance image-create --name &quot;fedora-openstack&quot; --is-public true --disk-format qcow2 \
 --container-format bare --file ./fedora-openstack.qcow2
 </pre></div>
 </div>
@@ -859,7 +862,7 @@ fedora-docker.ks example kickstart which removes the requirement for core files 
 <p>The OCI is a new specification that is still being worked on. You can read more about it at
 <a class="reference external" href="https://www.opencontainers.org/">the Open Container Initiative website</a>. You can create
 OCI images using the following command:</p>
-<div class="highlight-python"><div class="highlight"><pre>sudo livemedia-creator --make-oci --oci-config /path/to/config.json --oci-runtime /path/to/runtime.json \
+<div class="highlight-python"><div class="highlight"><pre><span></span>sudo livemedia-creator --make-oci --oci-config /path/to/config.json --oci-runtime /path/to/runtime.json \
 --iso=/path/to/boot.iso --ks=/path/to/fedora-minimal.ks
 </pre></div>
 </div>
@@ -872,7 +875,7 @@ partitioned disk images.</p>
 <div class="section" id="vagrant-image-creation">
 <h2>Vagrant Image Creation<a class="headerlink" href="#vagrant-image-creation" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://www.vagrantup.com/">Vagrant</a> images can be created using the following command:</p>
-<div class="highlight-python"><div class="highlight"><pre>sudo livemedia-creator --make-vagrant --vagrant-metadata /path/to/metadata.json \
+<div class="highlight-python"><div class="highlight"><pre><span></span>sudo livemedia-creator --make-vagrant --vagrant-metadata /path/to/metadata.json \
 --iso=/path/to/boot.iso --ks=/path/to/fedora-vagrant.ks
 </pre></div>
 </div>
@@ -903,12 +906,12 @@ in /etc/yum.repos.d/</li>
 <li>Copy /usr/share/edk2.git/ovmf-x64/OVMF_VARS-pure-efi.fd to /usr/share/OVMF/OVMF_VARS.fd</li>
 </ol>
 <p>Now you can run livemedia-creator with <tt class="docutils literal"><span class="pre">--virt-uefi</span></tt> to boot and install using UEFI:</p>
-<div class="highlight-python"><div class="highlight"><pre>sudo livemedia-creator --make-disk --virt-uefi --iso=/path/to/boot.iso \
+<div class="highlight-python"><div class="highlight"><pre><span></span>sudo livemedia-creator --make-disk --virt-uefi --iso=/path/to/boot.iso \
 --ks=/path/to/fedora-minimal.ks
 </pre></div>
 </div>
 <p>Make sure that the kickstart you are using creates a /boot/efi partition by including this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">part</span> <span class="o">/</span><span class="n">boot</span><span class="o">/</span><span class="n">efi</span> <span class="o">--</span><span class="n">fstype</span><span class="o">=</span><span class="s">&quot;efi&quot;</span> <span class="o">--</span><span class="n">size</span><span class="o">=</span><span class="mi">500</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">part</span> <span class="o">/</span><span class="n">boot</span><span class="o">/</span><span class="n">efi</span> <span class="o">--</span><span class="n">fstype</span><span class="o">=</span><span class="s2">&quot;efi&quot;</span> <span class="o">--</span><span class="n">size</span><span class="o">=</span><span class="mi">500</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -997,7 +1000,7 @@ report bugs against the lorax component.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'25.2',
+            VERSION:'25.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

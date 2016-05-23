@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.dnfhelper &mdash; Lorax 25.2 documentation</title>
+  <title>pylorax.dnfhelper &mdash; Lorax 25.6 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Lorax 25.2 documentation" href="../../index.html"/>
+    <link rel="top" title="Lorax 25.6 documentation" href="../../index.html"/>
         <link rel="up" title="pylorax" href="../pylorax.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                25.2
+                25.6
               </div>
             
           
@@ -134,36 +134,36 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pylorax.dnfhelper</h1><div class="highlight"><pre>
-<span class="c">#</span>
-<span class="c"># dnfhelper.py</span>
-<span class="c">#</span>
-<span class="c"># Copyright (C) 2010-2015 Red Hat, Inc.</span>
-<span class="c">#</span>
-<span class="c"># This program is free software; you can redistribute it and/or modify</span>
-<span class="c"># it under the terms of the GNU General Public License as published by</span>
-<span class="c"># the Free Software Foundation; either version 2 of the License, or</span>
-<span class="c"># (at your option) any later version.</span>
-<span class="c">#</span>
-<span class="c"># This program is distributed in the hope that it will be useful,</span>
-<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
-<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
-<span class="c"># GNU General Public License for more details.</span>
-<span class="c">#</span>
-<span class="c"># You should have received a copy of the GNU General Public License</span>
-<span class="c"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
-<span class="c">#</span>
-<span class="c"># Red Hat Author(s):  Martin Gracik &lt;mgracik@redhat.com&gt;</span>
-<span class="c">#                     Brian C. Lane &lt;bcl@redhat.com&gt;</span>
-<span class="c">#</span>
+<span></span><span class="c1">#</span>
+<span class="c1"># dnfhelper.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C) 2010-2015 Red Hat, Inc.</span>
+<span class="c1">#</span>
+<span class="c1"># This program is free software; you can redistribute it and/or modify</span>
+<span class="c1"># it under the terms of the GNU General Public License as published by</span>
+<span class="c1"># the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c1"># (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># This program is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="c1"># Red Hat Author(s):  Martin Gracik &lt;mgracik@redhat.com&gt;</span>
+<span class="c1">#                     Brian C. Lane &lt;bcl@redhat.com&gt;</span>
+<span class="c1">#</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&quot;pylorax.dnfhelper&quot;</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;pylorax.dnfhelper&quot;</span><span class="p">)</span>
 <span class="kn">import</span> <span class="nn">dnf</span>
 <span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">pylorax.output</span> <span class="kn">as</span> <span class="nn">output</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;LoraxDownloadCallback&#39;</span><span class="p">,</span> <span class="s">&#39;LoraxRpmCallback&#39;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;LoraxDownloadCallback&#39;</span><span class="p">,</span> <span class="s1">&#39;LoraxRpmCallback&#39;</span><span class="p">]</span>
 
 <span class="k">def</span> <span class="nf">_paced</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Execute `fn` no more often then every 2 seconds.&quot;&quot;&quot;</span>
@@ -190,15 +190,15 @@
 
     <span class="nd">@_paced</span>
     <span class="k">def</span> <span class="nf">_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Downloading </span><span class="si">%(pkgno)s</span><span class="s"> / </span><span class="si">%(total_files)s</span><span class="s"> RPMs, &quot;</span> \
-              <span class="s">&quot;</span><span class="si">%(downloaded)s</span><span class="s"> / </span><span class="si">%(total_size)s</span><span class="s"> (</span><span class="si">%(percent)d%%</span><span class="s">) done.</span><span class="se">\n</span><span class="s">&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Downloading </span><span class="si">%(pkgno)s</span><span class="s2"> / </span><span class="si">%(total_files)s</span><span class="s2"> RPMs, &quot;</span> \
+              <span class="s2">&quot;</span><span class="si">%(downloaded)s</span><span class="s2"> / </span><span class="si">%(total_size)s</span><span class="s2"> (</span><span class="si">%(percent)d%%</span><span class="s2">) done.</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="n">downloaded</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">downloads</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="n">vals</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s">&#39;downloaded&#39;</span>  <span class="p">:</span> <span class="n">downloaded</span><span class="p">,</span>
-            <span class="s">&#39;percent&#39;</span>     <span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="n">downloaded</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">total_size</span><span class="p">),</span>
-            <span class="s">&#39;pkgno&#39;</span>       <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pkgno</span><span class="p">,</span>
-            <span class="s">&#39;total_files&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_files</span><span class="p">,</span>
-            <span class="s">&#39;total_size&#39;</span>  <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_size</span>
+            <span class="s1">&#39;downloaded&#39;</span>  <span class="p">:</span> <span class="n">downloaded</span><span class="p">,</span>
+            <span class="s1">&#39;percent&#39;</span>     <span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="n">downloaded</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">total_size</span><span class="p">),</span>
+            <span class="s1">&#39;pkgno&#39;</span>       <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pkgno</span><span class="p">,</span>
+            <span class="s1">&#39;total_files&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_files</span><span class="p">,</span>
+            <span class="s1">&#39;total_size&#39;</span>  <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_size</span>
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">msg</span> <span class="o">%</span> <span class="n">vals</span><span class="p">)</span>
 
@@ -209,7 +209,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">pkgno</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">()</span>
             <span class="k">return</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s">&quot;Failed to download &#39;</span><span class="si">%s</span><span class="s">&#39;: </span><span class="si">%d</span><span class="s"> - </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">nevra</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">err_msg</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Failed to download &#39;</span><span class="si">%s</span><span class="s2">&#39;: </span><span class="si">%d</span><span class="s2"> - </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nevra</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">err_msg</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="LoraxDownloadCallback.progress"><a class="viewcode-back" href="../../pylorax.html#pylorax.dnfhelper.LoraxDownloadCallback.progress">[docs]</a>    <span class="k">def</span> <span class="nf">progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">done</span><span class="p">):</span>
         <span class="n">nevra</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
@@ -228,15 +228,15 @@
 
 <div class="viewcode-block" id="LoraxRpmCallback.progress"><a class="viewcode-back" href="../../pylorax.html#pylorax.dnfhelper.LoraxRpmCallback.progress">[docs]</a>    <span class="k">def</span> <span class="nf">progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">package</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">ti_done</span><span class="p">,</span> <span class="n">ti_total</span><span class="p">,</span> <span class="n">ts_done</span><span class="p">,</span> <span class="n">ts_total</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">PKG_INSTALL</span><span class="p">:</span>
-            <span class="c"># do not report same package twice</span>
+            <span class="c1"># do not report same package twice</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_ts</span> <span class="o">==</span> <span class="n">ts_done</span><span class="p">:</span>
                 <span class="k">return</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_last_ts</span> <span class="o">=</span> <span class="n">ts_done</span>
 
-            <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;(</span><span class="si">%d</span><span class="s">/</span><span class="si">%d</span><span class="s">) </span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ts_done</span><span class="p">,</span> <span class="n">ts_total</span><span class="p">,</span> <span class="n">package</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">package</span><span class="o">.</span><span class="n">arch</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;(</span><span class="si">%d</span><span class="s1">/</span><span class="si">%d</span><span class="s1">) </span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ts_done</span><span class="p">,</span> <span class="n">ts_total</span><span class="p">,</span> <span class="n">package</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">package</span><span class="o">.</span><span class="n">arch</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">TRANS_POST</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Performing post-installation setup tasks&quot;</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Performing post-installation setup tasks&quot;</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="LoraxRpmCallback.error"><a class="viewcode-back" href="../../pylorax.html#pylorax.dnfhelper.LoraxRpmCallback.error">[docs]</a>    <span class="k">def</span> <span class="nf">error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">err_msg</span><span class="p">):</span>
@@ -274,7 +274,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'25.2',
+            VERSION:'25.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
