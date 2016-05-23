@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Lorax &mdash; Lorax 24.10 documentation</title>
+  <title>Lorax &mdash; Lorax 25.6 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Lorax 24.10 documentation" href="index.html"/>
+    <link rel="top" title="Lorax 25.6 documentation" href="index.html"/>
         <link rel="next" title="livemedia-creator" href="livemedia-creator.html"/>
         <link rel="prev" title="Introduction to Lorax" href="intro.html"/> 
 
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                24.10
+                25.6
               </div>
             
           
@@ -85,6 +85,7 @@
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction to Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro.html#before-lorax">Before Lorax</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Lorax</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#lorax-cmdline-arguments">lorax cmdline arguments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#quickstart">Quickstart</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#how-it-works">How it works</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#runtime-install-tmpl">runtime-install.tmpl</a></li>
@@ -163,10 +164,159 @@ environment. It is best to run lorax from the same release as is being targeted
 because the templates may have release specific logic in them. eg. Use the
 rawhide version to build the boot.iso for rawhide, along with the rawhide
 repositories.</p>
+<div class="section" id="lorax-cmdline-arguments">
+<h2>lorax cmdline arguments<a class="headerlink" href="#lorax-cmdline-arguments" title="Permalink to this headline">¶</a></h2>
+<p>Create the Anaconda boot.iso</p>
+<pre class="literal-block">
+usage: lorax [-h] -p PRODUCT -v VERSION -r RELEASE [-s REPOSITORY]
+             [--repo REPOSITORY] [-m REPOSITORY] [-t VARIANT] [-b URL]
+             [--isfinal] [-c CONFIGFILE] [--proxy HOST] [-i PACKAGE]
+             [--buildarch ARCH] [--volid VOLID] [--macboot] [--nomacboot]
+             [--noupgrade] [--logfile LOGFILE] [--tmp TMP]
+             [--cachedir CACHEDIR] [--workdir WORKDIR] [--force]
+             [--add-template ADD_TEMPLATES]
+             [--add-template-var ADD_TEMPLATE_VARS]
+             [--add-arch-template ADD_ARCH_TEMPLATES]
+             [--add-arch-template-var ADD_ARCH_TEMPLATE_VARS] [--noverify]
+             [--sharedir SHAREDIR] [--enablerepo [repo]]
+             [--disablerepo [repo]] [-V]
+             OUTPUTDIR
+</pre>
+<dl class="docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>outputdir</kbd></td>
+<td>Output directory</td></tr>
+</tbody>
+</table>
+</dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-p</span>, <span class="option">--product</span></kbd></td>
+<td>product name</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-v</span>, <span class="option">--version</span></kbd></td>
+<td>version identifier</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-r</span>, <span class="option">--release</span></kbd></td>
+<td>release information</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-s=[]</span>, <span class="option">--source=[]</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>source repository (may be listed multiple times)</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--repo=[]</span></kbd></td>
+<td>source dnf repository file</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-m=[]</span>, <span class="option">--mirrorlist=[]</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>mirrorlist repository (may be listed multiple times)</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-t</span>, <span class="option">--variant</span></kbd></td>
+<td>variant name</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-b=your distribution provided bug reporting tool</span>, <span class="option">--bugurl=your distribution provided bug reporting tool</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>bug reporting URL for the product</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--isfinal=False</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Undocumented</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-c=/etc/lorax/lorax.conf</span>, <span class="option">--config=/etc/lorax/lorax.conf</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>config file</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--proxy</span></kbd></td>
+<td>repo proxy url:port</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-i=[]</span>, <span class="option">--installpkgs=[]</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>package glob to install before runtime-install.tmpl runs. (may be listed multiple times)</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--buildarch</span></kbd></td>
+<td>build architecture</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--volid</span></kbd></td>
+<td>volume id</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--macboot=True</span></kbd></td>
+<td>Undocumented</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--nomacboot=True</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Undocumented</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--noupgrade=True</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Undocumented</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--logfile=./lorax.log</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Path to logfile</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--tmp=/var/tmp</span></kbd></td>
+<td>Top level temporary directory</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--cachedir</span></kbd></td>
+<td>DNF cache directory. Default is a temporary dir.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--workdir</span></kbd></td>
+<td>Work directory, overrides &#8211;tmp. Default is a temporary dir under /var/tmp</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--force=False</span></kbd></td>
+<td>Run even when the destination directory exists</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--add-template=[]</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Additional template for runtime image</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--add-template-var=[]</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Set variable for runtime image template</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--add-arch-template=[]</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Additional template for architecture-specific image</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--add-arch-template-var=[]</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Set variable for architecture-specific image</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--noverify=True</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Do not verify the install root</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--sharedir</span></kbd></td>
+<td>Directory containing all the templates. Overrides config file sharedir</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--enablerepo=[]</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Names of repos to enable</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--disablerepo=[]</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Names of repos to disable</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-V</span></kbd></td>
+<td>show program&#8217;s version number and exit</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
 <div class="section" id="quickstart">
 <h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
 <p>Run this as root to create a boot.iso in <tt class="docutils literal"><span class="pre">./results/</span></tt>:</p>
-<div class="highlight-python"><div class="highlight"><pre>dnf install lorax
+<div class="highlight-python"><div class="highlight"><pre><span></span>dnf install lorax
 setenforce 0
 lorax -p Fedora -v 23 -r 23 \
 -s http://dl.fedoraproject.org/pub/fedora/linux/releases/23/Everything/x86_64/os/ \
@@ -309,7 +459,7 @@ should) select the specific template directory by passing <tt class="docutils li
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'24.10',
+            VERSION:'25.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

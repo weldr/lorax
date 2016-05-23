@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.treebuilder &mdash; Lorax 24.10 documentation</title>
+  <title>pylorax.treebuilder &mdash; Lorax 25.6 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Lorax 24.10 documentation" href="../../index.html"/>
+    <link rel="top" title="Lorax 25.6 documentation" href="../../index.html"/>
         <link rel="up" title="pylorax" href="../pylorax.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                24.10
+                25.6
               </div>
             
           
@@ -134,27 +134,27 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pylorax.treebuilder</h1><div class="highlight"><pre>
-<span class="c"># treebuilder.py - handle arch-specific tree building stuff using templates</span>
-<span class="c">#</span>
-<span class="c"># Copyright (C) 2011-2015 Red Hat, Inc.</span>
-<span class="c">#</span>
-<span class="c"># This program is free software; you can redistribute it and/or modify</span>
-<span class="c"># it under the terms of the GNU General Public License as published by</span>
-<span class="c"># the Free Software Foundation; either version 2 of the License, or</span>
-<span class="c"># (at your option) any later version.</span>
-<span class="c">#</span>
-<span class="c"># This program is distributed in the hope that it will be useful,</span>
-<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
-<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
-<span class="c"># GNU General Public License for more details.</span>
-<span class="c">#</span>
-<span class="c"># You should have received a copy of the GNU General Public License</span>
-<span class="c"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
-<span class="c">#</span>
-<span class="c"># Author(s):  Will Woods &lt;wwoods@redhat.com&gt;</span>
+<span></span><span class="c1"># treebuilder.py - handle arch-specific tree building stuff using templates</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C) 2011-2015 Red Hat, Inc.</span>
+<span class="c1">#</span>
+<span class="c1"># This program is free software; you can redistribute it and/or modify</span>
+<span class="c1"># it under the terms of the GNU General Public License as published by</span>
+<span class="c1"># the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c1"># (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># This program is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="c1"># Author(s):  Will Woods &lt;wwoods@redhat.com&gt;</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&quot;pylorax.treebuilder&quot;</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;pylorax.treebuilder&quot;</span><span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">basename</span>
@@ -169,39 +169,39 @@
 <span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="kn">import</span> <span class="n">runcmd</span><span class="p">,</span> <span class="n">runcmd_output</span><span class="p">,</span> <span class="n">execWithCapture</span>
 
 <span class="n">templatemap</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s">&#39;i386&#39;</span><span class="p">:</span>    <span class="s">&#39;x86.tmpl&#39;</span><span class="p">,</span>
-    <span class="s">&#39;x86_64&#39;</span><span class="p">:</span>  <span class="s">&#39;x86.tmpl&#39;</span><span class="p">,</span>
-    <span class="s">&#39;ppc&#39;</span><span class="p">:</span>     <span class="s">&#39;ppc.tmpl&#39;</span><span class="p">,</span>
-    <span class="s">&#39;ppc64&#39;</span><span class="p">:</span>   <span class="s">&#39;ppc.tmpl&#39;</span><span class="p">,</span>
-    <span class="s">&#39;ppc64le&#39;</span><span class="p">:</span> <span class="s">&#39;ppc64le.tmpl&#39;</span><span class="p">,</span>
-    <span class="s">&#39;s390&#39;</span><span class="p">:</span>    <span class="s">&#39;s390.tmpl&#39;</span><span class="p">,</span>
-    <span class="s">&#39;s390x&#39;</span><span class="p">:</span>   <span class="s">&#39;s390.tmpl&#39;</span><span class="p">,</span>
-    <span class="s">&#39;aarch64&#39;</span><span class="p">:</span> <span class="s">&#39;aarch64.tmpl&#39;</span><span class="p">,</span>
-    <span class="s">&#39;arm&#39;</span><span class="p">:</span>     <span class="s">&#39;arm.tmpl&#39;</span><span class="p">,</span>
-    <span class="s">&#39;armhfp&#39;</span><span class="p">:</span>  <span class="s">&#39;arm.tmpl&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;i386&#39;</span><span class="p">:</span>    <span class="s1">&#39;x86.tmpl&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;x86_64&#39;</span><span class="p">:</span>  <span class="s1">&#39;x86.tmpl&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ppc&#39;</span><span class="p">:</span>     <span class="s1">&#39;ppc.tmpl&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ppc64&#39;</span><span class="p">:</span>   <span class="s1">&#39;ppc.tmpl&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ppc64le&#39;</span><span class="p">:</span> <span class="s1">&#39;ppc64le.tmpl&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;s390&#39;</span><span class="p">:</span>    <span class="s1">&#39;s390.tmpl&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;s390x&#39;</span><span class="p">:</span>   <span class="s1">&#39;s390.tmpl&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;aarch64&#39;</span><span class="p">:</span> <span class="s1">&#39;aarch64.tmpl&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;arm&#39;</span><span class="p">:</span>     <span class="s1">&#39;arm.tmpl&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;armhfp&#39;</span><span class="p">:</span>  <span class="s1">&#39;arm.tmpl&#39;</span><span class="p">,</span>
 <span class="p">}</span>
 
 <div class="viewcode-block" id="generate_module_info"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.generate_module_info">[docs]</a><span class="k">def</span> <span class="nf">generate_module_info</span><span class="p">(</span><span class="n">moddir</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">module_desc</span><span class="p">(</span><span class="n">mod</span><span class="p">):</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="n">runcmd_output</span><span class="p">([</span><span class="s">&quot;modinfo&quot;</span><span class="p">,</span> <span class="s">&quot;-F&quot;</span><span class="p">,</span> <span class="s">&quot;description&quot;</span><span class="p">,</span> <span class="n">mod</span><span class="p">])</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">runcmd_output</span><span class="p">([</span><span class="s2">&quot;modinfo&quot;</span><span class="p">,</span> <span class="s2">&quot;-F&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="n">mod</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">output</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">read_module_set</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">moddir</span><span class="p">,</span><span class="n">name</span><span class="p">))</span> <span class="k">if</span> <span class="s">&quot;.ko&quot;</span> <span class="ow">in</span> <span class="n">l</span><span class="p">)</span>
-    <span class="n">modsets</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;scsi&#39;</span><span class="p">:</span><span class="n">read_module_set</span><span class="p">(</span><span class="s">&quot;modules.block&quot;</span><span class="p">),</span>
-               <span class="s">&#39;eth&#39;</span><span class="p">:</span><span class="n">read_module_set</span><span class="p">(</span><span class="s">&quot;modules.networking&quot;</span><span class="p">)}</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">moddir</span><span class="p">,</span><span class="n">name</span><span class="p">))</span> <span class="k">if</span> <span class="s2">&quot;.ko&quot;</span> <span class="ow">in</span> <span class="n">l</span><span class="p">)</span>
+    <span class="n">modsets</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;scsi&#39;</span><span class="p">:</span><span class="n">read_module_set</span><span class="p">(</span><span class="s2">&quot;modules.block&quot;</span><span class="p">),</span>
+               <span class="s1">&#39;eth&#39;</span><span class="p">:</span><span class="n">read_module_set</span><span class="p">(</span><span class="s2">&quot;modules.networking&quot;</span><span class="p">)}</span>
 
     <span class="n">modinfo</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">moddir</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">modtype</span><span class="p">,</span> <span class="n">modset</span> <span class="ow">in</span> <span class="n">modsets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">modset</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>  <span class="c"># modules in this dir</span>
-                <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">_ext</span><span class="p">)</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span> <span class="c"># foo.ko -&gt; (foo, .ko)</span>
-                <span class="n">desc</span> <span class="o">=</span> <span class="n">module_desc</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="n">mod</span><span class="p">))</span> <span class="ow">or</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> driver&quot;</span> <span class="o">%</span> <span class="n">name</span>
+            <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">modset</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>  <span class="c1"># modules in this dir</span>
+                <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">_ext</span><span class="p">)</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span> <span class="c1"># foo.ko -&gt; (foo, .ko)</span>
+                <span class="n">desc</span> <span class="o">=</span> <span class="n">module_desc</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="n">mod</span><span class="p">))</span> <span class="ow">or</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> driver&quot;</span> <span class="o">%</span> <span class="n">name</span>
                 <span class="n">modinfo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">modtype</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">))</span>
 
-    <span class="n">out</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span> <span class="ow">or</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">moddir</span><span class="p">,</span><span class="s">&quot;module-info&quot;</span><span class="p">),</span> <span class="s">&quot;w&quot;</span><span class="p">)</span>
-    <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;Version 0</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">modinfo</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">)):</span>
-        <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;{name}</span><span class="se">\n\t</span><span class="s">{type}</span><span class="se">\n\t</span><span class="s">&quot;{desc:.65}&quot;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">mod</span><span class="p">))</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span> <span class="ow">or</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">moddir</span><span class="p">,</span><span class="s2">&quot;module-info&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Version 0</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">modinfo</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)):</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;{name}</span><span class="se">\n\t</span><span class="s1">{type}</span><span class="se">\n\t</span><span class="s1">&quot;{desc:.65}&quot;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">mod</span><span class="p">))</span>
 </div>
 <div class="viewcode-block" id="RuntimeBuilder"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder">[docs]</a><span class="k">class</span> <span class="nc">RuntimeBuilder</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Builds the anaconda runtime image.&#39;&#39;&#39;</span>
@@ -210,7 +210,7 @@
                  <span class="n">add_templates</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                  <span class="n">add_template_vars</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="n">root</span> <span class="o">=</span> <span class="n">dbo</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">installroot</span>
-        <span class="c"># use a copy of product so we can modify it locally</span>
+        <span class="c1"># use a copy of product so we can modify it locally</span>
         <span class="n">product</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">product</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vars</span> <span class="o">=</span> <span class="n">DataHolder</span><span class="p">(</span><span class="n">arch</span><span class="o">=</span><span class="n">arch</span><span class="p">,</span> <span class="n">product</span><span class="o">=</span><span class="n">product</span><span class="p">,</span> <span class="n">dbo</span><span class="o">=</span><span class="n">dbo</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span>
@@ -228,31 +228,31 @@
         <span class="n">release</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
         <span class="n">a</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">available</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">provides</span><span class="o">=</span><span class="s">&#39;/etc/system-release&#39;</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">pkg</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;generic&#39;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">provides</span><span class="o">=</span><span class="s1">&#39;/etc/system-release&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">pkg</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;generic&#39;</span><span class="p">):</span>
                 <span class="k">continue</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">release</span> <span class="o">=</span> <span class="n">pkg</span><span class="o">.</span><span class="n">name</span>
                 <span class="k">break</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">release</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;could not get the release&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;could not get the release&#39;</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="c"># release</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;got release: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">release</span><span class="p">)</span>
+        <span class="c1"># release</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;got release: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">release</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">installpkg</span><span class="p">(</span><span class="n">release</span><span class="p">)</span>
 
-        <span class="c"># logos</span>
-        <span class="n">release</span><span class="p">,</span> <span class="n">_suffix</span> <span class="o">=</span> <span class="n">release</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">installpkg</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">-logos&#39;</span> <span class="o">%</span> <span class="n">release</span><span class="p">)</span>
+        <span class="c1"># logos</span>
+        <span class="n">release</span><span class="p">,</span> <span class="n">_suffix</span> <span class="o">=</span> <span class="n">release</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">installpkg</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">-logos&#39;</span> <span class="o">%</span> <span class="n">release</span><span class="p">)</span>
 
 <div class="viewcode-block" id="RuntimeBuilder.install"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.install">[docs]</a>    <span class="k">def</span> <span class="nf">install</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Install packages and do initial setup with runtime-install.tmpl&#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_install_branding</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_installpkgs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">installpkg</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_installpkgs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s">&quot;runtime-install.tmpl&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;runtime-install.tmpl&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">tmpl</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_templates</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">tmpl</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">add_template_vars</span><span class="p">)</span>
 </div>
@@ -262,101 +262,101 @@
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">pkglistdir</span><span class="p">)</span>
         <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">pkgobj</span> <span class="ow">in</span> <span class="n">q</span><span class="o">.</span><span class="n">installed</span><span class="p">():</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">pkglistdir</span><span class="p">,</span> <span class="n">pkgobj</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="s">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fobj</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">pkglistdir</span><span class="p">,</span> <span class="n">pkgobj</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fobj</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">pkgobj</span><span class="o">.</span><span class="n">files</span><span class="p">:</span>
-                    <span class="n">fobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;{0}</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname</span><span class="p">))</span>
+                    <span class="n">fobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;{0}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname</span><span class="p">))</span>
 </div>
 <div class="viewcode-block" id="RuntimeBuilder.postinstall"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.postinstall">[docs]</a>    <span class="k">def</span> <span class="nf">postinstall</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Do some post-install setup work with runtime-postinstall.tmpl&#39;&#39;&#39;</span>
-        <span class="c"># copy configdir into runtime root beforehand</span>
-        <span class="n">configdir</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">templatedir</span><span class="p">,</span><span class="s">&quot;config_files&quot;</span><span class="p">)</span>
-        <span class="n">configdir_path</span> <span class="o">=</span> <span class="s">&quot;tmp/config_files&quot;</span>
+        <span class="c1"># copy configdir into runtime root beforehand</span>
+        <span class="n">configdir</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">templatedir</span><span class="p">,</span><span class="s2">&quot;config_files&quot;</span><span class="p">)</span>
+        <span class="n">configdir_path</span> <span class="o">=</span> <span class="s2">&quot;tmp/config_files&quot;</span>
         <span class="n">fullpath</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">configdir_path</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fullpath</span><span class="p">):</span>
             <span class="n">remove</span><span class="p">(</span><span class="n">fullpath</span><span class="p">)</span>
         <span class="n">copytree</span><span class="p">(</span><span class="n">configdir</span><span class="p">,</span> <span class="n">fullpath</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s">&quot;runtime-postinstall.tmpl&quot;</span><span class="p">,</span> <span class="n">configdir</span><span class="o">=</span><span class="n">configdir_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;runtime-postinstall.tmpl&quot;</span><span class="p">,</span> <span class="n">configdir</span><span class="o">=</span><span class="n">configdir_path</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="RuntimeBuilder.cleanup"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.cleanup">[docs]</a>    <span class="k">def</span> <span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Remove unneeded packages and files with runtime-cleanup.tmpl&#39;&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s">&quot;runtime-cleanup.tmpl&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;runtime-cleanup.tmpl&quot;</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="RuntimeBuilder.verify"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.verify">[docs]</a>    <span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Ensure that contents of the installroot can run&#39;&#39;&#39;</span>
         <span class="n">status</span> <span class="o">=</span> <span class="bp">True</span>
 
-        <span class="n">ELF_MAGIC</span> <span class="o">=</span> <span class="n">b</span><span class="s">&#39;</span><span class="se">\x7f</span><span class="s">ELF&#39;</span>
+        <span class="n">ELF_MAGIC</span> <span class="o">=</span> <span class="n">b</span><span class="s1">&#39;</span><span class="se">\x7f</span><span class="s1">ELF&#39;</span>
 
-        <span class="c"># Iterate over all files in /usr/bin and /usr/sbin</span>
-        <span class="c"># For ELF files, gather them into a list and we&#39;ll check them all at</span>
-        <span class="c"># the end. For files with a #!, check them as we go</span>
+        <span class="c1"># Iterate over all files in /usr/bin and /usr/sbin</span>
+        <span class="c1"># For ELF files, gather them into a list and we&#39;ll check them all at</span>
+        <span class="c1"># the end. For files with a #!, check them as we go</span>
         <span class="n">elf_files</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">usr_bin</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="s">&#39;/usr/bin&#39;</span><span class="p">)</span>
-        <span class="n">usr_sbin</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="s">&#39;/usr/sbin&#39;</span><span class="p">)</span>
+        <span class="n">usr_bin</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="s1">&#39;/usr/bin&#39;</span><span class="p">)</span>
+        <span class="n">usr_sbin</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="s1">&#39;/usr/sbin&#39;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="n">usr_bin</span><span class="o">.</span><span class="n">iterdir</span><span class="p">(),</span> <span class="n">usr_sbin</span><span class="o">.</span><span class="n">iterdir</span><span class="p">())</span> \
                      <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">is_file</span><span class="p">()):</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">magic</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">magic</span> <span class="o">==</span> <span class="n">ELF_MAGIC</span><span class="p">:</span>
-                    <span class="c"># Save the path, minus the chroot prefix</span>
+                    <span class="c1"># Save the path, minus the chroot prefix</span>
                     <span class="n">elf_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span><span class="p">):])</span>
-                <span class="k">elif</span> <span class="n">magic</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="n">b</span><span class="s">&#39;#!&#39;</span><span class="p">:</span>
-                    <span class="c"># Reopen the file as text and read the first line.</span>
-                    <span class="c"># Open as latin-1 so that stray 8-bit characters don&#39;t make</span>
-                    <span class="c"># things blow up. We only really care about ASCII parts.</span>
-                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">&quot;rt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s">&quot;latin-1&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f_text</span><span class="p">:</span>
-                        <span class="c"># Remove the #!, split on space, and take the first part</span>
+                <span class="k">elif</span> <span class="n">magic</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="n">b</span><span class="s1">&#39;#!&#39;</span><span class="p">:</span>
+                    <span class="c1"># Reopen the file as text and read the first line.</span>
+                    <span class="c1"># Open as latin-1 so that stray 8-bit characters don&#39;t make</span>
+                    <span class="c1"># things blow up. We only really care about ASCII parts.</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;rt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;latin-1&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f_text</span><span class="p">:</span>
+                        <span class="c1"># Remove the #!, split on space, and take the first part</span>
                         <span class="n">shabang</span> <span class="o">=</span> <span class="n">f_text</span><span class="o">.</span><span class="n">readline</span><span class="p">()[</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
 
-                    <span class="c"># Does the path exist?</span>
+                    <span class="c1"># Does the path exist?</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="n">shabang</span><span class="p">):</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">, needed by </span><span class="si">%s</span><span class="s">, does not exist&#39;</span><span class="p">,</span> <span class="n">shabang</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">, needed by </span><span class="si">%s</span><span class="s1">, does not exist&#39;</span><span class="p">,</span> <span class="n">shabang</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
                         <span class="n">status</span> <span class="o">=</span> <span class="bp">False</span>
 
-        <span class="c"># Now, run ldd on all the ELF files</span>
-        <span class="c"># Just run ldd once on everything so it isn&#39;t logged a million times.</span>
-        <span class="c"># At least one thing in the list isn&#39;t going to be a dynamic executable,</span>
-        <span class="c"># so use execWithCapture to ignore the exit code.</span>
-        <span class="n">filename</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">execWithCapture</span><span class="p">(</span><span class="s">&#39;ldd&#39;</span><span class="p">,</span> <span class="n">elf_files</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
-                <span class="n">log_output</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">filter_stderr</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">):</span>
+        <span class="c1"># Now, run ldd on all the ELF files</span>
+        <span class="c1"># Just run ldd once on everything so it isn&#39;t logged a million times.</span>
+        <span class="c1"># At least one thing in the list isn&#39;t going to be a dynamic executable,</span>
+        <span class="c1"># so use execWithCapture to ignore the exit code.</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">execWithCapture</span><span class="p">(</span><span class="s1">&#39;ldd&#39;</span><span class="p">,</span> <span class="n">elf_files</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+                <span class="n">log_output</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">filter_stderr</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">line</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isspace</span><span class="p">():</span>
-                <span class="c"># New filename header, strip the : at the end and save</span>
+                <span class="c1"># New filename header, strip the : at the end and save</span>
                 <span class="n">filename</span> <span class="o">=</span> <span class="n">line</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">elif</span> <span class="s">&#39;not found&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">, needed by </span><span class="si">%s</span><span class="s">, not found&#39;</span><span class="p">,</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="s1">&#39;not found&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">, needed by </span><span class="si">%s</span><span class="s1">, not found&#39;</span><span class="p">,</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">filename</span><span class="p">)</span>
                 <span class="n">status</span> <span class="o">=</span> <span class="bp">False</span>
 
         <span class="k">return</span> <span class="n">status</span>
 </div>
 <div class="viewcode-block" id="RuntimeBuilder.writepkgsizes"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.writepkgsizes">[docs]</a>    <span class="k">def</span> <span class="nf">writepkgsizes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkgsizefile</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;debugging data: write a big list of pkg sizes&#39;&#39;&#39;</span>
-        <span class="n">fobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">pkgsizefile</span><span class="p">,</span> <span class="s">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">fobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">pkgsizefile</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
         <span class="n">getsize</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">lstat</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
         <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">installed</span><span class="p">()):</span>
             <span class="n">pkgsize</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">getsize</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span><span class="p">,</span><span class="n">f</span><span class="p">))</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">files</span><span class="p">)</span>
-            <span class="n">fobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;{0.name}.{0.arch}: {1}</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">pkgsize</span><span class="p">))</span>
+            <span class="n">fobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;{0.name}.{0.arch}: {1}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">pkgsize</span><span class="p">))</span>
 </div>
 <div class="viewcode-block" id="RuntimeBuilder.generate_module_data"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.generate_module_data">[docs]</a>    <span class="k">def</span> <span class="nf">generate_module_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span>
-        <span class="n">moddir</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s">&quot;lib/modules/&quot;</span><span class="p">)</span>
+        <span class="n">moddir</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;lib/modules/&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">kver</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">moddir</span><span class="p">):</span>
-            <span class="n">ksyms</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s">&quot;boot/System.map-</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">kver</span><span class="p">)</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;doing depmod and module-info for </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">kver</span><span class="p">)</span>
-            <span class="n">runcmd</span><span class="p">([</span><span class="s">&quot;depmod&quot;</span><span class="p">,</span> <span class="s">&quot;-a&quot;</span><span class="p">,</span> <span class="s">&quot;-F&quot;</span><span class="p">,</span> <span class="n">ksyms</span><span class="p">,</span> <span class="s">&quot;-b&quot;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">kver</span><span class="p">])</span>
-            <span class="n">generate_module_info</span><span class="p">(</span><span class="n">moddir</span><span class="o">+</span><span class="n">kver</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="n">moddir</span><span class="o">+</span><span class="s">&quot;module-info&quot;</span><span class="p">)</span>
+            <span class="n">ksyms</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;boot/System.map-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">kver</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;doing depmod and module-info for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">kver</span><span class="p">)</span>
+            <span class="n">runcmd</span><span class="p">([</span><span class="s2">&quot;depmod&quot;</span><span class="p">,</span> <span class="s2">&quot;-a&quot;</span><span class="p">,</span> <span class="s2">&quot;-F&quot;</span><span class="p">,</span> <span class="n">ksyms</span><span class="p">,</span> <span class="s2">&quot;-b&quot;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">kver</span><span class="p">])</span>
+            <span class="n">generate_module_info</span><span class="p">(</span><span class="n">moddir</span><span class="o">+</span><span class="n">kver</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="n">moddir</span><span class="o">+</span><span class="s2">&quot;module-info&quot;</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="RuntimeBuilder.create_runtime"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.create_runtime">[docs]</a>    <span class="k">def</span> <span class="nf">create_runtime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="s">&quot;/var/tmp/squashfs.img&quot;</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s">&quot;xz&quot;</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-        <span class="c"># make live rootfs image - must be named &quot;LiveOS/rootfs.img&quot; for dracut</span>
+<div class="viewcode-block" id="RuntimeBuilder.create_runtime"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.create_runtime">[docs]</a>    <span class="k">def</span> <span class="nf">create_runtime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="s2">&quot;/var/tmp/squashfs.img&quot;</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;xz&quot;</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="c1"># make live rootfs image - must be named &quot;LiveOS/rootfs.img&quot; for dracut</span>
         <span class="n">compressargs</span> <span class="o">=</span> <span class="n">compressargs</span> <span class="ow">or</span> <span class="p">[]</span>
-        <span class="n">workdir</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">outfile</span><span class="p">),</span> <span class="s">&quot;runtime-workdir&quot;</span><span class="p">)</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">workdir</span><span class="p">,</span> <span class="s">&quot;LiveOS&quot;</span><span class="p">))</span>
+        <span class="n">workdir</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">outfile</span><span class="p">),</span> <span class="s2">&quot;runtime-workdir&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">workdir</span><span class="p">,</span> <span class="s2">&quot;LiveOS&quot;</span><span class="p">))</span>
 
-        <span class="n">imgutils</span><span class="o">.</span><span class="n">mkrootfsimg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">workdir</span><span class="p">,</span> <span class="s">&quot;LiveOS/rootfs.img&quot;</span><span class="p">),</span>
-                             <span class="s">&quot;Anaconda&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+        <span class="n">imgutils</span><span class="o">.</span><span class="n">mkrootfsimg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">workdir</span><span class="p">,</span> <span class="s2">&quot;LiveOS/rootfs.img&quot;</span><span class="p">),</span>
+                             <span class="s2">&quot;Anaconda&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
 
-        <span class="c"># squash the live rootfs and clean up workdir</span>
+        <span class="c1"># squash the live rootfs and clean up workdir</span>
         <span class="n">imgutils</span><span class="o">.</span><span class="n">mksquashfs</span><span class="p">(</span><span class="n">workdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="p">)</span>
         <span class="n">remove</span><span class="p">(</span><span class="n">workdir</span><span class="p">)</span>
 </div>
@@ -372,8 +372,8 @@
 <span class="sd">    inroot should be the installtree root (the newly-built runtime dir)&#39;&#39;&#39;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">inroot</span><span class="p">,</span> <span class="n">outroot</span><span class="p">,</span> <span class="n">runtime</span><span class="p">,</span> <span class="n">isolabel</span><span class="p">,</span> <span class="n">domacboot</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">doupgrade</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">templatedir</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">add_templates</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">add_template_vars</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">workdir</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
 
-        <span class="c"># NOTE: if you pass an arg named &quot;runtime&quot; to a mako template it&#39;ll</span>
-        <span class="c"># clobber some mako internal variables - hence &quot;runtime_img&quot;.</span>
+        <span class="c1"># NOTE: if you pass an arg named &quot;runtime&quot; to a mako template it&#39;ll</span>
+        <span class="c1"># clobber some mako internal variables - hence &quot;runtime_img&quot;.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vars</span> <span class="o">=</span> <span class="n">DataHolder</span><span class="p">(</span><span class="n">arch</span><span class="o">=</span><span class="n">arch</span><span class="p">,</span> <span class="n">product</span><span class="o">=</span><span class="n">product</span><span class="p">,</span> <span class="n">runtime_img</span><span class="o">=</span><span class="n">runtime</span><span class="p">,</span>
                                <span class="n">runtime_base</span><span class="o">=</span><span class="n">basename</span><span class="p">(</span><span class="n">runtime</span><span class="p">),</span>
                                <span class="n">inroot</span><span class="o">=</span><span class="n">inroot</span><span class="p">,</span> <span class="n">outroot</span><span class="o">=</span><span class="n">outroot</span><span class="p">,</span>
@@ -391,44 +391,51 @@
 <div class="viewcode-block" id="TreeBuilder.kernels"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.TreeBuilder.kernels">[docs]</a>    <span class="k">def</span> <span class="nf">kernels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">findkernels</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">inroot</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="TreeBuilder.rebuild_initrds"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.TreeBuilder.rebuild_initrds">[docs]</a>    <span class="k">def</span> <span class="nf">rebuild_initrds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">add_args</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">backup</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="TreeBuilder.rebuild_initrds"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.TreeBuilder.rebuild_initrds">[docs]</a>    <span class="k">def</span> <span class="nf">rebuild_initrds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">add_args</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">backup</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Rebuild all the initrds in the tree. If backup is specified, each</span>
 <span class="sd">        initrd will be renamed with backup as a suffix before rebuilding.</span>
 <span class="sd">        If backup is empty, the existing initrd files will be overwritten.</span>
 <span class="sd">        If suffix is specified, the existing initrd is untouched and a new</span>
 <span class="sd">        image is built with the filename &quot;${prefix}-${kernel.version}.img&quot;</span>
+
+<span class="sd">        If the initrd doesn&#39;t exist its name will be created based on the</span>
+<span class="sd">        name of the kernel.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">add_args</span> <span class="o">=</span> <span class="n">add_args</span> <span class="ow">or</span> <span class="p">[]</span>
-        <span class="n">dracut</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;dracut&quot;</span><span class="p">,</span> <span class="s">&quot;--nomdadmconf&quot;</span><span class="p">,</span> <span class="s">&quot;--nolvmconf&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">add_args</span>
+        <span class="n">dracut</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;dracut&quot;</span><span class="p">,</span> <span class="s2">&quot;--nomdadmconf&quot;</span><span class="p">,</span> <span class="s2">&quot;--nolvmconf&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">add_args</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">backup</span><span class="p">:</span>
-            <span class="n">dracut</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;--force&quot;</span><span class="p">)</span>
+            <span class="n">dracut</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;--force&quot;</span><span class="p">)</span>
 
-        <span class="n">kernels</span> <span class="o">=</span> <span class="p">[</span><span class="n">kernel</span> <span class="k">for</span> <span class="n">kernel</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernels</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="s">&quot;initrd&quot;</span><span class="p">)]</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">kernels</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;No initrds found, cannot rebuild_initrds&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernels</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;No kernels found, cannot rebuild_initrds&quot;</span><span class="p">)</span>
 
-        <span class="c"># Hush some dracut warnings. TODO: bind-mount proc in place?</span>
-        <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">inroot</span><span class="p">,</span><span class="s">&quot;/proc/modules&quot;</span><span class="p">),</span><span class="s">&quot;w&quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">kernel</span> <span class="ow">in</span> <span class="n">kernels</span><span class="p">:</span>
+        <span class="c1"># Hush some dracut warnings. TODO: bind-mount proc in place?</span>
+        <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">inroot</span><span class="p">,</span><span class="s2">&quot;/proc/modules&quot;</span><span class="p">),</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">kernel</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernels</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
-                <span class="n">idir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">kernel</span><span class="o">.</span><span class="n">initrd</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
-                <span class="n">outfile</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">idir</span><span class="p">,</span> <span class="n">prefix</span><span class="o">+</span><span class="s">&#39;-&#39;</span><span class="o">+</span><span class="n">kernel</span><span class="o">.</span><span class="n">version</span><span class="o">+</span><span class="s">&#39;.img&#39;</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
+                <span class="n">idir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">kernel</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+                <span class="n">outfile</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">idir</span><span class="p">,</span> <span class="n">prefix</span><span class="o">+</span><span class="s1">&#39;-&#39;</span><span class="o">+</span><span class="n">kernel</span><span class="o">.</span><span class="n">version</span><span class="o">+</span><span class="s1">&#39;.img&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="s2">&quot;initrd&quot;</span><span class="p">):</span>
+                <span class="c1"># If there is an existing initrd, use that</span>
                 <span class="n">outfile</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">initrd</span><span class="o">.</span><span class="n">path</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;rebuilding </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Construct an initrd from the kernel name</span>
+                <span class="n">outfile</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;vmlinuz-&quot;</span><span class="p">,</span> <span class="s2">&quot;initrd-&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.img&quot;</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;rebuilding </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">backup</span><span class="p">:</span>
                 <span class="n">initrd</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">inroot</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">initrd</span><span class="p">,</span> <span class="n">initrd</span> <span class="o">+</span> <span class="n">backup</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">initrd</span><span class="p">):</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">initrd</span><span class="p">,</span> <span class="n">initrd</span> <span class="o">+</span> <span class="n">backup</span><span class="p">)</span>
             <span class="n">cmd</span> <span class="o">=</span> <span class="n">dracut</span> <span class="o">+</span> <span class="p">[</span><span class="n">outfile</span><span class="p">,</span> <span class="n">kernel</span><span class="o">.</span><span class="n">version</span><span class="p">]</span>
             <span class="n">runcmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">inroot</span><span class="p">)</span>
 
-            <span class="c"># ppc64 cannot boot images &gt; 32MiB, check size and warn</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">arch</span><span class="o">.</span><span class="n">basearch</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&quot;ppc64&quot;</span><span class="p">,</span> <span class="s">&quot;ppc64le&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">outfile</span><span class="p">):</span>
+            <span class="c1"># ppc64 cannot boot images &gt; 32MiB, check size and warn</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">arch</span><span class="o">.</span><span class="n">basearch</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;ppc64&quot;</span><span class="p">,</span> <span class="s2">&quot;ppc64le&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">outfile</span><span class="p">):</span>
                 <span class="n">st</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">st_size</span> <span class="o">&gt;</span> <span class="mi">32</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">:</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;ppc64 initrd </span><span class="si">%s</span><span class="s"> is &gt; 32MiB&quot;</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;ppc64 initrd </span><span class="si">%s</span><span class="s2"> is &gt; 32MiB&quot;</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
 
-        <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">inroot</span><span class="p">,</span><span class="s">&quot;/proc/modules&quot;</span><span class="p">))</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">inroot</span><span class="p">,</span><span class="s2">&quot;/proc/modules&quot;</span><span class="p">))</span>
 </div>
 <div class="viewcode-block" id="TreeBuilder.build"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.TreeBuilder.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">templatefile</span> <span class="o">=</span> <span class="n">templatemap</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">arch</span><span class="o">.</span><span class="n">basearch</span><span class="p">]</span>
@@ -440,9 +447,9 @@
 </div>
 <div class="viewcode-block" id="TreeBuilder.implantisomd5"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.TreeBuilder.implantisomd5">[docs]</a>    <span class="k">def</span> <span class="nf">implantisomd5</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">_section</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">treeinfo_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="s">&#39;boot.iso&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-                <span class="n">iso</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">outroot</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;boot.iso&#39;</span><span class="p">])</span>
-                <span class="n">runcmd</span><span class="p">([</span><span class="s">&quot;implantisomd5&quot;</span><span class="p">,</span> <span class="n">iso</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s1">&#39;boot.iso&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="n">iso</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">outroot</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;boot.iso&#39;</span><span class="p">])</span>
+                <span class="n">runcmd</span><span class="p">([</span><span class="s2">&quot;implantisomd5&quot;</span><span class="p">,</span> <span class="n">iso</span><span class="p">])</span>
 </div>
     <span class="nd">@property</span>
 <div class="viewcode-block" id="TreeBuilder.dracut_hooks_path"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.TreeBuilder.dracut_hooks_path">[docs]</a>    <span class="k">def</span> <span class="nf">dracut_hooks_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -452,9 +459,9 @@
 <span class="sd">            otherwise default to /usr/share/lorax/dracut_hooks</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">templatedir</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">templatedir</span><span class="p">,</span> <span class="s">&quot;dracut_hooks&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">templatedir</span><span class="p">,</span> <span class="s2">&quot;dracut_hooks&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s">&quot;/usr/share/lorax/dracut_hooks&quot;</span>
+            <span class="k">return</span> <span class="s2">&quot;/usr/share/lorax/dracut_hooks&quot;</span>
 </div>
 <div class="viewcode-block" id="TreeBuilder.copy_dracut_hooks"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.TreeBuilder.copy_dracut_hooks">[docs]</a>    <span class="k">def</span> <span class="nf">copy_dracut_hooks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hooks</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Copy the hook scripts in hooks into the installroot&#39;s /tmp/</span>
@@ -469,50 +476,50 @@
         <span class="k">for</span> <span class="n">hook_script</span><span class="p">,</span> <span class="n">dracut_path</span> <span class="ow">in</span> <span class="n">hooks</span><span class="p">:</span>
             <span class="n">src</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dracut_hooks_path</span><span class="p">,</span> <span class="n">hook_script</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">src</span><span class="p">):</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Missing lorax dracut hook script </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">src</span><span class="p">))</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Missing lorax dracut hook script </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">src</span><span class="p">))</span>
                 <span class="k">continue</span>
-            <span class="n">dst</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">inroot</span><span class="p">,</span> <span class="s">&quot;/tmp/&quot;</span><span class="p">,</span> <span class="n">hook_script</span><span class="p">)</span>
+            <span class="n">dst</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">inroot</span><span class="p">,</span> <span class="s2">&quot;/tmp/&quot;</span><span class="p">,</span> <span class="n">hook_script</span><span class="p">)</span>
             <span class="n">copy2</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
-            <span class="n">dracut_commands</span> <span class="o">+=</span> <span class="p">[</span><span class="s">&quot;--include&quot;</span><span class="p">,</span> <span class="n">joinpaths</span><span class="p">(</span><span class="s">&quot;/tmp/&quot;</span><span class="p">,</span> <span class="n">hook_script</span><span class="p">),</span>
+            <span class="n">dracut_commands</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;--include&quot;</span><span class="p">,</span> <span class="n">joinpaths</span><span class="p">(</span><span class="s2">&quot;/tmp/&quot;</span><span class="p">,</span> <span class="n">hook_script</span><span class="p">),</span>
                                 <span class="n">dracut_path</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">dracut_commands</span>
 
-<span class="c">#### TreeBuilder helper functions</span>
+<span class="c1">#### TreeBuilder helper functions</span>
 </div></div>
-<div class="viewcode-block" id="findkernels"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.findkernels">[docs]</a><span class="k">def</span> <span class="nf">findkernels</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="n">kdir</span><span class="o">=</span><span class="s">&quot;boot&quot;</span><span class="p">):</span>
-    <span class="c"># To find possible flavors, awk &#39;/BuildKernel/ { print $4 }&#39; kernel.spec</span>
-    <span class="n">flavors</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;debug&#39;</span><span class="p">,</span> <span class="s">&#39;PAE&#39;</span><span class="p">,</span> <span class="s">&#39;PAEdebug&#39;</span><span class="p">,</span> <span class="s">&#39;smp&#39;</span><span class="p">,</span> <span class="s">&#39;xen&#39;</span><span class="p">,</span> <span class="s">&#39;lpae&#39;</span><span class="p">)</span>
-    <span class="n">kre</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&quot;vmlinuz-(?P&lt;version&gt;.+?\.(?P&lt;arch&gt;[a-z0-9_]+)&quot;</span>
-                     <span class="s">r&quot;(.(?P&lt;flavor&gt;{0}))?)$&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">flavors</span><span class="p">)))</span>
+<div class="viewcode-block" id="findkernels"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.findkernels">[docs]</a><span class="k">def</span> <span class="nf">findkernels</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">kdir</span><span class="o">=</span><span class="s2">&quot;boot&quot;</span><span class="p">):</span>
+    <span class="c1"># To find possible flavors, awk &#39;/BuildKernel/ { print $4 }&#39; kernel.spec</span>
+    <span class="n">flavors</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;debug&#39;</span><span class="p">,</span> <span class="s1">&#39;PAE&#39;</span><span class="p">,</span> <span class="s1">&#39;PAEdebug&#39;</span><span class="p">,</span> <span class="s1">&#39;smp&#39;</span><span class="p">,</span> <span class="s1">&#39;xen&#39;</span><span class="p">,</span> <span class="s1">&#39;lpae&#39;</span><span class="p">)</span>
+    <span class="n">kre</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">r&quot;vmlinuz-(?P&lt;version&gt;.+?\.(?P&lt;arch&gt;[a-z0-9_]+)&quot;</span>
+                     <span class="s2">r&quot;(.(?P&lt;flavor&gt;{0}))?)$&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">flavors</span><span class="p">)))</span>
     <span class="n">kernels</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">bootfiles</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">kdir</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">bootfiles</span><span class="p">:</span>
         <span class="n">match</span> <span class="o">=</span> <span class="n">kre</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
             <span class="n">kernel</span> <span class="o">=</span> <span class="n">DataHolder</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">kdir</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
-            <span class="n">kernel</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">groupdict</span><span class="p">())</span> <span class="c"># sets version, arch, flavor</span>
+            <span class="n">kernel</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">groupdict</span><span class="p">())</span> <span class="c1"># sets version, arch, flavor</span>
             <span class="n">kernels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">kernel</span><span class="p">)</span>
 
-    <span class="c"># look for associated initrd/initramfs/etc.</span>
+    <span class="c1"># look for associated initrd/initramfs/etc.</span>
     <span class="k">for</span> <span class="n">kernel</span> <span class="ow">in</span> <span class="n">kernels</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">bootfiles</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;-&#39;</span><span class="o">+</span><span class="n">kernel</span><span class="o">.</span><span class="n">version</span><span class="o">+</span><span class="s">&#39;.img&#39;</span><span class="p">):</span>
-                <span class="n">imgtype</span><span class="p">,</span> <span class="n">_rest</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;-&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-                <span class="c"># special backwards-compat case</span>
-                <span class="k">if</span> <span class="n">imgtype</span> <span class="o">==</span> <span class="s">&#39;initramfs&#39;</span><span class="p">:</span>
-                    <span class="n">imgtype</span> <span class="o">=</span> <span class="s">&#39;initrd&#39;</span>
+            <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="o">+</span><span class="n">kernel</span><span class="o">.</span><span class="n">version</span><span class="o">+</span><span class="s1">&#39;.img&#39;</span><span class="p">):</span>
+                <span class="n">imgtype</span><span class="p">,</span> <span class="n">_rest</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+                <span class="c1"># special backwards-compat case</span>
+                <span class="k">if</span> <span class="n">imgtype</span> <span class="o">==</span> <span class="s1">&#39;initramfs&#39;</span><span class="p">:</span>
+                    <span class="n">imgtype</span> <span class="o">=</span> <span class="s1">&#39;initrd&#39;</span>
                 <span class="n">kernel</span><span class="p">[</span><span class="n">imgtype</span><span class="p">]</span> <span class="o">=</span> <span class="n">DataHolder</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">kdir</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
 
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;kernels=</span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">kernels</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;kernels=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">kernels</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">kernels</span>
 
-<span class="c"># udev whitelist: &#39;a-zA-Z0-9#+.:=@_-&#39; (see is_whitelisted in libudev-util.c)</span></div>
-<span class="n">udev_blacklist</span><span class="o">=</span><span class="s">&#39; !&quot;$%&amp;</span><span class="se">\&#39;</span><span class="s">()*,/;&lt;&gt;?[</span><span class="se">\\</span><span class="s">]^`{|}~&#39;</span> <span class="c"># ASCII printable, minus whitelist</span>
-<span class="n">udev_blacklist</span> <span class="o">+=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">chr</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">32</span><span class="p">))</span> <span class="c"># ASCII non-printable</span>
+<span class="c1"># udev whitelist: &#39;a-zA-Z0-9#+.:=@_-&#39; (see is_whitelisted in libudev-util.c)</span></div>
+<span class="n">udev_blacklist</span><span class="o">=</span><span class="s1">&#39; !&quot;$%&amp;</span><span class="se">\&#39;</span><span class="s1">()*,/;&lt;&gt;?[</span><span class="se">\\</span><span class="s1">]^`{|}~&#39;</span> <span class="c1"># ASCII printable, minus whitelist</span>
+<span class="n">udev_blacklist</span> <span class="o">+=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">chr</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">32</span><span class="p">))</span> <span class="c1"># ASCII non-printable</span>
 <div class="viewcode-block" id="udev_escape"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.udev_escape">[docs]</a><span class="k">def</span> <span class="nf">udev_escape</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
-    <span class="n">out</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">label</span><span class="p">:</span>
-        <span class="n">out</span> <span class="o">+=</span> <span class="n">ch</span> <span class="k">if</span> <span class="n">ch</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">udev_blacklist</span> <span class="k">else</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">x</span><span class="si">%02x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">ord</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">+=</span> <span class="n">ch</span> <span class="k">if</span> <span class="n">ch</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">udev_blacklist</span> <span class="k">else</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">x</span><span class="si">%02x</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">ord</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">out</span>
 </div>
 <div class="viewcode-block" id="string_lower"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.string_lower">[docs]</a><span class="k">def</span> <span class="nf">string_lower</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
@@ -556,7 +563,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'24.10',
+            VERSION:'25.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

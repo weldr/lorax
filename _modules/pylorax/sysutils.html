@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.sysutils &mdash; Lorax 24.10 documentation</title>
+  <title>pylorax.sysutils &mdash; Lorax 25.6 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Lorax 24.10 documentation" href="../../index.html"/>
+    <link rel="top" title="Lorax 25.6 documentation" href="../../index.html"/>
         <link rel="up" title="pylorax" href="../pylorax.html"/> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                24.10
+                25.6
               </div>
             
           
@@ -134,29 +134,29 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pylorax.sysutils</h1><div class="highlight"><pre>
-<span class="c">#</span>
-<span class="c"># sysutils.py</span>
-<span class="c">#</span>
-<span class="c"># Copyright (C) 2009-2015 Red Hat, Inc.</span>
-<span class="c">#</span>
-<span class="c"># This program is free software; you can redistribute it and/or modify</span>
-<span class="c"># it under the terms of the GNU General Public License as published by</span>
-<span class="c"># the Free Software Foundation; either version 2 of the License, or</span>
-<span class="c"># (at your option) any later version.</span>
-<span class="c">#</span>
-<span class="c"># This program is distributed in the hope that it will be useful,</span>
-<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
-<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
-<span class="c"># GNU General Public License for more details.</span>
-<span class="c">#</span>
-<span class="c"># You should have received a copy of the GNU General Public License</span>
-<span class="c"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
-<span class="c">#</span>
-<span class="c"># Red Hat Author(s):  Martin Gracik &lt;mgracik@redhat.com&gt;</span>
-<span class="c">#</span>
+<span></span><span class="c1">#</span>
+<span class="c1"># sysutils.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C) 2009-2015 Red Hat, Inc.</span>
+<span class="c1">#</span>
+<span class="c1"># This program is free software; you can redistribute it and/or modify</span>
+<span class="c1"># it under the terms of the GNU General Public License as published by</span>
+<span class="c1"># the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c1"># (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># This program is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="c1"># Red Hat Author(s):  Martin Gracik &lt;mgracik@redhat.com&gt;</span>
+<span class="c1">#</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;joinpaths&quot;</span><span class="p">,</span> <span class="s">&quot;touch&quot;</span><span class="p">,</span> <span class="s">&quot;replace&quot;</span><span class="p">,</span> <span class="s">&quot;chown_&quot;</span><span class="p">,</span> <span class="s">&quot;chmod_&quot;</span><span class="p">,</span> <span class="s">&quot;remove&quot;</span><span class="p">,</span>
-           <span class="s">&quot;linktree&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;joinpaths&quot;</span><span class="p">,</span> <span class="s2">&quot;touch&quot;</span><span class="p">,</span> <span class="s2">&quot;replace&quot;</span><span class="p">,</span> <span class="s2">&quot;chown_&quot;</span><span class="p">,</span> <span class="s2">&quot;chmod_&quot;</span><span class="p">,</span> <span class="s2">&quot;remove&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;linktree&quot;</span><span class="p">]</span>
 
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -172,15 +172,15 @@
 <div class="viewcode-block" id="joinpaths"><a class="viewcode-back" href="../../pylorax.html#pylorax.sysutils.joinpaths">[docs]</a><span class="k">def</span> <span class="nf">joinpaths</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;follow_symlinks&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;follow_symlinks&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">path</span>
 
 </div>
 <div class="viewcode-block" id="touch"><a class="viewcode-back" href="../../pylorax.html#pylorax.sysutils.touch">[docs]</a><span class="k">def</span> <span class="nf">touch</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
-    <span class="c"># python closes the file when it goes out of scope</span>
-    <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+    <span class="c1"># python closes the file when it goes out of scope</span>
+    <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
 
 </div>
 <div class="viewcode-block" id="replace"><a class="viewcode-back" href="../../pylorax.html#pylorax.sysutils.replace">[docs]</a><span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">find</span><span class="p">,</span> <span class="n">sub</span><span class="p">):</span>
@@ -241,7 +241,7 @@
         <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="linktree"><a class="viewcode-back" href="../../pylorax.html#pylorax.sysutils.linktree">[docs]</a><span class="k">def</span> <span class="nf">linktree</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">):</span>
-    <span class="n">runcmd</span><span class="p">([</span><span class="s">&quot;/bin/cp&quot;</span><span class="p">,</span> <span class="s">&quot;-alx&quot;</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">])</span></div>
+    <span class="n">runcmd</span><span class="p">([</span><span class="s2">&quot;/bin/cp&quot;</span><span class="p">,</span> <span class="s2">&quot;-alx&quot;</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">])</span></div>
 </pre></div>
 
            </div>
@@ -275,7 +275,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'24.10',
+            VERSION:'25.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

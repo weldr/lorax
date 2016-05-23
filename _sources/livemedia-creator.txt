@@ -12,8 +12,8 @@ isos, bootable (partitioned) disk images, tarfiles, and filesystem images for
 use with virtualization and container solutions like libvirt, docker, and
 OpenStack.
 
-The general idea is to use virt-install with kickstart and an Anaconda boot.iso
-to install into a disk image and then use the disk image to create the bootable
+The general idea is to use qemu with kickstart and an Anaconda boot.iso to
+install into a disk image and then use the disk image to create the bootable
 media.
 
 livemedia-creator --help will describe all of the options available. At the
@@ -21,19 +21,14 @@ minimum you need:
 
 ``--make-iso`` to create a final bootable .iso or one of the other ``--make-*`` options.
 
-``--iso`` to specify the Anaconda install media to use with virt-install
+``--iso`` to specify the Anaconda install media to use with qemu.
 
 ``--ks`` to select the kickstart file describing what to install.
 
-To use livemedia-creator with virt-install you will need to install the
-following packages, as well as have libvirtd setup correctly.
-
-* ``virt-install``
-* ``libvirt-python``
+To use livemedia-creator with virtualization you will need to have qemu installed.
 
 If you are going to be using Anaconda directly, with ``--no-virt`` mode, make sure
-you have the anaconda package installed. You can use the anaconda-tui package
-to save a bit of space on the build system.
+you have the anaconda-tui package installed.
 
 Conventions used in this document:
 
@@ -42,6 +37,14 @@ Conventions used in this document:
 ``builder`` is the system where livemedia-creator is being run
 
 ``image`` is the disk image being created by running livemedia-creator
+
+
+livemedia-creator cmdline arguments
+-----------------------------------
+
+.. argparse::
+   :ref: pylorax.cmdline.lmc_parser
+   :prog: livemedia-creator
 
 
 Quickstart
@@ -58,8 +61,8 @@ You can run it directly from the lorax git repo like this::
     --make-iso --iso=/extra/iso/boot.iso \
     --ks=./docs/fedora-livemedia.ks --lorax-templates=./share/
 
-If you want to watch the install you can pass ``--vnc vnc`` and use a vnc client
-to connect to localhost:0
+You can observe the installation using vnc. The logs will show what port was
+chosen, or you can use a specific port by passing it. eg. ``--vnc vnc:127.0.0.1:5``
 
 This is usually a good idea when testing changes to the kickstart. lmc tries
 to monitor the logs for fatal errors, but may not catch everything.
@@ -74,7 +77,7 @@ Normally you would run both stages, but it is possible to stop after the
 install stage, by using ``--image-only``, or to skip the install stage and use
 a previously created disk image by passing ``--disk-image`` or ``--fs-image``
 
-When creating an iso virt-install boots using the passed Anaconda installer iso
+When creating an iso qemu boots using the passed Anaconda installer iso
 and installs the system based on the kickstart. The ``%post`` section of the
 kickstart is used to customize the installed system in the same way that
 current spin-kickstarts do.
@@ -82,24 +85,22 @@ current spin-kickstarts do.
 livemedia-creator monitors the install process for problems by watching the
 install logs. They are written to the current directory or to the base
 directory specified by the --logfile command. You can also monitor the install
-by passing ``--vnc vnc`` and using a vnc client. This is recommended when first
-modifying a kickstart, since there are still places where Anaconda may get
-stuck without the log monitor catching it.
+by using a vnc client. This is recommended when first modifying a kickstart,
+since there are still places where Anaconda may get stuck without the log
+monitor catching it.
 
 The output from this process is a partitioned disk image. kpartx can be used
 to mount and examine it when there is a problem with the install. It can also
 be booted using kvm.
 
 When creating an iso the disk image's / partition is copied into a formatted
-disk image which is then used as the input to lorax for creation of the final
-media.
+filesystem image which is then used as the input to lorax for creation of the
+final media.
 
-The final image is created by lorax, using the templates in /usr/share/lorax/
-or the directory specified by ``--lorax-templates``
-
-Currently the standard lorax templates are used to make a bootable iso, but
-it should be possible to modify them to output other results. They are
-written using the Mako template system which is very flexible.
+The final image is created by lorax, using the templates in /usr/share/lorax/live/
+or the live directory below the directory specified by ``--lorax-templates``. The
+templates are written using the Mako template system with some extra commands
+added by lorax.
 
 .. note::
     The output from --make-iso includes the artifacts used to create the boot.iso;
@@ -163,10 +164,10 @@ changes. Here are the steps I used to convert the Fedora XFCE spin.
     memtest86+
     syslinux
 
-One drawback to using virt-install is that it pulls the packages from
-the repo each time you run it. To speed things up you either need a local
-mirror of the packages, or you can use a caching proxy. When using a proxy
-you pass it to livemedia-creator like this:
+One drawback to using qemu is that it pulls the packages from the repo each
+time you run it. To speed things up you either need a local mirror of the
+packages, or you can use a caching proxy. When using a proxy you pass it to
+livemedia-creator like this:
 
     ``--proxy=http://proxy.yourdomain.com:3128``
 
@@ -175,16 +176,16 @@ packages will get cached, so your kickstart url would look like:
 
     ``url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/x86_64/os/"``
 
-You can also add an update repo, but don't name it updates. Add --proxy to
-it as well.
+You can also add an update repo, but don't name it updates. Add --proxy to it
+as well.
 
 
 Anaconda image install (no-virt)
 --------------------------------
 
-You can create images without using virt-install by passing ``--no-virt`` on the
-cmdline. This will use Anaconda's directory install feature to handle the install.
-There are a couple of things to keep in mind when doing this:
+You can create images without using qemu by passing ``--no-virt`` on the
+cmdline. This will use Anaconda's directory install feature to handle the
+install.  There are a couple of things to keep in mind when doing this:
 
 1. It will be most reliable when building images for the same release that the
    host is running. Because Anaconda has expectations about the system it is
@@ -302,9 +303,9 @@ You can also create qcow2 appliance images using ``--image-type=qcow2``, for exa
 Filesystem Image Creation
 -------------------------
 
-livemedia-creator can be used to create un-partitined filesystem images using the
-``--make-fsimage`` option. As of version 21.8 this works with both virt-install and no-virt modes
-of operation. Previously it was only available with no-virt.
+livemedia-creator can be used to create un-partitined filesystem images using
+the ``--make-fsimage`` option. As of version 21.8 this works with both qemu and
+no-virt modes of operation. Previously it was only available with no-virt.
 
 Kickstarts should have a single / partition with no extra mountpoints.
 
@@ -346,9 +347,13 @@ for installations of Atomic Host.  Example kickstart for such an installation
 using Atomic installer iso with local repo included in the image can be found
 in docs/rhel-atomic-pxe-live.ks.
 
+The PXE images can also be created with ``--no-virt`` by using the example
+kickstart in docs/fedora-atomic-pxe-live-novirt.ks. This also works inside the
+mock environment.
 
-Using Mock to Create Images
----------------------------
+
+Using Mock and --no-virt to Create Images
+-----------------------------------------
 
 As of lorax version 22.2 you can use livemedia-creator and anaconda version
 22.15 inside of a mock chroot with --make-iso and --make-fsimage.
@@ -402,6 +407,66 @@ Results will be in ./results/try-1 and logs under /results/logs/try-1/
 including anaconda logs and livemedia-creator logs. The new iso will be
 located at ~/results/try-1/images/boot.iso, and the ~/results/try-1/
 directory tree will also contain the vmlinuz, initrd, etc.
+
+
+Using Mock and qemu to Create Images
+------------------------------------
+
+Version 25.0 of livemedia-creator switches to using qemu for virtualization.
+This allows creation of all image types, and use of the KVM on the host if
+/dev/kvm is present in the mock environment.
+
+On the host system:
+
+1. yum install -y mock
+
+2. Add a user to the mock group to use for running mock. eg. builder
+
+3. Create a new /etc/mock/ config file based on the rawhide one, or modify the
+   existing one so that the following options are setup::
+
+       config_opts['chroot_setup_cmd'] = 'install @buildsys-build lorax qemu'
+
+       # build results go into /home/builder/results/
+       config_opts['plugin_conf']['bind_mount_opts']['dirs'].append(('/home/builder/results','/results/'))
+
+   If you are creating images for a branched release of Fedora you should also enable
+   the updates-testing repository so that you get the latest builds in your mock chroot.
+
+The following steps are run as the builder user who is a member of the mock
+group.
+
+4. Make a directory for results matching the bind mount above
+   ``mkdir ~/results/``
+
+5. Copy the example kickstarts
+   ``cp /usr/share/docs/lorax/*ks .``
+
+6. Make sure tar and dracut-network are in the %packages section and that the
+   ``url points to the correct repo``
+
+7. Init the mock
+   ``mock -r fedora-rawhide-x86_64 --init``
+
+8. Copy the kickstart inside the mock
+   ``mock -r fedora-rawhide-x86_64 --copyin ./fedora-minimal.ks /root/``
+
+9. Copy the Anaconda boot.iso inside the mock
+   ``mock -r fedora-rawhide-x86_64 --copyin ./boot.iso /root/``
+
+10. Make a minimal iso::
+
+        mock -r fedora-rawhide-x86_64 --chroot -- livemedia-creator \
+        --resultdir=/results/try-1 --logfile=/results/logs/try-1/try-1.log \
+        --make-iso --ks /root/fedora-minimal.ks --iso /root/boot.iso
+
+Results will be in ./results/try-1 and logs under /results/logs/try-1/
+including anaconda logs and livemedia-creator logs. The new iso will be
+located at ~/results/try-1/images/boot.iso, and the ~/results/try-1/
+directory tree will also contain the vmlinuz, initrd, etc.
+
+This will run qemu without kvm support, which is going to be very slow. You can
+add ``mknod /dev/kvm c 10 232;`` to create the device node before running lmc.
 
 
 OpenStack Image Creation
@@ -528,29 +593,27 @@ Make sure that the kickstart you are using creates a /boot/efi partition by incl
 Debugging problems
 ------------------
 
-Sometimes an installation will get stuck. When using virt-install the logs will
+Sometimes an installation will get stuck. When using qemu the logs will
 be written to ./virt-install.log and most of the time any problems that happen
 will be near the end of the file. lmc tries to detect common errors and will
 cancel the installation when they happen. But not everything can be caught.
-When creating a new kickstart it is helpful to use the ``--vnc vnc`` command so
-that you can monitor the installation as it happens, and if it gets stuck
-without lmc detecting the problem you can switch to tty1 and examine the system
-directly.
+When creating a new kickstart it is helpful to use vnc so that you can monitor
+the installation as it happens, and if it gets stuck without lmc detecting the
+problem you can switch to tty1 and examine the system directly.
 
-If it does get stuck the best way to cancel is to use virsh to destroy the domain.
-
-1. Use ``sudo virsh list`` to show the name of the virt. It will start with LiveOS and contain a UUID.
-2. Run ``sudo virsh destroy <name>`` to destroy the domain.
-3. Wait 20 seconds or so for lmc to detect that the domain vanished. It should handle cleanup.
+If it does get stuck the best way to cancel is to use kill -9 on the qemu pid,
+lmc will detect that the process died and cleanup.
 
 If lmc didn't handle the cleanup for some reason you can do this:
-1. ``sudo virsh undefine <name>``
-2. ``sudo umount /tmp/tmpXXXX`` to unmount the iso from its mountpoint.
-3. ``sudo rm -rf /tmp/tmpXXXX``
-4. ``sudo rm /var/tmp/diskXXXXX`` to remove the disk image.
+1. ``sudo umount /tmp/lmc-XXXX`` to unmount the iso from its mountpoint.
+2. ``sudo rm -rf /tmp/lmc-XXXX``
+3. ``sudo rm /var/tmp/lmc-disk-XXXXX`` to remove the disk image.
 
-The logs from the virt-install run are stored in virt-install.log,
-logs from livemedia-creator are in livemedia.log and program.log
+Note that lmc uses the lmc- prefix for all of its temporary files and
+directories to make it easier to find and clean up leftovers.
+
+The logs from the qemu run are stored in virt-install.log, logs from
+livemedia-creator are in livemedia.log and program.log
 
 You can add ``--image-only`` to skip the .iso creation and examine the resulting
 disk image. Or you can pass ``--keep-image`` to keep it around after the iso has
