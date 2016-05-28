@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        25.6
+Version:        25.7
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -148,6 +148,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Fri May 27 2016 Brian C. Lane <bcl@redhat.com> 25.7-1
+- do not remove libutempter as tmux gained a dep on it (dennis@ausil.us)
+- New lorax documentation - 25.6 (bcl@redhat.com)
+- Update lmc UEFI support to use the edk2-ovmf package (bcl@redhat.com)
+
 * Fri May 13 2016 Brian C. Lane <bcl@redhat.com> 25.6-1
 - Add efi, product, and updates image paths to treeinfo (bcl@redhat.com)
 - livemedia-creator: Update make-pxe-live to support missing initramfs
