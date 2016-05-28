@@ -251,7 +251,8 @@ def find_ostree_root(phys_root):
     :raise Exception: More than one deployment roots were found
     """
     ostree_root = ""
-    ostree_sysroots = glob.glob(joinpaths(phys_root, "ostree/boot.0/*/*/0"))
+    ostree_sysroots = glob.glob(joinpaths(phys_root, "ostree/boot.?/*/*/0"))
+    log.debug("ostree_sysroots = %s", ostree_sysroots)
     if ostree_sysroots:
         if len(ostree_sysroots) > 1:
             raise Exception("Too many deployment roots found: %s" % ostree_sysroots)
@@ -408,8 +409,9 @@ def rebuild_initrds_for_live(opts, sys_root_dir, results_dir):
 
     kdir = "boot"
     if opts.ostree:
-        kernels_dir = glob.glob(joinpaths(sys_root_dir, "boot/ostree/*"))[0]
-        kdir = os.path.relpath(kernels_dir, sys_root_dir)
+        kernels_dir = glob.glob(joinpaths(sys_root_dir, "boot/ostree/*"))
+        if kernels_dir:
+            kdir = os.path.relpath(kernels_dir[0], sys_root_dir)
 
     kernels = [kernel for kernel in findkernels(sys_root_dir, kdir)
                if hasattr(kernel, "initrd")]
@@ -589,7 +591,6 @@ def mount_boot_part_over_root(img_mount):
     root_dir = img_mount.mount_dir
     is_boot_part = lambda dir: os.path.exists(dir+"/loader.0")
     tmp_mount_dir = tempfile.mkdtemp(prefix="lmc-tmpdir-")
-    sys_root = find_ostree_root(root_dir)
     sysroot_boot_dir = None
     for dev, _size in img_mount.loop_devices:
         if dev is img_mount.mount_dev:
@@ -598,7 +599,7 @@ def mount_boot_part_over_root(img_mount):
             mount("/dev/mapper/"+dev, mnt=tmp_mount_dir)
             if is_boot_part(tmp_mount_dir):
                 umount(tmp_mount_dir)
-                sysroot_boot_dir = joinpaths(joinpaths(root_dir, sys_root), "boot")
+                sysroot_boot_dir = joinpaths(root_dir, "boot")
                 mount("/dev/mapper/"+dev, mnt=sysroot_boot_dir)
                 break
             else:
@@ -638,7 +639,7 @@ def anaconda_cleanup(dirinstall_path):
     # unmount filesystems
     for mounted in reversed(open("/proc/mounts").readlines()):
         (_device, mountpoint, _rest) = mounted.split(" ", 2)
-        if mountpoint.startswith(dirinstall_path):
+        if mountpoint.startswith(dirinstall_path) and os.path.ismount(mountpoint):
             umount(mountpoint)
 
 
@@ -670,7 +671,7 @@ def novirt_install(opts, disk_img, disk_size):
     if opts.armplatform:
         args += ["--armplatform", opts.armplatform]
 
-    if opts.make_iso or opts.make_fsimage:
+    if opts.make_iso or opts.make_fsimage or opts.make_pxe_live:
         # Make a blank fs image
         args += ["--dirinstall"]
 
@@ -712,12 +713,18 @@ def novirt_install(opts, disk_img, disk_size):
         # Make sure the new filesystem is correctly labeled
         setfiles_args = ["-e", "/proc", "-e", "/sys", "-e", "/dev",
                          "/etc/selinux/targeted/contexts/files/file_contexts", "/"]
-        if "--dirinstall" in args:
-            execWithRedirect("setfiles", setfiles_args, root=dirinstall_path)
-        else:
-            with PartitionMount(disk_img) as img_mount:
-                if img_mount and img_mount.mount_dir:
-                    execWithRedirect("setfiles", setfiles_args, root=img_mount.mount_dir)
+
+        # setfiles may not be available, warn instead of fail
+        try:
+            if "--dirinstall" in args:
+                execWithRedirect("setfiles", setfiles_args, root=dirinstall_path)
+            else:
+                with PartitionMount(disk_img) as img_mount:
+                    if img_mount and img_mount.mount_dir:
+                        execWithRedirect("setfiles", setfiles_args, root=img_mount.mount_dir)
+        except (subprocess.CalledProcessError, OSError) as e:
+            log.warning("Running setfiles on install tree failed: %s", str(e))
+
     except (subprocess.CalledProcessError, OSError) as e:
         log.error("Running anaconda failed: %s", e)
         raise InstallError("novirt_install failed")
@@ -736,7 +743,7 @@ def novirt_install(opts, disk_img, disk_size):
             shutil.copy2(l, log_anaconda)
             os.unlink(l)
 
-        if not opts.make_iso and not opts.make_fsimage:
+        if not opts.make_iso and not opts.make_fsimage and not opts.make_pxe_live:
             dm_name = os.path.splitext(os.path.basename(disk_img))[0]
             dm_path = "/dev/mapper/"+dm_name
             if os.path.exists(dm_path):
@@ -1007,15 +1014,14 @@ def make_image(opts, ks):
     return disk_img
 
 
-def make_live_images(opts, work_dir, root_dir, rootfs_image=None, size=None):
+def make_live_images(opts, work_dir, disk_img):
     """
     Create live images from direcory or rootfs image
 
     :param opts: options passed to livemedia-creator
     :type opts: argparse options
     :param str work_dir: Directory for storing results
-    :param str root_dir: Root directory of live filesystem tree
-    :param str rootfs_image: Path to live rootfs image to be used
+    :param str disk_img: Path to disk image (fsimage or partitioned)
     :returns: Path of directory with created images or None
     :rtype: str
 
@@ -1024,38 +1030,65 @@ def make_live_images(opts, work_dir, root_dir, rootfs_image=None, size=None):
     it will return None and log the error.
     """
     sys_root = ""
-    if opts.ostree:
-        sys_root = find_ostree_root(root_dir)
 
     squashfs_root_dir = joinpaths(work_dir, "squashfs_root")
     liveos_dir = joinpaths(squashfs_root_dir, "LiveOS")
     os.makedirs(liveos_dir)
+    rootfs_img = joinpaths(liveos_dir, "rootfs.img")
 
-    if rootfs_image:
-        # Make sure free blocks are actually zeroed so it will compress
-        rc = execWithRedirect("/usr/sbin/fsck.ext4", ["-y", "-f", "-E", "discard", rootfs_image])
-        if rc != 0:
-            log.error("Problem zeroing free blocks of %s", rootfs_image)
-            return None
+    if opts.fs_image or opts.no_virt:
+        # Find the ostree root in the fsimage
+        if opts.ostree:
+            with Mount(disk_img, opts="loop") as mnt_dir:
+                sys_root = find_ostree_root(mnt_dir)
 
-        rc = execWithRedirect("/bin/ln", [rootfs_image, joinpaths(liveos_dir, "rootfs.img")])
+        # Try to hardlink the image, if that fails, copy it
+        rc = execWithRedirect("/bin/ln", [disk_img, rootfs_img])
         if rc != 0:
-            shutil.copy2(rootfs_image, joinpaths(liveos_dir, "rootfs.img"))
+            shutil.copy2(disk_img, rootfs_img)
     else:
-        log.info("Creating live rootfs image")
-        mkrootfsimg(root_dir, joinpaths(liveos_dir, "rootfs.img"), "LiveOS", size=size, sysroot=sys_root)
+        is_root_part = None
+        if opts.ostree:
+            is_root_part = lambda dir: os.path.exists(dir+"/ostree/deploy")
+        with PartitionMount(disk_img, mount_ok=is_root_part) as img_mount:
+            if img_mount and img_mount.mount_dir:
+                try:
+                    mounted_sysroot_boot_dir = None
+                    if opts.ostree:
+                        sys_root = find_ostree_root(img_mount.mount_dir)
+                        mounted_sysroot_boot_dir = mount_boot_part_over_root(img_mount)
+                    if opts.live_rootfs_keep_size:
+                        size = img_mount.mount_size / 1024**3
+                    else:
+                        size = opts.live_rootfs_size or None
+                    log.info("Creating live rootfs image")
+                    mkrootfsimg(img_mount.mount_dir, rootfs_img, "LiveOS", size=size, sysroot=sys_root)
+                finally:
+                    if mounted_sysroot_boot_dir:
+                        umount(mounted_sysroot_boot_dir)
+    log.debug("sys_root = %s", sys_root)
+
+    # Make sure free blocks are actually zeroed so it will compress
+    rc = execWithRedirect("/usr/sbin/fsck.ext4", ["-y", "-f", "-E", "discard", rootfs_img])
+    if rc != 0:
+        log.error("Problem zeroing free blocks of %s", disk_img)
+        return None
 
     log.info("Packing live rootfs image")
     add_pxe_args = []
     live_image_name = "live-rootfs.squashfs.img"
     compression, compressargs = squashfs_args(opts)
-    mksquashfs(squashfs_root_dir, joinpaths(work_dir, live_image_name),
-               compression, compressargs)
-
-    remove(squashfs_root_dir)
+    mksquashfs(squashfs_root_dir, joinpaths(work_dir, live_image_name), compression, compressargs)
 
     log.info("Rebuilding initramfs for live")
-    rebuild_initrds_for_live(opts, joinpaths(root_dir, sys_root), work_dir)
+    with Mount(rootfs_img, opts="loop") as mnt_dir:
+        try:
+            mount(joinpaths(mnt_dir, "boot"), opts="bind", mnt=joinpaths(mnt_dir, sys_root, "boot"))
+            rebuild_initrds_for_live(opts, joinpaths(mnt_dir, sys_root), work_dir)
+        finally:
+            umount(joinpaths(mnt_dir, sys_root, "boot"), delete=False)
+
+    remove(squashfs_root_dir)
 
     if opts.ostree:
         add_pxe_args.append("ostree=/%s" % sys_root)
@@ -1410,9 +1443,10 @@ def main():
     # Make the disk or filesystem image
     if not opts.disk_image and not opts.fs_image:
         errors = []
-        if opts.no_virt and ks.handler.method.method not in ("url", "nfs"):
-            errors.append("Only url and nfs install methods are currently supported. Please "
-                          "fix your kickstart file." )
+        if opts.no_virt and ks.handler.method.method not in ("url", "nfs") \
+           and not ks.handler.ostreesetup.seen:
+            errors.append("Only url, nfs and ostreesetup install methods are currently supported."
+                          "Please fix your kickstart file." )
 
         if ks.handler.method.method in ("url", "nfs") and not ks.handler.network.seen:
             errors.append("The kickstart must activate networking if "
@@ -1422,7 +1456,7 @@ def main():
             errors.append("The kickstart must not set a display mode (text, cmdline, "
                           "graphical), this will interfere with livemedia-creator.")
 
-        if opts.make_fsimage:
+        if opts.make_fsimage or (opts.make_pxe_live and opts.no_virt):
             # Make sure the kickstart isn't using autopart and only has a / mountpoint
             part_ok = not any(p for p in ks.handler.partition.partitions
                                  if p.mountpoint not in ["/", "swap"])
@@ -1497,34 +1531,12 @@ def main():
         elif opts.make_pxe_live:
             work_dir = tempfile.mkdtemp(prefix="lmc-work-")
             log.info("working dir is %s", work_dir)
+            disk_img = opts.fs_image or disk_img
+            log.debug("disk image is %s", disk_img)
 
-            if opts.fs_image and not opts.disk_image:
-                # Create pxe live images from a filesystem image
-                disk_img = opts.fs_image or disk_img
-                with Mount(disk_img, opts="loop") as mnt_dir:
-                    result_dir = make_live_images(opts, work_dir, mnt_dir, rootfs_image=disk_img)
-            else:
-                # Create pxe live images from a partitioned disk image
-                disk_img = opts.disk_image or disk_img
-                is_root_part = None
-                if opts.ostree:
-                    is_root_part = lambda dir: os.path.exists(dir+"/ostree/deploy")
-                with PartitionMount(disk_img, mount_ok=is_root_part) as img_mount:
-                    if img_mount and img_mount.mount_dir:
-                        try:
-                            mounted_sysroot_boot_dir = None
-                            if opts.ostree:
-                                mounted_sysroot_boot_dir = mount_boot_part_over_root(img_mount)
-                            if opts.live_rootfs_keep_size:
-                                size = img_mount.mount_size / 1024**3
-                            else:
-                                size = opts.live_rootfs_size or None
-                            result_dir = make_live_images(opts, work_dir, img_mount.mount_dir, size=size)
-                        finally:
-                            if mounted_sysroot_boot_dir:
-                                umount(mounted_sysroot_boot_dir)
+            result_dir = make_live_images(opts, work_dir, disk_img)
             if result_dir is None:
-                log.error("Creating live image failed.")
+                log.error("Creating PXE live image failed.")
                 sys.exit(1)
 
         if opts.result_dir != opts.tmp and result_dir:

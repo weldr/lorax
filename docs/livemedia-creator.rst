@@ -346,6 +346,10 @@ for installations of Atomic Host.  Example kickstart for such an installation
 using Atomic installer iso with local repo included in the image can be found
 in docs/rhel-atomic-pxe-live.ks.
 
+The PXE images can also be created with ``--no-virt`` by using the example
+kickstart in docs/fedora-atomic-pxe-live-novirt.ks. This also works inside the
+mock environment.
+
 
 Using Mock to Create Images
 ---------------------------
