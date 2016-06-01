@@ -630,16 +630,26 @@ def anaconda_cleanup(dirinstall_path):
     Cleanup any leftover mounts from anaconda
 
     :param str dirinstall_path: Path where anaconda mounts things
+    :returns: True if cleanups were successful. False if any of them failed.
 
     If anaconda crashes it may leave things mounted under this path. It will
     typically be set to /mnt/sysimage/
+
+    Attempts to cleanup may also fail. Catch these and continue trying the
+    other mountpoints.
     """
+    rc = True
     dirinstall_path = os.path.abspath(dirinstall_path)
     # unmount filesystems
     for mounted in reversed(open("/proc/mounts").readlines()):
         (_device, mountpoint, _rest) = mounted.split(" ", 2)
-        if mountpoint.startswith(dirinstall_path):
-            umount(mountpoint)
+        if mountpoint.startswith(dirinstall_path) and os.path.ismount(mountpoint):
+            try:
+                umount(mountpoint)
+            except subprocess.CalledProcessError:
+                log.error("Cleanup of %s failed. See program.log for details", mountpoint)
+                rc = False
+    return rc
 
 
 def novirt_install(opts, disk_img, disk_size):
@@ -724,9 +734,6 @@ def novirt_install(opts, disk_img, disk_size):
     finally:
         log_monitor.shutdown()
 
-        # Make sure any leftover anaconda mounts have been cleaned up
-        anaconda_cleanup(dirinstall_path)
-
         # Move the anaconda logs over to a log directory
         log_dir = os.path.abspath(os.path.dirname(opts.logfile))
         log_anaconda = joinpaths(log_dir, "anaconda")
@@ -735,6 +742,10 @@ def novirt_install(opts, disk_img, disk_size):
         for l in glob.glob("/tmp/*log")+glob.glob("/tmp/anaconda-tb-*"):
             shutil.copy2(l, log_anaconda)
             os.unlink(l)
+
+        # Make sure any leftover anaconda mounts have been cleaned up
+        if not anaconda_cleanup(dirinstall_path):
+            raise InstallError("novirt_install cleanup of anaconda mounts failed.")
 
         if not opts.make_iso and not opts.make_fsimage:
             dm_name = os.path.splitext(os.path.basename(disk_img))[0]
