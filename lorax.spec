@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        25.7
+Version:        25.8
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -148,6 +148,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Thu Jun 02 2016 Brian C. Lane <bcl@redhat.com> 25.8-1
+- livemedia-creator: Always copy novirt logs before cleanup (bcl@redhat.com)
+
 * Fri May 27 2016 Brian C. Lane <bcl@redhat.com> 25.7-1
 - do not remove libutempter as tmux gained a dep on it (dennis@ausil.us)
 - New lorax documentation - 25.6 (bcl@redhat.com)
