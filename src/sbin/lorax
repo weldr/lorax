@@ -30,6 +30,8 @@ import tempfile
 import shutil
 
 import dnf
+import dnf.logging
+import librepo
 import pylorax
 from pylorax.cmdline import lorax_parser
 
@@ -37,11 +39,15 @@ def setup_logging(opts):
     pylorax.setup_logging(opts.logfile, log)
 
     # dnf logging
-    dnf_log.setLevel(logging.DEBUG)
+    dnf_log.setLevel(dnf.logging.DDEBUG)
     logfile = os.path.abspath(os.path.dirname(opts.logfile))+"/dnf.log"
     fh = logging.FileHandler(filename=logfile, mode="w")
-    fh.setLevel(logging.DEBUG)
+    fh.setLevel(logging.NOTSET)
     dnf_log.addHandler(fh)
+
+    # Setup librepo logging
+    logfile = os.path.abspath(os.path.dirname(opts.logfile))+"/dnf.librepo.log"
+    librepo.log_set_file(logfile)
 
 
 def main():
@@ -80,7 +86,8 @@ def main():
 
     dnfbase = get_dnf_base_object(installtree, opts.source, opts.mirrorlist, opts.repos,
                                   opts.enablerepos, opts.disablerepos,
-                                  dnftempdir, opts.proxy, opts.version, opts.cachedir)
+                                  dnftempdir, opts.proxy, opts.version, opts.cachedir,
+                                  os.path.dirname(opts.logfile))
 
     if dnfbase is None:
         print("error: unable to create the dnf base object", file=sys.stderr)
@@ -126,7 +133,7 @@ def main():
 def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
                         enablerepos=None, disablerepos=None,
                         tempdir="/var/tmp", proxy=None, releasever="21",
-                        cachedir=None):
+                        cachedir=None, logdir=None):
     """ Create a dnf Base object and setup the repositories and installroot
 
         :param string installroot: Full path to the installroot
@@ -166,19 +173,15 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
     if not os.path.isdir(cachedir):
         os.mkdir(cachedir)
 
-    logdir = os.path.join(tempdir, "dnf.logs")
-    if not os.path.isdir(logdir):
-        os.mkdir(logdir)
+    if not logdir:
+        logdir = os.path.join(tempdir, "dnf.logs")
+        if not os.path.isdir(logdir):
+            os.mkdir(logdir)
 
     dnfbase = dnf.Base()
     conf = dnfbase.conf
     conf.logdir = logdir
     conf.cachedir = cachedir
-
-    # Turn off logging to the console
-    conf.debuglevel = 10
-    conf.errorlevel = 0
-    dnfbase.logging.setup_from_dnf_conf(conf)
 
     conf.install_weak_deps = False
     conf.releasever = releasever
