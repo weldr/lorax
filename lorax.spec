@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        24.18
+Version:        24.19
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -148,6 +148,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Thu Jun 02 2016 Brian C. Lane <bcl@redhat.com> 24.19-1
+- livemedia-creator: Always copy novirt logs before cleanup (bcl@redhat.com)
+- Update lmc UEFI support to use the edk2-ovmf package (bcl@redhat.com)
+
 * Mon Apr 18 2016 Brian C. Lane <bcl@redhat.com> 24.18-1
 - livemedia-creator: Make sure make-iso kickstart includes dracut-live
   (bcl@redhat.com)
