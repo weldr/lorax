@@ -41,6 +41,7 @@ Requires:       xz
 Requires:       pigz
 Requires:       dracut >= 030
 Requires:       kpartx
+Requires:       kmod
 
 # Python modules
 Requires:       libselinux-python3
