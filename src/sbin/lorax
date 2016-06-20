@@ -179,6 +179,9 @@ def main(args):
 
     opts.logfile = os.path.abspath(opts.logfile)
 
+    if opts.config and not os.path.exists(opts.config):
+        parser.error("config file %s doesn't exist." % opts.config)
+
     setup_logging(opts)
 
     tempfile.tempdir = opts.tmp
