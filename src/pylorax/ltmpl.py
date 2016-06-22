@@ -549,6 +549,7 @@ class LoraxTemplateRunner(object):
             excludes.append(pkgs[idx+1])
             pkgs = pkgs[:idx] + pkgs[idx+2:]
 
+        errors = False
         for p in pkgs:
             try:
                 # Start by using Subject to generate a package query, which will
@@ -563,6 +564,8 @@ class LoraxTemplateRunner(object):
                 # the filtering is done the hard way.
 
                 pkgnames = {pkg.name for pkg in dnf.subject.Subject(p).get_best_query(self.dbo.sack)}
+                if not pkgnames:
+                    raise dnf.exceptions.PackageNotFoundError("no package matched", p)
 
                 for exclude in excludes:
                     pkgnames = {pkgname for pkgname in pkgnames if not fnmatch.fnmatch(pkgname, exclude)}
@@ -570,10 +573,11 @@ class LoraxTemplateRunner(object):
                 for pkgname in pkgnames:
                     self.dbo.install(pkgname)
             except Exception as e: # pylint: disable=broad-except
-                # FIXME: save exception and re-raise after the loop finishes
                 logger.error("installpkg %s failed: %s", p, str(e))
-                if required:
-                    raise
+                errors = True
+
+        if errors and required:
+            raise Exception("Required installpkg failed.")
 
     def removepkg(self, *pkgs):
         '''
