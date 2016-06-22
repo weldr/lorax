@@ -524,14 +524,20 @@ class LoraxTemplateRunner(object):
 
     def installpkg(self, *pkgs):
         '''
-        installpkg [--required] [--except PKGGLOB [--except PKGGLOB ...]] PKGGLOB [PKGGLOB ...]
+        installpkg [--required|--optional] [--except PKGGLOB [--except PKGGLOB ...]] PKGGLOB [PKGGLOB ...]
           Request installation of all packages matching the given globs.
           Note that this is just a *request* - nothing is *actually* installed
           until the 'run_pkg_transaction' command is given.
+
+          --required is now the default. If the PKGGLOB can be missing pass --optional
         '''
-        required = False
-        if pkgs[0] == '--required':
+        if pkgs[0] == '--optional':
             pkgs = pkgs[1:]
+            required = False
+        elif pkgs[0] == '--required':
+            pkgs = pkgs[1:]
+            required = True
+        else:
             required = True
 
         excludes = []
