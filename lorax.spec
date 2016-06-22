@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.71
+Version:        19.6.72
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Jun 22 2016 Brian C. Lane <bcl@redhat.com> 19.6.72-1
+- Make sure cmdline config file exists (bcl)
+  Resolves: rhbz#1348302
+- Keep all of the kernel drivers/target/ modules (bcl)
+  Resolves: rhbz#1348381
+- Keep the pci utilities for use in kickstarts (bcl)
+  Resolves: rhbz#1344926
+
 * Thu May 05 2016 Brian C. Lane <bcl@redhat.com> 19.6.71-1
 - Create an empty selinux config file (bcl)
   Resolves: rhbz#1332147
