@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.72
+Version:        19.6.73
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Jun 24 2016 Brian C. Lane <bcl@redhat.com> 19.6.73-1
+- Add back libraries needed by spice-vdagent (dshea)
+  Resolves: rhbz#1347737
+
 * Wed Jun 22 2016 Brian C. Lane <bcl@redhat.com> 19.6.72-1
 - Make sure cmdline config file exists (bcl)
   Resolves: rhbz#1348302
