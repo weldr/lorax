@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        25.8
+Version:        25.9
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -148,6 +148,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Fri Jul 08 2016 Brian C. Lane <bcl@redhat.com> 25.9-1
+- Fix installpkg error handling (bcl@redhat.com)
+- Switch installpkg default to --required (bcl@redhat.com)
+- Keep all of the kernel drivers/target/ modules (#1348381) (bcl@redhat.com)
+- Keep the pci utilities for use in kickstarts (#1344926) (bcl@redhat.com)
+- Make sure cmdline config file exists (#1348304) (bcl@redhat.com)
+- Stop using undocumented DNF logging API (bcl@redhat.com)
+
 * Thu Jun 02 2016 Brian C. Lane <bcl@redhat.com> 25.8-1
 - livemedia-creator: Always copy novirt logs before cleanup (bcl@redhat.com)
 
