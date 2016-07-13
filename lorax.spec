@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        25.9
+Version:        25.10
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -148,6 +148,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Wed Jul 13 2016 Brian C. Lane <bcl@redhat.com> 25.10-1
+- Installing *-firmware should be optional (bcl@redhat.com)
+
 * Fri Jul 08 2016 Brian C. Lane <bcl@redhat.com> 25.9-1
 - Fix installpkg error handling (bcl@redhat.com)
 - Switch installpkg default to --required (bcl@redhat.com)
