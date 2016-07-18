@@ -102,7 +102,7 @@ removekmod sound drivers/media drivers/hwmon \
 removekmod drivers/char --allbut virtio_console hw_random \
                                   virtio-rng ipmi
 removekmod drivers/hid --allbut hid-logitech-dj hid-logitech-hidpp
-removekmod drivers/video --allbut hyperv_fb syscopyarea sysfillrect sysimgblt
+removekmod drivers/video --allbut hyperv_fb syscopyarea sysfillrect sysimgblt fb_sys_fops
 remove lib/modules/*/{build,source,*.map}
 ## NOTE: depmod gets re-run after cleanup finishes
 
