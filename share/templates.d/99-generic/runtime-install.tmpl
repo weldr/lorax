@@ -3,7 +3,9 @@
 
 ## anaconda package
 installpkg anaconda anaconda-widgets
+%if basearch != "aarch64":
 installpkg kexec-tools-anaconda-addon
+%endif
 ## anaconda deps that aren't in the RPM
 installpkg tmux
 ## for anaconda crash handling
@@ -115,8 +117,9 @@ installpkg bridge-utils
 ## hardware utilities/libraries
 installpkg pciutils usbutils ipmitool
 installpkg mt-st smartmontools
-%if basearch != "s390x":
-installpkg hdparm pcmciautils
+installpkg hdparm
+%if basearch not in ("aarch64", "s390x"):
+installpkg pcmciautils
 %endif
 installpkg libmlx4 rdma
 installpkg rng-tools
