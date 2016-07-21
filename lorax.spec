@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        25.10
+Version:        25.11
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -148,6 +148,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Wed Jul 20 2016 Brian C. Lane <bcl@redhat.com> 25.11-1
+- Fix aarch64 installs due to missing/unsupported packages
+  (pbrobinson@gmail.com)
+- Keep fb_sys_fops module needed for ast support (#1272658) (bcl@redhat.com)
+
 * Wed Jul 13 2016 Brian C. Lane <bcl@redhat.com> 25.10-1
 - Installing *-firmware should be optional (bcl@redhat.com)
 
