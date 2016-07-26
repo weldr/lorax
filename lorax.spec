@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.74
+Version:        19.6.75
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Jul 26 2016 Brian C. Lane <bcl@redhat.com> 19.6.75-1
+- livemedia-creator: Use hd:LABEL for stage2 iso (bcl)
+  Resolves: rhbz#1355882
+
 * Mon Jul 18 2016 Brian C. Lane <bcl@redhat.com> 19.6.74-1
 - Keep fb_sys_fops module needed for ast support (bcl)
   Resolves: rhbz#1272658
