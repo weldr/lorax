@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        25.11
+Version:        25.12
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -148,6 +148,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Thu Jul 28 2016 Brian C. Lane <bcl@redhat.com> 25.12-1
+- New lorax documentation - 25.12 (bcl@redhat.com)
+- Don't install python3-dnf-langpacks (vpodzime@redhat.com)
+
 * Wed Jul 20 2016 Brian C. Lane <bcl@redhat.com> 25.11-1
 - Fix aarch64 installs due to missing/unsupported packages
   (pbrobinson@gmail.com)
