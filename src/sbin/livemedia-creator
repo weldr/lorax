@@ -964,22 +964,6 @@ def setup_logging(opts):
     log.setLevel(logging.DEBUG)
     pylorax_log.setLevel(logging.DEBUG)
 
-
-def default_image_name(compression, basename):
-    """ Return a default image name with the correct suffix for the compression type.
-
-    :param str compression: Compression type
-    :param str basename: Base filename
-    :returns: basename with compression suffix
-
-    If the compression is unknown it defaults to xz
-    """
-    SUFFIXES = {"xz": ".xz", "gzip": ".gz", "bzip2": ".bz2", "lzma": ".lzma"}
-    return basename + SUFFIXES.get(compression, ".xz")
-
-
-def main():
-
     sh = logging.StreamHandler()
     sh.setLevel(logging.INFO)
     fmt = logging.Formatter("%(asctime)s: %(message)s")
@@ -1000,6 +984,19 @@ def main():
     fh = logging.FileHandler(filename=logfile, mode="w")
     fh.setLevel(logging.DEBUG)
     program_log.addHandler(fh)
+
+
+def default_image_name(compression, basename):
+    """ Return a default image name with the correct suffix for the compression type.
+
+    :param str compression: Compression type
+    :param str basename: Base filename
+    :returns: basename with compression suffix
+
+    If the compression is unknown it defaults to xz
+    """
+    SUFFIXES = {"xz": ".xz", "gzip": ".gz", "bzip2": ".bz2", "lzma": ".lzma"}
+    return basename + SUFFIXES.get(compression, ".xz")
 
 
 if __name__ == '__main__':
