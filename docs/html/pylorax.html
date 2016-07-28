@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax package &mdash; Lorax 25.6 documentation</title>
+  <title>pylorax package &mdash; Lorax 25.11 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="Lorax 25.6 documentation" href="index.html"/>
+    <link rel="top" title="Lorax 25.11 documentation" href="index.html"/>
         <link rel="up" title="pylorax" href="modules.html"/>
         <link rel="prev" title="pylorax" href="modules.html"/> 
 
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                25.6
+                25.11
               </div>
             
           
@@ -312,7 +312,7 @@
 
 <dl class="function">
 <dt id="pylorax.executils.execReadlines">
-<tt class="descclassname">pylorax.executils.</tt><tt class="descname">execReadlines</tt><big>(</big><em>command</em>, <em>argv</em>, <em>stdin=None</em>, <em>root='/'</em>, <em>env_prune=None</em>, <em>filter_stderr=False</em>, <em>callback=&lt;function &lt;lambda&gt; at 0x7f9a7033c1e0&gt;</em>, <em>env_add=None</em>, <em>reset_handlers=True</em>, <em>reset_lang=True</em><big>)</big><a class="reference internal" href="_modules/pylorax/executils.html#execReadlines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.executils.execReadlines" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">pylorax.executils.</tt><tt class="descname">execReadlines</tt><big>(</big><em>command</em>, <em>argv</em>, <em>stdin=None</em>, <em>root='/'</em>, <em>env_prune=None</em>, <em>filter_stderr=False</em>, <em>callback=&lt;function &lt;lambda&gt; at 0x7f98990fa378&gt;</em>, <em>env_add=None</em>, <em>reset_handlers=True</em>, <em>reset_lang=True</em><big>)</big><a class="reference internal" href="_modules/pylorax/executils.html#execReadlines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.executils.execReadlines" title="Permalink to this definition">¶</a></dt>
 <dd><p>Execute an external command and return the line output of the command
 in real-time.</p>
 <p>This method assumes that there is a reasonably low delay between the
@@ -891,10 +891,12 @@ treeinfo SECTION kernel DEST</dd>
 <dt id="pylorax.ltmpl.LoraxTemplateRunner.installpkg">
 <tt class="descname">installpkg</tt><big>(</big><em>*pkgs</em><big>)</big><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.installpkg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.installpkg" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>installpkg [&#8211;required] [&#8211;except PKGGLOB [&#8211;except PKGGLOB ...]] PKGGLOB [PKGGLOB ...]</dt>
-<dd>Request installation of all packages matching the given globs.
+<dt>installpkg [&#8211;required|&#8211;optional] [&#8211;except PKGGLOB [&#8211;except PKGGLOB ...]] PKGGLOB [PKGGLOB ...]</dt>
+<dd><p class="first">Request installation of all packages matching the given globs.
 Note that this is just a <em>request</em> - nothing is <em>actually</em> installed
-until the &#8216;run_pkg_transaction&#8217; command is given.</dd>
+until the &#8216;run_pkg_transaction&#8217; command is given.</p>
+<p class="last">&#8211;required is now the default. If the PKGGLOB can be missing pass &#8211;optional</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -1449,7 +1451,7 @@ name of the kernel.</p>
 <dd><p>Bases: <a class="reference internal" href="#pylorax.base.DataHolder" title="pylorax.base.DataHolder"><tt class="xref py py-class docutils literal"><span class="pre">pylorax.base.DataHolder</span></tt></a></p>
 <dl class="attribute">
 <dt id="pylorax.ArchData.bcj_arch">
-<tt class="descname">bcj_arch</tt><em class="property"> = {'ppc64': 'powerpc', 'armhfp': 'arm', 'ppc': 'powerpc', 'arm': 'arm', 'ppc64le': 'powerpc', 'i386': 'x86', 'x86_64': 'x86'}</em><a class="headerlink" href="#pylorax.ArchData.bcj_arch" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">bcj_arch</tt><em class="property"> = {'ppc': 'powerpc', 'arm': 'arm', 'armhfp': 'arm', 'ppc64': 'powerpc', 'i386': 'x86', 'x86_64': 'x86', 'ppc64le': 'powerpc'}</em><a class="headerlink" href="#pylorax.ArchData.bcj_arch" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1579,7 +1581,7 @@ lowest numbered directory entry is returned.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'25.6',
+            VERSION:'25.11',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
