@@ -1448,7 +1448,7 @@ def main():
         elif opts.make_pxe_live:
             work_dir = tempfile.mkdtemp(prefix="lmc-work-")
             log.info("working dir is %s", work_dir)
-            disk_img = opts.fs_image or disk_img
+            disk_img = opts.fs_image or opts.disk_image or disk_img
             log.debug("disk image is %s", disk_img)
 
             result_dir = make_live_images(opts, work_dir, disk_img)
