@@ -56,6 +56,7 @@ from pylorax.sysutils import joinpaths, remove
 from pylorax.imgutils import PartitionMount, mksparse, mkext4img, loop_detach
 from pylorax.imgutils import get_loop_name, dm_detach, mount, umount, Mount
 from pylorax.imgutils import mksquashfs, mktar, mkrootfsimg, mkqcow2
+from pylorax.imgutils import copytree
 from pylorax.executils import execWithRedirect, execWithCapture, runcmd
 
 # no-virt mode doesn't need libvirt, so make it optional
@@ -1349,7 +1350,7 @@ if __name__ == '__main__':
                                 umount(mounted_sysroot_boot_dir)
 
         if opts.result_dir != opts.tmp and result_dir:
-            shutil.copytree( result_dir, opts.result_dir )
+            copytree(result_dir, opts.result_dir, preserve=False)
             shutil.rmtree( result_dir )
 
     log.info("SUMMARY")
