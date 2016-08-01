@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.76
+Version:        19.6.77
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Mon Aug 01 2016 Brian C. Lane <bcl@redhat.com> 19.6.77-1
+- livemedia-creator: Install genericdvd.prm (bcl)
+  Related: rhbz#1269213
+- livemedia-creator: Use imgutils.copytree for results (bcl)
+  Resolves: rhbz#1362157
+
 * Thu Jul 28 2016 Brian C. Lane <bcl@redhat.com> 19.6.76-1
 - livemedia-creator: Fix logging (bcl)
   Resolves: rhbz#1361031
