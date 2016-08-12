@@ -37,7 +37,7 @@ installpkg glibc-all-langpacks
 
 ## arch-specific packages (bootloaders etc.)
 %if basearch == "aarch64":
-    installpkg efibootmgr grub2-efi grub2-efi-modules grubby shim shim-unsigned
+    installpkg efibootmgr grub2-efi grub2-efi-modules grub2-tools shim shim-unsigned
 %endif
 %if basearch in ("arm", "armhfp"):
     installpkg kernel-lpae
