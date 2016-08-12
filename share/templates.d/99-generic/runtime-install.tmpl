@@ -37,7 +37,7 @@ installpkg glibc-all-langpacks
 
 ## arch-specific packages (bootloaders etc.)
 %if basearch == "aarch64":
-    installpkg efibootmgr grub2-efi grub2-efi-modules grubby shim shim-unsigned
+    installpkg efibootmgr grub2-efi grub2-efi-modules grub2-tools shim shim-unsigned
 %endif
 %if basearch in ("arm", "armhfp"):
     installpkg kernel-lpae
@@ -118,7 +118,7 @@ installpkg bridge-utils
 installpkg pciutils usbutils ipmitool
 installpkg mt-st smartmontools
 installpkg hdparm
-%if basearch not in ("aarch64", "s390x"):
+%if basearch not in ("aarch64", "pcmciautils", "s390x"):
 installpkg pcmciautils
 %endif
 installpkg libmlx4 rdma
@@ -166,7 +166,7 @@ installpkg notification-daemon
 
 ## Docker enabled boot.iso
 # Not all arches currently have docker
-%if basearch not in ("ppc", "ppc64", "s390", "s390x"):
+%if basearch not in ("ppc", "ppc64", "s390"):
     installpkg docker-anaconda-addon
 %endif
 
