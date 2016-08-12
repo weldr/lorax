@@ -166,7 +166,7 @@ installpkg notification-daemon
 
 ## Docker enabled boot.iso
 # Not all arches currently have docker
-%if basearch not in ("ppc", "ppc64", "s390", "s390x"):
+%if basearch not in ("ppc", "ppc64", "s390"):
     installpkg docker-anaconda-addon
 %endif
 
