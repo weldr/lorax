@@ -118,7 +118,7 @@ installpkg bridge-utils
 installpkg pciutils usbutils ipmitool
 installpkg mt-st smartmontools
 installpkg hdparm
-%if basearch not in ("aarch64", "s390x"):
+%if basearch not in ("aarch64", "pcmciautils", "s390x"):
 installpkg pcmciautils
 %endif
 installpkg libmlx4 rdma
