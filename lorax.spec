@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        25.12
+Version:        25.13
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -148,6 +148,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Fri Aug 12 2016 Brian C. Lane <bcl@redhat.com> 25.13-1
+- as of Fedora 25 s390x now has docker (pbrobinson@fedoraproject.org)
+- ppc64le doesn't have pcmciatools (pbrobinson@fedoraproject.org)
+- add grub2-tools to aarch64, drop duplicate grubby (pbrobinson@fedoraproject.org)
+- Allow supplying a disk image for PXE live systems (code@schoeller.se)
+- Use size=10 by default (walters@verbum.org)
+
 * Thu Jul 28 2016 Brian C. Lane <bcl@redhat.com> 25.12-1
 - New lorax documentation - 25.12 (bcl@redhat.com)
 - Don't install python3-dnf-langpacks (vpodzime@redhat.com)
