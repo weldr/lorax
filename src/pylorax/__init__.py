@@ -166,7 +166,7 @@ class Lorax(BaseLoraxClass):
             isfinal=False, workdir=None, outputdir=None, buildarch=None, volid=None,
             domacboot=True, doupgrade=True, remove_temp=False,
             installpkgs=None,
-            size=10,
+            size=2,
             add_templates=None,
             add_template_vars=None,
             add_arch_templates=None,
