@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        25.13
+Version:        25.14
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -148,6 +148,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Tue Aug 23 2016 Brian C. Lane <bcl@redhat.com> 25.14-1
+- lorax: Add --rootfs-size (#1368743) (bcl@redhat.com)
+- Revert "Use size=10 by default" (bcl@redhat.com)
+
 * Fri Aug 12 2016 Brian C. Lane <bcl@redhat.com> 25.13-1
 - as of Fedora 25 s390x now has docker (pbrobinson@fedoraproject.org)
 - ppc64le doesn't have pcmciatools (pbrobinson@fedoraproject.org)
