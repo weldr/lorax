@@ -189,6 +189,8 @@ def main(args):
             default=[])
     optional.add_option("--noverifyssl", action="store_true", default=False,
                         help="Do not verify SSL certificates")
+    optional.add_option("--rootfs-size", type=int, default=2,
+                        help="Size of root filesystem in GiB. Defaults to 2.")
 
     # dracut arguments
     dracut_group = OptionGroup(parser, "dracut arguments")
@@ -293,6 +295,7 @@ def main(args):
               workdir=tempdir, outputdir=outputdir, buildarch=opts.buildarch,
               volid=opts.volid, domacboot=opts.domacboot, doupgrade=opts.doupgrade,
               installpkgs=opts.installpkgs,
+              size=opts.rootfs_size,
               add_templates=opts.add_templates,
               add_template_vars=parsed_add_template_vars,
               add_arch_templates=opts.add_arch_templates,
