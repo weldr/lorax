@@ -125,6 +125,7 @@ def main():
               workdir=tempdir, outputdir=opts.outputdir, buildarch=opts.buildarch,
               volid=opts.volid, domacboot=opts.domacboot, doupgrade=opts.doupgrade,
               installpkgs=opts.installpkgs,
+              size=opts.rootfs_size,
               add_templates=opts.add_templates,
               add_template_vars=parsed_add_template_vars,
               add_arch_templates=opts.add_arch_templates,
