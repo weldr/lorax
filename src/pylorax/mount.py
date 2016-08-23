@@ -57,8 +57,8 @@ class IsoMountpoint(object):
         else:
             self.mount_dir = self.initrd_path
 
-        self.kernel = self.mount_dir+"/isolinux/vmlinuz"
-        self.initrd = self.mount_dir+"/isolinux/initrd.img"
+        kernel_list = [("/isolinux/vmlinuz", "/isolinux/initrd.img"),
+                       ("/ppc/ppc64/vmlinuz", "/ppc/ppc64/initrd.img")]
 
         if os.path.isdir(self.mount_dir+"/repodata"):
             self.repo = self.mount_dir
@@ -68,9 +68,15 @@ class IsoMountpoint(object):
                       os.path.exists(self.mount_dir+"/images/install.img")
 
         try:
-            for f in [self.kernel, self.initrd]:
-                if not os.path.isfile(f):
-                    raise Exception("Missing file on iso: {0}".format(f))
+            for kernel, initrd in kernel_list:
+                if (os.path.isfile(self.mount_dir+kernel) and
+                    os.path.isfile(self.mount_dir+initrd)):
+                    self.kernel = self.mount_dir+kernel
+                    self.initrd = self.mount_dir+initrd
+                    break
+            else:
+                raise Exception("Missing kernel and initrd file in iso, failed"
+                                " to search under: {0}".format(kernel_list))
         except:
             self.umount()
             raise
