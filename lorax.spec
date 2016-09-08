@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        25.14
+Version:        25.15
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -148,6 +148,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Thu Sep 08 2016 Brian C. Lane <bcl@redhat.com> 25.15-1
+- Keep fsfreeze in install environment (#1315468) (rmarshall@redhat.com)
+- Add ppc64le kernel path (mkumatag@in.ibm.com)
+- Install storaged-iscsi to the runtime (#1347415) (vpodzime@redhat.com)
+
 * Tue Aug 23 2016 Brian C. Lane <bcl@redhat.com> 25.14-1
 - lorax: Add --rootfs-size (#1368743) (bcl@redhat.com)
 - Revert "Use size=10 by default" (bcl@redhat.com)
