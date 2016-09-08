@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.77
+Version:        19.6.78
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Thu Sep 08 2016 Brian C. Lane <bcl@redhat.com> 19.6.78-1
+- Don't log dracut initrd regeneration messages into /tmp/syslog (rvykydal)
+  Related: rhbz#1369439
+- Use imjournal for rsyslogd instead of sharing /dev/log with journal (rvykydal)
+  Resolves: rhbz#1369439
+
 * Mon Aug 01 2016 Brian C. Lane <bcl@redhat.com> 19.6.77-1
 - livemedia-creator: Install genericdvd.prm (bcl)
   Related: rhbz#1269213
