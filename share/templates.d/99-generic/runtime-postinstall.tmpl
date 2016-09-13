@@ -30,6 +30,7 @@ mkdir etc/systemd/system/local-fs.target.wants/
 symlink /lib/systemd/system/tmp.mount etc/systemd/system/local-fs.target.wants/tmp.mount
 
 ## Start rngd
+mkdir etc/systemd/system/basic.target.wants/
 symlink /lib/systemd/system/rngd.service etc/systemd/system/basic.target.wants/rngd.service
 
 ## Disable unwanted systemd services
