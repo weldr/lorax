@@ -108,6 +108,7 @@ class LogRequestHandler(socketserver.BaseRequestHandler):
                         "traceback script(s) have been run",
                         "crashed on signal",
                         "packaging: Missed: NoSuchPackage",
+                        "packaging: Installation failed",
                         "The following error occurred while installing.  This is a fatal error"]
         re_tests =     [r"packaging: base repo .* not valid",
                         r"packaging: .* requires .*"]
