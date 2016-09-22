@@ -275,10 +275,10 @@ removefrom nfs-utils /var/lib/nfs/rmtab /var/lib/nfs/state /var/lib/nfs/xtab
 removefrom nhn-nanum-gothic-fonts /usr/share/fonts/nhn-nanum/NanumGothic*Bold.ttf
 removefrom nss-softokn /usr/${libdir}/nss/*
 removefrom openldap /etc/openldap/* /usr/${libdir}/libldap_r-*
-removefrom openssh /etc/ssh/* /usr/libexec/*
-removefrom openssh-clients /etc/ssh/* /usr/bin/slogin /usr/bin/ssh-*
+removefrom openssh /usr/libexec/*
+removefrom openssh-clients /etc/ssh/* /usr/bin/ssh-*
 removefrom openssh-clients /usr/libexec/*
-removefrom openssh-server /etc/ssh/* /usr/libexec/*
+removefrom openssh-server /etc/ssh/* /usr/libexec/openssh/sftp-server
 removefrom openssl /etc/pki/* /usr/bin/* /usr/${libdir}/openssl/*
 removefrom pam /usr/sbin/* /usr/share/locale/*
 removefrom policycoreutils /etc/* /usr/bin/* /usr/share/locale/*
