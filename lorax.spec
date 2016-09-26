@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        25.15
+Version:        25.16
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -148,6 +148,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Mon Sep 26 2016 Brian C. Lane <bcl@redhat.com> 25.16-1
+- Fix broken sshd.inst boot option (#1378378) (jjelen@redhat.com)
+- Don't log dracut initrd regeneration messages into /tmp/syslog (#1369439) (rvykydal@redhat.com)
+- Use imjournal for rsyslogd instead of sharing /dev/log with journal (#1369439) (rvykydal@redhat.com)
+- livemedia-creator: Check for packaging failures in the logs (#1374809) (bcl@redhat.com)
+- templates: Enusre basic.target.wants dir exists for rngd (walters@verbum.org)
+
 * Thu Sep 08 2016 Brian C. Lane <bcl@redhat.com> 25.15-1
 - Keep fsfreeze in install environment (#1315468) (rmarshall@redhat.com)
 - Add ppc64le kernel path (mkumatag@in.ibm.com)
