@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        24.20
+Version:        24.21
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -148,6 +148,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Mon Sep 26 2016 Brian C. Lane <bcl@redhat.com> 24.21-1
+- Add ppc64le kernel path (mkumatag@in.ibm.com)
+
 * Fri Jul 08 2016 Brian C. Lane <bcl@redhat.com> 24.20-1
 - livemedia-creator: Fix off by 1024 error (#1353140) (bcl@redhat.com)
 - livemedia-creator: Create runtime using kickstart partition size (#1353140) (bcl@redhat.com)
