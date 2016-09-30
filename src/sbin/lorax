@@ -211,7 +211,7 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
             log.info("Skipping source repo: %s", r)
             continue
         repo_name = "lorax-repo-%d" % i
-        repo = dnf.repo.Repo(repo_name, cachedir)
+        repo = dnf.repo.Repo(repo_name, conf)
         repo.baseurl = [r]
         if proxy:
             repo.proxy = proxy
@@ -231,7 +231,7 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
             log.info("Skipping source repo: %s", r)
             continue
         repo_name = "lorax-mirrorlist-%d" % i
-        repo = dnf.repo.Repo(repo_name, cachedir)
+        repo = dnf.repo.Repo(repo_name, conf)
         repo.mirrorlist = r
         if proxy:
             repo.proxy = proxy
