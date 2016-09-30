@@ -148,6 +148,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Fri Sep 30 2016 Brian C. Lane <bcl@redhat.com> 26.0-1
+- Bump version to 26.0 (bcl@redhat.com)
+- adapt to DNF 2.0 API changes (i.gnatenko.brain@gmail.com)
+
 * Mon Sep 26 2016 Brian C. Lane <bcl@redhat.com> 25.16-1
 - Fix broken sshd.inst boot option (#1378378) (jjelen@redhat.com)
 - Don't log dracut initrd regeneration messages into /tmp/syslog (#1369439) (rvykydal@redhat.com)
