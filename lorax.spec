@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        25.16
+Version:        25.17
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -148,6 +148,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Mon Oct 17 2016 Brian C. Lane <bcl@redhat.com> 25.17-1
+- Add missing fonts (#1370118) (vponcova@redhat.com)
+- drop ssh server key generation for s390(x) (#1383641) (dan@danny.cz)
+
 * Mon Sep 26 2016 Brian C. Lane <bcl@redhat.com> 25.16-1
 - Fix broken sshd.inst boot option (#1378378) (jjelen@redhat.com)
 - Don't log dracut initrd regeneration messages into /tmp/syslog (#1369439) (rvykydal@redhat.com)
