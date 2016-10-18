@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        26.0
+Version:        26.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -148,6 +148,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Mon Oct 17 2016 Brian C. Lane <bcl@redhat.com> 26.1-1
+- Add missing fonts (#1370118) (vponcova@redhat.com)
+- drop ssh server key generation for s390(x) (#1383641) (dan@danny.cz)
+
 * Fri Sep 30 2016 Brian C. Lane <bcl@redhat.com> 26.0-1
 - Bump version to 26.0 (bcl@redhat.com)
 - adapt to DNF 2.0 API changes (i.gnatenko.brain@gmail.com)
