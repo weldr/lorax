@@ -65,6 +65,9 @@ def lorax_parser():
     optional.add_argument("-i", "--installpkgs", default=[],
                         action="append", metavar="PACKAGE",
                         help="package glob to install before runtime-install.tmpl runs. (may be listed multiple times)")
+    optional.add_argument("-e", "--excludepkgs", default=[],
+                        action="append", metavar="PACKAGE",
+                        help="package glob to remove before runtime-install.tmpl runs. (may be listed multiple times)")
     optional.add_argument("--buildarch", default=None,
                         help="build architecture", metavar="ARCH")
     optional.add_argument("--volid", default=None,
