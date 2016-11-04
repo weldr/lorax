@@ -165,7 +165,7 @@ class Lorax(BaseLoraxClass):
     def run(self, dbo, product, version, release, variant="", bugurl="",
             isfinal=False, workdir=None, outputdir=None, buildarch=None, volid=None,
             domacboot=True, doupgrade=True, remove_temp=False,
-            installpkgs=None,
+            installpkgs=None, excludepkgs=None,
             size=2,
             add_templates=None,
             add_template_vars=None,
@@ -176,6 +176,7 @@ class Lorax(BaseLoraxClass):
         assert self._configured
 
         installpkgs = installpkgs or []
+        excludepkgs = excludepkgs or []
 
         # get lorax version
         try:
@@ -270,6 +271,7 @@ class Lorax(BaseLoraxClass):
         rb = RuntimeBuilder(product=self.product, arch=self.arch,
                             dbo=dbo, templatedir=self.templatedir,
                             installpkgs=installpkgs,
+                            excludepkgs=excludepkgs,
                             add_templates=add_templates,
                             add_template_vars=add_template_vars)
 

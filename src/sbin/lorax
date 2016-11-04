@@ -124,7 +124,7 @@ def main():
               opts.variant, opts.bugurl, opts.isfinal,
               workdir=tempdir, outputdir=opts.outputdir, buildarch=opts.buildarch,
               volid=opts.volid, domacboot=opts.domacboot, doupgrade=opts.doupgrade,
-              installpkgs=opts.installpkgs,
+              installpkgs=opts.installpkgs, excludepkgs=opts.excludepkgs,
               size=opts.rootfs_size,
               add_templates=opts.add_templates,
               add_template_vars=parsed_add_template_vars,
