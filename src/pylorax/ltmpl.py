@@ -518,8 +518,8 @@ class LoraxTemplateRunner(object):
             logger.debug("command finished successfully")
         except CalledProcessError as e:
             if e.output:
-                logger.debug('command output:\n%s', e.output)
-            logger.debug('command returned failure (%d)', e.returncode)
+                logger.error('command output:\n%s', e.output)
+            logger.error('command returned failure (%d)', e.returncode)
             raise
 
     def installpkg(self, *pkgs):
