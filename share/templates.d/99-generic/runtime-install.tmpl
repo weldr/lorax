@@ -2,10 +2,7 @@
 <%page args="basearch, product"/>
 
 ## anaconda package
-installpkg anaconda anaconda-widgets
-%if basearch != "aarch64":
-installpkg kexec-tools-anaconda-addon
-%endif
+installpkg anaconda anaconda-widgets kexec-tools-anaconda-addon
 ## anaconda deps that aren't in the RPM
 installpkg tmux
 ## for anaconda crash handling
