@@ -114,7 +114,8 @@ def mkrootfsimg(rootdir, outfile, label, size=2, sysroot=""):
     # Reset selinux context on new rootfs
     with LoopDev(outfile) as loopdev:
         with Mount(loopdev) as mnt:
-            cmd = [ "setfiles", "-e", "/proc", "-e", "/sys", "-e", "/dev", "-e", "/install",
+            cmd = [ "setfiles", "-e", "/proc", "-e", "/sys", "-e", "/dev",
+                    "-e", "/install", "-e", "/ostree",
                     "/etc/selinux/targeted/contexts/files/file_contexts", "/"]
             root = join(mnt, sysroot.lstrip("/"))
             runcmd(cmd, root=root)
