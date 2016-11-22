@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        26.1
+Version:        26.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -148,6 +148,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Tue Nov 22 2016 Brian C. Lane <bcl@redhat.com> 26.2-1
+- add exception for lulzbot-marlin-firmware (pbrobinson@gmail.com)
+- drop kexec arch conditional for aarch64 (pbrobinson@gmail.com)
+- imgutils: Don't relabel /ostree (walters@verbum.org)
+- Added option to remove packages (parallel to installpkgs) (riehecky@fnal.gov)
+- templates: When a subprocess fatally errors, output its stderr directly (walters@verbum.org)
+
 * Mon Oct 17 2016 Brian C. Lane <bcl@redhat.com> 26.1-1
 - Add missing fonts (#1370118) (vponcova@redhat.com)
 - drop ssh server key generation for s390(x) (#1383641) (dan@danny.cz)
