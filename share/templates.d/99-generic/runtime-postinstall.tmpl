@@ -3,7 +3,10 @@
 
 <%page args="root, basearch, libdir, configdir"/>
 <%
-PYTHONDIR = sorted(glob("usr/"+libdir+"/python?.?"))[0]
+## if we have both python-2 and python-3 pkgs in environment
+import os
+PYANACONDADIR = glob("usr/"+libdir+"/python?.?/site-packages/pyanaconda")[0]
+PYTHONDIR = os.path.dirname(os.path.dirname(PYANACONDADIR))
 stubs = ("list-harddrives", "raidstart", "raidstop")
 configdir = configdir + "/common"
 %>
