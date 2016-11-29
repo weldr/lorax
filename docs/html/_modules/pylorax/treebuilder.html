@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.treebuilder &mdash; Lorax 25.11 documentation</title>
+  <title>pylorax.treebuilder &mdash; Lorax 26.2 documentation</title>
   
 
   
@@ -30,7 +30,10 @@
   
 
   
-    <link rel="top" title="Lorax 25.11 documentation" href="../../index.html"/>
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Lorax 26.2 documentation" href="../../index.html"/>
         <link rel="up" title="pylorax" href="../pylorax.html"/> 
 
   
@@ -59,7 +62,7 @@
             
             
               <div class="version">
-                25.11
+                26.2
               </div>
             
           
@@ -157,16 +160,16 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;pylorax.treebuilder&quot;</span><span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">basename</span>
-<span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="n">copytree</span><span class="p">,</span> <span class="n">copy2</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">basename</span>
+<span class="kn">from</span> <span class="nn">shutil</span> <span class="k">import</span> <span class="n">copytree</span><span class="p">,</span> <span class="n">copy2</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
 
-<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="kn">import</span> <span class="n">joinpaths</span><span class="p">,</span> <span class="n">remove</span>
-<span class="kn">from</span> <span class="nn">pylorax.base</span> <span class="kn">import</span> <span class="n">DataHolder</span>
-<span class="kn">from</span> <span class="nn">pylorax.ltmpl</span> <span class="kn">import</span> <span class="n">LoraxTemplateRunner</span>
-<span class="kn">import</span> <span class="nn">pylorax.imgutils</span> <span class="kn">as</span> <span class="nn">imgutils</span>
-<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="kn">import</span> <span class="n">runcmd</span><span class="p">,</span> <span class="n">runcmd_output</span><span class="p">,</span> <span class="n">execWithCapture</span>
+<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span><span class="p">,</span> <span class="n">remove</span>
+<span class="kn">from</span> <span class="nn">pylorax.base</span> <span class="k">import</span> <span class="n">DataHolder</span>
+<span class="kn">from</span> <span class="nn">pylorax.ltmpl</span> <span class="k">import</span> <span class="n">LoraxTemplateRunner</span>
+<span class="kn">import</span> <span class="nn">pylorax.imgutils</span> <span class="k">as</span> <span class="nn">imgutils</span>
+<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="k">import</span> <span class="n">runcmd</span><span class="p">,</span> <span class="n">runcmd_output</span><span class="p">,</span> <span class="n">execWithCapture</span>
 
 <span class="n">templatemap</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;i386&#39;</span><span class="p">:</span>    <span class="s1">&#39;x86.tmpl&#39;</span><span class="p">,</span>
@@ -181,7 +184,7 @@
     <span class="s1">&#39;armhfp&#39;</span><span class="p">:</span>  <span class="s1">&#39;arm.tmpl&#39;</span><span class="p">,</span>
 <span class="p">}</span>
 
-<div class="viewcode-block" id="generate_module_info"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.generate_module_info">[docs]</a><span class="k">def</span> <span class="nf">generate_module_info</span><span class="p">(</span><span class="n">moddir</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="generate_module_info"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.generate_module_info">[docs]</a><span class="k">def</span> <span class="nf">generate_module_info</span><span class="p">(</span><span class="n">moddir</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">module_desc</span><span class="p">(</span><span class="n">mod</span><span class="p">):</span>
         <span class="n">output</span> <span class="o">=</span> <span class="n">runcmd_output</span><span class="p">([</span><span class="s2">&quot;modinfo&quot;</span><span class="p">,</span> <span class="s2">&quot;-F&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="n">mod</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">output</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
@@ -201,14 +204,14 @@
     <span class="n">out</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span> <span class="ow">or</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">moddir</span><span class="p">,</span><span class="s2">&quot;module-info&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
     <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Version 0</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">modinfo</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)):</span>
-        <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;{name}</span><span class="se">\n\t</span><span class="s1">{type}</span><span class="se">\n\t</span><span class="s1">&quot;{desc:.65}&quot;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">mod</span><span class="p">))</span>
-</div>
+        <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{name}</span><span class="se">\n\t</span><span class="si">{type}</span><span class="se">\n\t</span><span class="s1">&quot;</span><span class="si">{desc:.65}</span><span class="s1">&quot;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">mod</span><span class="p">))</span></div>
+
 <div class="viewcode-block" id="RuntimeBuilder"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder">[docs]</a><span class="k">class</span> <span class="nc">RuntimeBuilder</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Builds the anaconda runtime image.&#39;&#39;&#39;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">dbo</span><span class="p">,</span> <span class="n">templatedir</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-                 <span class="n">installpkgs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-                 <span class="n">add_templates</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-                 <span class="n">add_template_vars</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">dbo</span><span class="p">,</span> <span class="n">templatedir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">installpkgs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">excludepkgs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">add_templates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">add_template_vars</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">root</span> <span class="o">=</span> <span class="n">dbo</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">installroot</span>
         <span class="c1"># use a copy of product so we can modify it locally</span>
         <span class="n">product</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -221,11 +224,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add_templates</span> <span class="o">=</span> <span class="n">add_templates</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_template_vars</span> <span class="o">=</span> <span class="n">add_template_vars</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_installpkgs</span> <span class="o">=</span> <span class="n">installpkgs</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_excludepkgs</span> <span class="o">=</span> <span class="n">excludepkgs</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">defaults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_install_branding</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">release</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">release</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
         <span class="n">a</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">available</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">provides</span><span class="o">=</span><span class="s1">&#39;/etc/system-release&#39;</span><span class="p">):</span>
@@ -252,10 +256,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_install_branding</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_installpkgs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">installpkg</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_installpkgs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_excludepkgs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">removepkg</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_excludepkgs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;runtime-install.tmpl&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">tmpl</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_templates</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">tmpl</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">add_template_vars</span><span class="p">)</span>
-</div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">tmpl</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">add_template_vars</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="RuntimeBuilder.writepkglists"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.writepkglists">[docs]</a>    <span class="k">def</span> <span class="nf">writepkglists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkglistdir</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;debugging data: write out lists of package contents&#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">pkglistdir</span><span class="p">):</span>
@@ -264,8 +270,8 @@
         <span class="k">for</span> <span class="n">pkgobj</span> <span class="ow">in</span> <span class="n">q</span><span class="o">.</span><span class="n">installed</span><span class="p">():</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">pkglistdir</span><span class="p">,</span> <span class="n">pkgobj</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fobj</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">pkgobj</span><span class="o">.</span><span class="n">files</span><span class="p">:</span>
-                    <span class="n">fobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;{0}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname</span><span class="p">))</span>
-</div>
+                    <span class="n">fobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname</span><span class="p">))</span></div>
+
 <div class="viewcode-block" id="RuntimeBuilder.postinstall"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.postinstall">[docs]</a>    <span class="k">def</span> <span class="nf">postinstall</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Do some post-install setup work with runtime-postinstall.tmpl&#39;&#39;&#39;</span>
         <span class="c1"># copy configdir into runtime root beforehand</span>
@@ -275,15 +281,15 @@
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fullpath</span><span class="p">):</span>
             <span class="n">remove</span><span class="p">(</span><span class="n">fullpath</span><span class="p">)</span>
         <span class="n">copytree</span><span class="p">(</span><span class="n">configdir</span><span class="p">,</span> <span class="n">fullpath</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;runtime-postinstall.tmpl&quot;</span><span class="p">,</span> <span class="n">configdir</span><span class="o">=</span><span class="n">configdir_path</span><span class="p">)</span>
-</div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;runtime-postinstall.tmpl&quot;</span><span class="p">,</span> <span class="n">configdir</span><span class="o">=</span><span class="n">configdir_path</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="RuntimeBuilder.cleanup"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.cleanup">[docs]</a>    <span class="k">def</span> <span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Remove unneeded packages and files with runtime-cleanup.tmpl&#39;&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;runtime-cleanup.tmpl&quot;</span><span class="p">)</span>
-</div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;runtime-cleanup.tmpl&quot;</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="RuntimeBuilder.verify"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.verify">[docs]</a>    <span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Ensure that contents of the installroot can run&#39;&#39;&#39;</span>
-        <span class="n">status</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="n">ELF_MAGIC</span> <span class="o">=</span> <span class="n">b</span><span class="s1">&#39;</span><span class="se">\x7f</span><span class="s1">ELF&#39;</span>
 
@@ -311,7 +317,7 @@
                     <span class="c1"># Does the path exist?</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="n">shabang</span><span class="p">):</span>
                         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">, needed by </span><span class="si">%s</span><span class="s1">, does not exist&#39;</span><span class="p">,</span> <span class="n">shabang</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
-                        <span class="n">status</span> <span class="o">=</span> <span class="bp">False</span>
+                        <span class="n">status</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="c1"># Now, run ldd on all the ELF files</span>
         <span class="c1"># Just run ldd once on everything so it isn&#39;t logged a million times.</span>
@@ -319,16 +325,16 @@
         <span class="c1"># so use execWithCapture to ignore the exit code.</span>
         <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">execWithCapture</span><span class="p">(</span><span class="s1">&#39;ldd&#39;</span><span class="p">,</span> <span class="n">elf_files</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
-                <span class="n">log_output</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">filter_stderr</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">):</span>
+                <span class="n">log_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">filter_stderr</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">line</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isspace</span><span class="p">():</span>
                 <span class="c1"># New filename header, strip the : at the end and save</span>
                 <span class="n">filename</span> <span class="o">=</span> <span class="n">line</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="k">elif</span> <span class="s1">&#39;not found&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">, needed by </span><span class="si">%s</span><span class="s1">, not found&#39;</span><span class="p">,</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">filename</span><span class="p">)</span>
-                <span class="n">status</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="kc">False</span>
 
-        <span class="k">return</span> <span class="n">status</span>
-</div>
+        <span class="k">return</span> <span class="n">status</span></div>
+
 <div class="viewcode-block" id="RuntimeBuilder.writepkgsizes"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.writepkgsizes">[docs]</a>    <span class="k">def</span> <span class="nf">writepkgsizes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkgsizefile</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;debugging data: write a big list of pkg sizes&#39;&#39;&#39;</span>
         <span class="n">fobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">pkgsizefile</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
@@ -336,8 +342,8 @@
         <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">installed</span><span class="p">()):</span>
             <span class="n">pkgsize</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">getsize</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span><span class="p">,</span><span class="n">f</span><span class="p">))</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">files</span><span class="p">)</span>
-            <span class="n">fobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;{0.name}.{0.arch}: {1}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">pkgsize</span><span class="p">))</span>
-</div>
+            <span class="n">fobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0.name}</span><span class="s2">.</span><span class="si">{0.arch}</span><span class="s2">: </span><span class="si">{1}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">pkgsize</span><span class="p">))</span></div>
+
 <div class="viewcode-block" id="RuntimeBuilder.generate_module_data"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.generate_module_data">[docs]</a>    <span class="k">def</span> <span class="nf">generate_module_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span>
         <span class="n">moddir</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;lib/modules/&quot;</span><span class="p">)</span>
@@ -345,9 +351,9 @@
             <span class="n">ksyms</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;boot/System.map-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">kver</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;doing depmod and module-info for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">kver</span><span class="p">)</span>
             <span class="n">runcmd</span><span class="p">([</span><span class="s2">&quot;depmod&quot;</span><span class="p">,</span> <span class="s2">&quot;-a&quot;</span><span class="p">,</span> <span class="s2">&quot;-F&quot;</span><span class="p">,</span> <span class="n">ksyms</span><span class="p">,</span> <span class="s2">&quot;-b&quot;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">kver</span><span class="p">])</span>
-            <span class="n">generate_module_info</span><span class="p">(</span><span class="n">moddir</span><span class="o">+</span><span class="n">kver</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="n">moddir</span><span class="o">+</span><span class="s2">&quot;module-info&quot;</span><span class="p">)</span>
-</div>
-<div class="viewcode-block" id="RuntimeBuilder.create_runtime"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.create_runtime">[docs]</a>    <span class="k">def</span> <span class="nf">create_runtime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="s2">&quot;/var/tmp/squashfs.img&quot;</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;xz&quot;</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+            <span class="n">generate_module_info</span><span class="p">(</span><span class="n">moddir</span><span class="o">+</span><span class="n">kver</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="n">moddir</span><span class="o">+</span><span class="s2">&quot;module-info&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RuntimeBuilder.create_runtime"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.create_runtime">[docs]</a>    <span class="k">def</span> <span class="nf">create_runtime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="s2">&quot;/var/tmp/squashfs.img&quot;</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;xz&quot;</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
         <span class="c1"># make live rootfs image - must be named &quot;LiveOS/rootfs.img&quot; for dracut</span>
         <span class="n">compressargs</span> <span class="o">=</span> <span class="n">compressargs</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="n">workdir</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">outfile</span><span class="p">),</span> <span class="s2">&quot;runtime-workdir&quot;</span><span class="p">)</span>
@@ -358,19 +364,19 @@
 
         <span class="c1"># squash the live rootfs and clean up workdir</span>
         <span class="n">imgutils</span><span class="o">.</span><span class="n">mksquashfs</span><span class="p">(</span><span class="n">workdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="p">)</span>
-        <span class="n">remove</span><span class="p">(</span><span class="n">workdir</span><span class="p">)</span>
-</div>
+        <span class="n">remove</span><span class="p">(</span><span class="n">workdir</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="RuntimeBuilder.finished"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.finished">[docs]</a>    <span class="k">def</span> <span class="nf">finished</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Done using RuntimeBuilder</span>
 
 <span class="sd">        Close the dnf base object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+
 <div class="viewcode-block" id="TreeBuilder"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.TreeBuilder">[docs]</a><span class="k">class</span> <span class="nc">TreeBuilder</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Builds the arch-specific boot images.</span>
 <span class="sd">    inroot should be the installtree root (the newly-built runtime dir)&#39;&#39;&#39;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">inroot</span><span class="p">,</span> <span class="n">outroot</span><span class="p">,</span> <span class="n">runtime</span><span class="p">,</span> <span class="n">isolabel</span><span class="p">,</span> <span class="n">domacboot</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">doupgrade</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">templatedir</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">add_templates</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">add_template_vars</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">workdir</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">inroot</span><span class="p">,</span> <span class="n">outroot</span><span class="p">,</span> <span class="n">runtime</span><span class="p">,</span> <span class="n">isolabel</span><span class="p">,</span> <span class="n">domacboot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">doupgrade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">templatedir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">add_templates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">add_template_vars</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">workdir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
         <span class="c1"># NOTE: if you pass an arg named &quot;runtime&quot; to a mako template it&#39;ll</span>
         <span class="c1"># clobber some mako internal variables - hence &quot;runtime_img&quot;.</span>
@@ -385,13 +391,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add_templates</span> <span class="o">=</span> <span class="n">add_templates</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_template_vars</span> <span class="o">=</span> <span class="n">add_template_vars</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">templatedir</span> <span class="o">=</span> <span class="n">templatedir</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">treeinfo_data</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeinfo_data</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
-<div class="viewcode-block" id="TreeBuilder.kernels"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.TreeBuilder.kernels">[docs]</a>    <span class="k">def</span> <span class="nf">kernels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">kernels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">findkernels</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">inroot</span><span class="p">)</span>
-</div>
-<div class="viewcode-block" id="TreeBuilder.rebuild_initrds"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.TreeBuilder.rebuild_initrds">[docs]</a>    <span class="k">def</span> <span class="nf">rebuild_initrds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">add_args</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">backup</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TreeBuilder.rebuild_initrds"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.TreeBuilder.rebuild_initrds">[docs]</a>    <span class="k">def</span> <span class="nf">rebuild_initrds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">add_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">backup</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Rebuild all the initrds in the tree. If backup is specified, each</span>
 <span class="sd">        initrd will be renamed with backup as a suffix before rebuilding.</span>
 <span class="sd">        If backup is empty, the existing initrd files will be overwritten.</span>
@@ -435,24 +441,24 @@
                 <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">st_size</span> <span class="o">&gt;</span> <span class="mi">32</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">:</span>
                     <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;ppc64 initrd </span><span class="si">%s</span><span class="s2"> is &gt; 32MiB&quot;</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
 
-        <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">inroot</span><span class="p">,</span><span class="s2">&quot;/proc/modules&quot;</span><span class="p">))</span>
-</div>
+        <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">inroot</span><span class="p">,</span><span class="s2">&quot;/proc/modules&quot;</span><span class="p">))</span></div>
+
 <div class="viewcode-block" id="TreeBuilder.build"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.TreeBuilder.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">templatefile</span> <span class="o">=</span> <span class="n">templatemap</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">arch</span><span class="o">.</span><span class="n">basearch</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">tmpl</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_templates</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">tmpl</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">add_template_vars</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">templatefile</span><span class="p">,</span> <span class="n">kernels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernels</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">treeinfo_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">treeinfo</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">implantisomd5</span><span class="p">()</span>
-</div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">implantisomd5</span><span class="p">()</span></div>
+
 <div class="viewcode-block" id="TreeBuilder.implantisomd5"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.TreeBuilder.implantisomd5">[docs]</a>    <span class="k">def</span> <span class="nf">implantisomd5</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">_section</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">treeinfo_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="s1">&#39;boot.iso&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
                 <span class="n">iso</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">outroot</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;boot.iso&#39;</span><span class="p">])</span>
-                <span class="n">runcmd</span><span class="p">([</span><span class="s2">&quot;implantisomd5&quot;</span><span class="p">,</span> <span class="n">iso</span><span class="p">])</span>
-</div>
+                <span class="n">runcmd</span><span class="p">([</span><span class="s2">&quot;implantisomd5&quot;</span><span class="p">,</span> <span class="n">iso</span><span class="p">])</span></div>
+
     <span class="nd">@property</span>
-<div class="viewcode-block" id="TreeBuilder.dracut_hooks_path"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.TreeBuilder.dracut_hooks_path">[docs]</a>    <span class="k">def</span> <span class="nf">dracut_hooks_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">dracut_hooks_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Return the path to the lorax dracut hooks scripts</span>
 
 <span class="sd">            Use the configured share dir if it is setup,</span>
@@ -462,7 +468,7 @@
             <span class="k">return</span> <span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">templatedir</span><span class="p">,</span> <span class="s2">&quot;dracut_hooks&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;/usr/share/lorax/dracut_hooks&quot;</span>
-</div>
+
 <div class="viewcode-block" id="TreeBuilder.copy_dracut_hooks"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.TreeBuilder.copy_dracut_hooks">[docs]</a>    <span class="k">def</span> <span class="nf">copy_dracut_hooks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hooks</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Copy the hook scripts in hooks into the installroot&#39;s /tmp/</span>
 <span class="sd">        and return a list of commands to pass to dracut when creating the</span>
@@ -482,15 +488,15 @@
             <span class="n">copy2</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
             <span class="n">dracut_commands</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;--include&quot;</span><span class="p">,</span> <span class="n">joinpaths</span><span class="p">(</span><span class="s2">&quot;/tmp/&quot;</span><span class="p">,</span> <span class="n">hook_script</span><span class="p">),</span>
                                 <span class="n">dracut_path</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">dracut_commands</span>
+        <span class="k">return</span> <span class="n">dracut_commands</span></div></div>
 
 <span class="c1">#### TreeBuilder helper functions</span>
-</div></div>
+
 <div class="viewcode-block" id="findkernels"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.findkernels">[docs]</a><span class="k">def</span> <span class="nf">findkernels</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">kdir</span><span class="o">=</span><span class="s2">&quot;boot&quot;</span><span class="p">):</span>
     <span class="c1"># To find possible flavors, awk &#39;/BuildKernel/ { print $4 }&#39; kernel.spec</span>
     <span class="n">flavors</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;debug&#39;</span><span class="p">,</span> <span class="s1">&#39;PAE&#39;</span><span class="p">,</span> <span class="s1">&#39;PAEdebug&#39;</span><span class="p">,</span> <span class="s1">&#39;smp&#39;</span><span class="p">,</span> <span class="s1">&#39;xen&#39;</span><span class="p">,</span> <span class="s1">&#39;lpae&#39;</span><span class="p">)</span>
     <span class="n">kre</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">r&quot;vmlinuz-(?P&lt;version&gt;.+?\.(?P&lt;arch&gt;[a-z0-9_]+)&quot;</span>
-                     <span class="s2">r&quot;(.(?P&lt;flavor&gt;{0}))?)$&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">flavors</span><span class="p">)))</span>
+                     <span class="s2">r&quot;(.(?P&lt;flavor&gt;</span><span class="si">{0}</span><span class="s2">))?)$&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">flavors</span><span class="p">)))</span>
     <span class="n">kernels</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">bootfiles</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">kdir</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">bootfiles</span><span class="p">:</span>
@@ -511,17 +517,17 @@
                 <span class="n">kernel</span><span class="p">[</span><span class="n">imgtype</span><span class="p">]</span> <span class="o">=</span> <span class="n">DataHolder</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">kdir</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;kernels=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">kernels</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">kernels</span>
+    <span class="k">return</span> <span class="n">kernels</span></div>
 
-<span class="c1"># udev whitelist: &#39;a-zA-Z0-9#+.:=@_-&#39; (see is_whitelisted in libudev-util.c)</span></div>
+<span class="c1"># udev whitelist: &#39;a-zA-Z0-9#+.:=@_-&#39; (see is_whitelisted in libudev-util.c)</span>
 <span class="n">udev_blacklist</span><span class="o">=</span><span class="s1">&#39; !&quot;$%&amp;</span><span class="se">\&#39;</span><span class="s1">()*,/;&lt;&gt;?[</span><span class="se">\\</span><span class="s1">]^`{|}~&#39;</span> <span class="c1"># ASCII printable, minus whitelist</span>
 <span class="n">udev_blacklist</span> <span class="o">+=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">chr</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">32</span><span class="p">))</span> <span class="c1"># ASCII non-printable</span>
 <div class="viewcode-block" id="udev_escape"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.udev_escape">[docs]</a><span class="k">def</span> <span class="nf">udev_escape</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
     <span class="n">out</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">label</span><span class="p">:</span>
         <span class="n">out</span> <span class="o">+=</span> <span class="n">ch</span> <span class="k">if</span> <span class="n">ch</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">udev_blacklist</span> <span class="k">else</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">x</span><span class="si">%02x</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">ord</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">out</span>
-</div>
+    <span class="k">return</span> <span class="n">out</span></div>
+
 <div class="viewcode-block" id="string_lower"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.string_lower">[docs]</a><span class="k">def</span> <span class="nf">string_lower</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Return a lowercase string.</span>
 
@@ -563,7 +569,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'25.11',
+            VERSION:'26.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.sysutils &mdash; Lorax 25.11 documentation</title>
+  <title>pylorax.sysutils &mdash; Lorax 26.2 documentation</title>
   
 
   
@@ -30,7 +30,10 @@
   
 
   
-    <link rel="top" title="Lorax 25.11 documentation" href="../../index.html"/>
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Lorax 26.2 documentation" href="../../index.html"/>
         <link rel="up" title="pylorax" href="../pylorax.html"/> 
 
   
@@ -59,7 +62,7 @@
             
             
               <div class="version">
-                25.11
+                26.2
               </div>
             
           
@@ -167,7 +170,7 @@
 <span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 
-<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="kn">import</span> <span class="n">runcmd</span>
+<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="k">import</span> <span class="n">runcmd</span>
 
 <div class="viewcode-block" id="joinpaths"><a class="viewcode-back" href="../../pylorax.html#pylorax.sysutils.joinpaths">[docs]</a><span class="k">def</span> <span class="nf">joinpaths</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
@@ -175,14 +178,14 @@
     <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;follow_symlinks&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">path</span>
+        <span class="k">return</span> <span class="n">path</span></div>
 
-</div>
+
 <div class="viewcode-block" id="touch"><a class="viewcode-back" href="../../pylorax.html#pylorax.sysutils.touch">[docs]</a><span class="k">def</span> <span class="nf">touch</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
     <span class="c1"># python closes the file when it goes out of scope</span>
-    <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
-</div>
+
 <div class="viewcode-block" id="replace"><a class="viewcode-back" href="../../pylorax.html#pylorax.sysutils.replace">[docs]</a><span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">find</span><span class="p">,</span> <span class="n">sub</span><span class="p">):</span>
     <span class="n">fin</span> <span class="o">=</span> <span class="n">fileinput</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">find</span><span class="p">)</span>
@@ -191,15 +194,15 @@
         <span class="n">line</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">sub</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
-    <span class="n">fin</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">fin</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-</div>
-<div class="viewcode-block" id="chown_"><a class="viewcode-back" href="../../pylorax.html#pylorax.sysutils.chown_">[docs]</a><span class="k">def</span> <span class="nf">chown_</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="chown_"><a class="viewcode-back" href="../../pylorax.html#pylorax.sysutils.chown_">[docs]</a><span class="k">def</span> <span class="nf">chown_</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="n">uid</span> <span class="o">=</span> <span class="n">gid</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
-    <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">uid</span> <span class="o">=</span> <span class="n">pwd</span><span class="o">.</span><span class="n">getpwnam</span><span class="p">(</span><span class="n">user</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">group</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">group</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">gid</span> <span class="o">=</span> <span class="n">grp</span><span class="o">.</span><span class="n">getgrnam</span><span class="p">(</span><span class="n">group</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
 
     <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
@@ -208,19 +211,19 @@
         <span class="k">if</span> <span class="n">recursive</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">nested</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
                 <span class="n">nested</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">nested</span><span class="p">)</span>
-                <span class="n">chown_</span><span class="p">(</span><span class="n">nested</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">recursive</span><span class="p">)</span>
+                <span class="n">chown_</span><span class="p">(</span><span class="n">nested</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">recursive</span><span class="p">)</span></div>
 
-</div>
-<div class="viewcode-block" id="chmod_"><a class="viewcode-back" href="../../pylorax.html#pylorax.sysutils.chmod_">[docs]</a><span class="k">def</span> <span class="nf">chmod_</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="chmod_"><a class="viewcode-back" href="../../pylorax.html#pylorax.sysutils.chmod_">[docs]</a><span class="k">def</span> <span class="nf">chmod_</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
         <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">recursive</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">nested</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
                 <span class="n">nested</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">nested</span><span class="p">)</span>
-                <span class="n">chmod_</span><span class="p">(</span><span class="n">nested</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">recursive</span><span class="p">)</span>
+                <span class="n">chmod_</span><span class="p">(</span><span class="n">nested</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">recursive</span><span class="p">)</span></div>
 
-</div>
+
 <span class="k">def</span> <span class="nf">cpfile</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">):</span>
     <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">dst</span><span class="p">):</span>
@@ -238,8 +241,8 @@
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">target</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-</div>
+        <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">target</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="linktree"><a class="viewcode-back" href="../../pylorax.html#pylorax.sysutils.linktree">[docs]</a><span class="k">def</span> <span class="nf">linktree</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">):</span>
     <span class="n">runcmd</span><span class="p">([</span><span class="s2">&quot;/bin/cp&quot;</span><span class="p">,</span> <span class="s2">&quot;-alx&quot;</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">])</span></div>
 </pre></div>
@@ -275,7 +278,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'25.11',
+            VERSION:'26.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

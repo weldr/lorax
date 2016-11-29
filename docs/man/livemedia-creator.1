@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LIVEMEDIA-CREATOR" "1" "March 18, 2016" "25.2" "Lorax"
+.TH "LIVEMEDIA-CREATOR" "1" "Nov 29, 2016" "26.2" "Lorax"
 .SH NAME
 livemedia-creator \- Live Media Creator Documentation
 .
@@ -249,7 +249,7 @@ System arch to build for. Used to select qemu\-system\-* command. Defaults to qe
 .B \-\-kernel\-args
 Additional argument to pass to the installation kernel
 .TP
-.B \-\-ovmf\-path=/usr/share/OVMF/
+.B \-\-ovmf\-path=/usr/share/edk2/ovmf/
 Path to OVMF firmware
 .TP
 .B \-\-virt\-uefi=False
@@ -654,6 +654,10 @@ The \fB\-\-make\-ostree\-live\fP command will produce the same result as \fB\-\-
 for installations of Atomic Host.  Example kickstart for such an installation
 using Atomic installer iso with local repo included in the image can be found
 in docs/rhel\-atomic\-pxe\-live.ks.
+.sp
+The PXE images can also be created with \fB\-\-no\-virt\fP by using the example
+kickstart in docs/fedora\-atomic\-pxe\-live\-novirt.ks. This also works inside the
+mock environment.
 .SH USING MOCK AND --NO-VIRT TO CREATE IMAGES
 .sp
 As of lorax version 22.2 you can use livemedia\-creator and anaconda version

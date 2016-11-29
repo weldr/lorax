@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LORAX" "1" "March 18, 2016" "25.2" "Lorax"
+.TH "LORAX" "1" "Nov 29, 2016" "26.2" "Lorax"
 .SH NAME
 lorax \- Lorax Documentation
 .
@@ -58,15 +58,15 @@ Create the Anaconda boot.iso
 usage: lorax [\-h] \-p PRODUCT \-v VERSION \-r RELEASE [\-s REPOSITORY]
              [\-\-repo REPOSITORY] [\-m REPOSITORY] [\-t VARIANT] [\-b URL]
              [\-\-isfinal] [\-c CONFIGFILE] [\-\-proxy HOST] [\-i PACKAGE]
-             [\-\-buildarch ARCH] [\-\-volid VOLID] [\-\-macboot] [\-\-nomacboot]
-             [\-\-noupgrade] [\-\-logfile LOGFILE] [\-\-tmp TMP]
+             [\-e PACKAGE] [\-\-buildarch ARCH] [\-\-volid VOLID] [\-\-macboot]
+             [\-\-nomacboot] [\-\-noupgrade] [\-\-logfile LOGFILE] [\-\-tmp TMP]
              [\-\-cachedir CACHEDIR] [\-\-workdir WORKDIR] [\-\-force]
              [\-\-add\-template ADD_TEMPLATES]
              [\-\-add\-template\-var ADD_TEMPLATE_VARS]
              [\-\-add\-arch\-template ADD_ARCH_TEMPLATES]
              [\-\-add\-arch\-template\-var ADD_ARCH_TEMPLATE_VARS] [\-\-noverify]
              [\-\-sharedir SHAREDIR] [\-\-enablerepo [repo]]
-             [\-\-disablerepo [repo]] [\-V]
+             [\-\-disablerepo [repo]] [\-\-rootfs\-size ROOTFS_SIZE] [\-V]
              OUTPUTDIR
 .ft P
 .fi
@@ -119,6 +119,9 @@ repo proxy url:port
 .TP
 .B \-i=[]\fP,\fB  \-\-installpkgs=[]
 package glob to install before runtime\-install.tmpl runs. (may be listed multiple times)
+.TP
+.B \-e=[]\fP,\fB  \-\-excludepkgs=[]
+package glob to remove before runtime\-install.tmpl runs. (may be listed multiple times)
 .TP
 .B \-\-buildarch
 build architecture
@@ -173,6 +176,9 @@ Names of repos to enable
 .TP
 .B \-\-disablerepo=[]
 Names of repos to disable
+.TP
+.B \-\-rootfs\-size=2
+Size of root filesystem in GiB. Defaults to 2.
 .TP
 .B \-V
 show program\(aqs version number and exit

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.mount &mdash; Lorax 25.11 documentation</title>
+  <title>pylorax.mount &mdash; Lorax 26.2 documentation</title>
   
 
   
@@ -30,7 +30,10 @@
   
 
   
-    <link rel="top" title="Lorax 25.11 documentation" href="../../index.html"/>
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Lorax 26.2 documentation" href="../../index.html"/>
         <link rel="up" title="pylorax" href="../pylorax.html"/> 
 
   
@@ -59,7 +62,7 @@
             
             
               <div class="version">
-                25.11
+                26.2
               </div>
             
           
@@ -158,8 +161,8 @@
 
 <span class="kn">import</span> <span class="nn">os</span>
 
-<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">mount</span><span class="p">,</span> <span class="n">umount</span>
-<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="kn">import</span> <span class="n">execWithCapture</span>
+<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="k">import</span> <span class="n">mount</span><span class="p">,</span> <span class="n">umount</span>
+<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="k">import</span> <span class="n">execWithCapture</span>
 
 <div class="viewcode-block" id="IsoMountpoint"><a class="viewcode-back" href="../../pylorax.html#pylorax.mount.IsoMountpoint">[docs]</a><span class="k">class</span> <span class="nc">IsoMountpoint</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -170,7 +173,7 @@
 
 <span class="sd">    stage2 can be either LiveOS/squashfs.img or images/install.img</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iso_path</span><span class="p">,</span> <span class="n">initrd_path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iso_path</span><span class="p">,</span> <span class="n">initrd_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Mount the iso</span>
 
@@ -184,7 +187,7 @@
 <span class="sd">        self.stage2 is set to True if there is a stage2 image.</span>
 <span class="sd">        self.repo is the path to the mounted iso if there is a /repodata dir.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">iso_path</span> <span class="o">=</span> <span class="n">iso_path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">initrd_path</span> <span class="o">=</span> <span class="n">initrd_path</span>
 
@@ -193,20 +196,26 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initrd_path</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="s2">&quot;/isolinux/vmlinuz&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">initrd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="s2">&quot;/isolinux/initrd.img&quot;</span>
+        <span class="n">kernel_list</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;/isolinux/vmlinuz&quot;</span><span class="p">,</span> <span class="s2">&quot;/isolinux/initrd.img&quot;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s2">&quot;/ppc/ppc64/vmlinuz&quot;</span><span class="p">,</span> <span class="s2">&quot;/ppc/ppc64/initrd.img&quot;</span><span class="p">)]</span>
 
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="s2">&quot;/repodata&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">repo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">repo</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">repo</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stage2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="s2">&quot;/LiveOS/squashfs.img&quot;</span><span class="p">)</span> <span class="ow">or</span> \
                       <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="s2">&quot;/images/install.img&quot;</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">initrd</span><span class="p">]:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
-                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Missing file on iso: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">initrd</span> <span class="ow">in</span> <span class="n">kernel_list</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="n">kernel</span><span class="p">)</span> <span class="ow">and</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="n">initrd</span><span class="p">)):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="n">kernel</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">initrd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="n">initrd</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Missing kernel and initrd file in iso, failed&quot;</span>
+                                <span class="s2">&quot; to search under: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kernel_list</span><span class="p">))</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">umount</span><span class="p">()</span>
             <span class="k">raise</span>
@@ -216,8 +225,8 @@
 <div class="viewcode-block" id="IsoMountpoint.umount"><a class="viewcode-back" href="../../pylorax.html#pylorax.mount.IsoMountpoint.umount">[docs]</a>    <span class="k">def</span> <span class="nf">umount</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Unmount the iso&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initrd_path</span><span class="p">:</span>
-            <span class="n">umount</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">)</span>
-</div>
+            <span class="n">umount</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="IsoMountpoint.get_iso_label"><a class="viewcode-back" href="../../pylorax.html#pylorax.mount.IsoMountpoint.get_iso_label">[docs]</a>    <span class="k">def</span> <span class="nf">get_iso_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the iso&#39;s label using isoinfo</span>
@@ -263,7 +272,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'25.11',
+            VERSION:'26.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
