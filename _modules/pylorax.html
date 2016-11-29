@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax &mdash; Lorax 25.6 documentation</title>
+  <title>pylorax &mdash; Lorax 26.2 documentation</title>
   
 
   
@@ -30,7 +30,10 @@
   
 
   
-    <link rel="top" title="Lorax 25.6 documentation" href="../index.html"/>
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Lorax 26.2 documentation" href="../index.html"/>
         <link rel="up" title="Module code" href="index.html"/> 
 
   
@@ -59,7 +62,7 @@
             
             
               <div class="version">
-                25.6
+                26.2
               </div>
             
           
@@ -166,22 +169,22 @@
 <span class="kn">import</span> <span class="nn">configparser</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">locale</span>
-<span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">CalledProcessError</span>
+<span class="kn">from</span> <span class="nn">subprocess</span> <span class="k">import</span> <span class="n">CalledProcessError</span>
 <span class="kn">import</span> <span class="nn">selinux</span>
-<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="k">import</span> <span class="n">glob</span>
 
-<span class="kn">from</span> <span class="nn">pylorax.base</span> <span class="kn">import</span> <span class="n">BaseLoraxClass</span><span class="p">,</span> <span class="n">DataHolder</span>
-<span class="kn">import</span> <span class="nn">pylorax.output</span> <span class="kn">as</span> <span class="nn">output</span>
+<span class="kn">from</span> <span class="nn">pylorax.base</span> <span class="k">import</span> <span class="n">BaseLoraxClass</span><span class="p">,</span> <span class="n">DataHolder</span>
+<span class="kn">import</span> <span class="nn">pylorax.output</span> <span class="k">as</span> <span class="nn">output</span>
 
 <span class="kn">import</span> <span class="nn">dnf</span>
 
-<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="kn">import</span> <span class="n">joinpaths</span><span class="p">,</span> <span class="n">remove</span><span class="p">,</span> <span class="n">linktree</span>
+<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span><span class="p">,</span> <span class="n">remove</span><span class="p">,</span> <span class="n">linktree</span>
 
-<span class="kn">from</span> <span class="nn">pylorax.treebuilder</span> <span class="kn">import</span> <span class="n">RuntimeBuilder</span><span class="p">,</span> <span class="n">TreeBuilder</span>
-<span class="kn">from</span> <span class="nn">pylorax.buildstamp</span> <span class="kn">import</span> <span class="n">BuildStamp</span>
-<span class="kn">from</span> <span class="nn">pylorax.treeinfo</span> <span class="kn">import</span> <span class="n">TreeInfo</span>
-<span class="kn">from</span> <span class="nn">pylorax.discinfo</span> <span class="kn">import</span> <span class="n">DiscInfo</span>
-<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="kn">import</span> <span class="n">runcmd</span><span class="p">,</span> <span class="n">runcmd_output</span>
+<span class="kn">from</span> <span class="nn">pylorax.treebuilder</span> <span class="k">import</span> <span class="n">RuntimeBuilder</span><span class="p">,</span> <span class="n">TreeBuilder</span>
+<span class="kn">from</span> <span class="nn">pylorax.buildstamp</span> <span class="k">import</span> <span class="n">BuildStamp</span>
+<span class="kn">from</span> <span class="nn">pylorax.treeinfo</span> <span class="k">import</span> <span class="n">TreeInfo</span>
+<span class="kn">from</span> <span class="nn">pylorax.discinfo</span> <span class="k">import</span> <span class="n">DiscInfo</span>
+<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="k">import</span> <span class="n">runcmd</span><span class="p">,</span> <span class="n">runcmd_output</span>
 
 <span class="c1"># List of drivers to remove on ppc64 arch to keep initrd &lt; 32MiB</span>
 <span class="n">REMOVE_PPC64_DRIVERS</span> <span class="o">=</span> <span class="s2">&quot;floppy scsi_debug nouveau radeon cirrus mgag200&quot;</span>
@@ -198,21 +201,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">buildarch</span> <span class="o">=</span> <span class="n">buildarch</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">basearch</span> <span class="o">=</span> <span class="n">dnf</span><span class="o">.</span><span class="n">rpm</span><span class="o">.</span><span class="n">basearch</span><span class="p">(</span><span class="n">buildarch</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">libdir</span> <span class="o">=</span> <span class="s2">&quot;lib64&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basearch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib64_arches</span> <span class="k">else</span> <span class="s2">&quot;lib&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bcj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bcj_arch</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basearch</span><span class="p">)</span>
-</div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bcj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bcj_arch</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basearch</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="Lorax"><a class="viewcode-back" href="../pylorax.html#pylorax.Lorax">[docs]</a><span class="k">class</span> <span class="nc">Lorax</span><span class="p">(</span><span class="n">BaseLoraxClass</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">BaseLoraxClass</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_configured</span> <span class="o">=</span> <span class="bp">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">product</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">workdir</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">arch</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">conf</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">inroot</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="bp">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_templatedir</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_configured</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">product</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">workdir</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arch</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conf</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inroot</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputdir</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_templatedir</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># set locale to C</span>
         <span class="n">locale</span><span class="o">.</span><span class="n">setlocale</span><span class="p">(</span><span class="n">locale</span><span class="o">.</span><span class="n">LC_ALL</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">)</span>
@@ -250,7 +253,7 @@
         <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">isatty</span><span class="p">():</span>
             <span class="n">colors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s2">&quot;output&quot;</span><span class="p">,</span> <span class="s2">&quot;colors&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">colors</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="n">colors</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">encoding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;output&quot;</span><span class="p">,</span> <span class="s2">&quot;encoding&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">basic_config</span><span class="p">(</span><span class="n">output_level</span><span class="o">=</span><span class="n">output_level</span><span class="p">,</span>
@@ -266,16 +269,16 @@
 
         <span class="c1"># cron does not have sbin in PATH,</span>
         <span class="c1"># so we have to add it ourselves</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PATH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;{0}:/sbin:/usr/sbin&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PATH&quot;</span><span class="p">])</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PATH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">:/sbin:/usr/sbin&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PATH&quot;</span><span class="p">])</span>
 
         <span class="c1"># remove some environmental variables that can cause problems with package scripts</span>
         <span class="n">env_remove</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;DISPLAY&#39;</span><span class="p">,</span> <span class="s1">&#39;DBUS_SESSION_BUS_ADDRESS&#39;</span><span class="p">)</span>
         <span class="nb">list</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">env_remove</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_configured</span> <span class="o">=</span> <span class="bp">True</span>
-</div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_configured</span> <span class="o">=</span> <span class="kc">True</span></div>
+
     <span class="nd">@property</span>
-<div class="viewcode-block" id="Lorax.templatedir"><a class="viewcode-back" href="../pylorax.html#pylorax.Lorax.templatedir">[docs]</a>    <span class="k">def</span> <span class="nf">templatedir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">templatedir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Find the template directory.</span>
 
 <span class="sd">        Pick the first directory under sharedir/templates.d/ if it exists.</span>
@@ -285,31 +288,32 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_templatedir</span> <span class="o">=</span> <span class="n">find_templates</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lorax&quot;</span><span class="p">,</span> <span class="s2">&quot;sharedir&quot;</span><span class="p">))</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using templatedir </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_templatedir</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_templatedir</span>
-</div>
+
 <div class="viewcode-block" id="Lorax.init_stream_logging"><a class="viewcode-back" href="../pylorax.html#pylorax.Lorax.init_stream_logging">[docs]</a>    <span class="k">def</span> <span class="nf">init_stream_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">sh</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
         <span class="n">sh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span>
-</div>
+        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="Lorax.init_file_logging"><a class="viewcode-back" href="../pylorax.html#pylorax.Lorax.init_file_logging">[docs]</a>    <span class="k">def</span> <span class="nf">init_file_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logdir</span><span class="p">,</span> <span class="n">logname</span><span class="o">=</span><span class="s2">&quot;pylorax.log&quot;</span><span class="p">):</span>
         <span class="n">fh</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">logdir</span><span class="p">,</span> <span class="n">logname</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
         <span class="n">fh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span>
-</div>
+        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="Lorax.run"><a class="viewcode-back" href="../pylorax.html#pylorax.Lorax.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbo</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">release</span><span class="p">,</span> <span class="n">variant</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">bugurl</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="n">isfinal</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">workdir</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">buildarch</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">volid</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-            <span class="n">domacboot</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">doupgrade</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">remove_temp</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
-            <span class="n">installpkgs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+            <span class="n">isfinal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">workdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outputdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">buildarch</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">volid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">domacboot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">doupgrade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">remove_temp</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">installpkgs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">excludepkgs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-            <span class="n">add_templates</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-            <span class="n">add_template_vars</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-            <span class="n">add_arch_templates</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-            <span class="n">add_arch_template_vars</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-            <span class="n">verify</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+            <span class="n">add_templates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">add_template_vars</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">add_arch_templates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">add_arch_template_vars</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">verify</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_configured</span>
 
         <span class="n">installpkgs</span> <span class="o">=</span> <span class="n">installpkgs</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="n">excludepkgs</span> <span class="o">=</span> <span class="n">excludepkgs</span> <span class="ow">or</span> <span class="p">[]</span>
 
         <span class="c1"># get lorax version</span>
         <span class="k">try</span><span class="p">:</span>
@@ -404,6 +408,7 @@
         <span class="n">rb</span> <span class="o">=</span> <span class="n">RuntimeBuilder</span><span class="p">(</span><span class="n">product</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arch</span><span class="p">,</span>
                             <span class="n">dbo</span><span class="o">=</span><span class="n">dbo</span><span class="p">,</span> <span class="n">templatedir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">templatedir</span><span class="p">,</span>
                             <span class="n">installpkgs</span><span class="o">=</span><span class="n">installpkgs</span><span class="p">,</span>
+                            <span class="n">excludepkgs</span><span class="o">=</span><span class="n">excludepkgs</span><span class="p">,</span>
                             <span class="n">add_templates</span><span class="o">=</span><span class="n">add_templates</span><span class="p">,</span>
                             <span class="n">add_template_vars</span><span class="o">=</span><span class="n">add_template_vars</span><span class="p">)</span>
 
@@ -497,12 +502,12 @@
 
         <span class="c1"># cleanup</span>
         <span class="k">if</span> <span class="n">remove_temp</span><span class="p">:</span>
-            <span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workdir</span><span class="p">)</span>
+            <span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workdir</span><span class="p">)</span></div></div>
 
-</div></div>
+
 <div class="viewcode-block" id="get_buildarch"><a class="viewcode-back" href="../pylorax.html#pylorax.get_buildarch">[docs]</a><span class="k">def</span> <span class="nf">get_buildarch</span><span class="p">(</span><span class="n">dbo</span><span class="p">):</span>
     <span class="c1"># get architecture of the available anaconda package</span>
-    <span class="n">buildarch</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">buildarch</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">q</span> <span class="o">=</span> <span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">available</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">anaconda</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;anaconda&quot;</span><span class="p">):</span>
@@ -513,9 +518,9 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;no anaconda package in the repository&quot;</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">buildarch</span>
+    <span class="k">return</span> <span class="n">buildarch</span></div>
 
-</div>
+
 <div class="viewcode-block" id="setup_logging"><a class="viewcode-back" href="../pylorax.html#pylorax.setup_logging">[docs]</a><span class="k">def</span> <span class="nf">setup_logging</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="n">theLogger</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Setup the various logs</span>
@@ -551,9 +556,9 @@
     <span class="n">f</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">logfile</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;/program.log&quot;</span>
     <span class="n">fh</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
     <span class="n">fh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
-    <span class="n">program_log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span>
+    <span class="n">program_log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span></div>
 
-</div>
+
 <div class="viewcode-block" id="find_templates"><a class="viewcode-back" href="../pylorax.html#pylorax.find_templates">[docs]</a><span class="k">def</span> <span class="nf">find_templates</span><span class="p">(</span><span class="n">templatedir</span><span class="o">=</span><span class="s2">&quot;/usr/share/lorax&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Find the templates to use.</span>
 
@@ -605,7 +610,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'25.6',
+            VERSION:'26.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
