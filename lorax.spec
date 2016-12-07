@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        26.2
+Version:        26.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -152,6 +152,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Tue Dec 06 2016 Brian C. Lane <bcl@redhat.com> 26.3-1
+- New lorax documentation - 26.2 (bcl@redhat.com)
+- runtime-postinstall: PYTHONDIR is no longer used. (bcl@redhat.com)
+- Only require edk2-ovmf on supported arches. (bcl@redhat.com)
+
 * Tue Nov 22 2016 Brian C. Lane <bcl@redhat.com> 26.2-1
 - add exception for lulzbot-marlin-firmware (pbrobinson@gmail.com)
 - drop kexec arch conditional for aarch64 (pbrobinson@gmail.com)
