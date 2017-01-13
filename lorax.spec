@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        26.3
+Version:        26.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -152,6 +152,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Fri Jan 13 2017 Brian C. Lane <bcl@redhat.com> 26.4-1
+- Only cleanup libhistory from readline (dennis@ausil.us)
+- Do not install rsh to anaconda chroot (gitDeveloper@bitthinker.com)
+- Fixed NameError on result_dir when calling with --image-only (yturgema@redhat.com)
+
 * Tue Dec 06 2016 Brian C. Lane <bcl@redhat.com> 26.3-1
 - New lorax documentation - 26.2 (bcl@redhat.com)
 - runtime-postinstall: PYTHONDIR is no longer used. (bcl@redhat.com)
