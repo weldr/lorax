@@ -97,7 +97,7 @@ class LoraxRpmCallback(dnf.callback.TransactionProgress):
                 return
             self._last_ts = ts_done
 
-            msg = '(%d/%d) %s.%s' % (ts_done, ts_total, package.name, package.arch)
+            msg = '(%d/%d) %s' % (ts_done, ts_total, package)
             logger.info(msg)
         elif action == self.TRANS_POST:
             msg = "Performing post-installation setup tasks"
