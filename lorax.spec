@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        25.17
+Version:        25.18
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -148,6 +148,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Mon Feb 06 2017 Brian C. Lane <bcl@redhat.com> 25.18-1
+- Print the full NEVRA when installing packages. (bcl@redhat.com)
+- Only cleanup libhistory from readline (dennis@ausil.us)
+
 * Mon Oct 17 2016 Brian C. Lane <bcl@redhat.com> 25.17-1
 - Add missing fonts (#1370118) (vponcova@redhat.com)
 - drop ssh server key generation for s390(x) (#1383641) (dan@danny.cz)
