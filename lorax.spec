@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        26.4
+Version:        26.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -152,6 +152,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Mon Feb 06 2017 Brian C. Lane <bcl@redhat.com> 26.5-1
+- Print the full NEVRA when installing packages. (bcl@redhat.com)
+
 * Fri Jan 13 2017 Brian C. Lane <bcl@redhat.com> 26.4-1
 - Only cleanup libhistory from readline (dennis@ausil.us)
 - Do not install rsh to anaconda chroot (gitDeveloper@bitthinker.com)
