@@ -118,6 +118,9 @@ remove etc/lvm/lvm.conf
 append etc/lvm/lvm.conf "global {\n\tuse_lvmetad = 1\n}\n"
 
 ## Record the package versions used to create the image
-runcmd chroot ${root} /bin/rpm -qa --pipe "tee /root/lorax-packages.log"
+## rpm initializes nss, which requires /dev/urandom to be present, hence the mknod
+runcmd chroot ${root} /usr/bin/mknod -m 666 /dev/random c 1 8
+runcmd chroot ${root} /usr/bin/mknod -m 666 /dev/urandom c 1 9
+runcmd chroot ${root} /usr/bin/rpm -qa --pipe "tee /root/lorax-packages.log"
 
 ## TODO: we could run prelink here if we wanted?
