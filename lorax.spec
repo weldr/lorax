@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        25.18
+Version:        25.19
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -148,6 +148,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Wed Feb 22 2017 Brian C. Lane <bcl@redhat.com> 25.19-1
+- Create /dev/random and /dev/urandom before running rpm -qa (#1420523)
+  (bcl@redhat.com)
+
 * Mon Feb 06 2017 Brian C. Lane <bcl@redhat.com> 25.18-1
 - Print the full NEVRA when installing packages. (bcl@redhat.com)
 - Only cleanup libhistory from readline (dennis@ausil.us)
