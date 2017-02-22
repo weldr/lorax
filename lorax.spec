@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        24.21
+Version:        24.22
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -148,6 +148,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Wed Feb 22 2017 Brian C. Lane <bcl@redhat.com> 24.22-1
+- templates: Enusre basic.target.wants dir exists for rngd (walters@verbum.org)
+- Create /dev/random and /dev/urandom before running rpm -qa (#1420523) (bcl@redhat.com)
+
 * Mon Sep 26 2016 Brian C. Lane <bcl@redhat.com> 24.21-1
 - Add ppc64le kernel path (mkumatag@in.ibm.com)
 
