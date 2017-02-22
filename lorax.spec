@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.79
+Version:        19.6.80
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Feb 22 2017 Brian C. Lane <bcl@redhat.com> 19.6.80-1
+- Add dependency for lvmdump -l command (jkonecny)
+  Related: rhbz#1255659
+
 * Fri Feb 17 2017 Brian C. Lane <bcl@redhat.com> 19.6.79-1
 - templates: Enusre basic.target.wants dir exists for rngd (walters)
   Resolves: rhbz#1377430
