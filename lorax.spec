@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.80
+Version:        19.6.81
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Thu Mar 02 2017 Brian C. Lane <bcl@redhat.com> 19.6.81-1
+- Keep fsfreeze in install environment (rmarshall)
+  Related: rhbz#1315468
+- Fix duplicate kernel messages in /tmp/syslog (rvykydal)
+  Resolves: rhbz#1382611
+
 * Wed Feb 22 2017 Brian C. Lane <bcl@redhat.com> 19.6.80-1
 - Add dependency for lvmdump -l command (jkonecny)
   Related: rhbz#1255659
