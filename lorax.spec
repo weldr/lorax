@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        26.6
+Version:        26.7
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -152,6 +152,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Mon Mar 06 2017 Brian C. Lane <bcl@redhat.com> 26.7-1
+- add ostree to get installed in anaconda environment (dusty@dustymabe.com)
+- Add dependency for lvmdump -l command (#1255659) (jkonecny@redhat.com)
+
 * Tue Feb 21 2017 Brian C. Lane <bcl@redhat.com> 26.6-1
 - Create /dev/random and /dev/urandom before running rpm -qa (#1420523) (bcl@redhat.com)
 - Fix duplicate kernel messages in /tmp/syslog (#1382611) (rvykydal@redhat.com)
