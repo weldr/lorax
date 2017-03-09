@@ -52,7 +52,13 @@ treeinfo ${basearch} platforms ${platforms}
 <%
     import os
     if os.path.exists(workdir + "/iso-graft"):
-        imggraft += " " + workdir + "/iso-graft"
+        filegraft += " " + workdir + "/iso-graft"
 %>
+
+# Add the license files
+%for f in glob("/usr/share/licenses/*-release/*"):
+    install ${f} ${f|basename}
+    <% filegraft += " {0}={1}/{0}".format(basename(f), outroot) %>
+%endfor
 
 ## FIXME: ARM may need some extra boot config
