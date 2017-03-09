@@ -18,6 +18,8 @@ prepboot = ""
 ## Instead we'll just replace any non-ASCII characters in the isolabel
 ## with '_', which means we won't need any udev escapes.
 isolabel = ''.join(ch if ch.isalnum() else '_' for ch in isolabel)
+
+from os.path import basename
 %>
 
 ## Test ${runtime_img} to see if udf is needed
@@ -90,13 +92,19 @@ install ${configdir}/mapping ${BOOTDIR}
 %endfor
 
 # Create optional product.img and updates.img
-<% imggraft=""; images=["product", "updates"] %>
+<% filegraft=""; images=["product", "updates"] %>
 %for img in images:
     %if exists("%s/%s/" % (LORAXDIR, img)):
         installimg ${LORAXDIR}/${img}/ images/${img}.img
         treeinfo images-${basearch} ${img}.img images/${img}.img
-        <% imggraft += " images/{0}.img={1}/images/{0}.img".format(img, outroot) %>
+        <% filegraft += " images/{0}.img={1}/images/{0}.img".format(img, outroot) %>
     %endif
+%endfor
+
+# Add the license files
+%for f in glob("/usr/share/licenses/*-release/*"):
+    install ${f} ${f|basename}
+    <% filegraft += " {0}={1}/{0}".format(basename(f), outroot) %>
 %endfor
 
 ## make boot.iso
@@ -111,7 +119,7 @@ runcmd mkisofs -o ${outroot}/images/boot.iso -chrp-boot -U \
         ${BOOTDIR}=${outroot}/${BOOTDIR} \
         ${GRUBDIR}=${outroot}/${GRUBDIR} \
         ${NETBOOTDIR}=${outroot}/${NETBOOTDIR} \
-        ${LIVEDIR}=${outroot}/${LIVEDIR} ${imggraft}
+        ${LIVEDIR}=${outroot}/${LIVEDIR} ${filegraft}
 
 %for kernel in kernels:
     treeinfo images-${kernel.arch} boot.iso images/boot.iso
