@@ -21,6 +21,8 @@ isolabel = ''.join(ch if ch.isalnum() else '_' for ch in isolabel)
 
 ## Anaconda finds the CDROM device automatically
 rootarg = ""
+
+from os.path import basename
 %>
 
 ## Test ${runtime_img} to see if udf is needed
@@ -93,12 +95,12 @@ install ${configdir}/mapping ${BOOTDIR}
 %endfor
 
 # Create optional product.img and updates.img
-<% imggraft=""; images=["product", "updates"] %>
+<% filegraft=""; images=["product", "updates"] %>
 %for img in images:
     %if exists("%s/%s/" % (LORAXDIR, img)):
         installimg ${LORAXDIR}/${img}/ images/${img}.img
         treeinfo images-${basearch} ${img}.img images/${img}.img
-        <% imggraft += " images/{0}.img={1}/images/{0}.img".format(img, outroot) %>
+        <% filegraft += " images/{0}.img={1}/images/{0}.img".format(img, outroot) %>
     %endif
 %endfor
 
@@ -106,8 +108,14 @@ install ${configdir}/mapping ${BOOTDIR}
 <%
     import os
     if os.path.exists(workdir + "/iso-graft"):
-        imggraft += " " + workdir + "/iso-graft"
+        filegraft += " " + workdir + "/iso-graft"
 %>
+
+# Add the license files
+%for f in glob("/usr/share/licenses/*-release/*"):
+    install ${f} ${f|basename}
+    <% filegraft += " {0}={1}/{0}".format(basename(f), outroot) %>
+%endfor
 
 ## make boot.iso
 runcmd mkisofs -o ${outroot}/images/boot.iso -chrp-boot -U \
@@ -120,7 +128,7 @@ runcmd mkisofs -o ${outroot}/images/boot.iso -chrp-boot -U \
         ${BOOTDIR}=${outroot}/${BOOTDIR} \
         ${GRUBDIR}=${outroot}/${GRUBDIR} \
         ${NETBOOTDIR}=${outroot}/${NETBOOTDIR} \
-        ${STAGE2IMG}=${outroot}/${STAGE2IMG} ${imggraft}
+        ${STAGE2IMG}=${outroot}/${STAGE2IMG} ${filegraft}
 
 
 %for kernel in kernels:
