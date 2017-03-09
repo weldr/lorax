@@ -7,6 +7,8 @@ INITRD_ADDRESS="0x02000000"
 LORAXDIR="usr/share/lorax/"
 # The assumption seems to be that there is only one s390 kernel, ever
 kernel = kernels[0]
+
+from os.path import basename
 %>
 
 mkdir images
@@ -34,11 +36,17 @@ treeinfo images-${basearch} generic.prm ${BOOTDIR}/generic.prm
 treeinfo images-${basearch} generic.ins generic.ins
 
 # Create optional product.img and updates.img
-<% imggraft=""; images=["product", "updates"] %>
+<% filegraft=""; images=["product", "updates"] %>
 %for img in images:
     %if exists("%s/%s/" % (LORAXDIR, img)):
         installimg ${LORAXDIR}/${img}/ images/${img}.img
         treeinfo images-${basearch} ${img}.img images/${img}.img
-        <% imggraft += " images/{0}.img={1}/images/{0}.img".format(img, outroot) %>
+        <% filegraft += " images/{0}.img={1}/images/{0}.img".format(img, outroot) %>
     %endif
+%endfor
+
+# Add the license files
+%for f in glob("/usr/share/licenses/*-release/*"):
+    install ${f} ${f|basename}
+    <% filegraft += " {0}={1}/{0}".format(basename(f), outroot) %>
 %endfor
