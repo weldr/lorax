@@ -203,7 +203,8 @@ removefrom glibc /usr/libexec/* /usr/sbin/*
 removefrom glibc-common /etc/* /usr/bin/catchsegv /usr/bin/gencat
 removefrom glibc-common /usr/bin/getent
 removefrom glibc-common /usr/bin/locale /usr/bin/rpcgen /usr/bin/sprof
-removefrom glibc-common /usr/bin/tzselect /usr/bin/localedef
+# NB: we keep /usr/bin/localedef so anaconda can inspect payload locale info
+removefrom glibc-common /usr/bin/tzselect
 removefrom glibc-common /usr/libexec/* /usr/sbin/*
 removefrom gmp /usr/${libdir}/libgmpxx.* /usr/${libdir}/libmp.*
 removefrom gnome-bluetooth-libs /usr/${libdir}/libgnome-bluetooth*
