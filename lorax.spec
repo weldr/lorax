@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.81
+Version:        19.6.82
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Mar 17 2017 Brian C. Lane <bcl@redhat.com> 19.6.82-1
+- Add --noverifyssl to lorax (bcl)
+  Resolves: rhbz#1430483
+
 * Thu Mar 02 2017 Brian C. Lane <bcl@redhat.com> 19.6.81-1
 - Keep fsfreeze in install environment (rmarshall)
   Related: rhbz#1315468
