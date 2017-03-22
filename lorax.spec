@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.82
+Version:        19.6.83
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Mar 22 2017 Brian C. Lane <bcl@redhat.com> 19.6.83-1
+- Make 64-bit kernel on 32-bit firmware work for x86 efi machines (pjones)
+  Resolves: rhbz#1310775
+
 * Fri Mar 17 2017 Brian C. Lane <bcl@redhat.com> 19.6.82-1
 - Add --noverifyssl to lorax (bcl)
   Resolves: rhbz#1430483
