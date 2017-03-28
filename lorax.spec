@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.83
+Version:        19.6.84
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Mar 28 2017 Brian C. Lane <bcl@redhat.com> 19.6.84-1
+- runtime-cleanup.tmpl: don't delete localedef (jlebon)
+  Related: rhbz#1429576
+
 * Wed Mar 22 2017 Brian C. Lane <bcl@redhat.com> 19.6.83-1
 - Make 64-bit kernel on 32-bit firmware work for x86 efi machines (pjones)
   Resolves: rhbz#1310775
