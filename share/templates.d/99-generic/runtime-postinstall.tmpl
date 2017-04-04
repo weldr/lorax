@@ -116,6 +116,10 @@ remove etc/lvm/cache
 remove etc/lvm/lvm.conf
 append etc/lvm/lvm.conf "global {\n\tuse_lvmetad = 1\n}\n"
 
+# RPM with NSS requires /dev/urandom to be available
+mknod -m 444 /dev/random c 1 8
+mknod -m 444 /dev/urandom c 1 9
+
 ## Record the package versions used to create the image
 ## rpm initializes nss, which requires /dev/urandom to be present, hence the mknod
 runcmd chroot ${root} /usr/bin/mknod -m 666 /dev/random c 1 8
