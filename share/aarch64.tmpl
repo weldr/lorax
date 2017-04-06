@@ -35,7 +35,7 @@ mkdir ${KERNELDIR}
         efiargs += " -eltorito-alt-boot -e {0} -no-emul-boot".format(img)
         efigraft += " {0}={1}/{0}".format(img,outroot)
     %>
-    <%include file="efi.tmpl" args="configdir=configdir, KERNELDIR=KERNELDIR, efiarch64=efiarch, isolabel=isolabel"/>
+    <%include file="efi.tmpl" args="configdir=configdir, KERNELDIR=KERNELDIR, efiarch32=None, efiarch64=efiarch, isolabel=isolabel"/>
 
     # Create optional product.img and updates.img
     <% imggraft=""; images=["product", "updates"] %>
