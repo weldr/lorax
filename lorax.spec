@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.84
+Version:        19.6.85
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Apr 07 2017 Brian C. Lane <bcl@redhat.com> 19.6.85-1
+- Fix aarch64 efi.tmpl invocation (pjones)
+  Related: rhbz#1310775
+
 * Tue Mar 28 2017 Brian C. Lane <bcl@redhat.com> 19.6.84-1
 - runtime-cleanup.tmpl: don't delete localedef (jlebon)
   Related: rhbz#1429576
