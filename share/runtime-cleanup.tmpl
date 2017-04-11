@@ -94,7 +94,7 @@ removekmod sound drivers/media drivers/hwmon \
 ## Also keep virtio-rng so that the installer can get sufficient randomness for
 ## LUKS setup.
 removekmod drivers/char --allbut virtio_console hw_random \
-                                  virtio-rng ipmi
+                                  virtio-rng ipmi hmcdrv
 removekmod drivers/staging --allbut zram
 removekmod drivers/video --allbut hyperv_fb syscopyarea sysfillrect sysimgblt fb_sys_fops
 remove lib/modules/*/{build,source,*.map}
