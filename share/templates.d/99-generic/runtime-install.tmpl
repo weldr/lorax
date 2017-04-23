@@ -50,7 +50,7 @@ installpkg glibc-all-langpacks
     installpkg grub2 grub2-tools memtest86+ syslinux syslinux-nonlinux
 %endif
 %if basearch in ("ppc", "ppc64", "ppc64le"):
-    installpkg grub2 grub2-tools fbset hfsutils kernel-bootwrapper ppc64-utils
+    installpkg grub2 grub2-tools fbset hfsutils kernel-bootwrapper ppc64-utils ppc64-diag
 %endif
 %if basearch == "s390x":
     installpkg lsscsi s390utils-base s390utils-cmsfs-fuse
