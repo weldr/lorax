@@ -4,8 +4,8 @@ sshpw --username=root --plaintext randOmStrinGhERE
 # Firewall configuration
 firewall --enabled
 # Use network installation
-url --url=http://repo/rhel7.0/Server/os
-repo --name=optional --baseurl=http://repo/rhel7.0/Server/optional/os
+url --url=http://repo/rhel7.4/Server/os
+repo --name=optional --baseurl=http://repo/rhel7.4/Server/optional/os
 
 # Root password
 rootpw --plaintext removethispw

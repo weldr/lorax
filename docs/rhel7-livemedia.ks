@@ -3,8 +3,8 @@ sshpw --username=root --plaintext randOmStrinGhERE
 # Firewall configuration
 firewall --enabled --service=mdns
 # Use network installation
-url --url=http://repo/rhel7.0/Server/os
-repo --name=optional --baseurl=http://repo/rhel7.0/Server/optional/os
+url --url=http://repo/rhel7.4/Server/os
+repo --name=optional --baseurl=http://repo/rhel7.4/Server/optional/os
 
 # X Window System configuration information
 xconfig  --startxonboot
@@ -36,7 +36,7 @@ zerombr
 clearpart --all
 # Disk partitioning information
 part biosboot --size=1
-part / --fstype="ext4" --size=4000
+part / --fstype="ext4" --size=5000
 part swap --size=1000
 
 %post
