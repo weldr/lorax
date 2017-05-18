@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.86
+Version:        19.6.87
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Thu May 18 2017 Brian C. Lane <bcl@redhat.com> 19.6.87-1
+- Increase rootfs size for rhel7-livemedia.ks example (bcl)
+  Resolves: rhbz#1451760
 * Tue Apr 11 2017 Brian C. Lane <bcl@redhat.com> 19.6.86-1
 - lorax: Remove cairo-sphinx from the image (bcl)
   Resolves: rhbz#1355681
