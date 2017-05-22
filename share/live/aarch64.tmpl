@@ -1,0 +1,92 @@
+<%page args="kernels, runtime_img, basearch, inroot, outroot, product, isolabel"/>
+<%
+configdir="tmp/config_files/aarch64"
+PXEBOOTDIR="images/pxeboot"
+KERNELDIR=PXEBOOTDIR
+LIVEDIR="LiveOS"
+LORAXDIR="usr/share/lorax/"
+
+## Don't allow spaces or escape characters in the iso label
+def valid_label(ch):
+    return ch.isalnum() or ch == '_'
+
+isolabel = ''.join(ch if valid_label(ch) else '-' for ch in isolabel)
+
+from os.path import basename
+%>
+
+## Test ${runtime_img} to see if udf is needed
+<%
+    import os
+    from pylorax.sysutils import joinpaths
+    if os.stat(joinpaths(inroot, runtime_img)).st_size >= 4*1024**3:
+        udfargs = "-allow-limited-size"
+    else:
+        udfargs = ""
+%>
+
+mkdir ${LIVEDIR}
+install ${runtime_img} ${LIVEDIR}/squashfs.img
+treeinfo stage2 mainimage ${LIVEDIR}/squashfs.img
+
+## install kernels
+mkdir ${KERNELDIR}
+%for kernel in kernels:
+    ## normal aarch64
+    installkernel images-${basearch} ${kernel.path} ${KERNELDIR}/vmlinuz
+    installinitrd images-${basearch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
+%endfor
+
+#FIXME: this will need adjusted when we have a real bootloader.
+## WHeeeeeeee, EFI.
+## We could remove the basearch restriction someday..
+<% efiargs=""; efigraft="" %>
+%if exists("boot/efi/EFI/*/gcdaa64.efi"):
+    <%
+    efiarch = 'AA64'
+    efigraft="EFI/BOOT={0}/EFI/BOOT".format(outroot)
+    images = ["images/efiboot.img"]
+    %>
+    %for img in images:
+        <%
+        efiargs += " -eltorito-alt-boot -e {0} -no-emul-boot".format(img)
+        efigraft += " {0}={1}/{0}".format(img,outroot)
+        %>
+        treeinfo images-${basearch} ${img|basename} ${img}
+    %endfor
+    <%include file="efi.tmpl" args="configdir=configdir, KERNELDIR=KERNELDIR, efiarch=efiarch, isolabel=isolabel"/>
+%endif
+
+# Create optional product.img and updates.img
+<% filegraft=""; images=["product", "updates"] %>
+%for img in images:
+    %if exists("%s/%s/" % (LORAXDIR, img)):
+        installimg ${LORAXDIR}/${img}/ images/${img}.img
+        treeinfo images-${basearch} ${img}.img images/${img}.img
+        <% filegraft += " images/{0}.img={1}/images/{0}.img".format(img, outroot) %>
+    %endif
+%endfor
+
+# Inherit iso-graft/ if it exists from external templates
+<%
+    import os
+    if os.path.exists(workdir + "/iso-graft"):
+        filegraft += " " + workdir + "/iso-graft"
+%>
+
+# Add the license files
+%for f in glob("/usr/share/licenses/*-release/*"):
+    install ${f} ${f|basename}
+    <% filegraft += " {0}={1}/{0}".format(basename(f), outroot) %>
+%endfor
+
+%if exists("boot/efi/EFI/*/gcdaa64.efi"):
+## make boot.iso
+runcmd mkisofs -o ${outroot}/images/boot.iso \
+       ${efiargs} -R -J -V '${isolabel}' -T ${udfargs} \
+       -graft-points \
+       ${KERNELDIR}=${outroot}/${KERNELDIR} \
+       ${LIVEDIR}=${outroot}/${LIVEDIR} \
+       ${efigraft} ${filegraft}
+treeinfo images-${basearch} boot.iso images/boot.iso
+%endif
