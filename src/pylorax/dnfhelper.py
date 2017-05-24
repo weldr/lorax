@@ -80,7 +80,7 @@ class LoraxDownloadCallback(dnf.callback.DownloadProgress):
         self.downloads[nevra] = done
         self._update()
 
-    def start(self, total_files, total_size):
+    def start(self, total_files, total_size, total_drpms=0):
         self.total_files = total_files
         self.total_size = total_size
 
