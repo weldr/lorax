@@ -570,8 +570,21 @@ class LoraxTemplateRunner(object):
                 for exclude in excludes:
                     pkgnames = {pkgname for pkgname in pkgnames if not fnmatch.fnmatch(pkgname, exclude)}
 
+                # Sort the results so that we have consistent results
+                pkgnames = sorted(pkgnames)
+
+                # If the request is a glob, expand it in the log
+                if any(g for g in ['*','?','.'] if g in p):
+                    logger.info("installpkg: %s expands to %s", p, ",".join(pkgnames))
+
                 for pkgname in pkgnames:
-                    self.dbo.install(pkgname)
+                    try:
+                        self.dbo.install(pkgname)
+                    except Exception as e: # pylint: disable=broad-except
+                        if required:
+                            raise
+                        # Not required, log it and continue processing pkgs
+                        logger.error("installpkg %s failed: %s", pkgname, str(e))
             except Exception as e: # pylint: disable=broad-except
                 logger.error("installpkg %s failed: %s", p, str(e))
                 errors = True
