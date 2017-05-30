@@ -152,6 +152,18 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Tue May 30 2017 Brian C. Lane <bcl@redhat.com> 27.0-1
+- Bump version to 27.0 (bcl@redhat.com)
+- Try all packages when installpkg --optional is used. (bcl@redhat.com)
+- Add support for aarch64 live images (bcl@redhat.com)
+- pylint: Ignore different argument lengths for dnf callback. (bcl@redhat.com)
+- Adds additional callbacks keyword for start() (jmracek@redhat.com)
+- Add ppc64-diag for Power64 platforms (pbrobinson@gmail.com)
+- livemedia-creator: Add release license files to / of the iso (bcl@redhat.com)
+- lorax: Add release license files to / of the iso (bcl@redhat.com)
+- INSTALL_ROOT and LIVE_ROOT are not available during %%post (bcl@redhat.com)
+- Add --noverifyssl to lorax (#1430483) (bcl@redhat.com)
+
 * Mon Mar 06 2017 Brian C. Lane <bcl@redhat.com> 26.7-1
 - add ostree to get installed in anaconda environment (dusty@dustymabe.com)
 - Add dependency for lvmdump -l command (#1255659) (jkonecny@redhat.com)
