@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        26.7
+Version:        26.8
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -152,6 +152,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Tue May 30 2017 Brian C. Lane <bcl@redhat.com> 26.8-1
+- Try all packages when installpkg --optional is used. (#1440417)
+
 * Mon Mar 06 2017 Brian C. Lane <bcl@redhat.com> 26.7-1
 - add ostree to get installed in anaconda environment (dusty@dustymabe.com)
 - Add dependency for lvmdump -l command (#1255659) (jkonecny@redhat.com)
