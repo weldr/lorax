@@ -371,12 +371,12 @@ def get_buildarch(dbo):
     buildarch = None
     q = dbo.sack.query()
     a = q.available()
-    for anaconda in a.filter(name="anaconda"):
+    for anaconda in a.filter(name="anaconda-core"):
         if anaconda.arch != "src":
             buildarch = anaconda.arch
             break
     if not buildarch:
-        logger.critical("no anaconda package in the repository")
+        logger.critical("no anaconda-core package in the repository")
         sys.exit(1)
 
     return buildarch
