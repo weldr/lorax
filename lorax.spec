@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        25.20
+Version:        25.21
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -148,6 +148,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Wed May 31 2017 Brian C. Lane <bcl@redhat.com> 25.21-1
+- arm.tmpl import basename (#1457055) (bcl@redhat.com)
+
 * Tue May 30 2017 Brian C. Lane <bcl@redhat.com> 25.20-1
 - Try all packages when installpkg --optional is used. (bcl@redhat.com)
 - livemedia-creator: Add release license files to / of the iso (bcl@redhat.com)
