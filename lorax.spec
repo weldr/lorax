@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        27.0
+Version:        27.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -152,6 +152,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Wed May 31 2017 Brian C. Lane <bcl@redhat.com> 27.1-1
+- arm.tmpl import basename (#1457055) (bcl@redhat.com)
+
 * Tue May 30 2017 Brian C. Lane <bcl@redhat.com> 27.0-1
 - Bump version to 27.0 (bcl@redhat.com)
 - Try all packages when installpkg --optional is used. (bcl@redhat.com)
