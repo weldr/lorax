@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.88
+Version:        19.6.89
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed May 31 2017 Brian C. Lane <bcl@redhat.com> 19.6.89-1
+- Remove incorrect variables from rhel7-livemedia.ks example (bcl)
+  Resolves: rhbz#1430547
+
 * Tue May 30 2017 Brian C. Lane <bcl@redhat.com> 19.6.88-1
 - Add support for aarch64 live images (bcl)
   Resolves: rhbz#1369014
