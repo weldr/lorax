@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        25.21
+Version:        25.22
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -148,6 +148,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Thu Jun 01 2017 Brian C. Lane <bcl@redhat.com> 25.22-1
+- Remove filegraft from arm.tmpl (#1457906) (bcl@redhat.com)
+- Use anaconda-core to detect buildarch (sgallagh@redhat.com)
+
 * Wed May 31 2017 Brian C. Lane <bcl@redhat.com> 25.21-1
 - arm.tmpl import basename (#1457055) (bcl@redhat.com)
 
