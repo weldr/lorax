@@ -11,7 +11,7 @@ mkdir ${EFIBOOTDIR}/fonts/
 %if exists("usr/share/shim/lockdown.efi"):
 	install usr/share/shim/lockdown.efi ${EFIBOOTDIR}/
 %endif
-%if efiarch64
+%if efiarch64:
 install boot/efi/EFI/*/shim${efiarch64|lower}.efi ${EFIBOOTDIR}/BOOT${efiarch64}.EFI
 install boot/efi/EFI/*/mm${efiarch64|lower}.efi ${EFIBOOTDIR}/
 install boot/efi/EFI/*/gcd${efiarch64|lower}.efi ${EFIBOOTDIR}/grub${efiarch64|lower}.efi

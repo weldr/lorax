@@ -54,7 +54,7 @@ mkdir ${KERNELDIR}
         %>
         treeinfo images-${basearch} ${img|basename} ${img}
     %endfor
-    <%include file="efi.tmpl" args="configdir=configdir, KERNELDIR=KERNELDIR, efiarch=efiarch, isolabel=isolabel"/>
+    <%include file="efi.tmpl" args="configdir=configdir, KERNELDIR=KERNELDIR, efiarch32=None, efiarch64=efiarch, isolabel=isolabel"/>
 %endif
 
 # Create optional product.img and updates.img
