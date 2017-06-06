@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.89
+Version:        19.6.90
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Mon Jun 05 2017 Brian C. Lane <bcl@redhat.com> 19.6.90-1
+- Fix aarch64 efi.tmpl invocation for live images (bcl)
+  Related: rhbz#1310775
+
 * Wed May 31 2017 Brian C. Lane <bcl@redhat.com> 19.6.89-1
 - Remove incorrect variables from rhel7-livemedia.ks example (bcl)
   Resolves: rhbz#1430547
