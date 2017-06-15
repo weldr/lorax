@@ -145,6 +145,16 @@ You can also add an update repo, but don't name it updates. Add --proxy to
 it as well.
 
 
+UEFI Disk Image Creation
+------------------------
+When making a live iso the bootloader is added after Anaconda has run. As long as
+anaconda-tools and grub2-efi-*-cdboot are included in the kickstart the iso will
+be bootable on UEFI systems.
+
+To create a disk image, eg. using rhel7-minimal.ks, livemedia-creator needs to be
+run from a UEFI system or virt running UEFI firmware.
+
+
 ANACONDA IMAGE INSTALL
 ----------------------
 You can create images without using virt-install by passing --no-virt on the

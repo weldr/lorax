@@ -351,7 +351,10 @@ cat /dev/null > /etc/fstab
 %end
 
 %packages
-@anaconda-tools
+# Packages needed by anaconda, but not directly required.
+# Includes all of the grub2 and shim packages needed, except
+# for the grub2-efi-*-cdboot package
+@anaconda-tools --optional
 @core
 @fonts
 @x11
@@ -363,4 +366,7 @@ kernel
 memtest86+
 syslinux
 -dracut-config-rescue
+
+# This package is needed to boot the iso on UEFI
+grub2-efi-*-cdboot
 %end

@@ -47,9 +47,16 @@ rm /var/lib/systemd/random-seed
 @core
 kernel
 memtest86+
+efibootmgr
 grub2-efi
 grub2
 shim
 syslinux
 -dracut-config-rescue
+
+# Boot on 32bit UEFI
+shim-ia32
+
+# NOTE: To build a bootable UEFI disk image livemedia-creator needs to be
+#       run on a UEFI system or virt.
 %end
