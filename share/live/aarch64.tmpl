@@ -67,13 +67,6 @@ mkdir ${KERNELDIR}
     %endif
 %endfor
 
-# Inherit iso-graft/ if it exists from external templates
-<%
-    import os
-    if os.path.exists(workdir + "/iso-graft"):
-        filegraft += " " + workdir + "/iso-graft"
-%>
-
 # Add the license files
 %for f in glob("/usr/share/licenses/*-release/*"):
     install ${f} ${f|basename}
