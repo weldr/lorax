@@ -254,7 +254,11 @@ removefrom mtools /etc/*
 removefrom ncurses /usr/bin/captoinfo /usr/bin/infocmp /usr/bin/infotocap
 removefrom ncurses /usr/bin/reset /usr/bin/tabs /usr/bin/tic /usr/bin/toe
 removefrom ncurses /usr/bin/tput /usr/bin/tset
-removefrom ncurses-libs /usr/${libdir}/libform* /usr/${libdir}/libmenu*
+removefrom ncurses-libs /usr/${libdir}/libform*
+## libmenu.so is needed by lp_diag binary from ppc64-diag which is a PowerPc specific package
+%if basearch not in ("ppc", "ppc64", "ppc64le"):
+    removefrom ncurses-libs /usr/${libdir}/libmenu*
+%endif
 removefrom ncurses-libs /usr/${libdir}/libpanel.* /usr/${libdir}/libtic*
 removefrom net-tools */bin/netstat */sbin/ether-wake */sbin/ipmaddr
 removefrom net-tools */sbin/iptunnel */sbin/mii-diag */sbin/mii-tool
