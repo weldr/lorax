@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        27.2
+Version:        27.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -152,6 +152,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Tue Jun 20 2017 Brian C. Lane <bcl@redhat.com> 27.3-1
+- Don't remove libmenu.so library during cleanup on PowerPC (sinny@redhat.com)
+
 * Thu Jun 01 2017 Brian C. Lane <bcl@redhat.com> 27.2-1
 - Remove filegraft from arm.tmpl (#1457906) (bcl@redhat.com)
 - Use anaconda-core to detect buildarch (sgallagh@redhat.com)
