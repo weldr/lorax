@@ -1,0 +1,5 @@
+#!ipxe
+set base-url http://example.com/  # You must download the files referenced here and change this URL
+kernel <%text>${base-url}</%text>${kernel} root=live:<%text>${base-url}/</%text>${liveimg} ${addargs}
+initrd <%text>${base-url}</%text>${initrd}
+boot
