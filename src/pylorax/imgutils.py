@@ -125,10 +125,32 @@ def mkqcow2(outfile, size, options=None):
         options.extend(["-f", "qcow2"])
     runcmd(["qemu-img", "create"] + options + [outfile, str(size)])
 
+def loop_waitfor(loop_dev, outfile):
+    """Make sure the loop device is attached to the outfile.
+
+    It seems that on rare occasions losetup can return before the /dev/loopX is
+    ready for use, causing problems with mkfs. This tries to make sure that the
+    loop device really is associated with the backing file before continuing.
+
+    Raise RuntimeError if it isn't setup after 5 tries.
+    """
+    for x in xrange(0,5):
+        runcmd(["udevadm", "settle", "--timeout", "300"])
+        buf = runcmd_output(["losetup", "--list", "-O", "BACK-FILE", loop_dev])
+        lines = buf.splitlines()
+        if len(lines) < 2:
+            continue
+        if lines[1].strip() == outfile:
+            return
+    raise RuntimeError("Unable to setup %s on %s" % (loop_dev, outfile))
+
 def loop_attach(outfile):
     '''Attach a loop device to the given file. Return the loop device name.
     Raises CalledProcessError if losetup fails.'''
     dev = runcmd_output(["losetup", "--find", "--show", outfile])
+
+    # Sometimes the loop device isn't ready yet, make extra sure before returning
+    loop_waitfor(dev, outfile)
     return dev.strip()
 
 def loop_detach(loopdev):
