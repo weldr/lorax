@@ -24,6 +24,7 @@ import os, tempfile
 from os.path import join, dirname
 from subprocess import Popen, PIPE, CalledProcessError
 import sys
+import time
 import traceback
 import multiprocessing
 from time import sleep
@@ -148,10 +149,36 @@ def mkqemu_img(outfile, size, options=None):
         options.extend(["-f", "qcow2"])
     runcmd(["qemu-img", "create"] + options + [outfile, str(size)])
 
+def loop_waitfor(loop_dev, outfile):
+    """Make sure the loop device is attached to the outfile.
+
+    It seems that on rare occasions losetup can return before the /dev/loopX is
+    ready for use, causing problems with mkfs. This tries to make sure that the
+    loop device really is associated with the backing file before continuing.
+
+    Raise RuntimeError if it isn't setup after 5 tries.
+    """
+    for _x in range(0,5):
+        runcmd(["udevadm", "settle", "--timeout", "300"])
+        ## XXX Note that losetup --list output can be truncated to 64 bytes in some
+        ##     situations. Don't use it to lookup backing file, go the other way
+        ##     and lookup the loop for the backing file. See util-linux lib/loopdev.c
+        ##     loopcxt_get_backing_file()
+        if get_loop_name(outfile) == os.path.basename(loop_dev):
+            return
+
+        # If this really is a race, give it some time to settle down
+        time.sleep(1)
+
+    raise RuntimeError("Unable to setup %s on %s" % (loop_dev, outfile))
+
 def loop_attach(outfile):
     '''Attach a loop device to the given file. Return the loop device name.
     Raises CalledProcessError if losetup fails.'''
     dev = runcmd_output(["losetup", "--find", "--show", outfile])
+
+    # Sometimes the loop device isn't ready yet, make extra sure before returning
+    loop_waitfor(dev.strip(), outfile)
     return dev.strip()
 
 def loop_detach(loopdev):
