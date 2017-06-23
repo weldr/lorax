@@ -150,7 +150,7 @@ def loop_attach(outfile):
     dev = runcmd_output(["losetup", "--find", "--show", outfile])
 
     # Sometimes the loop device isn't ready yet, make extra sure before returning
-    loop_waitfor(dev, outfile)
+    loop_waitfor(dev.strip(), outfile)
     return dev.strip()
 
 def loop_detach(loopdev):
