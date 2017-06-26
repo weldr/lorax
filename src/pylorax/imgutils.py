@@ -24,6 +24,7 @@ import os, tempfile
 from os.path import join, dirname
 from subprocess import Popen, PIPE, CalledProcessError
 import sys
+import time
 import traceback
 import multiprocessing
 from time import sleep
@@ -136,12 +137,16 @@ def loop_waitfor(loop_dev, outfile):
     """
     for x in xrange(0,5):
         runcmd(["udevadm", "settle", "--timeout", "300"])
-        buf = runcmd_output(["losetup", "--list", "-O", "BACK-FILE", loop_dev])
-        lines = buf.splitlines()
-        if len(lines) < 2:
-            continue
-        if lines[1].strip() == outfile:
+        ## XXX Note that losetup --list output can be truncated to 64 bytes in some
+        ##     situations. Don't use it to lookup backing file, go the other way
+        ##     and lookup the loop for the backing file. See util-linux lib/loopdev.c
+        ##     loopcxt_get_backing_file()
+        if get_loop_name(outfile) == os.path.basename(loop_dev):
             return
+
+        # If this really is a race, give it some time to settle down
+        time.sleep(1)
+
     raise RuntimeError("Unable to setup %s on %s" % (loop_dev, outfile))
 
 def loop_attach(outfile):
