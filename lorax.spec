@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        26.8
+Version:        26.9
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -152,6 +152,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Mon Jul 10 2017 Brian C. Lane <bcl@redhat.com> 26.9-1
+- runtime-cleanup.tmpl: don't delete localedef (jlebon@redhat.com)
+
 * Tue May 30 2017 Brian C. Lane <bcl@redhat.com> 26.8-1
 - Try all packages when installpkg --optional is used. (#1440417)
 
