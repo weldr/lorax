@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        27.3
+Version:        27.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -152,6 +152,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Mon Jul 10 2017 Brian C. Lane <bcl@redhat.com> 27.4-1
+- runtime-cleanup.tmpl: don't delete localedef (jlebon@redhat.com)
+
 * Tue Jun 20 2017 Brian C. Lane <bcl@redhat.com> 27.3-1
 - Don't remove libmenu.so library during cleanup on PowerPC (sinny@redhat.com)
 
