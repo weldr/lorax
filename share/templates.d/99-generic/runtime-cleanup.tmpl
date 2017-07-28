@@ -5,11 +5,10 @@
 remove usr/share/i18n
 
 ## not required packages installed as dependencies
-## no perl besides s390x
+## perl is needed on s390x
 ## perl needed for powerpc-utils and fbset on PPC
-%if basearch not in ("ppc", "ppc64", "ppc64le", "s390x"):
-    removepkg perl*
-%endif
+## perl is needed by /usr/bin/rxe_cfg from libibverbs
+
 ## no sound support, thanks
 removepkg flac gstreamer-tools libsndfile pulseaudio* sound-theme-freedesktop
 ## we don't create new initramfs/bootloader conf inside anaconda
