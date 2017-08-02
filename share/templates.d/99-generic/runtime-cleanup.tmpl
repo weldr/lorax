@@ -346,7 +346,7 @@ runcmd chroot ${root} find -L /etc /usr -xdev -type l -and \! -name "mtab" \
 removefrom gstreamer1 --allbut /usr/${libdir}/libgstbase-1.0.* \
                                /usr/${libdir}/libgstreamer-1.0.*
 removefrom gstreamer1-plugins-base --allbut \
-        /usr/${libdir}/libgst{app,audio,fft,pbutils,tag,video}-1.0.*
+        /usr/${libdir}/libgst{allocators,app,audio,badallocators,fft,pbutils,tag,video}-1.0.*
 
 ## We have enough geoip libraries, thanks
 removepkg geoclue2
