@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        27.4
+Version:        27.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -152,6 +152,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Wed Aug 02 2017 Brian C. Lane <bcl@redhat.com> 27.5-1
+- runtime-cleanup: preserve a couple more gstreamer libs (awilliam@redhat.com)
+- perl is needed on all arches now (dennis@ausil.us)
+
 * Mon Jul 10 2017 Brian C. Lane <bcl@redhat.com> 27.4-1
 - runtime-cleanup.tmpl: don't delete localedef (jlebon@redhat.com)
 
