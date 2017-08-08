@@ -518,6 +518,11 @@ class LoraxTemplateRunner(object):
         for po in errs:
             logger.error("package '%s' was not installed", po)
 
+        # Write the manifest of installed files to /root/lorax-packages.log
+        with open(self._out("root/lorax-packages.log"), "w") as f:
+            for t in sorted(self.yum.tsInfo):
+                f.write("%s\n" % t.po)
+
         self.yum.closeRpmDB()
 
     def removefrom(self, pkg, *globs):
