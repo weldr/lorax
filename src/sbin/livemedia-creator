@@ -1368,7 +1368,7 @@ if __name__ == '__main__':
         log.info("Disk image is at {0}".format(disk_img))
     if opts.make_appliance:
         log.info("Appliance description is in {0}".format(opts.app_file))
-    log.info("Results are in {0}".format(opts.result_dir))
+    log.info("Results are in {0}".format(result_dir or opts.result_dir))
 
     sys.exit( 0 )
 
