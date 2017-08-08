@@ -42,6 +42,8 @@ import yum
 yum.logginglevels._added_handlers = True
 import pylorax
 
+VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), pylorax.vernum)
+
 def setup_logging(opts):
     # Setup logging to console and to logfile
     log.setLevel(logging.DEBUG)
@@ -77,14 +79,6 @@ def setup_logging(opts):
 
 
 def main(args):
-    # get lorax version
-    try:
-        from pylorax import version
-        vernum = version.num
-    except ImportError:
-        vernum = "devel"
-
-    version = "{0}-{1}".format(os.path.basename(args[0]), vernum)
     usage = "%prog -p PRODUCT -v VERSION -r RELEASE -s REPOSITORY OUTPUTDIR"
 
     parser = OptionParser(usage=usage)
@@ -161,13 +155,13 @@ def main(args):
 
     # add the show version option
     parser.add_option("-V", help="show program's version number and exit",
-            action="store_true", default=False, dest="showver")
+            action="store_true", dest="showver")
 
     # parse the arguments
     opts, args = parser.parse_args()
 
     if opts.showver:
-        print(version)
+        print(VERSION)
         sys.exit(0)
 
     try:
@@ -190,6 +184,7 @@ def main(args):
 
     setup_logging(opts)
 
+    log.info("Lorax %s", pylorax.vernum)
     tempfile.tempdir = opts.tmp
 
     # create the temporary directory for lorax

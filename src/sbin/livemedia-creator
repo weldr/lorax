@@ -48,7 +48,7 @@ from mako.template import Template
 from mako.exceptions import text_error_template
 
 # Use the Lorax treebuilder branch for iso creation
-from pylorax import ArchData
+from pylorax import ArchData, vernum
 from pylorax.base import DataHolder
 from pylorax.treebuilder import TreeBuilder, RuntimeBuilder, udev_escape
 from pylorax.treebuilder import findkernels
@@ -64,6 +64,8 @@ try:
     import libvirt
 except ImportError:
     libvirt = None
+
+VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
 
 # Default parameters for rebuilding initramfs, override with --dracut-args
 DRACUT_DEFAULT = ["--xz", "--add", "livenet dmsquash-live convertfs pollcdrom",
@@ -1136,10 +1138,16 @@ if __name__ == '__main__':
     parser.add_argument( "--squashfs_args",
                          help="additional squashfs args" )
 
+    # add the show version option
+    parser.add_argument("-V", help="show program's version number and exit",
+                        action="version", version=VERSION)
+
+    # parse the arguments
     opts = parser.parse_args()
 
     setup_logging(opts)
 
+    log.info("livemedia-creator %s", vernum)
     log.debug( opts )
 
     if os.getuid() != 0:
