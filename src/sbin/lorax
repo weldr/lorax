@@ -54,6 +54,8 @@ def main():
     parser = lorax_parser()
     opts = parser.parse_args()
 
+    log.info("Lorax v%s", pylorax.vernum)
+
     if not opts.source and not opts.repos:
         parser.error("--source, --repo, or both are required.")
 

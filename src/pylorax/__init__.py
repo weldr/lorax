@@ -49,6 +49,15 @@ from pylorax.treeinfo import TreeInfo
 from pylorax.discinfo import DiscInfo
 from pylorax.executils import runcmd, runcmd_output
 
+
+# get lorax version
+try:
+    import pylorax.version
+except ImportError:
+    vernum = "devel"
+else:
+    vernum = pylorax.version.num
+
 # List of drivers to remove on ppc64 arch to keep initrd < 32MiB
 REMOVE_PPC64_DRIVERS = "floppy scsi_debug nouveau radeon cirrus mgag200"
 REMOVE_PPC64_MODULES = "drm plymouth"
@@ -177,14 +186,6 @@ class Lorax(BaseLoraxClass):
 
         installpkgs = installpkgs or []
         excludepkgs = excludepkgs or []
-
-        # get lorax version
-        try:
-            import pylorax.version
-        except ImportError:
-            vernum = "devel"
-        else:
-            vernum = pylorax.version.num
 
         if domacboot:
             try:

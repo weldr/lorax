@@ -44,7 +44,7 @@ from mako.template import Template
 from mako.exceptions import text_error_template
 
 # Use the Lorax treebuilder branch for iso creation
-from pylorax import ArchData, setup_logging, find_templates
+from pylorax import ArchData, setup_logging, find_templates, vernum
 from pylorax.base import DataHolder
 from pylorax.treebuilder import TreeBuilder, RuntimeBuilder, udev_escape
 from pylorax.treebuilder import findkernels
@@ -1198,6 +1198,8 @@ def main():
     setup_logging(opts.logfile, log)
 
     log.debug( opts )
+
+    log.info("livemedia-creator v%s", vernum)
 
     # Find the lorax templates
     opts.lorax_templates = find_templates(opts.lorax_templates or "/usr/share/lorax")
