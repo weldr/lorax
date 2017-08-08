@@ -87,6 +87,15 @@ iso using GNOME, and the other to create a minimal disk image. When creating you
 own kickstarts you should start with the minimal example, it includes several
 needed packages that are not always included by dependencies.
 
+livemedia-creator parses the 'part /' entry to determine how big a disk image
+needs to be created. This means that the common kickstart technique of using
+%pre to generate a partition scheme for use with %include will not work. There
+needs to be a 'part /' entry in the main part of the kickstart.
+
+Only one kickstart file is supported, so if your kickstart is built from a
+number of %include commands it needs to be flattened into a single file with
+ksflatten first.
+
 Or you can use existing spin kickstarts to create live media with a few
 changes. Here are the steps I used to convert the Fedora XFCE spin.
 
