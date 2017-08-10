@@ -642,11 +642,13 @@ class LoraxTemplateRunner(object):
             logger.debug("systemctl: no units given for %s, ignoring", cmd)
             return
         self.mkdir("/run/systemd/system") # XXX workaround for systemctl bug
-        systemctl = ('systemctl', '--root', self.outroot, '--no-reload',
-                     '--quiet', cmd)
+        systemctl = ['systemctl', '--root', self.outroot, '--no-reload',
+                     cmd]
+        # When a unit doesn't exist systemd aborts the command. Run them one at a time.
         # XXX for some reason 'systemctl enable/disable' always returns 1
-        try:
-            cmd = systemctl + units
-            runcmd(cmd)
-        except CalledProcessError:
-            pass
+        for unit in units:
+            try:
+                cmd = systemctl + [unit]
+                runcmd(cmd)
+            except CalledProcessError:
+                pass

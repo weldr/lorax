@@ -43,6 +43,9 @@ systemctl mask rhel-configure.service rhel-loadmodules.service \
                rhel-wait-storage.service media.mount \
                systemd-tmpfiles-clean.service systemd-tmpfiles-clean.timer
 
+## remove because it cannot be disabled
+remove usr/lib/systemd/system-generators/lvm2-activation-generator
+
 ## Make logind activate anaconda-shell@.service on switch to empty VT
 symlink anaconda-shell@.service lib/systemd/system/autovt@.service
 replace "#ReserveVT=6" "ReserveVT=2" etc/systemd/logind.conf
