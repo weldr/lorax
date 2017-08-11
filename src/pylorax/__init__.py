@@ -49,6 +49,14 @@ from treeinfo import TreeInfo
 from discinfo import DiscInfo
 from executils import runcmd, runcmd_output
 
+# get lorax version
+try:
+    import pylorax.version
+except ImportError:
+    vernum = "devel"
+else:
+    vernum = pylorax.version.num
+
 # List of drivers to remove on ppc64 arch to keep initrd < 32MiB
 REMOVE_PPC64_DRIVERS = "floppy scsi_debug nouveau radeon cirrus mgag200"
 REMOVE_PPC64_MODULES = "drm plymouth"
@@ -154,14 +162,6 @@ class Lorax(BaseLoraxClass):
         assert self._configured
 
         installpkgs = installpkgs or []
-
-        # get lorax version
-        try:
-            import pylorax.version
-        except ImportError:
-            vernum = "devel"
-        else:
-            vernum = pylorax.version.num
 
         if domacboot:
             try:
@@ -311,7 +311,7 @@ class Lorax(BaseLoraxClass):
                                   workdir=self.workdir)
 
         logger.info("rebuilding initramfs images")
-        dracut_args = ["--xz", "--install", "/.buildstamp", "--no-early-microcode"]
+        dracut_args = ["--xz", "--install", "/.buildstamp", "--no-early-microcode", "--add", "fips"]
         anaconda_args = dracut_args + ["--add", "anaconda pollcdrom"]
 
         # ppc64 cannot boot an initrd > 32MiB so remove some drivers

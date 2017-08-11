@@ -17,6 +17,7 @@ treeinfo stage2 mainimage images/${runtime_base}
 install ${configdir}/redhat.exec ${BOOTDIR}
 install ${configdir}/generic.prm ${BOOTDIR}
 install ${configdir}/genericdvd.prm ${BOOTDIR}
+install ${configdir}/cdboot.prm ${BOOTDIR}
 install ${configdir}/generic.ins .
 
 ## configure bootloader
@@ -55,3 +56,18 @@ treeinfo images-${basearch} generic.ins generic.ins
     if os.path.exists(workdir + "/iso-graft"):
         imggraft += " " + workdir + "/iso-graft"
 %>
+
+## Make a combined kernel+initrd image for the iso
+runcmd mk-s390-cdboot -i ${outroot}/${KERNELDIR}/kernel.img \
+                      -r ${outroot}/${KERNELDIR}/initrd.img \
+                      -p ${outroot}/${BOOTDIR}/cdboot.prm \
+                      -o ${outroot}/${BOOTDIR}/cdboot.img
+
+## make boot.iso
+runcmd mkisofs -o ${outroot}/images/boot.iso \
+       -b ${BOOTDIR}/cdboot.img -c ${BOOTDIR}/boot.cat \
+       -boot-load-size 4 -boot-info-table -no-emul-boot \
+       -R -J -V '${isolabel}' -T -graft-points \
+       ${BOOTDIR}=${outroot}/${BOOTDIR} \
+       ${imggraft}
+treeinfo images-${basearch} boot.iso images/boot.iso

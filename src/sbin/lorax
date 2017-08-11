@@ -31,6 +31,7 @@ yum_log = logging.getLogger("yum")
 
 import sys
 import os
+import shutil
 import tempfile
 from optparse import OptionParser, OptionGroup
 import ConfigParser
@@ -40,6 +41,8 @@ import yum
 # handler setup.  We already set one up so we don't need it to run.
 yum.logginglevels._added_handlers = True
 import pylorax
+
+VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), pylorax.vernum)
 
 def setup_logging(opts):
     # Setup logging to console and to logfile
@@ -76,14 +79,6 @@ def setup_logging(opts):
 
 
 def main(args):
-    # get lorax version
-    try:
-        from pylorax import version
-        vernum = version.num
-    except ImportError:
-        vernum = "devel"
-
-    version = "{0}-{1}".format(os.path.basename(args[0]), vernum)
     usage = "%prog -p PRODUCT -v VERSION -r RELEASE -s REPOSITORY OUTPUTDIR"
 
     parser = OptionParser(usage=usage)
@@ -99,6 +94,9 @@ def main(args):
     required.add_option("-s", "--source",
             help="source repository (may be listed multiple times)",
             metavar="REPOSITORY", action="append", default=[])
+    required.add_option("--repo",
+            help="source yum repository file",
+            dest="repo_files", metavar="REPOSITORY", action="append", default=[])
 
     # optional arguments
     optional = OptionGroup(parser, "optional arguments")
@@ -157,13 +155,13 @@ def main(args):
 
     # add the show version option
     parser.add_option("-V", help="show program's version number and exit",
-            action="store_true", default=False, dest="showver")
+            action="store_true", dest="showver")
 
     # parse the arguments
     opts, args = parser.parse_args()
 
     if opts.showver:
-        print(version)
+        print(VERSION)
         sys.exit(0)
 
     try:
@@ -173,7 +171,7 @@ def main(args):
 
     # check for the required arguments
     if not opts.product or not opts.version or not opts.release \
-            or not opts.source or not outputdir:
+            or not (opts.source or opts.repo_files) or not outputdir:
         parser.error("missing one or more required arguments")
 
     if os.path.exists(outputdir):
@@ -186,6 +184,7 @@ def main(args):
 
     setup_logging(opts)
 
+    log.info("Lorax %s", pylorax.vernum)
     tempfile.tempdir = opts.tmp
 
     # create the temporary directory for lorax
@@ -198,6 +197,7 @@ def main(args):
     os.mkdir(yumtempdir)
 
     yb = get_yum_base_object(installtree, opts.source, opts.mirrorlist,
+                             opts.repo_files,
                              yumtempdir, opts.proxy, opts.excludepkgs,
                              not opts.noverifyssl)
 
@@ -235,7 +235,7 @@ def main(args):
               remove_temp=True)
 
 
-def get_yum_base_object(installroot, repositories, mirrorlists=[],
+def get_yum_base_object(installroot, repositories, mirrorlists=[], repo_files=[],
                         tempdir="/var/tmp", proxy=None, excludepkgs=[],
                         sslverify=True):
 
@@ -285,13 +285,15 @@ def get_yum_base_object(installroot, repositories, mirrorlists=[],
     map(lambda (key, value): c.set(section, key, value), data.items())
 
     # add the main repository - the first repository from list
-    section = "lorax-repo"
-    data = {"name": "lorax repo",
-            "baseurl": repositories[0],
-            "enabled": 1}
+    # This list may be empty if using --repo to load .repo files
+    if repositories:
+        section = "lorax-repo"
+        data = {"name": "lorax repo",
+                "baseurl": repositories[0],
+                "enabled": 1}
 
-    c.add_section(section)
-    map(lambda (key, value): c.set(section, key, value), data.items())
+        c.add_section(section)
+        map(lambda (key, value): c.set(section, key, value), data.items())
 
     # add the extra repositories
     for n, extra in enumerate(repositories[1:], start=1):
@@ -329,6 +331,11 @@ def get_yum_base_object(installroot, repositories, mirrorlists=[],
     yb.preconf.errorlevel = 6
     yb.logger.setLevel(logging.DEBUG)
     yb.verbose_logger.setLevel(logging.DEBUG)
+
+    # Add .repo files from the cmdline
+    for fn in repo_files:
+        if os.path.exists(fn):
+            yb.getReposFromConfigFile(fn)
 
     return yb
 

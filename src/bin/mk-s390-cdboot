@@ -1,0 +1,113 @@
+#!/usr/bin/python
+#
+# mk-s390-cdboot
+#
+# Copyright (C) 2017  Red Hat, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+from __future__ import print_function
+
+import argparse
+import os
+import shutil
+from struct import pack
+import sys
+
+
+INITRD_START        = 0x0000000000800000
+START_PSW_ADDRESS   = 0x80010000
+KERNEL_PSW_ADDRESS  = 0x04
+KERNEL_INITRD_START = 0x10408
+KERNEL_INITRD_SIZE  = 0x10410
+KERNEL_CMDLINE      = 0x10480
+# See https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/s390/include/uapi/asm/setup.h
+KERNEL_CMDLINE_SIZE = 896
+
+
+def setup_parser():
+    """ Setup the cmdline parser"""
+    parser = argparse.ArgumentParser(description="Create s390 boot image")
+    parser.add_argument("-i", dest="kernel", required=True, metavar="KERNEL",
+                        help="The kernel.img file")
+    parser.add_argument("-r", dest="ramdisk", required=True, metavar="RAMDISK",
+                        help="The initrd.img file")
+    parser.add_argument("-p", dest="parmfile", required=True, metavar="PARMFILE",
+                        help="The parm file")
+    parser.add_argument("-o", dest="outfile", required=True, metavar="OUTFILE",
+                        help="The output image file")
+    return parser
+
+
+def copy_kernel(kernel, outfile):
+    """ Copy the kernel to the outfile"""
+    shutil.copy2(kernel, outfile)
+
+
+def append_ramdisk(ramdisk, outfile):
+    """ Append the ramdisk to the kernel and return its size"""
+    with open(ramdisk, "rb") as ram_fd:
+        with open(outfile, "r+b") as out_fd:
+            out_fd.seek(INITRD_START)
+            out_fd.write(ram_fd.read())
+    return os.stat(ramdisk).st_size
+
+
+def configure_kernel(outfile, parmfile, size):
+    """ Configure the kernel with the ramdisk start address and size."""
+    with open(outfile, "r+b") as out_fd:
+        # Change the start PSW address
+        out_fd.seek(KERNEL_PSW_ADDRESS)
+        out_fd.write(pack(">L", START_PSW_ADDRESS))
+
+        # Write the initrd start and size
+        out_fd.seek(KERNEL_INITRD_START)
+        out_fd.write(pack(">Q", INITRD_START))
+        out_fd.seek(KERNEL_INITRD_SIZE)
+        out_fd.write(pack(">Q", size))
+
+        # Erase the previous COMMAND_LINE, write zeros
+        out_fd.seek(KERNEL_CMDLINE)
+        out_fd.write("\0" * KERNEL_CMDLINE_SIZE)
+
+        # Write the first line of the parmfile
+        cmdline = open(parmfile, "r").readline().strip()
+        out_fd.seek(KERNEL_CMDLINE)
+        out_fd.write(cmdline)
+
+
+def main():
+    parser = setup_parser()
+    args = parser.parse_args()
+
+    errors = []
+    for f in [args.kernel, args.ramdisk, args.parmfile]:
+        if not os.path.exists(f):
+            errors.append("ERROR: %s is missing" % f)
+    if errors:
+        map(print, errors)
+        sys.exit(1)
+
+    print("Creating bootable CD-ROM image...")
+    print("kernel is  : %s" % args.kernel)
+    print("ramdisk is : %s" % args.ramdisk)
+    print("parmfile is: %s" % args.parmfile)
+    print("outfile is : %s" % args.outfile)
+
+    copy_kernel(args.kernel, args.outfile)
+    size = append_ramdisk(args.ramdisk, args.outfile)
+    configure_kernel(args.outfile, args.parmfile, size)
+
+if __name__ == '__main__':
+    main()
