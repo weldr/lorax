@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.94
+Version:        19.6.95
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -99,6 +99,31 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Aug 11 2017 Brian C. Lane <bcl@redhat.com> 19.6.95-1
+- IsoMountpoint: Add ppc64le kernel to search (bcl)
+  Resolves: rhbz#1373358
+- livemedia-creator: Report correct results dir (bcl)
+  Resolves: rhbz#1374609
+- Add creation of a bootable s390 iso (bcl)
+  Resolves: rhbz#1478448
+- Add mk-s360-cdboot utility (bcl)
+  Related: rhbz#1478448
+- Fix systemctl command (bcl)
+  Resolves: rhbz#1478247
+- Add the version to the log (bcl)
+  Resolves: rhbz#1335456
+- Include the dracut fips module in the initrd (bcl)
+  Resolves: rhbz#1341280
+- Fix loop_wait (bcl)
+  Resolves: rhbz#1462150
+- Document kickstart restrictions on %include (bcl)
+  Resolves: rhbz#1418500
+- Add support for --repo to read yum .repo files directly (bcl)
+  Resolves: rhbz#1430479
+- Package grub2-efi-ia32 need to be added explicitly to example kickstarts.
+  (mhruscak)
+  Resolves: rhbz#1458937
+
 * Fri Jun 23 2017 Brian C. Lane <bcl@redhat.com> 19.6.94-1
 - Fix waiting for loop devices (bcl)
   Resolves: rhbz#1462150
