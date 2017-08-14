@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        27.5
+Version:        27.6
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -152,6 +152,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Mon Aug 14 2017 Brian C. Lane <bcl@redhat.com> 27.6-1
+- Add creation of a bootable s390 iso (#1478448) (bcl@redhat.com)
+- Add mk-s360-cdboot utility (#1478448) (bcl@redhat.com)
+- Fix systemctl command (#1478247) (bcl@redhat.com)
+- Add version output (#1335456) (bcl@redhat.com)
+- Include the dracut fips module in the initrd (#1341280) (bcl@redhat.com)
+- Make sure loop device is setup (#1462150) (bcl@redhat.com)
+
 * Wed Aug 02 2017 Brian C. Lane <bcl@redhat.com> 27.5-1
 - runtime-cleanup: preserve a couple more gstreamer libs (awilliam@redhat.com)
 - perl is needed on all arches now (dennis@ausil.us)
