@@ -47,6 +47,9 @@ systemctl mask fedora-configure.service fedora-loadmodules.service \
                systemd-tmpfiles-clean.service systemd-tmpfiles-clean.timer \
                ldconfig.service
 
+## remove because it cannot be disabled
+remove usr/lib/systemd/system-generators/lvm2-activation-generator
+
 ## Remove the more terrible parts of systemd-tmpfiles.
 ## etc.conf is written with the assumption that /etc/ is empty, which is
 ## ridiculous, and it also creates a broken /etc/resolv.conf, which breaks
