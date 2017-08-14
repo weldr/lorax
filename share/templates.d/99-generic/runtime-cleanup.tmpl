@@ -70,7 +70,7 @@ removepkg tigervnc-license ttmkfdir xml-common xorg-x11-font-utils
 removepkg xorg-x11-server-common yum-utils firewalld
 
 ## other removals
-remove /boot /home /media /opt /srv /tmp/*
+remove /home /media /opt /srv /tmp/*
 remove /usr/etc /usr/games /usr/local /usr/tmp
 remove /usr/share/doc /usr/share/info /usr/share/man /usr/share/gnome
 remove /usr/share/mime/application /usr/share/mime/audio /usr/share/mime/image
@@ -332,6 +332,11 @@ removefrom ${product.name}-logos /usr/share/{firstboot,gnome-screensaver,kde4,pi
 ## cleanup_python_files()
 runcmd find ${root} -name "*.pyo" -type f -delete
 runcmd find ${root} -name "*.pyc" -type f -exec ln -sf /dev/null {} \;
+
+## cleanup /boot/ leaving vmlinuz, and .*hmac files
+runcmd chroot ${root} find /boot \! -name "vmlinuz*" \
+                            -and \! -name ".vmlinuz*" \
+                            -and \! -name boot -delete
 
 ## remove any broken links in /etc or /usr
 ## (broken systemd service links lead to confusing noise at boot)
