@@ -92,6 +92,7 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_sbindir}/mkefiboot
 %{_sbindir}/livemedia-creator
 %{_bindir}/image-minimizer
+%{_bindir}/mk-s390-cdboot
 %dir %{_sysconfdir}/lorax
 %config(noreplace) %{_sysconfdir}/lorax/lorax.conf
 %dir %{_datadir}/lorax
