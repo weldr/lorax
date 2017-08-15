@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.95
+Version:        19.6.96
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -100,6 +100,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Aug 15 2017 Brian C. Lane <bcl@redhat.com> 19.6.96-1
+- Install mk-s390-cdboot to /usr/bin/ (bcl)
+  Related: rhbz#1478448
+
 * Fri Aug 11 2017 Brian C. Lane <bcl@redhat.com> 19.6.95-1
 - IsoMountpoint: Add ppc64le kernel to search (bcl)
   Resolves: rhbz#1373358
