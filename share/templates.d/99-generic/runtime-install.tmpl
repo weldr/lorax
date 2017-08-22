@@ -122,7 +122,10 @@ installpkg hdparm
 %if basearch not in ("aarch64", "ppc64le", "s390x"):
 installpkg pcmciautils
 %endif
-installpkg libmlx4 rdma
+## see bug #1483278
+%if basearch not in ("arm", "armhfp"):
+    installpkg libmlx4 rdma-core
+%endif
 installpkg rng-tools
 
 ## fonts & themes
