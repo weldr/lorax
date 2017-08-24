@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        27.6
+Version:        27.7
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -152,6 +152,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Thu Aug 24 2017 Brian C. Lane <bcl@redhat.com> 27.7-1
+- Make 64-bit kernel on 32-bit firmware work for x86 efi machines (pjones@redhat.com)
+- Don't install rdma bits on 32-bit ARM (#1483278) (awilliam@redhat.com)
+
 * Mon Aug 14 2017 Brian C. Lane <bcl@redhat.com> 27.6-1
 - Add creation of a bootable s390 iso (#1478448) (bcl@redhat.com)
 - Add mk-s360-cdboot utility (#1478448) (bcl@redhat.com)
