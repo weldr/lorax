@@ -45,12 +45,12 @@ installpkg glibc-all-langpacks
 %endif
 %if basearch == "x86_64":
     installpkg grub2-tools-efi
+    installpkg efibootmgr
     installpkg shim-x64 grub2-efi-x64-cdboot
+    installpkg shim-ia32 grub2-efi-ia32-cdboot
 %endif
 %if basearch in ("i386", "x86_64"):
     installpkg biosdevname memtest86+ syslinux
-    installpkg efibootmgr
-    installpkg shim-ia32 grub2-efi-ia32-cdboot
 %endif
 %if basearch in ("ppc", "ppc64", "ppc64le"):
     installpkg fbset hfsutils kernel-bootwrapper ppc64-utils ppc64-diag
