@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        27.7
+Version:        27.8
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -152,6 +152,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Thu Aug 24 2017 Brian C. Lane <bcl@redhat.com> 27.8-1
+- Fix grub2-efi-ia32-cdboot and shim-ia32 bits. (pjones@redhat.com)
+
 * Thu Aug 24 2017 Brian C. Lane <bcl@redhat.com> 27.7-1
 - Make 64-bit kernel on 32-bit firmware work for x86 efi machines (pjones@redhat.com)
 - Don't install rdma bits on 32-bit ARM (#1483278) (awilliam@redhat.com)
