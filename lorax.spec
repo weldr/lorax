@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        27.8
+Version:        27.9
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -152,6 +152,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Fri Aug 25 2017 Brian C. Lane <bcl@redhat.com> 27.9-1
+- x86.tmpl: initially define compressargs as empty string (awilliam@redhat.com)
+- x86.tmpl: ensure efiarch64 is defined (awilliam@redhat.com)
+
 * Thu Aug 24 2017 Brian C. Lane <bcl@redhat.com> 27.8-1
 - Fix grub2-efi-ia32-cdboot and shim-ia32 bits. (pjones@redhat.com)
 
