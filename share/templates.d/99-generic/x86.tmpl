@@ -97,7 +97,7 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
 %endif
 
 # Create optional product.img and updates.img
-<% filegraft=""; images=["product", "updates"]; compressargs=None; %>
+<% filegraft=""; images=["product", "updates"]; compressargs=""; %>
 %if basearch == 'i386':
     # Limit the amount of memory xz uses on i386
     <% compressargs="--xz -9 --memlimit-compress=3700MiB" %>
