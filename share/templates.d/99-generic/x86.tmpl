@@ -71,7 +71,7 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
 %endif
 
 ## WHeeeeeeee, EFI.
-<% efiargs=""; efigraft=""; efihybrid=""; efiarch32=None %>
+<% efiargs=""; efigraft=""; efihybrid=""; efiarch32=None; efiarch64=None %>
 %if exists("boot/efi/EFI/*/gcdia32.efi"):
     <% efiarch32 = 'IA32' %>
 %endif
