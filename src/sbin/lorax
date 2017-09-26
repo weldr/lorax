@@ -199,7 +199,7 @@ def main(args):
     yb = get_yum_base_object(installtree, opts.source, opts.mirrorlist,
                              opts.repo_files,
                              yumtempdir, opts.proxy, opts.excludepkgs,
-                             not opts.noverifyssl)
+                             not opts.noverifyssl, opts.release)
 
     if yb is None:
         print("error: unable to create the yumbase object", file=sys.stderr)
@@ -237,7 +237,7 @@ def main(args):
 
 def get_yum_base_object(installroot, repositories, mirrorlists=[], repo_files=[],
                         tempdir="/var/tmp", proxy=None, excludepkgs=[],
-                        sslverify=True):
+                        sslverify=True, releasever=None):
 
     def sanitize_repo(repo):
         """Convert bare paths to file:/// URIs, and silently reject protocols unhandled by yum"""
@@ -269,6 +269,7 @@ def get_yum_base_object(installroot, repositories, mirrorlists=[], repo_files=[]
             "keepcache": 0,
             "gpgcheck": 0,
             "plugins": 0,
+            "assumeyes": 1,
             "reposdir": "",
             "tsflags": "nodocs"}
 
@@ -325,6 +326,8 @@ def get_yum_base_object(installroot, repositories, mirrorlists=[], repo_files=[]
     yb.preconf.fn = yumconf
     yb.preconf.root = installroot
     #yb.repos.setCacheDir(cachedir)
+    if releasever:
+        yb.preconf.releasever = releasever
 
     # Turn on as much yum logging as we can
     yb.preconf.debuglevel = 6
