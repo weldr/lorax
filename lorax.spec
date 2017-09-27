@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        27.10
+Version:        27.11
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -153,6 +153,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Wed Sep 27 2017 Brian C. Lane <bcl@redhat.com> 27.11-1
+- s390 doesn't need to graft product.img and updates.img into /images (#1496461) (bcl@redhat.com)
+- distribute the mk-s390-cdboot utility (dan@danny.cz)
+- update graft variable in s390 template (dan@danny.cz)
+
 * Mon Sep 18 2017 Brian C. Lane <bcl@redhat.com> 27.10-1
 - Restore all of the grub2-tools on x86_64 and i386 (#1492197) (bcl@redhat.com)
 
