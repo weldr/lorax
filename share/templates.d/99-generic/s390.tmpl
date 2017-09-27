@@ -73,5 +73,5 @@ runcmd mkisofs -o ${outroot}/images/boot.iso \
        -boot-load-size 4 -boot-info-table -no-emul-boot \
        -R -J -V '${isolabel}' -T -graft-points \
        ${BOOTDIR}=${outroot}/${BOOTDIR} \
-       ${imggraft}
+       ${filegraft}
 treeinfo images-${basearch} boot.iso images/boot.iso
