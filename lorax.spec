@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.97
+Version:        19.6.98
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -100,6 +100,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Sep 27 2017 Brian C. Lane <bcl@redhat.com> 19.6.98-1
+- Write a list of installed packages to /root/lorax-packages.log (bcl)
+  Resolves: rhbz#1416155
+- Set the releasever and install gpg keys when using --repo (bcl)
+  Related: rhbz#1430479
+
 * Fri Aug 18 2017 Brian C. Lane <bcl@redhat.com> 19.6.97-1
 - Remove -boot-info-table from s390 boot.iso creation (bcl)
   Related: rhbz#1478448
