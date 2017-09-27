@@ -38,13 +38,12 @@ treeinfo images-${basearch} generic.prm ${BOOTDIR}/generic.prm
 treeinfo images-${basearch} genericdvd.prm ${BOOTDIR}/genericdvd.prm
 treeinfo images-${basearch} generic.ins generic.ins
 
-# Create optional product.img and updates.img
+# Create optional product.img and updates.img in /images/
 <% filegraft=""; images=["product", "updates"] %>
 %for img in images:
     %if exists("%s/%s/" % (LORAXDIR, img)):
         installimg ${LORAXDIR}/${img}/ images/${img}.img
         treeinfo images-${basearch} ${img}.img images/${img}.img
-        <% filegraft += " images/{0}.img={1}/images/{0}.img".format(img, outroot) %>
     %endif
 %endfor
 
