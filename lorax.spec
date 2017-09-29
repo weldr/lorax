@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.98
+Version:        19.6.99
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -100,6 +100,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Sep 29 2017 Brian C. Lane <bcl@redhat.com> 19.6.99-1
+- s390 doesn't need to graft product.img and updates.img into /images (bcl)
+  Related: rhbz#1478448
+
 * Wed Sep 27 2017 Brian C. Lane <bcl@redhat.com> 19.6.98-1
 - Write a list of installed packages to /root/lorax-packages.log (bcl)
   Resolves: rhbz#1416155
