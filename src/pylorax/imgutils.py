@@ -107,6 +107,22 @@ def mkrootfsimg(rootdir, outfile, label, size=2, sysroot=""):
             root = join(mnt, sysroot.lstrip("/"))
             runcmd(cmd, root=root)
 
+def mkdiskfsimage(diskimage, fsimage, label="Anaconda"):
+    """
+    Copy the / partition of a partitioned disk image to an un-partitioned
+    disk image.
+
+    diskimage is the full path to partitioned disk image with a /
+    fsimage is the full path of the output fs image file
+    label is the label to apply to the image. Defaults to "Anaconda"
+    """
+    with PartitionMount(diskimage) as img_mount:
+        if not img_mount or not img_mount.mount_dir:
+            return None
+
+        logger.info("Creating fsimage %s", fsimage)
+        mkext4img(img_mount.mount_dir, fsimage, label=label)
+
 ######## Utility functions ###############################################
 
 def mksparse(outfile, size):
