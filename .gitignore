@@ -1,2 +1,4 @@
 *.pyc
 src/pylorax/version.py*
+*.swp
+.pylint.d/
