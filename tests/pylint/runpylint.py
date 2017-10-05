@@ -8,10 +8,10 @@ class LoraxLintConfig(PocketLintConfig):
     def __init__(self):
         PocketLintConfig.__init__(self)
 
-        self.falsePositives = [ FalsePositive(r"No name 'version' in module 'pylorax'"),
-                                FalsePositive(r"Module 'pylorax' has no 'version' member"),
-                                FalsePositive(r"Instance of 'int' has no .* member"),
-                                FalsePositive(r"ImageMinimizer.remove_rpm.runCallback: Unused argument .*")
+        self.falsePositives = [ FalsePositive(r"Module 'pylorax' has no 'version' member"),
+                                # threading.Lock() is a factory function which returns an
+                                # instance of the Lock class that is supported by the platform
+                                FalsePositive(r"Context manager 'lock' doesn't implement __enter__ and __exit__"),
                               ]
 
     @property
