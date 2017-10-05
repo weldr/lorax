@@ -2,3 +2,8 @@
 src/pylorax/version.py*
 *.swp
 .pylint.d/
+_build/
+tests/pylint/.pylint.d/
+__pycache__/
+.coverage
+pylint-log
