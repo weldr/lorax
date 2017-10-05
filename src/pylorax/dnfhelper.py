@@ -66,14 +66,14 @@ class LoraxDownloadCallback(dnf.callback.DownloadProgress):
         }
         self.output.write(msg % vals)
 
-    def end(self, payload, status, err_msg):
+    def end(self, payload, status, msg):
         nevra = str(payload)
         if status is dnf.callback.STATUS_OK:
             self.downloads[nevra] = payload.download_size
             self.pkgno += 1
             self._update()
             return
-        logger.critical("Failed to download '%s': %d - %s", nevra, status, err_msg)
+        logger.critical("Failed to download '%s': %d - %s", nevra, status, msg)
 
     def progress(self, payload, done):
         nevra = str(payload)
@@ -105,5 +105,5 @@ class LoraxRpmCallback(dnf.callback.TransactionProgress):
             msg = "Performing post-installation setup tasks"
             logger.info(msg)
 
-    def error(self, err_msg):
-        logger.warning(err_msg)
+    def error(self, message):
+        logger.warning(message)
