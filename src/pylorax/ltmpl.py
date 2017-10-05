@@ -250,8 +250,8 @@ class LoraxTemplateRunner(object):
                 # log the "ErrorType: this is what happened" line
                 logger.error("  " + exclines[-1].strip())
                 # and log the entire traceback to the debug log
-                for line in ''.join(exclines).splitlines():
-                    logger.debug("  " + line)
+                for _line in ''.join(exclines).splitlines():
+                    logger.debug("  " + _line)
                 if self.fatalerrors:
                     raise
 
