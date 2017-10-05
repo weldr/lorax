@@ -25,6 +25,14 @@ check:
 	@echo "*** Running pylint ***"
 	PYTHONPATH=$(PYTHONPATH):./src/ ./tests/pylint/runpylint.py
 
+test:
+	@echo "*** Running tests ***"
+	PYTHONPATH=$(PYTHONPATH):./src/ $(PYTHON) -m nose -v --with-coverage --cover-erase --cover-branches \
+                        --cover-package=pylorax --cover-package=bin --cover-package=sbin --cover-inclusive
+	coverage3 report -m
+	[ -f "/usr/bin/coveralls" ] && [ -n "$(COVERALLS_REPO_TOKEN)" ] && coveralls || echo
+
+
 clean:
 	-rm -rf build src/pylorax/version.py
 
@@ -51,4 +59,4 @@ local:
 	@rm -rf /var/tmp/$(PKGNAME)-$(VERSION)
 	@echo "The archive is in $(PKGNAME)-$(VERSION).tar.gz"
 
-ci: check
+ci: check test
