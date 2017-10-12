@@ -40,7 +40,7 @@ import yum
 import pylorax.ltmpl as ltmpl
 
 import pylorax.imgutils as imgutils
-from pylorax.sysutils import *
+from pylorax.sysutils import joinpaths, linktree, remove
 from rpmUtils.arch import getBaseArch
 
 from pylorax.treebuilder import RuntimeBuilder, TreeBuilder
