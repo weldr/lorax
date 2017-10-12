@@ -175,7 +175,7 @@ class LoraxTemplateRunner(object):
     def run(self, templatefile, **variables):
         for k,v in self.defaults.items() + self.builtins.items():
             variables.setdefault(k,v)
-        logger.debug("executing {0} with variables={1}".format(templatefile, variables))
+        logger.debug("executing %s with variables=%s", templatefile, variables)
         self.templatefile = templatefile
         t = LoraxTemplate(directories=[self.templatedir])
         commands = t.parse(templatefile, variables)

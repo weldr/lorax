@@ -183,15 +183,15 @@ class Lorax(BaseLoraxClass):
         self.init_stream_logging()
         self.init_file_logging(logdir)
 
-        logger.debug("version is {0}".format(vernum))
-        logger.debug("using work directory {0.workdir}".format(self))
-        logger.debug("using log directory {0}".format(logdir))
+        logger.debug("version is %s", vernum)
+        logger.debug("using work directory %s", self.workdir)
+        logger.debug("using log directory %s", logdir)
 
         # set up output directory
         self.outputdir = outputdir or tempfile.mkdtemp(prefix="pylorax.out.")
         if not os.path.isdir(self.outputdir):
             os.makedirs(self.outputdir)
-        logger.debug("using output directory {0.outputdir}".format(self))
+        logger.debug("using output directory %s", self.outputdir)
 
         # do we have root privileges?
         logger.info("checking for root privileges")
@@ -221,7 +221,7 @@ class Lorax(BaseLoraxClass):
             logger.critical("no yum base object")
             sys.exit(1)
         self.inroot = ybo.conf.installroot
-        logger.debug("using install root: {0}".format(self.inroot))
+        logger.debug("using install root: %s", self.inroot)
 
         if not buildarch:
             buildarch = get_buildarch(ybo)
@@ -235,12 +235,12 @@ class Lorax(BaseLoraxClass):
         product = DataHolder(name=product, version=version, release=release,
                              variant=variant, bugurl=bugurl, isfinal=isfinal)
         self.product = product
-        logger.debug("product data: %s" % product)
+        logger.debug("product data: %s", product)
 
         # NOTE: if you change isolabel, you need to change pungi to match, or
         # the pungi images won't boot.
-        isolabel = volid or "{0.name} {0.version} {1.basearch}".format(self.product,
-                                                                       self.arch)
+        isolabel = volid or "%s %s %s" % (self.product.name, self.product.version,
+                                          self.arch.basearch)
 
         if len(isolabel) > 32:
             logger.fatal("the volume id cannot be longer than 32 characters")
