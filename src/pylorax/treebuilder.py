@@ -156,7 +156,9 @@ class RuntimeBuilder(object):
             runcmd(["depmod", "-a", "-F", ksyms, "-b", root, kver])
             generate_module_info(moddir+kver, outfile=moddir+"module-info")
 
-    def create_runtime(self, outfile="/var/tmp/squashfs.img", compression="xz", compressargs=[], size=2):
+    def create_runtime(self, outfile="/var/tmp/squashfs.img", compression="xz", compressargs=None, size=2):
+        if compressargs is None:
+            compressargs = []
         # make live rootfs image - must be named "LiveOS/rootfs.img" for dracut
         workdir = joinpaths(os.path.dirname(outfile), "runtime-workdir")
         os.makedirs(joinpaths(workdir, "LiveOS"))
@@ -192,13 +194,15 @@ class TreeBuilder(object):
     def kernels(self):
         return findkernels(root=self.vars.inroot)
 
-    def rebuild_initrds(self, add_args=[], backup="", prefix=""):
+    def rebuild_initrds(self, add_args=None, backup="", prefix=""):
         '''Rebuild all the initrds in the tree. If backup is specified, each
         initrd will be renamed with backup as a suffix before rebuilding.
         If backup is empty, the existing initrd files will be overwritten.
         If suffix is specified, the existing initrd is untouched and a new
         image is built with the filename "${prefix}-${kernel.version}.img"
         '''
+        if add_args is None:
+            add_args = []
         dracut = ["dracut", "--nomdadmconf", "--nolvmconf"] + add_args
         if not backup:
             dracut.append("--force")
