@@ -267,9 +267,6 @@ def execWithCapture(command, argv, stdin = None, stderr = None, root=None,
 def execWithCallback(command, argv, stdin = None, stdout = None,
                      stderr = None, echo = True, callback = None,
                      callback_data = None, root = '/'):
-    def chroot():
-        os.chroot(root)
-
     def closefds ():
         stdinclose()
         stdoutclose()

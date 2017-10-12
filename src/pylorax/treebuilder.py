@@ -53,10 +53,10 @@ def generate_module_info(moddir, outfile=None):
                'eth':read_module_set("modules.networking")}
 
     modinfo = list()
-    for root, dirs, files in os.walk(moddir):
+    for root, _dirs, files in os.walk(moddir):
         for modtype, modset in modsets.items():
             for mod in modset.intersection(files):  # modules in this dir
-                (name, ext) = os.path.splitext(mod) # foo.ko -> (foo, .ko)
+                (name, _ext) = os.path.splitext(mod) # foo.ko -> (foo, .ko)
                 desc = module_desc(joinpaths(root,mod)) or "%s driver" % name
                 modinfo.append(dict(name=name, type=modtype, desc=desc))
 
@@ -238,7 +238,7 @@ class TreeBuilder(object):
         self.implantisomd5()
 
     def implantisomd5(self):
-        for section, data in self.treeinfo_data.items():
+        for _section, data in self.treeinfo_data.items():
             if 'boot.iso' in data:
                 iso = joinpaths(self.vars.outroot, data['boot.iso'])
                 runcmd(["implantisomd5", iso])
@@ -296,7 +296,7 @@ def findkernels(root="/", kdir="boot"):
     for kernel in kernels:
         for f in bootfiles:
             if f.endswith('-'+kernel.version+'.img'):
-                imgtype, rest = f.split('-',1)
+                imgtype, _rest = f.split('-',1)
                 # special backwards-compat case
                 if imgtype == 'initramfs':
                     imgtype = 'initrd'
