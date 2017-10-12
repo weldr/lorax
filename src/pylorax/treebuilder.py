@@ -186,6 +186,7 @@ class TreeBuilder(object):
         self.add_templates = add_templates or []
         self.add_template_vars = add_template_vars or {}
         self.templatedir = templatedir
+        self.treeinfo_data = None
 
     @property
     def kernels(self):
