@@ -87,44 +87,44 @@ class LinuxTerminalOutput(object):
         if self._indent_level > 0:
             self._indent_level -= 1
 
-    def write(self, s, file=sys.stdout):
+    def write(self, s, fp=sys.stdout):
         if self._colors:
             s = self.__format(s)
         else:
             s = self.__raw(s)
 
-        file.write(s)
-        file.flush()
+        fp.write(s)
+        fp.flush()
 
-    def writeline(self, s, file=sys.stdout):
+    def writeline(self, s, fp=sys.stdout):
         s = "{0}{1}\n".format("    " * self._indent_level, s)
-        self.write(s, file=file)
+        self.write(s, fp=fp)
 
-    def critical(self, s, file=sys.stdout):
+    def critical(self, s, fp=sys.stdout):
         s = "** critical: {0}".format(s)
         if (self._output_level <= CRITICAL and
             self.__raw(s) not in self._ignored_messages):
-            self.writeline(s, file=file)
+            self.writeline(s, fp=fp)
 
-    def error(self, s, file=sys.stdout):
+    def error(self, s, fp=sys.stdout):
         s = "** error: {0}".format(s)
         if (self._output_level <= ERROR and
             self.__raw(s) not in self._ignored_messages):
-            self.writeline(s, file=file)
+            self.writeline(s, fp=fp)
 
-    def warning(self, s, file=sys.stdout):
+    def warning(self, s, fp=sys.stdout):
         s = "** warning: {0}".format(s)
         if (self._output_level <= WARNING and
             self.__raw(s) not in self._ignored_messages):
-            self.writeline(s, file=file)
+            self.writeline(s, fp=fp)
 
-    def info(self, s, file=sys.stdout):
+    def info(self, s, fp=sys.stdout):
         if self._output_level <= INFO:
-            self.writeline(s, file=file)
+            self.writeline(s, fp=fp)
 
-    def debug(self, s, file=sys.stdout):
+    def debug(self, s, fp=sys.stdout):
         if self._output_level <= DEBUG:
-            self.writeline(s, file=file)
+            self.writeline(s, fp=fp)
 
     def __format(self, s):
         for tag, ccode in TAGS:
