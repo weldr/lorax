@@ -234,8 +234,8 @@ def main(args):
               remove_temp=True)
 
 
-def get_yum_base_object(installroot, repositories, mirrorlists=[], repo_files=[],
-                        tempdir="/var/tmp", proxy=None, excludepkgs=[],
+def get_yum_base_object(installroot, repositories, mirrorlists=None, repo_files=None,
+                        tempdir="/var/tmp", proxy=None, excludepkgs=None,
                         sslverify=True, releasever=None):
 
     def sanitize_repo(repo):
@@ -246,6 +246,13 @@ def get_yum_base_object(installroot, repositories, mirrorlists=[], repo_files=[]
             return repo
         else:
             return None
+
+    if mirrorlists is None:
+        mirrorlists = []
+    if repo_files is None:
+        repo_files = []
+    if excludepkgs is None:
+        excludepkgs = []
 
     # sanitize the repositories
     repositories = map(sanitize_repo, repositories)

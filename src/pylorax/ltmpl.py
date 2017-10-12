@@ -40,7 +40,9 @@ import sys, traceback
 import struct
 
 class LoraxTemplate(object):
-    def __init__(self, directories=["/usr/share/lorax"]):
+    def __init__(self, directories=None):
+        if directories is None:
+            directories = ["/usr/share/lorax"]
         # we have to add ["/"] to the template lookup directories or the
         # file includes won't work properly for absolute paths
         self.directories = ["/"] + directories
@@ -148,7 +150,9 @@ class LoraxTemplateRunner(object):
     * Commands should raise exceptions for errors - don't use sys.exit()
     '''
     def __init__(self, inroot, outroot, yum_obj=None, fatalerrors=True,
-                                        templatedir=None, defaults={}):
+                                        templatedir=None, defaults=None):
+        if defaults is None:
+            defaults = {}
         self.inroot = inroot
         self.outroot = outroot
         self.yum = yum_obj
