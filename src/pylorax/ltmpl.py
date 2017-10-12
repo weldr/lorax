@@ -29,7 +29,7 @@ from subprocess import CalledProcessError
 import shutil
 
 from pylorax.sysutils import joinpaths, cpfile, mvfile, replace, remove
-from pylorax.yumhelper import * # Lorax*Callback classes
+from pylorax import yumhelper
 from pylorax.base import DataHolder
 from pylorax.executils import runcmd, runcmd_output
 from pylorax.imgutils import mkcpio
@@ -514,9 +514,9 @@ class LoraxTemplateRunner(object):
           commands.
         '''
         self.yum.buildTransaction()
-        self.yum.repos.setProgressBar(LoraxDownloadCallback())
-        self.yum.processTransaction(callback=LoraxTransactionCallback(),
-                                    rpmDisplay=LoraxRpmCallback())
+        self.yum.repos.setProgressBar(yumhelper.LoraxDownloadCallback())
+        self.yum.processTransaction(callback=yumhelper.LoraxTransactionCallback(),
+                                    rpmDisplay=yumhelper.LoraxRpmCallback())
 
         # verify if all packages that were supposed to be installed,
         # are really installed
