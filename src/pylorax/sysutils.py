@@ -30,7 +30,6 @@ import pwd
 import grp
 import glob
 import shutil
-import subprocess
 
 from pylorax.executils import runcmd
 

@@ -24,9 +24,7 @@ pylorax_log = logging.getLogger("pylorax")
 
 import argparse
 import os
-import shutil
 import sys
-import tempfile
 from gevent.wsgi import WSGIServer
 
 from pylorax import vernum

@@ -33,7 +33,7 @@ import locale
 from subprocess import CalledProcessError
 import selinux
 
-from base import BaseLoraxClass, DataHolder
+from .base import BaseLoraxClass, DataHolder
 import output
 
 import yum
