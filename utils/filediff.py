@@ -22,7 +22,7 @@ def main(args):
     # parse sourcedir and targetdir
     sourcetree, targettree = {}, {}
     for tree, dir in [[sourcetree, sourcedir], [targettree, targetdir]]:
-        for root, dnames, fnames in os.walk(dir):
+        for root, _dnames, fnames in os.walk(dir):
             for fname in fnames:
                 fpath = os.path.join(root, fname)
                 rpath = fpath.replace(dir, "", 1)
@@ -116,7 +116,7 @@ def main(args):
                            [(rpath, sizeinbytes, islink)]
 
     # sort by size
-    for pkg, size in sorted(sizedict.items(), key=operator.itemgetter(1),
+    for pkg, _size in sorted(sizedict.items(), key=operator.itemgetter(1),
                             reverse=True):
 
         for item in sorted(pkgdict[pkg]):
