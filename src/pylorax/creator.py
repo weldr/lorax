@@ -82,8 +82,8 @@ class KernelInfo(object):
         self.boot_dir = boot_dir
         self.list = self.get_kernels()
         self.arch = self.get_kernel_arch()
-        log.debug("kernel_list for {0.boot_dir} = {0.list}".format(self))
-        log.debug("kernel_arch is {0.arch}".format(self))
+        log.debug("kernel_list for %s = %s", self.boot_dir, self.list)
+        log.debug("kernel_arch is %s", self.arch)
 
     def get_kernels(self):
         """
@@ -134,12 +134,12 @@ def make_appliance(disk_img, name, template, outfile, networks=None, ram=1024,
     if not (disk_img and template and outfile):
         return None
 
-    log.info("Creating appliance definition using {0}".format(template))
+    log.info("Creating appliance definition using %s", template)
 
     if not arch:
         arch = "x86_64"
 
-    log.info("Calculating SHA256 checksum of {0}".format(disk_img))
+    log.info("Calculating SHA256 checksum of %s", disk_img)
     sha256 = hashlib.sha256()
     with open(disk_img) as f:
         while True:
@@ -147,7 +147,7 @@ def make_appliance(disk_img, name, template, outfile, networks=None, ram=1024,
             if not data:
                 break
             sha256.update(data)
-    log.info("SHA256 of {0} is {1}".format(disk_img, sha256.hexdigest()))
+    log.info("SHA256 of %s is %s", disk_img, sha256.hexdigest())
     disk_info = DataHolder(name=os.path.basename(disk_img), format="raw",
                            checksum_type="sha256", checksum=sha256.hexdigest())
     try:
@@ -201,7 +201,7 @@ def rebuild_initrds_for_live(opts, sys_root_dir, results_dir):
         dracut_args = []
         for arg in opts.dracut_args:
             dracut_args += arg.split(" ", 1)
-    log.info("dracut args = {0}".format(dracut_args))
+    log.info("dracut args = %s", dracut_args)
 
     dracut = ["dracut", "--nomdadmconf", "--nolvmconf"] + dracut_args
 
@@ -321,7 +321,7 @@ def make_livecd(opts, mount_dir, work_dir):
     isolabel = opts.volid or "{0.name} {0.version} {1.basearch}".format(product, arch)
     if len(isolabel) > 32:
         isolabel = isolabel[:32]
-        log.warn("Truncating isolabel to 32 chars: %s" % (isolabel,))
+        log.warn("Truncating isolabel to 32 chars: %s", isolabel)
 
     tb = TreeBuilder(product=product, arch=arch, domacboot=opts.domacboot,
                      inroot=mount_dir, outroot=work_dir,
@@ -334,7 +334,7 @@ def make_livecd(opts, mount_dir, work_dir):
         dracut_args = []
         for arg in opts.dracut_args:
             dracut_args += arg.split(" ", 1)
-    log.info("dracut args = {0}".format(dracut_args))
+    log.info("dracut args = %s", dracut_args)
     tb.rebuild_initrds(add_args=dracut_args)
     log.info("Building boot.iso")
     tb.build()
@@ -416,7 +416,7 @@ def make_image(opts, ks):
 
             virt_install(opts, install_log, disk_img, disk_size)
     except InstallError as e:
-        log.error("Install failed: {0}".format(e))
+        log.error("Install failed: %s", e)
         if not opts.keep_image:
             log.info("Removing bad disk image")
             os.unlink(disk_img)

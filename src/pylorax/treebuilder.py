@@ -268,7 +268,7 @@ class TreeBuilder(object):
         for hook_script, dracut_path in hooks:
             src = joinpaths(self.dracut_hooks_path, hook_script)
             if not os.path.exists(src):
-                logger.error("Missing lorax dracut hook script %s" % (src))
+                logger.error("Missing lorax dracut hook script %s", src)
                 continue
             dst = joinpaths(self.vars.inroot, "/tmp/", hook_script)
             copy2(src, dst)
@@ -302,7 +302,7 @@ def findkernels(root="/", kdir="boot"):
                     imgtype = 'initrd'
                 kernel[imgtype] = DataHolder(path=joinpaths(kdir, f))
 
-    logger.debug("kernels=%s" % kernels)
+    logger.debug("kernels=%s", kernels)
     return kernels
 
 # udev whitelist: 'a-zA-Z0-9#+.:=@_-' (see is_whitelisted in libudev-util.c)

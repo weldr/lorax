@@ -214,7 +214,7 @@ class VirtualInstall( object ):
 
         Could use libvirt for this instead.
         """
-        log.info( "Shutting down {0}".format(self.virt_name) )
+        log.info( "Shutting down %s", self.virt_name)
         subprocess.call(["virsh", "destroy", self.virt_name])
         subprocess.call(["virsh", "undefine", self.virt_name])
 
