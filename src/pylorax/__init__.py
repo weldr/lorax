@@ -68,7 +68,7 @@ class ArchData(DataHolder):
                     arm="arm", armhfp="arm")
 
     def __init__(self, buildarch):
-        self.buildarch = buildarch
+        DataHolder.__init__(self, buildarch=buildarch)
         self.basearch = getBaseArch(buildarch)
         self.libdir = "lib64" if self.basearch in self.lib64_arches else "lib"
         self.bcj = self.bcj_arch.get(self.basearch)
@@ -141,7 +141,7 @@ class Lorax(BaseLoraxClass):
 
         # remove some environmental variables that can cause problems with package scripts
         env_remove = ('DISPLAY', 'DBUS_SESSION_BUS_ADDRESS')
-        [os.environ.pop(k) for k in env_remove if k in os.environ]
+        _ = [os.environ.pop(k) for k in env_remove if k in os.environ]
 
         self._configured = True
 

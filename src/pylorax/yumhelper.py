@@ -34,7 +34,7 @@ class LoraxDownloadCallback(yum.callbacks.DownloadBaseCallback):
         yum.callbacks.DownloadBaseCallback.__init__(self)
         self.output = output.LoraxOutput()
 
-        pattern = "\((?P<pkgno>\d+)/(?P<total>\d+)\):\s+(?P<pkgname>.*)"
+        pattern = r"\((?P<pkgno>\d+)/(?P<total>\d+)\):\s+(?P<pkgname>.*)"
         self.pattern = re.compile(pattern)
 
     def updateProgress(self, name, frac, fread, ftime):
