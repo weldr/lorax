@@ -151,7 +151,7 @@ def loop_waitfor(loop_dev, outfile):
 
     Raise RuntimeError if it isn't setup after 5 tries.
     """
-    for x in xrange(0,5):
+    for _ in xrange(0,5):
         runcmd(["udevadm", "settle", "--timeout", "300"])
         ## XXX Note that losetup --list output can be truncated to 64 bytes in some
         ##     situations. Don't use it to lookup backing file, go the other way
