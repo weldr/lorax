@@ -44,6 +44,7 @@ class LoraxTemplate(object):
         # we have to add ["/"] to the template lookup directories or the
         # file includes won't work properly for absolute paths
         self.directories = ["/"] + directories
+        self.lines = []
 
     def parse(self, template_file, variables):
         lookup = TemplateLookup(directories=self.directories)
@@ -153,6 +154,7 @@ class LoraxTemplateRunner(object):
         self.yum = yum
         self.fatalerrors = fatalerrors
         self.templatedir = templatedir or "/usr/share/lorax"
+        self.templatefile = None
         # some builtin methods
         self.builtins = DataHolder(exists=lambda p: rexists(p, root=inroot),
                                    glob=lambda g: list(rglob(g, root=inroot)))

@@ -78,6 +78,13 @@ class Lorax(BaseLoraxClass):
     def __init__(self):
         BaseLoraxClass.__init__(self)
         self._configured = False
+        self.conf = None
+        self.outputdir = None
+        self.workdir = None
+        self.inroot = None
+        self.arch = None
+        self.product = None
+        self.debug = False
 
         # set locale to C
         locale.setlocale(locale.LC_ALL, 'C')
