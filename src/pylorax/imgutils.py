@@ -402,9 +402,9 @@ class PartitionMount(object):
             except CalledProcessError:
                 logger.debug(traceback.format_exc())
         if self.mount_dir:
-            logger.info("Partition mounted on {0} size={1}".format(self.mount_dir, self.mount_size))
+            logger.info("Partition mounted on %s size=%d", self.mount_dir, self.mount_size)
         else:
-            logger.debug("Unable to mount anything from {0}".format(self.disk_img))
+            logger.debug("Unable to mount anything from %s", self.disk_img)
             os.rmdir(mount_dir)
         return self
 
@@ -431,7 +431,7 @@ def mkfsimage(fstype, rootdir, outfile, size=None, mkfsargs=[], mountargs="", gr
         try:
             runcmd(["mkfs.%s" % fstype] + mkfsargs + [loopdev])
         except CalledProcessError as e:
-            logger.error("mkfs exited with a non-zero return code: %d" % e.returncode)
+            logger.error("mkfs exited with a non-zero return code: %d", e.returncode)
             logger.error(e.output)
             sys.exit(e.returncode)
 

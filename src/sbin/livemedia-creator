@@ -254,13 +254,13 @@ if __name__ == '__main__':
         sys.exit( 1 )
 
     if opts.make_iso and not os.path.exists( opts.lorax_templates ):
-        log.error( "The lorax templates directory ({0}) doesn't"
-                   " exist.".format( opts.lorax_templates ) )
+        log.error( "The lorax templates directory (%s) doesn't"
+                   " exist.", opts.lorax_templates)
         sys.exit( 1 )
 
     if opts.result_dir and os.path.exists(opts.result_dir):
-        log.error( "The results_dir ({0}) should not exist, please delete or "
-                   "move its contents".format( opts.result_dir ))
+        log.error( "The results_dir (%s) should not exist, please delete or "
+                   "move its contents", opts.result_dir)
         sys.exit( 1 )
 
     # Default to putting results into tmp
@@ -270,15 +270,15 @@ if __name__ == '__main__':
         os.makedirs(opts.result_dir)
 
     if opts.iso and not os.path.exists( opts.iso ):
-        log.error( "The iso {0} is missing.".format( opts.iso ) )
+        log.error( "The iso %s is missing.", opts.iso)
         sys.exit( 1 )
 
     if opts.disk_image and not os.path.exists( opts.disk_image ):
-        log.error( "The disk image {0} is missing.".format( opts.disk_image ) )
+        log.error( "The disk image %s is missing.", opts.disk_image)
         sys.exit( 1 )
 
     if opts.fs_image and not os.path.exists( opts.fs_image ):
-        log.error( "The filesystem image {0} is missing.".format( opts.fs_image ) )
+        log.error( "The filesystem image %s is missing.", opts.fs_image)
         sys.exit( 1 )
 
     is_install = not (opts.disk_image or opts.fs_image)
@@ -309,8 +309,8 @@ if __name__ == '__main__':
                                             "appliance/libvirt.tmpl")
 
     if opts.make_appliance and not os.path.exists(opts.app_template):
-        log.error("The appliance template ({0}) doesn't "
-                  "exist".format(opts.app_template))
+        log.error("The appliance template (%s) doesn't "
+                  "exist", opts.app_template)
         sys.exit(1)
 
     if opts.image_name and os.path.exists(joinpaths(opts.result_dir, opts.image_name)):
@@ -398,14 +398,14 @@ if __name__ == '__main__':
         try:
             disk_img = make_image(opts, ks)
         except InstallError as e:
-            log.error("ERROR: Image creation failed: %s" % (e))
+            log.error("ERROR: Image creation failed: %s", e)
             sys.exit(1)
 
     if not opts.image_only:
         result_dir = None
         if opts.make_iso:
             work_dir = tempfile.mkdtemp()
-            log.info("working dir is {0}".format(work_dir))
+            log.info("working dir is %s", work_dir)
 
             if (opts.fs_image or opts.no_virt) and not opts.disk_image:
                 # Create iso from a filesystem image
@@ -438,7 +438,7 @@ if __name__ == '__main__':
                            opts.vcpus, opts.arch, opts.title, opts.project, opts.releasever)
         elif opts.make_pxe_live:
             work_dir = tempfile.mkdtemp()
-            log.info("working dir is {0}".format(work_dir))
+            log.info("working dir is %s", work_dir)
 
             if (opts.fs_image or opts.no_virt) and not opts.disk_image:
                 # Create pxe live images from a filesystem image
@@ -472,12 +472,11 @@ if __name__ == '__main__':
 
     log.info("SUMMARY")
     log.info("-------")
-    log.info("Logs are in {0}".format(os.path.abspath(os.path.dirname(opts.logfile))))
+    log.info("Logs are in %s", os.path.abspath(os.path.dirname(opts.logfile)))
     if disk_img:
-        log.info("Disk image is at {0}".format(disk_img))
+        log.info("Disk image is at %s", disk_img)
     if opts.make_appliance:
-        log.info("Appliance description is in {0}".format(opts.app_file))
-    log.info("Results are in {0}".format(opts.result_dir or result_dir))
+        log.info("Appliance description is in %s", opts.app_file)
+    log.info("Results are in %s", opts.result_dir or result_dir)
 
     sys.exit( 0 )
-
