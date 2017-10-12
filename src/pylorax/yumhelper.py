@@ -23,7 +23,7 @@ import logging
 logger = logging.getLogger("pylorax.yumhelper")
 import re
 import yum, yum.callbacks, yum.rpmtrans
-import output
+import pylorax.output as output
 
 __all__ = ['LoraxDownloadCallback', 'LoraxTransactionCallback',
            'LoraxRpmCallback']

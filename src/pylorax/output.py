@@ -22,7 +22,7 @@
 import sys
 import re
 
-import decorators
+import pylorax.decorators as decorators
 
 
 # output levels

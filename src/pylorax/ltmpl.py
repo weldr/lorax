@@ -28,9 +28,9 @@ from os.path import basename, isdir
 from subprocess import CalledProcessError
 import shutil
 
-from sysutils import joinpaths, cpfile, mvfile, replace, remove
-from yumhelper import * # Lorax*Callback classes
-from base import DataHolder
+from pylorax.sysutils import joinpaths, cpfile, mvfile, replace, remove
+from pylorax.yumhelper import * # Lorax*Callback classes
+from pylorax.base import DataHolder
 from pylorax.executils import runcmd, runcmd_output
 from pylorax.imgutils import mkcpio
 
