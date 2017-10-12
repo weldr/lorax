@@ -307,6 +307,7 @@ def estimate_size(rootdir, graft={}, fstype=None, blocksize=4096, overhead=128):
 
 class LoopDev(object):
     def __init__(self, filename, size=None):
+        self.loopdev = None
         self.filename = filename
         if size:
             mksparse(self.filename, size)
@@ -319,6 +320,7 @@ class LoopDev(object):
 class DMDev(object):
     def __init__(self, dev, size, name=None):
         (self.dev, self.size, self.name) = (dev, size, name)
+        self.mapperdev = None
     def __enter__(self):
         self.mapperdev = dm_attach(self.dev, self.size, self.name)
         return self.mapperdev
@@ -343,6 +345,8 @@ class PartitionMount(object):
         returns True if it should be mounted.
         """
         self.mount_dir = None
+        self.mount_dev = None
+        self.mount_size = None
         self.disk_img = disk_img
         self.mount_ok = mount_ok
 
