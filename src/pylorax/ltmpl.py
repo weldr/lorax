@@ -147,11 +147,11 @@ class LoraxTemplateRunner(object):
 
     * Commands should raise exceptions for errors - don't use sys.exit()
     '''
-    def __init__(self, inroot, outroot, yum=None, fatalerrors=True,
+    def __init__(self, inroot, outroot, yum_obj=None, fatalerrors=True,
                                         templatedir=None, defaults={}):
         self.inroot = inroot
         self.outroot = outroot
-        self.yum = yum
+        self.yum = yum_obj
         self.fatalerrors = fatalerrors
         self.templatedir = templatedir or "/usr/share/lorax"
         self.templatefile = None
@@ -455,9 +455,9 @@ class LoraxTemplateRunner(object):
             cmd = cmd[1:]
 
         try:
-            output = runcmd_output(cmd, cwd=cwd)
-            if output:
-                logger.debug('command output:\n%s', output)
+            _output = runcmd_output(cmd, cwd=cwd)
+            if _output:
+                logger.debug('command output:\n%s', _output)
             logger.debug("command finished successfully")
         except CalledProcessError as e:
             if e.output:
@@ -555,15 +555,15 @@ class LoraxTemplateRunner(object):
                 logger.debug("removefrom %s %s: no files matched!", pkg, g)
         # are we removing the matches, or keeping only the matches?
         if keepmatches:
-            remove = filelist.difference(matches)
+            files_to_remove = filelist.difference(matches)
         else:
-            remove = matches
+            files_to_remove = matches
         # remove the files
-        if remove:
+        if files_to_remove:
             logger.debug("%s: removed %i/%i files, %ikb/%ikb", cmd,
-                             len(remove), len(filelist),
-                             self._getsize(*remove)/1024, self._getsize(*filelist)/1024)
-            self.remove(*remove)
+                             len(files_to_remove), len(filelist),
+                             self._getsize(*files_to_remove)/1024, self._getsize(*filelist)/1024)
+            self.remove(*files_to_remove)
         else:
             logger.debug("removefrom %s: no files to remove!", cmd)
 

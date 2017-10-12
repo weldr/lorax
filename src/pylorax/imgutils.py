@@ -233,24 +233,24 @@ def mount(dev, opts="", mnt=None):
     if mnt is None:
         mnt = tempfile.mkdtemp(prefix="lorax.imgutils.")
         logger.debug("make tmp mountdir %s", mnt)
-    mount = ["mount"]
+    cmd = ["mount"]
     if opts:
-        mount += ["-o", opts]
-    mount += [dev, mnt]
-    runcmd(mount)
+        cmd += ["-o", opts]
+    cmd += [dev, mnt]
+    runcmd(cmd)
     return mnt
 
 def umount(mnt,  lazy=False, maxretry=3, retrysleep=1.0):
     '''Unmount the given mountpoint. If lazy is True, do a lazy umount (-l).
     If the mount was a temporary dir created by mount, it will be deleted.
     raises CalledProcessError if umount fails.'''
-    umount = ["umount"]
-    if lazy: umount += ["-l"]
-    umount += [mnt]
+    cmd = ["umount"]
+    if lazy: cmd += ["-l"]
+    cmd += [mnt]
     count = 0
     while maxretry > 0:
         try:
-            rv = runcmd(umount)
+            rv = runcmd(cmd)
         except CalledProcessError:
             count += 1
             if count == maxretry:
@@ -335,7 +335,7 @@ class LoopDev(object):
     def __enter__(self):
         self.loopdev = loop_attach(self.filename)
         return self.loopdev
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, exc_type, exc_value, exc_tb):
         loop_detach(self.loopdev)
 
 class DMDev(object):
@@ -345,7 +345,7 @@ class DMDev(object):
     def __enter__(self):
         self.mapperdev = dm_attach(self.dev, self.size, self.name)
         return self.mapperdev
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, exc_type, exc_value, exc_tb):
         dm_detach(self.mapperdev)
 
 class Mount(object):
@@ -354,7 +354,7 @@ class Mount(object):
     def __enter__(self):
         self.mnt = mount(self.dev, self.opts, self.mnt)
         return self.mnt
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, exc_type, exc_value, exc_tb):
         umount(self.mnt)
 
 class PartitionMount(object):
@@ -412,7 +412,7 @@ class PartitionMount(object):
             os.rmdir(mount_dir)
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, exc_type, exc_value, exc_tb):
         if self.mount_dir:
             umount( self.mount_dir )
             os.rmdir(self.mount_dir)
