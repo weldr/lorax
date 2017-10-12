@@ -67,7 +67,7 @@ def compress(command, rootdir, outfile, compression="xz", compressargs=None):
     except OSError as e:
         logger.error(e)
         # Kill off any hanging processes
-        [p.kill() for p in (find, archive, comp) if p]
+        _ = [p.kill() for p in (find, archive, comp) if p]
         return 1
 
 def mkcpio(rootdir, outfile, compression="xz", compressargs=None):

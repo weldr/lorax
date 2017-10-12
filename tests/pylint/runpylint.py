@@ -26,6 +26,7 @@ class LoraxLintConfig(PocketLintConfig):
         self.falsePositives = [ FalsePositive(r"No name 'version' in module 'pylorax'"),
                                 FalsePositive(r"Module 'pylorax' has no 'version' member"),
                                 FalsePositive(r"Instance of 'int' has no .* member"),
+                                FalsePositive(r"Catching too general exception Exception"),
                               ]
 
     @property

@@ -61,7 +61,7 @@ class LogRequestHandler(SocketServer.BaseRequestHandler):
 
             except socket.timeout:
                 pass
-            except:
+            except Exception:
                 break
 
     def finish(self):
