@@ -23,11 +23,11 @@ logger = logging.getLogger("pylorax.treebuilder")
 import os, re
 from os.path import basename
 
-from sysutils import joinpaths, remove
+from pylorax.sysutils import joinpaths, remove
 from shutil import copytree, copy2
-from base import DataHolder
-from ltmpl import LoraxTemplateRunner
-import imgutils
+from pylorax.base import DataHolder
+from pylorax.ltmpl import LoraxTemplateRunner
+import pylorax.imgutils as imgutils
 from pylorax.executils import runcmd, runcmd_output
 
 templatemap = {

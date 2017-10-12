@@ -33,21 +33,21 @@ import locale
 from subprocess import CalledProcessError
 import selinux
 
-from .base import BaseLoraxClass, DataHolder
-import output
+from pylorax.base import BaseLoraxClass, DataHolder
+import pylorax.output as output
 
 import yum
-import ltmpl
+import pylorax.ltmpl as ltmpl
 
-import imgutils
-from sysutils import *
+import pylorax.imgutils as imgutils
+from pylorax.sysutils import *
 from rpmUtils.arch import getBaseArch
 
-from treebuilder import RuntimeBuilder, TreeBuilder
-from buildstamp import BuildStamp
-from treeinfo import TreeInfo
-from discinfo import DiscInfo
-from executils import runcmd, runcmd_output
+from pylorax.treebuilder import RuntimeBuilder, TreeBuilder
+from pylorax.buildstamp import BuildStamp
+from pylorax.treeinfo import TreeInfo
+from pylorax.discinfo import DiscInfo
+from pylorax.executils import runcmd, runcmd_output
 
 # get lorax version
 try:

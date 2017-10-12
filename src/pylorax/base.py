@@ -22,7 +22,7 @@
 from abc import ABCMeta, abstractmethod
 import sys
 
-import output
+import pylorax.output as output
 
 
 class BaseLoraxClass(object):
