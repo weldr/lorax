@@ -21,7 +21,7 @@ import logging
 logger = logging.getLogger("pylorax.treebuilder")
 
 import os, re
-from os.path import basename, isdir
+from os.path import basename
 
 from sysutils import joinpaths, remove
 from shutil import copytree, copy2

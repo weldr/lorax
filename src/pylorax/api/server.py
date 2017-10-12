@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from flask import Flask, jsonify
+from flask import Flask
 
 from pylorax.api import crossdomain
 from pylorax.api.v0 import v0_api

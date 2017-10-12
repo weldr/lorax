@@ -18,13 +18,10 @@ import logging
 log = logging.getLogger("pylorax")
 
 import os
-import sys
 import tempfile
 import subprocess
-import threading
 import shutil
 import hashlib
-import re
 import glob
 
 # Use Mako templates for appliance builder descriptions
@@ -32,15 +29,14 @@ from mako.template import Template
 from mako.exceptions import text_error_template
 
 # Use the Lorax treebuilder branch for iso creation
-from pylorax import ArchData, vernum
+from pylorax import ArchData
 from pylorax.base import DataHolder
-from pylorax.treebuilder import TreeBuilder, RuntimeBuilder, udev_escape
+from pylorax.treebuilder import TreeBuilder, RuntimeBuilder
 from pylorax.treebuilder import findkernels
 from pylorax.sysutils import joinpaths, remove
-from pylorax.imgutils import mount, umount, Mount
+from pylorax.imgutils import mount, umount
 from pylorax.imgutils import mksquashfs, mkrootfsimg
-from pylorax.imgutils import copytree
-from pylorax.executils import execWithRedirect, execWithCapture, runcmd
+from pylorax.executils import execWithRedirect, runcmd
 from pylorax.installer import InstallError, novirt_install, virt_install
 
 RUNTIME = "images/install.img"
