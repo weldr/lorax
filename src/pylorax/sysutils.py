@@ -47,12 +47,12 @@ def touch(fname):
         pass
 
 
-def replace(fname, find, replace):
+def replace(fname, find, substitute):
     fin = fileinput.input(fname, inplace=1)
     pattern = re.compile(find)
 
     for line in fin:
-        line = pattern.sub(replace, line)
+        line = pattern.sub(substitute, line)
         sys.stdout.write(line)
 
     fin.close()

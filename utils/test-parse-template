@@ -43,7 +43,7 @@ def readtemplate(templatefile):
     lookup = TemplateLookup(directories=parser.directories)
     return lookup.get_template(templatefile)
 
-if __name__ == '__main__':
+def main():
     # check args
     if len(sys.argv) == 1:
         print "usage: %s TEMPLATE [arg1=value1] [arg2=value2] ..."
@@ -78,3 +78,6 @@ if __name__ == '__main__':
     except Exception:
         print text_error_template().render()
         raise SystemExit(1)
+
+if __name__ == '__main__':
+    main()
