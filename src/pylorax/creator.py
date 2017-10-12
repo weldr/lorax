@@ -51,8 +51,8 @@ def is_image_mounted(disk_img):
     Return True if the disk_img is mounted
     """
     with open("/proc/mounts") as mounts:
-        for mount in mounts:
-            fields = mount.split()
+        for _mount in mounts:
+            fields = _mount.split()
             if len(fields) > 2 and fields[1] == disk_img:
                 return True
     return False

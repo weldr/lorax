@@ -236,7 +236,7 @@ def default_image_name(compression, basename):
     return basename + SUFFIXES.get(compression, ".xz")
 
 
-if __name__ == '__main__':
+def main():
     # parse the arguments
     parser = lorax_parser()
     opts = parser.parse_args()
@@ -377,8 +377,8 @@ if __name__ == '__main__':
                               "multiple partitions. swap is allowed but not used.")
 
         if errors:
-            for e in errors:
-                log.error(e)
+            for _e in errors:
+                log.error(_e)
             sys.exit(1)
 
         # Make the image. Output of this is either a partitioned disk image or a fsimage
@@ -467,3 +467,6 @@ if __name__ == '__main__':
     log.info("Results are in %s", opts.result_dir or result_dir)
 
     sys.exit( 0 )
+
+if __name__ == '__main__':
+    main()

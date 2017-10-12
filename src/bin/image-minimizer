@@ -32,8 +32,8 @@ class ImageMinimizer:
     drops_rpm = set()
     ts = None
 
-    def __init__(self, filename, root, dryrun, verbose):
-        self.filename = filename
+    def __init__(self, _filename, root, dryrun, verbose):
+        self.filename = _filename
         self.prefix = root
         self.dryrun = dryrun
         self.verbose = verbose
@@ -173,12 +173,12 @@ def parse_options():
     parser.add_option("-v", "--verbose", action="store_true", dest="verbose",
         help="Display every action as it is performed.")
 
-    (options, args) = parser.parse_args()
+    (_options, _args) = parser.parse_args()
     if len(args) == 0:
         parser.print_help()
         sys.exit(1)
 
-    return (options, args)
+    return (_options, _args)
 
 
 if __name__ == "__main__":
