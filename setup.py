@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 from distutils.core import setup
-from glob import glob
 import os
 import sys
 

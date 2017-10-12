@@ -25,13 +25,13 @@ import tempfile
 from time import sleep
 import uuid
 
-from pylorax.executils import execWithRedirect, execWithCapture, runcmd
-from pylorax.imgutils import get_loop_name, dm_detach, mount, umount, Mount
+from pylorax.executils import execWithRedirect, execWithCapture
+from pylorax.imgutils import get_loop_name, dm_detach, mount, umount
 from pylorax.imgutils import PartitionMount, mksparse, mkext4img, loop_detach
-from pylorax.imgutils import mksquashfs, mktar, mkrootfsimg, mkdiskfsimage, mkqcow2
+from pylorax.imgutils import mktar, mkdiskfsimage, mkqcow2
 from pylorax.logmonitor import LogMonitor
-from pylorax.sysutils import joinpaths, remove
-from pylorax.treebuilder import TreeBuilder, RuntimeBuilder, udev_escape
+from pylorax.sysutils import joinpaths
+from pylorax.treebuilder import udev_escape
 
 ROOT_PATH = "/mnt/sysimage/"
 

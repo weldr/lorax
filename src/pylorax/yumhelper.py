@@ -21,7 +21,7 @@
 
 import logging
 logger = logging.getLogger("pylorax.yumhelper")
-import sys, os, re
+import re
 import yum, yum.callbacks, yum.rpmtrans
 import output
 
