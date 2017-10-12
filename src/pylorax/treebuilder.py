@@ -79,7 +79,7 @@ class RuntimeBuilder(object):
                                basearch=arch.basearch, libdir=arch.libdir)
         self.yum = yum
         self._runner = LoraxTemplateRunner(inroot=root, outroot=root,
-                                           yum=yum, templatedir=templatedir)
+                                           _yum=yum, templatedir=templatedir)
         self.add_templates = add_templates or []
         self.add_template_vars = add_template_vars or {}
         self._installpkgs = installpkgs or []

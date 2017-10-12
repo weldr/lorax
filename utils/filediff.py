@@ -21,11 +21,11 @@ def main(args):
 
     # parse sourcedir and targetdir
     sourcetree, targettree = {}, {}
-    for tree, dir in [[sourcetree, sourcedir], [targettree, targetdir]]:
-        for root, _dnames, fnames in os.walk(dir):
+    for tree, dir_name in [[sourcetree, sourcedir], [targettree, targetdir]]:
+        for root, _dnames, fnames in os.walk(dir_name):
             for fname in fnames:
                 fpath = os.path.join(root, fname)
-                rpath = fpath.replace(dir, "", 1)
+                rpath = fpath.replace(dir_name, "", 1)
                 tree[rpath] = fpath
 
     # set up magic

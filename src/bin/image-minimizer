@@ -45,8 +45,8 @@ class ImageMinimizer:
     def add_directory(self, files, dirname):
         self.visited.add(dirname)
         for root, dirs, items in os.walk(dirname):
-            for dir in dirs:
-                self.visited.add(os.path.join(root, dir))
+            for _dir in dirs:
+                self.visited.add(os.path.join(root, _dir))
             for name in items:
                 files.add(os.path.join(root, name))
 
@@ -123,14 +123,14 @@ class ImageMinimizer:
                     os.remove(tag)
 
         #remove all empty directory. Every 8k counts!
-        for dir in sorted(self.visited, reverse=True):
-            if len(os.listdir(dir)) == 0:
+        for _dir in sorted(self.visited, reverse=True):
+            if len(os.listdir(_dir)) == 0:
                 if self.dryrun:
-                    print 'rm -rf ' + dir
+                    print 'rm -rf ' + _dir
                 else:
                     if self.verbose:
-                        print 'rm -rf ' + dir
-                    os.rmdir(dir)
+                        print 'rm -rf ' + _dir
+                    os.rmdir(_dir)
 
     def remove_rpm(self):
 
