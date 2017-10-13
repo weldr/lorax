@@ -17,7 +17,7 @@
 
 from flask import Flask
 
-from pylorax.api import crossdomain
+from pylorax.api.crossdomain import crossdomain
 from pylorax.api.v0 import v0_api
 
 server = Flask(__name__)
