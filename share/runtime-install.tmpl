@@ -35,7 +35,7 @@ installpkg kernel
 %endif
 %if basearch in ("i386", "x86_64"):
     installpkg biosdevname memtest86+ syslinux
-    # installpkg grub2-tools grub2-tools-minimal
+    installpkg grub2-tools grub2-tools-minimal grub2-tools-extra
     installpkg efibootmgr
     installpkg shim-ia32 grub2-efi-ia32-cdboot
 %endif
