@@ -20,7 +20,7 @@ from flask import jsonify
 from pykickstart.parser import KickstartParser
 from pykickstart.version import makeVersion, RHEL7
 
-from pylorax.api import crossdomain
+from pylorax.api.crossdomain import crossdomain
 from pylorax.creator import DRACUT_DEFAULT, mount_boot_part_over_root
 from pylorax.creator import make_appliance, make_image, make_livecd, make_live_images
 from pylorax.creator import make_runtime, make_squashfs
