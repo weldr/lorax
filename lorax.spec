@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        27.11
+Version:        28.0
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -153,6 +153,15 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Tue Oct 17 2017 Brian C. Lane <bcl@redhat.com> 28.0-1
+- Add make test target and update .gitignore (atodorov@redhat.com)
+- Add first unit test so we can start collecting coverage (atodorov@redhat.com)
+- Convert mk-s390-cdboot to python3 (#1497141) (bcl@redhat.com)
+- Update false positives (atodorov@redhat.com)
+- Rename parameters to match names that dnf uses (atodorov@redhat.com)
+- Don't override 'line' from outer scope (atodorov@redhat.com)
+- Add swaplabel command (vponcova@redhat.com)
+
 * Wed Sep 27 2017 Brian C. Lane <bcl@redhat.com> 27.11-1
 - s390 doesn't need to graft product.img and updates.img into /images (#1496461) (bcl@redhat.com)
 - distribute the mk-s390-cdboot utility (dan@danny.cz)
