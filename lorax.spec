@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.100
+Version:        19.6.101
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -100,6 +100,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Oct 17 2017 Brian C. Lane <bcl@redhat.com> 19.6.101-1
+- Restore all of the grub2-tools on x86_64 and i386 (bcl)
+  Resolves: rhbz#1489707
+
 * Mon Oct 09 2017 Brian C. Lane <bcl@redhat.com> 19.6.100-1
 - Add dependencies for SE/HMC (vponcova)
   Resolves: rhbz#1498834
