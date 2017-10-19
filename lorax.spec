@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.0
+Version:        28.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -153,6 +153,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Thu Oct 19 2017 Brian C. Lane <bcl@redhat.com> 28.1-1
+- Use bytes when writing strings in mk-s390-cdboot (#1504026) (bcl@redhat.com)
+
 * Tue Oct 17 2017 Brian C. Lane <bcl@redhat.com> 28.0-1
 - Add make test target and update .gitignore (atodorov@redhat.com)
 - Add first unit test so we can start collecting coverage (atodorov@redhat.com)
