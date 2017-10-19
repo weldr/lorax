@@ -77,12 +77,12 @@ def configure_kernel(outfile, parmfile, size):
 
         # Erase the previous COMMAND_LINE, write zeros
         out_fd.seek(KERNEL_CMDLINE)
-        out_fd.write("\0" * KERNEL_CMDLINE_SIZE)
+        out_fd.write(bytes(KERNEL_CMDLINE_SIZE))
 
         # Write the first line of the parmfile
         cmdline = open(parmfile, "r").readline().strip()
         out_fd.seek(KERNEL_CMDLINE)
-        out_fd.write(cmdline)
+        out_fd.write(bytes(cmdline, "utf-8"))
 
 
 def main():
