@@ -563,15 +563,15 @@ class LoraxTemplateRunner(object):
                 # dnf queries don't have a concept of negative globs which is why
                 # the filtering is done the hard way.
 
-                pkgnames = {pkg.name for pkg in dnf.subject.Subject(p).get_best_query(self.dbo.sack)}
+                pkgnames = [pkg for pkg in dnf.subject.Subject(p).get_best_query(self.dbo.sack).filter(latest=True)]
                 if not pkgnames:
                     raise dnf.exceptions.PackageNotFoundError("no package matched", p)
 
-                for exclude in excludes:
-                    pkgnames = {pkgname for pkgname in pkgnames if not fnmatch.fnmatch(pkgname, exclude)}
-
                 # Sort the results so that we have consistent results
-                pkgnames = sorted(pkgnames)
+                pkgnames = sorted(["{}-{}-{}".format(pkg.name, pkg.version, pkg.release) for pkg in pkgnames])
+
+                for exclude in excludes:
+                    pkgnames = [pkg for pkg in pkgnames if not fnmatch.fnmatch(pkg, exclude)]
 
                 # If the request is a glob, expand it in the log
                 if any(g for g in ['*','?','.'] if g in p):
