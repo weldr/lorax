@@ -200,15 +200,16 @@ def open_or_create_repo(path):
     :rtype: Git.Repository
     :raises: Can raise errors from Ggit
 
-    A bare git repo will be created in at the specified path.
+    A bare git repo will be created in the git directory of the specified path.
     If a repo already exists it will be opened and returned instead of
     creating a new one.
     """
     Git.init()
-    if os.path.exists(joinpaths(path, "HEAD")):
-        return Git.Repository.open(gfile(path))
+    git_path = joinpaths(path, "git")
+    if os.path.exists(joinpaths(git_path, "HEAD")):
+        return Git.Repository.open(gfile(git_path))
 
-    repo = Git.Repository.init_repository(gfile(path), True)
+    repo = Git.Repository.init_repository(gfile(git_path), True)
 
     # Make an initial empty commit
     sig = Git.Signature.new_now("bdcs-api-server", "user-email")
@@ -445,7 +446,7 @@ def commit_recipe_directory(repo, branch, directory):
     for f in new_files:
         # Skip files with errors, but try the others
         try:
-            commit_recipe_file(repo, branch, f)
+            commit_recipe_file(repo, branch, joinpaths(directory, f))
         except (RecipeFileError, toml.TomlError):
             pass
 
