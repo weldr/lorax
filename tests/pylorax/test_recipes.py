@@ -105,6 +105,7 @@ class GitRecipesTest(unittest.TestCase):
         self.repo = recipes.open_or_create_repo(self.repo_dir)
 
         self.results_path = "./tests/pylorax/results/"
+        self.examples_path = "./tests/pylorax/recipes/"
 
     @classmethod
     def tearDownClass(self):
@@ -143,7 +144,7 @@ class GitRecipesTest(unittest.TestCase):
     def test_05_commit_toml_dir(self):
         """Test committing a directory of TOML files"""
         # It worked if it doesn't raise errors
-        recipes.commit_recipe_directory(self.repo, "master", self.results_path)
+        recipes.commit_recipe_directory(self.repo, "master", self.examples_path)
 
     def test_06_read_recipe(self):
         """Test reading a recipe from a commit"""
