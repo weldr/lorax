@@ -14,19 +14,29 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import os
+import tempfile
+from threading import Lock
 import unittest
 
 from flask import json
-from pylorax.api.server import server
+from pylorax.api.recipes import open_or_create_repo, commit_recipe_directory
+from pylorax.api.server import server, GitLock
 
 
 class ServerTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
+        repo_dir = tempfile.mkdtemp(prefix="lorax.test.repo.")
+        server.config["REPO_DIR"] = repo_dir
+        repo = open_or_create_repo(server.config["REPO_DIR"])
+        server.config["GITLOCK"] = GitLock(repo=repo, lock=Lock(), dir=repo_dir)
+
         server.config['TESTING'] = True
         self.server = server.test_client()
+
+        # Import the example recipes
+        commit_recipe_directory(server.config["GITLOCK"].repo, "master", "tests/pylorax/recipes/")
 
     @classmethod
     def tearDownClass(self):
@@ -38,3 +48,11 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/status")
         data = json.loads(resp.data)
         self.assertEqual(data, status_dict)
+
+    def test_recipes_list(self):
+        """Test the /api/v0/recipes/list route"""
+        list_dict = {"recipes":["atlas", "development", "glusterfs", "http-server", "jboss", "kubernetes"],
+                     "limit":20, "offset":0, "total":6}
+        resp = self.server.get("/api/v0/recipes/list")
+        data = json.loads(resp.data)
+        self.assertEqual(data, list_dict)
