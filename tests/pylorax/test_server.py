@@ -56,3 +56,56 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/recipes/list")
         data = json.loads(resp.data)
         self.assertEqual(data, list_dict)
+
+    def test_recipes_info(self):
+        """Test the /api/v0/recipes/info route"""
+        info_dict_1 = {"changes":[{"changed":False, "name":"http-server"}],
+                       "errors":[],
+                       "recipes":[{"description":"An example http server with PHP and MySQL support.",
+                                   "modules":[{"name":"httpd", "version":"2.4.*"},
+                                              {"name":"mod_auth_kerb", "version":"5.4"},
+                                              {"name":"mod_ssl", "version":"2.4.*"},
+                                              {"name":"php", "version":"5.4.*"},
+                                              {"name": "php-mysql", "version":"5.4.*"}],
+                                   "name":"http-server",
+                                   "packages": [{"name":"openssh-server", "version": "6.6.*"},
+                                                {"name": "rsync", "version": "3.0.*"},
+                                                {"name": "tmux", "version": "2.2"}],
+                                   "version": "0.0.2"}]}
+        resp = self.server.get("/api/v0/recipes/info/http-server")
+        data = json.loads(resp.data)
+        self.assertEqual(data, info_dict_1)
+
+        info_dict_2 = {"changes":[{"changed":False, "name":"glusterfs"},
+                                  {"changed":False, "name":"http-server"}],
+                       "errors":[],
+                       "recipes":[{"description": "An example GlusterFS server with samba",
+                                   "modules":[{"name":"glusterfs", "version":"3.7.*"},
+                                              {"name":"glusterfs-cli", "version":"3.7.*"}],
+                                   "name":"glusterfs",
+                                   "packages":[{"name":"samba", "version":"4.2.*"}],
+                                   "version": "0.0.1"},
+                                  {"description":"An example http server with PHP and MySQL support.",
+                                   "modules":[{"name":"httpd", "version":"2.4.*"},
+                                              {"name":"mod_auth_kerb", "version":"5.4"},
+                                              {"name":"mod_ssl", "version":"2.4.*"},
+                                              {"name":"php", "version":"5.4.*"},
+                                              {"name": "php-mysql", "version":"5.4.*"}],
+                                   "name":"http-server",
+                                   "packages": [{"name":"openssh-server", "version": "6.6.*"},
+                                                {"name": "rsync", "version": "3.0.*"},
+                                                {"name": "tmux", "version": "2.2"}],
+                                   "version": "0.0.2"},
+                                 ]}
+        resp = self.server.get("/api/v0/recipes/info/http-server,glusterfs")
+        data = json.loads(resp.data)
+        self.assertEqual(data, info_dict_2)
+
+        info_dict_3 = {"changes":[],
+                "errors":[{"recipe":"missing-recipe", "msg":"ggit-error: the path 'missing-recipe.toml' does not exist in the given tree (-3)"}],
+                       "recipes":[]
+                      }
+        resp = self.server.get("/api/v0/recipes/info/missing-recipe")
+        data = json.loads(resp.data)
+        self.assertEqual(data, info_dict_3)
+
