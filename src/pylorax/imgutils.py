@@ -119,7 +119,13 @@ def mkrootfsimg(rootdir, outfile, label, size=2, sysroot=""):
                     "-e", "/install", "-e", "/ostree",
                     "/etc/selinux/targeted/contexts/files/file_contexts", "/"]
             root = join(mnt, sysroot.lstrip("/"))
-            runcmd(cmd, root=root)
+            try:
+                runcmd(cmd, root=root)
+            except CalledProcessError as e:
+                logger.error("setfiles exited with a non-zero return code (%d) which may "
+                             "be caused by running without SELinux in Permissive mode.", e.returncode)
+                raise
+
 
 ######## Utility functions ###############################################
 
