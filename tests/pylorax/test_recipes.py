@@ -78,13 +78,13 @@ class BasicRecipeTest(unittest.TestCase):
         self.assertEqual(new_version, "0.0.1")
 
         # Original has a version, new does not
-        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.0.1", None, None)
-        new_version = recipe.bump_version(None)
+        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", None, None, None)
+        new_version = recipe.bump_version("0.0.1")
         self.assertEqual(new_version, "0.0.2")
 
         # Original has no version, new does
-        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", None, None, None)
-        new_version = recipe.bump_version("0.1.0")
+        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.1.0", None, None)
+        new_version = recipe.bump_version(None)
         self.assertEqual(new_version, "0.1.0")
 
         # New and Original are the same
@@ -93,8 +93,8 @@ class BasicRecipeTest(unittest.TestCase):
         self.assertEqual(new_version, "0.0.2")
 
         # New is different from Original
-        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.0.1", None, None)
-        new_version = recipe.bump_version("0.1.1")
+        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.1.1", None, None)
+        new_version = recipe.bump_version("0.0.1")
         self.assertEqual(new_version, "0.1.1")
 
 
@@ -120,14 +120,14 @@ class GitRecipesTest(unittest.TestCase):
     def test_02_commit_recipe(self):
         """Test committing a Recipe object"""
         recipe = recipes.Recipe("test-recipe", "A recipe used for testing", None, None, None)
-        oid = recipes.commit_recipe(self.repo, "master", recipe, "0.1.0")
+        oid = recipes.commit_recipe(self.repo, "master", recipe)
         self.assertNotEqual(oid, None)
 
     def test_03_list_recipe(self):
         """Test listing recipe commits"""
         commits = recipes.list_commits(self.repo, "master", "test-recipe.toml")
         self.assertEqual(len(commits), 1, "Wrong number of commits.")
-        self.assertEqual(commits[0].message, "Recipe test-recipe, version 0.1.0 saved.")
+        self.assertEqual(commits[0].message, "Recipe test-recipe, version 0.0.1 saved.")
         self.assertNotEqual(commits[0].timestamp, None, "Timestamp is None")
         self.assertEqual(len(commits[0].commit), 40, "Commit hash isn't 40 characters")
         self.assertEqual(commits[0].revision, None, "revision is not None")
@@ -195,7 +195,7 @@ class GitRecipesTest(unittest.TestCase):
         """Test tagging a newer commit of a recipe"""
         recipe = recipes.read_recipe_commit(self.repo, "master", "http-server.toml")
         recipe["description"] = "A modified description"
-        oid = recipes.commit_recipe(self.repo, "master", recipe, "0.1.0")
+        oid = recipes.commit_recipe(self.repo, "master", recipe)
         self.assertNotEqual(oid, None)
 
         # Tag the new commit

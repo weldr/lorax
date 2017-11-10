@@ -74,22 +74,22 @@ class Recipe(dict):
         """Return the Recipe in TOML format"""
         return toml.dumps(self).encode("UTF-8")
 
-    def bump_version(self, new_version=None):
+    def bump_version(self, old_version=None):
         """semver recipe version number bump
 
-        :param new_version: An optional new version number
-        :type new_version: str
+        :param old_version: An optional old version number
+        :type old_version: str
         :returns: The new version number or None
         :rtype: str
         :raises: ValueError
 
         If neither have a version, 0.0.1 is returned
-        If there is no previous version the new version is checked and returned
-        If there is no new version, but there is a previous one, bump its patch level
-        If the previous and new versions are the same, bump the patch level
+        If there is no old version the new version is checked and returned
+        If there is no new version, but there is a old one, bump its patch level
+        If the old and new versions are the same, bump the patch level
         If they are different, check and return the new version
         """
-        old_version = self.get("version")
+        new_version = self.get("version")
         if not new_version and not old_version:
             self["version"] = "0.0.1"
 
@@ -385,7 +385,7 @@ def revert_file(repo, branch, filename, commit):
     message = "Recipe %s reverted to commit %s" % (filename, commit_hash)
     return repo.create_commit(ref, sig, sig, "UTF-8", message, tree, [parent_commit])
 
-def commit_recipe(repo, branch, recipe, new_version=None):
+def commit_recipe(repo, branch, recipe):
     """Commit a recipe to a branch
 
     :param repo: Open repository
@@ -398,7 +398,13 @@ def commit_recipe(repo, branch, recipe, new_version=None):
     :rtype: Git.OId
     :raises: Can raise errors from Ggit
     """
-    recipe.bump_version(new_version)
+    try:
+        old_recipe = read_recipe_commit(repo, branch, recipe.filename)
+        old_version = old_recipe["version"]
+    except Exception:
+        old_version = None
+
+    recipe.bump_version(old_version)
     recipe_toml = recipe.toml()
     message = "Recipe %s, version %s saved." % (recipe["name"], recipe["version"])
     return write_commit(repo, branch, recipe.filename, message, recipe_toml)
@@ -422,7 +428,7 @@ def commit_recipe_file(repo, branch, filename):
     except IOError:
         raise RecipeFileError
 
-    return commit_recipe(repo, branch, recipe, new_version=recipe["version"])
+    return commit_recipe(repo, branch, recipe)
 
 def commit_recipe_directory(repo, branch, directory):
     """Commit all *.toml files from a directory, if they aren't already in git.
