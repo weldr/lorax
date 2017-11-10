@@ -109,3 +109,16 @@ class ServerTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertEqual(data, info_dict_3)
 
+    def test_recipes_changes(self):
+        """Test the /api/v0/recipes/changes route"""
+        resp = self.server.get("/api/v0/recipes/changes/http-server")
+        data = json.loads(resp.data)
+
+        # Can't compare a whole dict since commit hash and timestamps will change.
+        # Should have 1 commit (for now), with a matching message.
+        self.assertEqual(data["limit"], 20)
+        self.assertEqual(data["offset"], 0)
+        self.assertEqual(len(data["errors"]), 0)
+        self.assertEqual(len(data["recipes"]), 1)
+        self.assertEqual(data["recipes"][0]["name"], "http-server")
+        self.assertEqual(len(data["recipes"][0]["changes"]), 1)
