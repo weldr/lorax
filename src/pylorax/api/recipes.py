@@ -35,7 +35,7 @@ class CommitTimeValError(Exception):
 class RecipeFileError(Exception):
     pass
 
-class RecipeTOMLError(Exception):
+class RecipeError(Exception):
     pass
 
 
@@ -124,24 +124,34 @@ def recipe_from_toml(recipe_str):
     :rtype: Recipe
     :raises: TomlError
     """
-    recipe_toml = toml.loads(recipe_str)
+    recipe_dict = toml.loads(recipe_str)
+    return recipe_from_dict(recipe_dict)
 
+def recipe_from_dict(recipe_dict):
+    """Create a Recipe object from a plain dict.
+
+    :param recipe_dict: A plain dict of the recipe
+    :type recipe_dict: dict
+    :returns: A Recipe object
+    :rtype: Recipe
+    :raises: RecipeError
+    """
     # Make RecipeModule objects from the toml
     # The TOML may not have modules or packages in it. Set them to None in this case
     try:
-        if recipe_toml.get("modules"):
-            modules = [RecipeModule(m.get("name"), m.get("version")) for m in recipe_toml["modules"]]
+        if recipe_dict.get("modules"):
+            modules = [RecipeModule(m.get("name"), m.get("version")) for m in recipe_dict["modules"]]
         else:
             modules = None
-        if recipe_toml.get("packages"):
-            packages = [RecipePackage(p.get("name"), p.get("version")) for p in recipe_toml["packages"]]
+        if recipe_dict.get("packages"):
+            packages = [RecipePackage(p.get("name"), p.get("version")) for p in recipe_dict["packages"]]
         else:
             packages = None
-        name = recipe_toml["name"]
-        description = recipe_toml["description"]
-        version = recipe_toml.get("version", None)
-    except KeyError:
-        raise RecipeTOMLError
+        name = recipe_dict["name"]
+        description = recipe_dict["description"]
+        version = recipe_dict.get("version", None)
+    except KeyError as e:
+        raise RecipeError("There was a problem parsing the recipe: %s" % str(e))
 
     return Recipe(name, description, version, modules, packages)
 
@@ -659,5 +669,3 @@ def is_parent_diff(repo, filename, tree, parent):
     diff_opts.set_pathspec([filename])
     diff = Git.Diff.new_tree_to_tree(repo, parent.get_tree(), tree, diff_opts)
     return diff.get_num_deltas() > 0
-
-

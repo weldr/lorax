@@ -54,7 +54,7 @@ class BasicRecipeTest(unittest.TestCase):
         with self.assertRaises(TomlError):
             recipes.recipe_from_toml("This is not a TOML string\n")
 
-        with self.assertRaises(recipes.RecipeTOMLError):
+        with self.assertRaises(recipes.RecipeError):
             recipes.recipe_from_toml('name = "a failed toml string"\n')
 
     def recipe_to_toml_test(self):
