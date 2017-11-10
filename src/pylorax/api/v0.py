@@ -21,7 +21,7 @@ from pykickstart.parser import KickstartParser
 from pykickstart.version import makeVersion, RHEL7
 
 from pylorax.api.crossdomain import crossdomain
-from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename
+from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
 from pylorax.api.workspace import workspace_read
 from pylorax.creator import DRACUT_DEFAULT, mount_boot_part_over_root
 from pylorax.creator import make_appliance, make_image, make_livecd, make_live_images
@@ -39,6 +39,9 @@ try:
     import libvirt
 except ImportError:
     libvirt = None
+
+def take_limits(iterable, offset, limit):
+    return iterable[offset:][:limit]
 
 def v0_api(api):
     """ Setup v0 of the API server"""
@@ -110,3 +113,31 @@ def v0_api(api):
         errors = sorted(errors, key=lambda e: e["recipe"].lower())
 
         return jsonify(changes=changes, recipes=recipes, errors=errors)
+
+    @api.route("/api/v0/recipes/changes/<recipe_names>")
+    @crossdomain(origin="*")
+    def v0_recipes_changes(recipe_names):
+        """Return the changes to a recipe or list of recipes"""
+        try:
+            limit = int(request.args.get("limit", "20"))
+            offset = int(request.args.get("offset", "0"))
+        except ValueError:
+            # TODO return an error
+            pass
+
+        recipes = []
+        errors = []
+        for recipe_name in [n.strip() for n in recipe_names.split(",")]:
+            filename = recipe_filename(recipe_name)
+            try:
+                with api.config["GITLOCK"].lock:
+                    commits = take_limits(list_commits(api.config["GITLOCK"].repo, "master", filename), offset, limit)
+            except Exception as e:
+                errors.append({"recipe":recipe_name, "msg":e})
+            else:
+                recipes.append({"name":recipe_name, "changes":commits, "total":len(commits)})
+
+        recipes = sorted(recipes, key=lambda r: r["name"].lower())
+        errors = sorted(errors, key=lambda e: e["recipe"].lower())
+
+        return jsonify(recipes=recipes, errors=errors, offset=offset, limit=limit)
