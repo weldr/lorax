@@ -19,9 +19,10 @@ from threading import Lock
 import unittest
 
 from flask import json
+import pytoml as toml
 from pylorax.api.recipes import open_or_create_repo, commit_recipe_directory
 from pylorax.api.server import server, GitLock
-
+from pylorax.sysutils import joinpaths
 
 class ServerTestCase(unittest.TestCase):
 
@@ -35,8 +36,10 @@ class ServerTestCase(unittest.TestCase):
         server.config['TESTING'] = True
         self.server = server.test_client()
 
+        self.examples_path = "./tests/pylorax/recipes/"
+
         # Import the example recipes
-        commit_recipe_directory(server.config["GITLOCK"].repo, "master", "tests/pylorax/recipes/")
+        commit_recipe_directory(server.config["GITLOCK"].repo, "master", self.examples_path)
 
     @classmethod
     def tearDownClass(self):
@@ -122,3 +125,47 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(len(data["recipes"]), 1)
         self.assertEqual(data["recipes"][0]["name"], "http-server")
         self.assertEqual(len(data["recipes"][0]["changes"]), 1)
+
+    def test_recipes_new_json(self):
+        """Test the /api/v0/recipes/new route with json recipe"""
+        test_recipe = {"description": "An example GlusterFS server with samba",
+                       "name":"glusterfs",
+                       "version": "0.2.0",
+                       "modules":[{"name":"glusterfs", "version":"3.7.*"},
+                                  {"name":"glusterfs-cli", "version":"3.7.*"}],
+                       "packages":[{"name":"samba", "version":"4.2.*"},
+                                   {"name":"tmux", "version":"2.2"}]}
+
+        resp = self.server.post("/api/v0/recipes/new",
+                                data=json.dumps(test_recipe),
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+        resp = self.server.get("/api/v0/recipes/info/glusterfs")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        recipes = data.get("recipes")
+        self.assertEqual(len(recipes), 1)
+        self.assertEqual(recipes[0], test_recipe)
+
+    def test_recipes_new_toml(self):
+        """Test the /api/v0/recipes/new route with toml recipe"""
+        test_recipe = open(joinpaths(self.examples_path, "glusterfs.toml"), "rb").read()
+        resp = self.server.post("/api/v0/recipes/new",
+                                data=test_recipe,
+                                content_type="text/x-toml")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+        resp = self.server.get("/api/v0/recipes/info/glusterfs")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        recipes = data.get("recipes")
+        self.assertEqual(len(recipes), 1)
+
+        # Returned recipe has had its version bumped to 0.2.1
+        test_recipe = toml.loads(test_recipe)
+        test_recipe["version"] = "0.2.1"
+
+        self.assertEqual(recipes[0], test_recipe)
