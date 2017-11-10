@@ -22,7 +22,8 @@ from pykickstart.version import makeVersion, RHEL7
 
 from pylorax.api.crossdomain import crossdomain
 from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
-from pylorax.api.workspace import workspace_read
+from pylorax.api.recipes import recipe_from_dict, recipe_from_toml, commit_recipe
+from pylorax.api.workspace import workspace_read, workspace_write
 from pylorax.creator import DRACUT_DEFAULT, mount_boot_part_over_root
 from pylorax.creator import make_appliance, make_image, make_livecd, make_live_images
 from pylorax.creator import make_runtime, make_squashfs
@@ -141,3 +142,25 @@ def v0_api(api):
         errors = sorted(errors, key=lambda e: e["recipe"].lower())
 
         return jsonify(recipes=recipes, errors=errors, offset=offset, limit=limit)
+
+    @api.route("/api/v0/recipes/new", methods=["POST"])
+    @crossdomain(origin="*")
+    def v0_recipes_new():
+        """Commit a new recipe"""
+        errors = []
+        try:
+            if request.headers['Content-Type'] == "text/x-toml":
+                recipe = recipe_from_toml(request.data)
+            else:
+                recipe = recipe_from_dict(request.get_json(cache=False))
+
+            with api.config["GITLOCK"].lock:
+                commit_recipe(api.config["GITLOCK"].repo, "master", recipe)
+
+                # Read the recipe with new version and write it to the workspace
+                recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe.filename)
+                workspace_write(api.config["GITLOCK"].repo, "master", recipe)
+        except Exception as e:
+            return jsonify(status=False, error={"msg":str(e)}), 400
+        else:
+            return jsonify(status=True)
