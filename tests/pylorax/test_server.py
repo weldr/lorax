@@ -71,7 +71,7 @@ class ServerTestCase(unittest.TestCase):
                                    "packages": [{"name":"openssh-server", "version": "6.6.*"},
                                                 {"name": "rsync", "version": "3.0.*"},
                                                 {"name": "tmux", "version": "2.2"}],
-                                   "version": "0.0.2"}]}
+                                   "version": "0.0.1"}]}
         resp = self.server.get("/api/v0/recipes/info/http-server")
         data = json.loads(resp.data)
         self.assertEqual(data, info_dict_1)
@@ -95,7 +95,7 @@ class ServerTestCase(unittest.TestCase):
                                    "packages": [{"name":"openssh-server", "version": "6.6.*"},
                                                 {"name": "rsync", "version": "3.0.*"},
                                                 {"name": "tmux", "version": "2.2"}],
-                                   "version": "0.0.2"},
+                                   "version": "0.0.1"},
                                  ]}
         resp = self.server.get("/api/v0/recipes/info/http-server,glusterfs")
         data = json.loads(resp.data)
