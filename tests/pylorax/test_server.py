@@ -46,14 +46,14 @@ class ServerTestCase(unittest.TestCase):
     def tearDownClass(self):
         shutil.rmtree(server.config["REPO_DIR"])
 
-    def test_status(self):
+    def test_01_status(self):
         """Test the /api/v0/status route"""
         status_dict = {"build":"devel", "api":"0", "db_version":"0", "schema_version":"0", "db_supported":False}
         resp = self.server.get("/api/v0/status")
         data = json.loads(resp.data)
         self.assertEqual(data, status_dict)
 
-    def test_recipes_list(self):
+    def test_02_recipes_list(self):
         """Test the /api/v0/recipes/list route"""
         list_dict = {"recipes":["atlas", "development", "glusterfs", "http-server", "jboss", "kubernetes"],
                      "limit":20, "offset":0, "total":6}
@@ -61,7 +61,7 @@ class ServerTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertEqual(data, list_dict)
 
-    def test_recipes_info(self):
+    def test_03_recipes_info(self):
         """Test the /api/v0/recipes/info route"""
         info_dict_1 = {"changes":[{"changed":False, "name":"http-server"}],
                        "errors":[],
@@ -113,7 +113,7 @@ class ServerTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertEqual(data, info_dict_3)
 
-    def test_recipes_changes(self):
+    def test_04_recipes_changes(self):
         """Test the /api/v0/recipes/changes route"""
         resp = self.server.get("/api/v0/recipes/changes/http-server")
         data = json.loads(resp.data)
@@ -127,7 +127,7 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(data["recipes"][0]["name"], "http-server")
         self.assertEqual(len(data["recipes"][0]["changes"]), 1)
 
-    def test_recipes_new_json(self):
+    def test_05_recipes_new_json(self):
         """Test the /api/v0/recipes/new route with json recipe"""
         test_recipe = {"description": "An example GlusterFS server with samba",
                        "name":"glusterfs",
@@ -150,7 +150,7 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(len(recipes), 1)
         self.assertEqual(recipes[0], test_recipe)
 
-    def test_recipes_new_toml(self):
+    def test_06_recipes_new_toml(self):
         """Test the /api/v0/recipes/new route with toml recipe"""
         test_recipe = open(joinpaths(self.examples_path, "glusterfs.toml"), "rb").read()
         resp = self.server.post("/api/v0/recipes/new",
@@ -171,7 +171,7 @@ class ServerTestCase(unittest.TestCase):
 
         self.assertEqual(recipes[0], test_recipe)
 
-    def test_recipes_ws_json(self):
+    def test_07_recipes_ws_json(self):
         """Test the /api/v0/recipes/workspace route with json recipe"""
         test_recipe = {"description": "An example GlusterFS server with samba, ws version",
                        "name":"glusterfs",
@@ -197,7 +197,7 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(len(changes), 1)
         self.assertEqual(changes[0], {"name":"glusterfs", "changed":True})
 
-    def test_recipes_ws_toml(self):
+    def test_08_recipes_ws_toml(self):
         """Test the /api/v0/recipes/workspace route with toml recipe"""
         test_recipe = {"description": "An example GlusterFS server with samba, ws version",
                        "name":"glusterfs",
@@ -223,10 +223,10 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(len(changes), 1)
         self.assertEqual(changes[0], {"name":"glusterfs", "changed":True})
 
-    def test_recipes_ws_delete(self):
+    def test_09_recipes_ws_delete(self):
         """Test DELETE /api/v0/recipes/workspace/<recipe_name>"""
         # Write to the workspace first, just use the test_recipes_ws_json test for this
-        self.test_recipes_ws_json()
+        self.test_07_recipes_ws_json()
 
         # Delete it
         resp = self.server.delete("/api/v0/recipes/workspace/glusterfs")
@@ -243,3 +243,16 @@ class ServerTestCase(unittest.TestCase):
         changes = data.get("changes")
         self.assertEqual(len(changes), 1)
         self.assertEqual(changes[0], {"name":"glusterfs", "changed":False})
+
+    def test_10_recipes_delete(self):
+        """Test DELETE /api/v0/recipes/delete/<recipe_name>"""
+        resp = self.server.delete("/api/v0/recipes/delete/glusterfs")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+        # Make sure glusterfs is no longer in the list of recipes
+        resp = self.server.get("/api/v0/recipes/list")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        recipes = data.get("recipes")
+        self.assertEqual("glusterfs" in recipes, False)
