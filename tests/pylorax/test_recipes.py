@@ -174,7 +174,7 @@ class GitRecipesTest(unittest.TestCase):
 
     def test_08_delete_recipe(self):
         """Test deleting a file from a branch"""
-        oid = recipes.delete_file(self.repo, "master", "http-server.toml")
+        oid = recipes.delete_recipe(self.repo, "master", "http-server")
         self.assertNotEqual(oid, None)
 
         master_files = recipes.list_branch_files(self.repo, "master")
