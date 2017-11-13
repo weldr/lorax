@@ -79,7 +79,7 @@ def v0_api(api):
             # Get the workspace version (if it exists)
             try:
                 with api.config["GITLOCK"].lock:
-                    ws_recipe = workspace_read(api.config["GITLOCK"].repo, "master", filename)
+                    ws_recipe = workspace_read(api.config["GITLOCK"].repo, "master", recipe_name)
             except Exception as e:
                 ws_recipe = None
                 exceptions.append(str(e))
@@ -105,7 +105,7 @@ def v0_api(api):
                 recipes.append(git_recipe)
             else:
                 # Both exist, maybe changed, return the workspace recipe
-                changes.append({"name":recipe_name, "changed":ws_recipe == git_recipe})
+                changes.append({"name":recipe_name, "changed":ws_recipe != git_recipe})
                 recipes.append(ws_recipe)
 
         # Sort all the results by case-insensitive recipe name
@@ -147,7 +147,6 @@ def v0_api(api):
     @crossdomain(origin="*")
     def v0_recipes_new():
         """Commit a new recipe"""
-        errors = []
         try:
             if request.headers['Content-Type'] == "text/x-toml":
                 recipe = recipe_from_toml(request.data)
@@ -159,6 +158,23 @@ def v0_api(api):
 
                 # Read the recipe with new version and write it to the workspace
                 recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe.filename)
+                workspace_write(api.config["GITLOCK"].repo, "master", recipe)
+        except Exception as e:
+            return jsonify(status=False, error={"msg":str(e)}), 400
+        else:
+            return jsonify(status=True)
+
+    @api.route("/api/v0/recipes/workspace", methods=["POST"])
+    @crossdomain(origin="*")
+    def v0_recipes_workspace():
+        """Write a recipe to the workspace"""
+        try:
+            if request.headers['Content-Type'] == "text/x-toml":
+                recipe = recipe_from_toml(request.data)
+            else:
+                recipe = recipe_from_dict(request.get_json(cache=False))
+
+            with api.config["GITLOCK"].lock:
                 workspace_write(api.config["GITLOCK"].repo, "master", recipe)
         except Exception as e:
             return jsonify(status=False, error={"msg":str(e)}), 400
