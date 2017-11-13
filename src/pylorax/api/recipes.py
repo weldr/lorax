@@ -343,6 +343,21 @@ def list_commit_files(repo, commit):
     tree = commit_obj.get_tree()
     return sorted([tree.get(i).get_name() for i in range(0,tree.size())])
 
+def delete_recipe(repo, branch, recipe_name):
+    """Delete a recipe from a branch.
+
+    :param repo: Open repository
+    :type repo: Git.Repository
+    :param branch: Branch name
+    :type branch: str
+    :param recipe_name: Recipe name to delete
+    :type recipe_name: str
+    :returns: OId of the new commit
+    :rtype: Git.OId
+    :raises: Can raise errors from Ggit
+    """
+    return delete_file(repo, branch, recipe_filename(recipe_name))
+
 def delete_file(repo, branch, filename):
     """Delete a file from a branch.
 
