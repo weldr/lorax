@@ -292,15 +292,15 @@ def read_commit(repo, branch, filename, commit=None):
     """
     return read_commit_spec(repo, "%s:%s" % (commit or branch, filename))
 
-def read_recipe_commit(repo, branch, filename, commit=None):
+def read_recipe_commit(repo, branch, recipe_name, commit=None):
     """Read a recipe commit from git and return a Recipe object
 
     :param repo: Open repository
     :type repo: Git.Repository
     :param branch: Branch name
     :type branch: str
-    :param filename: filename to read
-    :type filename: str
+    :param recipe_name: Recipe name to read
+    :type recipe_name: str
     :param commit: Optional commit hash
     :type commit: str
     :returns: A Recipe object
@@ -310,7 +310,7 @@ def read_recipe_commit(repo, branch, filename, commit=None):
     If no commit is passed the master:filename is returned, otherwise it will be
     commit:filename
     """
-    recipe_toml = read_commit(repo, branch, filename, commit)
+    recipe_toml = read_commit(repo, branch, recipe_filename(recipe_name), commit)
     return recipe_from_toml(recipe_toml)
 
 def list_branch_files(repo, branch):
@@ -441,7 +441,7 @@ def commit_recipe(repo, branch, recipe):
     :raises: Can raise errors from Ggit
     """
     try:
-        old_recipe = read_recipe_commit(repo, branch, recipe.filename)
+        old_recipe = read_recipe_commit(repo, branch, recipe["name"])
         old_version = old_recipe["version"]
     except Exception:
         old_version = None

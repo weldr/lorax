@@ -151,12 +151,12 @@ class GitRecipesTest(unittest.TestCase):
         commits = recipes.list_commits(self.repo, "master", "http-server.toml")
         self.assertEqual(len(commits), 1, "Wrong number of commits: %s" % commits)
 
-        recipe = recipes.read_recipe_commit(self.repo, "master", "http-server.toml")
+        recipe = recipes.read_recipe_commit(self.repo, "master", "http-server")
         self.assertNotEqual(recipe, None)
         self.assertEqual(recipe["name"], "http-server")
 
         # Read by commit id
-        recipe = recipes.read_recipe_commit(self.repo, "master", "http-server.toml", commits[0].commit)
+        recipe = recipes.read_recipe_commit(self.repo, "master", "http-server", commits[0].commit)
         self.assertNotEqual(recipe, None)
         self.assertEqual(recipe["name"], "http-server")
 
@@ -193,7 +193,7 @@ class GitRecipesTest(unittest.TestCase):
 
     def test_10_tag_new_commit(self):
         """Test tagging a newer commit of a recipe"""
-        recipe = recipes.read_recipe_commit(self.repo, "master", "http-server.toml")
+        recipe = recipes.read_recipe_commit(self.repo, "master", "http-server")
         recipe["description"] = "A modified description"
         oid = recipes.commit_recipe(self.repo, "master", recipe)
         self.assertNotEqual(oid, None)
