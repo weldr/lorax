@@ -184,7 +184,7 @@ class GitRecipesTest(unittest.TestCase):
         """Test reverting a file on a branch"""
         commits = recipes.list_commits(self.repo, "master", "http-server.toml")
         revert_to = commits[0].commit
-        oid = recipes.revert_file(self.repo, "master", "http-server.toml", revert_to)
+        oid = recipes.revert_recipe(self.repo, "master", "http-server", revert_to)
         self.assertNotEqual(oid, None)
 
         commits = recipes.list_commits(self.repo, "master", "http-server.toml")

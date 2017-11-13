@@ -379,6 +379,23 @@ def delete_file(repo, branch, filename):
     message = "Recipe %s deleted" % filename
     return repo.create_commit(ref, sig, sig, "UTF-8", message, tree, [parent_commit])
 
+def revert_recipe(repo, branch, recipe_name, commit):
+    """Revert the contents of a recipe to that of a previous commit
+
+    :param repo: Open repository
+    :type repo: Git.Repository
+    :param branch: Branch name
+    :type branch: str
+    :param recipe_name: Recipe name to revert
+    :type recipe_name: str
+    :param commit: Commit hash
+    :type commit: str
+    :returns: OId of the new commit
+    :rtype: Git.OId
+    :raises: Can raise errors from Ggit
+    """
+    return revert_file(repo, branch, recipe_filename(recipe_name), commit)
+
 def revert_file(repo, branch, filename, commit):
     """Revert the contents of a file to that of a previous commit
 
