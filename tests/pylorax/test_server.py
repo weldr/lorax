@@ -222,3 +222,24 @@ class ServerTestCase(unittest.TestCase):
         changes = data.get("changes")
         self.assertEqual(len(changes), 1)
         self.assertEqual(changes[0], {"name":"glusterfs", "changed":True})
+
+    def test_recipes_ws_delete(self):
+        """Test DELETE /api/v0/recipes/workspace/<recipe_name>"""
+        # Write to the workspace first, just use the test_recipes_ws_json test for this
+        self.test_recipes_ws_json()
+
+        # Delete it
+        resp = self.server.delete("/api/v0/recipes/workspace/glusterfs")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+        # Make sure it isn't the workspace copy and that changed is False
+        resp = self.server.get("/api/v0/recipes/info/glusterfs")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        recipes = data.get("recipes")
+        self.assertEqual(len(recipes), 1)
+        self.assertEqual(recipes[0]["version"], "0.2.1")
+        changes = data.get("changes")
+        self.assertEqual(len(changes), 1)
+        self.assertEqual(changes[0], {"name":"glusterfs", "changed":False})
