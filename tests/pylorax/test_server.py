@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import shutil
 import tempfile
 from threading import Lock
 import unittest
@@ -43,7 +44,7 @@ class ServerTestCase(unittest.TestCase):
 
     @classmethod
     def tearDownClass(self):
-        pass
+        shutil.rmtree(server.config["REPO_DIR"])
 
     def test_status(self):
         """Test the /api/v0/status route"""
@@ -169,3 +170,55 @@ class ServerTestCase(unittest.TestCase):
         test_recipe["version"] = "0.2.1"
 
         self.assertEqual(recipes[0], test_recipe)
+
+    def test_recipes_ws_json(self):
+        """Test the /api/v0/recipes/workspace route with json recipe"""
+        test_recipe = {"description": "An example GlusterFS server with samba, ws version",
+                       "name":"glusterfs",
+                       "version": "0.3.0",
+                       "modules":[{"name":"glusterfs", "version":"3.7.*"},
+                                  {"name":"glusterfs-cli", "version":"3.7.*"}],
+                       "packages":[{"name":"samba", "version":"4.2.*"},
+                                   {"name":"tmux", "version":"2.2"}]}
+
+        resp = self.server.post("/api/v0/recipes/workspace",
+                                data=json.dumps(test_recipe),
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+        resp = self.server.get("/api/v0/recipes/info/glusterfs")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        recipes = data.get("recipes")
+        self.assertEqual(len(recipes), 1)
+        self.assertEqual(recipes[0], test_recipe)
+        changes = data.get("changes")
+        self.assertEqual(len(changes), 1)
+        self.assertEqual(changes[0], {"name":"glusterfs", "changed":True})
+
+    def test_recipes_ws_toml(self):
+        """Test the /api/v0/recipes/workspace route with toml recipe"""
+        test_recipe = {"description": "An example GlusterFS server with samba, ws version",
+                       "name":"glusterfs",
+                       "version": "0.4.0",
+                       "modules":[{"name":"glusterfs", "version":"3.7.*"},
+                                  {"name":"glusterfs-cli", "version":"3.7.*"}],
+                       "packages":[{"name":"samba", "version":"4.2.*"},
+                                   {"name":"tmux", "version":"2.2"}]}
+
+        resp = self.server.post("/api/v0/recipes/workspace",
+                                data=json.dumps(test_recipe),
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+        resp = self.server.get("/api/v0/recipes/info/glusterfs")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        recipes = data.get("recipes")
+        self.assertEqual(len(recipes), 1)
+        self.assertEqual(recipes[0], test_recipe)
+        changes = data.get("changes")
+        self.assertEqual(len(changes), 1)
+        self.assertEqual(changes[0], {"name":"glusterfs", "changed":True})
