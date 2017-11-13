@@ -23,7 +23,7 @@ from pykickstart.version import makeVersion, RHEL7
 from pylorax.api.crossdomain import crossdomain
 from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
 from pylorax.api.recipes import recipe_from_dict, recipe_from_toml, commit_recipe
-from pylorax.api.workspace import workspace_read, workspace_write
+from pylorax.api.workspace import workspace_read, workspace_write, workspace_delete
 from pylorax.creator import DRACUT_DEFAULT, mount_boot_part_over_root
 from pylorax.creator import make_appliance, make_image, make_livecd, make_live_images
 from pylorax.creator import make_runtime, make_squashfs
@@ -176,6 +176,18 @@ def v0_api(api):
 
             with api.config["GITLOCK"].lock:
                 workspace_write(api.config["GITLOCK"].repo, "master", recipe)
+        except Exception as e:
+            return jsonify(status=False, error={"msg":str(e)}), 400
+        else:
+            return jsonify(status=True)
+
+    @api.route("/api/v0/recipes/workspace/<recipe_name>", methods=["DELETE"])
+    @crossdomain(origin="*")
+    def v0_recipes_delete_workspace(recipe_name):
+        """Delete a recipe from the workspace"""
+        try:
+            with api.config["GITLOCK"].lock:
+                workspace_delete(api.config["GITLOCK"].repo, "master", recipe_name)
         except Exception as e:
             return jsonify(status=False, error={"msg":str(e)}), 400
         else:
