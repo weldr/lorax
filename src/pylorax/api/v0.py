@@ -75,7 +75,6 @@ def v0_api(api):
         errors = []
         for recipe_name in [n.strip() for n in recipe_names.split(",")]:
             exceptions = []
-            filename = recipe_filename(recipe_name)
             # Get the workspace version (if it exists)
             try:
                 with api.config["GITLOCK"].lock:
@@ -87,7 +86,7 @@ def v0_api(api):
             # Get the git version (if it exists)
             try:
                 with api.config["GITLOCK"].lock:
-                    git_recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", filename)
+                    git_recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe_name)
             except Exception as e:
                 git_recipe = None
                 exceptions.append(str(e))
@@ -157,7 +156,7 @@ def v0_api(api):
                 commit_recipe(api.config["GITLOCK"].repo, "master", recipe)
 
                 # Read the recipe with new version and write it to the workspace
-                recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe.filename)
+                recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe["name"])
                 workspace_write(api.config["GITLOCK"].repo, "master", recipe)
         except Exception as e:
             return jsonify(status=False, error={"msg":str(e)}), 400
