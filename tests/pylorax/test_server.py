@@ -256,3 +256,33 @@ class ServerTestCase(unittest.TestCase):
         self.assertNotEqual(data, None)
         recipes = data.get("recipes")
         self.assertEqual("glusterfs" in recipes, False)
+
+    def test_11_recipes_undo(self):
+        """Test POST /api/v0/recipes/undo/<recipe_name/<commit>"""
+        resp = self.server.get("/api/v0/recipes/changes/glusterfs")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+
+        # Revert it to the first commit
+        recipes = data.get("recipes")
+        self.assertNotEqual(recipes, None)
+        changes = recipes[0].get("changes")
+        self.assertEqual(len(changes) > 1, True)
+
+        # Revert it to the first commit
+        commit = changes[-1]["commit"]
+        resp = self.server.post("/api/v0/recipes/undo/glusterfs/%s" % commit)
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+        resp = self.server.get("/api/v0/recipes/changes/glusterfs")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+
+        recipes = data.get("recipes")
+        self.assertNotEqual(recipes, None)
+        changes = recipes[0].get("changes")
+        self.assertEqual(len(changes) > 1, True)
+
+        expected_msg = "Recipe glusterfs.toml reverted to commit %s" % commit
+        self.assertEqual(changes[0]["message"], expected_msg)
