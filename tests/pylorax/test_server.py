@@ -286,3 +286,20 @@ class ServerTestCase(unittest.TestCase):
 
         expected_msg = "Recipe glusterfs.toml reverted to commit %s" % commit
         self.assertEqual(changes[0]["message"], expected_msg)
+
+    def test_12_recipes_tag(self):
+        """Test POST /api/v0/recipes/tag/<recipe_name>"""
+        resp = self.server.post("/api/v0/recipes/tag/glusterfs")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+        resp = self.server.get("/api/v0/recipes/changes/glusterfs")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+
+        # Revert it to the first commit
+        recipes = data.get("recipes")
+        self.assertNotEqual(recipes, None)
+        changes = recipes[0].get("changes")
+        self.assertEqual(len(changes) > 1, True)
+        self.assertEqual(changes[0]["revision"], 1)
