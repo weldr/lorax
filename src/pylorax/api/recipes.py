@@ -498,6 +498,23 @@ def commit_recipe_directory(repo, branch, directory):
         except (RecipeFileError, toml.TomlError):
             pass
 
+def tag_recipe_commit(repo, branch, recipe_name):
+    """Tag a file's most recent commit
+
+    :param repo: Open repository
+    :type repo: Git.Repository
+    :param branch: Branch name
+    :type branch: str
+    :param recipe_name: Recipe name to tag
+    :type recipe_name: str
+    :returns: Tag id or None if it failed.
+    :rtype: Git.OId
+    :raises: Can raise errors from Ggit
+
+    Uses tag_file_commit()
+    """
+    return tag_file_commit(repo, branch, recipe_filename(recipe_name))
+
 def tag_file_commit(repo, branch, filename):
     """Tag a file's most recent commit
 

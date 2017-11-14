@@ -165,7 +165,7 @@ class GitRecipesTest(unittest.TestCase):
         result = recipes.tag_file_commit(self.repo, "master", "not-a-file")
         self.assertEqual(result, None)
 
-        result = recipes.tag_file_commit(self.repo, "master", "http-server.toml")
+        result = recipes.tag_recipe_commit(self.repo, "master", "http-server")
         self.assertNotEqual(result, None)
 
         commits = recipes.list_commits(self.repo, "master", "http-server.toml")
@@ -199,7 +199,7 @@ class GitRecipesTest(unittest.TestCase):
         self.assertNotEqual(oid, None)
 
         # Tag the new commit
-        result = recipes.tag_file_commit(self.repo, "master", "http-server.toml")
+        result = recipes.tag_recipe_commit(self.repo, "master", "http-server")
         self.assertNotEqual(result, None)
 
         commits = recipes.list_commits(self.repo, "master", "http-server.toml")
