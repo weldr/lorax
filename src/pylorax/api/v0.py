@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import logging
+log = logging.getLogger("lorax-composer")
+
 from flask import jsonify, request
 
 # Use pykickstart to calculate disk image size
@@ -83,6 +86,7 @@ def v0_api(api):
             except Exception as e:
                 ws_recipe = None
                 exceptions.append(str(e))
+                log.error("(v0_recipes_info) %s", str(e))
 
             # Get the git version (if it exists)
             try:
@@ -91,6 +95,7 @@ def v0_api(api):
             except Exception as e:
                 git_recipe = None
                 exceptions.append(str(e))
+                log.error("(v0_recipes_info) %s", str(e))
 
             if not ws_recipe and not git_recipe:
                 # Neither recipe, return an error
@@ -135,6 +140,7 @@ def v0_api(api):
                     commits = take_limits(list_commits(api.config["GITLOCK"].repo, "master", filename), offset, limit)
             except Exception as e:
                 errors.append({"recipe":recipe_name, "msg":e})
+                log.error("(v0_recipes_changes) %s", str(e))
             else:
                 recipes.append({"name":recipe_name, "changes":commits, "total":len(commits)})
 
@@ -160,6 +166,7 @@ def v0_api(api):
                 recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe["name"])
                 workspace_write(api.config["GITLOCK"].repo, "master", recipe)
         except Exception as e:
+            log.error("(v0_recipes_new) %s", str(e))
             return jsonify(status=False, error={"msg":str(e)}), 400
         else:
             return jsonify(status=True)
@@ -172,6 +179,7 @@ def v0_api(api):
             with api.config["GITLOCK"].lock:
                 delete_recipe(api.config["GITLOCK"].repo, "master", recipe_name)
         except Exception as e:
+            log.error("(v0_recipes_delete) %s", str(e))
             return jsonify(status=False, error={"msg":str(e)}), 400
         else:
             return jsonify(status=True)
@@ -189,6 +197,7 @@ def v0_api(api):
             with api.config["GITLOCK"].lock:
                 workspace_write(api.config["GITLOCK"].repo, "master", recipe)
         except Exception as e:
+            log.error("(v0_recipes_workspace) %s", str(e))
             return jsonify(status=False, error={"msg":str(e)}), 400
         else:
             return jsonify(status=True)
@@ -201,6 +210,7 @@ def v0_api(api):
             with api.config["GITLOCK"].lock:
                 workspace_delete(api.config["GITLOCK"].repo, "master", recipe_name)
         except Exception as e:
+            log.error("(v0_recipes_delete_workspace) %s", str(e))
             return jsonify(status=False, error={"msg":str(e)}), 400
         else:
             return jsonify(status=True)
@@ -217,6 +227,7 @@ def v0_api(api):
                 recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe_name)
                 workspace_write(api.config["GITLOCK"].repo, "master", recipe)
         except Exception as e:
+            log.error("(v0_recipes_undo) %s", str(e))
             return jsonify(status=False, error={"msg":str(e)}), 400
         else:
             return jsonify(status=True)
@@ -229,6 +240,7 @@ def v0_api(api):
             with api.config["GITLOCK"].lock:
                 tag_recipe_commit(api.config["GITLOCK"].repo, "master", recipe_name)
         except Exception as e:
+            log.error("(v0_recipes_tag) %s", str(e))
             return jsonify(status=False, error={"msg":str(e)}), 400
         else:
             return jsonify(status=True)
@@ -245,6 +257,7 @@ def v0_api(api):
                 with api.config["GITLOCK"].lock:
                     old_recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe_name, from_commit)
         except Exception as e:
+            log.error("(v0_recipes_diff) %s", str(e))
             return jsonify(status=False, error={"msg":str(e)}), 400
 
         try:
@@ -258,6 +271,7 @@ def v0_api(api):
                 with api.config["GITLOCK"].lock:
                     new_recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe_name, to_commit)
         except Exception as e:
+            log.error("(v0_recipes_diff) %s", str(e))
             return jsonify(status=False, error={"msg":str(e)}), 400
 
         diff = recipe_diff(old_recipe, new_recipe)
