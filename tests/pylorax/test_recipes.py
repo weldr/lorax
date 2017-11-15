@@ -39,6 +39,25 @@ class BasicRecipeTest(unittest.TestCase):
                     result_dict = eval(f_dict.read())
                 self.input_toml.append((f_toml.read(), result_dict))
 
+        self.old_modules = [recipes.RecipeModule("toml", "2.1"),
+                            recipes.RecipeModule("bash", "4.*"),
+                            recipes.RecipeModule("httpd", "3.7.*")]
+        self.old_packages = [recipes.RecipePackage("python", "2.7.*"),
+                             recipes.RecipePackage("parted", "3.2")]
+        self.new_modules = [recipes.RecipeModule("toml", "2.1"),
+                            recipes.RecipeModule("httpd", "3.8.*"),
+                            recipes.RecipeModule("openssh", "2.8.1")]
+        self.new_packages = [recipes.RecipePackage("python", "2.7.*"),
+                             recipes.RecipePackage("parted", "3.2"),
+                             recipes.RecipePackage("git", "2.13.*")]
+        self.modules_result = [{"new": {"Modules": {"version": "2.8.1", "name": "openssh"}},
+                                "old": None},
+                               {"new": None,
+                                "old": {"Modules": {"name": "bash", "version": "4.*"}}},
+                               {"new": {"Modules": {"version": "3.8.*", "name": "httpd"}},
+                                "old": {"Modules": {"version": "3.7.*", "name": "httpd"}}}]
+        self.packages_result = [{"new": {"Packages": {"name": "git", "version": "2.13.*"}}, "old": None}]
+
     @classmethod
     def tearDownClass(self):
         pass
@@ -97,6 +116,30 @@ class BasicRecipeTest(unittest.TestCase):
         new_version = recipe.bump_version("0.0.1")
         self.assertEqual(new_version, "0.1.1")
 
+    def find_name_test(self):
+        """Test the find_name function"""
+        test_list = [{"name":"dog"}, {"name":"cat"}, {"name":"squirrel"}]
+
+        self.assertEqual(recipes.find_name("dog", test_list), {"name":"dog"})
+        self.assertEqual(recipes.find_name("cat", test_list), {"name":"cat"})
+        self.assertEqual(recipes.find_name("squirrel", test_list), {"name":"squirrel"})
+
+    def diff_items_test(self):
+        """Test the diff_items function"""
+        self.assertEqual(recipes.diff_items("Modules", self.old_modules, self.new_modules), self.modules_result)
+        self.assertEqual(recipes.diff_items("Packages", self.old_packages, self.new_packages), self.packages_result)
+
+    def recipe_diff_test(self):
+        """Test the recipe_diff function"""
+        old_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.1.1", self.old_modules, self.old_packages)
+        new_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.3.1", self.new_modules, self.new_packages)
+        result = [{'new': {'Version': '0.3.1'}, 'old': {'Version': '0.1.1'}},
+                  {'new': {'Module': {'name': 'openssh', 'version': '2.8.1'}}, 'old': None},
+                  {'new': None, 'old': {'Module': {'name': 'bash', 'version': '4.*'}}},
+                  {'new': {'Module': {'name': 'httpd', 'version': '3.8.*'}},
+                   'old': {'Module': {'name': 'httpd', 'version': '3.7.*'}}},
+                  {'new': {'Package': {'name': 'git', 'version': '2.13.*'}}, 'old': None}]
+        self.assertEqual(recipes.recipe_diff(old_recipe, new_recipe), result)
 
 class GitRecipesTest(unittest.TestCase):
     @classmethod

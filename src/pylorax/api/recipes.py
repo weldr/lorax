@@ -718,3 +718,83 @@ def is_parent_diff(repo, filename, tree, parent):
     diff_opts.set_pathspec([filename])
     diff = Git.Diff.new_tree_to_tree(repo, parent.get_tree(), tree, diff_opts)
     return diff.get_num_deltas() > 0
+
+def find_name(name, lst):
+    """Find the dict matching the name in a list and return it.
+
+    :param name: Name to search for
+    :type name: str
+    :param lst: List of dict's with "name" field
+    :returns: First dict with matching name, or None
+    :rtype: dict or None
+    """
+    for e in lst:
+        if e["name"] == name:
+            return e
+    return None
+
+def diff_items(title, old_items, new_items):
+    """Return the differences between two lists of dicts.
+
+    :param title: Title of the entry
+    :type title: str
+    :param old_items: List of item dicts with "name" field
+    :type old_items: list(dict)
+    :param new_items: List of item dicts with "name" field
+    :type new_items: list(dict)
+    :returns: List of diff dicts with old/new entries
+    :rtype: list(dict)
+    """
+    diffs = []
+    old_names = set(m["name"] for m in old_items)
+    new_names = set(m["name"] for m in new_items)
+
+    added_items = new_names.difference(old_names)
+    added_items = sorted(added_items, key=lambda n: n.lower())
+
+    removed_items = old_names.difference(new_names)
+    removed_items = sorted(removed_items, key=lambda n: n.lower())
+
+    same_items = old_names.intersection(new_names)
+    same_items = sorted(same_items, key=lambda n: n.lower())
+
+    for name in added_items:
+        diffs.append({"old":None,
+                      "new":{title:find_name(name, new_items)}})
+
+    for name in removed_items:
+        diffs.append({"old":{title:find_name(name, old_items)},
+                      "new":None})
+
+    for name in same_items:
+        old_item = find_name(name, old_items)
+        new_item = find_name(name, new_items)
+        if old_item != new_item:
+            diffs.append({"old":{title:old_item},
+                          "new":{title:new_item}})
+
+    return diffs
+
+
+def recipe_diff(old_recipe, new_recipe):
+    """Diff two versions of a recipe
+
+    :param old_recipe: The old version of the recipe
+    :type old_recipe: Recipe
+    :param new_recipe: The new version of the recipe
+    :type new_recipe: Recipe
+    :returns: A list of diff dict entries with old/new
+    :rtype: list(dict)
+    """
+
+    diffs = []
+    # These cannot be added or removed, just different
+    for element in ["name", "description", "version"]:
+        if old_recipe[element] != new_recipe[element]:
+            diffs.append({"old":{element.title():old_recipe[element]},
+                          "new":{element.title():new_recipe[element]}})
+
+    diffs.extend(diff_items("Module", old_recipe["modules"], new_recipe["modules"]))
+    diffs.extend(diff_items("Package", old_recipe["packages"], new_recipe["packages"]))
+
+    return diffs
