@@ -303,3 +303,52 @@ class ServerTestCase(unittest.TestCase):
         changes = recipes[0].get("changes")
         self.assertEqual(len(changes) > 1, True)
         self.assertEqual(changes[0]["revision"], 1)
+
+    def test_13_recipes_diff(self):
+        """Test /api/v0/recipes/diff/<recipe_name>/<from_commit>/<to_commit>"""
+        resp = self.server.get("/api/v0/recipes/changes/glusterfs")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        recipes = data.get("recipes")
+        self.assertNotEqual(recipes, None)
+        changes = recipes[0].get("changes")
+        self.assertEqual(len(changes) >= 2, True)
+
+        from_commit = changes[1].get("commit")
+        self.assertNotEqual(from_commit, None)
+        to_commit = changes[0].get("commit")
+        self.assertNotEqual(to_commit, None)
+
+        # Get the differences between the two commits
+        resp = self.server.get("/api/v0/recipes/diff/glusterfs/%s/%s" % (from_commit, to_commit))
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data, {"diff": [{"new": {"Version": "0.0.1"}, "old": {"Version": "0.2.1"}}]})
+
+        # Write to the workspace and check the diff
+        test_recipe = {"description": "An example GlusterFS server with samba, ws version",
+                       "name":"glusterfs",
+                       "version": "0.3.0",
+                       "modules":[{"name":"glusterfs", "version":"3.7.*"},
+                                  {"name":"glusterfs-cli", "version":"3.7.*"}],
+                       "packages":[{"name":"samba", "version":"4.2.*"},
+                                   {"name":"tmux", "version":"2.2"}]}
+
+        resp = self.server.post("/api/v0/recipes/workspace",
+                                data=json.dumps(test_recipe),
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+        # Get the differences between the newest commit and the workspace
+        resp = self.server.get("/api/v0/recipes/diff/glusterfs/NEWEST/WORKSPACE")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        print(data)
+        result = {"diff": [{"new": {"Description": "An example GlusterFS server with samba, ws version"},
+                             "old": {"Description": "An example GlusterFS server with samba"}},
+                            {"new": {"Version": "0.3.0"},
+                             "old": {"Version": "0.0.1"}},
+                            {"new": {"Package": {"version": "2.2", "name": "tmux"}},
+                             "old": None}]}
+        self.assertEqual(data, result)

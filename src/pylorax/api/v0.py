@@ -23,7 +23,7 @@ from pykickstart.version import makeVersion, RHEL7
 from pylorax.api.crossdomain import crossdomain
 from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
 from pylorax.api.recipes import recipe_from_dict, recipe_from_toml, commit_recipe, delete_recipe, revert_recipe
-from pylorax.api.recipes import tag_recipe_commit
+from pylorax.api.recipes import tag_recipe_commit, recipe_diff
 from pylorax.api.workspace import workspace_read, workspace_write, workspace_delete
 from pylorax.creator import DRACUT_DEFAULT, mount_boot_part_over_root
 from pylorax.creator import make_appliance, make_image, make_livecd, make_live_images
@@ -232,3 +232,33 @@ def v0_api(api):
             return jsonify(status=False, error={"msg":str(e)}), 400
         else:
             return jsonify(status=True)
+
+    @api.route("/api/v0/recipes/diff/<recipe_name>/<from_commit>/<to_commit>")
+    @crossdomain(origin="*")
+    def v0_recipes_diff(recipe_name, from_commit, to_commit):
+        """Return the differences between two commits of a recipe"""
+        try:
+            if from_commit == "NEWEST":
+                with api.config["GITLOCK"].lock:
+                    old_recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe_name)
+            else:
+                with api.config["GITLOCK"].lock:
+                    old_recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe_name, from_commit)
+        except Exception as e:
+            return jsonify(status=False, error={"msg":str(e)}), 400
+
+        try:
+            if to_commit == "WORKSPACE":
+                with api.config["GITLOCK"].lock:
+                    new_recipe = workspace_read(api.config["GITLOCK"].repo, "master", recipe_name)
+            elif to_commit == "NEWEST":
+                with api.config["GITLOCK"].lock:
+                    new_recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe_name)
+            else:
+                with api.config["GITLOCK"].lock:
+                    new_recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe_name, to_commit)
+        except Exception as e:
+            return jsonify(status=False, error={"msg":str(e)}), 400
+
+        diff = recipe_diff(old_recipe, new_recipe)
+        return jsonify(diff=diff)
