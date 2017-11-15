@@ -6,7 +6,8 @@ import sys
 
 
 # config file
-data_files = [("/etc/lorax", ["etc/lorax.conf"])]
+data_files = [("/etc/lorax", ["etc/lorax.conf"]),
+              ("/usr/lib/systemd/system", ["systemd/lorax-composer.service"])]
 
 # shared files
 for root, dnames, fnames in os.walk("share"):
@@ -16,7 +17,7 @@ for root, dnames, fnames in os.walk("share"):
 
 # executable
 data_files.append(("/usr/sbin", ["src/sbin/lorax", "src/sbin/mkefiboot",
-                                 "src/sbin/livemedia-creator"]))
+                                 "src/sbin/livemedia-creator", "src/sbin/lorax-composer"]))
 data_files.append(("/usr/bin",  ["src/bin/image-minimizer",
                                  "src/bin/mk-s390-cdboot"]))
 
@@ -35,13 +36,13 @@ finally:
 setup(name="lorax",
       version=vernum,
       description="Lorax",
-      long_description="",
-      author="Martin Gracik",
-      author_email="mgracik@redhat.com",
-      url="http://",
-      download_url="http://",
+      long_description="Tools for creating bootable images, including the Anaconda boot.iso",
+      author="Brian C. Lane, Will Woods, Martin Gracik",
+      author_email="bcl@redhat.com",
+      url="https://rhinstaller.github.io/lorax/",
+      download_url="https://github.com/rhinstaller/lorax/releases",
       license="GPLv2+",
-      packages=["pylorax"],
+      packages=["pylorax", "pylorax.api"],
       package_dir={"" : "src"},
       data_files=data_files
       )
