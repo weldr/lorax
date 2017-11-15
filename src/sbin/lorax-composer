@@ -37,8 +37,8 @@ VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
 def get_parser():
     """ Return the ArgumentParser for lorax-composer"""
 
-    parser = argparse.ArgumentParser( description="Composer API Server",
-                                      fromfile_prefix_chars="@" )
+    parser = argparse.ArgumentParser(description="Lorax Composer API Server",
+                                     fromfile_prefix_chars="@")
 
     parser.add_argument("--host", default="127.0.0.1", metavar="HOST",
                         help="Host or IP to bind to (127.0.0.1)")
@@ -48,12 +48,8 @@ def get_parser():
                         help="Path to logfile (/var/log/lorax-composer/composer.log)")
     parser.add_argument("--mockfiles", default="/var/tmp/bdcs-mockfiles/", metavar="MOCKFILES",
                         help="Path to JSON files used for /api/mock/ paths (/var/tmp/bdcs-mockfiles/)")
-    parser.add_argument("--bdcs", default="/mddb/cs.repo", metavar="BDCS",
-                        help="Path to the content store directory (/mddb/cs.repo)")
     parser.add_argument("-V", action="store_true", dest="showver",
                         help="show program's version number and exit")
-    parser.add_argument("DB", metavar="DATABASE",
-                        help="Path to the BDCS sqlite database")
     parser.add_argument("RECIPES", metavar="RECIPES",
                         help="Path to the recipes")
 
@@ -95,18 +91,14 @@ if __name__ == '__main__':
         print(VERSION)
         sys.exit(0)
 
-    errors = []
-    if not os.path.exists(opts.DB):
-        errors.append("Database, %s, doesn't exist." % opts.DB)
-    if not os.path.exists(opts.RECIPES):
-        errors.append("Recipe directory, %s, is missing." % opts.RECIPES)
-
-    for e in errors:
-        print("ERROR: " + e)
-    if errors:
-        sys.exit(1)
-
+    logpath = os.path.abspath(os.path.dirname(opts.logfile))
+    if not os.path.isdir(logpath):
+        os.makedirs(logpath)
     setup_logging(opts.logfile)
+
+    if not os.path.isdir(opts.RECIPES):
+        log.warn("Creating empty recipe directory at %s", opts.RECIPES)
+        os.makedirs(opts.RECIPES)
 
     server.config["REPO_DIR"] = opts.RECIPES
     repo = open_or_create_repo(server.config["REPO_DIR"])
