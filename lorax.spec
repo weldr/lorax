@@ -149,6 +149,7 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %files lmc-novirt
 
 %files templates-generic
+%dir %{_datadir}/lorax/templates.d
 %{_datadir}/lorax/templates.d/*
 
 
