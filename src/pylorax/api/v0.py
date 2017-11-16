@@ -62,9 +62,8 @@ def v0_api(api):
         try:
             limit = int(request.args.get("limit", "20"))
             offset = int(request.args.get("offset", "0"))
-        except ValueError:
-            # TODO return an error
-            pass
+        except ValueError as e:
+            return jsonify(error={"msg":str(e)}), 400
 
         with api.config["GITLOCK"].lock:
             recipes = map(lambda f: f[:-5], list_branch_files(api.config["GITLOCK"].repo, "master"))
@@ -127,9 +126,8 @@ def v0_api(api):
         try:
             limit = int(request.args.get("limit", "20"))
             offset = int(request.args.get("offset", "0"))
-        except ValueError:
-            # TODO return an error
-            pass
+        except ValueError as e:
+            return jsonify(error={"msg":str(e)}), 400
 
         recipes = []
         errors = []
