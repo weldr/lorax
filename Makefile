@@ -18,8 +18,8 @@ all: src/pylorax/version.py
 install: all
 	$(PYTHON) setup.py install --root=$(DESTDIR)
 	mkdir -p $(DESTDIR)/$(mandir)/man1
-	install -m 644 docs/lorax.1 $(DESTDIR)/$(mandir)/man1
-	install -m 644 docs/livemedia-creator.1 $(DESTDIR)/$(mandir)/man1
+	install -m 644 docs/man/lorax.1 $(DESTDIR)/$(mandir)/man1
+	install -m 644 docs/man/livemedia-creator.1 $(DESTDIR)/$(mandir)/man1
 
 check:
 	@echo "*** Running pylint ***"
@@ -41,6 +41,9 @@ clean:
 tag:
 	git tag -f $(TAG)
 
+docs:
+	$(MAKE) -C docs apidoc html
+
 archive: tag
 	@git archive --format=tar --prefix=$(PKGNAME)-$(VERSION)/ $(TAG) > $(PKGNAME)-$(VERSION).tar
 	@gzip $(PKGNAME)-$(VERSION).tar
@@ -56,3 +59,5 @@ local:
 	@echo "The archive is in $(PKGNAME)-$(VERSION).tar.gz"
 
 ci: check test
+
+.PHONY: all install check test clean tag docs archive local
