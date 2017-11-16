@@ -66,7 +66,7 @@ def v0_api(api):
             return jsonify(error={"msg":str(e)}), 400
 
         with api.config["GITLOCK"].lock:
-            recipes = map(lambda f: f[:-5], list_branch_files(api.config["GITLOCK"].repo, "master"))
+            recipes = take_limits(map(lambda f: f[:-5], list_branch_files(api.config["GITLOCK"].repo, "master")), offset, limit)
         return jsonify(recipes=recipes, limit=limit, offset=offset, total=len(recipes))
 
     @api.route("/api/v0/recipes/info/<recipe_names>")
