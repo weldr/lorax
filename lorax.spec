@@ -73,6 +73,23 @@ It also includes livemedia-creator which is used to create bootable livemedia,
 including live isos and disk images. It can use libvirtd for the install, or
 Anaconda's image install feature.
 
+%package composer
+Summary: Lorax Image Composer API Server
+# From EPEL
+Requires: python2-pytoml
+Requires: python-semantic_version
+Requires: libgit2
+Requires: libgit2-glib
+# From Distribution
+Requires: python-flask
+Requires: python-gevent
+
+%{?systemd_requires}
+BuildRequires: systemd
+
+%description composer
+lorax-composer provides a REST API for building images using lorax.
+
 %prep
 %setup -q
 
@@ -82,11 +99,21 @@ Anaconda's image install feature.
 rm -rf $RPM_BUILD_ROOT
 make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
+%post composer
+%systemd_post lorax-composer.service
+
+%preun composer
+%systemd_preun lorax-composer.service
+
+%postun composer
+%systemd_postun_with_restart lorax-composer.service
+
 %files
 %defattr(-,root,root,-)
 %doc COPYING AUTHORS README.livemedia-creator README.product
 %doc docs/*ks
 %{python_sitelib}/pylorax
+%exclude %{python_sitelib}/pylorax/api/*
 %{python_sitelib}/*.egg-info
 %{_sbindir}/lorax
 %{_sbindir}/mkefiboot
@@ -98,6 +125,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %dir %{_datadir}/lorax
 %{_datadir}/lorax/*
 %{_mandir}/man1/*.1*
+
+%files composer
+%{python_sitelib}/pylorax/api/*
+%{_sbindir}/lorax-composer
+%{_unitdir}/lorax-composer.service
 
 %changelog
 * Fri Sep 29 2017 Brian C. Lane <bcl@redhat.com> 19.7.1-1

@@ -21,6 +21,7 @@ import logging
 log = logging.getLogger("lorax-composer")
 program_log = logging.getLogger("program")
 pylorax_log = logging.getLogger("pylorax")
+server_log = logging.getLogger("server")
 
 import argparse
 import os
@@ -37,8 +38,8 @@ VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
 def get_parser():
     """ Return the ArgumentParser for lorax-composer"""
 
-    parser = argparse.ArgumentParser( description="Composer API Server",
-                                      fromfile_prefix_chars="@" )
+    parser = argparse.ArgumentParser(description="Lorax Composer API Server",
+                                     fromfile_prefix_chars="@")
 
     parser.add_argument("--host", default="127.0.0.1", metavar="HOST",
                         help="Host or IP to bind to (127.0.0.1)")
@@ -48,12 +49,8 @@ def get_parser():
                         help="Path to logfile (/var/log/lorax-composer/composer.log)")
     parser.add_argument("--mockfiles", default="/var/tmp/bdcs-mockfiles/", metavar="MOCKFILES",
                         help="Path to JSON files used for /api/mock/ paths (/var/tmp/bdcs-mockfiles/)")
-    parser.add_argument("--bdcs", default="/mddb/cs.repo", metavar="BDCS",
-                        help="Path to the content store directory (/mddb/cs.repo)")
     parser.add_argument("-V", action="store_true", dest="showver",
                         help="show program's version number and exit")
-    parser.add_argument("DB", metavar="DATABASE",
-                        help="Path to the BDCS sqlite database")
     parser.add_argument("RECIPES", metavar="RECIPES",
                         help="Path to the recipes")
 
@@ -72,7 +69,7 @@ def setup_logging(logfile):
     log.addHandler(sh)
     pylorax_log.addHandler(sh)
 
-    fh = logging.FileHandler(filename=logfile, mode="w")
+    fh = logging.FileHandler(filename=logfile)
     fh.setLevel(logging.DEBUG)
     fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
     fh.setFormatter(fmt)
@@ -82,9 +79,26 @@ def setup_logging(logfile):
     # External program output log
     program_log.setLevel(logging.DEBUG)
     logfile = os.path.abspath(os.path.dirname(logfile))+"/program.log"
-    fh = logging.FileHandler(filename=logfile, mode="w")
+    fh = logging.FileHandler(filename=logfile)
     fh.setLevel(logging.DEBUG)
     program_log.addHandler(fh)
+
+    # Server request logging
+    server_log.setLevel(logging.DEBUG)
+    logfile = os.path.abspath(os.path.dirname(logfile))+"/server.log"
+    fh = logging.FileHandler(filename=logfile)
+    fh.setLevel(logging.DEBUG)
+    server_log.addHandler(fh)
+
+
+class LogWrapper(object):
+    """Wrapper for the WSGIServer which only calls write()"""
+    def __init__(self, log_obj):
+        self.log = log_obj
+
+    def write(self, msg):
+        """Log everything as INFO"""
+        self.log.info(msg.strip())
 
 
 if __name__ == '__main__':
@@ -95,18 +109,15 @@ if __name__ == '__main__':
         print(VERSION)
         sys.exit(0)
 
-    errors = []
-    if not os.path.exists(opts.DB):
-        errors.append("Database, %s, doesn't exist." % opts.DB)
-    if not os.path.exists(opts.RECIPES):
-        errors.append("Recipe directory, %s, is missing." % opts.RECIPES)
-
-    for e in errors:
-        print("ERROR: " + e)
-    if errors:
-        sys.exit(1)
-
+    logpath = os.path.abspath(os.path.dirname(opts.logfile))
+    if not os.path.isdir(logpath):
+        os.makedirs(logpath)
     setup_logging(opts.logfile)
+    log.debug("opts=%s", opts)
+
+    if not os.path.isdir(opts.RECIPES):
+        log.warn("Creating empty recipe directory at %s", opts.RECIPES)
+        os.makedirs(opts.RECIPES)
 
     server.config["REPO_DIR"] = opts.RECIPES
     repo = open_or_create_repo(server.config["REPO_DIR"])
@@ -115,9 +126,8 @@ if __name__ == '__main__':
     # Import example recipes
     commit_recipe_directory(server.config["GITLOCK"].repo, "master", opts.RECIPES)
 
-    http_server = WSGIServer((opts.host, opts.port), server)
+    log.info("Starting %s on %s:%d with recipes from %s", VERSION, opts.host, opts.port, opts.RECIPES)
+
+    http_server = WSGIServer((opts.host, opts.port), server, log=LogWrapper(server_log))
     # The server writes directly to a file object, so point to our log directory
-    server_logfile = os.path.abspath(os.path.dirname(opts.logfile))+"/server.log"
-    server_log = open(server_logfile, "w")
-    http_server.log = server_log
     http_server.serve_forever()
