@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.7.1
+Version:        19.7.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -132,6 +132,55 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_unitdir}/lorax-composer.service
 
 %changelog
+* Thu Nov 16 2017 Brian C. Lane <bcl@redhat.com> 19.7.2-1
+- Add limit/offset to recipes/list (bcl)
+- Add error message for offset/limit type errors (bcl)
+- Add error logging to api/v0.py (bcl)
+- Fix server request logging. (bcl)
+- Update lorax.spec for lorax-composer (bcl)
+- setup.py: Add pylorax.api module to install, and systemd service (bcl)
+- lorax-composer: Drop unneeded parameters and create missing directories (bcl)
+- Add /recipes/diff route and tests (bcl)
+- Add recipe_diff function and helpers. (bcl)
+- Add POST /recipes/tag/ route and tests (bcl)
+- Add tag_recipe_commit helper function (bcl)
+- Add POST /recipes/undo route and tests (bcl)
+- Change read_recipe_commit to use the recipe name (bcl)
+- Add revert_recipe function (bcl)
+- Add DELETE /recipes/delete/<recipe_name> route and tests (bcl)
+- Add delete_recipe helper function and test (bcl)
+- Add DELETE /recipes/workspace/<recipe_name> route and tests (bcl)
+- Add tests for POST /recipes/workspace for JSON and TOML (bcl)
+- Add POST /recipes/workspace route (bcl)
+- Add /recipes/new route and tests (bcl)
+- Split recipe_from_toml into recipe_from_dict helper. (bcl)
+- Fix the recipe version bumping (bcl)
+- Add /recipes/changes route with tests. (bcl)
+- Add /recipes/info route and tests (bcl)
+- Add workspace module and tests (bcl)
+- Add /recipes/list route and tests (bcl)
+- Move the git repo into a subdirectory (bcl)
+- Add basic API Server testing framework (bcl)
+- Fix list_commits sort order. (bcl)
+- Add tests for the pylorax.api.recipes module (bcl)
+- Add pylorax.api.recipes code for handling the Recipe's Git repository 
+- Fix mocking the built-in open function for Python2 (atodorov)
+- Don't do wildcard imports (atodorov)
+- Misc pylint fixes that are reported usually once (atodorov)
+- Fix dangerous-default value warnings (atodorov)
+- Don't redefine variables from outer scope (atodorov)
+- Define all class attributes inside __init__ (atodorov)
+- Fix logging formatting (atodorov)
+- Don't redefine builtins (atodorov)
+- Silence relative import warnings (atodorov)
+- pylint fix: unused variable warning (atodorov)
+- pylint fix: remove unused imports (atodorov)
+- Add make test target and update .gitignore (atodorov)
+- Add first unit test so we can start collecting coverage (atodorov)
+- lorax-composer initial commit (bcl)
+- Add pylint support to Makefile (bcl)
+- livemedia-creator: Move core functions into pylorax modules (bcl)
+
 * Fri Sep 29 2017 Brian C. Lane <bcl@redhat.com> 19.7.1-1
 - Build 19.7.1 for COPR
 
