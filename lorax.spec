@@ -11,6 +11,7 @@ URL:            http://git.fedorahosted.org/git/?p=lorax.git
 Source0:        https://fedorahosted.org/releases/l/o/%{name}/%{name}-%{version}.tar.gz
 
 BuildRequires:  python2-devel
+BuildRequires:  python-sphinx yum python-mako pykickstart
 
 Requires:       GConf2
 Requires:       cpio
@@ -75,6 +76,9 @@ Anaconda's image install feature.
 
 %package composer
 Summary: Lorax Image Composer API Server
+# For Sphinx documentation build
+BuildRequires: python-flask python-gobject libgit2-glib python2-pytoml python-semantic_version
+
 # From EPEL
 Requires: python2-pytoml
 Requires: python-semantic_version
@@ -94,6 +98,7 @@ lorax-composer provides a REST API for building images using lorax.
 %setup -q
 
 %build
+make docs
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -112,6 +117,7 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %defattr(-,root,root,-)
 %doc COPYING AUTHORS README.livemedia-creator README.product
 %doc docs/*ks
+%doc docs/html
 %{python_sitelib}/pylorax
 %exclude %{python_sitelib}/pylorax/api/*
 %{python_sitelib}/*.egg-info
