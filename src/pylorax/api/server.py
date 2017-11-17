@@ -14,11 +14,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import logging
+log = logging.getLogger("lorax-composer")
+
 from collections import namedtuple
-from flask import Flask
+from flask import Flask, send_from_directory
+from glob import glob
+import os
 
 from pylorax.api.crossdomain import crossdomain
 from pylorax.api.v0 import v0_api
+from pylorax.sysutils import joinpaths
 
 GitLock = namedtuple("GitLock", ["repo", "lock", "dir"])
 
@@ -30,5 +36,19 @@ __all__ = ["server", "GitLock"]
 @crossdomain(origin="*")
 def hello_world():
     return 'Hello, World!'
+
+@server.route("/api/docs/")
+@server.route("/api/docs/<path:path>")
+def api_docs(path=None):
+    # Find the html docs
+    try:
+        docs_path = glob("/usr/share/doc/lorax-*/html/")[0]
+    except IndexError:
+        # This assumes it is running from the source tree
+        docs_path = os.path.abspath(joinpaths(os.path.dirname(__file__), "../../../docs/html"))
+
+    if not path:
+        path="index.html"
+    return send_from_directory(docs_path, path)
 
 v0_api(server)
