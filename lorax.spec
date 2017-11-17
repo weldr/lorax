@@ -79,6 +79,8 @@ Summary: Lorax Image Composer API Server
 # For Sphinx documentation build
 BuildRequires: python-flask python-gobject libgit2-glib python2-pytoml python-semantic_version
 
+Requires: lorax = %{version}-%{release}
+
 # From EPEL
 Requires: python2-pytoml
 Requires: python-semantic_version
