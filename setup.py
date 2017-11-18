@@ -7,6 +7,7 @@ import sys
 
 # config file
 data_files = [("/etc/lorax", ["etc/lorax.conf"]),
+              ("/etc/lorax", ["etc/configure.conf"]),
               ("/usr/lib/systemd/system", ["systemd/lorax-composer.service"])]
 
 # shared files
