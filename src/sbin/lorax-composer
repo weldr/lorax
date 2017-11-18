@@ -24,6 +24,7 @@ pylorax_log = logging.getLogger("pylorax")
 server_log = logging.getLogger("server")
 
 import argparse
+import ConfigParser
 import os
 import sys
 from threading import Lock
@@ -31,7 +32,8 @@ from gevent.wsgi import WSGIServer
 
 from pylorax import vernum
 from pylorax.api.recipes import open_or_create_repo, commit_recipe_directory
-from pylorax.api.server import server, GitLock
+from pylorax.api.server import server, GitLock, YumLock
+from pylorax.api.yumbase import get_base_object
 
 VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
 
@@ -51,6 +53,8 @@ def get_parser():
                         help="Path to JSON files used for /api/mock/ paths (/var/tmp/bdcs-mockfiles/)")
     parser.add_argument("-V", action="store_true", dest="showver",
                         help="show program's version number and exit")
+    parser.add_argument("-c", "--config", default="/etc/lorax/composer.conf", metavar="CONFIG",
+                        help="Path to lorax-composer configuration file.")
     parser.add_argument("RECIPES", metavar="RECIPES",
                         help="Path to the recipes")
 
@@ -91,6 +95,45 @@ def setup_logging(logfile):
     server_log.addHandler(fh)
 
 
+class ComposerConfig(ConfigParser.SafeConfigParser):
+    def get_default(self, section, option, default):
+        try:
+            return self.get(section, option)
+        except ConfigParser.Error:
+            return default
+
+
+def configure(conf_file="/etc/lorax/composer.conf"):
+    """lorax-composer configuration"""
+    conf = ComposerConfig()
+
+    # set defaults
+    conf.add_section("composer")
+    conf.set("composer", "yum_conf", "/var/lib/lorax/composer/yum.conf")
+    conf.set("composer", "repo_dir", "/var/lib/lorax/composer/repos.d/")
+    conf.set("composer", "cache_dir", "/var/cache/lorax/composer/yum/")
+
+    conf.add_section("users")
+    conf.set("users", "root", "1")
+
+    # Enable all available repo files by default
+    conf.add_section("repos")
+    conf.set("repos", "use_system_repos", "1")
+    conf.set("repos", "enabled", "*")
+
+    # read the config file
+    if os.path.isfile(conf_file):
+        conf.read(conf_file)
+
+    # Create any missing directories
+    for section, key in [("composer", "yum_conf"), ("composer", "repo_dir"), ("composer", "cache_dir")]:
+        path = conf.get(section, key)
+        if not os.path.isdir(os.path.dirname(path)):
+            os.makedirs(os.path.dirname(path))
+
+    return conf
+
+
 class LogWrapper(object):
     """Wrapper for the WSGIServer which only calls write()"""
     def __init__(self, log_obj):
@@ -122,6 +165,11 @@ if __name__ == '__main__':
     server.config["REPO_DIR"] = opts.RECIPES
     repo = open_or_create_repo(server.config["REPO_DIR"])
     server.config["GITLOCK"] = GitLock(repo=repo, lock=Lock(), dir=opts.RECIPES)
+    server.config["COMPOSER_CFG"] = configure(opts.config)
+
+    # Get a YumBase to share with the requests
+    yb = get_base_object(server.config["COMPOSER_CFG"])
+    server.config["YUMLOCK"] = YumLock(yb=yb, lock=Lock())
 
     # Import example recipes
     commit_recipe_directory(server.config["GITLOCK"].repo, "master", opts.RECIPES)
