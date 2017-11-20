@@ -24,6 +24,7 @@ from pykickstart.parser import KickstartParser
 from pykickstart.version import makeVersion, RHEL7
 
 from pylorax.api.crossdomain import crossdomain
+from pylorax.api.projects import projects_list
 from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
 from pylorax.api.recipes import recipe_from_dict, recipe_from_toml, commit_recipe, delete_recipe, revert_recipe
 from pylorax.api.recipes import tag_recipe_commit, recipe_diff
@@ -279,3 +280,19 @@ def v0_api(api):
 
         diff = recipe_diff(old_recipe, new_recipe)
         return jsonify(diff=diff)
+
+    @api.route("/api/v0/projects/list")
+    @crossdomain(origin="*")
+    def v0_projects_list():
+        """List all of the available projects/packages"""
+        try:
+            limit = int(request.args.get("limit", "20"))
+            offset = int(request.args.get("offset", "0"))
+        except ValueError as e:
+            return jsonify(error={"msg":str(e)}), 400
+
+        with api.config["YUMLOCK"].lock:
+            available = projects_list(api.config["YUMLOCK"].yb)
+        projects = take_limits(available, offset, limit)
+
+        return jsonify(projects=projects, offset=offset, limit=limit, total=len(available))
