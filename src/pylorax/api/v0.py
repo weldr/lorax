@@ -24,7 +24,7 @@ from pykickstart.parser import KickstartParser
 from pykickstart.version import makeVersion, RHEL7
 
 from pylorax.api.crossdomain import crossdomain
-from pylorax.api.projects import projects_list
+from pylorax.api.projects import projects_list, projects_info
 from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
 from pylorax.api.recipes import recipe_from_dict, recipe_from_toml, commit_recipe, delete_recipe, revert_recipe
 from pylorax.api.recipes import tag_recipe_commit, recipe_diff
@@ -296,3 +296,12 @@ def v0_api(api):
         projects = take_limits(available, offset, limit)
 
         return jsonify(projects=projects, offset=offset, limit=limit, total=len(available))
+
+    @api.route("/api/v0/projects/info/<project_names>")
+    @crossdomain(origin="*")
+    def v0_projects_info(project_names):
+        """Return detailed information about the listed projects"""
+        with api.config["YUMLOCK"].lock:
+            projects = projects_info(api.config["YUMLOCK"].yb, project_names.split(","))
+
+        return jsonify(projects=projects)
