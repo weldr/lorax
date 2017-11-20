@@ -50,6 +50,11 @@ def take_limits(iterable, offset, limit):
 
 def v0_api(api):
     """ Setup v0 of the API server"""
+    @api.route("/api/v0/test")
+    @crossdomain(origin="*")
+    def v0_test():
+        return "API v0 test"
+
     @api.route("/api/v0/status")
     @crossdomain(origin="*")
     def v0_status():
