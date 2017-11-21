@@ -73,6 +73,15 @@ def yaps_to_project_info(yaps):
             "builds":       [build]}
 
 
+def tm_to_dep(tm):
+    """Extract the info from a TransactionMember object"""
+    return {"name":     tm.name,
+            "epoch":    tm.epoch,
+            "version":  tm.version,
+            "release":  tm.release,
+            "arch":     tm.arch}
+
+
 def projects_list(yb):
     """Return a list of projects
 
@@ -113,7 +122,16 @@ def projects_depsolve(yb, project_names):
     :returns: ...
     :rtype: ...
     """
-    pass
+    # TODO - Catch yum tracebacks here
+
+    # This resets the transaction
+    yb.closeRpmDB()
+    for p in project_names:
+        yb.install(pattern=p)
+    (rc, msg) = yb.buildTransaction()
+    # If rc isn't 2 something went wrong, raise and error
+    yb.tsInfo.makelists()
+    return sorted(map(tm_to_dep, yb.tsInfo.installed + yb.tsInfo.depinstalled), key=lambda p: p["name"].lower())
 
 
 def modules_list(yb):
