@@ -25,7 +25,7 @@ from pykickstart.version import makeVersion, RHEL7
 
 from pylorax.api.crossdomain import crossdomain
 from pylorax.api.projects import projects_list, projects_info, projects_depsolve
-from pylorax.api.projects import modules_list, modules_info
+from pylorax.api.projects import modules_list, modules_info, ProjectsError
 from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
 from pylorax.api.recipes import recipe_from_dict, recipe_from_toml, commit_recipe, delete_recipe, revert_recipe
 from pylorax.api.recipes import tag_recipe_commit, recipe_diff
@@ -263,7 +263,7 @@ def v0_api(api):
                     old_recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe_name, from_commit)
         except Exception as e:
             log.error("(v0_recipes_diff) %s", str(e))
-            return jsonify(status=False, error={"msg":str(e)}), 400
+            return jsonify(error={"msg":str(e)}), 400
 
         try:
             if to_commit == "WORKSPACE":
@@ -277,7 +277,7 @@ def v0_api(api):
                     new_recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe_name, to_commit)
         except Exception as e:
             log.error("(v0_recipes_diff) %s", str(e))
-            return jsonify(status=False, error={"msg":str(e)}), 400
+            return jsonify(error={"msg":str(e)}), 400
 
         diff = recipe_diff(old_recipe, new_recipe)
         return jsonify(diff=diff)
@@ -292,18 +292,26 @@ def v0_api(api):
         except ValueError as e:
             return jsonify(error={"msg":str(e)}), 400
 
-        with api.config["YUMLOCK"].lock:
-            available = projects_list(api.config["YUMLOCK"].yb)
-        projects = take_limits(available, offset, limit)
+        try:
+            with api.config["YUMLOCK"].lock:
+                available = projects_list(api.config["YUMLOCK"].yb)
+        except ProjectsError as e:
+            log.error("(v0_projects_list) %s", str(e))
+            return jsonify(error={"msg":str(e)}), 400
 
+        projects = take_limits(available, offset, limit)
         return jsonify(projects=projects, offset=offset, limit=limit, total=len(available))
 
     @api.route("/api/v0/projects/info/<project_names>")
     @crossdomain(origin="*")
     def v0_projects_info(project_names):
         """Return detailed information about the listed projects"""
-        with api.config["YUMLOCK"].lock:
-            projects = projects_info(api.config["YUMLOCK"].yb, project_names.split(","))
+        try:
+            with api.config["YUMLOCK"].lock:
+                projects = projects_info(api.config["YUMLOCK"].yb, project_names.split(","))
+        except ProjectsError as e:
+            log.error("(v0_projects_info) %s", str(e))
+            return jsonify(error={"msg":str(e)}), 400
 
         return jsonify(projects=projects)
 
@@ -311,8 +319,12 @@ def v0_api(api):
     @crossdomain(origin="*")
     def v0_projects_depsolve(project_names):
         """Return detailed information about the listed projects"""
-        with api.config["YUMLOCK"].lock:
-            deps = projects_depsolve(api.config["YUMLOCK"].yb, project_names.split(","))
+        try:
+            with api.config["YUMLOCK"].lock:
+                deps = projects_depsolve(api.config["YUMLOCK"].yb, project_names.split(","))
+        except ProjectsError as e:
+            log.error("(v0_projects_depsolve) %s", str(e))
+            return jsonify(error={"msg":str(e)}), 400
 
         return jsonify(projects=deps)
 
@@ -326,17 +338,25 @@ def v0_api(api):
         except ValueError as e:
             return jsonify(error={"msg":str(e)}), 400
 
-        with api.config["YUMLOCK"].lock:
-            available = modules_list(api.config["YUMLOCK"].yb)
-        projects = take_limits(available, offset, limit)
+        try:
+            with api.config["YUMLOCK"].lock:
+                available = modules_list(api.config["YUMLOCK"].yb)
+        except ProjectsError as e:
+            log.error("(v0_modules_list) %s", str(e))
+            return jsonify(error={"msg":str(e)}), 400
 
+        projects = take_limits(available, offset, limit)
         return jsonify(projects=projects, offset=offset, limit=limit, total=len(available))
 
     @api.route("/api/v0/modules/info/<module_names>")
     @crossdomain(origin="*")
     def v0_modules_info(module_names):
         """Return detailed information about the listed modules"""
-        with api.config["YUMLOCK"].lock:
-            modules = modules_info(api.config["YUMLOCK"].yb, module_names.split(","))
+        try:
+            with api.config["YUMLOCK"].lock:
+                modules = modules_info(api.config["YUMLOCK"].yb, module_names.split(","))
+        except ProjectsError as e:
+            log.error("(v0_modules_info) %s", str(e))
+            return jsonify(error={"msg":str(e)}), 400
 
         return jsonify(modules=modules)
