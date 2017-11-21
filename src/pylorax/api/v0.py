@@ -25,6 +25,7 @@ from pykickstart.version import makeVersion, RHEL7
 
 from pylorax.api.crossdomain import crossdomain
 from pylorax.api.projects import projects_list, projects_info, projects_depsolve
+from pylorax.api.projects import modules_list, modules_info
 from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
 from pylorax.api.recipes import recipe_from_dict, recipe_from_toml, commit_recipe, delete_recipe, revert_recipe
 from pylorax.api.recipes import tag_recipe_commit, recipe_diff
@@ -314,3 +315,28 @@ def v0_api(api):
             deps = projects_depsolve(api.config["YUMLOCK"].yb, project_names.split(","))
 
         return jsonify(projects=deps)
+
+    @api.route("/api/v0/modules/list")
+    @crossdomain(origin="*")
+    def v0_modules_list():
+        """List all of the available modules"""
+        try:
+            limit = int(request.args.get("limit", "20"))
+            offset = int(request.args.get("offset", "0"))
+        except ValueError as e:
+            return jsonify(error={"msg":str(e)}), 400
+
+        with api.config["YUMLOCK"].lock:
+            available = modules_list(api.config["YUMLOCK"].yb)
+        projects = take_limits(available, offset, limit)
+
+        return jsonify(projects=projects, offset=offset, limit=limit, total=len(available))
+
+    @api.route("/api/v0/modules/info/<module_names>")
+    @crossdomain(origin="*")
+    def v0_modules_info(module_names):
+        """Return detailed information about the listed modules"""
+        with api.config["YUMLOCK"].lock:
+            modules = modules_info(api.config["YUMLOCK"].yb, module_names.split(","))
+
+        return jsonify(modules=modules)
