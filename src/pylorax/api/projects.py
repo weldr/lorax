@@ -19,7 +19,14 @@ log = logging.getLogger("lorax-composer")
 
 import time
 
+from yum.Errors import YumBaseError
+
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
+
+
+class ProjectsError(Exception):
+    pass
+
 
 def api_time(t):
     """Convert time since epoch to a string
@@ -134,7 +141,10 @@ def projects_list(yb):
     :returns: List of project info dicts with name, summary, description, homepage, upstream_vcs
     :rtype: list of dicts
     """
-    ybl = yb.doPackageLists(pkgnarrow="available", showdups=False)
+    try:
+        ybl = yb.doPackageLists(pkgnarrow="available", showdups=False)
+    except YumBaseError as e:
+        raise ProjectsError("There was a problem listing projects: %s", str(e))
     return sorted(map(yaps_to_project, ybl.available), key=lambda p: p["name"].lower())
 
 
@@ -148,7 +158,10 @@ def projects_info(yb, project_names):
     :returns: List of project info dicts with yaps_to_project as well as epoch, version, release, etc.
     :rtype: list of dicts
     """
-    ybl = yb.doPackageLists(pkgnarrow="available", patterns=project_names, showdups=False)
+    try:
+        ybl = yb.doPackageLists(pkgnarrow="available", patterns=project_names, showdups=False)
+    except YumBaseError as e:
+        raise ProjectsError("There was a problem with info for %s: %s" % (project_names, str(e)))
     return sorted(map(yaps_to_project_info, ybl.available), key=lambda p: p["name"].lower())
 
 
@@ -162,13 +175,17 @@ def projects_depsolve(yb, project_names):
     :returns: NEVRA's of the project and its dependencies
     :rtype: list of dicts
     """
-    # This resets the transaction
-    yb.closeRpmDB()
-    for p in project_names:
-        yb.install(pattern=p)
-    (rc, msg) = yb.buildTransaction()
-    # If rc isn't 2 something went wrong, raise and error
-    yb.tsInfo.makelists()
+    try:
+        # This resets the transaction
+        yb.closeRpmDB()
+        for p in project_names:
+            yb.install(pattern=p)
+        (rc, msg) = yb.buildTransaction()
+        if rc not in [1,2]:
+            raise ProjectsError("There was a problem depsolving %s: %s" % (project_names, msg))
+        yb.tsInfo.makelists()
+    except YumBaseError as e:
+        raise ProjectsError("There was a problem depsolving %s: %s" % (project_names, str(e)))
     return sorted(map(tm_to_dep, yb.tsInfo.installed + yb.tsInfo.depinstalled), key=lambda p: p["name"].lower())
 
 
@@ -187,7 +204,10 @@ def modules_list(yb):
     Modules don't exist in RHEL7 so this only returns projects
     and sets the type to "rpm"
     """
-    ybl = yb.doPackageLists(pkgnarrow="available", showdups=False)
+    try:
+        ybl = yb.doPackageLists(pkgnarrow="available", showdups=False)
+    except YumBaseError as e:
+        raise ProjectsError("There was a problem listing modules: %s" % str(e))
     return sorted(map(yaps_to_module, ybl.available), key=lambda p: p["name"].lower())
 
 
@@ -201,11 +221,15 @@ def modules_info(yb, module_names):
     :returns: List of dicts with module details and dependencies.
     :rtype: list of dicts
     """
-    # Get the info about each module
-    ybl = yb.doPackageLists(pkgnarrow="available", patterns=module_names, showdups=False)
-    modules = sorted(map(yaps_to_project, ybl.available), key=lambda p: p["name"].lower())
+    try:
+        # Get the info about each module
+        ybl = yb.doPackageLists(pkgnarrow="available", patterns=module_names, showdups=False)
+    except YumBaseError as e:
+        raise ProjectsError("There was a problem with info for %s: %s" % (module_names, str(e)))
 
+    modules = sorted(map(yaps_to_project, ybl.available), key=lambda p: p["name"].lower())
     # Add the dependency info to each one
     for module in modules:
         module["dependencies"] = projects_depsolve(yb, [module["name"]])
+
     return modules
