@@ -21,8 +21,10 @@ import unittest
 
 from flask import json
 import pytoml as toml
+from pylorax.api.config import configure
 from pylorax.api.recipes import open_or_create_repo, commit_recipe_directory
-from pylorax.api.server import server, GitLock
+from pylorax.api.server import server, GitLock, YumLock
+from pylorax.api.yumbase import get_base_object
 from pylorax.sysutils import joinpaths
 
 class ServerTestCase(unittest.TestCase):
@@ -33,6 +35,10 @@ class ServerTestCase(unittest.TestCase):
         server.config["REPO_DIR"] = repo_dir
         repo = open_or_create_repo(server.config["REPO_DIR"])
         server.config["GITLOCK"] = GitLock(repo=repo, lock=Lock(), dir=repo_dir)
+
+        server.config["COMPOSER_CFG"] = configure(root_dir=repo_dir, test_config=True)
+        yb = get_base_object(server.config["COMPOSER_CFG"])
+        server.config["YUMLOCK"] = YumLock(yb=yb, lock=Lock())
 
         server.config['TESTING'] = True
         self.server = server.test_client()
@@ -352,3 +358,51 @@ class ServerTestCase(unittest.TestCase):
                             {"new": {"Package": {"version": "2.2", "name": "tmux"}},
                              "old": None}]}
         self.assertEqual(data, result)
+
+    def test_projects_list(self):
+        """Test /api/v0/projects/list"""
+        resp = self.server.get("/api/v0/projects/list")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        projects = data.get("projects")
+        self.assertEqual(len(projects) > 10, True)
+
+    def test_projects_info(self):
+        """Test /api/v0/projects/info/<project_names>"""
+        resp = self.server.get("/api/v0/projects/info/bash")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        projects = data.get("projects")
+        self.assertEqual(len(projects), 1)
+        self.assertEqual(projects[0]["name"], "bash")
+        self.assertEqual(projects[0]["builds"][0]["source"]["license"], "GPLv3+")
+
+    def test_projects_depsolve(self):
+        """Test /api/v0/projects/depsolve/<project_names>"""
+        resp = self.server.get("/api/v0/projects/depsolve/bash")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        deps = data.get("projects")
+        self.assertEqual(len(deps) > 10, True)
+        self.assertEqual(deps[0]["name"], "basesystem")
+
+    def test_modules_list(self):
+        """Test /api/v0/modules/list"""
+        resp = self.server.get("/api/v0/modules/list")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        print(data)
+        modules = data.get("modules")
+        self.assertEqual(len(modules) > 10, True)
+        self.assertEqual(modules[0]["group_type"], "rpm")
+
+    def test_modules_info(self):
+        """Test /api/v0/modules/info"""
+        resp = self.server.get("/api/v0/modules/info/bash")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        modules = data.get("modules")
+        self.assertEqual(len(modules), 1)
+        self.assertEqual(modules[0]["name"], "bash")
+        self.assertEqual(modules[0]["dependencies"][0]["name"], "basesystem")
+
