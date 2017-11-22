@@ -17,6 +17,8 @@
 import ConfigParser
 import os
 
+from pylorax.sysutils import joinpaths
+
 class ComposerConfig(ConfigParser.SafeConfigParser):
     def get_default(self, section, option, default):
         try:
@@ -25,15 +27,23 @@ class ComposerConfig(ConfigParser.SafeConfigParser):
             return default
 
 
-def configure(conf_file="/etc/lorax/composer.conf"):
-    """lorax-composer configuration"""
+def configure(conf_file="/etc/lorax/composer.conf", root_dir="/", test_config=False):
+    """lorax-composer configuration
+
+    :param conf_file: Path to the config file overriding the default settings
+    :type conf_file: str
+    :param root_dir: Directory to prepend to paths, defaults to /
+    :type root_dir: str
+    :param test_config: Set to True to skip reading conf_file
+    :type test_config: bool
+    """
     conf = ComposerConfig()
 
     # set defaults
     conf.add_section("composer")
-    conf.set("composer", "yum_conf", "/var/lib/lorax/composer/yum.conf")
-    conf.set("composer", "repo_dir", "/var/lib/lorax/composer/repos.d/")
-    conf.set("composer", "cache_dir", "/var/cache/lorax/composer/yum/")
+    conf.set("composer", "yum_conf", joinpaths(root_dir, "/var/lib/lorax/composer/yum.conf"))
+    conf.set("composer", "repo_dir", joinpaths(root_dir, "/var/lib/lorax/composer/repos.d/"))
+    conf.set("composer", "cache_dir", joinpaths(root_dir, "/var/cache/lorax/composer/yum/"))
 
     conf.add_section("users")
     conf.set("users", "root", "1")
@@ -43,9 +53,10 @@ def configure(conf_file="/etc/lorax/composer.conf"):
     conf.set("repos", "use_system_repos", "1")
     conf.set("repos", "enabled", "*")
 
-    # read the config file
-    if os.path.isfile(conf_file):
-        conf.read(conf_file)
+    if not test_config:
+        # read the config file
+        if os.path.isfile(conf_file):
+            conf.read(conf_file)
 
     # Create any missing directories
     for section, key in [("composer", "yum_conf"), ("composer", "repo_dir"), ("composer", "cache_dir")]:

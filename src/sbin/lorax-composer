@@ -126,7 +126,7 @@ if __name__ == '__main__':
     server.config["REPO_DIR"] = opts.RECIPES
     repo = open_or_create_repo(server.config["REPO_DIR"])
     server.config["GITLOCK"] = GitLock(repo=repo, lock=Lock(), dir=opts.RECIPES)
-    server.config["COMPOSER_CFG"] = configure(opts.config)
+    server.config["COMPOSER_CFG"] = configure(conf_file=opts.config)
 
     # Get a YumBase to share with the requests
     yb = get_base_object(server.config["COMPOSER_CFG"])
