@@ -21,7 +21,7 @@ import unittest
 from pylorax.api.config import configure
 from pylorax.api.projects import api_time, api_changelog, yaps_to_project, yaps_to_project_info
 from pylorax.api.projects import tm_to_dep, yaps_to_module, projects_list, projects_info, projects_depsolve
-from pylorax.api.projects import modules_list, modules_info, ProjectsError
+from pylorax.api.projects import modules_list, modules_info, ProjectsError, dep_evra
 from pylorax.api.yumbase import get_base_object
 
 
@@ -118,6 +118,14 @@ class ProjectsTest(unittest.TestCase):
 
         y = Yaps()
         self.assertEqual(yaps_to_module(y), result)
+
+    def test_dep_evra(self):
+        dep = {"arch": "noarch",
+               "epoch": "0",
+               "name": "basesystem",
+               "release": "7.el7",
+               "version": "10.0"}
+        self.assertEqual(dep_evra(dep), "10.0-7.el7.noarch")
 
     def test_projects_list(self):
         projects = projects_list(self.yb)

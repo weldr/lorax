@@ -133,6 +133,19 @@ def yaps_to_module(yaps):
             "group_type": "rpm"}
 
 
+def dep_evra(dep):
+    """Return the epoch:version-release.arch for the dep
+
+    :param dep: dependency dict
+    :type dep: dict
+    :returns: epoch:version-release.arch
+    :rtype: str
+    """
+    if dep["epoch"] == "0":
+        return dep["version"]+"-"+dep["release"]+"."+dep["arch"]
+    else:
+        return dep["epoch"]+":"+dep["version"]+"-"+dep["release"]+"."+dep["arch"]
+
 def projects_list(yb):
     """Return a list of projects
 
