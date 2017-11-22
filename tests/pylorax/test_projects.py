@@ -14,43 +14,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import os
 import shutil
 import tempfile
 import unittest
 
-from pylorax.api.config import ComposerConfig
+from pylorax.api.config import configure
 from pylorax.api.projects import api_time, api_changelog, yaps_to_project, yaps_to_project_info
 from pylorax.api.projects import tm_to_dep, yaps_to_module, projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError
 from pylorax.api.yumbase import get_base_object
-from pylorax.sysutils import joinpaths
-
-def config(tmp_dir):
-    """Create a config to use for testing projects functions"""
-    conf = ComposerConfig()
-
-    # set defaults
-    conf.add_section("composer")
-    conf.set("composer", "yum_conf", joinpaths(tmp_dir, "/var/lib/lorax/composer/yum.conf"))
-    conf.set("composer", "repo_dir", joinpaths(tmp_dir, "/var/lib/lorax/composer/repos.d/"))
-    conf.set("composer", "cache_dir", joinpaths("/var/cache/lorax/composer/yum/"))
-
-    conf.add_section("users")
-    conf.set("users", "root", "1")
-
-    # Enable all available repo files by default
-    conf.add_section("repos")
-    conf.set("repos", "use_system_repos", "1")
-    conf.set("repos", "enabled", "*")
-
-    # Create any missing directories
-    for section, key in [("composer", "yum_conf"), ("composer", "repo_dir"), ("composer", "cache_dir")]:
-        path = conf.get(section, key)
-        if not os.path.isdir(os.path.dirname(path)):
-            os.makedirs(os.path.dirname(path))
-
-    return conf
 
 
 class Yaps(object):
@@ -83,7 +55,7 @@ class ProjectsTest(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.tmp_dir = tempfile.mkdtemp(prefix="lorax.test.repo.")
-        self.config = config(self.tmp_dir)
+        self.config = configure(root_dir=self.tmp_dir, test_config=True)
         self.yb = get_base_object(self.config)
 
     @classmethod

@@ -345,8 +345,8 @@ def v0_api(api):
             log.error("(v0_modules_list) %s", str(e))
             return jsonify(error={"msg":str(e)}), 400
 
-        projects = take_limits(available, offset, limit)
-        return jsonify(projects=projects, offset=offset, limit=limit, total=len(available))
+        modules = take_limits(available, offset, limit)
+        return jsonify(modules=modules, offset=offset, limit=limit, total=len(available))
 
     @api.route("/api/v0/modules/info/<module_names>")
     @crossdomain(origin="*")
