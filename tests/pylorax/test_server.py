@@ -370,6 +370,18 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(recipes[0]["recipe"]["name"], "glusterfs")
         self.assertEqual(len(recipes[0]["dependencies"]) > 10, True)
 
+    def test_15_recipes_freeze(self):
+        """Test /api/v0/recipes/freeze/<recipe_names>"""
+        resp = self.server.get("/api/v0/recipes/freeze/glusterfs")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        recipes = data.get("recipes")
+        self.assertNotEqual(recipes, None)
+        self.assertEqual(len(recipes), 1)
+        self.assertEqual(recipes[0]["recipe"]["name"], "glusterfs")
+        evra = recipes[0]["recipe"]["modules"][0]["version"]
+        self.assertEqual(len(evra) > 10, True)
+
     def test_projects_list(self):
         """Test /api/v0/projects/list"""
         resp = self.server.get("/api/v0/projects/list")

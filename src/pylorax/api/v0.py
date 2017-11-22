@@ -24,11 +24,11 @@ from pykickstart.parser import KickstartParser
 from pykickstart.version import makeVersion, RHEL7
 
 from pylorax.api.crossdomain import crossdomain
-from pylorax.api.projects import projects_list, projects_info, projects_depsolve
+from pylorax.api.projects import projects_list, projects_info, projects_depsolve, dep_evra
 from pylorax.api.projects import modules_list, modules_info, ProjectsError
 from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
 from pylorax.api.recipes import recipe_from_dict, recipe_from_toml, commit_recipe, delete_recipe, revert_recipe
-from pylorax.api.recipes import tag_recipe_commit, recipe_diff
+from pylorax.api.recipes import tag_recipe_commit, recipe_diff, Recipe, RecipePackage, RecipeModule
 from pylorax.api.workspace import workspace_read, workspace_write, workspace_delete
 from pylorax.creator import DRACUT_DEFAULT, mount_boot_part_over_root
 from pylorax.creator import make_appliance, make_image, make_livecd, make_live_images
@@ -281,6 +281,66 @@ def v0_api(api):
 
         diff = recipe_diff(old_recipe, new_recipe)
         return jsonify(diff=diff)
+
+    @api.route("/api/v0/recipes/freeze/<recipe_names>")
+    @crossdomain(origin="*")
+    def v0_recipes_freeze(recipe_names):
+        """Return the recipe with the exact modules and packages selected by depsolve"""
+        recipes = []
+        errors = []
+        for recipe_name in [n.strip() for n in sorted(recipe_names.split(","), key=lambda n: n.lower())]:
+            # get the recipe
+            # Get the workspace version (if it exists)
+            recipe = None
+            try:
+                with api.config["GITLOCK"].lock:
+                    recipe = workspace_read(api.config["GITLOCK"].repo, "master", recipe_name)
+            except Exception:
+                pass
+
+            if not recipe:
+                # No workspace version, get the git version (if it exists)
+                try:
+                    with api.config["GITLOCK"].lock:
+                        recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe_name)
+                except Exception as e:
+                    errors.append({"recipe":recipe_name, "msg":str(e)})
+                    log.error("(v0_recipes_depsolve) %s", str(e))
+
+            # No recipe found, skip it.
+            if not recipe:
+                errors.append({"recipe":recipe_name, "msg":"Recipe not found"})
+                continue
+
+            # Combine modules and packages and depsolve the list
+            # TODO include the version/glob in the depsolving
+            module_names = map(lambda m: m["name"], recipe["modules"] or [])
+            package_names = map(lambda p: p["name"], recipe["packages"] or [])
+            projects = sorted(set(module_names+package_names), key=lambda n: n.lower())
+            deps = []
+            try:
+                with api.config["YUMLOCK"].lock:
+                    deps = projects_depsolve(api.config["YUMLOCK"].yb, projects)
+            except ProjectsError as e:
+                errors.append({"recipe":recipe_name, "msg":str(e)})
+                log.error("(v0_recipes_depsolve) %s", str(e))
+
+            # Change the recipe's modules and packages to use the depsolved version
+            new_modules = []
+            new_packages = []
+            for dep in deps:
+                if dep["name"] in package_names:
+                    new_packages.append(RecipePackage(dep["name"], dep_evra(dep)))
+                elif dep["name"] in module_names:
+                    new_modules.append(RecipeModule(dep["name"], dep_evra(dep)))
+
+            recipes.append({"recipe":Recipe(recipe["name"],
+                                            recipe["description"],
+                                            recipe["version"],
+                                            new_modules,
+                                            new_packages)})
+
+        return jsonify(recipes=recipes, errors=errors)
 
     @api.route("/api/v0/recipes/depsolve/<recipe_names>")
     @crossdomain(origin="*")
