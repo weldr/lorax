@@ -202,7 +202,7 @@ def projects_depsolve(yb, project_names):
     return sorted(map(tm_to_dep, yb.tsInfo.installed + yb.tsInfo.depinstalled), key=lambda p: p["name"].lower())
 
 
-def modules_list(yb):
+def modules_list(yb, module_names):
     """Return a list of modules
 
     :param yb: yum base object
@@ -218,7 +218,7 @@ def modules_list(yb):
     and sets the type to "rpm"
     """
     try:
-        ybl = yb.doPackageLists(pkgnarrow="available", showdups=False)
+        ybl = yb.doPackageLists(pkgnarrow="available", patterns=module_names, showdups=False)
     except YumBaseError as e:
         raise ProjectsError("There was a problem listing modules: %s" % str(e))
     return sorted(map(yaps_to_module, ybl.available), key=lambda p: p["name"].lower())

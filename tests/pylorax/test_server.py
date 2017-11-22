@@ -419,6 +419,14 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(len(modules) > 10, True)
         self.assertEqual(modules[0]["group_type"], "rpm")
 
+        resp = self.server.get("/api/v0/modules/list/d*")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        print(data)
+        modules = data.get("modules")
+        self.assertEqual(len(modules) > 0, True)
+        self.assertEqual(modules[0]["name"].startswith("d"), True)
+
     def test_modules_info(self):
         """Test /api/v0/modules/info"""
         resp = self.server.get("/api/v0/modules/info/bash")
