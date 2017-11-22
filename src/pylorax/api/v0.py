@@ -443,18 +443,22 @@ def v0_api(api):
         return jsonify(projects=deps)
 
     @api.route("/api/v0/modules/list")
+    @api.route("/api/v0/modules/list/<module_names>")
     @crossdomain(origin="*")
-    def v0_modules_list():
-        """List all of the available modules"""
+    def v0_modules_list(module_names=None):
+        """List available modules, filtering by module_names"""
         try:
             limit = int(request.args.get("limit", "20"))
             offset = int(request.args.get("offset", "0"))
         except ValueError as e:
             return jsonify(error={"msg":str(e)}), 400
 
+        if module_names:
+            module_names = module_names.split(",")
+
         try:
             with api.config["YUMLOCK"].lock:
-                available = modules_list(api.config["YUMLOCK"].yb)
+                available = modules_list(api.config["YUMLOCK"].yb, module_names)
         except ProjectsError as e:
             log.error("(v0_modules_list) %s", str(e))
             return jsonify(error={"msg":str(e)}), 400

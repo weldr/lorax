@@ -147,10 +147,13 @@ class ProjectsTest(unittest.TestCase):
             projects_depsolve(self.yb, ["nada-package"])
 
     def test_modules_list(self):
-        modules = modules_list(self.yb)
+        modules = modules_list(self.yb, None)
 
         self.assertEqual(len(modules) > 10, True)
         self.assertEqual(modules[0]["group_type"], "rpm")
+
+        modules = modules_list(self.yb, ["g*"])
+        self.assertEqual(modules[0]["name"].startswith("g"), True)
 
     def test_modules_info(self):
         modules = modules_info(self.yb, ["bash"])
