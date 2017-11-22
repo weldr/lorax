@@ -282,6 +282,60 @@ def v0_api(api):
         diff = recipe_diff(old_recipe, new_recipe)
         return jsonify(diff=diff)
 
+    @api.route("/api/v0/recipes/depsolve/<recipe_names>")
+    @crossdomain(origin="*")
+    def v0_recipes_depsolve(recipe_names):
+        """Return the dependencies for a recipe"""
+        recipes = []
+        errors = []
+        for recipe_name in [n.strip() for n in sorted(recipe_names.split(","), key=lambda n: n.lower())]:
+            # get the recipe
+            # Get the workspace version (if it exists)
+            recipe = None
+            try:
+                with api.config["GITLOCK"].lock:
+                    recipe = workspace_read(api.config["GITLOCK"].repo, "master", recipe_name)
+            except Exception:
+                pass
+
+            if not recipe:
+                # No workspace version, get the git version (if it exists)
+                try:
+                    with api.config["GITLOCK"].lock:
+                        recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe_name)
+                except Exception as e:
+                    errors.append({"recipe":recipe_name, "msg":str(e)})
+                    log.error("(v0_recipes_depsolve) %s", str(e))
+
+            # No recipe found, skip it.
+            if not recipe:
+                errors.append({"recipe":recipe_name, "msg":"Recipe not found"})
+                continue
+
+            # Combine modules and packages and depsolve the list
+            # TODO include the version/glob in the depsolving
+            module_names = map(lambda m: m["name"], recipe["modules"] or [])
+            package_names = map(lambda p: p["name"], recipe["packages"] or [])
+            projects = sorted(set(module_names+package_names), key=lambda n: n.lower())
+            deps = []
+            try:
+                with api.config["YUMLOCK"].lock:
+                    deps = projects_depsolve(api.config["YUMLOCK"].yb, projects)
+            except ProjectsError as e:
+                errors.append({"recipe":recipe_name, "msg":str(e)})
+                log.error("(v0_recipes_depsolve) %s", str(e))
+
+            # Get the NEVRA's of the modules and projects, add as "modules"
+            modules = []
+            for dep in deps:
+                if dep["name"] in projects:
+                    modules.append(dep)
+            modules = sorted(modules, key=lambda m: m["name"].lower())
+
+            recipes.append({"recipe":recipe, "dependencies":deps, "modules":modules})
+
+        return jsonify(recipes=recipes, errors=errors)
+
     @api.route("/api/v0/projects/list")
     @crossdomain(origin="*")
     def v0_projects_list():
