@@ -359,6 +359,17 @@ class ServerTestCase(unittest.TestCase):
                              "old": None}]}
         self.assertEqual(data, result)
 
+    def test_14_recipes_depsolve(self):
+        """Test /api/v0/recipes/depsolve/<recipe_names>"""
+        resp = self.server.get("/api/v0/recipes/depsolve/glusterfs")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        recipes = data.get("recipes")
+        self.assertNotEqual(recipes, None)
+        self.assertEqual(len(recipes), 1)
+        self.assertEqual(recipes[0]["recipe"]["name"], "glusterfs")
+        self.assertEqual(len(recipes[0]["dependencies"]) > 10, True)
+
     def test_projects_list(self):
         """Test /api/v0/projects/list"""
         resp = self.server.get("/api/v0/projects/list")
@@ -405,4 +416,3 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(len(modules), 1)
         self.assertEqual(modules[0]["name"], "bash")
         self.assertEqual(modules[0]["dependencies"][0]["name"], "basesystem")
-
