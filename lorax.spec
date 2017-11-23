@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.7.3
+Version:        19.7.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -141,6 +141,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_unitdir}/lorax-composer.service
 
 %changelog
+* Wed Nov 22 2017 Brian C. Lane <bcl@redhat.com> 19.7.4-1
+- Fix wrong name for /etc/composer.conf (bcl) (bcl)
+
 * Wed Nov 22 2017 Brian C. Lane <bcl@redhat.com> 19.7.3-1
 - Add filtering and glob support to /modules/list route (bcl) (bcl)
 - Add /recipes/freeze route and tests. (bcl) (bcl)
