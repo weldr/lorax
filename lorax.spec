@@ -135,6 +135,7 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %files composer
+%config(noreplace) %{_sysconfdir}/lorax/composer.conf
 %{python_sitelib}/pylorax/api/*
 %{_sbindir}/lorax-composer
 %{_unitdir}/lorax-composer.service
