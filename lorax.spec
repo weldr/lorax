@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.7.2
+Version:        19.7.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -140,6 +140,28 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_unitdir}/lorax-composer.service
 
 %changelog
+* Wed Nov 22 2017 Brian C. Lane <bcl@redhat.com> 19.7.3-1
+- Add filtering and glob support to /modules/list route (bcl) (bcl)
+- Add /recipes/freeze route and tests. (bcl) (bcl)
+- Add /recipes/depsolve route and test (bcl) (bcl)
+- Add /projects and /modules API tests (bcl) (bcl)
+- Modify pylorax.api.config.configure so it can also be used for tests. (bcl)
+  (bcl)
+- Add tests for projects module functions (bcl) (bcl)
+- Move ComposerConfig into pylorax.api.config module (bcl) (bcl)
+- Catch ProjectsError and return an error 400 with a message. (bcl) (bcl)
+- Catch Yum errors in the projects functions (bcl) (bcl)
+- Add /modules/list and /modules/info routes (bcl) (bcl)
+- Add modules functions and update function documentation (bcl) (bcl)
+- Add /projects/depsolve route (bcl) (bcl)
+- Add /projects/info route (bcl) (bcl)
+- Add /projects/list route (bcl) (bcl)
+- Add /api/v0/test route (bcl) (bcl)
+- Add support for yum to lorax-composer (bcl) (bcl)
+- Add lorax requires to lorax-composer package. (bcl) (bcl)
+- Add /api/docs to serve up the documentation (bcl) (bcl)
+- Add basic documentation generation with Sphinx (bcl) (bcl)
+
 * Thu Nov 16 2017 Brian C. Lane <bcl@redhat.com> 19.7.2-1
 - Add limit/offset to recipes/list (bcl)
 - Add error message for offset/limit type errors (bcl)
