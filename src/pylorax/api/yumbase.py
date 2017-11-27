@@ -22,6 +22,8 @@ from fnmatch import fnmatchcase
 from glob import glob
 import os
 import yum
+# This is a hack to short circuit yum's internal logging
+yum.logginglevels._added_handlers = True
 
 from pylorax.sysutils import joinpaths
 
