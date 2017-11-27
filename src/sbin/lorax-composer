@@ -55,6 +55,8 @@ def get_parser():
                         help="show program's version number and exit")
     parser.add_argument("-c", "--config", default="/etc/lorax/composer.conf", metavar="CONFIG",
                         help="Path to lorax-composer configuration file.")
+    parser.add_argument( "--releasever", default=None, metavar="STRING",
+                         help="Release version to use for $releasever in yum repository urls" )
     parser.add_argument("RECIPES", metavar="RECIPES",
                         help="Path to the recipes")
 
@@ -127,6 +129,10 @@ if __name__ == '__main__':
     repo = open_or_create_repo(server.config["REPO_DIR"])
     server.config["GITLOCK"] = GitLock(repo=repo, lock=Lock(), dir=opts.RECIPES)
     server.config["COMPOSER_CFG"] = configure(conf_file=opts.config)
+
+    # If the user passed in a releasever set it in the configuration
+    if opts.releasever:
+        server.config["COMPOSER_CFG"].set("composer", "releasever", opts.releasever)
 
     # Get a YumBase to share with the requests
     yb = get_base_object(server.config["COMPOSER_CFG"])

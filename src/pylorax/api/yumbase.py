@@ -72,6 +72,14 @@ def get_base_object(conf):
     if not os.path.isdir(yb.preconf.root):
         os.makedirs(yb.preconf.root)
 
+    _releasever = conf.get_default("composer", "releasever", None)
+    if not _releasever:
+        distroverpkg = ['system-release(releasever)', 'redhat-release']
+        # Use yum private function to guess the releasever
+        _releasever = yum.config._getsysver("/", distroverpkg)
+    log.info("releasever = %s", _releasever)
+    yb.preconf.releasever = _releasever
+
     # Turn on as much yum logging as we can
     yb.preconf.debuglevel = 6
     yb.preconf.errorlevel = 6
