@@ -158,6 +158,8 @@ def projects_list(yb):
         ybl = yb.doPackageLists(pkgnarrow="available", showdups=False)
     except YumBaseError as e:
         raise ProjectsError("There was a problem listing projects: %s" % str(e))
+    finally:
+        yb.closeRpmDB()
     return sorted(map(yaps_to_project, ybl.available), key=lambda p: p["name"].lower())
 
 
@@ -175,6 +177,8 @@ def projects_info(yb, project_names):
         ybl = yb.doPackageLists(pkgnarrow="available", patterns=project_names, showdups=False)
     except YumBaseError as e:
         raise ProjectsError("There was a problem with info for %s: %s" % (project_names, str(e)))
+    finally:
+        yb.closeRpmDB()
     return sorted(map(yaps_to_project_info, ybl.available), key=lambda p: p["name"].lower())
 
 
@@ -197,9 +201,12 @@ def projects_depsolve(yb, project_names):
         if rc not in [1,2]:
             raise ProjectsError("There was a problem depsolving %s: %s" % (project_names, msg))
         yb.tsInfo.makelists()
+        deps = sorted(map(tm_to_dep, yb.tsInfo.installed + yb.tsInfo.depinstalled), key=lambda p: p["name"].lower())
     except YumBaseError as e:
         raise ProjectsError("There was a problem depsolving %s: %s" % (project_names, str(e)))
-    return sorted(map(tm_to_dep, yb.tsInfo.installed + yb.tsInfo.depinstalled), key=lambda p: p["name"].lower())
+    finally:
+        yb.closeRpmDB()
+    return deps
 
 
 def modules_list(yb, module_names):
@@ -221,6 +228,8 @@ def modules_list(yb, module_names):
         ybl = yb.doPackageLists(pkgnarrow="available", patterns=module_names, showdups=False)
     except YumBaseError as e:
         raise ProjectsError("There was a problem listing modules: %s" % str(e))
+    finally:
+        yb.closeRpmDB()
     return sorted(map(yaps_to_module, ybl.available), key=lambda p: p["name"].lower())
 
 
@@ -239,6 +248,8 @@ def modules_info(yb, module_names):
         ybl = yb.doPackageLists(pkgnarrow="available", patterns=module_names, showdups=False)
     except YumBaseError as e:
         raise ProjectsError("There was a problem with info for %s: %s" % (module_names, str(e)))
+    finally:
+        yb.closeRpmDB()
 
     modules = sorted(map(yaps_to_project, ybl.available), key=lambda p: p["name"].lower())
     # Add the dependency info to each one
