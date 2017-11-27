@@ -157,7 +157,7 @@ def projects_list(yb):
     try:
         ybl = yb.doPackageLists(pkgnarrow="available", showdups=False)
     except YumBaseError as e:
-        raise ProjectsError("There was a problem listing projects: %s", str(e))
+        raise ProjectsError("There was a problem listing projects: %s" % str(e))
     return sorted(map(yaps_to_project, ybl.available), key=lambda p: p["name"].lower())
 
 
