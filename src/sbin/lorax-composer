@@ -22,6 +22,7 @@ log = logging.getLogger("lorax-composer")
 program_log = logging.getLogger("program")
 pylorax_log = logging.getLogger("pylorax")
 server_log = logging.getLogger("server")
+yum_log = logging.getLogger("yum")
 
 import argparse
 import os
@@ -95,6 +96,13 @@ def setup_logging(logfile):
     fh = logging.FileHandler(filename=logfile)
     fh.setLevel(logging.DEBUG)
     server_log.addHandler(fh)
+
+    # YUM logging
+    yum_log.setLevel(logging.DEBUG)
+    logfile = os.path.abspath(os.path.dirname(logfile))+"/yum.log"
+    fh = logging.FileHandler(filename=logfile)
+    fh.setLevel(logging.DEBUG)
+    yum_log.addHandler(fh)
 
 
 class LogWrapper(object):
