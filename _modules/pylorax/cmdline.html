@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.cmdline &mdash; Lorax 26.2 documentation</title>
+  <title>pylorax.cmdline &mdash; Lorax 28.2 documentation</title>
   
 
+  
+  
   
   
 
@@ -33,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Lorax 26.2 documentation" href="../../index.html"/>
+    <link rel="top" title="Lorax 28.2 documentation" href="../../index.html"/>
         <link rel="up" title="pylorax" href="../pylorax.html"/> 
 
   
@@ -43,6 +45,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -62,7 +65,7 @@
             
             
               <div class="version">
-                26.2
+                28.2
               </div>
             
           
@@ -83,7 +86,10 @@
           
             
             
-                <ul>
+              
+            
+            
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction to Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro.html#before-lorax">Before Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../lorax.html">Lorax</a></li>
@@ -102,8 +108,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../index.html">Lorax</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Lorax</a>
+        
       </nav>
 
 
@@ -116,21 +124,38 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../index.html">Module code</a> &raquo;</li>
-      
+        
           <li><a href="../pylorax.html">pylorax</a> &raquo;</li>
-      
-    <li>pylorax.cmdline</li>
+        
+      <li>pylorax.cmdline</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -161,17 +186,12 @@
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
 
+<span class="kn">from</span> <span class="nn">pylorax</span> <span class="k">import</span> <span class="n">vernum</span>
+
+<span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">-</span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">vernum</span><span class="p">)</span>
+
 <div class="viewcode-block" id="lorax_parser"><a class="viewcode-back" href="../../pylorax.html#pylorax.cmdline.lorax_parser">[docs]</a><span class="k">def</span> <span class="nf">lorax_parser</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot; Return the ArgumentParser for lorax&quot;&quot;&quot;</span>
-
-    <span class="c1"># get lorax version</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">pylorax</span> <span class="k">import</span> <span class="n">version</span>
-        <span class="n">vernum</span> <span class="o">=</span> <span class="n">version</span><span class="o">.</span><span class="n">num</span>
-    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-        <span class="n">vernum</span> <span class="o">=</span> <span class="s2">&quot;devel&quot;</span>
-
-    <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">-</span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">vernum</span><span class="p">)</span>
 
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Create the Anaconda boot.iso&quot;</span><span class="p">)</span>
 
@@ -249,6 +269,8 @@
                           <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;[repo]&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Names of repos to disable&quot;</span><span class="p">)</span>
     <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--rootfs-size&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
                           <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Size of root filesystem in GiB. Defaults to 2.&quot;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--noverifyssl&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                          <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Do not verify SSL certificates&quot;</span><span class="p">)</span>
 
     <span class="c1"># add the show version option</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;show program&#39;s version number and exit&quot;</span><span class="p">,</span>
@@ -427,9 +449,16 @@
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--timeout&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Cancel installer after X minutes&quot;</span><span class="p">)</span>
 
+    <span class="c1"># add the show version option</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;show program&#39;s version number and exit&quot;</span><span class="p">,</span>
+                      <span class="n">action</span><span class="o">=</span><span class="s2">&quot;version&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">parser</span></div>
 </pre></div>
 
+           </div>
+           <div class="articleComments">
+            
            </div>
           </div>
           <footer>
@@ -461,10 +490,11 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'26.2',
+            VERSION:'28.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../../_static/jquery.js"></script>

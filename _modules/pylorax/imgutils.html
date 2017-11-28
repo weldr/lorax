@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.imgutils &mdash; Lorax 26.2 documentation</title>
+  <title>pylorax.imgutils &mdash; Lorax 28.2 documentation</title>
   
 
+  
+  
   
   
 
@@ -33,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Lorax 26.2 documentation" href="../../index.html"/>
+    <link rel="top" title="Lorax 28.2 documentation" href="../../index.html"/>
         <link rel="up" title="pylorax" href="../pylorax.html"/> 
 
   
@@ -43,6 +45,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -62,7 +65,7 @@
             
             
               <div class="version">
-                26.2
+                28.2
               </div>
             
           
@@ -83,7 +86,10 @@
           
             
             
-                <ul>
+              
+            
+            
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction to Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro.html#before-lorax">Before Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../lorax.html">Lorax</a></li>
@@ -102,8 +108,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../index.html">Lorax</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Lorax</a>
+        
       </nav>
 
 
@@ -116,21 +124,38 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../index.html">Module code</a> &raquo;</li>
-      
+        
           <li><a href="../pylorax.html">pylorax</a> &raquo;</li>
-      
-    <li>pylorax.imgutils</li>
+        
+      <li>pylorax.imgutils</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -163,6 +188,7 @@
 <span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">join</span><span class="p">,</span> <span class="n">dirname</span>
 <span class="kn">from</span> <span class="nn">subprocess</span> <span class="k">import</span> <span class="n">Popen</span><span class="p">,</span> <span class="n">PIPE</span><span class="p">,</span> <span class="n">CalledProcessError</span>
 <span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">traceback</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span>
 <span class="kn">from</span> <span class="nn">time</span> <span class="k">import</span> <span class="n">sleep</span>
@@ -257,7 +283,13 @@
                     <span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="s2">&quot;/install&quot;</span><span class="p">,</span> <span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="s2">&quot;/ostree&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;/etc/selinux/targeted/contexts/files/file_contexts&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">]</span>
             <span class="n">root</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">mnt</span><span class="p">,</span> <span class="n">sysroot</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">))</span>
-            <span class="n">runcmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">)</span></div>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">runcmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;setfiles exited with a non-zero return code (</span><span class="si">%d</span><span class="s2">) which may &quot;</span>
+                             <span class="s2">&quot;be caused by running without SELinux in Permissive mode.&quot;</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">returncode</span><span class="p">)</span>
+                <span class="k">raise</span></div>
+
 
 <span class="c1">######## Utility functions ###############################################</span>
 
@@ -287,10 +319,36 @@
         <span class="n">options</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="s2">&quot;qcow2&quot;</span><span class="p">])</span>
     <span class="n">runcmd</span><span class="p">([</span><span class="s2">&quot;qemu-img&quot;</span><span class="p">,</span> <span class="s2">&quot;create&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">options</span> <span class="o">+</span> <span class="p">[</span><span class="n">outfile</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">size</span><span class="p">)])</span></div>
 
+<div class="viewcode-block" id="loop_waitfor"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.loop_waitfor">[docs]</a><span class="k">def</span> <span class="nf">loop_waitfor</span><span class="p">(</span><span class="n">loop_dev</span><span class="p">,</span> <span class="n">outfile</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Make sure the loop device is attached to the outfile.</span>
+
+<span class="sd">    It seems that on rare occasions losetup can return before the /dev/loopX is</span>
+<span class="sd">    ready for use, causing problems with mkfs. This tries to make sure that the</span>
+<span class="sd">    loop device really is associated with the backing file before continuing.</span>
+
+<span class="sd">    Raise RuntimeError if it isn&#39;t setup after 5 tries.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">_x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">):</span>
+        <span class="n">runcmd</span><span class="p">([</span><span class="s2">&quot;udevadm&quot;</span><span class="p">,</span> <span class="s2">&quot;settle&quot;</span><span class="p">,</span> <span class="s2">&quot;--timeout&quot;</span><span class="p">,</span> <span class="s2">&quot;300&quot;</span><span class="p">])</span>
+        <span class="c1">## XXX Note that losetup --list output can be truncated to 64 bytes in some</span>
+        <span class="c1">##     situations. Don&#39;t use it to lookup backing file, go the other way</span>
+        <span class="c1">##     and lookup the loop for the backing file. See util-linux lib/loopdev.c</span>
+        <span class="c1">##     loopcxt_get_backing_file()</span>
+        <span class="k">if</span> <span class="n">get_loop_name</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span> <span class="o">==</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">loop_dev</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="c1"># If this really is a race, give it some time to settle down</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Unable to setup </span><span class="si">%s</span><span class="s2"> on </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">loop_dev</span><span class="p">,</span> <span class="n">outfile</span><span class="p">))</span></div>
+
 <div class="viewcode-block" id="loop_attach"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.loop_attach">[docs]</a><span class="k">def</span> <span class="nf">loop_attach</span><span class="p">(</span><span class="n">outfile</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Attach a loop device to the given file. Return the loop device name.</span>
 <span class="sd">    Raises CalledProcessError if losetup fails.&#39;&#39;&#39;</span>
     <span class="n">dev</span> <span class="o">=</span> <span class="n">runcmd_output</span><span class="p">([</span><span class="s2">&quot;losetup&quot;</span><span class="p">,</span> <span class="s2">&quot;--find&quot;</span><span class="p">,</span> <span class="s2">&quot;--show&quot;</span><span class="p">,</span> <span class="n">outfile</span><span class="p">])</span>
+
+    <span class="c1"># Sometimes the loop device isn&#39;t ready yet, make extra sure before returning</span>
+    <span class="n">loop_waitfor</span><span class="p">(</span><span class="n">dev</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">outfile</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dev</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="loop_detach"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.loop_detach">[docs]</a><span class="k">def</span> <span class="nf">loop_detach</span><span class="p">(</span><span class="n">loopdev</span><span class="p">):</span>
@@ -592,6 +650,9 @@
 </pre></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -622,10 +683,11 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'26.2',
+            VERSION:'28.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../../_static/jquery.js"></script>

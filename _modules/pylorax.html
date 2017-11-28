@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax &mdash; Lorax 26.2 documentation</title>
+  <title>pylorax &mdash; Lorax 28.2 documentation</title>
   
 
+  
+  
   
   
 
@@ -33,7 +35,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="Lorax 26.2 documentation" href="../index.html"/>
+    <link rel="top" title="Lorax 28.2 documentation" href="../index.html"/>
         <link rel="up" title="Module code" href="index.html"/> 
 
   
@@ -43,6 +45,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -62,7 +65,7 @@
             
             
               <div class="version">
-                26.2
+                28.2
               </div>
             
           
@@ -83,7 +86,10 @@
           
             
             
-                <ul>
+              
+            
+            
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction to Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro.html#before-lorax">Before Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lorax.html">Lorax</a></li>
@@ -102,8 +108,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../index.html">Lorax</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Lorax</a>
+        
       </nav>
 
 
@@ -116,19 +124,36 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="index.html">Module code</a> &raquo;</li>
-      
-    <li>pylorax</li>
+        
+      <li>pylorax</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -186,6 +211,15 @@
 <span class="kn">from</span> <span class="nn">pylorax.discinfo</span> <span class="k">import</span> <span class="n">DiscInfo</span>
 <span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="k">import</span> <span class="n">runcmd</span><span class="p">,</span> <span class="n">runcmd_output</span>
 
+
+<span class="c1"># get lorax version</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">pylorax.version</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">vernum</span> <span class="o">=</span> <span class="s2">&quot;devel&quot;</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">vernum</span> <span class="o">=</span> <span class="n">pylorax</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">num</span>
+
 <span class="c1"># List of drivers to remove on ppc64 arch to keep initrd &lt; 32MiB</span>
 <span class="n">REMOVE_PPC64_DRIVERS</span> <span class="o">=</span> <span class="s2">&quot;floppy scsi_debug nouveau radeon cirrus mgag200&quot;</span>
 <span class="n">REMOVE_PPC64_MODULES</span> <span class="o">=</span> <span class="s2">&quot;drm plymouth&quot;</span>
@@ -197,7 +231,7 @@
                     <span class="n">arm</span><span class="o">=</span><span class="s2">&quot;arm&quot;</span><span class="p">,</span> <span class="n">armhfp</span><span class="o">=</span><span class="s2">&quot;arm&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buildarch</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">ArchData</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ArchData</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">buildarch</span> <span class="o">=</span> <span class="n">buildarch</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">basearch</span> <span class="o">=</span> <span class="n">dnf</span><span class="o">.</span><span class="n">rpm</span><span class="o">.</span><span class="n">basearch</span><span class="p">(</span><span class="n">buildarch</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">libdir</span> <span class="o">=</span> <span class="s2">&quot;lib64&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basearch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lib64_arches</span> <span class="k">else</span> <span class="s2">&quot;lib&quot;</span>
@@ -206,7 +240,7 @@
 <div class="viewcode-block" id="Lorax"><a class="viewcode-back" href="../pylorax.html#pylorax.Lorax">[docs]</a><span class="k">class</span> <span class="nc">Lorax</span><span class="p">(</span><span class="n">BaseLoraxClass</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">BaseLoraxClass</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">BaseLoraxClass</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_configured</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">product</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">workdir</span> <span class="o">=</span> <span class="kc">None</span>
@@ -314,14 +348,6 @@
 
         <span class="n">installpkgs</span> <span class="o">=</span> <span class="n">installpkgs</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="n">excludepkgs</span> <span class="o">=</span> <span class="n">excludepkgs</span> <span class="ow">or</span> <span class="p">[]</span>
-
-        <span class="c1"># get lorax version</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">pylorax.version</span>
-        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-            <span class="n">vernum</span> <span class="o">=</span> <span class="s2">&quot;devel&quot;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">vernum</span> <span class="o">=</span> <span class="n">pylorax</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">num</span>
 
         <span class="k">if</span> <span class="n">domacboot</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
@@ -477,7 +503,7 @@
                                   <span class="n">workdir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">workdir</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;rebuilding initramfs images&quot;</span><span class="p">)</span>
-        <span class="n">dracut_args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;--xz&quot;</span><span class="p">,</span> <span class="s2">&quot;--install&quot;</span><span class="p">,</span> <span class="s2">&quot;/.buildstamp&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-early-microcode&quot;</span><span class="p">]</span>
+        <span class="n">dracut_args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;--xz&quot;</span><span class="p">,</span> <span class="s2">&quot;--install&quot;</span><span class="p">,</span> <span class="s2">&quot;/.buildstamp&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-early-microcode&quot;</span><span class="p">,</span> <span class="s2">&quot;--add&quot;</span><span class="p">,</span> <span class="s2">&quot;fips&quot;</span><span class="p">]</span>
         <span class="n">anaconda_args</span> <span class="o">=</span> <span class="n">dracut_args</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;--add&quot;</span><span class="p">,</span> <span class="s2">&quot;anaconda pollcdrom qemu qemu-net&quot;</span><span class="p">]</span>
 
         <span class="c1"># ppc64 cannot boot an initrd &gt; 32MiB so remove some drivers</span>
@@ -510,12 +536,12 @@
     <span class="n">buildarch</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">q</span> <span class="o">=</span> <span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">available</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">anaconda</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;anaconda&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">anaconda</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;anaconda-core&quot;</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">anaconda</span><span class="o">.</span><span class="n">arch</span> <span class="o">!=</span> <span class="s2">&quot;src&quot;</span><span class="p">:</span>
             <span class="n">buildarch</span> <span class="o">=</span> <span class="n">anaconda</span><span class="o">.</span><span class="n">arch</span>
             <span class="k">break</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">buildarch</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;no anaconda package in the repository&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;no anaconda-core package in the repository&quot;</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">buildarch</span></div>
@@ -580,6 +606,9 @@
 </pre></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -610,10 +639,11 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'26.2',
+            VERSION:'28.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../_static/jquery.js"></script>

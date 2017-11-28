@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Lorax &mdash; Lorax 26.2 documentation</title>
+  <title>Lorax &mdash; Lorax 28.2 documentation</title>
   
 
+  
+  
   
   
 
@@ -33,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Lorax 26.2 documentation" href="index.html"/>
+    <link rel="top" title="Lorax 28.2 documentation" href="index.html"/>
         <link rel="next" title="livemedia-creator" href="livemedia-creator.html"/>
         <link rel="prev" title="Introduction to Lorax" href="intro.html"/> 
 
@@ -44,6 +46,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -63,7 +66,7 @@
             
             
               <div class="version">
-                26.2
+                28.2
               </div>
             
           
@@ -84,12 +87,16 @@
           
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction to Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro.html#before-lorax">Before Lorax</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Lorax</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#lorax-cmdline-arguments">lorax cmdline arguments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#quickstart">Quickstart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-inside-of-mock">Running inside of mock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#how-it-works">How it works</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#runtime-install-tmpl">runtime-install.tmpl</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#runtime-postinstall-tmpl">runtime-postinstall.tmpl</a></li>
@@ -116,8 +123,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Lorax</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Lorax</a>
+        
       </nav>
 
 
@@ -126,23 +135,40 @@
         <div class="rst-content">
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>Lorax</li>
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Lorax</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-            <a href="_sources/lorax.txt" rel="nofollow"> View page source</a>
+            
+            <a href="_sources/lorax.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -181,7 +207,8 @@ repositories.</p>
              <span class="p">[</span><span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">arch</span><span class="o">-</span><span class="n">template</span> <span class="n">ADD_ARCH_TEMPLATES</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">arch</span><span class="o">-</span><span class="n">template</span><span class="o">-</span><span class="n">var</span> <span class="n">ADD_ARCH_TEMPLATE_VARS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">noverify</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">sharedir</span> <span class="n">SHAREDIR</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">enablerepo</span> <span class="p">[</span><span class="n">repo</span><span class="p">]]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">disablerepo</span> <span class="p">[</span><span class="n">repo</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">rootfs</span><span class="o">-</span><span class="n">size</span> <span class="n">ROOTFS_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">disablerepo</span> <span class="p">[</span><span class="n">repo</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">rootfs</span><span class="o">-</span><span class="n">size</span> <span class="n">ROOTFS_SIZE</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">noverifyssl</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span>
              <span class="n">OUTPUTDIR</span>
 </pre></div>
 </div>
@@ -214,40 +241,40 @@ repositories.</p>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">-s=[]</span>, <span class="option">--source=[]</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td>source repository (may be listed multiple times)</td></tr>
+<tr><td>&#160;</td><td>source repository (may be listed multiple times)</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">--repo=[]</span></kbd></td>
 <td>source dnf repository file</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">-m=[]</span>, <span class="option">--mirrorlist=[]</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td>mirrorlist repository (may be listed multiple times)</td></tr>
+<tr><td>&#160;</td><td>mirrorlist repository (may be listed multiple times)</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">-t</span>, <span class="option">--variant</span></kbd></td>
 <td>variant name</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">-b=your distribution provided bug reporting tool</span>, <span class="option">--bugurl=your distribution provided bug reporting tool</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td>bug reporting URL for the product</td></tr>
+<tr><td>&#160;</td><td>bug reporting URL for the product</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--isfinal=False</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td>Undocumented</td></tr>
+<tr><td>&#160;</td><td>Undocumented</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">-c=/etc/lorax/lorax.conf</span>, <span class="option">--config=/etc/lorax/lorax.conf</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td>config file</td></tr>
+<tr><td>&#160;</td><td>config file</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">--proxy</span></kbd></td>
 <td>repo proxy url:port</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">-i=[]</span>, <span class="option">--installpkgs=[]</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td>package glob to install before runtime-install.tmpl runs. (may be listed multiple times)</td></tr>
+<tr><td>&#160;</td><td>package glob to install before runtime-install.tmpl runs. (may be listed multiple times)</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">-e=[]</span>, <span class="option">--excludepkgs=[]</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td>package glob to remove before runtime-install.tmpl runs. (may be listed multiple times)</td></tr>
+<tr><td>&#160;</td><td>package glob to remove before runtime-install.tmpl runs. (may be listed multiple times)</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">--buildarch</span></kbd></td>
 <td>build architecture</td></tr>
@@ -260,15 +287,15 @@ repositories.</p>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--nomacboot=True</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td>Undocumented</td></tr>
+<tr><td>&#160;</td><td>Undocumented</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--noupgrade=True</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td>Undocumented</td></tr>
+<tr><td>&#160;</td><td>Undocumented</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--logfile=./lorax.log</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td>Path to logfile</td></tr>
+<tr><td>&#160;</td><td>Path to logfile</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">--tmp=/var/tmp</span></kbd></td>
 <td>Top level temporary directory</td></tr>
@@ -284,38 +311,42 @@ repositories.</p>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--add-template=[]</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td>Additional template for runtime image</td></tr>
+<tr><td>&#160;</td><td>Additional template for runtime image</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--add-template-var=[]</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td>Set variable for runtime image template</td></tr>
+<tr><td>&#160;</td><td>Set variable for runtime image template</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--add-arch-template=[]</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td>Additional template for architecture-specific image</td></tr>
+<tr><td>&#160;</td><td>Additional template for architecture-specific image</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--add-arch-template-var=[]</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td>Set variable for architecture-specific image</td></tr>
+<tr><td>&#160;</td><td>Set variable for architecture-specific image</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--noverify=True</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td>Do not verify the install root</td></tr>
+<tr><td>&#160;</td><td>Do not verify the install root</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">--sharedir</span></kbd></td>
 <td>Directory containing all the templates. Overrides config file sharedir</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--enablerepo=[]</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td>Names of repos to enable</td></tr>
+<tr><td>&#160;</td><td>Names of repos to enable</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--disablerepo=[]</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td>Names of repos to disable</td></tr>
+<tr><td>&#160;</td><td>Names of repos to disable</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--rootfs-size=2</span></kbd></td>
 </tr>
-<tr><td>&nbsp;</td><td>Size of root filesystem in GiB. Defaults to 2.</td></tr>
+<tr><td>&#160;</td><td>Size of root filesystem in GiB. Defaults to 2.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--noverifyssl=False</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Do not verify SSL certificates</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">-V</span></kbd></td>
 <td>show program&#8217;s version number and exit</td></tr>
@@ -340,6 +371,13 @@ repositories.</p>
 override the ones in the distribution repositories.</p>
 <p>Under <code class="docutils literal"><span class="pre">./results/</span></code> will be the release tree files: .discinfo, .treeinfo, everything that
 goes onto the boot.iso, the pxeboot directory, and the boot.iso under <code class="docutils literal"><span class="pre">./images/</span></code>.</p>
+</div>
+<div class="section" id="running-inside-of-mock">
+<h2>Running inside of mock<a class="headerlink" href="#running-inside-of-mock" title="Permalink to this headline">¶</a></h2>
+<p>If you are using lorax with mock v1.3.4 or later you will need to pass
+<code class="docutils literal"><span class="pre">--old-chroot</span></code> to mock. Mock now defaults to using systemd-nspawn which cannot
+create the needed loop device nodes. Passing <code class="docutils literal"><span class="pre">--old-chroot</span></code> will use the old
+system where <code class="docutils literal"><span class="pre">/dev/loop*</span></code> is setup for you.</p>
 </div>
 <div class="section" id="how-it-works">
 <h2>How it works<a class="headerlink" href="#how-it-works" title="Permalink to this headline">¶</a></h2>
@@ -431,15 +469,18 @@ should) select the specific template directory by passing <code class="docutils 
 
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="livemedia-creator.html" class="btn btn-neutral float-right" title="livemedia-creator" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="livemedia-creator.html" class="btn btn-neutral float-right" title="livemedia-creator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="intro.html" class="btn btn-neutral" title="Introduction to Lorax" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="intro.html" class="btn btn-neutral" title="Introduction to Lorax" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -470,10 +511,11 @@ should) select the specific template directory by passing <code class="docutils 
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'26.2',
+            VERSION:'28.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

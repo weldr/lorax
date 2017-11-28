@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.ltmpl &mdash; Lorax 26.2 documentation</title>
+  <title>pylorax.ltmpl &mdash; Lorax 28.2 documentation</title>
   
 
+  
+  
   
   
 
@@ -33,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Lorax 26.2 documentation" href="../../index.html"/>
+    <link rel="top" title="Lorax 28.2 documentation" href="../../index.html"/>
         <link rel="up" title="pylorax" href="../pylorax.html"/> 
 
   
@@ -43,6 +45,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -62,7 +65,7 @@
             
             
               <div class="version">
-                26.2
+                28.2
               </div>
             
           
@@ -83,7 +86,10 @@
           
             
             
-                <ul>
+              
+            
+            
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction to Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro.html#before-lorax">Before Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../lorax.html">Lorax</a></li>
@@ -102,8 +108,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../index.html">Lorax</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Lorax</a>
+        
       </nav>
 
 
@@ -116,21 +124,38 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../index.html">Module code</a> &raquo;</li>
-      
+        
           <li><a href="../pylorax.html">pylorax</a> &raquo;</li>
-      
-    <li>pylorax.ltmpl</li>
+        
+      <li>pylorax.ltmpl</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -389,8 +414,8 @@
                 <span class="c1"># log the &quot;ErrorType: this is what happened&quot; line</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;  &quot;</span> <span class="o">+</span> <span class="n">exclines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
                 <span class="c1"># and log the entire traceback to the debug log</span>
-                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exclines</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;  &quot;</span> <span class="o">+</span> <span class="n">line</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">_line</span> <span class="ow">in</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exclines</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;  &quot;</span> <span class="o">+</span> <span class="n">_line</span><span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fatalerrors</span><span class="p">:</span>
                     <span class="k">raise</span>
 
@@ -702,15 +727,28 @@
                 <span class="c1"># dnf queries don&#39;t have a concept of negative globs which is why</span>
                 <span class="c1"># the filtering is done the hard way.</span>
 
-                <span class="n">pkgnames</span> <span class="o">=</span> <span class="p">{</span><span class="n">pkg</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">dnf</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">Subject</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">get_best_query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="p">)}</span>
+                <span class="n">pkgnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">pkg</span> <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">dnf</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">Subject</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">get_best_query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">latest</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">pkgnames</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">dnf</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">PackageNotFoundError</span><span class="p">(</span><span class="s2">&quot;no package matched&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
 
+                <span class="c1"># Sort the results so that we have consistent results</span>
+                <span class="n">pkgnames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pkg</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">pkg</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="n">pkg</span><span class="o">.</span><span class="n">release</span><span class="p">)</span> <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">pkgnames</span><span class="p">])</span>
+
                 <span class="k">for</span> <span class="n">exclude</span> <span class="ow">in</span> <span class="n">excludes</span><span class="p">:</span>
-                    <span class="n">pkgnames</span> <span class="o">=</span> <span class="p">{</span><span class="n">pkgname</span> <span class="k">for</span> <span class="n">pkgname</span> <span class="ow">in</span> <span class="n">pkgnames</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">pkgname</span><span class="p">,</span> <span class="n">exclude</span><span class="p">)}</span>
+                    <span class="n">pkgnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">pkg</span> <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">pkgnames</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">pkg</span><span class="p">,</span> <span class="n">exclude</span><span class="p">)]</span>
+
+                <span class="c1"># If the request is a glob, expand it in the log</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">g</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;*&#39;</span><span class="p">,</span><span class="s1">&#39;?&#39;</span><span class="p">,</span><span class="s1">&#39;.&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">p</span><span class="p">):</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;installpkg: </span><span class="si">%s</span><span class="s2"> expands to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pkgnames</span><span class="p">))</span>
 
                 <span class="k">for</span> <span class="n">pkgname</span> <span class="ow">in</span> <span class="n">pkgnames</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">pkgname</span><span class="p">)</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">pkgname</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="c1"># pylint: disable=broad-except</span>
+                        <span class="k">if</span> <span class="n">required</span><span class="p">:</span>
+                            <span class="k">raise</span>
+                        <span class="c1"># Not required, log it and continue processing pkgs</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;installpkg </span><span class="si">%s</span><span class="s2"> failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pkgname</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="c1"># pylint: disable=broad-except</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;installpkg </span><span class="si">%s</span><span class="s2"> failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
                 <span class="n">errors</span> <span class="o">=</span> <span class="kc">True</span>
@@ -901,16 +939,20 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;systemctl: no units given for </span><span class="si">%s</span><span class="s2">, ignoring&quot;</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s2">&quot;/run/systemd/system&quot;</span><span class="p">)</span> <span class="c1"># XXX workaround for systemctl bug</span>
-        <span class="n">systemctl</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;systemctl&#39;</span><span class="p">,</span> <span class="s1">&#39;--root&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outroot</span><span class="p">,</span> <span class="s1">&#39;--no-reload&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;--quiet&#39;</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)</span>
+        <span class="n">systemctl</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;systemctl&#39;</span><span class="p">,</span> <span class="s1">&#39;--root&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outroot</span><span class="p">,</span> <span class="s1">&#39;--no-reload&#39;</span><span class="p">,</span> <span class="n">cmd</span><span class="p">]</span>
+        <span class="c1"># When a unit doesn&#39;t exist systemd aborts the command. Run them one at a time.</span>
         <span class="c1"># XXX for some reason &#39;systemctl enable/disable&#39; always returns 1</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">cmd</span> <span class="o">=</span> <span class="n">systemctl</span> <span class="o">+</span> <span class="n">units</span>
-            <span class="n">runcmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">CalledProcessError</span><span class="p">:</span>
-            <span class="k">pass</span></div></div>
+        <span class="k">for</span> <span class="n">unit</span> <span class="ow">in</span> <span class="n">units</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">cmd</span> <span class="o">=</span> <span class="n">systemctl</span> <span class="o">+</span> <span class="p">[</span><span class="n">unit</span><span class="p">]</span>
+                <span class="n">runcmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">CalledProcessError</span><span class="p">:</span>
+                <span class="k">pass</span></div></div>
 </pre></div>
 
+           </div>
+           <div class="articleComments">
+            
            </div>
           </div>
           <footer>
@@ -942,10 +984,11 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'26.2',
+            VERSION:'28.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../../_static/jquery.js"></script>
