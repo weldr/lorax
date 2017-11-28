@@ -44,6 +44,15 @@ Under ``./results/`` will be the release tree files: .discinfo, .treeinfo, every
 goes onto the boot.iso, the pxeboot directory, and the boot.iso under ``./images/``.
 
 
+Running inside of mock
+----------------------
+
+If you are using lorax with mock v1.3.4 or later you will need to pass
+``--old-chroot`` to mock. Mock now defaults to using systemd-nspawn which cannot
+create the needed loop device nodes. Passing ``--old-chroot`` will use the old
+system where ``/dev/loop*`` is setup for you.
+
+
 How it works
 ------------
 

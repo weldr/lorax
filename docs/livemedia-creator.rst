@@ -359,8 +359,9 @@ As of lorax version 22.2 you can use livemedia-creator and anaconda version
 22.15 inside of a mock chroot with --make-iso and --make-fsimage.
 
 .. note::
-    As of mock 1.2.12 you no longer need to bind mount ``/dev/``, loop devices are setup
-    as part of the standard mock ``/dev/`` creation.
+    As of mock 1.3.4 you need to use ``--old-chroot`` with mock. Mock now defaults to using systemd-nspawn
+    which cannot create the needed loop device nodes. Passing ``--old-chroot`` will use the old system
+    where ``/dev/loop*`` is setup for you.
 
 On the host system:
 
