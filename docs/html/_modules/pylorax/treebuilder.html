@@ -8,9 +8,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.treebuilder &mdash; Lorax 26.2 documentation</title>
+  <title>pylorax.treebuilder &mdash; Lorax 28.2 documentation</title>
   
 
+  
+  
   
   
 
@@ -33,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Lorax 26.2 documentation" href="../../index.html"/>
+    <link rel="top" title="Lorax 28.2 documentation" href="../../index.html"/>
         <link rel="up" title="pylorax" href="../pylorax.html"/> 
 
   
@@ -43,6 +45,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -62,7 +65,7 @@
             
             
               <div class="version">
-                26.2
+                28.2
               </div>
             
           
@@ -83,7 +86,10 @@
           
             
             
-                <ul>
+              
+            
+            
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction to Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../intro.html#before-lorax">Before Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../lorax.html">Lorax</a></li>
@@ -102,8 +108,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../index.html">Lorax</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Lorax</a>
+        
       </nav>
 
 
@@ -116,21 +124,38 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../index.html">Module code</a> &raquo;</li>
-      
+        
           <li><a href="../pylorax.html">pylorax</a> &raquo;</li>
-      
-    <li>pylorax.treebuilder</li>
+        
+      <li>pylorax.treebuilder</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -291,7 +316,7 @@
         <span class="sd">&#39;&#39;&#39;Ensure that contents of the installroot can run&#39;&#39;&#39;</span>
         <span class="n">status</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="n">ELF_MAGIC</span> <span class="o">=</span> <span class="n">b</span><span class="s1">&#39;</span><span class="se">\x7f</span><span class="s1">ELF&#39;</span>
+        <span class="n">ELF_MAGIC</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x7f</span><span class="s1">ELF&#39;</span>
 
         <span class="c1"># Iterate over all files in /usr/bin and /usr/sbin</span>
         <span class="c1"># For ELF files, gather them into a list and we&#39;ll check them all at</span>
@@ -306,7 +331,7 @@
                 <span class="k">if</span> <span class="n">magic</span> <span class="o">==</span> <span class="n">ELF_MAGIC</span><span class="p">:</span>
                     <span class="c1"># Save the path, minus the chroot prefix</span>
                     <span class="n">elf_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span><span class="p">):])</span>
-                <span class="k">elif</span> <span class="n">magic</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="n">b</span><span class="s1">&#39;#!&#39;</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">magic</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;#!&#39;</span><span class="p">:</span>
                     <span class="c1"># Reopen the file as text and read the first line.</span>
                     <span class="c1"># Open as latin-1 so that stray 8-bit characters don&#39;t make</span>
                     <span class="c1"># things blow up. We only really care about ASCII parts.</span>
@@ -495,8 +520,8 @@
 <div class="viewcode-block" id="findkernels"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.findkernels">[docs]</a><span class="k">def</span> <span class="nf">findkernels</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">kdir</span><span class="o">=</span><span class="s2">&quot;boot&quot;</span><span class="p">):</span>
     <span class="c1"># To find possible flavors, awk &#39;/BuildKernel/ { print $4 }&#39; kernel.spec</span>
     <span class="n">flavors</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;debug&#39;</span><span class="p">,</span> <span class="s1">&#39;PAE&#39;</span><span class="p">,</span> <span class="s1">&#39;PAEdebug&#39;</span><span class="p">,</span> <span class="s1">&#39;smp&#39;</span><span class="p">,</span> <span class="s1">&#39;xen&#39;</span><span class="p">,</span> <span class="s1">&#39;lpae&#39;</span><span class="p">)</span>
-    <span class="n">kre</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">r&quot;vmlinuz-(?P&lt;version&gt;.+?\.(?P&lt;arch&gt;[a-z0-9_]+)&quot;</span>
-                     <span class="s2">r&quot;(.(?P&lt;flavor&gt;</span><span class="si">{0}</span><span class="s2">))?)$&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">flavors</span><span class="p">)))</span>
+    <span class="n">kre</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;vmlinuz-(?P&lt;version&gt;.+?\.(?P&lt;arch&gt;[a-z0-9_]+)&quot;</span>
+                     <span class="sa">r</span><span class="s2">&quot;(.(?P&lt;flavor&gt;</span><span class="si">{0}</span><span class="s2">))?)$&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">flavors</span><span class="p">)))</span>
     <span class="n">kernels</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">bootfiles</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">kdir</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">bootfiles</span><span class="p">:</span>
@@ -539,6 +564,9 @@
 </pre></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -569,10 +597,11 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'26.2',
+            VERSION:'28.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../../_static/jquery.js"></script>
