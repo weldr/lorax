@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.1
+Version:        28.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -154,6 +154,15 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Tue Nov 28 2017 Brian C. Lane <bcl@redhat.com> 28.2-1
+- Add documentation about mock changes (#1473880) (bcl@redhat.com)
+- Log a more descriptive error when setfiles fails (#1499771) (bcl@redhat.com)
+- Add /usr/share/lorax/templates.d ownership to lorax-templates-generic
+  (bcl@redhat.com)
+- Add dependencies for SE/HMC (vponcova@redhat.com)
+- Allow installpkgs to do version pinning through globbing (claudioz@fb.com)
+- Storaged re-merged with udisks2 upstream (sgallagh@redhat.com)
+
 * Thu Oct 19 2017 Brian C. Lane <bcl@redhat.com> 28.1-1
 - Use bytes when writing strings in mk-s390-cdboot (#1504026) (bcl@redhat.com)
 
