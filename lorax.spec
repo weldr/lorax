@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.7.4
+Version:        19.7.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -141,6 +141,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_unitdir}/lorax-composer.service
 
 %changelog
+* Tue Nov 28 2017 Brian C. Lane <bcl@redhat.com> 19.7.5-1
+- Redirect yum's logging to yum.log (bcl)
+- Close the rpmdb after every API operation. (bcl)
+- Fix error string when there is a problem listing projects (bcl)
+- Add --releasever option to lorax-composer (bcl)
+
 * Wed Nov 22 2017 Brian C. Lane <bcl@redhat.com> 19.7.4-1
 - Fix wrong name for /etc/composer.conf (bcl) (bcl)
 
