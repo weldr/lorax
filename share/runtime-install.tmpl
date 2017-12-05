@@ -21,6 +21,7 @@ installpkg kernel
 ## arch-specific packages (bootloaders etc.)
 %if basearch == "aarch64":
     installpkg efibootmgr grub2-efi-aa64-cdboot grubby shim-aa64
+    installpkg grub2-tools grub2-tools-minimal grub2-tools-extra
 %endif
 %if basearch in ("arm", "armhfp"):
     installpkg kernel-lpae kernel-tegra
