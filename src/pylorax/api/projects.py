@@ -198,7 +198,7 @@ def projects_depsolve(yb, project_names):
         for p in project_names:
             yb.install(pattern=p)
         (rc, msg) = yb.buildTransaction()
-        if rc not in [1,2]:
+        if rc not in [0, 1, 2]:
             raise ProjectsError("There was a problem depsolving %s: %s" % (project_names, msg))
         yb.tsInfo.makelists()
         deps = sorted(map(tm_to_dep, yb.tsInfo.installed + yb.tsInfo.depinstalled), key=lambda p: p["name"].lower())

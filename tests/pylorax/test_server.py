@@ -369,6 +369,30 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(len(recipes), 1)
         self.assertEqual(recipes[0]["recipe"]["name"], "glusterfs")
         self.assertEqual(len(recipes[0]["dependencies"]) > 10, True)
+        self.assertFalse(data.get("errors"))
+
+    def test_14_recipes_depsolve_empty(self):
+        """Test /api/v0/recipes/depsolve/<recipe_names> on empty recipe"""
+        test_recipe = {"description": "An empty recipe",
+                       "name":"void",
+                       "version": "0.1.0"}
+        resp = self.server.post("/api/v0/recipes/new",
+                                data=json.dumps(test_recipe),
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+        resp = self.server.get("/api/v0/recipes/depsolve/void")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        recipes = data.get("recipes")
+        self.assertNotEqual(recipes, None)
+        self.assertEqual(len(recipes), 1)
+        self.assertEqual(recipes[0]["recipe"]["name"], "void")
+        self.assertEqual(recipes[0]["recipe"]["packages"], [])
+        self.assertEqual(recipes[0]["recipe"]["modules"], [])
+        self.assertEqual(recipes[0]["dependencies"], [])
+        self.assertFalse(data.get("errors"))
 
     def test_15_recipes_freeze(self):
         """Test /api/v0/recipes/freeze/<recipe_names>"""
