@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import os
+import time
 import shutil
 import tempfile
 import unittest
@@ -57,13 +59,15 @@ class ProjectsTest(unittest.TestCase):
         self.tmp_dir = tempfile.mkdtemp(prefix="lorax.test.repo.")
         self.config = configure(root_dir=self.tmp_dir, test_config=True)
         self.yb = get_base_object(self.config)
+        os.environ["TZ"] = "UTC"
+        time.tzset()
 
     @classmethod
     def tearDownClass(self):
         shutil.rmtree(self.tmp_dir)
 
     def test_api_time(self):
-        self.assertEqual(api_time(499222800), "1985-10-26T21:00:00")
+        self.assertEqual(api_time(499222800), "1985-10-27T01:00:00")
 
     def test_api_changelog(self):
         self.assertEqual(api_changelog([[0,1,"Heavy!"]]), "Heavy!")
@@ -82,7 +86,7 @@ class ProjectsTest(unittest.TestCase):
         build = {"epoch":"epoch",
                  "release":"release",
                  "arch":"arch",
-                 "build_time":"1985-10-26T21:00:00",
+                 "build_time":"1985-10-27T01:00:00",
                  "changelog":"Heavy!",
                  "build_config_ref": "BUILD_CONFIG_REF",
                  "build_env_ref":    "BUILD_ENV_REF",
