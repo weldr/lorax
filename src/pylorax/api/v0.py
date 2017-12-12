@@ -305,7 +305,7 @@ def v0_api(api):
                         recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe_name)
                 except Exception as e:
                     errors.append({"recipe":recipe_name, "msg":str(e)})
-                    log.error("(v0_recipes_depsolve) %s", str(e))
+                    log.error("(v0_recipes_freeze) %s", str(e))
 
             # No recipe found, skip it.
             if not recipe:
@@ -323,7 +323,7 @@ def v0_api(api):
                     deps = projects_depsolve(api.config["YUMLOCK"].yb, projects)
             except ProjectsError as e:
                 errors.append({"recipe":recipe_name, "msg":str(e)})
-                log.error("(v0_recipes_depsolve) %s", str(e))
+                log.error("(v0_recipes_freeze) %s", str(e))
 
             # Change the recipe's modules and packages to use the depsolved version
             new_modules = []
