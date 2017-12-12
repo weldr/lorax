@@ -142,11 +142,11 @@ def recipe_from_dict(recipe_dict):
         if recipe_dict.get("modules"):
             modules = [RecipeModule(m.get("name"), m.get("version")) for m in recipe_dict["modules"]]
         else:
-            modules = None
+            modules = []
         if recipe_dict.get("packages"):
             packages = [RecipePackage(p.get("name"), p.get("version")) for p in recipe_dict["packages"]]
         else:
-            packages = None
+            packages = []
         name = recipe_dict["name"]
         description = recipe_dict["description"]
         version = recipe_dict.get("version", None)
