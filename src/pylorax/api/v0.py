@@ -18,6 +18,7 @@ import logging
 log = logging.getLogger("lorax-composer")
 
 from flask import jsonify, request
+from flask_jwt import jwt_required
 
 # Use pykickstart to calculate disk image size
 from pykickstart.parser import KickstartParser
@@ -64,6 +65,7 @@ def v0_api(api):
 
     @api.route("/api/v0/recipes/list")
     @crossdomain(origin="*")
+    @jwt_required()
     def v0_recipes_list():
         """List the available recipes on a branch."""
         try:

@@ -45,6 +45,10 @@ def configure(conf_file="/etc/lorax/composer.conf", root_dir="/", test_config=Fa
     conf.set("composer", "repo_dir", joinpaths(root_dir, "/var/lib/lorax/composer/repos.d/"))
     conf.set("composer", "cache_dir", joinpaths(root_dir, "/var/cache/lorax/composer/yum/"))
 
+    # Enable user authentication
+    conf.set("composer", "auth", "1")
+
+    # Only root is allowed to use composer
     conf.add_section("users")
     conf.set("users", "root", "1")
 
