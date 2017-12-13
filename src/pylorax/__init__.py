@@ -57,9 +57,14 @@ except ImportError:
 else:
     vernum = pylorax.version.num
 
-# List of drivers to remove on ppc64 arch to keep initrd < 32MiB
-REMOVE_PPC64_DRIVERS = "floppy scsi_debug nouveau radeon cirrus mgag200"
-REMOVE_PPC64_MODULES = "drm plymouth"
+# List of drivers to remove on ppc64 and s390x arch to keep initrd < 32MiB
+# This is a space separated list that is passed directly to dracut
+REMOVE_DRIVERS = {"ppc64":   "floppy scsi_debug nouveau radeon cirrus mgag200",
+                  "ppc64le": "floppy scsi_debug nouveau radeon cirrus mgag200",
+                  "s390x":   "floppy scsi_debug nouveau radeon cirrus mgag200"}
+REMOVE_MODULES = {"ppc64":   "drm plymouth",
+                  "ppc64le": "drm plymouth",
+                  "s390x":   "drm plymouth"}
 
 class ArchData(DataHolder):
     lib64_arches = ("x86_64", "ppc64", "ppc64le", "s390x", "ia64", "aarch64")
@@ -314,13 +319,16 @@ class Lorax(BaseLoraxClass):
         dracut_args = ["--xz", "--install", "/.buildstamp", "--no-early-microcode", "--add", "fips"]
         anaconda_args = dracut_args + ["--add", "anaconda pollcdrom"]
 
-        # ppc64 cannot boot an initrd > 32MiB so remove some drivers
-        if self.arch.basearch in ("ppc64", "ppc64le"):
-            dracut_args.extend(["--omit-drivers", REMOVE_PPC64_DRIVERS])
+        # Some arches cannot boot an initrd > 32MiB, so removes some drivers and modules
+        if self.arch.basearch in REMOVE_DRIVERS:
+            logger.info("Removing drivers from %s initrd: %s", self.arch.basearch, REMOVE_DRIVERS[self.arch.basearch])
+            dracut_args.extend(["--omit-drivers", REMOVE_DRIVERS[self.arch.basearch]])
 
+        if self.arch.basearch in REMOVE_MODULES:
+            logger.info("Removing modules from %s initrd: %s", self.arch.basearch, REMOVE_MODULES[self.arch.basearch])
             # Only omit dracut modules from the initrd so that they're kept for
             # upgrade.img
-            anaconda_args.extend(["--omit", REMOVE_PPC64_MODULES])
+            anaconda_args.extend(["--omit", REMOVE_MODULES[self.arch.basearch]])
 
         treebuilder.rebuild_initrds(add_args=anaconda_args)
 

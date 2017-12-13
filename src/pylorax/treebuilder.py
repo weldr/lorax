@@ -221,11 +221,11 @@ class TreeBuilder(object):
             cmd = dracut + [outfile, kernel.version]
             runcmd(cmd, root=self.vars.inroot)
 
-            # ppc64 cannot boot images > 32MiB, check size and warn
-            if self.vars.arch.basearch in ("ppc64", "ppc64le") and os.path.exists(outfile):
+            # s390x and ppc64 cannot boot images > 32MiB, check size and warn
+            if self.vars.arch.basearch in ("ppc64", "ppc64le", "s390x") and os.path.exists(outfile):
                 st = os.stat(outfile)
                 if st.st_size > 32 * 1024 * 1024:
-                    logging.warning("ppc64 initrd %s is > 32MiB", outfile)
+                    logging.warning("%s initrd %s is > 32MiB", self.vars.arch.basearch, outfile)
 
         os.unlink(joinpaths(self.vars.inroot,"/proc/modules"))
 
