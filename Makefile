@@ -58,6 +58,9 @@ local:
 	@rm -rf /var/tmp/$(PKGNAME)-$(VERSION)
 	@echo "The archive is in $(PKGNAME)-$(VERSION).tar.gz"
 
+test-in-docker:
+	sudo docker build -t welder/lorax-composer:latest -f Dockerfile.test .
+
 ci: check test
 
 .PHONY: all install check test clean tag docs archive local
