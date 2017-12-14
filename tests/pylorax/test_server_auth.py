@@ -18,6 +18,7 @@ import shutil
 import tempfile
 from threading import Lock
 
+from flask import json
 from pylorax.api.auth import setup_jwt
 from pylorax.api.config import configure
 from pylorax.api.recipes import open_or_create_repo, commit_recipe_directory
@@ -26,8 +27,8 @@ from pylorax.api.yumbase import get_base_object
 
 from common import ServerCommon
 
-class ServerTestCase(ServerCommon):
-    """Test the server API without authentication"""
+class ServerAuthTestCase(ServerCommon):
+    """Test the server API with authentication"""
     __test__ = True
 
     @classmethod
@@ -39,8 +40,8 @@ class ServerTestCase(ServerCommon):
 
         server.config["COMPOSER_CFG"] = configure(root_dir=repo_dir, test_config=True)
 
-        # Disable authentication for these tests
-        server.config["COMPOSER_CFG"].set("composer", "auth", "0")
+        # Make sure that authentication is enabled
+        server.config["COMPOSER_CFG"].set("composer", "auth", "1")
 
         yb = get_base_object(server.config["COMPOSER_CFG"])
         server.config["YUMLOCK"] = YumLock(yb=yb, lock=Lock())
@@ -53,11 +54,17 @@ class ServerTestCase(ServerCommon):
         # Import the example recipes
         commit_recipe_directory(server.config["GITLOCK"].repo, "master", self.examples_path)
 
-        # Initialize JWT
-        setup_jwt(server)
+        # Initialize JWT with the test user
+        setup_jwt(server, test_user=True)
 
-        # No extra headers to send
-        self.jwt_header = {}
+        # Get the JWT token from /api/auth
+        resp = self.server.post("/api/auth",
+                                data=json.dumps({"username":"testuser", "password":"goodpassword"}),
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        jwt_token = data["access_token"]
+
+        self.jwt_header = {"Authorization": "JWT " + jwt_token}
 
     @classmethod
     def tearDownClass(self):

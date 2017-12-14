@@ -16,7 +16,7 @@
 #
 import PAM
 from flask import current_app
-from flask_jwt import JWT, current_identity, _jwt_required
+from flask_jwt import JWT, _jwt_required
 from functools import wraps
 import uuid
 
@@ -35,7 +35,7 @@ def check_unpw(un, pw, service="passwd"):
     """
     def pam_conv(auth, query_list):
         responses = []
-        for query, typ in query_list:
+        for _query, typ in query_list:
             if typ == PAM.PAM_PROMPT_ECHO_OFF:
                 responses.append((pw,0))
             else:
@@ -61,6 +61,24 @@ def check_unpw(un, pw, service="passwd"):
 class User(object):
     def __init__(self, username):
         self.id = username
+
+def jwt_test_auth(username, password):
+    """Test authentication
+
+    :param username: User to authenticate
+    :type username: str
+    :param password: User's password to use for authentication
+    :type password: str
+    :returns: username if they are authenticated, None otherwise
+    :rtype: str or None
+
+    This method is only successfull for testuser:goodpassword
+    and should ONLY be used for testing.
+    """
+    if username == "testuser" and password == "goodpassword":
+        return User(username)
+    else:
+        return None
 
 def jwt_auth(username, password):
     """Authenticate a user
@@ -104,7 +122,7 @@ def authenticate():
         return decorator
     return wrapper
 
-def setup_jwt(server):
+def setup_jwt(server, test_user=False):
     """Initialize JWT for the server application
 
     :param server: Flask server
@@ -120,5 +138,9 @@ def setup_jwt(server):
     server.config["JWT_SECRET_KEY"] = uuid.uuid4().hex
     server.config["JWT_AUTH_URL_RULE"] = "/api/auth"
 
-    # Initialize JWT support
-    JWT(server, jwt_auth, jwt_identity)
+    if test_user:
+        # Setup test auth
+        JWT(server, jwt_test_auth, jwt_identity)
+    else:
+        # Initialize JWT support
+        JWT(server, jwt_auth, jwt_identity)
