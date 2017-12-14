@@ -21,6 +21,7 @@ import unittest
 
 from flask import json
 import pytoml as toml
+from pylorax.api.auth import setup_jwt
 from pylorax.api.config import configure
 from pylorax.api.recipes import open_or_create_repo, commit_recipe_directory
 from pylorax.api.server import server, GitLock, YumLock
@@ -37,6 +38,10 @@ class ServerTestCase(unittest.TestCase):
         server.config["GITLOCK"] = GitLock(repo=repo, lock=Lock(), dir=repo_dir)
 
         server.config["COMPOSER_CFG"] = configure(root_dir=repo_dir, test_config=True)
+
+        # Disable authentication for these tests
+        server.config["COMPOSER_CFG"].set("composer", "auth", "0")
+
         yb = get_base_object(server.config["COMPOSER_CFG"])
         server.config["YUMLOCK"] = YumLock(yb=yb, lock=Lock())
 
@@ -47,6 +52,9 @@ class ServerTestCase(unittest.TestCase):
 
         # Import the example recipes
         commit_recipe_directory(server.config["GITLOCK"].repo, "master", self.examples_path)
+
+        # Initialize JWT
+        setup_jwt(server)
 
     @classmethod
     def tearDownClass(self):

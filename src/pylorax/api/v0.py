@@ -80,6 +80,7 @@ def v0_api(api):
 
     @api.route("/api/v0/recipes/info/<recipe_names>")
     @crossdomain(origin="*")
+    @authenticate()
     def v0_recipes_info(recipe_names):
         """Return the contents of the recipe, or a list of recipes"""
         recipes = []
@@ -130,6 +131,7 @@ def v0_api(api):
 
     @api.route("/api/v0/recipes/changes/<recipe_names>")
     @crossdomain(origin="*")
+    @authenticate()
     def v0_recipes_changes(recipe_names):
         """Return the changes to a recipe or list of recipes"""
         try:
@@ -158,6 +160,7 @@ def v0_api(api):
 
     @api.route("/api/v0/recipes/new", methods=["POST"])
     @crossdomain(origin="*")
+    @authenticate()
     def v0_recipes_new():
         """Commit a new recipe"""
         try:
@@ -180,6 +183,7 @@ def v0_api(api):
 
     @api.route("/api/v0/recipes/delete/<recipe_name>", methods=["DELETE"])
     @crossdomain(origin="*")
+    @authenticate()
     def v0_recipes_delete(recipe_name):
         """Delete a recipe from git"""
         try:
@@ -193,6 +197,7 @@ def v0_api(api):
 
     @api.route("/api/v0/recipes/workspace", methods=["POST"])
     @crossdomain(origin="*")
+    @authenticate()
     def v0_recipes_workspace():
         """Write a recipe to the workspace"""
         try:
@@ -211,6 +216,7 @@ def v0_api(api):
 
     @api.route("/api/v0/recipes/workspace/<recipe_name>", methods=["DELETE"])
     @crossdomain(origin="*")
+    @authenticate()
     def v0_recipes_delete_workspace(recipe_name):
         """Delete a recipe from the workspace"""
         try:
@@ -224,6 +230,7 @@ def v0_api(api):
 
     @api.route("/api/v0/recipes/undo/<recipe_name>/<commit>", methods=["POST"])
     @crossdomain(origin="*")
+    @authenticate()
     def v0_recipes_undo(recipe_name, commit):
         """Undo changes to a recipe by reverting to a previous commit."""
         try:
@@ -241,6 +248,7 @@ def v0_api(api):
 
     @api.route("/api/v0/recipes/tag/<recipe_name>", methods=["POST"])
     @crossdomain(origin="*")
+    @authenticate()
     def v0_recipes_tag(recipe_name):
         """Tag a recipe's latest recipe commit as a 'revision'"""
         try:
@@ -254,6 +262,7 @@ def v0_api(api):
 
     @api.route("/api/v0/recipes/diff/<recipe_name>/<from_commit>/<to_commit>")
     @crossdomain(origin="*")
+    @authenticate()
     def v0_recipes_diff(recipe_name, from_commit, to_commit):
         """Return the differences between two commits of a recipe"""
         try:
@@ -286,6 +295,7 @@ def v0_api(api):
 
     @api.route("/api/v0/recipes/freeze/<recipe_names>")
     @crossdomain(origin="*")
+    @authenticate()
     def v0_recipes_freeze(recipe_names):
         """Return the recipe with the exact modules and packages selected by depsolve"""
         recipes = []
@@ -346,6 +356,7 @@ def v0_api(api):
 
     @api.route("/api/v0/recipes/depsolve/<recipe_names>")
     @crossdomain(origin="*")
+    @authenticate()
     def v0_recipes_depsolve(recipe_names):
         """Return the dependencies for a recipe"""
         recipes = []
@@ -400,6 +411,7 @@ def v0_api(api):
 
     @api.route("/api/v0/projects/list")
     @crossdomain(origin="*")
+    @authenticate()
     def v0_projects_list():
         """List all of the available projects/packages"""
         try:
@@ -420,6 +432,7 @@ def v0_api(api):
 
     @api.route("/api/v0/projects/info/<project_names>")
     @crossdomain(origin="*")
+    @authenticate()
     def v0_projects_info(project_names):
         """Return detailed information about the listed projects"""
         try:
@@ -433,6 +446,7 @@ def v0_api(api):
 
     @api.route("/api/v0/projects/depsolve/<project_names>")
     @crossdomain(origin="*")
+    @authenticate()
     def v0_projects_depsolve(project_names):
         """Return detailed information about the listed projects"""
         try:
@@ -447,6 +461,7 @@ def v0_api(api):
     @api.route("/api/v0/modules/list")
     @api.route("/api/v0/modules/list/<module_names>")
     @crossdomain(origin="*")
+    @authenticate()
     def v0_modules_list(module_names=None):
         """List available modules, filtering by module_names"""
         try:
@@ -470,6 +485,7 @@ def v0_api(api):
 
     @api.route("/api/v0/modules/info/<module_names>")
     @crossdomain(origin="*")
+    @authenticate()
     def v0_modules_info(module_names):
         """Return detailed information about the listed modules"""
         try:
