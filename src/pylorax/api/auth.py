@@ -15,7 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import PAM
-from flask_jwt import JWT, current_identity
+from flask import current_app
+from flask_jwt import JWT, current_identity, _jwt_required
+from functools import wraps
 import uuid
 
 def check_unpw(un, pw, service="passwd"):
@@ -79,6 +81,28 @@ def jwt_identity(payload):
     """Return details about the user
     """
     return payload["identity"]
+
+def auth_enabled():
+    """Return True if the configuration file has disabled authentication
+    """
+    # Authentication can be disabled via the config file
+    return current_app.config["COMPOSER_CFG"].get("composer", "auth") != "0"
+
+def authenticate():
+    """API Route decorator
+
+    Authentication can be disabled by setting the "auth" config value to "0"
+
+    NOTE: This uses a private method from flask-jwt, _jwt_required
+    """
+    def wrapper(fn):
+        @wraps(fn)
+        def decorator(*args, **kwargs):
+            if auth_enabled():
+                _jwt_required(current_app.config['JWT_DEFAULT_REALM'])
+            return fn(*args, **kwargs)
+        return decorator
+    return wrapper
 
 def setup_jwt(server):
     """Initialize JWT for the server application
