@@ -10,10 +10,11 @@ after_success:
   - |
 
         sudo docker create --name results-cont welder/lorax-composer
-        sudo docker cp results-cont:/lorax/.coverage .coverage
+        sudo docker cp results-cont:/lorax/.coverage .coverage.docker
         sudo docker rm results-cont
 
-        pip install coveralls
+        pip install coverage==3.6 coveralls
+        coverage combine
         coveralls
 
 notifications:
