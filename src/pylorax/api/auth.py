@@ -20,6 +20,19 @@ from flask_jwt import JWT, _jwt_required
 from functools import wraps
 import uuid
 
+def user_allowed(username):
+    """Check to see if the user is allowed to use lorax-composer
+
+    :param username: name to lookup in the config file
+    :type username: str
+    :returns: True if the user is allowed, False otherwise
+    :rtype: bool
+
+    If the username is set to "1" in the configuration file's users
+    section then it returns True. All other cases return False.
+    """
+    return current_app.config["COMPOSER_CFG"].get_default("users", username, "0") == "1"
+
 def check_unpw(un, pw, service="passwd"):
     """Check the username and password authentication.
 
@@ -56,7 +69,7 @@ def check_unpw(un, pw, service="passwd"):
         # TODO Do we want to log anything here?
         return False
 
-    return True
+    return user_allowed(un)
 
 class User(object):
     def __init__(self, username):
