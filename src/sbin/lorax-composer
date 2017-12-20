@@ -31,6 +31,7 @@ from threading import Lock
 from gevent.wsgi import WSGIServer
 
 from pylorax import vernum
+from pylorax.api.auth import setup_jwt
 from pylorax.api.config import configure
 from pylorax.api.recipes import open_or_create_repo, commit_recipe_directory
 from pylorax.api.server import server, GitLock, YumLock
@@ -56,8 +57,10 @@ def get_parser():
                         help="show program's version number and exit")
     parser.add_argument("-c", "--config", default="/etc/lorax/composer.conf", metavar="CONFIG",
                         help="Path to lorax-composer configuration file.")
-    parser.add_argument( "--releasever", default=None, metavar="STRING",
-                         help="Release version to use for $releasever in yum repository urls" )
+    parser.add_argument("--releasever", default=None, metavar="STRING",
+                        help="Release version to use for $releasever in yum repository urls")
+    parser.add_argument("--noauth", action="store_true",
+                        help="Disable JWT authorization for API routes. USE WITH CAUTION!")
     parser.add_argument("RECIPES", metavar="RECIPES",
                         help="Path to the recipes")
 
@@ -142,12 +145,20 @@ if __name__ == '__main__':
     if opts.releasever:
         server.config["COMPOSER_CFG"].set("composer", "releasever", opts.releasever)
 
+    # If the user passed in --noauth disable JWT authorization on API routes
+    # THIS IS VERY DANGEROUS AND SHOULD ONLY BE USED ON A CLOSED SYSTEM FOR TESTING
+    if opts.noauth:
+        server.config["COMPOSER_CFG"].set("composer", "auth", "0")
+
     # Get a YumBase to share with the requests
     yb = get_base_object(server.config["COMPOSER_CFG"])
     server.config["YUMLOCK"] = YumLock(yb=yb, lock=Lock())
 
     # Import example recipes
     commit_recipe_directory(server.config["GITLOCK"].repo, "master", opts.RECIPES)
+
+    # Initialize JWT
+    setup_jwt(server)
 
     log.info("Starting %s on %s:%d with recipes from %s", VERSION, opts.host, opts.port, opts.RECIPES)
 

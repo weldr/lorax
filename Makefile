@@ -20,6 +20,7 @@ install: all
 	mkdir -p $(DESTDIR)/$(mandir)/man1
 	install -m 644 docs/man/lorax.1 $(DESTDIR)/$(mandir)/man1
 	install -m 644 docs/man/livemedia-creator.1 $(DESTDIR)/$(mandir)/man1
+	install -m 644 systemd/lorax-composer.tmpfile $(DESTDIR)/etc/tmpfiles.d/lorax-composer.conf
 
 check:
 	@echo "*** Running pylint ***"

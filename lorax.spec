@@ -81,14 +81,18 @@ BuildRequires: python-flask python-gobject libgit2-glib python2-pytoml python-se
 
 Requires: lorax = %{version}-%{release}
 
+# From COPR
+Requires: python2-flask-jwt
 # From EPEL
 Requires: python2-pytoml
 Requires: python-semantic_version
 Requires: libgit2
 Requires: libgit2-glib
+Requires: python-jwt
 # From Distribution
 Requires: python-flask
 Requires: python-gevent
+Requires: PyPAM
 
 %{?systemd_requires}
 BuildRequires: systemd
