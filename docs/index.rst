@@ -14,6 +14,7 @@ Contents:
    intro
    lorax
    livemedia-creator
+   lorax-composer
    product-images
    modules
 

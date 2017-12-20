@@ -25,9 +25,11 @@ server_log = logging.getLogger("server")
 yum_log = logging.getLogger("yum")
 
 import argparse
+import grp
 import os
 import sys
 from threading import Lock
+from gevent import socket
 from gevent.wsgi import WSGIServer
 
 from pylorax import vernum
@@ -44,10 +46,10 @@ def get_parser():
     parser = argparse.ArgumentParser(description="Lorax Composer API Server",
                                      fromfile_prefix_chars="@")
 
-    parser.add_argument("--host", default="127.0.0.1", metavar="HOST",
-                        help="Host or IP to bind to (127.0.0.1)")
-    parser.add_argument("--port", default=4000, metavar="PORT",
-                        help="Port to bind to (4000)")
+    parser.add_argument("--socket", default="/run/weldr/api.socket", metavar="SOCKET",
+                        help="Path to the socket file to listen on")
+    parser.add_argument("--group", default="weldr", metavar="GROUP",
+                        help="Group to set ownership of the socket to")
     parser.add_argument("--log", dest="logfile", default="/var/log/lorax-composer/composer.log", metavar="LOG",
                         help="Path to logfile (/var/log/lorax-composer/composer.log)")
     parser.add_argument("--mockfiles", default="/var/tmp/bdcs-mockfiles/", metavar="MOCKFILES",
@@ -129,6 +131,29 @@ if __name__ == '__main__':
     setup_logging(opts.logfile)
     log.debug("opts=%s", opts)
 
+    # Check to make sure the group exists and get its gid
+    try:
+        gid = grp.getgrnam(opts.group).gr_gid
+    except KeyError:
+        log.error("Missing group '%s'", opts.group)
+        sys.exit(1)
+
+    # Check the socket path to make sure it exists, and that ownership and permissions are correct.
+    socket_dir = os.path.dirname(opts.socket)
+    if not os.path.exists(socket_dir):
+        # Create the directory and set permissions and ownership
+        os.makedirs(socket_dir, 0o750)
+        os.chown(socket_dir, 0, gid)
+
+    sockdir_stat = os.stat(socket_dir)
+    if sockdir_stat.st_mode & 0o007 != 0:
+        log.error("Incorrect permissions on %s, no 'other' permissions are allowed.")
+        sys.exit(1)
+
+    if sockdir_stat.st_gid != gid or sockdir_stat.st_uid != 0:
+        log.error("%s should be owned by root:%s", socket_dir, opts.group)
+        sys.exit(1)
+
     if not os.path.isdir(opts.RECIPES):
         log.warn("Creating empty recipe directory at %s", opts.RECIPES)
         os.makedirs(opts.RECIPES)
@@ -149,8 +174,16 @@ if __name__ == '__main__':
     # Import example recipes
     commit_recipe_directory(server.config["GITLOCK"].repo, "master", opts.RECIPES)
 
-    log.info("Starting %s on %s:%d with recipes from %s", VERSION, opts.host, opts.port, opts.RECIPES)
+    # Setup the Unix Domain Socket, remove old one, set ownership and permissions
+    if os.path.exists(opts.socket):
+        os.unlink(opts.socket)
+    listener = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    listener.bind(opts.socket)
+    os.chmod(opts.socket, 0o660)
+    os.chown(opts.socket, 0, gid)
+    listener.listen(1)
 
-    http_server = WSGIServer((opts.host, opts.port), server, log=LogWrapper(server_log))
+    log.info("Starting %s on %s with recipes from %s", VERSION, opts.socket, opts.RECIPES)
+    http_server = WSGIServer(listener, server, log=LogWrapper(server_log))
     # The server writes directly to a file object, so point to our log directory
     http_server.serve_forever()
