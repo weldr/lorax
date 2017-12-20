@@ -14,11 +14,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import PAM
+import logging
+log = logging.getLogger("lorax-composer")
+
 from flask import current_app
 from flask_jwt import JWT, _jwt_required
 from functools import wraps
+import os
+import PAM
 import uuid
+
+from pylorax.sysutils import safe_write
 
 def user_allowed(username):
     """Check to see if the user is allowed to use lorax-composer
@@ -63,10 +69,10 @@ def check_unpw(un, pw, service="passwd"):
     try:
         auth.authenticate()
     except PAM.error as e:
-        # TODO Do we want to log anything here?
+        log.debug("Authentication for %s failed: %s", un, e)
         return False
     except Exception as e:
-        # TODO Do we want to log anything here?
+        log.debug("Authentication for %s failed: %s", un, e)
         return False
 
     return user_allowed(un)
@@ -150,6 +156,16 @@ def setup_jwt(server, test_user=False):
     # Use a new secret key
     server.config["JWT_SECRET_KEY"] = uuid.uuid4().hex
     server.config["JWT_AUTH_URL_RULE"] = "/api/auth"
+
+    # If we have a safe place to write the secret, do so in a secure manner.
+    try:
+        if os.stat("/var/run/lorax").st_mode & 0o007 == 0:
+            with safe_write("/var/run/lorax/composer-secret", 0o750) as f:
+                f.write(server.config["JWT_SECRET_KEY"])
+        else:
+            log.info("/var/run/lorax has unsafe permissions. Not writing secret.")
+    except OSError:
+        log.info("/var/run/lorax is missing. Not writing secret.")
 
     if test_user:
         # Setup test auth
