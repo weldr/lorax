@@ -20,7 +20,7 @@
 #
 
 __all__ = ["joinpaths", "touch", "replace", "chown_", "chmod_", "remove",
-           "linktree"]
+           "linktree", "safe_write"]
 
 import sys
 import os
@@ -106,3 +106,31 @@ def remove(target):
 
 def linktree(src, dst):
     runcmd(["/bin/cp", "-alx", src, dst])
+
+class safe_write(object):
+    """Open a file for writing in a secure fashion.
+
+    This makes sure that any previous file (possible with wrong permissions) is
+    removed first, and that the file is created with the selected permissions,
+    not with wider access.
+    """
+    def __init__(self, filename, mode=0o600, flags=None):
+        self.filename = filename
+        self.mode = mode
+        if not flags:
+            self.flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+        self.umask_orig = None
+        self.fd = None
+
+    def __enter__(self):
+        try:
+            os.unlink(self.filename)
+        except OSError:
+            pass
+
+        self.umask_orig = os.umask(0)
+        self.fd = os.open(self.filename, self.flags, self.mode)
+        return os.fdopen(self.fd, "w")
+
+    def __exit__(self, exc_type, exc_value, exc_tb):
+        os.umask(self.umask_orig)
