@@ -460,3 +460,26 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(len(modules), 1)
         self.assertEqual(modules[0]["name"], "bash")
         self.assertEqual(modules[0]["dependencies"][0]["name"], "basesystem")
+
+    def test_recipe_new_branch(self):
+        """Test the /api/v0/recipes/new route with a new branch"""
+        test_recipe = {"description": "An example GlusterFS server with samba",
+                       "name":"glusterfs",
+                       "version": "0.2.0",
+                       "modules":[{"name":"glusterfs", "version":"3.7.*"},
+                                  {"name":"glusterfs-cli", "version":"3.7.*"}],
+                       "packages":[{"name":"samba", "version":"4.2.*"},
+                                   {"name":"tmux", "version":"2.2"}]}
+
+        resp = self.server.post("/api/v0/recipes/new?branch=test",
+                                data=json.dumps(test_recipe),
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+        resp = self.server.get("/api/v0/recipes/info/glusterfs?branch=test")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        recipes = data.get("recipes")
+        self.assertEqual(len(recipes), 1)
+        self.assertEqual(recipes[0], test_recipe)
