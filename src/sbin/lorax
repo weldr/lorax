@@ -19,6 +19,8 @@
 #
 # Red Hat Author(s):  Martin Gracik <mgracik@redhat.com>
 #
+# pylint: disable=bad-preconf-access
+
 from __future__ import print_function
 
 import logging
@@ -331,7 +333,6 @@ def get_yum_base_object(installroot, repositories, mirrorlists=None, repo_files=
 
     yb.preconf.fn = yumconf
     yb.preconf.root = installroot
-    #yb.repos.setCacheDir(cachedir)
     if releasever:
         yb.preconf.releasever = releasever
 
