@@ -66,6 +66,7 @@ def v0_api(api):
     @crossdomain(origin="*")
     def v0_recipes_list():
         """List the available recipes on a branch."""
+        branch = request.args.get("branch", "master")
         try:
             limit = int(request.args.get("limit", "20"))
             offset = int(request.args.get("offset", "0"))
@@ -73,13 +74,14 @@ def v0_api(api):
             return jsonify(error={"msg":str(e)}), 400
 
         with api.config["GITLOCK"].lock:
-            recipes = take_limits(map(lambda f: f[:-5], list_branch_files(api.config["GITLOCK"].repo, "master")), offset, limit)
+            recipes = take_limits(map(lambda f: f[:-5], list_branch_files(api.config["GITLOCK"].repo, branch)), offset, limit)
         return jsonify(recipes=recipes, limit=limit, offset=offset, total=len(recipes))
 
     @api.route("/api/v0/recipes/info/<recipe_names>")
     @crossdomain(origin="*")
     def v0_recipes_info(recipe_names):
         """Return the contents of the recipe, or a list of recipes"""
+        branch = request.args.get("branch", "master")
         recipes = []
         changes = []
         errors = []
@@ -88,7 +90,7 @@ def v0_api(api):
             # Get the workspace version (if it exists)
             try:
                 with api.config["GITLOCK"].lock:
-                    ws_recipe = workspace_read(api.config["GITLOCK"].repo, "master", recipe_name)
+                    ws_recipe = workspace_read(api.config["GITLOCK"].repo, branch, recipe_name)
             except Exception as e:
                 ws_recipe = None
                 exceptions.append(str(e))
@@ -97,7 +99,7 @@ def v0_api(api):
             # Get the git version (if it exists)
             try:
                 with api.config["GITLOCK"].lock:
-                    git_recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe_name)
+                    git_recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, recipe_name)
             except Exception as e:
                 git_recipe = None
                 exceptions.append(str(e))
@@ -130,6 +132,7 @@ def v0_api(api):
     @crossdomain(origin="*")
     def v0_recipes_changes(recipe_names):
         """Return the changes to a recipe or list of recipes"""
+        branch = request.args.get("branch", "master")
         try:
             limit = int(request.args.get("limit", "20"))
             offset = int(request.args.get("offset", "0"))
@@ -142,7 +145,7 @@ def v0_api(api):
             filename = recipe_filename(recipe_name)
             try:
                 with api.config["GITLOCK"].lock:
-                    commits = take_limits(list_commits(api.config["GITLOCK"].repo, "master", filename), offset, limit)
+                    commits = take_limits(list_commits(api.config["GITLOCK"].repo, branch, filename), offset, limit)
             except Exception as e:
                 errors.append({"recipe":recipe_name, "msg":e})
                 log.error("(v0_recipes_changes) %s", str(e))
@@ -158,6 +161,7 @@ def v0_api(api):
     @crossdomain(origin="*")
     def v0_recipes_new():
         """Commit a new recipe"""
+        branch = request.args.get("branch", "master")
         try:
             if request.headers['Content-Type'] == "text/x-toml":
                 recipe = recipe_from_toml(request.data)
@@ -165,11 +169,11 @@ def v0_api(api):
                 recipe = recipe_from_dict(request.get_json(cache=False))
 
             with api.config["GITLOCK"].lock:
-                commit_recipe(api.config["GITLOCK"].repo, "master", recipe)
+                commit_recipe(api.config["GITLOCK"].repo, branch, recipe)
 
                 # Read the recipe with new version and write it to the workspace
-                recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe["name"])
-                workspace_write(api.config["GITLOCK"].repo, "master", recipe)
+                recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, recipe["name"])
+                workspace_write(api.config["GITLOCK"].repo, branch, recipe)
         except Exception as e:
             log.error("(v0_recipes_new) %s", str(e))
             return jsonify(status=False, error={"msg":str(e)}), 400
@@ -180,9 +184,10 @@ def v0_api(api):
     @crossdomain(origin="*")
     def v0_recipes_delete(recipe_name):
         """Delete a recipe from git"""
+        branch = request.args.get("branch", "master")
         try:
             with api.config["GITLOCK"].lock:
-                delete_recipe(api.config["GITLOCK"].repo, "master", recipe_name)
+                delete_recipe(api.config["GITLOCK"].repo, branch, recipe_name)
         except Exception as e:
             log.error("(v0_recipes_delete) %s", str(e))
             return jsonify(status=False, error={"msg":str(e)}), 400
@@ -193,6 +198,7 @@ def v0_api(api):
     @crossdomain(origin="*")
     def v0_recipes_workspace():
         """Write a recipe to the workspace"""
+        branch = request.args.get("branch", "master")
         try:
             if request.headers['Content-Type'] == "text/x-toml":
                 recipe = recipe_from_toml(request.data)
@@ -200,7 +206,7 @@ def v0_api(api):
                 recipe = recipe_from_dict(request.get_json(cache=False))
 
             with api.config["GITLOCK"].lock:
-                workspace_write(api.config["GITLOCK"].repo, "master", recipe)
+                workspace_write(api.config["GITLOCK"].repo, branch, recipe)
         except Exception as e:
             log.error("(v0_recipes_workspace) %s", str(e))
             return jsonify(status=False, error={"msg":str(e)}), 400
@@ -211,9 +217,10 @@ def v0_api(api):
     @crossdomain(origin="*")
     def v0_recipes_delete_workspace(recipe_name):
         """Delete a recipe from the workspace"""
+        branch = request.args.get("branch", "master")
         try:
             with api.config["GITLOCK"].lock:
-                workspace_delete(api.config["GITLOCK"].repo, "master", recipe_name)
+                workspace_delete(api.config["GITLOCK"].repo, branch, recipe_name)
         except Exception as e:
             log.error("(v0_recipes_delete_workspace) %s", str(e))
             return jsonify(status=False, error={"msg":str(e)}), 400
@@ -224,13 +231,14 @@ def v0_api(api):
     @crossdomain(origin="*")
     def v0_recipes_undo(recipe_name, commit):
         """Undo changes to a recipe by reverting to a previous commit."""
+        branch = request.args.get("branch", "master")
         try:
             with api.config["GITLOCK"].lock:
-                revert_recipe(api.config["GITLOCK"].repo, "master", recipe_name, commit)
+                revert_recipe(api.config["GITLOCK"].repo, branch, recipe_name, commit)
 
                 # Read the new recipe and write it to the workspace
-                recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe_name)
-                workspace_write(api.config["GITLOCK"].repo, "master", recipe)
+                recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, recipe_name)
+                workspace_write(api.config["GITLOCK"].repo, branch, recipe)
         except Exception as e:
             log.error("(v0_recipes_undo) %s", str(e))
             return jsonify(status=False, error={"msg":str(e)}), 400
@@ -241,9 +249,10 @@ def v0_api(api):
     @crossdomain(origin="*")
     def v0_recipes_tag(recipe_name):
         """Tag a recipe's latest recipe commit as a 'revision'"""
+        branch = request.args.get("branch", "master")
         try:
             with api.config["GITLOCK"].lock:
-                tag_recipe_commit(api.config["GITLOCK"].repo, "master", recipe_name)
+                tag_recipe_commit(api.config["GITLOCK"].repo, branch, recipe_name)
         except Exception as e:
             log.error("(v0_recipes_tag) %s", str(e))
             return jsonify(status=False, error={"msg":str(e)}), 400
@@ -254,13 +263,14 @@ def v0_api(api):
     @crossdomain(origin="*")
     def v0_recipes_diff(recipe_name, from_commit, to_commit):
         """Return the differences between two commits of a recipe"""
+        branch = request.args.get("branch", "master")
         try:
             if from_commit == "NEWEST":
                 with api.config["GITLOCK"].lock:
-                    old_recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe_name)
+                    old_recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, recipe_name)
             else:
                 with api.config["GITLOCK"].lock:
-                    old_recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe_name, from_commit)
+                    old_recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, recipe_name, from_commit)
         except Exception as e:
             log.error("(v0_recipes_diff) %s", str(e))
             return jsonify(error={"msg":str(e)}), 400
@@ -268,13 +278,13 @@ def v0_api(api):
         try:
             if to_commit == "WORKSPACE":
                 with api.config["GITLOCK"].lock:
-                    new_recipe = workspace_read(api.config["GITLOCK"].repo, "master", recipe_name)
+                    new_recipe = workspace_read(api.config["GITLOCK"].repo, branch, recipe_name)
             elif to_commit == "NEWEST":
                 with api.config["GITLOCK"].lock:
-                    new_recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe_name)
+                    new_recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, recipe_name)
             else:
                 with api.config["GITLOCK"].lock:
-                    new_recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe_name, to_commit)
+                    new_recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, recipe_name, to_commit)
         except Exception as e:
             log.error("(v0_recipes_diff) %s", str(e))
             return jsonify(error={"msg":str(e)}), 400
@@ -286,6 +296,7 @@ def v0_api(api):
     @crossdomain(origin="*")
     def v0_recipes_freeze(recipe_names):
         """Return the recipe with the exact modules and packages selected by depsolve"""
+        branch = request.args.get("branch", "master")
         recipes = []
         errors = []
         for recipe_name in [n.strip() for n in sorted(recipe_names.split(","), key=lambda n: n.lower())]:
@@ -294,7 +305,7 @@ def v0_api(api):
             recipe = None
             try:
                 with api.config["GITLOCK"].lock:
-                    recipe = workspace_read(api.config["GITLOCK"].repo, "master", recipe_name)
+                    recipe = workspace_read(api.config["GITLOCK"].repo, branch, recipe_name)
             except Exception:
                 pass
 
@@ -302,7 +313,7 @@ def v0_api(api):
                 # No workspace version, get the git version (if it exists)
                 try:
                     with api.config["GITLOCK"].lock:
-                        recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe_name)
+                        recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, recipe_name)
                 except Exception as e:
                     errors.append({"recipe":recipe_name, "msg":str(e)})
                     log.error("(v0_recipes_freeze) %s", str(e))
@@ -346,6 +357,7 @@ def v0_api(api):
     @crossdomain(origin="*")
     def v0_recipes_depsolve(recipe_names):
         """Return the dependencies for a recipe"""
+        branch = request.args.get("branch", "master")
         recipes = []
         errors = []
         for recipe_name in [n.strip() for n in sorted(recipe_names.split(","), key=lambda n: n.lower())]:
@@ -354,7 +366,7 @@ def v0_api(api):
             recipe = None
             try:
                 with api.config["GITLOCK"].lock:
-                    recipe = workspace_read(api.config["GITLOCK"].repo, "master", recipe_name)
+                    recipe = workspace_read(api.config["GITLOCK"].repo, branch, recipe_name)
             except Exception:
                 pass
 
@@ -362,7 +374,7 @@ def v0_api(api):
                 # No workspace version, get the git version (if it exists)
                 try:
                     with api.config["GITLOCK"].lock:
-                        recipe = read_recipe_commit(api.config["GITLOCK"].repo, "master", recipe_name)
+                        recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, recipe_name)
                 except Exception as e:
                     errors.append({"recipe":recipe_name, "msg":str(e)})
                     log.error("(v0_recipes_depsolve) %s", str(e))

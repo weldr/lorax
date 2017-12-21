@@ -245,6 +245,14 @@ def write_commit(repo, branch, filename, message, content):
     :rtype: Git.OId
     :raises: Can raise errors from Ggit
     """
+    try:
+        parent_commit = head_commit(repo, branch)
+    except GLib.GError:
+        # Branch doesn't exist, make a new one based on master
+        master_head = head_commit(repo, "master")
+        repo.create_branch(branch, master_head, 0)
+        parent_commit = head_commit(repo, branch)
+
     parent_commit = head_commit(repo, branch)
     blob_id = repo.create_blob_from_buffer(content)
 
