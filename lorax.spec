@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.2
+Version:        28.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -154,6 +154,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Wed Jan 03 2018 Brian C. Lane <bcl@redhat.com> 28.3-1
+- Add --old-chroot to the mock example cmdlines (bcl@redhat.com)
+- Don't try and install kernel-PAE on i686 any more (awilliam@redhat.com)
+- New lorax documentation - 28.2 (bcl@redhat.com)
+
 * Tue Nov 28 2017 Brian C. Lane <bcl@redhat.com> 28.2-1
 - Add documentation about mock changes (#1473880) (bcl@redhat.com)
 - Log a more descriptive error when setfiles fails (#1499771) (bcl@redhat.com)
