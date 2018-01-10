@@ -86,10 +86,9 @@ removekmod sound drivers/media drivers/hwmon \
            net/atm net/bluetooth net/sched net/sctp \
            net/rds net/l2tp net/decnet net/netfilter net/ipv4 net/ipv6 \
            drivers/watchdog drivers/rtc drivers/input/joystick \
-           drivers/bluetooth drivers/hid drivers/edac \
-           drivers/usb/serial drivers/usb/host drivers/usb/misc \
-           fs/ocfs2 fs/ceph fs/nfsd fs/ubifs fs/nilfs2 \
-           arch/x86/kvm
+           drivers/bluetooth drivers/edac drivers/usb/serial \
+           drivers/usb/host drivers/usb/misc fs/ocfs2 fs/ceph fs/nfsd \
+           fs/ubifs fs/nilfs2 arch/x86/kvm
 ## Need to keep virtio_console.ko and ipmi stuff in drivers/char
 ## Also keep virtio-rng so that the installer can get sufficient randomness for
 ## LUKS setup.
@@ -98,6 +97,8 @@ removekmod drivers/char --allbut virtio_console hw_random \
 removekmod drivers/staging --allbut zram
 removekmod drivers/video --allbut hyperv_fb syscopyarea sysfillrect sysimgblt fb_sys_fops
 remove lib/modules/*/{build,source,*.map}
+## Need to keep hid-multitouch and i2c-hid in drivers/hid, rhbz#1526323
+removekmod drivers/hid --allbut hid-multitouch i2c-hid
 ## NOTE: depmod gets re-run after cleanup finishes
 
 ## remove unused themes, theme engines, icons, etc.
