@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.102
+Version:        19.6.103
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -100,6 +100,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Thu Jan 11 2018 Brian C. Lane <bcl@redhat.com> 19.6.103-1
+- Keep hid-multitouch and i2c-hid modules. (rhbz#1526323) (sbueno+anaconda)
+  Resolves: rhbz#1526323
+
 * Tue Jan 02 2018 Brian C. Lane <bcl@redhat.com> 19.6.102-1
 - Add grub2-tools to aarch64 (bcl)
   Resolves: rhbz#1489707
