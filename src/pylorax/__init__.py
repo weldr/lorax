@@ -281,7 +281,8 @@ class Lorax(BaseLoraxClass):
 
         # write .buildstamp
         buildstamp = BuildStamp(self.product.name, self.product.version,
-                                self.product.bugurl, self.product.isfinal, self.arch.buildarch)
+                                self.product.bugurl, self.product.isfinal,
+                                self.arch.buildarch, self.product.variant)
 
         buildstamp.write(joinpaths(self.inroot, ".buildstamp"))
 

@@ -27,11 +27,12 @@ import datetime
 
 class BuildStamp(object):
 
-    def __init__(self, product, version, bugurl, isfinal, buildarch):
+    def __init__(self, product, version, bugurl, isfinal, buildarch, variant=""):
         self.product = product
         self.version = version
         self.bugurl = bugurl
         self.isfinal = isfinal
+        self.variant = variant
 
         now = datetime.datetime.now()
         now = now.strftime("%Y%m%d%H%M")
@@ -54,5 +55,7 @@ class BuildStamp(object):
             fobj.write("BugURL={0.bugurl}\n".format(self))
             fobj.write("IsFinal={0.isfinal}\n".format(self))
             fobj.write("UUID={0.uuid}\n".format(self))
+            if self.variant:
+                fobj.write("Variant={0.variant}\n".format(self))
             fobj.write("[Compose]\n")
             fobj.write("Lorax={0}\n".format(vernum))

@@ -46,7 +46,7 @@ def lorax_parser():
     optional.add_argument("-m", "--mirrorlist",
                         help="mirrorlist repository (may be listed multiple times)",
                         metavar="REPOSITORY", action="append", default=[])
-    optional.add_argument("-t", "--variant",
+    optional.add_argument("-t", "--variant", default="",
                         help="variant name", metavar="VARIANT")
     optional.add_argument("-b", "--bugurl",
                         help="bug reporting URL for the product", metavar="URL",

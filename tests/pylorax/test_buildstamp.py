@@ -11,7 +11,8 @@ class BuildStampTestCase(unittest.TestCase):
             '0.1',
             'https://github.com/rhinstaller/lorax/issues',
             True,
-            'noarch'
+            'noarch',
+            'Server'
         )
 
     def test_write_produces_file_with_expected_content(self):
@@ -19,5 +20,6 @@ class BuildStampTestCase(unittest.TestCase):
         with patch.object(out_file, 'close'):
             with patch.object(buildstamp, 'open', return_value=out_file):
                 self.bstamp.write('/tmp/stamp.ini')
-                self.assertIn("[Main]\nProduct=Lorax Tests\nVersion=0.1\nBugURL=https://github.com/rhinstaller/lorax/issues\nIsFinal=True", out_file.getvalue())
-                self.assertIn("[Compose]\nLorax=devel", out_file.getvalue())
+                self.assertIn("[Main]\nProduct=Lorax Tests\nVersion=0.1\nBugURL=https://github.com/rhinstaller/lorax/issues\nIsFinal=True\n", out_file.getvalue())
+                # Skip UUID which is between IsFinal and Variant
+                self.assertIn("Variant=Server\n[Compose]\nLorax=devel", out_file.getvalue())
