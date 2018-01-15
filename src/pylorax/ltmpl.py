@@ -567,24 +567,25 @@ class LoraxTemplateRunner(object):
                 if not pkgnames:
                     raise dnf.exceptions.PackageNotFoundError("no package matched", p)
 
-                # Sort the results so that we have consistent results
-                pkgnames = sorted(["{}-{}-{}".format(pkg.name, pkg.version, pkg.release) for pkg in pkgnames])
-
+                # Apply excludes to the name only
                 for exclude in excludes:
-                    pkgnames = [pkg for pkg in pkgnames if not fnmatch.fnmatch(pkg, exclude)]
+                    pkgnames = [pkg for pkg in pkgnames if not fnmatch.fnmatch(pkg.name, exclude)]
+
+                # Convert to a sorted NVR list for installation
+                pkgnvrs = sorted(["{}-{}-{}".format(pkg.name, pkg.version, pkg.release) for pkg in pkgnames])
 
                 # If the request is a glob, expand it in the log
                 if any(g for g in ['*','?','.'] if g in p):
-                    logger.info("installpkg: %s expands to %s", p, ",".join(pkgnames))
+                    logger.info("installpkg: %s expands to %s", p, ",".join(pkgnvrs))
 
-                for pkgname in pkgnames:
+                for pkgnvr in pkgnvrs:
                     try:
-                        self.dbo.install(pkgname)
+                        self.dbo.install(pkgnvr)
                     except Exception as e: # pylint: disable=broad-except
                         if required:
                             raise
                         # Not required, log it and continue processing pkgs
-                        logger.error("installpkg %s failed: %s", pkgname, str(e))
+                        logger.error("installpkg %s failed: %s", pkgnvr, str(e))
             except Exception as e: # pylint: disable=broad-except
                 logger.error("installpkg %s failed: %s", p, str(e))
                 errors = True
