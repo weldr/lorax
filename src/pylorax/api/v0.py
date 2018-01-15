@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2017  Red Hat, Inc.
+# Copyright (C) 2017-2018  Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,6 +14,605 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+""" Setup v0 of the API server
+
+v0_api() must be called to setup the API routes for Flask
+
+Status Responses
+----------------
+
+Some requests only return a status/error response.
+
+  The response will be a status response with `status` set to true, or an
+  error response with it set to false and an error message included.
+
+  Example response::
+
+      {
+        "status": true
+      }
+
+  Error response::
+
+      {
+        "error": {
+          "msg": "ggit-error: Failed to remove entry. File isn't in the tree - jboss.toml (-1)"
+        },
+        "status": false
+      }
+
+API Routes
+----------
+
+All of the recipes routes support the optional `branch` argument. If it is not
+used then the API will use the `master` branch for recipes. If you want to create
+a new branch use the `new` or `workspace` routes with ?branch=<branch-name> to
+store the new recipe on the new branch.
+
+`/api/v0/test`
+^^^^^^^^^^^^^^
+
+  Return a test string. It is not JSON encoded.
+
+`/api/v0/status`
+^^^^^^^^^^^^^^^^
+  Return the status of the API Server::
+
+      { "api": "0",
+        "build": "devel",
+        "db_supported": false,
+        "db_version": "0",
+        "schema_version": "0" }
+
+`/api/v0/recipes/list`
+^^^^^^^^^^^^^^^^^^^^^^
+
+  List the available recipes::
+
+      { "limit": 20,
+        "offset": 0,
+        "recipes": [
+          "atlas",
+          "development",
+          "glusterfs",
+          "http-server",
+          "jboss",
+          "kubernetes" ],
+        "total": 6 }
+
+`/api/v0/recipes/info/<recipe_names>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Return the JSON representation of the recipe. This includes 3 top level
+  objects.  `changes` which lists whether or not the workspace is different from
+  the most recent commit. `recipes` which lists the JSON representation of the
+  recipe, and `errors` which will list any errors, like non-existant recipes.
+
+  Example::
+
+      {
+        "changes": [
+          {
+            "changed": false,
+            "name": "glusterfs"
+          }
+        ],
+        "errors": [],
+        "recipes": [
+          {
+            "description": "An example GlusterFS server with samba",
+            "modules": [
+              {
+                "name": "glusterfs",
+                "version": "3.7.*"
+              },
+              {
+                "name": "glusterfs-cli",
+                "version": "3.7.*"
+              }
+            ],
+            "name": "glusterfs",
+            "packages": [
+              {
+                "name": "2ping",
+                "version": "3.2.1"
+              },
+              {
+                "name": "samba",
+                "version": "4.2.*"
+              }
+            ],
+            "version": "0.0.6"
+          }
+        ]
+      }
+
+  Error example::
+
+      {
+        "changes": [],
+        "errors": [
+          {
+            "msg": "ggit-error: the path 'missing.toml' does not exist in the given tree (-3)",
+            "recipe": "missing"
+          }
+        ],
+        "recipes": []
+      }
+
+`/api/v0/recipes/changes/<recipe_names>[?offset=0&limit=20]`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Return the commits to a recipe. By default it returns the first 20 commits, this
+  can be changed by passing `offset` and/or `limit`. The response will include the
+  commit hash, summary, timestamp, and optionally the revision number. The commit
+  hash can be passed to `/api/v0/recipes/diff/` to retrieve the exact changes.
+
+  Example::
+
+      {
+        "errors": [],
+        "limit": 20,
+        "offset": 0,
+        "recipes": [
+          {
+            "changes": [
+              {
+                "commit": "e083921a7ed1cf2eec91ad12b9ad1e70ef3470be",
+                "message": "Recipe glusterfs, version 0.0.6 saved.",
+                "revision": null,
+                "timestamp": "2017-11-23T00:18:13Z"
+              },
+              {
+                "commit": "cee5f4c20fc33ea4d54bfecf56f4ad41ad15f4f3",
+                "message": "Recipe glusterfs, version 0.0.5 saved.",
+                "revision": null,
+                "timestamp": "2017-11-11T01:00:28Z"
+              },
+              {
+                "commit": "29b492f26ed35d80800b536623bafc51e2f0eff2",
+                "message": "Recipe glusterfs, version 0.0.4 saved.",
+                "revision": null,
+                "timestamp": "2017-11-11T00:28:30Z"
+              },
+              {
+                "commit": "03374adbf080fe34f5c6c29f2e49cc2b86958bf2",
+                "message": "Recipe glusterfs, version 0.0.3 saved.",
+                "revision": null,
+                "timestamp": "2017-11-10T23:15:52Z"
+              },
+              {
+                "commit": "0e08ecbb708675bfabc82952599a1712a843779d",
+                "message": "Recipe glusterfs, version 0.0.2 saved.",
+                "revision": null,
+                "timestamp": "2017-11-10T23:14:56Z"
+              },
+              {
+                "commit": "3e11eb87a63d289662cba4b1804a0947a6843379",
+                "message": "Recipe glusterfs, version 0.0.1 saved.",
+                "revision": null,
+                "timestamp": "2017-11-08T00:02:47Z"
+              }
+            ],
+            "name": "glusterfs",
+            "total": 6
+          }
+        ]
+      }
+
+POST `/api/v0/recipes/new`
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Create a new recipe, or update an existing recipe. This supports both JSON and TOML
+  for the recipe format. The recipe should be in the body of the request with the
+  `Content-Type` header set to either `application/json` or `text/x-toml`.
+
+  The response will be a status response with `status` set to true, or an
+  error response with it set to false and an error message included.
+
+DELETE `/api/v0/recipes/delete/<recipe_name>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Delete a recipe. The recipe is deleted from the branch, and will no longer
+  be listed by the `list` route. A recipe can be undeleted using the `undo` route
+  to revert to a previous commit.
+
+  The response will be a status response with `status` set to true, or an
+  error response with it set to false and an error message included.
+
+POST `/api/v0/recipes/workspace`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Write a recipe to the temporary workspace. This works exactly the same as `new` except
+  that it does not create a commit. JSON and TOML bodies are supported.
+
+  The workspace is meant to be used as a temporary recipe storage for clients.
+  It will be read by the `info` and `diff` routes if it is different from the
+  most recent commit.
+
+  The response will be a status response with `status` set to true, or an
+  error response with it set to false and an error message included.
+
+DELETE `/api/v0/recipes/workspace/<recipe_name>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Remove the temporary workspace copy of a recipe. The `info` route will now
+  return the most recent commit of the recipe. Any changes that were in the
+  workspace will be lost.
+
+  The response will be a status response with `status` set to true, or an
+  error response with it set to false and an error message included.
+
+POST `/api/v0/recipes/undo/<recipe_name>/<commit>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  This will revert the recipe to a previous commit. The commit hash from the `changes`
+  route can be used in this request.
+
+  The response will be a status response with `status` set to true, or an
+  error response with it set to false and an error message included.
+
+POST `/api/v0/recipes/tag/<recipe_name>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Tag a recipe as a new release. This uses git tags with a special format.
+  `refs/tags/<branch>/<filename>/r<revision>`. Only the most recent recipe commit
+  can be tagged. Revisions start at 1 and increment for each new tag
+  (per-recipe). If the commit has already been tagged it will return false.
+
+  The response will be a status response with `status` set to true, or an
+  error response with it set to false and an error message included.
+
+`/api/v0/recipes/diff/<recipe_name>/<from_commit>/<to_commit>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Return the differences between two commits, or the workspace. The commit hash
+  from the `changes` response can be used here, or several special strings:
+
+  - NEWEST will select the newest git commit. This works for `from_commit` or `to_commit`
+  - WORKSPACE will select the workspace copy. This can only be used in `to_commit`
+
+  eg. `/api/v0/recipes/diff/glusterfs/NEWEST/WORKSPACE` will return the differences
+  between the most recent git commit and the contents of the workspace.
+
+  Each entry in the response's diff object contains the old recipe value and the new one.
+  If old is null and new is set, then it was added.
+  If new is null and old is set, then it was removed.
+  If both are set, then it was changed.
+
+  The old/new entries will have the name of the recipe field that was changed. This
+  can be one of: Name, Description, Version, Module, or Package.
+  The contents for these will be the old/new values for them.
+
+  In the example below the version was changed and the ping package was added.
+
+  Example::
+
+      {
+        "diff": [
+          {
+            "new": {
+              "Version": "0.0.6"
+            },
+            "old": {
+              "Version": "0.0.5"
+            }
+          },
+          {
+            "new": {
+              "Package": {
+                "name": "ping",
+                "version": "3.2.1"
+              }
+            },
+            "old": null
+          }
+        ]
+      }
+
+`/api/v0/recipes/freeze/<recipe_names>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Return a JSON representation of the recipe with the package and module versions set
+  to the exact versions chosen by depsolving the recipe.
+
+  Example::
+
+      {
+        "errors": [],
+        "recipes": [
+          {
+            "recipe": {
+              "description": "An example GlusterFS server with samba",
+              "modules": [
+                {
+                  "name": "glusterfs",
+                  "version": "3.8.4-18.4.el7.x86_64"
+                },
+                {
+                  "name": "glusterfs-cli",
+                  "version": "3.8.4-18.4.el7.x86_64"
+                }
+              ],
+              "name": "glusterfs",
+              "packages": [
+                {
+                  "name": "ping",
+                  "version": "2:3.2.1-2.el7.noarch"
+                },
+                {
+                  "name": "samba",
+                  "version": "4.6.2-8.el7.x86_64"
+                }
+              ],
+              "version": "0.0.6"
+            }
+          }
+        ]
+      }
+
+`/api/v0/recipes/depsolve/<recipe_names>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Depsolve the recipe using yum, return the recipe used, and the NEVRAs of the packages
+  chosen to satisfy the recipe's requirements. The response will include a list of results,
+  with the full dependency list in `dependencies`, the NEVRAs for the recipe's direct modules
+  and packages in `modules`, and any error will be in `errors`.
+
+  Example::
+
+      {
+        "errors": [],
+        "recipes": [
+          {
+            "dependencies": [
+              {
+                "arch": "noarch",
+                "epoch": "0",
+                "name": "2ping",
+                "release": "2.el7",
+                "version": "3.2.1"
+              },
+              {
+                "arch": "x86_64",
+                "epoch": "0",
+                "name": "acl",
+                "release": "12.el7",
+                "version": "2.2.51"
+              },
+              {
+                "arch": "x86_64",
+                "epoch": "0",
+                "name": "audit-libs",
+                "release": "3.el7",
+                "version": "2.7.6"
+              },
+              {
+                "arch": "x86_64",
+                "epoch": "0",
+                "name": "avahi-libs",
+                "release": "17.el7",
+                "version": "0.6.31"
+              },
+              ...
+            ],
+            "modules": [
+              {
+                "arch": "noarch",
+                "epoch": "0",
+                "name": "2ping",
+                "release": "2.el7",
+                "version": "3.2.1"
+              },
+              {
+                "arch": "x86_64",
+                "epoch": "0",
+                "name": "glusterfs",
+                "release": "18.4.el7",
+                "version": "3.8.4"
+              },
+              ...
+            ],
+            "recipe": {
+              "description": "An example GlusterFS server with samba",
+              "modules": [
+                {
+                  "name": "glusterfs",
+                  "version": "3.7.*"
+                },
+             ...
+            }
+          }
+        ]
+      }
+
+`/api/v0/projects/list[?offset=0&limit=20]`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  List all of the available projects. By default this returns the first 20 items,
+  but this can be changed by setting the `offset` and `limit` arguments.
+
+  Example::
+
+      {
+        "limit": 20,
+        "offset": 0,
+        "projects": [
+          {
+            "description": "0 A.D. (pronounced \"zero ey-dee\") is a ...",
+            "homepage": "http://play0ad.com",
+            "name": "0ad",
+            "summary": "Cross-Platform RTS Game of Ancient Warfare",
+            "upstream_vcs": "UPSTREAM_VCS"
+          },
+          ...
+        ],
+        "total": 21770
+      }
+
+`/api/v0/projects/info/<project_names>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Return information about the comma-separated list of projects. It includes the description
+  of the package along with the list of available builds.
+
+  Example::
+
+      {
+        "projects": [
+          {
+            "builds": [
+              {
+                "arch": "x86_64",
+                "build_config_ref": "BUILD_CONFIG_REF",
+                "build_env_ref": "BUILD_ENV_REF",
+                "build_time": "2017-03-01T08:39:23",
+                "changelog": "- restore incremental backups correctly, files ...",
+                "epoch": "2",
+                "metadata": {},
+                "release": "32.el7",
+                "source": {
+                  "license": "GPLv3+",
+                  "metadata": {},
+                  "source_ref": "SOURCE_REF",
+                  "version": "1.26"
+                }
+              }
+            ],
+            "description": "The GNU tar program saves many ...",
+            "homepage": "http://www.gnu.org/software/tar/",
+            "name": "tar",
+            "summary": "A GNU file archiving program",
+            "upstream_vcs": "UPSTREAM_VCS"
+          }
+        ]
+      }
+
+`/api/v0/projects/depsolve/<project_names>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Depsolve the comma-separated list of projects and return the list of NEVRAs needed
+  to satisfy the request.
+
+  Example::
+
+      {
+        "projects": [
+          {
+            "arch": "noarch",
+            "epoch": "0",
+            "name": "basesystem",
+            "release": "7.el7",
+            "version": "10.0"
+          },
+          {
+            "arch": "x86_64",
+            "epoch": "0",
+            "name": "bash",
+            "release": "28.el7",
+            "version": "4.2.46"
+          },
+          {
+            "arch": "x86_64",
+            "epoch": "0",
+            "name": "filesystem",
+            "release": "21.el7",
+            "version": "3.2"
+          },
+          ...
+        ]
+      }
+
+`/api/v0/modules/list[?offset=0&limit=20]`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Return a list of all of the available modules. This includes the name and the
+  group_type, which is always "rpm" for lorax-composer. By default this returns
+  the first 20 items. This can be changed by setting the `offset` and `limit`
+  arguments.
+
+  Example::
+
+      {
+        "limit": 20,
+        "modules": [
+          {
+            "group_type": "rpm",
+            "name": "0ad"
+          },
+          {
+            "group_type": "rpm",
+            "name": "0ad-data"
+          },
+          {
+            "group_type": "rpm",
+            "name": "0install"
+          },
+          {
+            "group_type": "rpm",
+            "name": "2048-cli"
+          },
+          ...
+        ]
+        "total": 21770
+      }
+
+`/api/v0/modules/list/<module_names>[?offset=0&limit=20]`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Return the list of comma-separated modules. Output is the same as `/modules/list`
+
+  Example::
+
+      {
+        "limit": 20,
+        "modules": [
+          {
+            "group_type": "rpm",
+            "name": "tar"
+          }
+        ],
+        "offset": 0,
+        "total": 1
+      }
+
+`/api/v0/modules/info/<module_names>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Return the module's dependencies, and the information about the module.
+
+  Example::
+
+      {
+        "modules": [
+          {
+            "dependencies": [
+              {
+                "arch": "noarch",
+                "epoch": "0",
+                "name": "basesystem",
+                "release": "7.el7",
+                "version": "10.0"
+              },
+              {
+                "arch": "x86_64",
+                "epoch": "0",
+                "name": "bash",
+                "release": "28.el7",
+                "version": "4.2.46"
+              },
+              ...
+            ],
+            "description": "The GNU tar program saves ...",
+            "homepage": "http://www.gnu.org/software/tar/",
+            "name": "tar",
+            "summary": "A GNU file archiving program",
+            "upstream_vcs": "UPSTREAM_VCS"
+          }
+        ]
+      }
+"""
+
 import logging
 log = logging.getLogger("lorax-composer")
 
@@ -48,10 +647,20 @@ except ImportError:
     libvirt = None
 
 def take_limits(iterable, offset, limit):
+    """ Apply offset and limit to an iterable object
+
+    :param iterable: The object to limit
+    :type iterable: iter
+    :param offset: The number of items to skip
+    :type offset: int
+    :param limit: The total number of items to return
+    :type limit: int
+    :returns: A subset of the iterable
+    """
     return iterable[offset:][:limit]
 
 def v0_api(api):
-    """ Setup v0 of the API server"""
+    # Note that Sphinx will not generate documentations for any of these.
     @api.route("/api/v0/test")
     @crossdomain(origin="*")
     def v0_test():
