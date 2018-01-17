@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.3
+Version:        28.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -154,6 +154,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Wed Jan 17 2018 Brian C. Lane <bcl@redhat.com> 28.4-1
+- Write the --variant string to .buildstamp as 'Variant=' (bcl@redhat.com)
+- Run the pylorax tests with 'make test' (bcl@redhat.com)
+- Fix installpkg exclude operation (bcl@redhat.com)
+
 * Wed Jan 03 2018 Brian C. Lane <bcl@redhat.com> 28.3-1
 - Add --old-chroot to the mock example cmdlines (bcl@redhat.com)
 - Don't try and install kernel-PAE on i686 any more (awilliam@redhat.com)
