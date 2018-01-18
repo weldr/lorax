@@ -36,7 +36,7 @@ from pylorax import vernum
 from pylorax.creator import DRACUT_DEFAULT, mount_boot_part_over_root
 from pylorax.creator import make_appliance, make_image, make_livecd, make_live_images
 from pylorax.creator import make_runtime, make_squashfs
-from pylorax.imgutils import copytree
+from pylorax.imgutils import copytree, default_image_name
 from pylorax.imgutils import Mount, PartitionMount, umount
 from pylorax.installer import InstallError
 from pylorax.sysutils import joinpaths
@@ -224,19 +224,6 @@ def setup_logging(opts):
     fh = logging.FileHandler(filename=logfile, mode="w")
     fh.setLevel(logging.DEBUG)
     program_log.addHandler(fh)
-
-
-def default_image_name(compression, basename):
-    """ Return a default image name with the correct suffix for the compression type.
-
-    :param str compression: Compression type
-    :param str basename: Base filename
-    :returns: basename with compression suffix
-
-    If the compression is unknown it defaults to xz
-    """
-    SUFFIXES = {"xz": ".xz", "gzip": ".gz", "bzip2": ".bz2", "lzma": ".lzma"}
-    return basename + SUFFIXES.get(compression, ".xz")
 
 
 def main():

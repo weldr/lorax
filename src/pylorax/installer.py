@@ -303,11 +303,13 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
     else:
         # If anaconda failed the disk image may still be in use by dm
         execWithRedirect("anaconda-cleanup", [])
-        dm_name = os.path.splitext(os.path.basename(disk_img))[0]
-        dm_path = "/dev/mapper/"+dm_name
-        if os.path.exists(dm_path):
-            dm_detach(dm_path)
-            loop_detach(get_loop_name(disk_img))
+
+        if disk_img:
+            dm_name = os.path.splitext(os.path.basename(disk_img))[0]
+            dm_path = "/dev/mapper/"+dm_name
+            if os.path.exists(dm_path):
+                dm_detach(dm_path)
+                loop_detach(get_loop_name(disk_img))
 
     if selinux_enforcing:
         selinux.security_setenforce(1)
@@ -322,6 +324,7 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
 
         rc = mktar(ROOT_PATH, disk_img, opts.compression, compress_args)
         shutil.rmtree(ROOT_PATH)
+        log.info("tar finished with rc=%d", rc)
 
         if rc:
             raise InstallError("novirt_install failed")

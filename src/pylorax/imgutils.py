@@ -62,7 +62,7 @@ def compress(command, rootdir, outfile, compression="xz", compressargs=None):
         archive = Popen(command, stdin=find.stdout, stdout=PIPE, cwd=rootdir)
         comp = Popen([compression] + compressargs,
                      stdin=archive.stdout, stdout=open(outfile, "wb"))
-        comp.wait()
+        (_stdout, _stderr) = comp.communicate()
         return comp.returncode
     except OSError as e:
         logger.error(e)
@@ -328,6 +328,18 @@ def estimate_size(rootdir, graft=None, fstype=None, blocksize=4096, overhead=128
     if fstype == "btrfs":
         total = max(256*1024*1024, total) # btrfs minimum size: 256MB
     return total
+
+def default_image_name(compression, basename):
+    """ Return a default image name with the correct suffix for the compression type.
+
+    :param str compression: Compression type
+    :param str basename: Base filename
+    :returns: basename with compression suffix
+
+    If the compression is unknown it defaults to xz
+    """
+    SUFFIXES = {"xz": ".xz", "gzip": ".gz", "bzip2": ".bz2", "lzma": ".lzma"}
+    return basename + SUFFIXES.get(compression, ".xz")
 
 ######## Execution contexts - use with the 'with' statement ##############
 
