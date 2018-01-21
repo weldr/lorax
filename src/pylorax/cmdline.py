@@ -243,6 +243,8 @@ def lmc_parser(dracut_default=""):
                             help="Use OVMF firmware to boot the VM in UEFI mode")
     virt_group.add_argument("--no-kvm", action="store_true", default=False,
                             help="Skip using kvm with qemu even if it is available.")
+    virt_group.add_argument("--with-rng", default="/dev/random",
+                            help="RNG device for QEMU (none for no RNG)")
 
     # dracut arguments
     dracut_group = parser.add_argument_group("dracut arguments")
