@@ -242,8 +242,9 @@ class QEMUInstall(object):
         qemu_cmd += ["-chardev", "socket,id=charchannel0,host=%s,port=%s" % (virtio_host, virtio_port)]
 
         # PAss through rng from host
-        qemu_cmd += ["-object", "rng-random,id=virtio-rng0,filename=/dev/random"]
-        qemu_cmd += ["-device", "virtio-rng-pci,rng=virtio-rng0,id=rng0,bus=pci.0,addr=0x9"]
+        if opts.with_rng != "none":
+            qemu_cmd += ["-object", "rng-random,id=virtio-rng0,filename=%s" % opts.with_rng]
+            qemu_cmd += ["-device", "virtio-rng-pci,rng=virtio-rng0,id=rng0,bus=pci.0,addr=0x9"]
 
         if boot_uefi and ovmf_path:
             qemu_cmd += ["-drive", "file=%s/OVMF_CODE.fd,if=pflash,format=raw,unit=0,readonly=on" % ovmf_path]
