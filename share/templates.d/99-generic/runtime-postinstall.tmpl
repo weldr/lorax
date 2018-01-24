@@ -28,6 +28,10 @@ symlink /lib/systemd/system/anaconda.target etc/systemd/system/default.target
 mkdir etc/systemd/system/local-fs.target.wants/
 symlink /lib/systemd/system/tmp.mount etc/systemd/system/local-fs.target.wants/tmp.mount
 
+## Make sure fedora-import-state is enabled
+## (moving ifcfg files from initramfs to Anacodna environment)
+symlink /usr/lib/systemd/system/fedora-import-state.service etc/systemd/system/sysinit.target.wants/fedora-import-state.service
+
 ## Start rngd
 mkdir etc/systemd/system/basic.target.wants/
 symlink /lib/systemd/system/rngd.service etc/systemd/system/basic.target.wants/rngd.service
