@@ -146,6 +146,10 @@ def dep_evra(dep):
     else:
         return dep["epoch"]+":"+dep["version"]+"-"+dep["release"]+"."+dep["arch"]
 
+def dep_nevra(dep):
+    """Return the name-epoch:version-release.arch"""
+    return dep["name"]+"-"+dep_evra(dep)
+
 def projects_list(yb):
     """Return a list of projects
 
