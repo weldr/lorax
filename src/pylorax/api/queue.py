@@ -18,12 +18,12 @@ import logging
 log = logging.getLogger("pylorax")
 
 import os
+import pytoml as toml
 import time
 from pykickstart.version import makeVersion, RHEL7
 from pykickstart.parser import KickstartParser
 
 from pylorax.base import DataHolder
-from pylorax.imgutils import default_image_name
 from pylorax.installer import novirt_install
 from pylorax.sysutils import joinpaths
 
@@ -96,33 +96,18 @@ def make_compose(cfg, results_dir):
     ks.readKickstart(ks_path)
     repo_url = ks.handler.method.url
 
-    # TODO -- This will change based on the type of image requested
-    # Configuration to pass to novirt_install
-    install_cfg = DataHolder(
-                image_name = default_image_name("xz", "root.tar"),
-                compression = "xz",
-                #compress_args = ["-9"],
-                compress_args = [],
-                ks = [ks_path],
-                anaconda_args = "",
-                proxy = "",
-                armplatform = "",
+    # Load the compose configuration
+    cfg_file = joinpaths(results_dir, "config.toml")
+    if not os.path.exists(cfg_path):
+        raise RuntimeError("Missing config.toml for %s" % results_dir)
+    cfg_dict = toml.loads(open(cfg_file, "r").read())
+    cfg_dict["logfile"] = log_dict
 
-                make_tar = True,
-                make_iso = False,
-                make_fsimage = False,
-                fslabel = "",
-                qcow2 = False,
-
-                project = "Red Hat Enterprise Linux",
-                releasever = "7",
-
-                logfile=log_dir
-          )
+    install_cfg = DataHolder(**cfg_dict)
 
     # Some kludges for the 99-copy-logs %post, failure in it will crash the build
     for f in ["/tmp/NOSAVE_INPUT_KS", "/tmp/NOSAVE_LOGS"]:
         open(f, "w")
 
-    log.info("repo_url = %s, cfg  = %s", repo_url, install_cfg)
+    log.debug("repo_url = %s, cfg  = %s", repo_url, install_cfg)
     novirt_install(install_cfg, joinpaths(results_dir, install_cfg.image_name), None, repo_url)
