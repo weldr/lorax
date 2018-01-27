@@ -41,9 +41,11 @@ def configure(conf_file="/etc/lorax/composer.conf", root_dir="/", test_config=Fa
 
     # set defaults
     conf.add_section("composer")
-    conf.set("composer", "yum_conf", joinpaths(root_dir, "/var/lib/lorax/composer/yum.conf"))
-    conf.set("composer", "repo_dir", joinpaths(root_dir, "/var/lib/lorax/composer/repos.d/"))
-    conf.set("composer", "cache_dir", joinpaths(root_dir, "/var/cache/lorax/composer/yum/"))
+    conf.set("composer", "share_dir", os.path.realpath(joinpaths(root_dir, "/usr/share/lorax/composer/")))
+    conf.set("composer", "lib_dir", os.path.realpath(joinpaths(root_dir, "/var/lib/lorax/composer/")))
+    conf.set("composer", "yum_conf", os.path.realpath(joinpaths(root_dir, "/var/tmp/composer/yum.conf")))
+    conf.set("composer", "repo_dir", os.path.realpath(joinpaths(root_dir, "/var/tmp/composer/repos.d/")))
+    conf.set("composer", "cache_dir", os.path.realpath(joinpaths(root_dir, "/var/tmp/composer/cache/")))
 
     conf.add_section("users")
     conf.set("users", "root", "1")
@@ -57,11 +59,5 @@ def configure(conf_file="/etc/lorax/composer.conf", root_dir="/", test_config=Fa
         # read the config file
         if os.path.isfile(conf_file):
             conf.read(conf_file)
-
-    # Create any missing directories
-    for section, key in [("composer", "yum_conf"), ("composer", "repo_dir"), ("composer", "cache_dir")]:
-        path = conf.get(section, key)
-        if not os.path.isdir(os.path.dirname(path)):
-            os.makedirs(os.path.dirname(path))
 
     return conf
