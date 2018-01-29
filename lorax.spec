@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.4
+Version:        28.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -154,6 +154,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Mon Jan 29 2018 Brian C. Lane <bcl@redhat.com> 28.5-1
+- Don't try to build efi images for basearch=i386. (pjones@redhat.com)
+- LMC: Make the QEMU RNG device optional (yturgema@redhat.com)
+
 * Wed Jan 17 2018 Brian C. Lane <bcl@redhat.com> 28.4-1
 - Write the --variant string to .buildstamp as 'Variant=' (bcl@redhat.com)
 - Run the pylorax tests with 'make test' (bcl@redhat.com)
