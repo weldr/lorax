@@ -25,6 +25,7 @@ import os
 import pytoml as toml
 import semantic_version as semver
 
+from pylorax.api.projects import dep_evra
 from pylorax.base import DataHolder
 from pylorax.sysutils import joinpaths
 
@@ -61,6 +62,16 @@ class Recipe(dict):
                             version=version,
                             modules=modules,
                             packages=packages)
+
+    @property
+    def package_names(self):
+        """Return the names of the packages"""
+        return map(lambda p: p["name"], self["packages"] or [])
+
+    @property
+    def module_names(self):
+        """Return the names of the modules"""
+        return map(lambda m: m["name"], self["modules"] or [])
 
     @property
     def filename(self):
@@ -107,6 +118,28 @@ class Recipe(dict):
 
         # Return the new version
         return str(semver.Version(self["version"]))
+
+    def freeze(self, deps):
+        """ Return a new Recipe with full module and package NEVRA
+
+        :param deps: A list of dependency NEVRA to use to fill in the modules and packages
+        :type deps: list(
+        :returns: A new Recipe object
+        :rtype: Recipe
+        """
+        module_names = self.module_names
+        package_names = self.package_names
+
+        new_modules = []
+        new_packages = []
+        for dep in deps:
+            if dep["name"] in package_names:
+                new_packages.append(RecipePackage(dep["name"], dep_evra(dep)))
+            elif dep["name"] in module_names:
+                new_modules.append(RecipeModule(dep["name"], dep_evra(dep)))
+
+        return Recipe(self["name"], self["description"], self["version"],
+                      new_modules, new_packages)
 
 class RecipeModule(dict):
     def __init__(self, name, version):

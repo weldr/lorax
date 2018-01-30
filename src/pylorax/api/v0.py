@@ -620,11 +620,11 @@ from flask import jsonify, request
 
 from pylorax.api.compose import start_build, compose_types
 from pylorax.api.crossdomain import crossdomain
-from pylorax.api.projects import projects_list, projects_info, projects_depsolve, dep_evra
+from pylorax.api.projects import projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError
 from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
 from pylorax.api.recipes import recipe_from_dict, recipe_from_toml, commit_recipe, delete_recipe, revert_recipe
-from pylorax.api.recipes import tag_recipe_commit, recipe_diff, Recipe, RecipePackage, RecipeModule
+from pylorax.api.recipes import tag_recipe_commit, recipe_diff
 from pylorax.api.workspace import workspace_read, workspace_write, workspace_delete
 
 # The API functions don't actually get called by any code here
@@ -918,8 +918,8 @@ def v0_api(api):
 
             # Combine modules and packages and depsolve the list
             # TODO include the version/glob in the depsolving
-            module_names = map(lambda m: m["name"], recipe["modules"] or [])
-            package_names = map(lambda p: p["name"], recipe["packages"] or [])
+            module_names = recipe.module_names
+            package_names = recipe.package_names
             projects = sorted(set(module_names+package_names), key=lambda n: n.lower())
             deps = []
             try:
@@ -929,20 +929,7 @@ def v0_api(api):
                 errors.append({"recipe":recipe_name, "msg":str(e)})
                 log.error("(v0_recipes_freeze) %s", str(e))
 
-            # Change the recipe's modules and packages to use the depsolved version
-            new_modules = []
-            new_packages = []
-            for dep in deps:
-                if dep["name"] in package_names:
-                    new_packages.append(RecipePackage(dep["name"], dep_evra(dep)))
-                elif dep["name"] in module_names:
-                    new_modules.append(RecipeModule(dep["name"], dep_evra(dep)))
-
-            recipes.append({"recipe":Recipe(recipe["name"],
-                                            recipe["description"],
-                                            recipe["version"],
-                                            new_modules,
-                                            new_packages)})
+            recipes.append({"recipe": recipe.freeze(deps)})
 
         return jsonify(recipes=recipes, errors=errors)
 
