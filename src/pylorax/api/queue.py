@@ -56,7 +56,6 @@ def monitor(cfg, cancel_q):
 
     while True:
         jobs = sorted(os.listdir(joinpaths(cfg.composer_dir, "queue/new")), key=queue_sort)
-        log.debug("jobs = %s", jobs)
 
         # Pick the oldest and move it into ./run/
         if not jobs:
@@ -97,11 +96,10 @@ def make_compose(cfg, results_dir):
     repo_url = ks.handler.method.url
 
     # Load the compose configuration
-    cfg_file = joinpaths(results_dir, "config.toml")
+    cfg_path = joinpaths(results_dir, "config.toml")
     if not os.path.exists(cfg_path):
         raise RuntimeError("Missing config.toml for %s" % results_dir)
-    cfg_dict = toml.loads(open(cfg_file, "r").read())
-    cfg_dict["logfile"] = log_dict
+    cfg_dict = toml.loads(open(cfg_path, "r").read())
 
     install_cfg = DataHolder(**cfg_dict)
 

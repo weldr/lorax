@@ -618,10 +618,7 @@ log = logging.getLogger("lorax-composer")
 
 from flask import jsonify, request
 
-# Use pykickstart to calculate disk image size
-from pykickstart.parser import KickstartParser
-from pykickstart.version import makeVersion, RHEL7
-
+from pylorax.api.compose import start_build, compose_types
 from pylorax.api.crossdomain import crossdomain
 from pylorax.api.projects import projects_list, projects_info, projects_depsolve, dep_evra
 from pylorax.api.projects import modules_list, modules_info, ProjectsError
@@ -629,22 +626,9 @@ from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_fi
 from pylorax.api.recipes import recipe_from_dict, recipe_from_toml, commit_recipe, delete_recipe, revert_recipe
 from pylorax.api.recipes import tag_recipe_commit, recipe_diff, Recipe, RecipePackage, RecipeModule
 from pylorax.api.workspace import workspace_read, workspace_write, workspace_delete
-from pylorax.creator import DRACUT_DEFAULT, mount_boot_part_over_root
-from pylorax.creator import make_appliance, make_image, make_livecd, make_live_images
-from pylorax.creator import make_runtime, make_squashfs
-from pylorax.imgutils import copytree
-from pylorax.imgutils import Mount, PartitionMount, umount
-from pylorax.installer import InstallError
-from pylorax.sysutils import joinpaths
 
 # The API functions don't actually get called by any code here
 # pylint: disable=unused-variable
-
-# no-virt mode doesn't need libvirt, so make it optional
-try:
-    import libvirt
-except ImportError:
-    libvirt = None
 
 def take_limits(iterable, offset, limit):
     """ Apply offset and limit to an iterable object
@@ -1099,3 +1083,61 @@ def v0_api(api):
             return jsonify(error={"msg":str(e)}), 400
 
         return jsonify(modules=modules)
+
+    @api.route("/api/v0/compose", methods=["POST"])
+    @crossdomain(origin="*")
+    def v0_compose_start():
+        """Start a compose
+
+        The body of the post should have these fields:
+          recipe_name   - The recipe name from /recipes/list/
+          compose_type  - The type of output to create, from /compose/types
+          branch        - Optional, defaults to master, selects the git branch to use for the recipe.
+        """
+        compose = request.get_json(cache=False)
+
+        errors = []
+        if not compose:
+            return jsonify(status=False, error={"msg":"Missing POST body"}), 400
+
+        if "recipe_name" not in compose:
+            errors.append("No 'recipe_name' in the JSON request")
+        else:
+            recipe_name = compose["recipe_name"]
+
+        if "branch" not in compose or not compose["branch"]:
+            branch = "master"
+        else:
+            branch = compose["branch"]
+
+        if "compose_type" not in compose:
+            errors.append("No 'compose_type' in the JSON request")
+        else:
+            compose_type = compose["compose_type"]
+
+        if errors:
+            return jsonify(status=False, error={"msg":"\n".join(errors)}), 400
+
+        # Get the git version (if it exists)
+        try:
+            with api.config["GITLOCK"].lock:
+                recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, recipe_name)
+        except Exception as e:
+            log.error("Problem reading recipe %s: %s", recipe_name, str(e))
+            return jsonify(status=False, error={"msg":str(e)}), 400
+        try:
+            build_id = start_build(api.config["COMPOSER_CFG"], api.config["YUMLOCK"], recipe, compose_type)
+        except Exception as e:
+            return jsonify(status=False, error={"msg":str(e)}), 400
+
+        return jsonify(status=True, build_id=build_id)
+
+    @api.route("/api/v0/compose/types")
+    @crossdomain(origin="*")
+    def v0_compose_types():
+        """Return the list of enabled output types
+
+        (only enabled types are returned)
+        """
+        share_dir = api.config["COMPOSER_CFG"].get("composer", "share_dir")
+        return jsonify(types=[{"name": k, "enabled": True} for k in compose_types(share_dir)])
