@@ -114,6 +114,17 @@ def start_build(cfg, yumlock, recipe, compose_type):
     results_dir = joinpaths(lib_dir, "results", build_id)
     os.makedirs(results_dir)
 
+    # Write the original recipe
+    recipe_path = joinpaths(results_dir, "recipe.toml")
+    with open(recipe_path, "w") as f:
+        f.write(recipe.toml())
+
+    # Write the frozen recipe
+    frozen_recipe = recipe.freeze(deps)
+    recipe_path = joinpaths(results_dir, "frozen.toml")
+    with open(recipe_path, "w") as f:
+        f.write(frozen_recipe.toml())
+
     # Read the kickstart template for this type and copy it into the results
     ks_template_path = joinpaths(share_dir, "composer", compose_type) + ".ks"
     shutil.copy(ks_template_path, results_dir)
@@ -168,7 +179,10 @@ def start_build(cfg, yumlock, recipe, compose_type):
     with open(joinpaths(results_dir, "config.toml"), "w") as f:
         f.write(toml.dumps(cfg_args).encode("UTF-8"))
 
-    log.info("Starting compose %s with recipe %s output type %s", build_id, recipe["name"], compose_type)
+    # Set the initial status
+    open(joinpaths(results_dir, "STATUS"), "w").write("WAITING")
+
+    log.info("Adding %s with recipe %s output type %s to compose queue", build_id, recipe["name"], compose_type)
     os.symlink(results_dir, joinpaths(lib_dir, "queue/new/", build_id))
 
     return build_id
