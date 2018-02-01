@@ -147,3 +147,32 @@ def queue_status(cfg):
         "new":  [compose_detail(n) for n in new_queue],
         "run":  [compose_detail(r) for r in run_queue]
     }
+
+def build_status(cfg, status_filter=None):
+    """ Return the details of finished or failed builds
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :param status_filter: What builds to return. None == all, "FINISHED", or "FAILED"
+    :type status_filter: str
+    :returns: A list of the build details (from compose_details)
+    :rtype: list of dicts
+
+    This returns a list of build details for each of the matching builds on the
+    system. It does not return the status of builds that have not been finished.
+    Use queue_status() for those.
+    """
+    if status_filter:
+        status_filter = [status_filter]
+    else:
+        status_filter = ["FINISHED", "FAILED"]
+
+    results = []
+    result_dir = joinpaths(cfg.get("composer", "lib_dir"), "results")
+    for build in glob(result_dir + "/*"):
+        log.debug("Checking status of build %s", build)
+
+        status = open(joinpaths(build, "STATUS"), "r").read().strip()
+        if status in status_filter:
+            results.append(compose_detail(build))
+    return results
