@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.7.6
+Version:        19.7.7
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -141,6 +141,18 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_unitdir}/lorax-composer.service
 
 %changelog
+* Thu Feb 01 2018 Brian C. Lane <bcl@redhat.com> 19.7.7-1
+- Add /compose/queue to get the status of the build queue (bcl)
+- Add reading a recipe directly from a file (bcl)
+- Include the recipe in the results of a build (bcl)
+- Move creating a frozen recipe into recipes.py (bcl)
+- Add building an image, and the /compose route to start it (bcl)
+- Remove test configuration and read it from the build directory (bcl)
+- Add function to return full NEVRA of a dependency (bcl)
+- Change config and paths (bcl)
+- Add basic composer queue handling (bcl)
+- Change compress to use communicate instead of wait (bcl)
+
 * Mon Jan 15 2018 Brian C. Lane <bcl@redhat.com> 19.7.6-1
 - Add documentation for the API routes. (bcl)
 - Switch the API to use a Unix Domain Socket (bcl)
