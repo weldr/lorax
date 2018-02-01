@@ -18,11 +18,13 @@ import logging
 log = logging.getLogger("pylorax")
 
 import os
+from glob import glob
 import pytoml as toml
 import time
 from pykickstart.version import makeVersion, RHEL7
 from pykickstart.parser import KickstartParser
 
+from pylorax.api.recipes import recipe_from_file
 from pylorax.base import DataHolder
 from pylorax.installer import novirt_install
 from pylorax.sysutils import joinpaths
@@ -109,3 +111,39 @@ def make_compose(cfg, results_dir):
 
     log.debug("repo_url = %s, cfg  = %s", repo_url, install_cfg)
     novirt_install(install_cfg, joinpaths(results_dir, install_cfg.image_name), None, repo_url)
+
+def compose_detail(results_dir):
+    """ Return details about the build."""
+
+    # Just in case it went away
+    if not os.path.exists(results_dir):
+        return {}
+
+    build_id = os.path.basename(os.path.abspath(results_dir))
+    status = open(joinpaths(results_dir, "STATUS")).read().strip()
+    mtime = os.stat(joinpaths(results_dir, "STATUS")).st_mtime
+    recipe = recipe_from_file(joinpaths(results_dir, "recipe.toml"))
+
+    # Should only be 2 kickstarts, the final-kickstart.ks and the template
+    types = [os.path.basename(ks)[:-3] for ks in glob(joinpaths(results_dir, "*.ks"))
+                                       if "final-kickstart" not in ks]
+    if len(types) != 1:
+        raise RuntimeError("Cannot find ks template for build %s" % build_id)
+
+    return {"id":       build_id,
+            "status":   status,
+            "timestamp":mtime,
+            "recipe":   recipe["name"],
+            "version":  recipe["version"]
+            }
+
+def queue_status(cfg):
+    """ Return details about what is in the queue."""
+    queue_dir = joinpaths(cfg.get("composer", "lib_dir"), "queue")
+    new_queue = [os.path.realpath(p) for p in glob(joinpaths(queue_dir, "new/*"))]
+    run_queue = [os.path.realpath(p) for p in glob(joinpaths(queue_dir, "run/*"))]
+
+    return {
+        "new":  [compose_detail(n) for n in new_queue],
+        "run":  [compose_detail(r) for r in run_queue]
+    }
