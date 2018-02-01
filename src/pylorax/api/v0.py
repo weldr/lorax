@@ -611,6 +611,43 @@ POST `/api/v0/recipes/tag/<recipe_name>`
           }
         ]
       }
+
+`/api/v0/compose/queue`
+^^^^^^^^^^^^^^^^^^^^^^^
+
+  Return the status of the build queue. It includes information about the builds waiting,
+  and the build that is running.
+
+  Example::
+
+      {
+        "new": [
+          {
+            "id": "45502a6d-06e8-48a5-a215-2b4174b3614b",
+            "recipe": "glusterfs",
+            "status": "WAITING",
+            "timestamp": 1517362647.4570868,
+            "version": "0.0.6"
+          },
+          {
+            "id": "6d292bd0-bec7-4825-8d7d-41ef9c3e4b73",
+            "recipe": "kubernetes",
+            "status": "WAITING",
+            "timestamp": 1517362659.0034983,
+            "version": "0.0.1"
+          }
+        ],
+        "run": [
+          {
+            "id": "745712b2-96db-44c0-8014-fe925c35e795",
+            "recipe": "glusterfs",
+            "status": "RUNNING",
+            "timestamp": 1517362633.7965999,
+            "version": "0.0.6"
+          }
+        ]
+      }
+
 """
 
 import logging
@@ -622,6 +659,7 @@ from pylorax.api.compose import start_build, compose_types
 from pylorax.api.crossdomain import crossdomain
 from pylorax.api.projects import projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError
+from pylorax.api.queue import queue_status
 from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
 from pylorax.api.recipes import recipe_from_dict, recipe_from_toml, commit_recipe, delete_recipe, revert_recipe
 from pylorax.api.recipes import tag_recipe_commit, recipe_diff
@@ -1128,3 +1166,9 @@ def v0_api(api):
         """
         share_dir = api.config["COMPOSER_CFG"].get("composer", "share_dir")
         return jsonify(types=[{"name": k, "enabled": True} for k in compose_types(share_dir)])
+
+    @api.route("/api/v0/compose/queue")
+    @crossdomain(origin="*")
+    def v0_compose_queue():
+        """Return the status of the new and running queues"""
+        return jsonify(queue_status(api.config["COMPOSER_CFG"]))
