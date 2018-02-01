@@ -148,6 +148,17 @@ class RecipeModule(dict):
 class RecipePackage(RecipeModule):
     pass
 
+def recipe_from_file(recipe_path):
+    """Return a recipe file as a Recipe object
+
+    :param recipe_path: Path to the recipe fila
+    :type recipe_path: str
+    :returns: A Recipe object
+    :rtype: Recipe
+    """
+    with open(recipe_path, 'rb') as f:
+        return recipe_from_toml(f.read())
+
 def recipe_from_toml(recipe_str):
     """Create a Recipe object from a toml string.
 
@@ -506,8 +517,7 @@ def commit_recipe_file(repo, branch, filename):
     :raises: Can raise errors from Ggit or RecipeFileError
     """
     try:
-        f = open(filename, 'rb')
-        recipe = recipe_from_toml(f.read())
+        recipe = recipe_from_file(filename)
     except IOError:
         raise RecipeFileError
 
