@@ -18,8 +18,12 @@ import logging
 log = logging.getLogger("pylorax")
 
 import os
+import grp
 from glob import glob
 import pytoml as toml
+import pwd
+import shutil
+import subprocess
 import time
 from pykickstart.version import makeVersion, RHEL7
 from pykickstart.parser import KickstartParser
@@ -112,6 +116,12 @@ def make_compose(cfg, results_dir):
     log.debug("repo_url = %s, cfg  = %s", repo_url, install_cfg)
     novirt_install(install_cfg, joinpaths(results_dir, install_cfg.image_name), None, repo_url)
 
+    # Make sure that everything under the results directory is owned by the user
+    user = pwd.getpwuid(cfg.uid).pw_name
+    group = grp.getgrgid(cfg.gid).gr_name
+    log.debug("Install finished, chowning results to %s:%s", user, group)
+    subprocess.call(["chown", "-R", "%s:%s" % (user, group), results_dir])
+
 def compose_detail(results_dir):
     """ Return details about the build."""
 
@@ -192,3 +202,19 @@ def build_status(cfg, status_filter=None):
         if status in status_filter:
             results.append(compose_detail(build))
     return results
+
+def uuid_delete(cfg, uuid):
+    """Delete all of the results from a compose
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :param uuid: The UUID of the build
+    :type uuid: str
+    :returns: True if it was deleted
+    :rtype: bool
+    """
+    uuid_dir = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid)
+    if not uuid_dir or len(uuid_dir) < 10:
+        raise RuntimeError("Directory length is too short: %s" % uuid_dir)
+    shutil.rmtree(uuid_dir)
+    return True
