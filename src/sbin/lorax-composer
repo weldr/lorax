@@ -198,13 +198,13 @@ if __name__ == '__main__':
         if not os.path.exists(p_dir):
             log.info("%s does not exist, creating it.", p_dir)
             orig_umask = os.umask(0)
-            os.makedirs(p_dir, 0o770)
+            os.makedirs(p_dir, 0o771)
             os.chown(p_dir, 0, gid)
             os.umask(orig_umask)
         else:
             p_stat = os.stat(p_dir)
-            if p_stat.st_mode & 0o007 != 0:
-                errors.append("Incorrect permissions on %s, no 'other' permissions are allowed." % p_dir)
+            if p_stat.st_mode & 0o006 != 0:
+                errors.append("Incorrect permissions on %s, no o+rw permissions are allowed." % p_dir)
 
             if p_stat.st_gid != gid or p_stat.st_uid != 0:
                 errors.append("%s should be owned by root:%s" % (p_dir, opts.group))
