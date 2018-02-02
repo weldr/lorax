@@ -718,6 +718,24 @@ POST `/api/v0/recipes/tag/<recipe_name>`
           }
         ]
       }
+
+DELETE `/api/v0/compose/delete/<uuids>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Delete the list of comma-separated uuids from the compose results.
+
+  Example::
+
+      {
+        "errors": [],
+        "uuids": [
+          {
+            "status": true,
+            "uuid": "ae1bf7e3-7f16-4c9f-b36e-3726a1093fd0"
+          }
+        ]
+      }
+
 """
 
 import logging
@@ -729,7 +747,7 @@ from pylorax.api.compose import start_build, compose_types
 from pylorax.api.crossdomain import crossdomain
 from pylorax.api.projects import projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError
-from pylorax.api.queue import queue_status, build_status, uuid_status
+from pylorax.api.queue import queue_status, build_status, uuid_delete, uuid_status
 from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
 from pylorax.api.recipes import recipe_from_dict, recipe_from_toml, commit_recipe, delete_recipe, revert_recipe
 from pylorax.api.recipes import tag_recipe_commit, recipe_diff
@@ -1257,7 +1275,7 @@ def v0_api(api):
 
     @api.route("/api/v0/compose/status/<uuids>")
     @crossdomain(origin="*")
-    def v0_compose_status(uuids=None):
+    def v0_compose_status(uuids):
         """Return the status of the listed uuids"""
         results = []
         for uuid in [n.strip().lower() for n in uuids.split(",")]:
@@ -1266,3 +1284,22 @@ def v0_api(api):
                 results.append(details)
 
         return jsonify(uuids=results)
+
+    @api.route("/api/v0/compose/delete/<uuids>", methods=["DELETE"])
+    @crossdomain(origin="*")
+    def v0_compose_delete(uuids):
+        """Delete the compose results for the listed uuids"""
+        results = []
+        errors = []
+        for uuid in [n.strip().lower() for n in uuids.split(",")]:
+            status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+            if status["status"] not in ["FINISHED", "FAILED"]:
+                errors.append({"uuid":uuid, "msg":"Build not in FINISHED or FAILED."})
+            else:
+                try:
+                    uuid_delete(api.config["COMPOSER_CFG"], uuid)
+                except Exception as e:
+                    errors.append({"uuid":uuid, "msg":str(e)})
+                else:
+                    results.append({"uuid":uuid, "status":True})
+        return jsonify(uuids=results, errors=errors)
