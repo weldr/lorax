@@ -18,8 +18,12 @@ import logging
 log = logging.getLogger("pylorax")
 
 import os
+import grp
 from glob import glob
 import pytoml as toml
+import pwd
+import shutil
+import subprocess
 import time
 from pykickstart.version import makeVersion, RHEL7
 from pykickstart.parser import KickstartParser
@@ -112,6 +116,12 @@ def make_compose(cfg, results_dir):
     log.debug("repo_url = %s, cfg  = %s", repo_url, install_cfg)
     novirt_install(install_cfg, joinpaths(results_dir, install_cfg.image_name), None, repo_url)
 
+    # Make sure that everything under the results directory is owned by the user
+    user = pwd.getpwuid(cfg.uid).pw_name
+    group = grp.getgrgid(cfg.gid).gr_name
+    log.debug("Install finished, chowning results to %s:%s", user, group)
+    subprocess.call(["chown", "-R", "%s:%s" % (user, group), results_dir])
+
 def compose_detail(results_dir):
     """ Return details about the build."""
 
@@ -147,3 +157,64 @@ def queue_status(cfg):
         "new":  [compose_detail(n) for n in new_queue],
         "run":  [compose_detail(r) for r in run_queue]
     }
+
+def uuid_status(cfg, uuid):
+    """Return the details of a specific UUID compose
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :param uuid: The UUID of the build
+    :type uuid: str
+    :returns: Details about the build
+    :rtype: dict or None
+    """
+    uuid_dir = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid)
+    if os.path.exists(uuid_dir):
+        return compose_detail(uuid_dir)
+    else:
+        return None
+
+def build_status(cfg, status_filter=None):
+    """ Return the details of finished or failed builds
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :param status_filter: What builds to return. None == all, "FINISHED", or "FAILED"
+    :type status_filter: str
+    :returns: A list of the build details (from compose_details)
+    :rtype: list of dicts
+
+    This returns a list of build details for each of the matching builds on the
+    system. It does not return the status of builds that have not been finished.
+    Use queue_status() for those.
+    """
+    if status_filter:
+        status_filter = [status_filter]
+    else:
+        status_filter = ["FINISHED", "FAILED"]
+
+    results = []
+    result_dir = joinpaths(cfg.get("composer", "lib_dir"), "results")
+    for build in glob(result_dir + "/*"):
+        log.debug("Checking status of build %s", build)
+
+        status = open(joinpaths(build, "STATUS"), "r").read().strip()
+        if status in status_filter:
+            results.append(compose_detail(build))
+    return results
+
+def uuid_delete(cfg, uuid):
+    """Delete all of the results from a compose
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :param uuid: The UUID of the build
+    :type uuid: str
+    :returns: True if it was deleted
+    :rtype: bool
+    """
+    uuid_dir = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid)
+    if not uuid_dir or len(uuid_dir) < 10:
+        raise RuntimeError("Directory length is too short: %s" % uuid_dir)
+    shutil.rmtree(uuid_dir)
+    return True

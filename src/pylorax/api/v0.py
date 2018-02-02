@@ -648,6 +648,94 @@ POST `/api/v0/recipes/tag/<recipe_name>`
         ]
       }
 
+`/api/v0/compose/finished`
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Return the details on all of the finished composes on the system.
+
+  Example::
+
+      {
+        "finished": [
+          {
+            "id": "70b84195-9817-4b8a-af92-45e380f39894",
+            "recipe": "glusterfs",
+            "status": "FINISHED",
+            "timestamp": 1517351003.8210032,
+            "version": "0.0.6"
+          },
+          {
+            "id": "e695affd-397f-4af9-9022-add2636e7459",
+            "recipe": "glusterfs",
+            "status": "FINISHED",
+            "timestamp": 1517362289.7193348,
+            "version": "0.0.6"
+          }
+        ]
+      }
+
+`/api/v0/compose/failed`
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Return the details on all of the failed composes on the system.
+
+  Example::
+
+      {
+        "finished": [
+           {
+            "id": "8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a",
+            "recipe": "http-server",
+            "status": "RUNNING",
+            "timestamp": 1517523249.9301329,
+            "version": "0.0.2"
+          }
+        ]
+      }
+
+`/api/v0/compose/status/<uuids>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Return the details for each of the comma-separated list of uuids.
+
+  Example::
+
+      {
+        "uuids": [
+          {
+            "id": "8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a",
+            "recipe": "http-server",
+            "status": "FINISHED",
+            "timestamp": 1517523644.2384307,
+            "version": "0.0.2"
+          },
+          {
+            "id": "45502a6d-06e8-48a5-a215-2b4174b3614b",
+            "recipe": "glusterfs",
+            "status": "FINISHED",
+            "timestamp": 1517363442.188399,
+            "version": "0.0.6"
+          }
+        ]
+      }
+
+DELETE `/api/v0/compose/delete/<uuids>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Delete the list of comma-separated uuids from the compose results.
+
+  Example::
+
+      {
+        "errors": [],
+        "uuids": [
+          {
+            "status": true,
+            "uuid": "ae1bf7e3-7f16-4c9f-b36e-3726a1093fd0"
+          }
+        ]
+      }
+
 """
 
 import logging
@@ -659,7 +747,7 @@ from pylorax.api.compose import start_build, compose_types
 from pylorax.api.crossdomain import crossdomain
 from pylorax.api.projects import projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError
-from pylorax.api.queue import queue_status
+from pylorax.api.queue import queue_status, build_status, uuid_delete, uuid_status
 from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
 from pylorax.api.recipes import recipe_from_dict, recipe_from_toml, commit_recipe, delete_recipe, revert_recipe
 from pylorax.api.recipes import tag_recipe_commit, recipe_diff
@@ -1172,3 +1260,46 @@ def v0_api(api):
     def v0_compose_queue():
         """Return the status of the new and running queues"""
         return jsonify(queue_status(api.config["COMPOSER_CFG"]))
+
+    @api.route("/api/v0/compose/finished")
+    @crossdomain(origin="*")
+    def v0_compose_finished():
+        """Return the list of finished composes"""
+        return jsonify(finished=build_status(api.config["COMPOSER_CFG"], "FINISHED"))
+
+    @api.route("/api/v0/compose/failed")
+    @crossdomain(origin="*")
+    def v0_compose_failed():
+        """Return the list of failed composes"""
+        return jsonify(failed=build_status(api.config["COMPOSER_CFG"], "FAILED"))
+
+    @api.route("/api/v0/compose/status/<uuids>")
+    @crossdomain(origin="*")
+    def v0_compose_status(uuids):
+        """Return the status of the listed uuids"""
+        results = []
+        for uuid in [n.strip().lower() for n in uuids.split(",")]:
+            details = uuid_status(api.config["COMPOSER_CFG"], uuid)
+            if details is not None:
+                results.append(details)
+
+        return jsonify(uuids=results)
+
+    @api.route("/api/v0/compose/delete/<uuids>", methods=["DELETE"])
+    @crossdomain(origin="*")
+    def v0_compose_delete(uuids):
+        """Delete the compose results for the listed uuids"""
+        results = []
+        errors = []
+        for uuid in [n.strip().lower() for n in uuids.split(",")]:
+            status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+            if status["status"] not in ["FINISHED", "FAILED"]:
+                errors.append({"uuid":uuid, "msg":"Build not in FINISHED or FAILED."})
+            else:
+                try:
+                    uuid_delete(api.config["COMPOSER_CFG"], uuid)
+                except Exception as e:
+                    errors.append({"uuid":uuid, "msg":str(e)})
+                else:
+                    results.append({"uuid":uuid, "status":True})
+        return jsonify(uuids=results, errors=errors)
