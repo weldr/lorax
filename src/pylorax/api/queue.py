@@ -148,6 +148,22 @@ def queue_status(cfg):
         "run":  [compose_detail(r) for r in run_queue]
     }
 
+def uuid_status(cfg, uuid):
+    """Return the details of a specific UUID compose
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :param uuid: The UUID of the build
+    :type uuid: str
+    :returns: Details about the build
+    :rtype: dict or None
+    """
+    uuid_dir = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid)
+    if os.path.exists(uuid_dir):
+        return compose_detail(uuid_dir)
+    else:
+        return None
+
 def build_status(cfg, status_filter=None):
     """ Return the details of finished or failed builds
 

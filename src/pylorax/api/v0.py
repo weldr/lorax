@@ -693,6 +693,31 @@ POST `/api/v0/recipes/tag/<recipe_name>`
         ]
       }
 
+`/api/v0/compose/status/<uuids>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Return the details for each of the comma-separated list of uuids.
+
+  Example::
+
+      {
+        "uuids": [
+          {
+            "id": "8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a",
+            "recipe": "http-server",
+            "status": "FINISHED",
+            "timestamp": 1517523644.2384307,
+            "version": "0.0.2"
+          },
+          {
+            "id": "45502a6d-06e8-48a5-a215-2b4174b3614b",
+            "recipe": "glusterfs",
+            "status": "FINISHED",
+            "timestamp": 1517363442.188399,
+            "version": "0.0.6"
+          }
+        ]
+      }
 """
 
 import logging
@@ -704,7 +729,7 @@ from pylorax.api.compose import start_build, compose_types
 from pylorax.api.crossdomain import crossdomain
 from pylorax.api.projects import projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError
-from pylorax.api.queue import queue_status, build_status
+from pylorax.api.queue import queue_status, build_status, uuid_status
 from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
 from pylorax.api.recipes import recipe_from_dict, recipe_from_toml, commit_recipe, delete_recipe, revert_recipe
 from pylorax.api.recipes import tag_recipe_commit, recipe_diff
@@ -1229,3 +1254,15 @@ def v0_api(api):
     def v0_compose_failed():
         """Return the list of failed composes"""
         return jsonify(failed=build_status(api.config["COMPOSER_CFG"], "FAILED"))
+
+    @api.route("/api/v0/compose/status/<uuids>")
+    @crossdomain(origin="*")
+    def v0_compose_status(uuids=None):
+        """Return the status of the listed uuids"""
+        results = []
+        for uuid in [n.strip().lower() for n in uuids.split(",")]:
+            details = uuid_status(api.config["COMPOSER_CFG"], uuid)
+            if details is not None:
+                results.append(details)
+
+        return jsonify(uuids=results)
