@@ -736,6 +736,54 @@ DELETE `/api/v0/compose/delete/<uuids>`
         ]
       }
 
+`/api/v0/compose/info/<uuid>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Get detailed information about the compose. The returned JSON string will
+  contain the following information:
+
+    * id - The uuid of the comoposition
+    * config - containing the configuration settings used to run Anaconda
+    * recipe - The depsolved recipe used to generate the kickstart
+    * commit - The (local) git commit hash for the recipe used
+    * deps - The NEVRA of all of the dependencies used in the composition
+    * compose_type - The type of output generated (tar, iso, etc.)
+    * queue_status - The final status of the composition (FINISHED or FAILED)
+
+  Example::
+
+      {
+        "commit": "7078e521a54b12eae31c3fd028680da7a0815a4d",
+        "compose_type": "tar",
+        "config": {
+          "anaconda_args": "",
+          "armplatform": "",
+          "compress_args": [],
+          "compression": "xz",
+          "image_name": "root.tar.xz",
+          ...
+        },
+        "deps": {
+          "packages": [
+            {
+              "arch": "x86_64",
+              "epoch": "0",
+              "name": "acl",
+              "release": "14.el7",
+              "version": "2.2.51"
+            }
+          ]
+        },
+        "id": "c30b7d80-523b-4a23-ad52-61b799739ce8",
+        "queue_status": "FINISHED",
+        "recipe": {
+          "description": "An example kubernetes master",
+          ...
+        }
+      }
+
+
+
 """
 
 import logging
@@ -747,7 +795,7 @@ from pylorax.api.compose import start_build, compose_types
 from pylorax.api.crossdomain import crossdomain
 from pylorax.api.projects import projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError
-from pylorax.api.queue import queue_status, build_status, uuid_delete, uuid_status
+from pylorax.api.queue import queue_status, build_status, uuid_delete, uuid_status, uuid_info
 from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
 from pylorax.api.recipes import recipe_from_dict, recipe_from_toml, commit_recipe, delete_recipe, revert_recipe
 from pylorax.api.recipes import tag_recipe_commit, recipe_diff
@@ -1231,15 +1279,9 @@ def v0_api(api):
         if errors:
             return jsonify(status=False, error={"msg":"\n".join(errors)}), 400
 
-        # Get the git version (if it exists)
         try:
-            with api.config["GITLOCK"].lock:
-                recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, recipe_name)
-        except Exception as e:
-            log.error("Problem reading recipe %s: %s", recipe_name, str(e))
-            return jsonify(status=False, error={"msg":str(e)}), 400
-        try:
-            build_id = start_build(api.config["COMPOSER_CFG"], api.config["YUMLOCK"], recipe, compose_type)
+            build_id = start_build(api.config["COMPOSER_CFG"], api.config["YUMLOCK"], api.config["GITLOCK"],
+                                   branch, recipe_name, compose_type)
         except Exception as e:
             return jsonify(status=False, error={"msg":str(e)}), 400
 
@@ -1303,3 +1345,14 @@ def v0_api(api):
                 else:
                     results.append({"uuid":uuid, "status":True})
         return jsonify(uuids=results, errors=errors)
+
+    @api.route("/api/v0/compose/info/<uuid>")
+    @crossdomain(origin="*")
+    def v0_compose_info(uuid):
+        """Return detailed info about a compose"""
+        try:
+            info = uuid_info(api.config["COMPOSER_CFG"], uuid)
+        except Exception as e:
+            return jsonify(status=False, msg=str(e))
+
+        return jsonify(**info)

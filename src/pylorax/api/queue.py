@@ -122,6 +122,17 @@ def make_compose(cfg, results_dir):
     log.debug("Install finished, chowning results to %s:%s", user, group)
     subprocess.call(["chown", "-R", "%s:%s" % (user, group), results_dir])
 
+def get_compose_type(results_dir):
+    """ Return the type of composition.
+
+    """
+    # Should only be 2 kickstarts, the final-kickstart.ks and the template
+    t = [os.path.basename(ks)[:-3] for ks in glob(joinpaths(results_dir, "*.ks"))
+                                   if "final-kickstart" not in ks]
+    if len(t) != 1:
+        raise RuntimeError("Cannot find ks template for build %s" % os.path.basename(results_dir))
+    return t[0]
+
 def compose_detail(results_dir):
     """ Return details about the build."""
 
@@ -134,17 +145,14 @@ def compose_detail(results_dir):
     mtime = os.stat(joinpaths(results_dir, "STATUS")).st_mtime
     recipe = recipe_from_file(joinpaths(results_dir, "recipe.toml"))
 
-    # Should only be 2 kickstarts, the final-kickstart.ks and the template
-    types = [os.path.basename(ks)[:-3] for ks in glob(joinpaths(results_dir, "*.ks"))
-                                       if "final-kickstart" not in ks]
-    if len(types) != 1:
-        raise RuntimeError("Cannot find ks template for build %s" % build_id)
+    compose_type = get_compose_type(results_dir)
 
-    return {"id":       build_id,
-            "status":   status,
-            "timestamp":mtime,
-            "recipe":   recipe["name"],
-            "version":  recipe["version"]
+    return {"id":           build_id,
+            "queue_status": status,
+            "timestamp":    mtime,
+            "compose_type": compose_type,
+            "recipe":       recipe["name"],
+            "version":      recipe["version"]
             }
 
 def queue_status(cfg):
@@ -218,3 +226,58 @@ def uuid_delete(cfg, uuid):
         raise RuntimeError("Directory length is too short: %s" % uuid_dir)
     shutil.rmtree(uuid_dir)
     return True
+
+def uuid_info(cfg, uuid):
+    """Return information about the composition
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :param uuid: The UUID of the build
+    :type uuid: str
+    :returns: dictionary of information about the composition
+    :rtype: dict
+
+    This will return a dict with the following fields populated:
+
+    * id - The uuid of the comoposition
+    * config - containing the configuration settings used to run Anaconda
+    * recipe - The depsolved recipe used to generate the kickstart
+    * commit - The (local) git commit hash for the recipe used
+    * deps - The NEVRA of all of the dependencies used in the composition
+    * compose_type - The type of output generated (tar, iso, etc.)
+    * queue_status - The final status of the composition (FINISHED or FAILED)
+    """
+    uuid_dir = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid)
+    if not os.path.exists(uuid_dir):
+        raise RuntimeError("%s is not a valid build_id" % uuid)
+
+    # Load the compose configuration
+    cfg_path = joinpaths(uuid_dir, "config.toml")
+    if not os.path.exists(cfg_path):
+        raise RuntimeError("Missing config.toml for %s" % uuid)
+    cfg_dict = toml.loads(open(cfg_path, "r").read())
+
+    frozen_path = joinpaths(uuid_dir, "frozen.toml")
+    if not os.path.exists(frozen_path):
+        raise RuntimeError("Missing frozen.toml for %s" % uuid)
+    frozen_dict = toml.loads(open(frozen_path, "r").read())
+
+    deps_path = joinpaths(uuid_dir, "deps.toml")
+    if not os.path.exists(deps_path):
+        raise RuntimeError("Missing deps.toml for %s" % uuid)
+    deps_dict = toml.loads(open(deps_path, "r").read())
+
+    compose_type = get_compose_type(uuid_dir)
+    status = open(joinpaths(uuid_dir, "STATUS")).read().strip()
+
+    commit_path = joinpaths(uuid_dir, "COMMIT")
+    commit_id = open(commit_path, "r").read().strip()
+
+    return {"id":           uuid,
+            "config":       cfg_dict,
+            "recipe":       frozen_dict,
+            "commit":       commit_id,
+            "deps":         deps_dict,
+            "compose_type": compose_type,
+            "queue_status": status
+    }
