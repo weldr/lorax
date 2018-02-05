@@ -41,6 +41,7 @@ from uuid import uuid4
 
 from pylorax.api.projects import projects_depsolve, dep_nevra
 from pylorax.api.projects import ProjectsError
+from pylorax.api.recipes import read_recipe_and_id
 from pylorax.imgutils import default_image_name
 from pylorax.sysutils import joinpaths
 
@@ -75,7 +76,7 @@ def repo_to_ks(r, url="url"):
 
     return cmd
 
-def start_build(cfg, yumlock, recipe, compose_type):
+def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type):
     """ Start the build
 
     :param cfg: Configuration object
@@ -96,6 +97,9 @@ def start_build(cfg, yumlock, recipe, compose_type):
     if compose_type not in compose_types(share_dir):
         raise RuntimeError("Invalid compose type (%s), must be one of %s" % (compose_type, compose_types(share_dir)))
 
+    with gitlock.lock:
+        (commit_id, recipe) = read_recipe_and_id(gitlock.repo, branch, recipe_name)
+
     # Combine modules and packages and depsolve the list
     # TODO include the version/glob in the depsolving
     module_names = map(lambda m: m["name"], recipe["modules"] or [])
@@ -114,6 +118,11 @@ def start_build(cfg, yumlock, recipe, compose_type):
     results_dir = joinpaths(lib_dir, "results", build_id)
     os.makedirs(results_dir)
 
+    # Write the recipe commit hash
+    commit_path = joinpaths(results_dir, "COMMIT")
+    with open(commit_path, "w") as f:
+        f.write(commit_id)
+
     # Write the original recipe
     recipe_path = joinpaths(results_dir, "recipe.toml")
     with open(recipe_path, "w") as f:
@@ -131,10 +140,9 @@ def start_build(cfg, yumlock, recipe, compose_type):
     ks_template = open(ks_template_path, "r").read()
 
     # Write out the dependencies to the results dir
-    deps_path = joinpaths(results_dir, "deps.txt")
+    deps_path = joinpaths(results_dir, "deps.toml")
     with open(deps_path, "w") as f:
-        for d in deps:
-            f.write(dep_nevra(d)+"\n")
+        f.write(toml.dumps({"packages":deps}).encode("UTF-8"))
 
     # Create the final kickstart with repos and package list
     ks_path = joinpaths(results_dir, "final-kickstart.ks")
