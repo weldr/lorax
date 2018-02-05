@@ -20,7 +20,7 @@ import shutil
 import tempfile
 import unittest
 
-from pylorax.api.config import configure
+from pylorax.api.config import configure, make_yum_dirs
 from pylorax.api.projects import api_time, api_changelog, yaps_to_project, yaps_to_project_info
 from pylorax.api.projects import tm_to_dep, yaps_to_module, projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError, dep_evra
@@ -58,6 +58,7 @@ class ProjectsTest(unittest.TestCase):
     def setUpClass(self):
         self.tmp_dir = tempfile.mkdtemp(prefix="lorax.test.repo.")
         self.config = configure(root_dir=self.tmp_dir, test_config=True)
+        make_yum_dirs(self.config)
         self.yb = get_base_object(self.config)
         os.environ["TZ"] = "UTC"
         time.tzset()

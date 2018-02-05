@@ -61,3 +61,15 @@ def configure(conf_file="/etc/lorax/composer.conf", root_dir="/", test_config=Fa
             conf.read(conf_file)
 
     return conf
+
+def make_yum_dirs(conf):
+    """Make any missing yum directories
+
+    :param conf: The configuration to use
+    :type conf: ComposerConfig
+    :returns: None
+    """
+    for p in ["yum_conf", "repo_dir", "cache_dir"]:
+        p_dir = os.path.dirname(conf.get("composer", p))
+        if not os.path.exists(p_dir):
+            os.makedirs(p_dir)

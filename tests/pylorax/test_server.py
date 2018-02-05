@@ -21,7 +21,7 @@ import unittest
 
 from flask import json
 import pytoml as toml
-from pylorax.api.config import configure
+from pylorax.api.config import configure, make_yum_dirs
 from pylorax.api.recipes import open_or_create_repo, commit_recipe_directory
 from pylorax.api.server import server, GitLock, YumLock
 from pylorax.api.yumbase import get_base_object
@@ -37,6 +37,7 @@ class ServerTestCase(unittest.TestCase):
         server.config["GITLOCK"] = GitLock(repo=repo, lock=Lock(), dir=repo_dir)
 
         server.config["COMPOSER_CFG"] = configure(root_dir=repo_dir, test_config=True)
+        make_yum_dirs(server.config["COMPOSER_CFG"])
         yb = get_base_object(server.config["COMPOSER_CFG"])
         server.config["YUMLOCK"] = YumLock(yb=yb, lock=Lock())
 
