@@ -335,14 +335,20 @@ def read_commit(repo, branch, filename, commit=None):
     :type filename: str
     :param commit: Optional commit hash
     :type commit: str
-    :returns: Contents of the commit
-    :rtype: str
+    :returns: The commit id, and the contents of the commit
+    :rtype: tuple(str, str)
     :raises: Can raise errors from Ggit
 
     If no commit is passed the master:filename is returned, otherwise it will be
     commit:filename
     """
-    return read_commit_spec(repo, "%s:%s" % (commit or branch, filename))
+    if not commit:
+        # Find the most recent commit for filename on the selected branch
+        commits = list_commits(repo, branch, filename, 1)
+        if not commits:
+            raise RecipeError("No commits for %s on the %s branch." % (filename, branch))
+        commit = commits[0].commit
+    return (commit, read_commit_spec(repo, "%s:%s" % (commit, filename)))
 
 def read_recipe_commit(repo, branch, recipe_name, commit=None):
     """Read a recipe commit from git and return a Recipe object
@@ -362,8 +368,29 @@ def read_recipe_commit(repo, branch, recipe_name, commit=None):
     If no commit is passed the master:filename is returned, otherwise it will be
     commit:filename
     """
-    recipe_toml = read_commit(repo, branch, recipe_filename(recipe_name), commit)
+    (_, recipe_toml) = read_commit(repo, branch, recipe_filename(recipe_name), commit)
     return recipe_from_toml(recipe_toml)
+
+def read_recipe_and_id(repo, branch, recipe_name, commit=None):
+    """Read a recipe commit and its id from git
+
+    :param repo: Open repository
+    :type repo: Git.Repository
+    :param branch: Branch name
+    :type branch: str
+    :param recipe_name: Recipe name to read
+    :type recipe_name: str
+    :param commit: Optional commit hash
+    :type commit: str
+    :returns: The commit id, and a Recipe object
+    :rtype: tuple(str, Recipe)
+    :raises: Can raise errors from Ggit
+
+    If no commit is passed the master:filename is returned, otherwise it will be
+    commit:filename
+    """
+    (commit_id, recipe_toml) = read_commit(repo, branch, recipe_filename(recipe_name), commit)
+    return (commit_id, recipe_from_toml(recipe_toml))
 
 def list_branch_files(repo, branch):
     """Return a sorted list of the files on the branch HEAD
@@ -671,7 +698,7 @@ class CommitDetails(DataHolder):
                             message = message,
                             revision = revision)
 
-def list_commits(repo, branch, filename):
+def list_commits(repo, branch, filename, limit=0):
     """List the commit history of a file on a branch.
 
     :param repo: Open repository
@@ -680,6 +707,8 @@ def list_commits(repo, branch, filename):
     :type branch: str
     :param filename: filename to revert
     :type filename: str
+    :param limit: Number of commits to return (0=all)
+    :type limit: int
     :returns: A list of commit details
     :rtype: list(CommitDetails)
     :raises: Can raise errors from Ggit
@@ -716,6 +745,8 @@ def list_commits(repo, branch, filename):
         tag = find_commit_tag(repo, branch, filename, commit.get_id())
         try:
             commits.append(get_commit_details(commit, get_revision_from_tag(tag)))
+            if limit and len(commits) > limit:
+                break
         except CommitTimeValError:
             # Skip any commits that have trouble converting the time
             # TODO - log details about this failure
