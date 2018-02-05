@@ -113,7 +113,7 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(data, info_dict_2)
 
         info_dict_3 = {"changes":[],
-                "errors":[{"recipe":"missing-recipe", "msg":"ggit-error: the path 'missing-recipe.toml' does not exist in the given tree (-3)"}],
+                "errors":[{"recipe":"missing-recipe", "msg":"No commits for missing-recipe.toml on the master branch."}],
                        "recipes":[]
                       }
         resp = self.server.get("/api/v0/recipes/info/missing-recipe")

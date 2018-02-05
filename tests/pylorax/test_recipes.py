@@ -203,6 +203,10 @@ class GitRecipesTest(unittest.TestCase):
         self.assertNotEqual(recipe, None)
         self.assertEqual(recipe["name"], "http-server")
 
+        # Read the recipe and its commit id
+        (commit_id, recipe) = recipes.read_recipe_and_id(self.repo, "master", "http-server", commits[0].commit)
+        self.assertEqual(commit_id, commits[0].commit)
+
     def test_07_tag_commit(self):
         """Test tagging the most recent commit of a recipe"""
         result = recipes.tag_file_commit(self.repo, "master", "not-a-file")
