@@ -37,7 +37,7 @@ from gevent.wsgi import WSGIServer
 from pyanaconda.queue import QueueFactory
 
 from pylorax import vernum
-from pylorax.api.config import configure
+from pylorax.api.config import configure, make_yum_dirs
 from pylorax.api.queue import monitor
 from pylorax.api.recipes import open_or_create_repo, commit_recipe_directory
 from pylorax.api.server import server, GitLock, YumLock
@@ -232,10 +232,7 @@ if __name__ == '__main__':
     log.debug("user is now %s:%s", os.getresuid(), os.getresgid())
 
     # Make sure yumbase directories are created
-    for p in ["yum_conf", "repo_dir", "cache_dir"]:
-        p_dir = os.path.dirname(server.config["COMPOSER_CFG"].get("composer", p))
-        if not os.path.exists(p_dir):
-            os.makedirs(p_dir)
+    make_yum_dirs(server.config["COMPOSER_CFG"])
 
     # Get a YumBase to share with the requests
     yb = get_base_object(server.config["COMPOSER_CFG"])
