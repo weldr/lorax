@@ -625,14 +625,14 @@ POST `/api/v0/recipes/tag/<recipe_name>`
           {
             "id": "45502a6d-06e8-48a5-a215-2b4174b3614b",
             "recipe": "glusterfs",
-            "status": "WAITING",
+            "queue_status": "WAITING",
             "timestamp": 1517362647.4570868,
             "version": "0.0.6"
           },
           {
             "id": "6d292bd0-bec7-4825-8d7d-41ef9c3e4b73",
             "recipe": "kubernetes",
-            "status": "WAITING",
+            "queue_status": "WAITING",
             "timestamp": 1517362659.0034983,
             "version": "0.0.1"
           }
@@ -641,7 +641,7 @@ POST `/api/v0/recipes/tag/<recipe_name>`
           {
             "id": "745712b2-96db-44c0-8014-fe925c35e795",
             "recipe": "glusterfs",
-            "status": "RUNNING",
+            "queue_status": "RUNNING",
             "timestamp": 1517362633.7965999,
             "version": "0.0.6"
           }
@@ -660,14 +660,14 @@ POST `/api/v0/recipes/tag/<recipe_name>`
           {
             "id": "70b84195-9817-4b8a-af92-45e380f39894",
             "recipe": "glusterfs",
-            "status": "FINISHED",
+            "queue_status": "FINISHED",
             "timestamp": 1517351003.8210032,
             "version": "0.0.6"
           },
           {
             "id": "e695affd-397f-4af9-9022-add2636e7459",
             "recipe": "glusterfs",
-            "status": "FINISHED",
+            "queue_status": "FINISHED",
             "timestamp": 1517362289.7193348,
             "version": "0.0.6"
           }
@@ -686,7 +686,7 @@ POST `/api/v0/recipes/tag/<recipe_name>`
            {
             "id": "8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a",
             "recipe": "http-server",
-            "status": "RUNNING",
+            "queue_status": "FAILED",
             "timestamp": 1517523249.9301329,
             "version": "0.0.2"
           }
@@ -705,14 +705,14 @@ POST `/api/v0/recipes/tag/<recipe_name>`
           {
             "id": "8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a",
             "recipe": "http-server",
-            "status": "FINISHED",
+            "queue_status": "FINISHED",
             "timestamp": 1517523644.2384307,
             "version": "0.0.2"
           },
           {
             "id": "45502a6d-06e8-48a5-a215-2b4174b3614b",
             "recipe": "glusterfs",
-            "status": "FINISHED",
+            "queue_status": "FINISHED",
             "timestamp": 1517363442.188399,
             "version": "0.0.6"
           }
@@ -782,20 +782,57 @@ DELETE `/api/v0/compose/delete/<uuids>`
         }
       }
 
+`/api/v0/compose/metadata/<uuid>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+  Returns a .tar of the metadata used for the build. This includes all the
+  information needed to reproduce the build, including the final kickstart
+  populated with repository and package NEVRA.
+
+  The mime type is set to 'application/x-tar' and the filename is set to
+  UUID-metadata.tar
+
+  The .tar is uncompressed, but is not large.
+
+`/api/v0/compose/results/<uuid>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Returns a .tar of the metadata, logs, and output image of the build. This
+  includes all the information needed to reproduce the build, including the
+  final kickstart populated with repository and package NEVRA. The output image
+  is already in compressed form so the returned tar is not compressed.
+
+  The mime type is set to 'application/x-tar' and the filename is set to
+  UUID.tar
+
+`/api/v0/compose/logs/<uuid>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Returns a .tar of the anaconda build logs. The tar is not compressed, but is
+  not large.
+
+  The mime type is set to 'application/x-tar' and the filename is set to
+  UUID-logs.tar
+
+`/api/v0/compose/image/<uuid>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Returns the output image from the build. The filename is set to the filename
+  from the build. eg. root.tar.xz or boot.iso.
 
 """
 
 import logging
 log = logging.getLogger("lorax-composer")
 
-from flask import jsonify, request
+from flask import jsonify, request, Response, send_file
 
 from pylorax.api.compose import start_build, compose_types
 from pylorax.api.crossdomain import crossdomain
 from pylorax.api.projects import projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError
 from pylorax.api.queue import queue_status, build_status, uuid_delete, uuid_status, uuid_info
+from pylorax.api.queue import uuid_tar, uuid_image
 from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
 from pylorax.api.recipes import recipe_from_dict, recipe_from_toml, commit_recipe, delete_recipe, revert_recipe
 from pylorax.api.recipes import tag_recipe_commit, recipe_diff
@@ -1335,7 +1372,7 @@ def v0_api(api):
         errors = []
         for uuid in [n.strip().lower() for n in uuids.split(",")]:
             status = uuid_status(api.config["COMPOSER_CFG"], uuid)
-            if status["status"] not in ["FINISHED", "FAILED"]:
+            if status["queue_status"] not in ["FINISHED", "FAILED"]:
                 errors.append({"uuid":uuid, "msg":"Build not in FINISHED or FAILED."})
             else:
                 try:
@@ -1356,3 +1393,55 @@ def v0_api(api):
             return jsonify(status=False, msg=str(e))
 
         return jsonify(**info)
+
+    @api.route("/api/v0/compose/metadata/<uuid>")
+    @crossdomain(origin="*")
+    def v0_compose_metadata(uuid):
+        """Return a tar of the metadata for the build"""
+        status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+        if status["queue_status"] not in ["FINISHED", "FAILED"]:
+            return jsonify({"status":False, "uuid":uuid, "msg":"Build not in FINISHED or FAILED."})
+        else:
+            return Response(uuid_tar(api.config["COMPOSER_CFG"], uuid, metadata=True, image=False, logs=False),
+                            mimetype="application/x-tar",
+                            headers=[("Content-Disposition", "attachment; filename=%s-metadata.tar;" % uuid)],
+                            direct_passthrough=True)
+
+    @api.route("/api/v0/compose/results/<uuid>")
+    @crossdomain(origin="*")
+    def v0_compose_results(uuid):
+        """Return a tar of the metadata and the results for the build"""
+        status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+        if status["queue_status"] not in ["FINISHED", "FAILED"]:
+            return jsonify({"status":False, "uuid":uuid, "msg":"Build not in FINISHED or FAILED."})
+        else:
+            return Response(uuid_tar(api.config["COMPOSER_CFG"], uuid, metadata=True, image=True, logs=True),
+                            mimetype="application/x-tar",
+                            headers=[("Content-Disposition", "attachment; filename=%s.tar;" % uuid)],
+                            direct_passthrough=True)
+
+    @api.route("/api/v0/compose/logs/<uuid>")
+    @crossdomain(origin="*")
+    def v0_compose_logs(uuid):
+        """Return a tar of the metadata for the build"""
+        status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+        if status["queue_status"] not in ["FINISHED", "FAILED"]:
+            return jsonify({"status":False, "uuid":uuid, "msg":"Build not in FINISHED or FAILED."})
+        else:
+            return Response(uuid_tar(api.config["COMPOSER_CFG"], uuid, metadata=False, image=False, logs=True),
+                            mimetype="application/x-tar",
+                            headers=[("Content-Disposition", "attachment; filename=%s-logs.tar;" % uuid)],
+                            direct_passthrough=True)
+
+    @api.route("/api/v0/compose/image/<uuid>")
+    @crossdomain(origin="*")
+    def v0_compose_image(uuid):
+        """Return the output image for the build"""
+        status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+        if status["queue_status"] not in ["FINISHED", "FAILED"]:
+            return jsonify({"status":False, "uuid":uuid, "msg":"Build not in FINISHED or FAILED."})
+        else:
+            image_name, image_path = uuid_image(api.config["COMPOSER_CFG"], uuid)
+
+            # XXX - Will mime type guessing work for all our output?
+            return send_file(image_path, as_attachment=True, attachment_filename=image_name, add_etags=False)

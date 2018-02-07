@@ -24,6 +24,7 @@ import pytoml as toml
 import pwd
 import shutil
 import subprocess
+from subprocess import Popen, PIPE
 import time
 from pykickstart.version import makeVersion, RHEL7
 from pykickstart.parser import KickstartParser
@@ -281,3 +282,67 @@ def uuid_info(cfg, uuid):
             "compose_type": compose_type,
             "queue_status": status
     }
+
+def uuid_tar(cfg, uuid, metadata=False, image=False, logs=False):
+    """Return a tar of the build data
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :param uuid: The UUID of the build
+    :type uuid: str
+    :param metadata: Set to true to include all the metadata needed to reproduce the build
+    :type metadata: bool
+    :param image: Set to true to include the output image
+    :type image: bool
+    :param logs: Set to true to include the logs from the build
+    :type logs: bool
+    :returns: A stream of bytes from tar
+    :rtype: A generator
+
+    This yields an uncompressed tar's data to the caller. It includes
+    the selected data to the caller by returning the Popen stdout from the tar process.
+    """
+    uuid_dir = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid)
+    if not os.path.exists(uuid_dir):
+        raise RuntimeError("%s is not a valid build_id" % uuid)
+
+    # Load the compose configuration
+    cfg_path = joinpaths(uuid_dir, "config.toml")
+    if not os.path.exists(cfg_path):
+        raise RuntimeError("Missing config.toml for %s" % uuid)
+    cfg_dict = toml.loads(open(cfg_path, "r").read())
+    image_name = cfg_dict["image_name"]
+
+    def include_file(f):
+        if f.endswith("/logs"):
+            return logs
+        if f.endswith(image_name):
+            return image
+        return metadata
+    filenames = [os.path.basename(f) for f in glob(joinpaths(uuid_dir, "*")) if include_file(f)]
+
+    tar = Popen(["tar", "-C", uuid_dir, "-cf-"] + filenames, stdout=PIPE)
+    return tar.stdout
+
+def uuid_image(cfg, uuid):
+    """Return the filename and full path of the build's image file
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :param uuid: The UUID of the build
+    :type uuid: str
+    :returns: The image filename and full path
+    :rtype: tuple of strings
+    """
+    uuid_dir = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid)
+    if not os.path.exists(uuid_dir):
+        raise RuntimeError("%s is not a valid build_id" % uuid)
+
+    # Load the compose configuration
+    cfg_path = joinpaths(uuid_dir, "config.toml")
+    if not os.path.exists(cfg_path):
+        raise RuntimeError("Missing config.toml for %s" % uuid)
+    cfg_dict = toml.loads(open(cfg_path, "r").read())
+    image_name = cfg_dict["image_name"]
+
+    return (image_name, joinpaths(uuid_dir, image_name))
