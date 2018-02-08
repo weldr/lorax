@@ -35,8 +35,12 @@ from pylorax.installer import novirt_install
 from pylorax.sysutils import joinpaths
 
 # TODO needs a quit queue to cleanly manage quitting
-def monitor(cfg, cancel_q):
+def monitor(cfg):
     """ Monitor the queue for new compose requests
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :returns: Does not return
 
     The queue has 2 subdirectories, new and run. When a compose is ready to be run
     a symlink to the uniquely named results directory should be placed in ./queue/new/
@@ -50,9 +54,9 @@ def monitor(cfg, cancel_q):
     If the system is restarted while a compose is running it will move any old symlinks
     from ./queue/run/ to ./queue/new/ and rerun them.
     """
-    def queue_sort(job):
+    def queue_sort(uuid):
         """Sort the queue entries by their mtime, not their names"""
-        return os.stat(joinpaths(cfg.composer_dir, "queue/new", job)).st_mtime
+        return os.stat(joinpaths(cfg.composer_dir, "queue/new", uuid)).st_mtime
 
     # Move any symlinks in the run queue back to the new queue
     for link in os.listdir(joinpaths(cfg.composer_dir, "queue/run")):
@@ -62,15 +66,15 @@ def monitor(cfg, cancel_q):
         log.debug("Moved unfinished compose %s back to new state", src)
 
     while True:
-        jobs = sorted(os.listdir(joinpaths(cfg.composer_dir, "queue/new")), key=queue_sort)
+        uuids = sorted(os.listdir(joinpaths(cfg.composer_dir, "queue/new")), key=queue_sort)
 
         # Pick the oldest and move it into ./run/
-        if not jobs:
+        if not uuids:
             # No composes left to process, sleep for a bit
             time.sleep(30)
         else:
-            src = joinpaths(cfg.composer_dir, "queue/new", jobs[0])
-            dst = joinpaths(cfg.composer_dir, "queue/run", jobs[0])
+            src = joinpaths(cfg.composer_dir, "queue/new", uuids[0])
+            dst = joinpaths(cfg.composer_dir, "queue/run", uuids[0])
             try:
                 os.rename(src, dst)
             except OSError:

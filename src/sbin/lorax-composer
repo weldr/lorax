@@ -34,8 +34,6 @@ from threading import Lock
 from gevent import socket
 from gevent.wsgi import WSGIServer
 
-from pyanaconda.queue import QueueFactory
-
 from pylorax import vernum
 from pylorax.api.config import configure, make_yum_dirs
 from pylorax.api.queue import monitor
@@ -219,10 +217,8 @@ if __name__ == '__main__':
     listener.listen(1)
 
     # Start queue monitor thread as root
-    cancel_q = QueueFactory("cancel")
-    cancel_q.addMessage("cancel", 0)
     cfg = DataHolder(composer_dir=lib_dir, uid=uid, gid=gid)
-    p = mp.Process(target=monitor, args=(cfg, cancel_q))
+    p = mp.Process(target=monitor, args=(cfg,))
     p.daemon = True
     p.start()
 
