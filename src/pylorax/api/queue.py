@@ -71,7 +71,12 @@ def monitor(cfg, cancel_q):
         else:
             src = joinpaths(cfg.composer_dir, "queue/new", jobs[0])
             dst = joinpaths(cfg.composer_dir, "queue/run", jobs[0])
-            os.rename(src, dst)
+            try:
+                os.rename(src, dst)
+            except OSError:
+                # The symlink may vanish if uuid_cancel() has been called
+                continue
+
             log.info("Starting new compose: %s", dst)
             open(joinpaths(dst, "STATUS"), "w").write("RUNNING\n")
 
@@ -114,14 +119,20 @@ def make_compose(cfg, results_dir):
     for f in ["/tmp/NOSAVE_INPUT_KS", "/tmp/NOSAVE_LOGS"]:
         open(f, "w")
 
-    log.debug("repo_url = %s, cfg  = %s", repo_url, install_cfg)
-    novirt_install(install_cfg, joinpaths(results_dir, install_cfg.image_name), None, repo_url)
+    # Placing a CANCEL file in the results directory will make execWithRedirect send anaconda a SIGTERM
+    def cancel_build():
+        return os.path.exists(joinpaths(results_dir, "CANCEL"))
 
-    # Make sure that everything under the results directory is owned by the user
-    user = pwd.getpwuid(cfg.uid).pw_name
-    group = grp.getgrgid(cfg.gid).gr_name
-    log.debug("Install finished, chowning results to %s:%s", user, group)
-    subprocess.call(["chown", "-R", "%s:%s" % (user, group), results_dir])
+    log.debug("repo_url = %s, cfg  = %s", repo_url, install_cfg)
+    try:
+        novirt_install(install_cfg, joinpaths(results_dir, install_cfg.image_name), None, repo_url,
+                       callback_func=cancel_build)
+    finally:
+        # Make sure that everything under the results directory is owned by the user
+        user = pwd.getpwuid(cfg.uid).pw_name
+        group = grp.getgrgid(cfg.gid).gr_name
+        log.debug("Install finished, chowning results to %s:%s", user, group)
+        subprocess.call(["chown", "-R", "%s:%s" % (user, group), results_dir])
 
 def get_compose_type(results_dir):
     """ Return the type of composition.
@@ -211,6 +222,57 @@ def build_status(cfg, status_filter=None):
         if status in status_filter:
             results.append(compose_detail(build))
     return results
+
+def uuid_cancel(cfg, uuid):
+    """Cancel a build and delete its results
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :param uuid: The UUID of the build
+    :type uuid: str
+    :returns: True if it was canceled and deleted
+    :rtype: bool
+
+    Only call this if the build status is WAITING or RUNNING
+    """
+    # This status can change (and probably will) while it is in the middle of doing this:
+    # It can move from WAITING -> RUNNING or it can move from RUNNING -> FINISHED|FAILED
+
+    # If it is in WAITING remove the symlink and then check to make sure it didn't show up
+    # in RUNNING
+    queue_dir = joinpaths(cfg.get("composer", "lib_dir"), "queue")
+    uuid_new = joinpaths(queue_dir, "new", uuid)
+    if os.path.exists(uuid_new):
+        try:
+            os.unlink(uuid_new)
+        except OSError:
+            # The symlink may vanish if the queue monitor started the build
+            pass
+        uuid_run = joinpaths(queue_dir, "run", uuid)
+        if not os.path.exists(uuid_run):
+            # Successfully removed it before the build started
+            return uuid_delete(cfg, uuid)
+
+    # Tell the build to stop running
+    cancel_path = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid, "CANCEL")
+    open(cancel_path, "w").write("\n")
+
+    # Wait for status to move to FAILED
+    started = time.time()
+    while True:
+        status = uuid_status(cfg, uuid)
+        if status["queue_status"] == "FAILED":
+            break
+
+        # Is this taking too long? Exit anyway and try to cleanup.
+        if time.time() > started + (10 * 60):
+            log.error("Failed to cancel the build of %s", uuid)
+            break
+
+        time.sleep(5)
+
+    # Remove the partial results
+    uuid_delete(cfg, uuid)
 
 def uuid_delete(cfg, uuid):
     """Delete all of the results from a compose
