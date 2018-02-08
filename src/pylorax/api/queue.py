@@ -36,7 +36,7 @@ from pylorax.sysutils import joinpaths
 
 # TODO needs a quit queue to cleanly manage quitting
 def monitor(cfg):
-    """ Monitor the queue for new compose requests
+    """Monitor the queue for new compose requests
 
     :param cfg: Configuration settings
     :type cfg: ComposerConfig
@@ -94,7 +94,23 @@ def monitor(cfg):
             os.unlink(dst)
 
 def make_compose(cfg, results_dir):
-    """Run anaconda with the final-kickstart.ks from results_dir"""
+    """Run anaconda with the final-kickstart.ks from results_dir
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :param results_dir: The directory containing the metadata and results for the build
+    :type results_dir: str
+    :returns: Nothing
+    :raises: May raise various exceptions
+
+    This takes the final-kickstart.ks, and the settings in config.toml and runs Anaconda
+    in no-virt mode (directly on the host operating system). Exceptions should be caught
+    at the higer level.
+
+    If there is a failure, the build artifacts will be cleaned up, and any logs will be
+    moved into logs/anaconda/ and their ownership will be set to the user from the cfg
+    object.
+    """
 
     # Check on the ks's presense
     ks_path = joinpaths(results_dir, "final-kickstart.ks")
@@ -139,8 +155,13 @@ def make_compose(cfg, results_dir):
         subprocess.call(["chown", "-R", "%s:%s" % (user, group), results_dir])
 
 def get_compose_type(results_dir):
-    """ Return the type of composition.
+    """Return the type of composition.
 
+    :param results_dir: The directory containing the metadata and results for the build
+    :type results_dir: str
+    :returns: The type of compose (eg. 'tar')
+    :rtype: str
+    :raises: RuntimeError if no kickstart template can be found.
     """
     # Should only be 2 kickstarts, the final-kickstart.ks and the template
     t = [os.path.basename(ks)[:-3] for ks in glob(joinpaths(results_dir, "*.ks"))
@@ -150,8 +171,22 @@ def get_compose_type(results_dir):
     return t[0]
 
 def compose_detail(results_dir):
-    """ Return details about the build."""
+    """Return details about the build.
 
+    :param results_dir: The directory containing the metadata and results for the build
+    :type results_dir: str
+    :returns: A dictionary with details about the compose
+    :rtype: dict
+
+    The following details are included in the dict:
+
+    * id - The uuid of the comoposition
+    * queue_status - The final status of the composition (FINISHED or FAILED)
+    * timestamp - The time of the last status change
+    * compose_type - The type of output generated (tar, iso, etc.)
+    * recipe - Recipe name
+    * version - Recipe version
+    """
     # Just in case it went away
     if not os.path.exists(results_dir):
         return {}
@@ -172,7 +207,16 @@ def compose_detail(results_dir):
             }
 
 def queue_status(cfg):
-    """ Return details about what is in the queue."""
+    """Return details about what is in the queue.
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :returns: A list of the new composes, and a list of the running composes
+    :rtype: dict
+
+    This returns a dict with 2 lists. "new" is the list of uuids that are waiting to be built,
+    and "run" has the uuids that are being built (currently limited to 1 at a time).
+    """
     queue_dir = joinpaths(cfg.get("composer", "lib_dir"), "queue")
     new_queue = [os.path.realpath(p) for p in glob(joinpaths(queue_dir, "new/*"))]
     run_queue = [os.path.realpath(p) for p in glob(joinpaths(queue_dir, "run/*"))]
@@ -191,6 +235,8 @@ def uuid_status(cfg, uuid):
     :type uuid: str
     :returns: Details about the build
     :rtype: dict or None
+
+    Returns the same dict as `compose_details()`
     """
     uuid_dir = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid)
     if os.path.exists(uuid_dir):
@@ -199,7 +245,7 @@ def uuid_status(cfg, uuid):
         return None
 
 def build_status(cfg, status_filter=None):
-    """ Return the details of finished or failed builds
+    """Return the details of finished or failed builds
 
     :param cfg: Configuration settings
     :type cfg: ComposerConfig
@@ -287,6 +333,7 @@ def uuid_delete(cfg, uuid):
     :type uuid: str
     :returns: True if it was deleted
     :rtype: bool
+    :raises: This will raise an error if the delete failed
     """
     uuid_dir = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid)
     if not uuid_dir or len(uuid_dir) < 10:
@@ -303,6 +350,7 @@ def uuid_info(cfg, uuid):
     :type uuid: str
     :returns: dictionary of information about the composition
     :rtype: dict
+    :raises: RuntimeError if there was a problem
 
     This will return a dict with the following fields populated:
 
@@ -364,6 +412,7 @@ def uuid_tar(cfg, uuid, metadata=False, image=False, logs=False):
     :type logs: bool
     :returns: A stream of bytes from tar
     :rtype: A generator
+    :raises: RuntimeError if there was a problem (eg. missing config file)
 
     This yields an uncompressed tar's data to the caller. It includes
     the selected data to the caller by returning the Popen stdout from the tar process.
@@ -399,6 +448,7 @@ def uuid_image(cfg, uuid):
     :type uuid: str
     :returns: The image filename and full path
     :rtype: tuple of strings
+    :raises: RuntimeError if there was a problem (eg. invalid uuid, missing config file)
     """
     uuid_dir = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid)
     if not os.path.exists(uuid_dir):
@@ -424,6 +474,7 @@ def uuid_log(cfg, uuid, size=1024):
     :type size: int
     :returns: Up to `size` kbytes from the end of the log
     :rtype: str
+    :raises: RuntimeError if there was a problem (eg. no log file available)
 
     This function tries to return lines from the end of the log, it will
     attempt to start on a line boundry, and may return less than `size` kbytes.
