@@ -219,7 +219,7 @@ class VirtualInstall( object ):
         subprocess.call(["virsh", "undefine", self.virt_name])
 
 
-def novirt_install(opts, disk_img, disk_size, repo_url):
+def novirt_install(opts, disk_img, disk_size, repo_url, callback_func=None):
     """
     Use Anaconda to install to a disk image
     """
@@ -270,7 +270,7 @@ def novirt_install(opts, disk_img, disk_size, repo_url):
     # Make sure anaconda has the right product and release
     os.environ["ANACONDA_PRODUCTNAME"] = opts.project
     os.environ["ANACONDA_PRODUCTVERSION"] = opts.releasever
-    rc = execWithRedirect("anaconda", args)
+    rc = execWithRedirect("anaconda", args, callback_func=callback_func)
 
     # Move the anaconda logs over to a log directory
     log_dir = os.path.abspath(os.path.dirname(opts.logfile))
@@ -386,6 +386,3 @@ def virt_install(opts, install_log, disk_img, disk_size):
 
         if rc:
             raise InstallError("virt_install failed")
-
-
-

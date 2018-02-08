@@ -22,6 +22,7 @@
 
 import os, sys
 import subprocess
+import time
 import threading
 
 import logging
@@ -66,7 +67,7 @@ class tee(threading.Thread):
 
 def execWithRedirect(command, argv, stdin = None, stdout = None,
                      stderr = None, root = None, preexec_fn=None, cwd=None,
-                     raise_err=False):
+                     raise_err=False, callback_func=None, callback_args=None):
     """ Run an external program and redirect the output to a file.
         @param command The command to run.
         @param argv A list of arguments.
@@ -143,7 +144,14 @@ def execWithRedirect(command, argv, stdin = None, stdout = None,
                                 preexec_fn=preexec_fn, cwd=cwd,
                                 env=env)
 
-        proc.wait()
+        # Wait for the process to finish, calling callback_func to test for early termination
+        while proc.returncode is None:
+            time.sleep(5)
+            if callback_func and callback_func():
+                proc.terminate()
+                callback_func = None
+            proc.poll()
+
         ret = proc.returncode
 
         #close the input ends of pipes so we get EOF in the tee processes
