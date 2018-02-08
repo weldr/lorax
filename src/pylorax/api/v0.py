@@ -1382,6 +1382,9 @@ def v0_api(api):
     def v0_compose_cancel(uuid):
         """Cancel a running compose and delete its results directory"""
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+        if status is None:
+            return jsonify(status=False, msg="%s is not a valid build uuid" % uuid), 400
+
         if status["queue_status"] not in ["WAITING", "RUNNING"]:
             return jsonify({"status": False, "uuid": uuid, "msg": "Cannot cancel a build that is in the %s state" % status["queue_status"]})
 
@@ -1400,7 +1403,9 @@ def v0_api(api):
         errors = []
         for uuid in [n.strip().lower() for n in uuids.split(",")]:
             status = uuid_status(api.config["COMPOSER_CFG"], uuid)
-            if status["queue_status"] not in ["FINISHED", "FAILED"]:
+            if status is None:
+                errors.append({"uuid": uuid, "msg": "Not a valid build uuid"})
+            elif status["queue_status"] not in ["FINISHED", "FAILED"]:
                 errors.append({"uuid":uuid, "msg":"Build not in FINISHED or FAILED."})
             else:
                 try:
@@ -1427,6 +1432,8 @@ def v0_api(api):
     def v0_compose_metadata(uuid):
         """Return a tar of the metadata for the build"""
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+        if status is None:
+            return jsonify(status=False, msg="%s is not a valid build uuid" % uuid), 400
         if status["queue_status"] not in ["FINISHED", "FAILED"]:
             return jsonify({"status":False, "uuid":uuid, "msg":"Build not in FINISHED or FAILED."})
         else:
@@ -1440,7 +1447,9 @@ def v0_api(api):
     def v0_compose_results(uuid):
         """Return a tar of the metadata and the results for the build"""
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
-        if status["queue_status"] not in ["FINISHED", "FAILED"]:
+        if status is None:
+            return jsonify(status=False, msg="%s is not a valid build uuid" % uuid), 400
+        elif status["queue_status"] not in ["FINISHED", "FAILED"]:
             return jsonify({"status":False, "uuid":uuid, "msg":"Build not in FINISHED or FAILED."})
         else:
             return Response(uuid_tar(api.config["COMPOSER_CFG"], uuid, metadata=True, image=True, logs=True),
@@ -1453,7 +1462,9 @@ def v0_api(api):
     def v0_compose_logs(uuid):
         """Return a tar of the metadata for the build"""
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
-        if status["queue_status"] not in ["FINISHED", "FAILED"]:
+        if status is None:
+            return jsonify(status=False, msg="%s is not a valid build uuid"), 400
+        elif status["queue_status"] not in ["FINISHED", "FAILED"]:
             return jsonify({"status":False, "uuid":uuid, "msg":"Build not in FINISHED or FAILED."})
         else:
             return Response(uuid_tar(api.config["COMPOSER_CFG"], uuid, metadata=False, image=False, logs=True),
@@ -1466,7 +1477,9 @@ def v0_api(api):
     def v0_compose_image(uuid):
         """Return the output image for the build"""
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
-        if status["queue_status"] not in ["FINISHED", "FAILED"]:
+        if status is None:
+            return jsonify(status=False, msg="%s is not a valid build uuid" % uuid), 400
+        elif status["queue_status"] not in ["FINISHED", "FAILED"]:
             return jsonify({"status":False, "uuid":uuid, "msg":"Build not in FINISHED or FAILED."})
         else:
             image_name, image_path = uuid_image(api.config["COMPOSER_CFG"], uuid)
