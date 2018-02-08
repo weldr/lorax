@@ -408,3 +408,43 @@ def uuid_image(cfg, uuid):
     image_name = cfg_dict["image_name"]
 
     return (image_name, joinpaths(uuid_dir, image_name))
+
+def uuid_log(cfg, uuid, size=1024):
+    """Return `size` kbytes from the end of the anaconda.log
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :param uuid: The UUID of the build
+    :type uuid: str
+    :param size: Number of kbytes to read. Default is 1024
+    :type size: int
+    :returns: Up to `size` kbytes from the end of the log
+    :rtype: str
+
+    This function tries to return lines from the end of the log, it will
+    attempt to start on a line boundry, and may return less than `size` kbytes.
+    """
+    uuid_dir = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid)
+    if not os.path.exists(uuid_dir):
+        raise RuntimeError("%s is not a valid build_id" % uuid)
+
+    # While a build is running the logs will be in /tmp/anaconda.log and when it
+    # has finished they will be in the results directory
+    status = uuid_status(cfg, uuid)
+    if status["queue_status"] == "RUNNING":
+        log_path = "/tmp/anaconda.log"
+    else:
+        log_path = joinpaths(uuid_dir, "logs", "anaconda", "anaconda.log")
+    if not os.path.exists(log_path):
+        raise RuntimeError("No anaconda.log available.")
+
+    with open(log_path, "r") as f:
+        f.seek(0, 2)
+        end = f.tell()
+        if end < 1024 * size:
+            f.seek(0, 0)
+        else:
+            f.seek(end - (1024 * size))
+        # Find the start of the next line and return the rest
+        f.readline()
+        return f.read()

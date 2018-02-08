@@ -833,6 +833,31 @@ DELETE `/api/v0/compose/delete/<uuids>`
   Returns the output image from the build. The filename is set to the filename
   from the build. eg. root.tar.xz or boot.iso.
 
+`/api/v0/compose/log/<uuid>[?size=kbytes]`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Returns the end of the anaconda.log. The size parameter is optional and defaults to 1Mbytes
+  if it is not included. The returned data is raw text from the end of the logfile, starting on
+  a line boundry.
+
+  Example::
+
+      12:59:24,222 INFO anaconda: Running Thread: AnaConfigurationThread (140629395244800)
+      12:59:24,223 INFO anaconda: Configuring installed system
+      12:59:24,912 INFO anaconda: Configuring installed system
+      12:59:24,912 INFO anaconda: Creating users
+      12:59:24,913 INFO anaconda: Clearing libuser.conf at /tmp/libuser.Dyy8Gj
+      12:59:25,154 INFO anaconda: Creating users
+      12:59:25,155 INFO anaconda: Configuring addons
+      12:59:25,155 INFO anaconda: Configuring addons
+      12:59:25,155 INFO anaconda: Generating initramfs
+      12:59:49,467 INFO anaconda: Generating initramfs
+      12:59:49,467 INFO anaconda: Running post-installation scripts
+      12:59:49,467 INFO anaconda: Running kickstart %%post script(s)
+      12:59:50,782 INFO anaconda: All kickstart %%post script(s) have been run
+      12:59:50,782 INFO anaconda: Running post-installation scripts
+      12:59:50,784 INFO anaconda: Thread Done: AnaConfigurationThread (140629395244800)
+
 """
 
 import logging
@@ -845,7 +870,7 @@ from pylorax.api.crossdomain import crossdomain
 from pylorax.api.projects import projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError
 from pylorax.api.queue import queue_status, build_status, uuid_delete, uuid_status, uuid_info
-from pylorax.api.queue import uuid_tar, uuid_image, uuid_cancel
+from pylorax.api.queue import uuid_tar, uuid_image, uuid_cancel, uuid_log
 from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
 from pylorax.api.recipes import recipe_from_dict, recipe_from_toml, commit_recipe, delete_recipe, revert_recipe
 from pylorax.api.recipes import tag_recipe_commit, recipe_diff
@@ -1486,3 +1511,20 @@ def v0_api(api):
 
             # XXX - Will mime type guessing work for all our output?
             return send_file(image_path, as_attachment=True, attachment_filename=image_name, add_etags=False)
+
+    @api.route("/api/v0/compose/log/<uuid>")
+    @crossdomain(origin="*")
+    def v0_compose_log_tail(uuid):
+        """Return the end of the main anaconda.log, defaults to 1Mbytes"""
+        try:
+            size = int(request.args.get("size", "1024"))
+        except ValueError as e:
+            return jsonify(error={"msg":str(e)}), 400
+
+        status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+        if status is None or status["queue_status"] == "WAITING":
+            return jsonify(status=False, uuid=uuid, msg="Build has not started yet. No logs to view")
+        try:
+            return Response(uuid_log(api.config["COMPOSER_CFG"], uuid, size), direct_passthrough=True)
+        except RuntimeError as e:
+            return jsonify(status=False, uuid=uuid, msg=str(e))
