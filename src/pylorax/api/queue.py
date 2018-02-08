@@ -133,6 +133,9 @@ def make_compose(cfg, results_dir):
         raise RuntimeError("Missing config.toml for %s" % results_dir)
     cfg_dict = toml.loads(open(cfg_path, "r").read())
 
+    # Make sure that image_name contains no path components
+    cfg_dict["image_name"] = os.path.basename(cfg_dict["image_name"])
+
     install_cfg = DataHolder(**cfg_dict)
 
     # Some kludges for the 99-copy-logs %post, failure in it will crash the build
@@ -145,8 +148,21 @@ def make_compose(cfg, results_dir):
 
     log.debug("repo_url = %s, cfg  = %s", repo_url, install_cfg)
     try:
-        novirt_install(install_cfg, joinpaths(results_dir, install_cfg.image_name), None, repo_url,
-                       callback_func=cancel_build)
+        test_path = joinpaths(results_dir, "TEST")
+        if os.path.exists(test_path):
+            # Pretend to run the compose
+            time.sleep(10)
+            try:
+                test_mode = int(open(test_path, "r").read())
+            except Exception:
+                test_mode = 1
+            if test_mode == 1:
+                raise RuntimeError("TESTING FAILED compose")
+            else:
+                open(joinpaths(results_dir, install_cfg.image_name), "w").write("TEST IMAGE")
+        else:
+            novirt_install(install_cfg, joinpaths(results_dir, install_cfg.image_name), None, repo_url,
+                           callback_func=cancel_build)
     finally:
         # Make sure that everything under the results directory is owned by the user
         user = pwd.getpwuid(cfg.uid).pw_name

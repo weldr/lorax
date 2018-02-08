@@ -1330,6 +1330,13 @@ def v0_api(api):
           compose_type  - The type of output to create, from /compose/types
           branch        - Optional, defaults to master, selects the git branch to use for the recipe.
         """
+        # Passing ?test=1 will generate a fake FAILED compose.
+        # Passing ?test=2 will generate a fake FINISHED compose.
+        try:
+            test_mode = int(request.args.get("test", "0"))
+        except ValueError:
+            test_mode = 0
+
         compose = request.get_json(cache=False)
 
         errors = []
@@ -1356,7 +1363,7 @@ def v0_api(api):
 
         try:
             build_id = start_build(api.config["COMPOSER_CFG"], api.config["YUMLOCK"], api.config["GITLOCK"],
-                                   branch, recipe_name, compose_type)
+                                   branch, recipe_name, compose_type, test_mode)
         except Exception as e:
             return jsonify(status=False, error={"msg":str(e)}), 400
 
