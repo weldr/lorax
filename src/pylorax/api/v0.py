@@ -719,6 +719,19 @@ POST `/api/v0/recipes/tag/<recipe_name>`
         ]
       }
 
+DELETE `/api/v0/recipes/cancel/<uuid>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Cancel the build, if it is not finished, and delete the results. It will return a
+  status of True if it is successful.
+
+  Example::
+
+      {
+        "status": true,
+        "uuid": "03397f8d-acff-4cdb-bd31-f629b7a948f5"
+      }
+
 DELETE `/api/v0/compose/delete/<uuids>`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -832,7 +845,7 @@ from pylorax.api.crossdomain import crossdomain
 from pylorax.api.projects import projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError
 from pylorax.api.queue import queue_status, build_status, uuid_delete, uuid_status, uuid_info
-from pylorax.api.queue import uuid_tar, uuid_image
+from pylorax.api.queue import uuid_tar, uuid_image, uuid_cancel
 from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
 from pylorax.api.recipes import recipe_from_dict, recipe_from_toml, commit_recipe, delete_recipe, revert_recipe
 from pylorax.api.recipes import tag_recipe_commit, recipe_diff
@@ -1363,6 +1376,21 @@ def v0_api(api):
                 results.append(details)
 
         return jsonify(uuids=results)
+
+    @api.route("/api/v0/compose/cancel/<uuid>", methods=["DELETE"])
+    @crossdomain(origin="*")
+    def v0_compose_cancel(uuid):
+        """Cancel a running compose and delete its results directory"""
+        status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+        if status["queue_status"] not in ["WAITING", "RUNNING"]:
+            return jsonify({"status": False, "uuid": uuid, "msg": "Cannot cancel a build that is in the %s state" % status["queue_status"]})
+
+        try:
+            uuid_cancel(api.config["COMPOSER_CFG"], uuid)
+        except Exception as e:
+            return jsonify({"status": False, "uuid": uuid, "msg": str(e)})
+        else:
+            return jsonify({"status": True, "uuid": uuid})
 
     @api.route("/api/v0/compose/delete/<uuids>", methods=["DELETE"])
     @crossdomain(origin="*")
