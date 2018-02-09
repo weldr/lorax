@@ -166,3 +166,23 @@ class ProjectsTest(unittest.TestCase):
         print(modules)
         self.assertEqual(modules[0]["name"], "bash")
         self.assertEqual(modules[0]["dependencies"][0]["name"], "basesystem")
+
+
+class ConfigureTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        self.tmp_dir = tempfile.mkdtemp(prefix="lorax.test.configure.")
+        self.conf_file = os.path.join(self.tmp_dir, 'test.conf')
+        open(self.conf_file, 'w').write("[composer]\ncache_dir = /tmp/cache-test")
+
+    @classmethod
+    def tearDownClass(self):
+        shutil.rmtree(self.tmp_dir)
+
+    def test_configure_reads_existing_file(self):
+        config = configure(conf_file=self.conf_file)
+        self.assertEqual(config.get('composer', 'cache_dir'), '/tmp/cache-test')
+
+    def test_configure_reads_non_existing_file(self):
+        config = configure(conf_file=self.conf_file + '.non-existing')
+        self.assertEqual(config.get('composer', 'cache_dir'), '/var/tmp/composer/cache')
