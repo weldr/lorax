@@ -26,7 +26,6 @@ yum_log = logging.getLogger("yum")
 
 import argparse
 import grp
-import multiprocessing as mp
 import os
 import pwd
 import sys
@@ -36,11 +35,10 @@ from gevent.wsgi import WSGIServer
 
 from pylorax import vernum
 from pylorax.api.config import configure, make_yum_dirs, make_queue_dirs
-from pylorax.api.queue import monitor
+from pylorax.api.queue import start_queue_monitor
 from pylorax.api.recipes import open_or_create_repo, commit_recipe_directory
 from pylorax.api.server import server, GitLock, YumLock
 from pylorax.api.yumbase import get_base_object
-from pylorax.base import DataHolder
 
 VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
 
@@ -204,12 +202,7 @@ if __name__ == '__main__':
     os.chown(opts.socket, 0, gid)
     listener.listen(1)
 
-    # Start queue monitor thread as root
-    lib_dir = server.config["COMPOSER_CFG"].get("composer", "lib_dir")
-    cfg = DataHolder(composer_dir=lib_dir, uid=uid, gid=gid)
-    p = mp.Process(target=monitor, args=(cfg,))
-    p.daemon = True
-    p.start()
+    start_queue_monitor(server.config["COMPOSER_CFG"], uid, gid)
 
     # Drop root privileges on the main process
     os.setgid(gid)
