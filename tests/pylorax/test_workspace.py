@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import os
+import mock
 import shutil
 import tempfile
 import unittest
@@ -66,6 +67,13 @@ class WorkspaceTest(unittest.TestCase):
         recipe = workspace_read(self.repo, "master", "http-server")
         self.assertEqual(self.example_recipe, recipe)
 
+    def test_04_workspace_read_ioerror(self):
+        """Test the workspace_read function dealing with internal IOError"""
+        # The recipe was written by the workspace_write test.
+        with self.assertRaises(recipes.RecipeFileError):
+            with mock.patch('pylorax.api.workspace.recipe_from_toml', side_effect=IOError('TESTING')):
+                recipe = workspace_read(self.repo, "master", "http-server")
+
     def test_05_workspace_delete(self):
         """Test the workspace_delete function"""
         ws_recipe_path = joinpaths(self.repo_dir, "git", "workspace", "master", "http-server.toml")
@@ -73,3 +81,10 @@ class WorkspaceTest(unittest.TestCase):
         self.assertEqual(os.path.exists(ws_recipe_path), True)
         workspace_delete(self.repo, "master", "http-server")
         self.assertEqual(os.path.exists(ws_recipe_path), False)
+
+    def test_05_workspace_delete_non_existing(self):
+        """Test the workspace_delete function"""
+        ws_recipe_path = joinpaths(self.repo_dir, "git", "workspace", "master", "non-existing.toml")
+
+        workspace_delete(self.repo, "master", "non-existing")
+        self.assertFalse(os.path.exists(ws_recipe_path))
