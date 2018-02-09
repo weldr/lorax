@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import ConfigParser
+import grp
 import os
 
 from pylorax.sysutils import joinpaths
@@ -41,7 +42,7 @@ def configure(conf_file="/etc/lorax/composer.conf", root_dir="/", test_config=Fa
 
     # set defaults
     conf.add_section("composer")
-    conf.set("composer", "share_dir", os.path.realpath(joinpaths(root_dir, "/usr/share/lorax/composer/")))
+    conf.set("composer", "share_dir", os.path.realpath(joinpaths(root_dir, "/usr/share/lorax/")))
     conf.set("composer", "lib_dir", os.path.realpath(joinpaths(root_dir, "/var/lib/lorax/composer/")))
     conf.set("composer", "yum_conf", os.path.realpath(joinpaths(root_dir, "/var/tmp/composer/yum.conf")))
     conf.set("composer", "repo_dir", os.path.realpath(joinpaths(root_dir, "/var/tmp/composer/repos.d/")))
@@ -73,3 +74,33 @@ def make_yum_dirs(conf):
         p_dir = os.path.dirname(conf.get("composer", p))
         if not os.path.exists(p_dir):
             os.makedirs(p_dir)
+
+def make_queue_dirs(conf, gid):
+    """Make any missing queue directories
+
+    :param conf: The configuration to use
+    :type conf: ComposerConfig
+    :param gid: Group ID that has access to the queue directories
+    :type gid: int
+    :returns: list of errors
+    :rtype: list of str
+    """
+    errors = []
+    lib_dir = conf.get("composer", "lib_dir")
+    for p in ["queue/run", "queue/new", "results"]:
+        p_dir = joinpaths(lib_dir, p)
+        if not os.path.exists(p_dir):
+            orig_umask = os.umask(0)
+            os.makedirs(p_dir, 0o771)
+            os.chown(p_dir, 0, gid)
+            os.umask(orig_umask)
+        else:
+            p_stat = os.stat(p_dir)
+            if p_stat.st_mode & 0o006 != 0:
+                errors.append("Incorrect permissions on %s, no o+rw permissions are allowed." % p_dir)
+
+            if p_stat.st_gid != gid or p_stat.st_uid != 0:
+                gr_name = grp.getgrgid(gid).gr_name
+                errors.append("%s should be owned by root:%s" % (p_dir, gr_name))
+
+    return errors
