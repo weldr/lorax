@@ -719,6 +719,19 @@ POST `/api/v0/recipes/tag/<recipe_name>`
         ]
       }
 
+DELETE `/api/v0/recipes/cancel/<uuid>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Cancel the build, if it is not finished, and delete the results. It will return a
+  status of True if it is successful.
+
+  Example::
+
+      {
+        "status": true,
+        "uuid": "03397f8d-acff-4cdb-bd31-f629b7a948f5"
+      }
+
 DELETE `/api/v0/compose/delete/<uuids>`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -832,7 +845,7 @@ from pylorax.api.crossdomain import crossdomain
 from pylorax.api.projects import projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError
 from pylorax.api.queue import queue_status, build_status, uuid_delete, uuid_status, uuid_info
-from pylorax.api.queue import uuid_tar, uuid_image
+from pylorax.api.queue import uuid_tar, uuid_image, uuid_cancel
 from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
 from pylorax.api.recipes import recipe_from_dict, recipe_from_toml, commit_recipe, delete_recipe, revert_recipe
 from pylorax.api.recipes import tag_recipe_commit, recipe_diff
@@ -1364,6 +1377,24 @@ def v0_api(api):
 
         return jsonify(uuids=results)
 
+    @api.route("/api/v0/compose/cancel/<uuid>", methods=["DELETE"])
+    @crossdomain(origin="*")
+    def v0_compose_cancel(uuid):
+        """Cancel a running compose and delete its results directory"""
+        status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+        if status is None:
+            return jsonify(status=False, msg="%s is not a valid build uuid" % uuid), 400
+
+        if status["queue_status"] not in ["WAITING", "RUNNING"]:
+            return jsonify({"status": False, "uuid": uuid, "msg": "Cannot cancel a build that is in the %s state" % status["queue_status"]})
+
+        try:
+            uuid_cancel(api.config["COMPOSER_CFG"], uuid)
+        except Exception as e:
+            return jsonify({"status": False, "uuid": uuid, "msg": str(e)})
+        else:
+            return jsonify({"status": True, "uuid": uuid})
+
     @api.route("/api/v0/compose/delete/<uuids>", methods=["DELETE"])
     @crossdomain(origin="*")
     def v0_compose_delete(uuids):
@@ -1372,7 +1403,9 @@ def v0_api(api):
         errors = []
         for uuid in [n.strip().lower() for n in uuids.split(",")]:
             status = uuid_status(api.config["COMPOSER_CFG"], uuid)
-            if status["queue_status"] not in ["FINISHED", "FAILED"]:
+            if status is None:
+                errors.append({"uuid": uuid, "msg": "Not a valid build uuid"})
+            elif status["queue_status"] not in ["FINISHED", "FAILED"]:
                 errors.append({"uuid":uuid, "msg":"Build not in FINISHED or FAILED."})
             else:
                 try:
@@ -1399,6 +1432,8 @@ def v0_api(api):
     def v0_compose_metadata(uuid):
         """Return a tar of the metadata for the build"""
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+        if status is None:
+            return jsonify(status=False, msg="%s is not a valid build uuid" % uuid), 400
         if status["queue_status"] not in ["FINISHED", "FAILED"]:
             return jsonify({"status":False, "uuid":uuid, "msg":"Build not in FINISHED or FAILED."})
         else:
@@ -1412,7 +1447,9 @@ def v0_api(api):
     def v0_compose_results(uuid):
         """Return a tar of the metadata and the results for the build"""
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
-        if status["queue_status"] not in ["FINISHED", "FAILED"]:
+        if status is None:
+            return jsonify(status=False, msg="%s is not a valid build uuid" % uuid), 400
+        elif status["queue_status"] not in ["FINISHED", "FAILED"]:
             return jsonify({"status":False, "uuid":uuid, "msg":"Build not in FINISHED or FAILED."})
         else:
             return Response(uuid_tar(api.config["COMPOSER_CFG"], uuid, metadata=True, image=True, logs=True),
@@ -1425,7 +1462,9 @@ def v0_api(api):
     def v0_compose_logs(uuid):
         """Return a tar of the metadata for the build"""
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
-        if status["queue_status"] not in ["FINISHED", "FAILED"]:
+        if status is None:
+            return jsonify(status=False, msg="%s is not a valid build uuid"), 400
+        elif status["queue_status"] not in ["FINISHED", "FAILED"]:
             return jsonify({"status":False, "uuid":uuid, "msg":"Build not in FINISHED or FAILED."})
         else:
             return Response(uuid_tar(api.config["COMPOSER_CFG"], uuid, metadata=False, image=False, logs=True),
@@ -1438,7 +1477,9 @@ def v0_api(api):
     def v0_compose_image(uuid):
         """Return the output image for the build"""
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
-        if status["queue_status"] not in ["FINISHED", "FAILED"]:
+        if status is None:
+            return jsonify(status=False, msg="%s is not a valid build uuid" % uuid), 400
+        elif status["queue_status"] not in ["FINISHED", "FAILED"]:
             return jsonify({"status":False, "uuid":uuid, "msg":"Build not in FINISHED or FAILED."})
         else:
             image_name, image_path = uuid_image(api.config["COMPOSER_CFG"], uuid)
