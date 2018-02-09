@@ -20,6 +20,7 @@ log = logging.getLogger("pylorax")
 import os
 import grp
 from glob import glob
+import multiprocessing as mp
 import pytoml as toml
 import pwd
 import shutil
@@ -34,7 +35,23 @@ from pylorax.base import DataHolder
 from pylorax.installer import novirt_install
 from pylorax.sysutils import joinpaths
 
-# TODO needs a quit queue to cleanly manage quitting
+def start_queue_monitor(cfg, uid, gid):
+    """Start the queue monitor as a mp process
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :param uid: User ID that owns the queue
+    :type uid: int
+    :param gid: Group ID that owns the queue
+    :type gid: int
+    :returns: None
+    """
+    lib_dir = cfg.get("composer", "lib_dir")
+    monitor_cfg = DataHolder(composer_dir=lib_dir, uid=uid, gid=gid)
+    p = mp.Process(target=monitor, args=(monitor_cfg,))
+    p.daemon = True
+    p.start()
+
 def monitor(cfg):
     """Monitor the queue for new compose requests
 
