@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import os
+import mock
 from pytoml import TomlError
 import shutil
 import tempfile
@@ -124,6 +126,8 @@ class BasicRecipeTest(unittest.TestCase):
         self.assertEqual(recipes.find_name("cat", test_list), {"name":"cat"})
         self.assertEqual(recipes.find_name("squirrel", test_list), {"name":"squirrel"})
 
+        self.assertIsNone(recipes.find_name("alien", test_list))
+
     def diff_items_test(self):
         """Test the diff_items function"""
         self.assertEqual(recipes.diff_items("Modules", self.old_modules, self.new_modules), self.modules_result)
@@ -149,12 +153,27 @@ class GitRecipesTest(unittest.TestCase):
 
         self.results_path = "./tests/pylorax/results/"
         self.examples_path = "./tests/pylorax/recipes/"
+        self.new_recipe = os.path.join(self.examples_path, 'python-testing.toml')
 
     @classmethod
     def tearDownClass(self):
         if self.repo is not None:
             del self.repo
         shutil.rmtree(self.repo_dir)
+
+    def tearDown(self):
+        if os.path.exists(self.new_recipe):
+            os.remove(self.new_recipe)
+
+    def _create_another_recipe(self):
+        open(self.new_recipe, 'w').write("""name = "python-testing"
+description = "A recipe used during testing."
+version = "0.0.1"
+
+[[packages]]
+name = "python"
+version = "2.7.*"
+""")
 
     def test_01_repo_creation(self):
         """Test that creating the repository succeeded"""
@@ -175,7 +194,13 @@ class GitRecipesTest(unittest.TestCase):
         self.assertEqual(len(commits[0].commit), 40, "Commit hash isn't 40 characters")
         self.assertEqual(commits[0].revision, None, "revision is not None")
 
-    def test_04_commit_toml_file(self):
+    def test_03_list_commits_commit_time_val_error(self):
+        """Test listing recipe commits which raise CommitTimeValError"""
+        with mock.patch('pylorax.api.recipes.GLib.DateTime.to_timeval', return_value=False):
+            commits = recipes.list_commits(self.repo, "master", "test-recipe.toml")
+        self.assertEqual(len(commits), 0, "Wrong number of commits.")
+
+    def test_04_commit_recipe_file(self):
         """Test committing a TOML file"""
         recipe_path = joinpaths(self.results_path, "full-recipe.toml")
         oid = recipes.commit_recipe_file(self.repo, "master", recipe_path)
@@ -184,10 +209,49 @@ class GitRecipesTest(unittest.TestCase):
         commits = recipes.list_commits(self.repo, "master", "http-server.toml")
         self.assertEqual(len(commits), 1, "Wrong number of commits: %s" % commits)
 
+    def test_04_commit_recipe_file_handles_internal_ioerror(self):
+        """Test committing a TOML raises RecipeFileError on internal IOError"""
+        recipe_path = joinpaths(self.results_path, "non-existing-file.toml")
+        with self.assertRaises(recipes.RecipeFileError):
+            recipes.commit_recipe_file(self.repo, "master", recipe_path)
+
     def test_05_commit_toml_dir(self):
         """Test committing a directory of TOML files"""
-        # It worked if it doesn't raise errors
+        # first verify that the newly created file isn't present
+        old_commits = recipes.list_commits(self.repo, "master", "python-testing.toml")
+        self.assertEqual(len(old_commits), 0, "Wrong number of commits: %s" % old_commits)
+
+        # then create it and commit the entire directory
+        self._create_another_recipe()
         recipes.commit_recipe_directory(self.repo, "master", self.examples_path)
+
+        # verify that the newly created file is already in the repository
+        new_commits = recipes.list_commits(self.repo, "master", "python-testing.toml")
+        self.assertEqual(len(new_commits), 1, "Wrong number of commits: %s" % new_commits)
+        # again make sure new_commits != old_commits
+        self.assertGreater(len(new_commits), len(old_commits),
+                           "New commits shoud differ from old commits")
+
+    def test_05_commit_recipe_directory_handling_internal_exceptions(self):
+        """Test committing a directory of TOML files while handling internal exceptions"""
+        # first verify that the newly created file isn't present
+        old_commits = recipes.list_commits(self.repo, "master", "python-testing.toml")
+        self.assertEqual(len(old_commits), 0, "Wrong number of commits: %s" % old_commits)
+
+        # then create it and commit the entire directory
+        self._create_another_recipe()
+
+        # try to commit while raising RecipeFileError
+        with mock.patch('pylorax.api.recipes.commit_recipe_file', side_effect=recipes.RecipeFileError('TESTING')):
+            recipes.commit_recipe_directory(self.repo, "master", self.examples_path)
+
+        # try to commit while raising TomlError
+        with mock.patch('pylorax.api.recipes.commit_recipe_file', side_effect=TomlError('TESTING', 0, 0, '__test__')):
+            recipes.commit_recipe_directory(self.repo, "master", self.examples_path)
+
+        # verify again that the newly created file isn't present b/c we raised an exception
+        new_commits = recipes.list_commits(self.repo, "master", "python-testing.toml")
+        self.assertEqual(len(new_commits), 0, "Wrong number of commits: %s" % new_commits)
 
     def test_06_read_recipe(self):
         """Test reading a recipe from a commit"""
@@ -252,3 +316,28 @@ class GitRecipesTest(unittest.TestCase):
         commits = recipes.list_commits(self.repo, "master", "http-server.toml")
         self.assertEqual(len(commits), 3, "Wrong number of commits: %s" % commits)
         self.assertEqual(commits[0].revision, 2)
+
+
+class ExistingGitRepoRecipesTest(GitRecipesTest):
+    @classmethod
+    def setUpClass(self):
+        # will initialize the git repository in the parent class
+        super(ExistingGitRepoRecipesTest, self).setUpClass()
+
+        # reopen the repository again so that tests are executed
+        # against the existing repo one more time.
+        self.repo = recipes.open_or_create_repo(self.repo_dir)
+
+
+class GetRevisionFromTagTests(unittest.TestCase):
+    def test_01_valid_tag(self):
+        revision = recipes.get_revision_from_tag('branch/filename/r123')
+        self.assertEqual(123, revision)
+
+    def test_02_invalid_tag_not_a_number(self):
+        revision = recipes.get_revision_from_tag('branch/filename/rABC')
+        self.assertIsNone(revision)
+
+    def test_02_invalid_tag_missing_revision_string(self):
+        revision = recipes.get_revision_from_tag('branch/filename/mybranch')
+        self.assertIsNone(revision)
