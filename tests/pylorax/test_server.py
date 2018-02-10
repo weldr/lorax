@@ -15,14 +15,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import os
+from glob import glob
 import shutil
 import tempfile
+import time
 from threading import Lock
 import unittest
 
 from flask import json
 import pytoml as toml
-from pylorax.api.config import configure, make_yum_dirs
+from pylorax.api.config import configure, make_yum_dirs, make_queue_dirs
+from pylorax.api.queue import start_queue_monitor
 from pylorax.api.recipes import open_or_create_repo, commit_recipe_directory
 from pylorax.api.server import server, GitLock, YumLock
 from pylorax.api.yumbase import get_base_object
@@ -38,6 +41,11 @@ class ServerTestCase(unittest.TestCase):
         server.config["GITLOCK"] = GitLock(repo=repo, lock=Lock(), dir=repo_dir)
 
         server.config["COMPOSER_CFG"] = configure(root_dir=repo_dir, test_config=True)
+        os.makedirs(joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), "composer"))
+        errors = make_queue_dirs(server.config["COMPOSER_CFG"], 0)
+        if errors:
+            raise RuntimeError("\n".join(errors))
+
         make_yum_dirs(server.config["COMPOSER_CFG"])
         yb = get_base_object(server.config["COMPOSER_CFG"])
         server.config["YUMLOCK"] = YumLock(yb=yb, lock=Lock())
@@ -47,8 +55,15 @@ class ServerTestCase(unittest.TestCase):
 
         self.examples_path = "./tests/pylorax/recipes/"
 
+        # Copy the shared files over to the directory tree we are using
+        share_path = "./share/composer/"
+        for f in glob(joinpaths(share_path, "*")):
+            shutil.copy(f, joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), "composer"))
+
         # Import the example recipes
         commit_recipe_directory(server.config["GITLOCK"].repo, "master", self.examples_path)
+
+        start_queue_monitor(server.config["COMPOSER_CFG"], 0, 0)
 
     @classmethod
     def tearDownClass(self):
@@ -502,3 +517,204 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/docs/modules.html")
         doc_str = open(os.path.abspath(joinpaths(os.path.dirname(__file__), "../../docs/html/modules.html"))).read()
         self.assertEqual(doc_str, resp.data)
+
+    def wait_for_status(self, uuid, wait_status):
+        """Helper function that waits for a status
+
+        :param uuid: UUID of the build to check
+        :type uuid: str
+        :param wait_status: List of statuses to exit on
+        :type wait_status: list of str
+        :returns: True if status was found, False if it timed out
+        :rtype: bool
+
+        This will time out after 60 seconds
+        """
+        start = time.time()
+        while True:
+            resp = self.server.get("/api/v0/compose/info/%s" % uuid)
+            data = json.loads(resp.data)
+            self.assertNotEqual(data, None)
+            queue_status = data.get("queue_status")
+            if queue_status in wait_status:
+                return True
+            if time.time() > start + 60:
+                return False
+            time.sleep(5)
+
+    def test_compose_01_types(self):
+        """Test the /api/v0/compose/types route"""
+        resp = self.server.get("/api/v0/compose/types")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual({"name": "tar", "enabled": True} in data["types"], True)
+
+    def test_compose_02_create_failed(self):
+        """Test the /api/v0/compose routes with a failed test compose"""
+        test_compose = {"recipe_name": "glusterfs",
+                        "compose_type": "tar",
+                        "branch": "master"}
+
+        resp = self.server.post("/api/v0/compose?test=1",
+                                data=json.dumps(test_compose),
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["status"], True, "Failed to start test compose: %s" % data)
+
+        build_id = data["build_id"]
+
+        # Is it in the queue list (either new or run is fine, based on timing)
+        resp = self.server.get("/api/v0/compose/queue")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        ids = [e["id"] for e in data["new"] + data["run"]]
+        self.assertEqual(build_id in ids, True, "Failed to add build to the queue")
+
+        # Wait for it to start
+        self.assertEqual(self.wait_for_status(build_id, ["RUNNING"]), True, "Failed to start test compose")
+
+        # Wait for it to finish
+        self.assertEqual(self.wait_for_status(build_id, ["FAILED"]), True, "Failed to finish test compose")
+
+        resp = self.server.get("/api/v0/compose/info/%s" % build_id)
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["queue_status"], "FAILED", "Build not in FAILED state")
+
+        # Test the /api/v0/compose/failed route
+        resp = self.server.get("/api/v0/compose/failed")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        ids = [e["id"] for e in data["failed"]]
+        self.assertEqual(build_id in ids, True, "Failed build not listed by /compose/failed")
+
+        # Test the /api/v0/compose/finished route
+        resp = self.server.get("/api/v0/compose/finished")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["finished"], [], "Finished build not listed by /compose/finished")
+
+        # Test the /api/v0/compose/status/<uuid> route
+        resp = self.server.get("/api/v0/compose/status/%s" % build_id)
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        ids = [(e["id"], e["queue_status"]) for e in data["uuids"]]
+        self.assertEqual((build_id, "FAILED") in ids, True, "Failed build not listed by /compose/status")
+
+        # Test the /api/v0/compose/cancel/<uuid> route
+        resp = self.server.post("/api/v0/compose?test=1",
+                                data=json.dumps(test_compose),
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["status"], True, "Failed to start test compose: %s" % data)
+
+        cancel_id = data["build_id"]
+
+        # Wait for it to start
+        self.assertEqual(self.wait_for_status(cancel_id, ["RUNNING"]), True, "Failed to start test compose")
+
+        # Cancel the build
+        resp = self.server.delete("/api/v0/compose/cancel/%s" % cancel_id)
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["status"], True, "Failed to cancel test compose: %s" % data)
+
+        # Delete the failed build
+        # Test the /api/v0/compose/delete/<uuid> route
+        resp = self.server.delete("/api/v0/compose/delete/%s" % build_id)
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        ids = [(e["uuid"], e["status"]) for e in data["uuids"]]
+        self.assertEqual((build_id, True) in ids, True, "Failed to delete test compose: %s" % data)
+
+        # Make sure the failed list is empty
+        resp = self.server.get("/api/v0/compose/failed")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["failed"], [], "Failed to delete the failed build: %s" % data)
+
+    def test_compose_03_create_finished(self):
+        """Test the /api/v0/compose routes with a finished test compose"""
+        test_compose = {"recipe_name": "glusterfs",
+                        "compose_type": "tar",
+                        "branch": "master"}
+
+        resp = self.server.post("/api/v0/compose?test=2",
+                                data=json.dumps(test_compose),
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["status"], True, "Failed to start test compose: %s" % data)
+
+        build_id = data["build_id"]
+
+        # Is it in the queue list (either new or run is fine, based on timing)
+        resp = self.server.get("/api/v0/compose/queue")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        ids = [e["id"] for e in data["new"] + data["run"]]
+        self.assertEqual(build_id in ids, True, "Failed to add build to the queue")
+
+        # Wait for it to start
+        self.assertEqual(self.wait_for_status(build_id, ["RUNNING"]), True, "Failed to start test compose")
+
+        # Wait for it to finish
+        self.assertEqual(self.wait_for_status(build_id, ["FINISHED"]), True, "Failed to finish test compose")
+
+        resp = self.server.get("/api/v0/compose/info/%s" % build_id)
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["queue_status"], "FINISHED", "Build not in FINISHED state")
+
+        # Test the /api/v0/compose/finished route
+        resp = self.server.get("/api/v0/compose/finished")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        ids = [e["id"] for e in data["finished"]]
+        self.assertEqual(build_id in ids, True, "Finished build not listed by /compose/finished")
+
+        # Test the /api/v0/compose/failed route
+        resp = self.server.get("/api/v0/compose/failed")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["failed"], [], "Failed build not listed by /compose/failed")
+
+        # Test the /api/v0/compose/status/<uuid> route
+        resp = self.server.get("/api/v0/compose/status/%s" % build_id)
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        ids = [(e["id"], e["queue_status"]) for e in data["uuids"]]
+        self.assertEqual((build_id, "FINISHED") in ids, True, "Finished build not listed by /compose/status")
+
+        # Test the /api/v0/compose/metadata/<uuid> route
+        resp = self.server.get("/api/v0/compose/metadata/%s" % build_id)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.data) > 1024, True)
+
+        # Test the /api/v0/compose/results/<uuid> route
+        resp = self.server.get("/api/v0/compose/results/%s" % build_id)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.data) > 1024, True)
+
+        # Test the /api/v0/compose/image/<uuid> route
+        resp = self.server.get("/api/v0/compose/image/%s" % build_id)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.data) > 0, True)
+        self.assertEqual(resp.data, "TEST IMAGE")
+
+        # Delete the finished build
+        # Test the /api/v0/compose/delete/<uuid> route
+        resp = self.server.delete("/api/v0/compose/delete/%s" % build_id)
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        ids = [(e["uuid"], e["status"]) for e in data["uuids"]]
+        self.assertEqual((build_id, True) in ids, True, "Failed to delete test compose: %s" % data)
+
+        # Make sure the finished list is empty
+        resp = self.server.get("/api/v0/compose/finished")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["finished"], [], "Failed to delete the failed build: %s" % data)
+>>>>>>> Add tests for /compose API
