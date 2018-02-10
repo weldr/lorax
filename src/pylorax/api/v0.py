@@ -612,6 +612,41 @@ POST `/api/v0/recipes/tag/<recipe_name>`
         ]
       }
 
+POST `/api/v0/compose`
+^^^^^^^^^^^^^^^^^^^^^^
+
+  Start a compose. The content type should be 'application/json' and the body of the POST
+  should look like this::
+
+      {
+        "recipe_name": "http-server",
+        "compose_type": "tar",
+        "branch": "master"
+      }
+
+  Pass it the name of the recipe, the type of output (from '/api/v0/compose/types'), and the
+  recipe branch to use. 'branch' is optional and will default to master. It will create a new
+  build and add it to the queue. It returns the build uuid and a status if it succeeds::
+
+      {
+        "build_id": "e6fa6db4-9c81-4b70-870f-a697ca405cdf",
+        "status": true
+      }
+
+`/api/v0/compose/types`
+^^^^^^^^^^^^^^^^^^^^^^^
+
+  Returns the list of supported output types that are valid for use with 'POST /api/v0/compose'
+
+      {
+        "types": [
+          {
+            "enabled": true,
+            "name": "tar"
+          }
+        ]
+      }
+
 `/api/v0/compose/queue`
 ^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -682,7 +717,7 @@ POST `/api/v0/recipes/tag/<recipe_name>`
   Example::
 
       {
-        "finished": [
+        "failed": [
            {
             "id": "8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a",
             "recipe": "http-server",
