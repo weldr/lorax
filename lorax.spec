@@ -80,6 +80,9 @@ Summary: Lorax Image Composer API Server
 BuildRequires: python-flask python-gobject libgit2-glib python2-pytoml python-semantic_version
 
 Requires: lorax = %{version}-%{release}
+Requires(pre): /usr/bin/getent
+Requires(pre): /usr/sbin/groupadd
+Requires(pre): /usr/sbin/useradd
 
 # From EPEL
 Requires: python2-pytoml
@@ -106,6 +109,10 @@ make docs
 %install
 rm -rf $RPM_BUILD_ROOT
 make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
+
+%pre composer
+getent group weldr >/dev/null 2>&1 || groupadd -r weldr >/dev/null 2>&1 || :
+getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin -c "User for lorax-composer" weldr >/dev/null 2>&1 || :
 
 %post composer
 %systemd_post lorax-composer.service
