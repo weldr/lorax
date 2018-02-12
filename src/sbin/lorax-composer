@@ -29,6 +29,7 @@ import grp
 import os
 import pwd
 import sys
+import subprocess
 from threading import Lock
 from gevent import socket
 from gevent.wsgi import WSGIServer
@@ -177,14 +178,12 @@ if __name__ == '__main__':
             log.error(e)
         sys.exit(1)
 
-    if not os.path.isdir(opts.RECIPES):
-        log.warn("Creating empty recipe directory at %s", opts.RECIPES)
-        os.makedirs(opts.RECIPES)
-
-    server.config["REPO_DIR"] = opts.RECIPES
-    repo = open_or_create_repo(server.config["REPO_DIR"])
-    server.config["GITLOCK"] = GitLock(repo=repo, lock=Lock(), dir=opts.RECIPES)
     server.config["COMPOSER_CFG"] = configure(conf_file=opts.config)
+
+    # Make sure the git repo can be accessed by the API uid/gid
+    repodir_stat = os.stat(opts.RECIPES)
+    if repodir_stat.st_gid != gid or repodir_stat.st_uid != uid:
+        subprocess.call(["chown", "-R", "%s:%s" % (opts.user, opts.group), opts.RECIPES])
 
     # If the user passed in a releasever set it in the configuration
     if opts.releasever:
@@ -223,6 +222,11 @@ if __name__ == '__main__':
     # Get a YumBase to share with the requests
     yb = get_base_object(server.config["COMPOSER_CFG"])
     server.config["YUMLOCK"] = YumLock(yb=yb, lock=Lock())
+
+    # Setup access to the git repo
+    server.config["REPO_DIR"] = opts.RECIPES
+    repo = open_or_create_repo(server.config["REPO_DIR"])
+    server.config["GITLOCK"] = GitLock(repo=repo, lock=Lock(), dir=opts.RECIPES)
 
     # Import example recipes
     commit_recipe_directory(server.config["GITLOCK"].repo, "master", opts.RECIPES)
