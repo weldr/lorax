@@ -89,6 +89,7 @@ Requires: libgit2-glib
 # From Distribution
 Requires: python-flask
 Requires: python-gevent
+Requires: anaconda-tui
 
 %{?systemd_requires}
 BuildRequires: systemd
