@@ -150,6 +150,13 @@ if __name__ == '__main__':
     except KeyError:
         errors.append("Missing group '%s'" % opts.group)
 
+    # No point in continuing if there are uid or gid errors
+    if errors:
+        for e in errors:
+            log.error(e)
+        sys.exit(1)
+
+    errors = []
     # Check the socket path to make sure it exists, and that ownership and permissions are correct.
     socket_dir = os.path.dirname(opts.socket)
     if not os.path.exists(socket_dir):
@@ -164,14 +171,15 @@ if __name__ == '__main__':
     if sockdir_stat.st_gid != gid or sockdir_stat.st_uid != 0:
         errors.append("%s should be owned by root:%s" % (socket_dir, opts.group))
 
-    if not os.path.isdir(opts.RECIPES):
-        log.warn("Creating empty recipe directory at %s", opts.RECIPES)
-        os.makedirs(opts.RECIPES)
-
+    # No point in continuing if there are ownership or permission errors
     if errors:
         for e in errors:
             log.error(e)
         sys.exit(1)
+
+    if not os.path.isdir(opts.RECIPES):
+        log.warn("Creating empty recipe directory at %s", opts.RECIPES)
+        os.makedirs(opts.RECIPES)
 
     server.config["REPO_DIR"] = opts.RECIPES
     repo = open_or_create_repo(server.config["REPO_DIR"])
