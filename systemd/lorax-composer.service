@@ -6,7 +6,7 @@ Wants=network-online.target
 [Service]
 User=root
 Type=simple
-ExecStart=/usr/sbin/lorax-composer /var/lib/lorax-composer/recipes/
+ExecStart=/usr/sbin/lorax-composer /var/lib/lorax/composer/recipes/
 
 [Install]
 WantedBy=multi-user.target
