@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import os
 import shutil
 import tempfile
 from threading import Lock
@@ -52,6 +53,11 @@ class ServerTestCase(unittest.TestCase):
     @classmethod
     def tearDownClass(self):
         shutil.rmtree(server.config["REPO_DIR"])
+
+    def test_00_hello(self):
+        """Test /"""
+        resp = self.server.get("/")
+        self.assertEqual(resp.data, 'Hello, World!')
 
     def test_01_status(self):
         """Test the /api/v0/status route"""
@@ -484,3 +490,15 @@ class ServerTestCase(unittest.TestCase):
         recipes = data.get("recipes")
         self.assertEqual(len(recipes), 1)
         self.assertEqual(recipes[0], test_recipe)
+
+    def test_api_docs(self):
+        """Test the /api/docs/"""
+        resp = self.server.get("/api/docs/")
+        doc_str = open(os.path.abspath(joinpaths(os.path.dirname(__file__), "../../docs/html/index.html"))).read()
+        self.assertEqual(doc_str, resp.data)
+
+    def test_api_docs_with_existing_path(self):
+        """Test the /api/docs/modules.html"""
+        resp = self.server.get("/api/docs/modules.html")
+        doc_str = open(os.path.abspath(joinpaths(os.path.dirname(__file__), "../../docs/html/modules.html"))).read()
+        self.assertEqual(doc_str, resp.data)
