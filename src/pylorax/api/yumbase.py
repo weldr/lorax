@@ -22,6 +22,7 @@ log = logging.getLogger("lorax-composer")
 import ConfigParser
 from fnmatch import fnmatchcase
 from glob import glob
+from distutils.util import strtobool
 import os
 import yum
 # This is a hack to short circuit yum's internal logging
@@ -56,7 +57,7 @@ def get_base_object(conf):
     if conf.get_default("yum", "proxy", None):
         data["proxy"] = conf.get("yum", "proxy")
 
-    if conf.get_default("yum", "sslverify", None) == False:
+    if conf.has_option("yum", "sslverify") and not conf.getboolean("yum", "sslverify"):
         data["sslverify"] = "0"
 
     c.add_section(section)
@@ -93,7 +94,7 @@ def get_base_object(conf):
     # Gather up all the available repo files, add the ones matching "repos":"enabled" patterns
     enabled_repos = conf.get("repos", "enabled").split(",")
     repo_files = glob(joinpaths(repodir, "*.repo"))
-    if conf.get_default("repos", "use_system_repos", True):
+    if not conf.has_option("repos", "use_system_repos") or conf.getboolean("repos", "use_system_repos"):
         repo_files.extend(glob("/etc/yum.repos.d/*.repo"))
 
     for repo_file in repo_files:
