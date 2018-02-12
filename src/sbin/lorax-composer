@@ -215,6 +215,8 @@ if __name__ == '__main__':
     os.setgid(gid)
     os.setuid(uid)
     log.debug("user is now %s:%s", os.getresuid(), os.getresgid())
+    # Switch to a home directory we can access (libgit2 uses this to look for .gitconfig)
+    os.environ["HOME"] = server.config["COMPOSER_CFG"].get("composer", "lib_dir")
 
     # Make sure yumbase directories are created
     make_yum_dirs(server.config["COMPOSER_CFG"])
