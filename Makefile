@@ -25,7 +25,8 @@ check:
 	@echo "*** Running pylint ***"
 	PYTHONPATH=$(PYTHONPATH):./src/ ./tests/pylint/runpylint.py
 
-test:
+# /api/docs/ tests require we have the documentation already built
+test: docs
 	@echo "*** Running tests ***"
 	PYTHONPATH=$(PYTHONPATH):./src/ $(PYTHON) -m nose -v --with-coverage --cover-erase --cover-branches \
 			--cover-package=pylorax --cover-inclusive \
