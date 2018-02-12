@@ -20,6 +20,7 @@ log = logging.getLogger("pylorax")
 import os
 import grp
 from glob import glob
+import multiprocessing as mp
 import pytoml as toml
 import pwd
 import shutil
@@ -34,9 +35,29 @@ from pylorax.base import DataHolder
 from pylorax.installer import novirt_install
 from pylorax.sysutils import joinpaths
 
-# TODO needs a quit queue to cleanly manage quitting
-def monitor(cfg, cancel_q):
-    """ Monitor the queue for new compose requests
+def start_queue_monitor(cfg, uid, gid):
+    """Start the queue monitor as a mp process
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :param uid: User ID that owns the queue
+    :type uid: int
+    :param gid: Group ID that owns the queue
+    :type gid: int
+    :returns: None
+    """
+    lib_dir = cfg.get("composer", "lib_dir")
+    monitor_cfg = DataHolder(composer_dir=lib_dir, uid=uid, gid=gid)
+    p = mp.Process(target=monitor, args=(monitor_cfg,))
+    p.daemon = True
+    p.start()
+
+def monitor(cfg):
+    """Monitor the queue for new compose requests
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :returns: Does not return
 
     The queue has 2 subdirectories, new and run. When a compose is ready to be run
     a symlink to the uniquely named results directory should be placed in ./queue/new/
@@ -50,9 +71,9 @@ def monitor(cfg, cancel_q):
     If the system is restarted while a compose is running it will move any old symlinks
     from ./queue/run/ to ./queue/new/ and rerun them.
     """
-    def queue_sort(job):
+    def queue_sort(uuid):
         """Sort the queue entries by their mtime, not their names"""
-        return os.stat(joinpaths(cfg.composer_dir, "queue/new", job)).st_mtime
+        return os.stat(joinpaths(cfg.composer_dir, "queue/new", uuid)).st_mtime
 
     # Move any symlinks in the run queue back to the new queue
     for link in os.listdir(joinpaths(cfg.composer_dir, "queue/run")):
@@ -62,16 +83,21 @@ def monitor(cfg, cancel_q):
         log.debug("Moved unfinished compose %s back to new state", src)
 
     while True:
-        jobs = sorted(os.listdir(joinpaths(cfg.composer_dir, "queue/new")), key=queue_sort)
+        uuids = sorted(os.listdir(joinpaths(cfg.composer_dir, "queue/new")), key=queue_sort)
 
         # Pick the oldest and move it into ./run/
-        if not jobs:
+        if not uuids:
             # No composes left to process, sleep for a bit
             time.sleep(30)
         else:
-            src = joinpaths(cfg.composer_dir, "queue/new", jobs[0])
-            dst = joinpaths(cfg.composer_dir, "queue/run", jobs[0])
-            os.rename(src, dst)
+            src = joinpaths(cfg.composer_dir, "queue/new", uuids[0])
+            dst = joinpaths(cfg.composer_dir, "queue/run", uuids[0])
+            try:
+                os.rename(src, dst)
+            except OSError:
+                # The symlink may vanish if uuid_cancel() has been called
+                continue
+
             log.info("Starting new compose: %s", dst)
             open(joinpaths(dst, "STATUS"), "w").write("RUNNING\n")
 
@@ -85,7 +111,23 @@ def monitor(cfg, cancel_q):
             os.unlink(dst)
 
 def make_compose(cfg, results_dir):
-    """Run anaconda with the final-kickstart.ks from results_dir"""
+    """Run anaconda with the final-kickstart.ks from results_dir
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :param results_dir: The directory containing the metadata and results for the build
+    :type results_dir: str
+    :returns: Nothing
+    :raises: May raise various exceptions
+
+    This takes the final-kickstart.ks, and the settings in config.toml and runs Anaconda
+    in no-virt mode (directly on the host operating system). Exceptions should be caught
+    at the higer level.
+
+    If there is a failure, the build artifacts will be cleaned up, and any logs will be
+    moved into logs/anaconda/ and their ownership will be set to the user from the cfg
+    object.
+    """
 
     # Check on the ks's presense
     ks_path = joinpaths(results_dir, "final-kickstart.ks")
@@ -108,24 +150,51 @@ def make_compose(cfg, results_dir):
         raise RuntimeError("Missing config.toml for %s" % results_dir)
     cfg_dict = toml.loads(open(cfg_path, "r").read())
 
+    # Make sure that image_name contains no path components
+    cfg_dict["image_name"] = os.path.basename(cfg_dict["image_name"])
+
     install_cfg = DataHolder(**cfg_dict)
 
     # Some kludges for the 99-copy-logs %post, failure in it will crash the build
     for f in ["/tmp/NOSAVE_INPUT_KS", "/tmp/NOSAVE_LOGS"]:
         open(f, "w")
 
-    log.debug("repo_url = %s, cfg  = %s", repo_url, install_cfg)
-    novirt_install(install_cfg, joinpaths(results_dir, install_cfg.image_name), None, repo_url)
+    # Placing a CANCEL file in the results directory will make execWithRedirect send anaconda a SIGTERM
+    def cancel_build():
+        return os.path.exists(joinpaths(results_dir, "CANCEL"))
 
-    # Make sure that everything under the results directory is owned by the user
-    user = pwd.getpwuid(cfg.uid).pw_name
-    group = grp.getgrgid(cfg.gid).gr_name
-    log.debug("Install finished, chowning results to %s:%s", user, group)
-    subprocess.call(["chown", "-R", "%s:%s" % (user, group), results_dir])
+    log.debug("repo_url = %s, cfg  = %s", repo_url, install_cfg)
+    try:
+        test_path = joinpaths(results_dir, "TEST")
+        if os.path.exists(test_path):
+            # Pretend to run the compose
+            time.sleep(10)
+            try:
+                test_mode = int(open(test_path, "r").read())
+            except Exception:
+                test_mode = 1
+            if test_mode == 1:
+                raise RuntimeError("TESTING FAILED compose")
+            else:
+                open(joinpaths(results_dir, install_cfg.image_name), "w").write("TEST IMAGE")
+        else:
+            novirt_install(install_cfg, joinpaths(results_dir, install_cfg.image_name), None, repo_url,
+                           callback_func=cancel_build)
+    finally:
+        # Make sure that everything under the results directory is owned by the user
+        user = pwd.getpwuid(cfg.uid).pw_name
+        group = grp.getgrgid(cfg.gid).gr_name
+        log.debug("Install finished, chowning results to %s:%s", user, group)
+        subprocess.call(["chown", "-R", "%s:%s" % (user, group), results_dir])
 
 def get_compose_type(results_dir):
-    """ Return the type of composition.
+    """Return the type of composition.
 
+    :param results_dir: The directory containing the metadata and results for the build
+    :type results_dir: str
+    :returns: The type of compose (eg. 'tar')
+    :rtype: str
+    :raises: RuntimeError if no kickstart template can be found.
     """
     # Should only be 2 kickstarts, the final-kickstart.ks and the template
     t = [os.path.basename(ks)[:-3] for ks in glob(joinpaths(results_dir, "*.ks"))
@@ -135,8 +204,22 @@ def get_compose_type(results_dir):
     return t[0]
 
 def compose_detail(results_dir):
-    """ Return details about the build."""
+    """Return details about the build.
 
+    :param results_dir: The directory containing the metadata and results for the build
+    :type results_dir: str
+    :returns: A dictionary with details about the compose
+    :rtype: dict
+
+    The following details are included in the dict:
+
+    * id - The uuid of the comoposition
+    * queue_status - The final status of the composition (FINISHED or FAILED)
+    * timestamp - The time of the last status change
+    * compose_type - The type of output generated (tar, iso, etc.)
+    * recipe - Recipe name
+    * version - Recipe version
+    """
     # Just in case it went away
     if not os.path.exists(results_dir):
         return {}
@@ -157,7 +240,16 @@ def compose_detail(results_dir):
             }
 
 def queue_status(cfg):
-    """ Return details about what is in the queue."""
+    """Return details about what is in the queue.
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :returns: A list of the new composes, and a list of the running composes
+    :rtype: dict
+
+    This returns a dict with 2 lists. "new" is the list of uuids that are waiting to be built,
+    and "run" has the uuids that are being built (currently limited to 1 at a time).
+    """
     queue_dir = joinpaths(cfg.get("composer", "lib_dir"), "queue")
     new_queue = [os.path.realpath(p) for p in glob(joinpaths(queue_dir, "new/*"))]
     run_queue = [os.path.realpath(p) for p in glob(joinpaths(queue_dir, "run/*"))]
@@ -176,6 +268,8 @@ def uuid_status(cfg, uuid):
     :type uuid: str
     :returns: Details about the build
     :rtype: dict or None
+
+    Returns the same dict as `compose_details()`
     """
     uuid_dir = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid)
     if os.path.exists(uuid_dir):
@@ -184,7 +278,7 @@ def uuid_status(cfg, uuid):
         return None
 
 def build_status(cfg, status_filter=None):
-    """ Return the details of finished or failed builds
+    """Return the details of finished or failed builds
 
     :param cfg: Configuration settings
     :type cfg: ComposerConfig
@@ -212,6 +306,57 @@ def build_status(cfg, status_filter=None):
             results.append(compose_detail(build))
     return results
 
+def uuid_cancel(cfg, uuid):
+    """Cancel a build and delete its results
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :param uuid: The UUID of the build
+    :type uuid: str
+    :returns: True if it was canceled and deleted
+    :rtype: bool
+
+    Only call this if the build status is WAITING or RUNNING
+    """
+    # This status can change (and probably will) while it is in the middle of doing this:
+    # It can move from WAITING -> RUNNING or it can move from RUNNING -> FINISHED|FAILED
+
+    # If it is in WAITING remove the symlink and then check to make sure it didn't show up
+    # in RUNNING
+    queue_dir = joinpaths(cfg.get("composer", "lib_dir"), "queue")
+    uuid_new = joinpaths(queue_dir, "new", uuid)
+    if os.path.exists(uuid_new):
+        try:
+            os.unlink(uuid_new)
+        except OSError:
+            # The symlink may vanish if the queue monitor started the build
+            pass
+        uuid_run = joinpaths(queue_dir, "run", uuid)
+        if not os.path.exists(uuid_run):
+            # Successfully removed it before the build started
+            return uuid_delete(cfg, uuid)
+
+    # Tell the build to stop running
+    cancel_path = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid, "CANCEL")
+    open(cancel_path, "w").write("\n")
+
+    # Wait for status to move to FAILED
+    started = time.time()
+    while True:
+        status = uuid_status(cfg, uuid)
+        if status["queue_status"] == "FAILED":
+            break
+
+        # Is this taking too long? Exit anyway and try to cleanup.
+        if time.time() > started + (10 * 60):
+            log.error("Failed to cancel the build of %s", uuid)
+            break
+
+        time.sleep(5)
+
+    # Remove the partial results
+    uuid_delete(cfg, uuid)
+
 def uuid_delete(cfg, uuid):
     """Delete all of the results from a compose
 
@@ -221,6 +366,7 @@ def uuid_delete(cfg, uuid):
     :type uuid: str
     :returns: True if it was deleted
     :rtype: bool
+    :raises: This will raise an error if the delete failed
     """
     uuid_dir = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid)
     if not uuid_dir or len(uuid_dir) < 10:
@@ -237,6 +383,7 @@ def uuid_info(cfg, uuid):
     :type uuid: str
     :returns: dictionary of information about the composition
     :rtype: dict
+    :raises: RuntimeError if there was a problem
 
     This will return a dict with the following fields populated:
 
@@ -298,6 +445,7 @@ def uuid_tar(cfg, uuid, metadata=False, image=False, logs=False):
     :type logs: bool
     :returns: A stream of bytes from tar
     :rtype: A generator
+    :raises: RuntimeError if there was a problem (eg. missing config file)
 
     This yields an uncompressed tar's data to the caller. It includes
     the selected data to the caller by returning the Popen stdout from the tar process.
@@ -333,6 +481,7 @@ def uuid_image(cfg, uuid):
     :type uuid: str
     :returns: The image filename and full path
     :rtype: tuple of strings
+    :raises: RuntimeError if there was a problem (eg. invalid uuid, missing config file)
     """
     uuid_dir = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid)
     if not os.path.exists(uuid_dir):
@@ -346,3 +495,44 @@ def uuid_image(cfg, uuid):
     image_name = cfg_dict["image_name"]
 
     return (image_name, joinpaths(uuid_dir, image_name))
+
+def uuid_log(cfg, uuid, size=1024):
+    """Return `size` kbytes from the end of the anaconda.log
+
+    :param cfg: Configuration settings
+    :type cfg: ComposerConfig
+    :param uuid: The UUID of the build
+    :type uuid: str
+    :param size: Number of kbytes to read. Default is 1024
+    :type size: int
+    :returns: Up to `size` kbytes from the end of the log
+    :rtype: str
+    :raises: RuntimeError if there was a problem (eg. no log file available)
+
+    This function tries to return lines from the end of the log, it will
+    attempt to start on a line boundry, and may return less than `size` kbytes.
+    """
+    uuid_dir = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid)
+    if not os.path.exists(uuid_dir):
+        raise RuntimeError("%s is not a valid build_id" % uuid)
+
+    # While a build is running the logs will be in /tmp/anaconda.log and when it
+    # has finished they will be in the results directory
+    status = uuid_status(cfg, uuid)
+    if status["queue_status"] == "RUNNING":
+        log_path = "/tmp/anaconda.log"
+    else:
+        log_path = joinpaths(uuid_dir, "logs", "anaconda", "anaconda.log")
+    if not os.path.exists(log_path):
+        raise RuntimeError("No anaconda.log available.")
+
+    with open(log_path, "r") as f:
+        f.seek(0, 2)
+        end = f.tell()
+        if end < 1024 * size:
+            f.seek(0, 0)
+        else:
+            f.seek(end - (1024 * size))
+        # Find the start of the next line and return the rest
+        f.readline()
+        return f.read()

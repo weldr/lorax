@@ -76,7 +76,7 @@ def repo_to_ks(r, url="url"):
 
     return cmd
 
-def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type):
+def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_mode=0):
     """ Start the build
 
     :param cfg: Configuration object
@@ -189,6 +189,10 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type):
 
     # Set the initial status
     open(joinpaths(results_dir, "STATUS"), "w").write("WAITING")
+
+    # Set the test mode, if requested
+    if test_mode > 0:
+        open(joinpaths(results_dir, "TEST"), "w").write("%s" % test_mode)
 
     log.info("Adding %s with recipe %s output type %s to compose queue", build_id, recipe["name"], compose_type)
     os.symlink(results_dir, joinpaths(lib_dir, "queue/new/", build_id))
