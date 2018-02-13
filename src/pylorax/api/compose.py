@@ -52,7 +52,15 @@ def repo_to_ks(r, url="url"):
     Set url to "baseurl" if it is a repo, leave it as "url" for the installation url.
     """
     cmd = ""
-    if r.metalink:
+    if url == "url":
+        if not r.urls:
+            raise RuntimeError("Cannot find a base url for %s" % r.name)
+
+        # url is passed to Anaconda on the cmdline with --repo, so it cannot support a mirror
+        # If a mirror is setup yum will return the list of mirrors in .urls
+        # So just use the first one.
+        cmd += '--%s="%s" ' % (url, r.urls[0])
+    elif r.metalink:
         # XXX Total Hack
         # RHEL7 kickstart doesn't support metalink. If the url has 'metalink' in it, rewrite it as 'mirrorlist'
         if "metalink" in r.metalink:

@@ -142,6 +142,10 @@ def make_compose(cfg, results_dir):
     ks_version = makeVersion(RHEL7)
     ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
     ks.readKickstart(ks_path)
+    # anaconda can only handle a url, it cannot use a mirrorlist or metalink for the primary repository.
+    if not ks.handler.method.url:
+        raise RuntimeError("The kickstart is missing a valid url line")
+
     repo_url = ks.handler.method.url
 
     # Load the compose configuration
