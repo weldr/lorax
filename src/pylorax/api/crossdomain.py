@@ -31,7 +31,7 @@ def crossdomain(origin, methods=None, headers=None,
     if not isinstance(origin, list):
         origin = [origin]
     if isinstance(max_age, timedelta):
-        max_age = max_age.total_seconds()
+        max_age = int(max_age.total_seconds())
 
     def get_methods():
         if methods is not None:
