@@ -5,7 +5,7 @@ RUN yum -y install --nogpgcheck epel-release && \
     rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-* && \
     yum -y install make libgit2-glib tito python-pylint  \
                     python-nose python-mako python-flask \
-                    python-coverage libselinux-python    \
+                    python-coverage libselinux-python sudo \
                     pykickstart python2-pytoml python-sphinx \
                     python2-mock python-semantic_version && \
     yum clean all && \
