@@ -717,4 +717,3 @@ class ServerTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         self.assertEqual(data["finished"], [], "Failed to delete the failed build: %s" % data)
->>>>>>> Add tests for /compose API
