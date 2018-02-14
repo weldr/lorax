@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.7.7
+Version:        19.7.8
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -149,6 +149,42 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_unitdir}/lorax-composer.service
 
 %changelog
+* Tue Feb 13 2018 Brian C. Lane <bcl@redhat.com> 19.7.8-1
+- Fix a problem with using a mirror as the primary url (bcl)
+- Set the HOME variable to a directory the uid can access (bcl)
+- Open the git repo after dropping root privileges (bcl)
+- Create the weldr user in lorax.spec (bcl)
+- Exit on uid/gid errors before checking directory permissions (bcl)
+- lorax-composer now requires anaconda-tui (bcl)
+- Add tests for /compose API (bcl)
+- Add documentation for /compose and /compose/types (bcl)
+- Move queue monitor startup into a function (bcl)
+- Move queue directory creation into a function (bcl)
+- Add a test mode to /compose (bcl)
+- Cleanup docstrings for queue.py (bcl)
+- Drop cancel_q from the monitor() function (bcl)
+- Fix the jsonify calls to use kwargs (bcl)
+- Add /compose/log/ API to retrieve the end of the build log (bcl)
+- Return a status of false if the uuid isn't valid (bcl)
+- Add /compose/cancel API to cancel a running build (bcl)
+- Pass the callback_func through novirt_install to execWithRedirect (bcl)
+- Add a callback to execWithRedirect (bcl)
+- Update how we pass the source to docker so it includes docs/ dir (atodorov)
+- Add tests for functions in api/projects (atodorov)
+- Add tests for api/server.py (atodorov)
+- Add tests for yumbase and update how we inspect boolean options (atodorov)
+- Add new tests for workspace_read() and workspace_delete() (atodorov)
+- Add new tests for configure() (atodorov)
+- Add more tests for api.recipes (atodorov)
+- Add API routes for downloading build results (bcl)
+- Add /compose/info route to retrieve details about a compose (bcl)
+- Return the commit id for the recipe being read (bcl)
+- Fix yum config directory creation for projects and server tests (bcl)
+- Add DELETE /compose/delete/<uuids> API route (bcl)
+- Turn on o+x permission for the queue and results directories (bcl)
+- Add /compose/status/<uuids> to retrieve details of a specific build (bcl)
+- Add compose status routes /compose/finished and /compose/failed (bcl)
+
 * Thu Feb 01 2018 Brian C. Lane <bcl@redhat.com> 19.7.7-1
 - Add /compose/queue to get the status of the build queue (bcl)
 - Add reading a recipe directly from a file (bcl)
