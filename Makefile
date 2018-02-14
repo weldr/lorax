@@ -28,7 +28,7 @@ check:
 # /api/docs/ tests require we have the documentation already built
 test: docs
 	@echo "*** Running tests ***"
-	PYTHONPATH=$(PYTHONPATH):./src/ $(PYTHON) -m nose -v --with-coverage --cover-erase --cover-branches \
+	sudo PYTHONPATH=$(PYTHONPATH):./src/ $(PYTHON) -m nose -v --with-coverage --cover-erase --cover-branches \
 			--cover-package=pylorax --cover-inclusive \
 			./src/pylorax/ ./tests/pylorax/
 
