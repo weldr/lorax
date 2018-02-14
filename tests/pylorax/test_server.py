@@ -372,7 +372,6 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/recipes/diff/glusterfs/NEWEST/WORKSPACE")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
-        print(data)
         result = {"diff": [{"new": {"Description": "An example GlusterFS server with samba, ws version"},
                              "old": {"Description": "An example GlusterFS server with samba"}},
                             {"new": {"Version": "0.3.0"},
@@ -460,7 +459,6 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/modules/list")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
-        print(data)
         modules = data.get("modules")
         self.assertEqual(len(modules) > 10, True)
         self.assertEqual(modules[0]["group_type"], "rpm")
@@ -468,7 +466,6 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/modules/list/d*")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
-        print(data)
         modules = data.get("modules")
         self.assertEqual(len(modules) > 0, True)
         self.assertEqual(modules[0]["name"].startswith("d"), True)
