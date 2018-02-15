@@ -43,10 +43,10 @@ def hello_world():
 def api_docs(path=None):
     # Find the html docs
     try:
-        docs_path = glob("/usr/share/doc/lorax-*/html/")[0]
-    except IndexError:
         # This assumes it is running from the source tree
         docs_path = os.path.abspath(joinpaths(os.path.dirname(__file__), "../../../docs/html"))
+    except IndexError:
+        docs_path = glob("/usr/share/doc/lorax-*/html/")[0]
 
     if not path:
         path="index.html"
