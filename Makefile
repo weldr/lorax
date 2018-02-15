@@ -5,6 +5,8 @@ PKGNAME = lorax
 VERSION = $(shell awk '/Version:/ { print $$2 }' $(PKGNAME).spec)
 RELEASE = $(shell awk '/Release:/ { print $$2 }' $(PKGNAME).spec | sed -e 's|%.*$$||g')
 TAG = lorax-$(VERSION)-$(RELEASE)
+PW_DIR ?= $(shell pwd)
+USER_SITE_PACKAGES ?= $(shell sudo $(PYTHON) -m site --user-site)
 
 
 default: all
@@ -28,11 +30,13 @@ check:
 # /api/docs/ tests require we have the documentation already built
 test: docs
 	@echo "*** Running tests ***"
-	sudo PYTHONPATH=$(PYTHONPATH):./src/ $(PYTHON) -m nose -v --with-coverage --cover-erase --cover-branches \
-			--cover-package=pylorax --cover-inclusive \
-			./src/pylorax/ ./tests/pylorax/
+	sudo mkdir -p $(USER_SITE_PACKAGES)
+	sudo cp ./tests/usercustomize.py $(USER_SITE_PACKAGES)
+	sudo COVERAGE_PROCESS_START=$(PW_DIR)/.coveragerc PYTHONPATH=$(PYTHONPATH):./src/ \
+			$(PYTHON) -m nose -v ./src/pylorax/ ./tests/pylorax/
+	sudo rm -rf $(USER_SITE_PACKAGES)
 
-
+	coverage combine
 	coverage report -m
 	[ -f "/usr/bin/coveralls" ] && [ -n "$(COVERALLS_REPO_TOKEN)" ] && coveralls || echo
 
