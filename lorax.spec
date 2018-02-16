@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.7.8
+Version:        19.7.9
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -149,6 +149,18 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_unitdir}/lorax-composer.service
 
 %changelog
+* Fri Feb 16 2018 Brian C. Lane <bcl@redhat.com> 19.7.9-1
+- Fix a problem with diff/NEWEST/WORKSPACE (bcl)
+- Don't be overly strict when validating /api/docs/ response in tests (atodorov)
+- Check for a source tree doc install first, not second. (bcl)
+- Measure coverage for parallel processes (atodorov)
+- Remove calls to print() (atodorov)
+- Use sudo to run the tests (atodorov)
+- Add tests for api.crossdomain.py (atodorov)
+- Add required_methods for decorator (atodorov)
+- Convert max_age to int b/c timedelta.total_seconds() is a float (atodorov)
+- Fix syntax error caused by conflict resolution (atodorov)
+
 * Tue Feb 13 2018 Brian C. Lane <bcl@redhat.com> 19.7.8-1
 - Fix a problem with using a mirror as the primary url (bcl)
 - Set the HOME variable to a directory the uid can access (bcl)
