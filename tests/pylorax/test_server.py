@@ -155,6 +155,13 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(data["recipes"][0]["name"], "http-server")
         self.assertEqual(len(data["recipes"][0]["changes"]), 1)
 
+    def test_04a_recipes_diff_empty_ws(self):
+        """Test the /api/v0/diff/NEWEST/WORKSPACE with empty workspace"""
+        resp = self.server.get("/api/v0/recipes/diff/glusterfs/NEWEST/WORKSPACE")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data, {"diff": []})
+
     def test_05_recipes_new_json(self):
         """Test the /api/v0/recipes/new route with json recipe"""
         test_recipe = {"description": "An example GlusterFS server with samba",
