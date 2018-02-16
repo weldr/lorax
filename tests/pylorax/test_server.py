@@ -503,17 +503,26 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(len(recipes), 1)
         self.assertEqual(recipes[0], test_recipe)
 
+    def assert_documentation(self, response):
+        """
+            Assert response containing documentation from /api/doc/ is
+            valid *without* comparing to the actual file on disk.
+        """
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(len(response.data) > 1024)
+        # look for some well known strings inside the documentation
+        self.assertRegexpMatches(response.data, "Lorax [\d.]+ documentation")
+        self.assertRegexpMatches(response.data, "Copyright \d+, Red Hat, Inc.")
+
     def test_api_docs(self):
         """Test the /api/docs/"""
         resp = self.server.get("/api/docs/")
-        doc_str = open(os.path.abspath(joinpaths(os.path.dirname(__file__), "../../docs/html/index.html"))).read()
-        self.assertEqual(doc_str, resp.data)
+        self.assert_documentation(resp)
 
     def test_api_docs_with_existing_path(self):
         """Test the /api/docs/modules.html"""
         resp = self.server.get("/api/docs/modules.html")
-        doc_str = open(os.path.abspath(joinpaths(os.path.dirname(__file__), "../../docs/html/modules.html"))).read()
-        self.assertEqual(doc_str, resp.data)
+        self.assert_documentation(resp)
 
     def wait_for_status(self, uuid, wait_status):
         """Helper function that waits for a status
