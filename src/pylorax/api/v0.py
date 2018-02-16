@@ -1156,6 +1156,10 @@ def v0_api(api):
             if to_commit == "WORKSPACE":
                 with api.config["GITLOCK"].lock:
                     new_recipe = workspace_read(api.config["GITLOCK"].repo, branch, recipe_name)
+                # If there is no workspace, use the newest commit instead
+                if not new_recipe:
+                    with api.config["GITLOCK"].lock:
+                        new_recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, recipe_name)
             elif to_commit == "NEWEST":
                 with api.config["GITLOCK"].lock:
                     new_recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, recipe_name)
