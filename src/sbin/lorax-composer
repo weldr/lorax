@@ -181,9 +181,10 @@ if __name__ == '__main__':
     server.config["COMPOSER_CFG"] = configure(conf_file=opts.config)
 
     # Make sure the git repo can be accessed by the API uid/gid
-    repodir_stat = os.stat(opts.RECIPES)
-    if repodir_stat.st_gid != gid or repodir_stat.st_uid != uid:
-        subprocess.call(["chown", "-R", "%s:%s" % (opts.user, opts.group), opts.RECIPES])
+    if os.path.exists(opts.RECIPES):
+        repodir_stat = os.stat(opts.RECIPES)
+        if repodir_stat.st_gid != gid or repodir_stat.st_uid != uid:
+            subprocess.call(["chown", "-R", "%s:%s" % (opts.user, opts.group), opts.RECIPES])
 
     # If the user passed in a releasever set it in the configuration
     if opts.releasever:
