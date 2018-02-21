@@ -28,13 +28,17 @@ import glob
 from mako.template import Template
 from mako.exceptions import text_error_template
 
+# Use pykickstart to calculate disk image size
+from pykickstart.parser import KickstartParser
+from pykickstart.version import makeVersion, RHEL7
+
 # Use the Lorax treebuilder branch for iso creation
 from pylorax import ArchData
 from pylorax.base import DataHolder
 from pylorax.treebuilder import TreeBuilder, RuntimeBuilder
 from pylorax.treebuilder import findkernels
 from pylorax.sysutils import joinpaths, remove
-from pylorax.imgutils import mount, umount
+from pylorax.imgutils import Mount, PartitionMount, copytree, mount, umount
 from pylorax.imgutils import mksquashfs, mkrootfsimg
 from pylorax.executils import execWithRedirect, runcmd
 from pylorax.installer import InstallError, novirt_install, virt_install
@@ -45,6 +49,17 @@ RUNTIME = "images/install.img"
 DRACUT_DEFAULT = ["--xz", "--add", "livenet dmsquash-live convertfs pollcdrom",
                   "--omit", "plymouth", "--no-hostonly", "--no-early-microcode"]
 
+
+def get_ks_disk_size(ks):
+    """Return the size of the kickstart's disk partitions
+
+    :param ks: The kickstart
+    :type ks: Kickstart object
+    :returns: The size of the disk, in GiB
+    """
+    disk_size = 1 + (sum([p.size for p in ks.handler.partition.partitions]) / 1024)
+    log.info("disk_size = %sGiB", disk_size)
+    return disk_size
 
 def is_image_mounted(disk_img):
     """
@@ -390,7 +405,7 @@ def make_squashfs(disk_img, work_dir, compression="xz"):
     remove(joinpaths(work_dir, "runtime"))
 
 
-def make_image(opts, ks):
+def make_image(opts, ks, callback_func=None):
     """
     Install to an image
 
@@ -398,8 +413,7 @@ def make_image(opts, ks):
 
     Returns the full path of of the image created.
     """
-    disk_size = 1 + (sum([p.size for p in ks.handler.partition.partitions]) / 1024)
-    log.info("disk_size = %sGB", disk_size)
+    disk_size = get_ks_disk_size(ks)
 
     if opts.image_name:
         disk_img = joinpaths(opts.result_dir, opts.image_name)
@@ -409,7 +423,7 @@ def make_image(opts, ks):
 
     try:
         if opts.no_virt:
-            novirt_install(opts, disk_img, disk_size, ks.handler.method.url)
+            novirt_install(opts, disk_img, disk_size, ks.handler.method.url, callback_func=callback_func)
         else:
             install_log = os.path.abspath(os.path.dirname(opts.logfile))+"/virt-install.log"
             log.info("install_log = %s", install_log)
@@ -473,3 +487,127 @@ def make_live_images(opts, work_dir, root_dir, rootfs_image=None, size=None):
     create_pxe_config(template, work_dir, live_image_name, add_pxe_args)
 
     return work_dir
+
+def run_creator(opts, callback_func=None):
+    """Run the image creator process
+
+    :param opts: Commandline options to control the process
+    :type opts: Either a DataHolder or ArgumentParser
+    :returns: The result directory and the disk image path.
+    :rtype: Tuple of str
+
+    This function takes the opts arguments and creates the selected output image.
+    See the cmdline --help for livemedia-creator for the possible options
+
+    (Yes, this is not ideal, but we can fix that later)
+    """
+    result_dir = None
+
+    # Parse the kickstart
+    if opts.ks:
+        ks_version = makeVersion(RHEL7)
+        ks = KickstartParser( ks_version, errorsAreFatal=False, missingIncludeIsFatal=False )
+        ks.readKickstart( opts.ks[0] )
+
+    # Make the disk or filesystem image
+    if not opts.disk_image and not opts.fs_image:
+        if not opts.ks:
+            raise RuntimeError("Image creation requires a kickstart file")
+
+        errors = []
+        if ks.handler.method.method != "url" and opts.no_virt:
+            errors.append("Only url install method is currently supported. Please "
+                          "fix your kickstart file." )
+
+        if ks.handler.displaymode.displayMode is not None:
+            errors.append("The kickstart must not set a display mode (text, cmdline, "
+                          "graphical), this will interfere with livemedia-creator.")
+
+        if opts.make_fsimage:
+            # Make sure the kickstart isn't using autopart and only has a / mountpoint
+            part_ok = not any(p for p in ks.handler.partition.partitions
+                                 if p.mountpoint not in ["/", "swap"])
+            if not part_ok or ks.handler.autopart.seen:
+                errors.append("Filesystem images must use a single / part, not autopart or "
+                              "multiple partitions. swap is allowed but not used.")
+
+        if errors:
+            raise RuntimeError("\n".join(errors))
+
+        # Make the image. Output of this is either a partitioned disk image or a fsimage
+        # Can also fail with InstallError
+        disk_img = make_image(opts, ks, callback_func=callback_func)
+
+    # Only create the disk image, return that now
+    if opts.image_only:
+        return (result_dir, disk_img)
+
+    if opts.make_iso:
+        work_dir = tempfile.mkdtemp()
+        log.info("working dir is %s", work_dir)
+
+        if (opts.fs_image or opts.no_virt) and not opts.disk_image:
+            # Create iso from a filesystem image
+            disk_img = opts.fs_image or disk_img
+
+            make_squashfs(disk_img, work_dir)
+            with Mount(disk_img, opts="loop") as mount_dir:
+                result_dir = make_livecd(opts, mount_dir, work_dir)
+        else:
+            # Create iso from a partitioned disk image
+            disk_img = opts.disk_image or disk_img
+            with PartitionMount(disk_img) as img_mount:
+                if img_mount and img_mount.mount_dir:
+                    make_runtime(opts, img_mount.mount_dir, work_dir)
+                    result_dir = make_livecd(opts, img_mount.mount_dir, work_dir)
+
+        # cleanup the mess
+        # cleanup work_dir?
+        if disk_img and not (opts.keep_image or opts.disk_image or opts.fs_image):
+            os.unlink(disk_img)
+            log.info("Disk image erased")
+            disk_img = None
+    elif opts.make_appliance:
+        if not opts.ks:
+            networks = []
+        else:
+            networks = ks.handler.network.network
+        make_appliance(opts.disk_image or disk_img, opts.app_name,
+                       opts.app_template, opts.app_file, networks, opts.ram,
+                       opts.vcpus, opts.arch, opts.title, opts.project, opts.releasever)
+    elif opts.make_pxe_live:
+        work_dir = tempfile.mkdtemp()
+        log.info("working dir is %s", work_dir)
+
+        if (opts.fs_image or opts.no_virt) and not opts.disk_image:
+            # Create pxe live images from a filesystem image
+            disk_img = opts.fs_image or disk_img
+            with Mount(disk_img, opts="loop") as mnt_dir:
+                result_dir = make_live_images(opts, work_dir, mnt_dir, rootfs_image=disk_img)
+        else:
+            # Create pxe live images from a partitioned disk image
+            disk_img = opts.disk_image or disk_img
+            is_root_part = None
+            if opts.ostree:
+                is_root_part = lambda dir: os.path.exists(dir+"/ostree/deploy")
+            with PartitionMount(disk_img, mount_ok=is_root_part) as img_mount:
+                if img_mount and img_mount.mount_dir:
+                    try:
+                        mounted_sysroot_boot_dir = None
+                        if opts.ostree:
+                            mounted_sysroot_boot_dir = mount_boot_part_over_root(img_mount)
+                        if opts.live_rootfs_keep_size:
+                            size = img_mount.mount_size / 1024**3
+                        else:
+                            size = opts.live_rootfs_size or None
+                        result_dir = make_live_images(opts, work_dir, img_mount.mount_dir, size=size)
+                    finally:
+                        if mounted_sysroot_boot_dir:
+                            umount(mounted_sysroot_boot_dir)
+
+    if opts.result_dir != opts.tmp and result_dir:
+        copytree(result_dir, opts.result_dir, preserve=False)
+        shutil.rmtree( result_dir )
+        result_dir = None
+
+    return (result_dir, disk_img)

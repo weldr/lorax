@@ -24,21 +24,12 @@ pylorax_log = logging.getLogger("pylorax")
 
 import argparse
 import os
-import shutil
 import sys
 import tempfile
 
-# Use pykickstart to calculate disk image size
-from pykickstart.parser import KickstartParser
-from pykickstart.version import makeVersion, RHEL7
-
 from pylorax import vernum
-from pylorax.creator import DRACUT_DEFAULT, mount_boot_part_over_root
-from pylorax.creator import make_appliance, make_image, make_livecd, make_live_images
-from pylorax.creator import make_runtime, make_squashfs
-from pylorax.imgutils import copytree, default_image_name
-from pylorax.imgutils import Mount, PartitionMount, umount
-from pylorax.installer import InstallError
+from pylorax.creator import DRACUT_DEFAULT, run_creator
+from pylorax.imgutils import default_image_name
 from pylorax.sysutils import joinpaths
 
 VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
@@ -246,7 +237,7 @@ def main():
         sys.exit( 1 )
 
     if opts.result_dir and os.path.exists(opts.result_dir):
-        log.error( "The results_dir (%s) should not exist, please delete or "
+        log.error( "The result_dir (%s) should not exist, please delete or "
                    "move its contents", opts.result_dir)
         sys.exit( 1 )
 
@@ -347,115 +338,12 @@ def main():
     tempfile.tempdir = opts.tmp
     disk_img = None
 
-    # Parse the kickstart
-    if opts.ks:
-        ks_version = makeVersion(RHEL7)
-        ks = KickstartParser( ks_version, errorsAreFatal=False, missingIncludeIsFatal=False )
-        ks.readKickstart( opts.ks[0] )
-
-    # Make the disk or filesystem image
-    if not opts.disk_image and not opts.fs_image:
-        if not opts.ks:
-            log.error("Image creation requires a kickstart file")
-            sys.exit(1)
-
-        errors = []
-        if ks.handler.method.method != "url" and opts.no_virt:
-            errors.append("Only url install method is currently supported. Please "
-                          "fix your kickstart file." )
-
-        if ks.handler.displaymode.displayMode is not None:
-            errors.append("The kickstart must not set a display mode (text, cmdline, "
-                          "graphical), this will interfere with livemedia-creator.")
-
-        if opts.make_fsimage:
-            # Make sure the kickstart isn't using autopart and only has a / mountpoint
-            part_ok = not any(p for p in ks.handler.partition.partitions
-                                 if p.mountpoint not in ["/", "swap"])
-            if not part_ok or ks.handler.autopart.seen:
-                errors.append("Filesystem images must use a single / part, not autopart or "
-                              "multiple partitions. swap is allowed but not used.")
-
-        if errors:
-            for _e in errors:
-                log.error(_e)
-            sys.exit(1)
-
-        # Make the image. Output of this is either a partitioned disk image or a fsimage
-        try:
-            disk_img = make_image(opts, ks)
-        except InstallError as e:
-            log.error("ERROR: Image creation failed: %s", e)
-            sys.exit(1)
-
-    if not opts.image_only:
-        result_dir = None
-        if opts.make_iso:
-            work_dir = tempfile.mkdtemp()
-            log.info("working dir is %s", work_dir)
-
-            if (opts.fs_image or opts.no_virt) and not opts.disk_image:
-                # Create iso from a filesystem image
-                disk_img = opts.fs_image or disk_img
-
-                make_squashfs(disk_img, work_dir)
-                with Mount(disk_img, opts="loop") as mount_dir:
-                    result_dir = make_livecd(opts, mount_dir, work_dir)
-            else:
-                # Create iso from a partitioned disk image
-                disk_img = opts.disk_image or disk_img
-                with PartitionMount(disk_img) as img_mount:
-                    if img_mount and img_mount.mount_dir:
-                        make_runtime(opts, img_mount.mount_dir, work_dir)
-                        result_dir = make_livecd(opts, img_mount.mount_dir, work_dir)
-
-            # cleanup the mess
-            # cleanup work_dir?
-            if disk_img and not (opts.keep_image or opts.disk_image or opts.fs_image):
-                os.unlink(disk_img)
-                log.info("Disk image erased")
-                disk_img = None
-        elif opts.make_appliance:
-            if not opts.ks:
-                networks = []
-            else:
-                networks = ks.handler.network.network
-            make_appliance(opts.disk_image or disk_img, opts.app_name,
-                           opts.app_template, opts.app_file, networks, opts.ram,
-                           opts.vcpus, opts.arch, opts.title, opts.project, opts.releasever)
-        elif opts.make_pxe_live:
-            work_dir = tempfile.mkdtemp()
-            log.info("working dir is %s", work_dir)
-
-            if (opts.fs_image or opts.no_virt) and not opts.disk_image:
-                # Create pxe live images from a filesystem image
-                disk_img = opts.fs_image or disk_img
-                with Mount(disk_img, opts="loop") as mnt_dir:
-                    result_dir = make_live_images(opts, work_dir, mnt_dir, rootfs_image=disk_img)
-            else:
-                # Create pxe live images from a partitioned disk image
-                disk_img = opts.disk_image or disk_img
-                is_root_part = None
-                if opts.ostree:
-                    is_root_part = lambda dir: os.path.exists(dir+"/ostree/deploy")
-                with PartitionMount(disk_img, mount_ok=is_root_part) as img_mount:
-                    if img_mount and img_mount.mount_dir:
-                        try:
-                            mounted_sysroot_boot_dir = None
-                            if opts.ostree:
-                                mounted_sysroot_boot_dir = mount_boot_part_over_root(img_mount)
-                            if opts.live_rootfs_keep_size:
-                                size = img_mount.mount_size / 1024**3
-                            else:
-                                size = opts.live_rootfs_size or None
-                            result_dir = make_live_images(opts, work_dir, img_mount.mount_dir, size=size)
-                        finally:
-                            if mounted_sysroot_boot_dir:
-                                umount(mounted_sysroot_boot_dir)
-
-        if opts.result_dir != opts.tmp and result_dir:
-            copytree(result_dir, opts.result_dir, preserve=False)
-            shutil.rmtree( result_dir )
+    try:
+        # TODO - Better API than passing in opts
+        (result_dir, disk_img) = run_creator(opts)
+    except Exception as e:
+        log.error(str(e))
+        sys.exit(1)
 
     log.info("SUMMARY")
     log.info("-------")
@@ -464,7 +352,7 @@ def main():
         log.info("Disk image is at %s", disk_img)
     if opts.make_appliance:
         log.info("Appliance description is in %s", opts.app_file)
-    log.info("Results are in %s", opts.result_dir or result_dir)
+    log.info("Results are in %s", result_dir or opts.result_dir)
 
     sys.exit( 0 )
 
