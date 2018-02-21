@@ -50,7 +50,7 @@ installpkg glibc-all-langpacks
     installpkg shim-ia32 grub2-efi-ia32-cdboot
 %endif
 %if basearch in ("i386", "x86_64"):
-    installpkg biosdevname memtest86+ syslinux
+    installpkg biosdevname memtest86+ syslinux system-logos
     installpkg grub2-tools grub2-tools-minimal grub2-tools-extra
 %endif
 %if basearch in ("ppc", "ppc64", "ppc64le"):
