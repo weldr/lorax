@@ -27,12 +27,11 @@ import shutil
 import subprocess
 from subprocess import Popen, PIPE
 import time
-from pykickstart.version import makeVersion, RHEL7
-from pykickstart.parser import KickstartParser
 
+from pylorax.api.compose import move_compose_results
 from pylorax.api.recipes import recipe_from_file
 from pylorax.base import DataHolder
-from pylorax.installer import novirt_install
+from pylorax.creator import run_creator
 from pylorax.sysutils import joinpaths
 
 def start_queue_monitor(cfg, uid, gid):
@@ -47,7 +46,8 @@ def start_queue_monitor(cfg, uid, gid):
     :returns: None
     """
     lib_dir = cfg.get("composer", "lib_dir")
-    monitor_cfg = DataHolder(composer_dir=lib_dir, uid=uid, gid=gid)
+    share_dir = cfg.get("composer", "share_dir")
+    monitor_cfg = DataHolder(composer_dir=lib_dir, share_dir=share_dir, uid=uid, gid=gid)
     p = mp.Process(target=monitor, args=(monitor_cfg,))
     p.daemon = True
     p.start()
@@ -56,7 +56,7 @@ def monitor(cfg):
     """Monitor the queue for new compose requests
 
     :param cfg: Configuration settings
-    :type cfg: ComposerConfig
+    :type cfg: DataHolder
     :returns: Does not return
 
     The queue has 2 subdirectories, new and run. When a compose is ready to be run
@@ -106,15 +106,20 @@ def monitor(cfg):
                 log.info("Finished building %s, results are in %s", dst, os.path.realpath(dst))
                 open(joinpaths(dst, "STATUS"), "w").write("FINISHED\n")
             except Exception as e:
-                log.error("Error running compose: %s", e)
+                import traceback
+                log.error("traceback: %s", traceback.format_exc())
+
+# TODO - Write the error message to an ERROR-LOG file to include with the status
+#                log.error("Error running compose: %s", e)
                 open(joinpaths(dst, "STATUS"), "w").write("FAILED\n")
+
             os.unlink(dst)
 
 def make_compose(cfg, results_dir):
     """Run anaconda with the final-kickstart.ks from results_dir
 
     :param cfg: Configuration settings
-    :type cfg: ComposerConfig
+    :type cfg: DataHolder
     :param results_dir: The directory containing the metadata and results for the build
     :type results_dir: str
     :returns: Nothing
@@ -129,7 +134,7 @@ def make_compose(cfg, results_dir):
     object.
     """
 
-    # Check on the ks's presense
+    # Check on the ks's presence
     ks_path = joinpaths(results_dir, "final-kickstart.ks")
     if not os.path.exists(ks_path):
         raise RuntimeError("Missing kickstart file at %s" % ks_path)
@@ -139,23 +144,37 @@ def make_compose(cfg, results_dir):
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
 
-    ks_version = makeVersion(RHEL7)
-    ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
-    ks.readKickstart(ks_path)
-    # anaconda can only handle a url, it cannot use a mirrorlist or metalink for the primary repository.
-    if not ks.handler.method.url:
-        raise RuntimeError("The kickstart is missing a valid url line")
-
-    repo_url = ks.handler.method.url
-
     # Load the compose configuration
     cfg_path = joinpaths(results_dir, "config.toml")
     if not os.path.exists(cfg_path):
         raise RuntimeError("Missing config.toml for %s" % results_dir)
     cfg_dict = toml.loads(open(cfg_path, "r").read())
 
+    # The keys in cfg_dict correspond to the arguments setup in livemedia-creator
+    # keys that define what to build should be setup in compose_args, and keys with
+    # defaults should be setup here.
+
     # Make sure that image_name contains no path components
     cfg_dict["image_name"] = os.path.basename(cfg_dict["image_name"])
+
+    # Only support novirt installation, set some other defaults
+    cfg_dict["no_virt"] = True
+    cfg_dict["disk_image"] = None
+    cfg_dict["fs_image"] = None
+    cfg_dict["keep_image"] = False
+    cfg_dict["domacboot"] = False
+    cfg_dict["anaconda_args"] = ""
+    cfg_dict["proxy"] = ""
+    cfg_dict["armplatform"] = ""
+    cfg_dict["squashfs_args"] = None
+
+    cfg_dict["lorax_templates"] = cfg.share_dir
+    cfg_dict["tmp"] = "/var/tmp/"
+    cfg_dict["dracut_args"] = None                  # Use default args for dracut
+
+    # Compose things in a temporary directory inside the results directory
+    cfg_dict["result_dir"] = joinpaths(results_dir, "compose")
+    os.makedirs(cfg_dict["result_dir"])
 
     install_cfg = DataHolder(**cfg_dict)
 
@@ -167,7 +186,7 @@ def make_compose(cfg, results_dir):
     def cancel_build():
         return os.path.exists(joinpaths(results_dir, "CANCEL"))
 
-    log.debug("repo_url = %s, cfg  = %s", repo_url, install_cfg)
+    log.debug("cfg  = %s", install_cfg)
     try:
         test_path = joinpaths(results_dir, "TEST")
         if os.path.exists(test_path):
@@ -182,8 +201,10 @@ def make_compose(cfg, results_dir):
             else:
                 open(joinpaths(results_dir, install_cfg.image_name), "w").write("TEST IMAGE")
         else:
-            novirt_install(install_cfg, joinpaths(results_dir, install_cfg.image_name), None, repo_url,
-                           callback_func=cancel_build)
+            run_creator(install_cfg, callback_func=cancel_build)
+
+            # Extract the results of the compose into results_dir and cleanup the compose directory
+            move_compose_results(install_cfg, results_dir)
     finally:
         # Make sure that everything under the results directory is owned by the user
         user = pwd.getpwuid(cfg.uid).pw_name

@@ -39,6 +39,8 @@ import pytoml as toml
 import shutil
 from uuid import uuid4
 
+from pyanaconda.simpleconfig import SimpleConfigFile
+
 from pylorax.api.projects import projects_depsolve, dep_nevra
 from pylorax.api.projects import ProjectsError
 from pylorax.api.recipes import read_recipe_and_id
@@ -178,18 +180,26 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_m
     # Setup the config to pass to novirt_install
     log_dir = joinpaths(results_dir, "logs/")
     cfg_args = compose_args(compose_type)
+
+    # Get the title, project, and release version from the host
+    if not os.path.exists("/etc/os-release"):
+        log.error("/etc/os-release is missing, cannot determine product or release version")
+    os_release = SimpleConfigFile("/etc/os-release")
+    os_release.read()
+
+    log.debug("os_release = %s", os_release)
+
+    cfg_args["title"] = os_release.get("PRETTY_NAME")
+    cfg_args["project"] = os_release.get("NAME")
+    cfg_args["releasever"] = os_release.get("VERSION_ID")
+    cfg_args["volid"] = ""
+
     cfg_args.update({
         "compression":      "xz",
-        #"compress_args":    ["-9"],
         "compress_args":    [],
         "ks":               [ks_path],
-        "anaconda_args":    "",
-        "proxy":            "",
-        "armplatform":      "",
-
         "project":          "Red Hat Enterprise Linux",
         "releasever":       "7",
-
         "logfile":          log_dir
     })
     with open(joinpaths(results_dir, "config.toml"), "w") as f:
@@ -216,12 +226,73 @@ def compose_types(share_dir):
     return [os.path.basename(ks)[:-3] for ks in glob(joinpaths(share_dir, "composer/*.ks"))]
 
 def compose_args(compose_type):
-    """ Returns the settings to pass to novirt_install for the compose type"""
-    _MAP = {"tar": {"make_tar":     True,
-                    "make_iso":     False,
-                    "make_fsimage": False,
-                    "qcow2":        False,
-                    "image_name":   default_image_name("xz", "root.tar")},
-                    }
+    """ Returns the settings to pass to novirt_install for the compose type
 
+    :param compose_type: The type of compose to create, from `compose_types()`
+    :type compose_type: str
+
+    This will return a dict of options that match the ArgumentParser options for livemedia-creator.
+    These are the ones the define the type of output, it's filename, etc.
+    Other options will be filled in by `make_compose()`
+    """
+    _MAP = {"tar":              {"make_iso":                False,
+                                 "make_disk":               False,
+                                 "make_fsimage":            False,
+                                 "make_appliance":          False,
+                                 "make_ami":                False,
+                                 "make_tar":                True,
+                                 "make_pxe_live":           False,
+                                 "make_ostree_live":        False,
+                                 "ostree":                  False,
+                                 "live_rootfs_keep_size":   False,
+                                 "live_rootfs_size":        0,
+                                 "qcow2":                   False,
+                                 "qcow2_arg":               [],
+                                 "image_name":              default_image_name("xz", "root.tar"),
+                                 "image_only":              True,
+                                 "app_name":                None,
+                                 "app_template":            None,
+                                 "app_file":                None
+                                },
+            "live-iso":         {"make_iso":                True,
+                                 "make_disk":               False,
+                                 "make_fsimage":            False,
+                                 "make_appliance":          False,
+                                 "make_ami":                False,
+                                 "make_tar":                False,
+                                 "make_pxe_live":           False,
+                                 "make_ostree_live":        False,
+                                  "ostree":                  False,
+                                 "live_rootfs_keep_size":   False,
+                                 "live_rootfs_size":        0,
+                                 "qcow2":                   False,
+                                 "qcow2_arg":               [],
+                                 "image_name":              "live.iso",
+                                 "fs_label":                "Anaconda",     # Live booting may expect this to be 'Anaconda'
+                                 "image_only":              False,
+                                 "app_name":                None,
+                                 "app_template":            None,
+                                 "app_file":                None
+                                },
+            }
     return _MAP[compose_type]
+
+def move_compose_results(cfg, results_dir):
+    """Move the final image to the results_dir and cleanup the unneeded compose files
+
+    :param cfg: Build configuration
+    :type cfg: DataHolder
+    :param results_dir: Directory to put the results into
+    :type results_dir: str
+    """
+    if cfg["make_tar"]:
+        shutil.move(joinpaths(cfg["result_dir"], cfg["image_name"]), results_dir)
+    elif cfg["make_iso"]:
+        # Output from live iso is always a boot.iso under images/, move and rename it
+        shutil.move(joinpaths(cfg["result_dir"], "images/boot.iso"), joinpaths(results_dir, cfg["image_name"]))
+
+    # Cleanup the compose directory, but only if it looks like a compose directory
+    if os.path.basename(cfg["result_dir"]) == "compose":
+        shutil.rmtree(cfg["result_dir"])
+    else:
+        log.error("Incorrect compose directory, not cleaning up")
