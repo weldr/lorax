@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.7.9
+Version:        19.7.10
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -149,6 +149,13 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_unitdir}/lorax-composer.service
 
 %changelog
+* Thu Feb 22 2018 Brian C. Lane <bcl@redhat.com> 19.7.10-1
+- Add the partitioned-disk.ks file for the new output type (bcl)
+- lorax-composer: Add partitioned-disk output support (bcl)
+- Add live-iso output support to lorax-composer (bcl)
+- Move core of livemedia-creator to run_creator() (bcl)
+- Only chown recipe directory if it already exists (bcl)
+
 * Fri Feb 16 2018 Brian C. Lane <bcl@redhat.com> 19.7.9-1
 - Fix a problem with diff/NEWEST/WORKSPACE (bcl)
 - Don't be overly strict when validating /api/docs/ response in tests (atodorov)
