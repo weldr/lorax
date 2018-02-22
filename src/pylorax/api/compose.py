@@ -262,7 +262,7 @@ def compose_args(compose_type):
                                  "make_tar":                False,
                                  "make_pxe_live":           False,
                                  "make_ostree_live":        False,
-                                  "ostree":                  False,
+                                 "ostree":                  False,
                                  "live_rootfs_keep_size":   False,
                                  "live_rootfs_size":        0,
                                  "qcow2":                   False,
@@ -270,6 +270,26 @@ def compose_args(compose_type):
                                  "image_name":              "live.iso",
                                  "fs_label":                "Anaconda",     # Live booting may expect this to be 'Anaconda'
                                  "image_only":              False,
+                                 "app_name":                None,
+                                 "app_template":            None,
+                                 "app_file":                None
+                                },
+            "partitioned-disk": {"make_iso":                False,
+                                 "make_disk":               True,
+                                 "make_fsimage":            False,
+                                 "make_appliance":          False,
+                                 "make_ami":                False,
+                                 "make_tar":                False,
+                                 "make_pxe_live":           False,
+                                 "make_ostree_live":        False,
+                                  "ostree":                  False,
+                                 "live_rootfs_keep_size":   False,
+                                 "live_rootfs_size":        0,
+                                 "qcow2":                   False,
+                                 "qcow2_arg":               [],
+                                 "image_name":              "disk.img",
+                                 "fs_label":                "",
+                                 "image_only":              True,
                                  "app_name":                None,
                                  "app_template":            None,
                                  "app_file":                None
@@ -290,6 +310,9 @@ def move_compose_results(cfg, results_dir):
     elif cfg["make_iso"]:
         # Output from live iso is always a boot.iso under images/, move and rename it
         shutil.move(joinpaths(cfg["result_dir"], "images/boot.iso"), joinpaths(results_dir, cfg["image_name"]))
+    elif cfg["make_disk"]:
+        shutil.move(joinpaths(cfg["result_dir"], cfg["image_name"]), joinpaths(results_dir, cfg["image_name"]))
+
 
     # Cleanup the compose directory, but only if it looks like a compose directory
     if os.path.basename(cfg["result_dir"]) == "compose":
