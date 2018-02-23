@@ -76,7 +76,7 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
 %if exists("boot/efi/EFI/*/gcdx64.efi"):
     <% efiarch64 = 'X64' %>
 %endif
-%if efiarch32 or efiarch64 and basearch != 'i386':
+%if (efiarch32 or efiarch64) and basearch != 'i386':
     <%
     efigraft="EFI/BOOT={0}/EFI/BOOT".format(outroot)
     images = ["images/efiboot.img"]
