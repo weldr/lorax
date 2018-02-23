@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.6
+Version:        28.7
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -155,6 +155,11 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Fri Feb 23 2018 Brian C. Lane <bcl@redhat.com> 28.7-1
+- Fix _install_branding (bcl@redhat.com)
+- livemedia-creator --no-virt requires a system-logos package (bcl@redhat.com)
+- Revert "add system-logos dependency for syslinux" (bcl@redhat.com)
+
 * Thu Feb 22 2018 Brian C. Lane <bcl@redhat.com> 28.6-1
 - add system-logos dependency for syslinux (pbrobinson@gmail.com)
 - Really don't try to build EFI images on i386 (awilliam@redhat.com)
