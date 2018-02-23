@@ -93,7 +93,8 @@ class RuntimeBuilder(object):
         release = None
         q = self.dbo.sack.query()
         a = q.available()
-        for pkg in a.filter(provides='/etc/system-release'):
+        for pkg in a.filter(provides='system-release'):
+            logger.debug("Found release package %s", pkg)
             if pkg.name.startswith('generic'):
                 continue
             else:
