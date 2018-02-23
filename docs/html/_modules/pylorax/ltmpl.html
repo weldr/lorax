@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.ltmpl &mdash; Lorax 28.2 documentation</title>
+  <title>pylorax.ltmpl &mdash; Lorax 28.6 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Lorax 28.2 documentation" href="../../index.html"/>
+    <link rel="top" title="Lorax 28.6 documentation" href="../../index.html"/>
         <link rel="up" title="pylorax" href="../pylorax.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                28.2
+                28.6
               </div>
             
           
@@ -731,24 +731,25 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">pkgnames</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">dnf</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">PackageNotFoundError</span><span class="p">(</span><span class="s2">&quot;no package matched&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
 
-                <span class="c1"># Sort the results so that we have consistent results</span>
-                <span class="n">pkgnames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pkg</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">pkg</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="n">pkg</span><span class="o">.</span><span class="n">release</span><span class="p">)</span> <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">pkgnames</span><span class="p">])</span>
-
+                <span class="c1"># Apply excludes to the name only</span>
                 <span class="k">for</span> <span class="n">exclude</span> <span class="ow">in</span> <span class="n">excludes</span><span class="p">:</span>
-                    <span class="n">pkgnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">pkg</span> <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">pkgnames</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">pkg</span><span class="p">,</span> <span class="n">exclude</span><span class="p">)]</span>
+                    <span class="n">pkgnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">pkg</span> <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">pkgnames</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">pkg</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">exclude</span><span class="p">)]</span>
+
+                <span class="c1"># Convert to a sorted NVR list for installation</span>
+                <span class="n">pkgnvrs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pkg</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">pkg</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="n">pkg</span><span class="o">.</span><span class="n">release</span><span class="p">)</span> <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">pkgnames</span><span class="p">])</span>
 
                 <span class="c1"># If the request is a glob, expand it in the log</span>
                 <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">g</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;*&#39;</span><span class="p">,</span><span class="s1">&#39;?&#39;</span><span class="p">,</span><span class="s1">&#39;.&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">p</span><span class="p">):</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;installpkg: </span><span class="si">%s</span><span class="s2"> expands to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pkgnames</span><span class="p">))</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;installpkg: </span><span class="si">%s</span><span class="s2"> expands to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pkgnvrs</span><span class="p">))</span>
 
-                <span class="k">for</span> <span class="n">pkgname</span> <span class="ow">in</span> <span class="n">pkgnames</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">pkgnvr</span> <span class="ow">in</span> <span class="n">pkgnvrs</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">pkgname</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">pkgnvr</span><span class="p">)</span>
                     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="c1"># pylint: disable=broad-except</span>
                         <span class="k">if</span> <span class="n">required</span><span class="p">:</span>
                             <span class="k">raise</span>
                         <span class="c1"># Not required, log it and continue processing pkgs</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;installpkg </span><span class="si">%s</span><span class="s2"> failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pkgname</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;installpkg </span><span class="si">%s</span><span class="s2"> failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pkgnvr</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="c1"># pylint: disable=broad-except</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;installpkg </span><span class="si">%s</span><span class="s2"> failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
                 <span class="n">errors</span> <span class="o">=</span> <span class="kc">True</span>
@@ -984,7 +985,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'28.2',
+            VERSION:'28.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

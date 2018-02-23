@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Lorax &mdash; Lorax 28.2 documentation</title>
+  <title>Lorax &mdash; Lorax 28.6 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Lorax 28.2 documentation" href="index.html"/>
+    <link rel="top" title="Lorax 28.6 documentation" href="index.html"/>
         <link rel="next" title="livemedia-creator" href="livemedia-creator.html"/>
         <link rel="prev" title="Introduction to Lorax" href="intro.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                28.2
+                28.6
               </div>
             
           
@@ -184,7 +184,7 @@
 </tr>
 </tbody>
 </table>
-<p>&#8220;I am the Lorax.  I speak for the trees [and images].&#8221;</p>
+<p>“I am the Lorax.  I speak for the trees [and images].”</p>
 <p>The <a class="reference external" href="https://github.com/rhinstaller/lorax">lorax</a> tool is used to create the
 <a class="reference external" href="https://github.com/rhinstaller/anaconda">Anaconda</a> installer boot.iso as
 well as the basic release tree, and .treeinfo metadata file. Its dependencies
@@ -249,9 +249,10 @@ repositories.</p>
 <kbd><span class="option">-m=[]</span>, <span class="option">--mirrorlist=[]</span></kbd></td>
 </tr>
 <tr><td>&#160;</td><td>mirrorlist repository (may be listed multiple times)</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-t</span>, <span class="option">--variant</span></kbd></td>
-<td>variant name</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-t=</span>, <span class="option">--variant=</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>variant name</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">-b=your distribution provided bug reporting tool</span>, <span class="option">--bugurl=your distribution provided bug reporting tool</span></kbd></td>
 </tr>
@@ -304,7 +305,7 @@ repositories.</p>
 <td>DNF cache directory. Default is a temporary dir.</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">--workdir</span></kbd></td>
-<td>Work directory, overrides &#8211;tmp. Default is a temporary dir under /var/tmp</td></tr>
+<td>Work directory, overrides –tmp. Default is a temporary dir under /var/tmp</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">--force=False</span></kbd></td>
 <td>Run even when the destination directory exists</td></tr>
@@ -349,7 +350,7 @@ repositories.</p>
 <tr><td>&#160;</td><td>Do not verify SSL certificates</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">-V</span></kbd></td>
-<td>show program&#8217;s version number and exit</td></tr>
+<td>show program’s version number and exit</td></tr>
 </tbody>
 </table>
 </dd>
@@ -410,7 +411,7 @@ unneeded services are disabled, some of which can interfere with the
 installation. A number of template commands are used here:</p>
 <ul class="simple">
 <li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.append" title="pylorax.ltmpl.LoraxTemplateRunner.append"><code class="xref py py-func docutils literal"><span class="pre">append</span></code></a> to add text to a file.</li>
-<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.chmod" title="pylorax.ltmpl.LoraxTemplateRunner.chmod"><code class="xref py py-func docutils literal"><span class="pre">chmod</span></code></a> changes the file&#8217;s mode.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.chmod" title="pylorax.ltmpl.LoraxTemplateRunner.chmod"><code class="xref py py-func docutils literal"><span class="pre">chmod</span></code></a> changes the file’s mode.</li>
 <li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.gconfset" title="pylorax.ltmpl.LoraxTemplateRunner.gconfset"><code class="xref py py-func docutils literal"><span class="pre">gconfset</span></code></a> runs gconfset.</li>
 <li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.install" title="pylorax.ltmpl.LoraxTemplateRunner.install"><code class="xref py py-func docutils literal"><span class="pre">install</span></code></a> to install a file into the installroot.</li>
 <li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.mkdir" title="pylorax.ltmpl.LoraxTemplateRunner.mkdir"><code class="xref py py-func docutils literal"><span class="pre">mkdir</span></code></a> makes a new directory.</li>
@@ -424,14 +425,14 @@ installation. A number of template commands are used here:</p>
 </div>
 <div class="section" id="runtime-cleanup-tmpl">
 <h3>runtime-cleanup.tmpl<a class="headerlink" href="#runtime-cleanup-tmpl" title="Permalink to this headline">¶</a></h3>
-<p>The <code class="docutils literal"><span class="pre">runtime-cleanup.tmpl</span></code> template is used to remove files that aren&#8217;t strictly needed
+<p>The <code class="docutils literal"><span class="pre">runtime-cleanup.tmpl</span></code> template is used to remove files that aren’t strictly needed
 by the installation environment. In addition to the <code class="docutils literal"><span class="pre">remove</span></code> template command it uses:</p>
 <ul class="simple">
 <li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.removepkg" title="pylorax.ltmpl.LoraxTemplateRunner.removepkg"><code class="xref py py-func docutils literal"><span class="pre">removepkg</span></code></a>
-remove all of a specific package&#8217;s contents. A package may be pulled in as a dependency, but
+remove all of a specific package’s contents. A package may be pulled in as a dependency, but
 not really used. eg. sound support.</li>
 <li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.removefrom" title="pylorax.ltmpl.LoraxTemplateRunner.removefrom"><code class="xref py py-func docutils literal"><span class="pre">removefrom</span></code></a>
-Removes some files from a package. A file glob can be used, or the &#8211;allbut option to
+Removes some files from a package. A file glob can be used, or the –allbut option to
 remove everything except a select few.</li>
 <li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.removekmod" title="pylorax.ltmpl.LoraxTemplateRunner.removekmod"><code class="xref py py-func docutils literal"><span class="pre">removekmod</span></code></a>
 Removes kernel modules</li>
@@ -441,7 +442,7 @@ Removes kernel modules</li>
 <h3>The squashfs filesystem<a class="headerlink" href="#the-squashfs-filesystem" title="Permalink to this headline">¶</a></h3>
 <p>After <code class="docutils literal"><span class="pre">runtime-*.tmpl</span></code> templates have finished their work lorax creates an
 empty ext4 filesystem, copies the remaining files to it, and makes a squashfs
-filesystem of it. This file is the / of the boot.iso&#8217;s installer environment
+filesystem of it. This file is the / of the boot.iso’s installer environment
 and is what is in the LiveOS/squashfs.img file on the iso.</p>
 </div>
 <div class="section" id="iso-creation">
@@ -511,7 +512,7 @@ should) select the specific template directory by passing <code class="docutils 
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'28.2',
+            VERSION:'28.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
