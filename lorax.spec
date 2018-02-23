@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.5
+Version:        28.6
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -154,6 +154,10 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Thu Feb 22 2018 Brian C. Lane <bcl@redhat.com> 28.6-1
+- add system-logos dependency for syslinux (pbrobinson@gmail.com)
+- Really don't try to build EFI images on i386 (awilliam@redhat.com)
+
 * Mon Jan 29 2018 Brian C. Lane <bcl@redhat.com> 28.5-1
 - Don't try to build efi images for basearch=i386. (pjones@redhat.com)
 - LMC: Make the QEMU RNG device optional (yturgema@redhat.com)
