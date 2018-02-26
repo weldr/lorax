@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.cmdline &mdash; Lorax 28.2 documentation</title>
+  <title>pylorax.cmdline &mdash; Lorax 28.6 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Lorax 28.2 documentation" href="../../index.html"/>
+    <link rel="top" title="Lorax 28.6 documentation" href="../../index.html"/>
         <link rel="up" title="pylorax" href="../pylorax.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                28.2
+                28.6
               </div>
             
           
@@ -210,7 +210,7 @@
     <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;--mirrorlist&quot;</span><span class="p">,</span>
                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;mirrorlist repository (may be listed multiple times)&quot;</span><span class="p">,</span>
                         <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;REPOSITORY&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[])</span>
-    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-t&quot;</span><span class="p">,</span> <span class="s2">&quot;--variant&quot;</span><span class="p">,</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-t&quot;</span><span class="p">,</span> <span class="s2">&quot;--variant&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;variant name&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;VARIANT&quot;</span><span class="p">)</span>
     <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-b&quot;</span><span class="p">,</span> <span class="s2">&quot;--bugurl&quot;</span><span class="p">,</span>
                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;bug reporting URL for the product&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;URL&quot;</span><span class="p">,</span>
@@ -407,6 +407,8 @@
                             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use OVMF firmware to boot the VM in UEFI mode&quot;</span><span class="p">)</span>
     <span class="n">virt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no-kvm&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                             <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Skip using kvm with qemu even if it is available.&quot;</span><span class="p">)</span>
+    <span class="n">virt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--with-rng&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;/dev/random&quot;</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;RNG device for QEMU (none for no RNG)&quot;</span><span class="p">)</span>
 
     <span class="c1"># dracut arguments</span>
     <span class="n">dracut_group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;dracut arguments&quot;</span><span class="p">)</span>
@@ -441,7 +443,7 @@
                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Substituted for @TITLE@ in bootloader config files&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--project&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;Linux&quot;</span><span class="p">,</span>
                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;substituted for @PROJECT@ in bootloader config files&quot;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--releasever&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;25&quot;</span><span class="p">,</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--releasever&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;29&quot;</span><span class="p">,</span>
                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;substituted for @VERSION@ in bootloader config files&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--volid&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;volume id&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--squashfs_args&quot;</span><span class="p">,</span>
@@ -490,7 +492,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'28.2',
+            VERSION:'28.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

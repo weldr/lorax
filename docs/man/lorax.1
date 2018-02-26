@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LORAX" "1" "Nov 29, 2016" "26.2" "Lorax"
+.TH "LORAX" "1" "Feb 23, 2018" "28.6" "Lorax"
 .SH NAME
 lorax \- Lorax Documentation
 .
@@ -66,7 +66,8 @@ usage: lorax [\-h] \-p PRODUCT \-v VERSION \-r RELEASE [\-s REPOSITORY]
              [\-\-add\-arch\-template ADD_ARCH_TEMPLATES]
              [\-\-add\-arch\-template\-var ADD_ARCH_TEMPLATE_VARS] [\-\-noverify]
              [\-\-sharedir SHAREDIR] [\-\-enablerepo [repo]]
-             [\-\-disablerepo [repo]] [\-\-rootfs\-size ROOTFS_SIZE] [\-V]
+             [\-\-disablerepo [repo]] [\-\-rootfs\-size ROOTFS_SIZE]
+             [\-\-noverifyssl] [\-V]
              OUTPUTDIR
 .ft P
 .fi
@@ -102,7 +103,7 @@ source dnf repository file
 .B \-m=[]\fP,\fB  \-\-mirrorlist=[]
 mirrorlist repository (may be listed multiple times)
 .TP
-.B \-t\fP,\fB  \-\-variant
+.B \-t=\fP,\fB  \-\-variant=
 variant name
 .TP
 .B \-b=your distribution provided bug reporting tool\fP,\fB  \-\-bugurl=your distribution provided bug reporting tool
@@ -180,6 +181,9 @@ Names of repos to disable
 .B \-\-rootfs\-size=2
 Size of root filesystem in GiB. Defaults to 2.
 .TP
+.B \-\-noverifyssl=False
+Do not verify SSL certificates
+.TP
 .B \-V
 show program\(aqs version number and exit
 .UNINDENT
@@ -209,6 +213,12 @@ override the ones in the distribution repositories.
 .sp
 Under \fB\&./results/\fP will be the release tree files: .discinfo, .treeinfo, everything that
 goes onto the boot.iso, the pxeboot directory, and the boot.iso under \fB\&./images/\fP\&.
+.SH RUNNING INSIDE OF MOCK
+.sp
+If you are using lorax with mock v1.3.4 or later you will need to pass
+\fB\-\-old\-chroot\fP to mock. Mock now defaults to using systemd\-nspawn which cannot
+create the needed loop device nodes. Passing \fB\-\-old\-chroot\fP will use the old
+system where \fB/dev/loop*\fP is setup for you.
 .SH HOW IT WORKS
 .sp
 Lorax uses \fI\%dnf\fP to install
