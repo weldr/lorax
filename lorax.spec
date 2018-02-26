@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.7
+Version:        28.8
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -155,6 +155,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Mon Feb 26 2018 Brian C. Lane <bcl@redhat.com> 28.8-1
+- cleanup: don't remove libgstgl (dusty@dustymabe.com)
+
 * Fri Feb 23 2018 Brian C. Lane <bcl@redhat.com> 28.7-1
 - Fix _install_branding (bcl@redhat.com)
 - livemedia-creator --no-virt requires a system-logos package (bcl@redhat.com)
