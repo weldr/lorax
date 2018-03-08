@@ -959,6 +959,7 @@ def v0_api(api):
     def v0_recipes_info(recipe_names):
         """Return the contents of the recipe, or a list of recipes"""
         branch = request.args.get("branch", "master")
+        out_fmt = request.args.get("format", "json")
         recipes = []
         changes = []
         errors = []
@@ -1003,7 +1004,11 @@ def v0_api(api):
         recipes = sorted(recipes, key=lambda r: r["name"].lower())
         errors = sorted(errors, key=lambda e: e["recipe"].lower())
 
-        return jsonify(changes=changes, recipes=recipes, errors=errors)
+        if out_fmt == "toml":
+            # With TOML output we just want to dump the raw recipe, skipping the rest.
+            return "\n\n".join([r.toml() for r in recipes])
+        else:
+            return jsonify(changes=changes, recipes=recipes, errors=errors)
 
     @api.route("/api/v0/recipes/changes/<recipe_names>")
     @crossdomain(origin="*")
