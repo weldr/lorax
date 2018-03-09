@@ -1183,6 +1183,7 @@ def v0_api(api):
     def v0_recipes_freeze(recipe_names):
         """Return the recipe with the exact modules and packages selected by depsolve"""
         branch = request.args.get("branch", "master")
+        out_fmt = request.args.get("format", "json")
         recipes = []
         errors = []
         for recipe_name in [n.strip() for n in sorted(recipe_names.split(","), key=lambda n: n.lower())]:
@@ -1224,7 +1225,11 @@ def v0_api(api):
 
             recipes.append({"recipe": recipe.freeze(deps)})
 
-        return jsonify(recipes=recipes, errors=errors)
+        if out_fmt == "toml":
+            # With TOML output we just want to dump the raw recipe, skipping the rest.
+            return "\n\n".join([e["recipe"].toml() for e in recipes])
+        else:
+            return jsonify(recipes=recipes, errors=errors)
 
     @api.route("/api/v0/recipes/depsolve/<recipe_names>")
     @crossdomain(origin="*")
