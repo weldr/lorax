@@ -26,7 +26,7 @@ from yum.Errors import YumBaseError
 from pylorax.api.config import configure, make_yum_dirs
 from pylorax.api.projects import api_time, api_changelog, yaps_to_project, yaps_to_project_info
 from pylorax.api.projects import tm_to_dep, yaps_to_module, projects_list, projects_info, projects_depsolve
-from pylorax.api.projects import modules_list, modules_info, ProjectsError, dep_evra, dep_nevra, ProjectsError
+from pylorax.api.projects import modules_list, modules_info, ProjectsError, dep_evra, dep_nevra
 from pylorax.api.yumbase import get_base_object
 
 
@@ -36,7 +36,7 @@ class Yaps(object):
     summary = "summary"
     description = "description"
     url = "url"
-    epoch = "epoch"
+    epoch = 1
     release = "release"
     arch = "arch"
     buildtime = 499222800
@@ -50,7 +50,7 @@ class Yaps(object):
 class TM(object):
     """Test class for tm test"""
     name = "name"
-    epoch = "epoch"
+    epoch = 1
     version = "version"
     release = "release"
     arch = "arch"
@@ -93,7 +93,7 @@ class ProjectsTest(unittest.TestCase):
         self.assertEqual(yaps_to_project(y), result)
 
     def test_yaps_to_project_info(self):
-        build = {"epoch":"epoch",
+        build = {"epoch":1,
                  "release":"release",
                  "arch":"arch",
                  "build_time":"1985-10-27T01:00:00",
@@ -118,7 +118,7 @@ class ProjectsTest(unittest.TestCase):
 
     def test_tm_to_dep(self):
         result = {"name":"name",
-                  "epoch":"epoch",
+                  "epoch":1,
                   "version":"version",
                   "release":"release",
                   "arch":"arch"}
@@ -135,7 +135,7 @@ class ProjectsTest(unittest.TestCase):
 
     def test_dep_evra(self):
         dep = {"arch": "noarch",
-               "epoch": "0",
+               "epoch": 0,
                "name": "basesystem",
                "release": "7.el7",
                "version": "10.0"}
@@ -143,7 +143,7 @@ class ProjectsTest(unittest.TestCase):
 
     def test_dep_evra_with_epoch_not_zero(self):
         dep = {"arch": "x86_64",
-               "epoch": "2",
+               "epoch": 2,
                "name": "tog-pegasus-libs",
                "release": "3.el7",
                "version": "2.14.1"}
@@ -151,7 +151,7 @@ class ProjectsTest(unittest.TestCase):
 
     def test_dep_nevra(self):
         dep = {"arch": "noarch",
-               "epoch": "0",
+               "epoch": 0,
                "name": "basesystem",
                "release": "7.el7",
                "version": "10.0"}
