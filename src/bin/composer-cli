@@ -50,6 +50,7 @@ recipes list                     List the names of the available recipes.
         workspace <recipe>       Push the recipe TOML to the temporary workspace storage.
 modules list                     List the available modules.
 projects list                    List the available projects.
+projects info <project,...>      Show details about the listed projects.
 """
 
 def get_parser():
