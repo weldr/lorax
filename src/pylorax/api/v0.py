@@ -866,7 +866,7 @@ DELETE `/api/v0/compose/delete/<uuids>`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns the output image from the build. The filename is set to the filename
-  from the build. eg. root.tar.xz or boot.iso.
+  from the build with the UUID as a prefix. eg. UUID-root.tar.xz or UUID-boot.iso.
 
 `/api/v0/compose/log/<uuid>[?size=kbytes]`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1564,6 +1564,7 @@ def v0_api(api):
             return jsonify(status=False, uuid=uuid, msg="Build not in FINISHED or FAILED.")
         else:
             image_name, image_path = uuid_image(api.config["COMPOSER_CFG"], uuid)
+            image_name = uuid + "-" + image_name
 
             # XXX - Will mime type guessing work for all our output?
             return send_file(image_path, as_attachment=True, attachment_filename=image_name, add_etags=False)
