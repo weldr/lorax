@@ -31,7 +31,17 @@ VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
 
 # Documentation for the commands
 epilog = """
-compose tar <recipe>             Depsolve Recipe and compose a tar file using export from bdcs
+compose start <recipe> <type>    Start a compose using the selected recipe and output type.
+        types                    List the supported output types.
+        status                   List the status of all running and finished composes.
+        log <uuid> [<size>kB]    Show the last 1kB of the compose log.
+        cancel <uuid>            Cancel a running compose and delete any intermediate results.
+        delete <uuid,...>        Delete the listed compose results.
+        info <uuid>              Show detailed information on the compose.
+        metadata <uuid>          Download the metadata use to create the compose to <uuid>-metadata.tar
+        logs <uuid>              Download the compose logs to <uuid>-logs.tar
+        results <uuid>           Download all of the compose results; metadata, logs, and image to <uuid>.tar
+        image <uuid>             Download the output image from the compose. Filename depends on the type.
 recipes list                     List the names of the available recipes.
         show <recipe,...>        Display the recipe in TOML format.
         changes <recipe,...>     Display the changes for each recipe.

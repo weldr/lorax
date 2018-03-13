@@ -18,6 +18,7 @@ import logging
 log = logging.getLogger("composer-cli")
 
 import os
+import sys
 import json
 
 from composer.unix_socket import UnixHTTPConnectionPool
@@ -104,3 +105,82 @@ def post_url_toml(socket_path, url, body):
                      body=body.encode("utf-8"),
                      headers={"Content-Type": "text/x-toml"})
     return json.loads(r.data.decode("utf-8"))
+
+def post_url_json(socket_path, url, body):
+    """POST some JSON data to the URL
+
+    :param socket_path: Path to the Unix socket to use for API communication
+    :type socket_path: str
+    :param url: URL to send POST to
+    :type url: str
+    :param body: The data for the body of the POST
+    :type body: str
+    :returns: The json response from the server
+    :rtype: dict
+    """
+    http = UnixHTTPConnectionPool(socket_path)
+    r = http.request("POST", url,
+                     body=body.encode("utf-8"),
+                     headers={"Content-Type": "application/json"})
+    return json.loads(r.data.decode("utf-8"))
+
+def get_filename(response):
+    """Get the filename from the response header
+
+    :param response: The urllib3 response object
+    :type response: Response
+    :raises: RuntimeError if it cannot find a filename in the header
+    :returns: Filename from content-disposition header
+    :rtype: str
+    """
+    log.debug("Headers = %s", response.headers)
+    if "content-disposition" not in response.headers:
+        raise RuntimeError("No Content-Disposition header; cannot get filename")
+
+    try:
+        k, _, v = response.headers["content-disposition"].split(";")[1].strip().partition("=")
+        if k != "filename":
+            raise RuntimeError("No filename= found in content-disposition header")
+    except RuntimeError:
+        raise
+    except Exception as e:
+        raise RuntimeError("Error parsing filename from content-disposition header: %s" % str(e))
+
+    return os.path.basename(v)
+
+def download_file(socket_path, url, progress=True):
+    """Download a file, saving it to the CWD with the included filename
+
+    :param socket_path: Path to the Unix socket to use for API communication
+    :type socket_path: str
+    :param url: URL to send POST to
+    :type url: str
+    """
+    http = UnixHTTPConnectionPool(socket_path)
+    r = http.request("GET", url, preload_content=False)
+
+    filename = get_filename(r)
+    if os.path.exists(filename):
+        msg = "%s exists, skipping download" % filename
+        log.error(msg)
+        raise RuntimeError(msg)
+
+    with open(filename, "wb") as f:
+        while True:
+            data = r.read(10 * 1024**2)
+            if not data:
+                break
+            f.write(data)
+
+            if progress:
+                data_written = f.tell()
+                if data_written > 5 * 1024**2:
+                    sys.stdout.write("%s: %0.2f MB    \r" % (filename, data_written / 1024**2))
+                else:
+                    sys.stdout.write("%s: %0.2f kB\r" % (filename, data_written / 1024))
+                sys.stdout.flush()
+
+    print("")
+    r.release_conn()
+
+    return 0

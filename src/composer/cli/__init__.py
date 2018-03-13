@@ -39,11 +39,14 @@ def main(opts):
     :param opts: Cmdline arguments
     :type opts: argparse.Namespace
     """
-    if len(opts.args) > 0 and opts.args[0] in command_map:
-        return command_map[opts.args[0]](opts)
-    elif len(opts.args) == 0:
-        log.error("Unknown command: %s", opts.args)
+    if len(opts.args) == 0:
+        log.error("Missing command")
+        return 1
+    elif opts.args[0] not in command_map:
+        log.error("Unknown command %s", opts.args[0])
+        return 1
+    if len(opts.args) == 1:
+        log.error("Missing %s sub-command", opts.args[0])
         return 1
     else:
-        log.error("Unknown command: %s", opts.args)
-        return 1
+        return command_map[opts.args[0]](opts)

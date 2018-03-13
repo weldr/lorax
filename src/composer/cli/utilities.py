@@ -68,3 +68,16 @@ def handle_api_result(result, show_json=False):
         return 0
     else:
         return 1
+
+def packageNEVRA(pkg):
+    """Return the package info as a NEVRA
+
+    :param pkg: The package details
+    :type pkg: dict
+    :returns: name-[epoch:]version-release-arch
+    :rtype: str
+    """
+    if pkg["epoch"]:
+        return "%s-%s:%s-%s.%s" % (pkg["name"], pkg["epoch"], pkg["version"], pkg["release"], pkg["arch"])
+    else:
+        return "%s-%s-%s.%s" % (pkg["name"], pkg["version"], pkg["release"], pkg["arch"])
