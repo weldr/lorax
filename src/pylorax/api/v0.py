@@ -898,6 +898,7 @@ DELETE `/api/v0/compose/delete/<uuids>`
 import logging
 log = logging.getLogger("lorax-composer")
 
+import os
 from flask import jsonify, request, Response, send_file
 
 from pylorax.api.compose import start_build, compose_types
@@ -1564,8 +1565,13 @@ def v0_api(api):
             return jsonify(status=False, uuid=uuid, msg="Build not in FINISHED or FAILED.")
         else:
             image_name, image_path = uuid_image(api.config["COMPOSER_CFG"], uuid)
-            image_name = uuid + "-" + image_name
 
+            # Make sure it really exists
+            if not os.path.exists(image_path):
+                return jsonify(status=False, uuid=uuid, error={"msg":"Build %s is missing image file %s" % (uuid, image_name)}), 400
+
+            # Make the image name unique
+            image_name = uuid + "-" + image_name
             # XXX - Will mime type guessing work for all our output?
             return send_file(image_path, as_attachment=True, attachment_filename=image_name, add_etags=False)
 
