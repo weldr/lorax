@@ -34,6 +34,10 @@ def projects_cmd(opts):
         "list":      projects_list,
         "info":      projects_info,
         }
+    if opts.args[1] not in cmd_map:
+        log.error("Unknown projects command: %s", opts.args[1])
+        return 1
+
     return cmd_map[opts.args[1]](opts.socket, opts.api_version, opts.args[2:], opts.json)
 
 def projects_list(socket_path, api_version, args, show_json=False):

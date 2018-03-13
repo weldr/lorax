@@ -22,6 +22,7 @@ import json
 
 from composer import http_client as client
 from composer.cli.utilities import argify, frozen_toml_filename, toml_filename, handle_api_result
+from composer.cli.utilities import packageNEVRA
 
 def recipes_cmd(opts):
     """Process recipes commands
@@ -47,6 +48,10 @@ def recipes_cmd(opts):
         "undo":      recipes_undo,
         "workspace": recipes_workspace
         }
+    if opts.args[1] not in cmd_map:
+        log.error("Unknown recipes command: %s", opts.args[1])
+        return 1
+
     return cmd_map[opts.args[1]](opts.socket, opts.api_version, opts.args[2:], opts.json)
 
 def recipes_list(socket_path, api_version, args, show_json=False):
@@ -294,19 +299,6 @@ def recipes_depsolve(socket_path, api_version, args, show_json=False):
             print("    " + packageNEVRA(dep))
 
     return 0
-
-def packageNEVRA(pkg):
-    """Return the package info as a NEVRA
-
-    :param pkg: The package details
-    :type pkg: dict
-    :returns: name-[epoch:]version-release-arch
-    :rtype: str
-    """
-    if pkg["epoch"]:
-        return "%s-%s:%s-%s.%s" % (pkg["name"], pkg["epoch"], pkg["version"], pkg["release"], pkg["arch"])
-    else:
-        return "%s-%s-%s.%s" % (pkg["name"], pkg["version"], pkg["release"], pkg["arch"])
 
 def recipes_push(socket_path, api_version, args, show_json=False):
     """Push a recipe TOML file to the server, updating the recipe
