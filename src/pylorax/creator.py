@@ -433,7 +433,8 @@ def make_image(opts, ks, callback_func=None):
         log.error("Install failed: %s", e)
         if not opts.keep_image:
             log.info("Removing bad disk image")
-            os.unlink(disk_img)
+            if os.path.exists(disk_img):
+                os.unlink(disk_img)
         raise
 
     log.info("Disk Image install successful")
