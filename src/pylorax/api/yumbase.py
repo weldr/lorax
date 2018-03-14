@@ -22,7 +22,6 @@ log = logging.getLogger("lorax-composer")
 import ConfigParser
 from fnmatch import fnmatchcase
 from glob import glob
-from distutils.util import strtobool
 import os
 import yum
 # This is a hack to short circuit yum's internal logging
@@ -40,6 +39,7 @@ def get_base_object(conf):
     """
     cachedir = os.path.abspath(conf.get("composer", "cache_dir"))
     yumconf = os.path.abspath(conf.get("composer", "yum_conf"))
+    yumroot = os.path.abspath(conf.get("composer", "yum_root"))
     repodir = os.path.abspath(conf.get("composer", "repo_dir"))
 
     c = ConfigParser.ConfigParser()
@@ -72,8 +72,7 @@ def get_base_object(conf):
 
     yb.preconf.fn = yumconf
 
-    # TODO How to handle this?
-    yb.preconf.root = "/var/tmp/composer/yum/root"
+    yb.preconf.root = yumroot
     if not os.path.isdir(yb.preconf.root):
         os.makedirs(yb.preconf.root)
 
@@ -101,5 +100,14 @@ def get_base_object(conf):
         name = os.path.basename(repo_file)[:-5]
         if any(map(lambda pattern: fnmatchcase(name, pattern), enabled_repos)):     # pylint: disable=cell-var-from-loop
             yb.getReposFromConfigFile(repo_file)
+
+    # Update the metadata from the enabled repos to speed up later operations
+    log.info("Updating yum repository metadata")
+    for r in yb.repos.sort():
+        r.metadata_expire = 0
+        r.mdpolicy = "group:all"
+    yb.doRepoSetup()
+    yb.repos.doSetup()
+    yb.repos.populateSack(mdtype='all', cacheonly=1)
 
     return yb

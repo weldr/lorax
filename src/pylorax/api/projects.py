@@ -83,7 +83,7 @@ def yaps_to_project_info(yaps):
 
     metadata entries are hard-coded to {}
     """
-    build = {"epoch":      yaps.epoch,
+    build = {"epoch":      int(yaps.epoch),
              "release":    yaps.release,
              "arch":       yaps.arch,
              "build_time": api_time(yaps.buildtime),
@@ -113,7 +113,7 @@ def tm_to_dep(tm):
     :rtype: dict
     """
     return {"name":     tm.name,
-            "epoch":    tm.epoch,
+            "epoch":    int(tm.epoch),
             "version":  tm.version,
             "release":  tm.release,
             "arch":     tm.arch}
@@ -141,10 +141,10 @@ def dep_evra(dep):
     :returns: epoch:version-release.arch
     :rtype: str
     """
-    if dep["epoch"] == "0":
+    if dep["epoch"] == 0:
         return dep["version"]+"-"+dep["release"]+"."+dep["arch"]
     else:
-        return dep["epoch"]+":"+dep["version"]+"-"+dep["release"]+"."+dep["arch"]
+        return str(dep["epoch"])+":"+dep["version"]+"-"+dep["release"]+"."+dep["arch"]
 
 def dep_nevra(dep):
     """Return the name-epoch:version-release.arch"""

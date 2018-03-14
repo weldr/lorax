@@ -11,10 +11,13 @@ USER_SITE_PACKAGES ?= $(shell sudo $(PYTHON) -m site --user-site)
 
 default: all
 
+src/composer/version.py: lorax.spec
+	echo "num = '$(VERSION)-$(RELEASE)'" > src/composer/version.py
+
 src/pylorax/version.py: lorax.spec
 	echo "num = '$(VERSION)-$(RELEASE)'" > src/pylorax/version.py
 
-all: src/pylorax/version.py
+all: src/pylorax/version.py src/composer/version.py
 	$(PYTHON) setup.py build
 
 install: all
@@ -33,7 +36,7 @@ test: docs
 	sudo mkdir -p $(USER_SITE_PACKAGES)
 	sudo cp ./tests/usercustomize.py $(USER_SITE_PACKAGES)
 	sudo COVERAGE_PROCESS_START=$(PW_DIR)/.coveragerc PYTHONPATH=$(PYTHONPATH):./src/ \
-			$(PYTHON) -m nose -v ./src/pylorax/ ./tests/pylorax/
+			$(PYTHON) -m nose -v ./src/pylorax/ ./src/composer/ ./tests/pylorax/ ./tests/composer/
 	sudo rm -rf $(USER_SITE_PACKAGES)
 
 	coverage combine
@@ -42,6 +45,7 @@ test: docs
 
 clean:
 	-rm -rf build src/pylorax/version.py
+	-rm -rf build src/composer/version.py
 
 tag:
 	git tag -f $(TAG)

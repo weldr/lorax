@@ -28,6 +28,7 @@ class LoraxLintConfig(PocketLintConfig):
                                 FalsePositive(r"Instance of 'int' has no .* member"),
                                 FalsePositive(r"Catching too general exception Exception"),
                                 FalsePositive(r"^E0712.*: Catching an exception which doesn't inherit from (Base|)Exception: GError$"),
+                                FalsePositive(r"Module 'composer' has no 'version' member"),
                               ]
 
     @property

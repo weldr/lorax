@@ -866,7 +866,7 @@ DELETE `/api/v0/compose/delete/<uuids>`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns the output image from the build. The filename is set to the filename
-  from the build. eg. root.tar.xz or boot.iso.
+  from the build with the UUID as a prefix. eg. UUID-root.tar.xz or UUID-boot.iso.
 
 `/api/v0/compose/log/<uuid>[?size=kbytes]`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -898,6 +898,7 @@ DELETE `/api/v0/compose/delete/<uuids>`
 import logging
 log = logging.getLogger("lorax-composer")
 
+import os
 from flask import jsonify, request, Response, send_file
 
 from pylorax.api.compose import start_build, compose_types
@@ -948,7 +949,7 @@ def v0_api(api):
             limit = int(request.args.get("limit", "20"))
             offset = int(request.args.get("offset", "0"))
         except ValueError as e:
-            return jsonify(error={"msg":str(e)}), 400
+            return jsonify(status=False, error={"msg":str(e)}), 400
 
         with api.config["GITLOCK"].lock:
             recipes = take_limits(map(lambda f: f[:-5], list_branch_files(api.config["GITLOCK"].repo, branch)), offset, limit)
@@ -959,6 +960,7 @@ def v0_api(api):
     def v0_recipes_info(recipe_names):
         """Return the contents of the recipe, or a list of recipes"""
         branch = request.args.get("branch", "master")
+        out_fmt = request.args.get("format", "json")
         recipes = []
         changes = []
         errors = []
@@ -1003,7 +1005,11 @@ def v0_api(api):
         recipes = sorted(recipes, key=lambda r: r["name"].lower())
         errors = sorted(errors, key=lambda e: e["recipe"].lower())
 
-        return jsonify(changes=changes, recipes=recipes, errors=errors)
+        if out_fmt == "toml":
+            # With TOML output we just want to dump the raw recipe, skipping the rest.
+            return "\n\n".join([r.toml() for r in recipes])
+        else:
+            return jsonify(changes=changes, recipes=recipes, errors=errors)
 
     @api.route("/api/v0/recipes/changes/<recipe_names>")
     @crossdomain(origin="*")
@@ -1014,7 +1020,7 @@ def v0_api(api):
             limit = int(request.args.get("limit", "20"))
             offset = int(request.args.get("offset", "0"))
         except ValueError as e:
-            return jsonify(error={"msg":str(e)}), 400
+            return jsonify(status=False, error={"msg":str(e)}), 400
 
         recipes = []
         errors = []
@@ -1150,7 +1156,7 @@ def v0_api(api):
                     old_recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, recipe_name, from_commit)
         except Exception as e:
             log.error("(v0_recipes_diff) %s", str(e))
-            return jsonify(error={"msg":str(e)}), 400
+            return jsonify(status=False, error={"msg":str(e)}), 400
 
         try:
             if to_commit == "WORKSPACE":
@@ -1168,7 +1174,7 @@ def v0_api(api):
                     new_recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, recipe_name, to_commit)
         except Exception as e:
             log.error("(v0_recipes_diff) %s", str(e))
-            return jsonify(error={"msg":str(e)}), 400
+            return jsonify(status=False, error={"msg":str(e)}), 400
 
         diff = recipe_diff(old_recipe, new_recipe)
         return jsonify(diff=diff)
@@ -1178,6 +1184,7 @@ def v0_api(api):
     def v0_recipes_freeze(recipe_names):
         """Return the recipe with the exact modules and packages selected by depsolve"""
         branch = request.args.get("branch", "master")
+        out_fmt = request.args.get("format", "json")
         recipes = []
         errors = []
         for recipe_name in [n.strip() for n in sorted(recipe_names.split(","), key=lambda n: n.lower())]:
@@ -1219,7 +1226,11 @@ def v0_api(api):
 
             recipes.append({"recipe": recipe.freeze(deps)})
 
-        return jsonify(recipes=recipes, errors=errors)
+        if out_fmt == "toml":
+            # With TOML output we just want to dump the raw recipe, skipping the rest.
+            return "\n\n".join([e["recipe"].toml() for e in recipes])
+        else:
+            return jsonify(recipes=recipes, errors=errors)
 
     @api.route("/api/v0/recipes/depsolve/<recipe_names>")
     @crossdomain(origin="*")
@@ -1284,14 +1295,14 @@ def v0_api(api):
             limit = int(request.args.get("limit", "20"))
             offset = int(request.args.get("offset", "0"))
         except ValueError as e:
-            return jsonify(error={"msg":str(e)}), 400
+            return jsonify(status=False, error={"msg":str(e)}), 400
 
         try:
             with api.config["YUMLOCK"].lock:
                 available = projects_list(api.config["YUMLOCK"].yb)
         except ProjectsError as e:
             log.error("(v0_projects_list) %s", str(e))
-            return jsonify(error={"msg":str(e)}), 400
+            return jsonify(status=False, error={"msg":str(e)}), 400
 
         projects = take_limits(available, offset, limit)
         return jsonify(projects=projects, offset=offset, limit=limit, total=len(available))
@@ -1305,7 +1316,7 @@ def v0_api(api):
                 projects = projects_info(api.config["YUMLOCK"].yb, project_names.split(","))
         except ProjectsError as e:
             log.error("(v0_projects_info) %s", str(e))
-            return jsonify(error={"msg":str(e)}), 400
+            return jsonify(status=False, error={"msg":str(e)}), 400
 
         return jsonify(projects=projects)
 
@@ -1318,7 +1329,7 @@ def v0_api(api):
                 deps = projects_depsolve(api.config["YUMLOCK"].yb, project_names.split(","))
         except ProjectsError as e:
             log.error("(v0_projects_depsolve) %s", str(e))
-            return jsonify(error={"msg":str(e)}), 400
+            return jsonify(status=False, error={"msg":str(e)}), 400
 
         return jsonify(projects=deps)
 
@@ -1331,7 +1342,7 @@ def v0_api(api):
             limit = int(request.args.get("limit", "20"))
             offset = int(request.args.get("offset", "0"))
         except ValueError as e:
-            return jsonify(error={"msg":str(e)}), 400
+            return jsonify(status=False, error={"msg":str(e)}), 400
 
         if module_names:
             module_names = module_names.split(",")
@@ -1341,7 +1352,7 @@ def v0_api(api):
                 available = modules_list(api.config["YUMLOCK"].yb, module_names)
         except ProjectsError as e:
             log.error("(v0_modules_list) %s", str(e))
-            return jsonify(error={"msg":str(e)}), 400
+            return jsonify(status=False, error={"msg":str(e)}), 400
 
         modules = take_limits(available, offset, limit)
         return jsonify(modules=modules, offset=offset, limit=limit, total=len(available))
@@ -1355,7 +1366,7 @@ def v0_api(api):
                 modules = modules_info(api.config["YUMLOCK"].yb, module_names.split(","))
         except ProjectsError as e:
             log.error("(v0_modules_info) %s", str(e))
-            return jsonify(error={"msg":str(e)}), 400
+            return jsonify(status=False, error={"msg":str(e)}), 400
 
         return jsonify(modules=modules)
 
@@ -1454,7 +1465,7 @@ def v0_api(api):
         """Cancel a running compose and delete its results directory"""
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
         if status is None:
-            return jsonify(status=False, msg="%s is not a valid build uuid" % uuid), 400
+            return jsonify(status=False, error={"msg":"%s is not a valid build uuid" % uuid}), 400
 
         if status["queue_status"] not in ["WAITING", "RUNNING"]:
             return jsonify(status=False, uuid=uuid, msg="Cannot cancel a build that is in the %s state" % status["queue_status"])
@@ -1504,9 +1515,9 @@ def v0_api(api):
         """Return a tar of the metadata for the build"""
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
         if status is None:
-            return jsonify(status=False, msg="%s is not a valid build uuid" % uuid), 400
+            return jsonify(status=False, error={"msg":"%s is not a valid build uuid" % uuid}), 400
         if status["queue_status"] not in ["FINISHED", "FAILED"]:
-            return jsonify(status=False, uuid=uuid, msg="Build not in FINISHED or FAILED.")
+            return jsonify(status=False, error={"msg":"Build %s not in FINISHED or FAILED state." % uuid}), 400
         else:
             return Response(uuid_tar(api.config["COMPOSER_CFG"], uuid, metadata=True, image=False, logs=False),
                             mimetype="application/x-tar",
@@ -1519,9 +1530,9 @@ def v0_api(api):
         """Return a tar of the metadata and the results for the build"""
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
         if status is None:
-            return jsonify(status=False, msg="%s is not a valid build uuid" % uuid), 400
+            return jsonify(status=False, error={"msg":"%s is not a valid build uuid" % uuid}), 400
         elif status["queue_status"] not in ["FINISHED", "FAILED"]:
-            return jsonify(status=False, uuid=uuid, msg="Build not in FINISHED or FAILED.")
+            return jsonify(status=False, error={"msg":"Build %s not in FINISHED or FAILED state." % uuid}), 400
         else:
             return Response(uuid_tar(api.config["COMPOSER_CFG"], uuid, metadata=True, image=True, logs=True),
                             mimetype="application/x-tar",
@@ -1534,9 +1545,9 @@ def v0_api(api):
         """Return a tar of the metadata for the build"""
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
         if status is None:
-            return jsonify(status=False, msg="%s is not a valid build uuid"), 400
+            return jsonify(status=False, error={"msg":"%s is not a valid build uuid" % uuid}), 400
         elif status["queue_status"] not in ["FINISHED", "FAILED"]:
-            return jsonify(status=False, uuid=uuid, msg="Build not in FINISHED or FAILED.")
+            return jsonify(status=False, error={"msg":"Build %s not in FINISHED or FAILED state." % uuid}), 400
         else:
             return Response(uuid_tar(api.config["COMPOSER_CFG"], uuid, metadata=False, image=False, logs=True),
                             mimetype="application/x-tar",
@@ -1549,12 +1560,18 @@ def v0_api(api):
         """Return the output image for the build"""
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
         if status is None:
-            return jsonify(status=False, msg="%s is not a valid build uuid" % uuid), 400
+            return jsonify(status=False, error={"msg":"%s is not a valid build uuid" % uuid}), 400
         elif status["queue_status"] not in ["FINISHED", "FAILED"]:
-            return jsonify(status=False, uuid=uuid, msg="Build not in FINISHED or FAILED.")
+            return jsonify(status=False, error={"msg":"Build %s not in FINISHED or FAILED state." % uuid}), 400
         else:
             image_name, image_path = uuid_image(api.config["COMPOSER_CFG"], uuid)
 
+            # Make sure it really exists
+            if not os.path.exists(image_path):
+                return jsonify(status=False, error={"msg":"Build %s is missing image file %s" % (uuid, image_name)}), 400
+
+            # Make the image name unique
+            image_name = uuid + "-" + image_name
             # XXX - Will mime type guessing work for all our output?
             return send_file(image_path, as_attachment=True, attachment_filename=image_name, add_etags=False)
 
@@ -1565,7 +1582,7 @@ def v0_api(api):
         try:
             size = int(request.args.get("size", "1024"))
         except ValueError as e:
-            return jsonify(error={"msg":str(e)}), 400
+            return jsonify(status=False, error={"msg":str(e)}), 400
 
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
         if status is None or status["queue_status"] == "WAITING":

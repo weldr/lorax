@@ -100,6 +100,16 @@ BuildRequires: systemd
 %description composer
 lorax-composer provides a REST API for building images using lorax.
 
+%package -n composer-cli
+Summary: A command line tool for use with the lorax-composer API server
+
+# From Distribution
+Requires: python-urllib3
+
+%description -n composer-cli
+A command line tool for use with the lorax-composer API server. Examine recipes,
+build images, etc. from the command line.
+
 %prep
 %setup -q
 
@@ -147,6 +157,9 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python_sitelib}/pylorax/api/*
 %{_sbindir}/lorax-composer
 %{_unitdir}/lorax-composer.service
+
+%files -n composer-cli
+%{_bindir}/composer-cli
 
 %changelog
 * Thu Feb 22 2018 Brian C. Lane <bcl@redhat.com> 19.7.10-1
