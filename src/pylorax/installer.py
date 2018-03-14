@@ -232,7 +232,7 @@ def novirt_install(opts, disk_img, disk_size, repo_url, callback_func=None):
         selinux.security_setenforce(0)
 
     # Clean up /tmp/ from previous runs to prevent stale info from being used
-    for path in ["/tmp/yum.repos.d/", "/tmp/yum.cache/"]:
+    for path in ["/tmp/yum.repos.d/", "/tmp/yum.cache/", "/tmp/yum.root/", "/tmp/yum.pluginconf.d/"]:
         if os.path.isdir(path):
             shutil.rmtree(path)
 
