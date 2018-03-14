@@ -39,6 +39,7 @@ def get_base_object(conf):
     """
     cachedir = os.path.abspath(conf.get("composer", "cache_dir"))
     yumconf = os.path.abspath(conf.get("composer", "yum_conf"))
+    yumroot = os.path.abspath(conf.get("composer", "yum_root"))
     repodir = os.path.abspath(conf.get("composer", "repo_dir"))
 
     c = ConfigParser.ConfigParser()
@@ -71,8 +72,7 @@ def get_base_object(conf):
 
     yb.preconf.fn = yumconf
 
-    # TODO How to handle this?
-    yb.preconf.root = "/var/tmp/composer/yum/root"
+    yb.preconf.root = yumroot
     if not os.path.isdir(yb.preconf.root):
         os.makedirs(yb.preconf.root)
 

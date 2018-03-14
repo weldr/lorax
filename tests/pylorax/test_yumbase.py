@@ -18,7 +18,6 @@ import os
 import shutil
 import tempfile
 import unittest
-from glob import glob
 
 import ConfigParser
 
@@ -73,14 +72,17 @@ use_system_repos = False
 class CreateYumDirsTest(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        # remove this directory
-        if os.path.exists('/var/tmp/composer/yum/root'):
-            shutil.rmtree('/var/tmp/composer/yum/root')
+        self.tmp_dir = tempfile.mkdtemp(prefix="lorax.test.yumbase.")
+
+    @classmethod
+    def tearDownClass(self):
+        shutil.rmtree(self.tmp_dir)
 
     def test_creates_missing_yum_root_directory(self):
-        config = configure(test_config=True)
+        config = configure(test_config=True, root_dir=self.tmp_dir)
 
         # will create the above directory if missing
+        make_yum_dirs(config)
         _ = get_base_object(config)
 
-        self.assertTrue(os.path.exists('/var/tmp/composer/yum/root'))
+        self.assertTrue(os.path.exists(self.tmp_dir + '/var/tmp/composer/yum/root'))
