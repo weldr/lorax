@@ -49,4 +49,8 @@ def main(opts):
         log.error("Missing %s sub-command", opts.args[0])
         return 1
     else:
-        return command_map[opts.args[0]](opts)
+        try:
+            return command_map[opts.args[0]](opts)
+        except Exception as e:
+            log.error(str(e))
+            return 1

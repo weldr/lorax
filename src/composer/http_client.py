@@ -158,6 +158,10 @@ def download_file(socket_path, url, progress=True):
     """
     http = UnixHTTPConnectionPool(socket_path)
     r = http.request("GET", url, preload_content=False)
+    if r.status == 400:
+        err = json.loads(r.data.decode("utf-8"))
+        if not err["status"]:
+            raise RuntimeError(err["error"]["msg"])
 
     filename = get_filename(r)
     if os.path.exists(filename):
