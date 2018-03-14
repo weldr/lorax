@@ -45,6 +45,7 @@ def configure(conf_file="/etc/lorax/composer.conf", root_dir="/", test_config=Fa
     conf.set("composer", "share_dir", os.path.realpath(joinpaths(root_dir, "/usr/share/lorax/")))
     conf.set("composer", "lib_dir", os.path.realpath(joinpaths(root_dir, "/var/lib/lorax/composer/")))
     conf.set("composer", "yum_conf", os.path.realpath(joinpaths(root_dir, "/var/tmp/composer/yum.conf")))
+    conf.set("composer", "yum_root", os.path.realpath(joinpaths(root_dir, "/var/tmp/composer/yum/root/")))
     conf.set("composer", "repo_dir", os.path.realpath(joinpaths(root_dir, "/var/tmp/composer/repos.d/")))
     conf.set("composer", "cache_dir", os.path.realpath(joinpaths(root_dir, "/var/tmp/composer/cache/")))
 
@@ -70,7 +71,7 @@ def make_yum_dirs(conf):
     :type conf: ComposerConfig
     :returns: None
     """
-    for p in ["yum_conf", "repo_dir", "cache_dir"]:
+    for p in ["yum_conf", "repo_dir", "cache_dir", "yum_root"]:
         p_dir = os.path.dirname(conf.get("composer", p))
         if not os.path.exists(p_dir):
             os.makedirs(p_dir)
