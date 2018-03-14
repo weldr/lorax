@@ -123,6 +123,29 @@ class LogWrapper(object):
         """Log everything as INFO"""
         self.log.info(msg.strip())
 
+def make_pidfile(pid_path="/run/lorax-composer.pid"):
+    """Check for a running instance of lorax-composer
+
+    :param pid_path: Path to the pid file
+    :type pid_path: str
+    :returns: False if there is already a running lorax-composer, True otherwise
+    :rtype: bool
+
+    This will look for an existing pid file, and if found read the PID and check to
+    see if it is really lorax-composer running, or if it is a stale pid.
+    It will create a new pid file if there isn't already one, or if the PID is stale.
+    """
+    if os.path.exists(pid_path):
+        try:
+            pid = int(open(pid_path, "r").read())
+            cmdline = open("/proc/%s/cmdline" % pid, "r").read()
+            if "lorax-composer" in cmdline:
+                return False
+        except (IOError, ValueError):
+            pass
+
+    open(pid_path, "w").write(str(os.getpid()))
+    return True
 
 if __name__ == '__main__':
     # parse the arguments
@@ -137,6 +160,10 @@ if __name__ == '__main__':
         os.makedirs(logpath)
     setup_logging(opts.logfile)
     log.debug("opts=%s", opts)
+
+    if not make_pidfile():
+        log.error("PID file exists, lorax-composer already running. Quitting.")
+        sys.exit(1)
 
     errors = []
     # Check to make sure the user exists and get its uid
