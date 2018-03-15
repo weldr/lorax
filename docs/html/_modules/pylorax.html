@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax &mdash; Lorax 28.2 documentation</title>
+  <title>pylorax &mdash; Lorax 28.9 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="Lorax 28.2 documentation" href="../index.html"/>
+    <link rel="top" title="Lorax 28.9 documentation" href="../index.html"/>
         <link rel="up" title="Module code" href="index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                28.2
+                28.9
               </div>
             
           
@@ -443,7 +443,8 @@
 
         <span class="c1"># write .buildstamp</span>
         <span class="n">buildstamp</span> <span class="o">=</span> <span class="n">BuildStamp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">product</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">product</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">product</span><span class="o">.</span><span class="n">bugurl</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">product</span><span class="o">.</span><span class="n">isfinal</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">arch</span><span class="o">.</span><span class="n">buildarch</span><span class="p">)</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">product</span><span class="o">.</span><span class="n">bugurl</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">product</span><span class="o">.</span><span class="n">isfinal</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">arch</span><span class="o">.</span><span class="n">buildarch</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">product</span><span class="o">.</span><span class="n">variant</span><span class="p">)</span>
 
         <span class="n">buildstamp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inroot</span><span class="p">,</span> <span class="s2">&quot;.buildstamp&quot;</span><span class="p">))</span>
 
@@ -617,7 +618,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015, Red Hat, Inc..
+        &copy; Copyright 2018, Red Hat, Inc..
 
     </p>
   </div>
@@ -639,7 +640,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'28.2',
+            VERSION:'28.9',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
