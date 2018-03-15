@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.8
+Version:        29.0
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -155,6 +155,12 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Thu Mar 15 2018 Brian C. Lane <bcl@redhat.com> 29.0-1
+- Update Copyright year to 2018 in Sphinx docs (bcl@redhat.com)
+- Add links to documentation for previous versions (bcl@redhat.com)
+- make docs now also builds html (bcl@redhat.com)
+- Update default releasever to Fedora 29 (rawhide) (jkonecny@redhat.com)
+
 * Mon Feb 26 2018 Brian C. Lane <bcl@redhat.com> 28.8-1
 - cleanup: don't remove libgstgl (dusty@dustymabe.com)
 
