@@ -42,7 +42,7 @@ tag:
 	git tag -f $(TAG)
 
 docs:
-	$(MAKE) -C docs apidoc
+	$(MAKE) -C docs apidoc html
 
 archive:
 	@git archive --format=tar --prefix=$(PKGNAME)-$(VERSION)/ $(TAG) > $(PKGNAME)-$(VERSION).tar
@@ -62,3 +62,5 @@ local:
 	@echo "The archive is in $(PKGNAME)-$(VERSION).tar.gz"
 
 ci: check test
+
+.PHONY: docs
