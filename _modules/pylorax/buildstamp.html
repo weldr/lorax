@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.buildstamp &mdash; Lorax 28.2 documentation</title>
+  <title>pylorax.buildstamp &mdash; Lorax 29.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Lorax 28.2 documentation" href="../../index.html"/>
+    <link rel="top" title="Lorax 29.0 documentation" href="../../index.html"/>
         <link rel="up" title="pylorax" href="../pylorax.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                28.2
+                29.0
               </div>
             
           
@@ -191,11 +191,12 @@
 
 <div class="viewcode-block" id="BuildStamp"><a class="viewcode-back" href="../../pylorax.html#pylorax.buildstamp.BuildStamp">[docs]</a><span class="k">class</span> <span class="nc">BuildStamp</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">bugurl</span><span class="p">,</span> <span class="n">isfinal</span><span class="p">,</span> <span class="n">buildarch</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">bugurl</span><span class="p">,</span> <span class="n">isfinal</span><span class="p">,</span> <span class="n">buildarch</span><span class="p">,</span> <span class="n">variant</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">product</span> <span class="o">=</span> <span class="n">product</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">version</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bugurl</span> <span class="o">=</span> <span class="n">bugurl</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">isfinal</span> <span class="o">=</span> <span class="n">isfinal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variant</span> <span class="o">=</span> <span class="n">variant</span>
 
         <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
         <span class="n">now</span> <span class="o">=</span> <span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">%H%M&quot;</span><span class="p">)</span>
@@ -218,6 +219,8 @@
             <span class="n">fobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;BugURL=</span><span class="si">{0.bugurl}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
             <span class="n">fobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;IsFinal=</span><span class="si">{0.isfinal}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
             <span class="n">fobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;UUID=</span><span class="si">{0.uuid}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">variant</span><span class="p">:</span>
+                <span class="n">fobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Variant=</span><span class="si">{0.variant}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
             <span class="n">fobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;[Compose]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">fobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Lorax=</span><span class="si">{0}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">vernum</span><span class="p">))</span></div></div>
 </pre></div>
@@ -234,7 +237,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015, Red Hat, Inc..
+        &copy; Copyright 2018, Red Hat, Inc..
 
     </p>
   </div>
@@ -256,7 +259,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'28.2',
+            VERSION:'29.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

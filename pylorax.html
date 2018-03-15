@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax package &mdash; Lorax 28.2 documentation</title>
+  <title>pylorax package &mdash; Lorax 29.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Lorax 28.2 documentation" href="index.html"/>
+    <link rel="top" title="Lorax 29.0 documentation" href="index.html"/>
         <link rel="up" title="pylorax" href="modules.html"/>
         <link rel="prev" title="pylorax" href="modules.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                28.2
+                29.0
               </div>
             
           
@@ -238,7 +238,7 @@
 <span id="pylorax-buildstamp-module"></span><h2>pylorax.buildstamp module<a class="headerlink" href="#module-pylorax.buildstamp" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pylorax.buildstamp.BuildStamp">
-<em class="property">class </em><code class="descclassname">pylorax.buildstamp.</code><code class="descname">BuildStamp</code><span class="sig-paren">(</span><em>product</em>, <em>version</em>, <em>bugurl</em>, <em>isfinal</em>, <em>buildarch</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/buildstamp.html#BuildStamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.buildstamp.BuildStamp" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pylorax.buildstamp.</code><code class="descname">BuildStamp</code><span class="sig-paren">(</span><em>product</em>, <em>version</em>, <em>bugurl</em>, <em>isfinal</em>, <em>buildarch</em>, <em>variant=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/buildstamp.html#BuildStamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.buildstamp.BuildStamp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
 <dl class="method">
 <dt id="pylorax.buildstamp.BuildStamp.write">
@@ -345,27 +345,27 @@
 in real-time.</p>
 <p>This method assumes that there is a reasonably low delay between the
 end of output and the process exiting. If the child process closes
-stdout and then keeps on truckin&#8217; there will be problems.</p>
+stdout and then keeps on truckin’ there will be problems.</p>
 <dl class="docutils">
 <dt>NOTE/WARNING: UnicodeDecodeError will be raised if the output of the</dt>
-<dd>external command can&#8217;t be decoded as UTF-8.</dd>
+<dd>external command can’t be decoded as UTF-8.</dd>
 </dl>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>command</strong> &#8211; The command to run</li>
-<li><strong>argv</strong> &#8211; The argument list</li>
-<li><strong>stdin</strong> &#8211; The file object to read stdin from.</li>
-<li><strong>stdout</strong> &#8211; Optional file object to redirect stdout and stderr to.</li>
-<li><strong>root</strong> &#8211; The directory to chroot to before running command.</li>
-<li><strong>env_prune</strong> &#8211; environment variable to remove before execution</li>
-<li><strong>filter_stderr</strong> &#8211; Whether stderr should be excluded from the returned output</li>
-<li><strong>callback</strong> &#8211; method to call while waiting for process to finish, passed Popen object</li>
-<li><strong>env_add</strong> &#8211; environment variables to add before execution</li>
-<li><strong>reset_handlers</strong> &#8211; whether to reset to SIG_DFL any signal handlers set to SIG_IGN</li>
-<li><strong>reset_lang</strong> &#8211; whether to set the locale of the child process to C</li>
+<li><strong>command</strong> – The command to run</li>
+<li><strong>argv</strong> – The argument list</li>
+<li><strong>stdin</strong> – The file object to read stdin from.</li>
+<li><strong>stdout</strong> – Optional file object to redirect stdout and stderr to.</li>
+<li><strong>root</strong> – The directory to chroot to before running command.</li>
+<li><strong>env_prune</strong> – environment variable to remove before execution</li>
+<li><strong>filter_stderr</strong> – Whether stderr should be excluded from the returned output</li>
+<li><strong>callback</strong> – method to call while waiting for process to finish, passed Popen object</li>
+<li><strong>env_add</strong> – environment variables to add before execution</li>
+<li><strong>reset_handlers</strong> – whether to reset to SIG_DFL any signal handlers set to SIG_IGN</li>
+<li><strong>reset_lang</strong> – whether to set the locale of the child process to C</li>
 </ul>
 </td>
 </tr>
@@ -387,16 +387,16 @@ This returns an iterator with the lines from the command until it has finished</
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>command</strong> &#8211; The command to run</li>
-<li><strong>argv</strong> &#8211; The argument list</li>
-<li><strong>stdin</strong> &#8211; The file object to read stdin from.</li>
-<li><strong>root</strong> &#8211; The directory to chroot to before running command.</li>
-<li><strong>log_output</strong> &#8211; Whether to log the output of command</li>
-<li><strong>filter_stderr</strong> &#8211; Whether stderr should be excluded from the returned output</li>
-<li><strong>callback</strong> &#8211; method to call while waiting for process to finish, passed Popen object</li>
-<li><strong>env_add</strong> &#8211; environment variables to add before execution</li>
-<li><strong>reset_handlers</strong> &#8211; whether to reset to SIG_DFL any signal handlers set to SIG_IGN</li>
-<li><strong>reset_lang</strong> &#8211; whether to set the locale of the child process to C</li>
+<li><strong>command</strong> – The command to run</li>
+<li><strong>argv</strong> – The argument list</li>
+<li><strong>stdin</strong> – The file object to read stdin from.</li>
+<li><strong>root</strong> – The directory to chroot to before running command.</li>
+<li><strong>log_output</strong> – Whether to log the output of command</li>
+<li><strong>filter_stderr</strong> – Whether stderr should be excluded from the returned output</li>
+<li><strong>callback</strong> – method to call while waiting for process to finish, passed Popen object</li>
+<li><strong>env_add</strong> – environment variables to add before execution</li>
+<li><strong>reset_handlers</strong> – whether to reset to SIG_DFL any signal handlers set to SIG_IGN</li>
+<li><strong>reset_lang</strong> – whether to set the locale of the child process to C</li>
 </ul>
 </td>
 </tr>
@@ -416,19 +416,19 @@ This returns an iterator with the lines from the command until it has finished</
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>command</strong> &#8211; The command to run</li>
-<li><strong>argv</strong> &#8211; The argument list</li>
-<li><strong>stdin</strong> &#8211; The file object to read stdin from.</li>
-<li><strong>stdout</strong> &#8211; Optional file object to redirect stdout and stderr to.</li>
-<li><strong>root</strong> &#8211; The directory to chroot to before running command.</li>
-<li><strong>env_prune</strong> &#8211; environment variable to remove before execution</li>
-<li><strong>log_output</strong> &#8211; whether to log the output of command</li>
-<li><strong>binary_output</strong> &#8211; whether to treat the output of command as binary data</li>
-<li><strong>raise_err</strong> &#8211; whether to raise a CalledProcessError if the returncode is non-zero</li>
-<li><strong>callback</strong> &#8211; method to call while waiting for process to finish, passed Popen object</li>
-<li><strong>env_add</strong> &#8211; environment variables to add before execution</li>
-<li><strong>reset_handlers</strong> &#8211; whether to reset to SIG_DFL any signal handlers set to SIG_IGN</li>
-<li><strong>reset_lang</strong> &#8211; whether to set the locale of the child process to C</li>
+<li><strong>command</strong> – The command to run</li>
+<li><strong>argv</strong> – The argument list</li>
+<li><strong>stdin</strong> – The file object to read stdin from.</li>
+<li><strong>stdout</strong> – Optional file object to redirect stdout and stderr to.</li>
+<li><strong>root</strong> – The directory to chroot to before running command.</li>
+<li><strong>env_prune</strong> – environment variable to remove before execution</li>
+<li><strong>log_output</strong> – whether to log the output of command</li>
+<li><strong>binary_output</strong> – whether to treat the output of command as binary data</li>
+<li><strong>raise_err</strong> – whether to raise a CalledProcessError if the returncode is non-zero</li>
+<li><strong>callback</strong> – method to call while waiting for process to finish, passed Popen object</li>
+<li><strong>env_add</strong> – environment variables to add before execution</li>
+<li><strong>reset_handlers</strong> – whether to reset to SIG_DFL any signal handlers set to SIG_IGN</li>
+<li><strong>reset_lang</strong> – whether to set the locale of the child process to C</li>
 </ul>
 </td>
 </tr>
@@ -463,8 +463,8 @@ variable name, the old value is overwritten.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) &#8211; The name of the environment variable</li>
-<li><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) &#8211; The value of the environment variable</li>
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The name of the environment variable</li>
+<li><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The value of the environment variable</li>
 </ul>
 </td>
 </tr>
@@ -485,17 +485,17 @@ last.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>argv</strong> &#8211; The command to run and argument</li>
-<li><strong>root</strong> &#8211; The directory to chroot to before running command.</li>
-<li><strong>stdin</strong> &#8211; The file object to read stdin from.</li>
-<li><strong>stdout</strong> &#8211; The file object to write stdout to.</li>
-<li><strong>stderr</strong> &#8211; The file object to write stderr to.</li>
-<li><strong>env_prune</strong> &#8211; environment variables to remove before execution</li>
-<li><strong>env_add</strong> &#8211; environment variables to add before execution</li>
-<li><strong>reset_handlers</strong> &#8211; whether to reset to SIG_DFL any signal handlers set to SIG_IGN</li>
-<li><strong>reset_lang</strong> &#8211; whether to set the locale of the child process to C</li>
-<li><strong>kwargs</strong> &#8211; Additional parameters to pass to subprocess.Popen</li>
-<li><strong>preexec_fn</strong> &#8211; A function to run before execution starts.</li>
+<li><strong>argv</strong> – The command to run and argument</li>
+<li><strong>root</strong> – The directory to chroot to before running command.</li>
+<li><strong>stdin</strong> – The file object to read stdin from.</li>
+<li><strong>stdout</strong> – The file object to write stdout to.</li>
+<li><strong>stderr</strong> – The file object to write stderr to.</li>
+<li><strong>env_prune</strong> – environment variables to remove before execution</li>
+<li><strong>env_add</strong> – environment variables to add before execution</li>
+<li><strong>reset_handlers</strong> – whether to reset to SIG_DFL any signal handlers set to SIG_IGN</li>
+<li><strong>reset_lang</strong> – whether to set the locale of the child process to C</li>
+<li><strong>kwargs</strong> – Additional parameters to pass to subprocess.Popen</li>
+<li><strong>preexec_fn</strong> – A function to run before execution starts.</li>
 </ul>
 </td>
 </tr>
@@ -539,7 +539,7 @@ last.</p>
 <code class="descclassname">pylorax.imgutils.</code><code class="descname">compress</code><span class="sig-paren">(</span><em>command</em>, <em>rootdir</em>, <em>outfile</em>, <em>compression='xz'</em>, <em>compressargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/imgutils.html#compress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.compress" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make a compressed archive of the given rootdir.
 command is a list of the archiver commands to run
-compression should be &#8220;xz&#8221;, &#8220;gzip&#8221;, &#8220;lzma&#8221;, &#8220;bzip2&#8221;, or None.
+compression should be “xz”, “gzip”, “lzma”, “bzip2”, or None.
 compressargs will be used on the compression commandline.</p>
 </dd></dl>
 
@@ -570,7 +570,7 @@ raises CalledProcessError if dmsetup fails.</p>
 <dt id="pylorax.imgutils.do_grafts">
 <code class="descclassname">pylorax.imgutils.</code><code class="descname">do_grafts</code><span class="sig-paren">(</span><em>grafts</em>, <em>dest</em>, <em>preserve=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/imgutils.html#do_grafts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.do_grafts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copy each of the items listed in grafts into dest.
-If the key ends with &#8216;/&#8217; it&#8217;s assumed to be a directory which should be
+If the key ends with ‘/’ it’s assumed to be a directory which should be
 created, otherwise just the leading directories will be created.</p>
 </dd></dl>
 
@@ -606,7 +606,7 @@ Raises CalledProcessError if losetup fails.</p>
 <p>It seems that on rare occasions losetup can return before the /dev/loopX is
 ready for use, causing problems with mkfs. This tries to make sure that the
 loop device really is associated with the backing file before continuing.</p>
-<p>Raise RuntimeError if it isn&#8217;t setup after 5 tries.</p>
+<p>Raise RuntimeError if it isn’t setup after 5 tries.</p>
 </dd></dl>
 
 <dl class="function">
@@ -633,10 +633,10 @@ loop device really is associated with the backing file before continuing.</p>
 <dt id="pylorax.imgutils.mkfsimage">
 <code class="descclassname">pylorax.imgutils.</code><code class="descname">mkfsimage</code><span class="sig-paren">(</span><em>fstype</em>, <em>rootdir</em>, <em>outfile</em>, <em>size=None</em>, <em>mkfsargs=None</em>, <em>mountargs=''</em>, <em>graft=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/imgutils.html#mkfsimage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.mkfsimage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic filesystem image creation function.
-fstype should be a filesystem type - &#8220;mkfs.${fstype}&#8221; must exist.
-graft should be a dict: {&#8220;some/path/in/image&#8221;: &#8220;local/file/or/dir&#8221;};</p>
+fstype should be a filesystem type - “mkfs.${fstype}” must exist.
+graft should be a dict: {“some/path/in/image”: “local/file/or/dir”};</p>
 <blockquote>
-<div>if the path ends with a &#8216;/&#8217; it&#8217;s assumed to be a directory.</div></blockquote>
+<div>if the path ends with a ‘/’ it’s assumed to be a directory.</div></blockquote>
 <p>Will raise CalledProcessError if something goes wrong.</p>
 </dd></dl>
 
@@ -650,7 +650,7 @@ graft should be a dict: {&#8220;some/path/in/image&#8221;: &#8220;local/file/or/
 <code class="descclassname">pylorax.imgutils.</code><code class="descname">mkqcow2</code><span class="sig-paren">(</span><em>outfile</em>, <em>size</em>, <em>options=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/imgutils.html#mkqcow2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.mkqcow2" title="Permalink to this definition">¶</a></dt>
 <dd><p>use qemu-img to create a file of the given size.
 options is a list of options passed to qemu-img</p>
-<p>Default format is qcow2, override by passing &#8220;-f&#8221;, fmt
+<p>Default format is qcow2, override by passing “-f”, fmt
 in options.</p>
 </dd></dl>
 
@@ -659,7 +659,7 @@ in options.</p>
 <code class="descclassname">pylorax.imgutils.</code><code class="descname">mkqemu_img</code><span class="sig-paren">(</span><em>outfile</em>, <em>size</em>, <em>options=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/imgutils.html#mkqemu_img"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.mkqemu_img" title="Permalink to this definition">¶</a></dt>
 <dd><p>use qemu-img to create a file of the given size.
 options is a list of options passed to qemu-img</p>
-<p>Default format is qcow2, override by passing &#8220;-f&#8221;, fmt
+<p>Default format is qcow2, override by passing “-f”, fmt
 in options.</p>
 </dd></dl>
 
@@ -672,11 +672,11 @@ in options.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>rootdir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) &#8211; Root directory</li>
-<li><strong>outfile</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) &#8211; Path of output image file</li>
-<li><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) &#8211; Filesystem label</li>
-<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) &#8211; Size of the image in GiB, if None computed automatically</li>
-<li><strong>sysroot</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) &#8211; path to system (deployment) root relative to physical root</li>
+<li><strong>rootdir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Root directory</li>
+<li><strong>outfile</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path of output image file</li>
+<li><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Filesystem label</li>
+<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Size of the image in GiB, if None computed automatically</li>
+<li><strong>sysroot</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to system (deployment) root relative to physical root</li>
 </ul>
 </td>
 </tr>
@@ -714,7 +714,7 @@ raises CalledProcessError if mount fails.</p>
 <dl class="function">
 <dt id="pylorax.imgutils.round_to_blocks">
 <code class="descclassname">pylorax.imgutils.</code><code class="descname">round_to_blocks</code><span class="sig-paren">(</span><em>size</em>, <em>blocksize</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/imgutils.html#round_to_blocks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.round_to_blocks" title="Permalink to this definition">¶</a></dt>
-<dd><p>If size isn&#8217;t a multiple of blocksize, round up to the next multiple</p>
+<dd><p>If size isn’t a multiple of blocksize, round up to the next multiple</p>
 </dd></dl>
 
 <dl class="function">
@@ -747,10 +747,10 @@ raises CalledProcessError if umount fails.</p>
 <blockquote>
 <div><p># install a bunch of packages
 runner = LoraxTemplateRunner(inroot=rundir, outroot=rundir, dbo=dnf_obj)
-runner.run(&#8220;install-packages.ltmpl&#8221;)</p>
+runner.run(“install-packages.ltmpl”)</p>
 <p># modify a runtime dir
 runner = LoraxTemplateRunner(inroot=rundir, outroot=newrun)
-runner.run(&#8220;runtime-transmogrify.ltmpl&#8221;)</p>
+runner.run(“runtime-transmogrify.ltmpl”)</p>
 </div></blockquote>
 <p>NOTES:</p>
 <ul>
@@ -766,12 +766,12 @@ with the rest of the line as arguments</li>
 </ol>
 </div></blockquote>
 </li>
-<li><p class="first">Parsing and execution are <em>separate</em> passes - so you can&#8217;t use the result
+<li><p class="first">Parsing and execution are <em>separate</em> passes - so you can’t use the result
 of a command in an %if statement (or any other control statements)!</p>
 </li>
 <li><p class="first">Commands that run external programs (systemctl, gconfset) currently use
-the <em>host</em>&#8216;s copy of that program, which may cause problems if there&#8217;s a
-big enough difference between the host and the image you&#8217;re modifying.</p>
+the <em>host</em>’s copy of that program, which may cause problems if there’s a
+big enough difference between the host and the image you’re modifying.</p>
 </li>
 <li><p class="first">The commands are not executed under a real chroot, so absolute symlinks
 will point <em>outside</em> the inroot/outroot. Be careful with symlinks!</p>
@@ -783,7 +783,7 @@ will point <em>outside</em> the inroot/outroot. Be careful with symlinks!</p>
 object - so adding a new command is as easy as adding a new function.</li>
 <li>Each function gets arguments that correspond to the rest of the tokens
 on that line (after word splitting and brace expansion)</li>
-<li>Commands should raise exceptions for errors - don&#8217;t use sys.exit()</li>
+<li>Commands should raise exceptions for errors - don’t use sys.exit()</li>
 </ul>
 <dl class="method">
 <dt id="pylorax.ltmpl.LoraxTemplateRunner.append">
@@ -791,12 +791,12 @@ on that line (after word splitting and brace expansion)</li>
 <dd><dl class="docutils">
 <dt>append FILE STRING</dt>
 <dd><p class="first">Append STRING (followed by a newline character) to FILE.
-Python character escape sequences (&#8216;n&#8217;, &#8216;t&#8217;, etc.) will be
+Python character escape sequences (‘n’, ‘t’, etc.) will be
 converted to the appropriate characters.
 Examples:</p>
 <blockquote class="last">
-<div>append /etc/depmod.d/dd.conf &#8220;search updates built-in&#8221;
-append /etc/resolv.conf &#8220;&#8221;</div></blockquote>
+<div>append /etc/depmod.d/dd.conf “search updates built-in”
+append /etc/resolv.conf “”</div></blockquote>
 </dd>
 </dl>
 </dd></dl>
@@ -817,7 +817,7 @@ append /etc/resolv.conf &#8220;&#8221;</div></blockquote>
 <dt>copy SRC DEST</dt>
 <dd>Copy SRC to DEST.
 If DEST is a directory, SRC will be copied inside it.
-If DEST doesn&#8217;t exist, SRC will be copied to a file with
+If DEST doesn’t exist, SRC will be copied to a file with
 that name, if the path leading to it exists.</dd>
 </dl>
 </dd></dl>
@@ -867,9 +867,9 @@ Example:</p>
 tree to the given destination in the output tree.
 The path to DEST must exist in the output tree.
 If DEST is a directory, SRC will be copied into that directory.
-If DEST doesn&#8217;t exist, SRC will be copied to a file with that name,
+If DEST doesn’t exist, SRC will be copied to a file with that name,
 assuming the rest of the path exists.
-This is pretty much like how the &#8216;cp&#8217; command works.
+This is pretty much like how the ‘cp’ command works.
 Examples:</p>
 <blockquote class="last">
 <div>install usr/share/myconfig/grub.conf /boot
@@ -882,16 +882,16 @@ install /usr/share/myconfig/grub.conf.in /boot/grub.conf</div></blockquote>
 <dt id="pylorax.ltmpl.LoraxTemplateRunner.installimg">
 <code class="descname">installimg</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.installimg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.installimg" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>installimg [&#8211;xz|&#8211;gzip|&#8211;bzip2|&#8211;lzma] [-ARG|&#8211;ARG=OPTION] SRCDIR DESTFILE</dt>
+<dt>installimg [–xz|–gzip|–bzip2|–lzma] [-ARG|–ARG=OPTION] SRCDIR DESTFILE</dt>
 <dd><p class="first">Create a compressed cpio archive of the contents of SRCDIR and place
 it in DESTFILE.</p>
-<p>If SRCDIR doesn&#8217;t exist or is empty nothing is created.</p>
+<p>If SRCDIR doesn’t exist or is empty nothing is created.</p>
 <dl class="docutils">
 <dt>Examples:</dt>
 <dd>installimg ${LORAXDIR}/product/ images/product.img
 installimg ${LORAXDIR}/updates/ images/updates.img
-installimg &#8211;xz -6 ${LORAXDIR}/updates/ images/updates.img
-installimg &#8211;xz -9 &#8211;memlimit-compress=3700MiB ${LORAXDIR}/updates/ images/updates.img</dd>
+installimg –xz -6 ${LORAXDIR}/updates/ images/updates.img
+installimg –xz -9 –memlimit-compress=3700MiB ${LORAXDIR}/updates/ images/updates.img</dd>
 </dl>
 <p class="last">Optionally use a different compression type and override the default args
 passed to it. The default is xz -9</p>
@@ -904,7 +904,7 @@ passed to it. The default is xz -9</p>
 <code class="descname">installinitrd</code><span class="sig-paren">(</span><em>section</em>, <em>src</em>, <em>dest</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.installinitrd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.installinitrd" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
 <dt>installinitrd SECTION SRC DEST</dt>
-<dd>Same as installkernel, but for &#8220;initrd&#8221;.</dd>
+<dd>Same as installkernel, but for “initrd”.</dd>
 </dl>
 </dd></dl>
 
@@ -915,7 +915,7 @@ passed to it. The default is xz -9</p>
 <dt>installkernel SECTION SRC DEST</dt>
 <dd><p class="first">Install the kernel from SRC in the input tree to DEST in the output
 tree, and then add an item to the treeinfo data store, in the named
-SECTION, where &#8220;kernel&#8221; = DEST.</p>
+SECTION, where “kernel” = DEST.</p>
 <dl class="last docutils">
 <dt>Equivalent to:</dt>
 <dd>install SRC DEST
@@ -929,11 +929,11 @@ treeinfo SECTION kernel DEST</dd>
 <dt id="pylorax.ltmpl.LoraxTemplateRunner.installpkg">
 <code class="descname">installpkg</code><span class="sig-paren">(</span><em>*pkgs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.installpkg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.installpkg" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>installpkg [&#8211;required|&#8211;optional] [&#8211;except PKGGLOB [&#8211;except PKGGLOB ...]] PKGGLOB [PKGGLOB ...]</dt>
+<dt>installpkg [–required|–optional] [–except PKGGLOB [–except PKGGLOB …]] PKGGLOB [PKGGLOB …]</dt>
 <dd><p class="first">Request installation of all packages matching the given globs.
 Note that this is just a <em>request</em> - nothing is <em>actually</em> installed
-until the &#8216;run_pkg_transaction&#8217; command is given.</p>
-<p class="last">&#8211;required is now the default. If the PKGGLOB can be missing pass &#8211;optional</p>
+until the ‘run_pkg_transaction’ command is given.</p>
+<p class="last">–required is now the default. If the PKGGLOB can be missing pass –optional</p>
 </dd>
 </dl>
 </dd></dl>
@@ -943,7 +943,7 @@ until the &#8216;run_pkg_transaction&#8217; command is given.</p>
 <code class="descname">installupgradeinitrd</code><span class="sig-paren">(</span><em>section</em>, <em>src</em>, <em>dest</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.installupgradeinitrd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.installupgradeinitrd" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
 <dt>installupgradeinitrd SECTION SRC DEST</dt>
-<dd>Same as installkernel, but for &#8220;upgrade&#8221;.</dd>
+<dd>Same as installkernel, but for “upgrade”.</dd>
 </dl>
 </dd></dl>
 
@@ -955,7 +955,7 @@ until the &#8216;run_pkg_transaction&#8217; command is given.</p>
 <dd><p class="first">Emit the given log message. Be sure to put it in quotes!
 Example:</p>
 <blockquote class="last">
-<div>log &#8220;Reticulating splines, please wait...&#8221;</div></blockquote>
+<div>log “Reticulating splines, please wait…”</div></blockquote>
 </dd>
 </dl>
 </dd></dl>
@@ -964,7 +964,7 @@ Example:</p>
 <dt id="pylorax.ltmpl.LoraxTemplateRunner.mkdir">
 <code class="descname">mkdir</code><span class="sig-paren">(</span><em>*dirs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.mkdir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.mkdir" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>mkdir DIR [DIR ...]</dt>
+<dt>mkdir DIR [DIR …]</dt>
 <dd><p class="first">Create the named DIR(s). Will create leading directories as needed.
 Example:</p>
 <blockquote class="last">
@@ -986,7 +986,7 @@ Example:</p>
 <dt id="pylorax.ltmpl.LoraxTemplateRunner.remove">
 <code class="descname">remove</code><span class="sig-paren">(</span><em>*fileglobs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.remove" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>remove FILEGLOB [FILEGLOB ...]</dt>
+<dt>remove FILEGLOB [FILEGLOB …]</dt>
 <dd>Remove all the named files or directories.
 Will <em>not</em> raise exceptions if the file(s) are not found.</dd>
 </dl>
@@ -996,15 +996,15 @@ Will <em>not</em> raise exceptions if the file(s) are not found.</dd>
 <dt id="pylorax.ltmpl.LoraxTemplateRunner.removefrom">
 <code class="descname">removefrom</code><span class="sig-paren">(</span><em>pkg</em>, <em>*globs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.removefrom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.removefrom" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>removefrom PKGGLOB [&#8211;allbut] FILEGLOB [FILEGLOB...]</dt>
+<dt>removefrom PKGGLOB [–allbut] FILEGLOB [FILEGLOB…]</dt>
 <dd><p class="first">Remove all files matching the given file globs from the package
 (or packages) named.
-If &#8216;&#8211;allbut&#8217; is used, all the files from the given package(s) will
+If ‘–allbut’ is used, all the files from the given package(s) will
 be removed <em>except</em> the ones which match the file globs.
 Examples:</p>
 <blockquote class="last">
 <div>removefrom usbutils /usr/bin/*
-removefrom xfsprogs &#8211;allbut /sbin/*</div></blockquote>
+removefrom xfsprogs –allbut /sbin/*</div></blockquote>
 </dd>
 </dl>
 </dd></dl>
@@ -1013,10 +1013,10 @@ removefrom xfsprogs &#8211;allbut /sbin/*</div></blockquote>
 <dt id="pylorax.ltmpl.LoraxTemplateRunner.removekmod">
 <code class="descname">removekmod</code><span class="sig-paren">(</span><em>*globs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.removekmod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.removekmod" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>removekmod GLOB [GLOB...] [&#8211;allbut] KEEPGLOB [KEEPGLOB...]</dt>
+<dt>removekmod GLOB [GLOB…] [–allbut] KEEPGLOB [KEEPGLOB…]</dt>
 <dd><p class="first">Remove all files and directories matching the given file globs from the kernel
 modules directory.</p>
-<p>If &#8216;&#8211;allbut&#8217; is used, all the files from the modules will be removed <em>except</em>
+<p>If ‘–allbut’ is used, all the files from the modules will be removed <em>except</em>
 the ones which match the file globs. There must be at least one initial GLOB
 to search and one KEEPGLOB to keep. The KEEPGLOB is expanded to be <em>KEEPGLOB</em>
 so that it will match anywhere in the path.</p>
@@ -1024,7 +1024,7 @@ so that it will match anywhere in the path.</p>
 <dl class="last docutils">
 <dt>Examples:</dt>
 <dd>removekmod sound drivers/media drivers/hwmon drivers/video
-removekmod drivers/char &#8211;allbut virtio_console hw_random</dd>
+removekmod drivers/char –allbut virtio_console hw_random</dd>
 </dl>
 </dd>
 </dl>
@@ -1034,7 +1034,7 @@ removekmod drivers/char &#8211;allbut virtio_console hw_random</dd>
 <dt id="pylorax.ltmpl.LoraxTemplateRunner.removepkg">
 <code class="descname">removepkg</code><span class="sig-paren">(</span><em>*pkgs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.removepkg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.removepkg" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>removepkg PKGGLOB [PKGGLOB...]</dt>
+<dt>removepkg PKGGLOB [PKGGLOB…]</dt>
 <dd><p class="first">Delete the named package(s).
 IMPLEMENTATION NOTES:</p>
 <blockquote class="last">
@@ -1048,7 +1048,7 @@ Files are deleted, but directories are left behind.</div></blockquote>
 <dt id="pylorax.ltmpl.LoraxTemplateRunner.replace">
 <code class="descname">replace</code><span class="sig-paren">(</span><em>pat</em>, <em>repl</em>, <em>*fileglobs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.replace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.replace" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>replace PATTERN REPLACEMENT FILEGLOB [FILEGLOB ...]</dt>
+<dt>replace PATTERN REPLACEMENT FILEGLOB [FILEGLOB …]</dt>
 <dd><p class="first">Find-and-replace the given PATTERN (Python-style regex) with the given
 REPLACEMENT string for each of the files listed.
 Example:</p>
@@ -1066,7 +1066,7 @@ Example:</p>
 <dl class="method">
 <dt id="pylorax.ltmpl.LoraxTemplateRunner.run_pkg_transaction">
 <code class="descname">run_pkg_transaction</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.run_pkg_transaction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.run_pkg_transaction" title="Permalink to this definition">¶</a></dt>
-<dd><p>Actually install all the packages requested by previous &#8216;installpkg&#8217;
+<dd><p>Actually install all the packages requested by previous ‘installpkg’
 commands.</p>
 </dd></dl>
 
@@ -1074,19 +1074,19 @@ commands.</p>
 <dt id="pylorax.ltmpl.LoraxTemplateRunner.runcmd">
 <code class="descname">runcmd</code><span class="sig-paren">(</span><em>*cmdlist</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.runcmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.runcmd" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>runcmd CMD [ARG ...]</dt>
+<dt>runcmd CMD [ARG …]</dt>
 <dd><p class="first">Run the given command with the given arguments.</p>
 <p>NOTE: All paths given MUST be COMPLETE, ABSOLUTE PATHS to the file
 or files mentioned. ${root}/${inroot}/${outroot} are good for
 constructing these paths.</p>
 <p>FURTHER NOTE: Please use this command only as a last resort!
 Whenever possible, you should use the existing template commands.
-If the existing commands don&#8217;t do what you need, fix them!</p>
+If the existing commands don’t do what you need, fix them!</p>
 <dl class="last docutils">
 <dt>Examples:</dt>
-<dd><p class="first">(this should be replaced with a &#8220;find&#8221; function)
-runcmd find ${root} -name &#8220;<em>.pyo&#8221; -type f -delete
-%for f in find(root, name=&#8221;</em>.pyo&#8221;):</p>
+<dd><p class="first">(this should be replaced with a “find” function)
+runcmd find ${root} -name “<em>.pyo” -type f -delete
+%for f in find(root, name=”</em>.pyo”):</p>
 <blockquote>
 <div>remove ${f}</div></blockquote>
 <p class="last">%endfor</p>
@@ -1109,7 +1109,7 @@ runcmd find ${root} -name &#8220;<em>.pyo&#8221; -type f -delete
 <dt id="pylorax.ltmpl.LoraxTemplateRunner.systemctl">
 <code class="descname">systemctl</code><span class="sig-paren">(</span><em>cmd</em>, <em>*units</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.systemctl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.systemctl" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>systemctl [enable|disable|mask] UNIT [UNIT...]</dt>
+<dt>systemctl [enable|disable|mask] UNIT [UNIT…]</dt>
 <dd><p class="first">Enable, disable, or mask the given systemd units.
 Examples:</p>
 <blockquote class="last">
@@ -1123,10 +1123,10 @@ systemctl mask fedora-storage-init.service fedora-configure.service</div></block
 <dt id="pylorax.ltmpl.LoraxTemplateRunner.treeinfo">
 <code class="descname">treeinfo</code><span class="sig-paren">(</span><em>section</em>, <em>key</em>, <em>*valuetoks</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.treeinfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.treeinfo" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>treeinfo SECTION KEY ARG [ARG ...]</dt>
+<dt>treeinfo SECTION KEY ARG [ARG …]</dt>
 <dd><p class="first">Add an item to the treeinfo data store.
 The given SECTION will have a new item added where
-KEY = ARG ARG ...
+KEY = ARG ARG …
 Example:</p>
 <blockquote class="last">
 <div>treeinfo images-${kernel.arch} boot.iso images/boot.iso</div></blockquote>
@@ -1204,7 +1204,7 @@ errors that indicate that the install failed.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) &#8211; log line to check for failure</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – log line to check for failure</td>
 </tr>
 </tbody>
 </table>
@@ -1256,12 +1256,12 @@ errors that indicate that the install failed.</p>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
 <p>Mount the iso and check to make sure the vmlinuz and initrd.img files exist</p>
 <p>Also check the iso for a a stage2 image and set a flag and extract the
-iso&#8217;s label.</p>
+iso’s label.</p>
 <p>stage2 can be either LiveOS/squashfs.img or images/install.img</p>
 <dl class="method">
 <dt id="pylorax.mount.IsoMountpoint.get_iso_label">
 <code class="descname">get_iso_label</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/mount.html#IsoMountpoint.get_iso_label"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.mount.IsoMountpoint.get_iso_label" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the iso&#8217;s label using isoinfo</p>
+<dd><p>Get the iso’s label using isoinfo</p>
 <p>Sets self.label if one is found</p>
 </dd></dl>
 
@@ -1391,12 +1391,12 @@ inroot should be the installtree root (the newly-built runtime dir)</p>
 <dl class="method">
 <dt id="pylorax.treebuilder.TreeBuilder.copy_dracut_hooks">
 <code class="descname">copy_dracut_hooks</code><span class="sig-paren">(</span><em>hooks</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/treebuilder.html#TreeBuilder.copy_dracut_hooks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.TreeBuilder.copy_dracut_hooks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Copy the hook scripts in hooks into the installroot&#8217;s /tmp/
+<dd><p>Copy the hook scripts in hooks into the installroot’s /tmp/
 and return a list of commands to pass to dracut when creating the
 initramfs</p>
 <p>hooks is a list of tuples with the name of the hook script and the
 target dracut hook directory
-(eg. [(&#8220;99anaconda-copy-ks.sh&#8221;, &#8220;/lib/dracut/hooks/pre-pivot&#8221;)])</p>
+(eg. [(“99anaconda-copy-ks.sh”, “/lib/dracut/hooks/pre-pivot”)])</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -1424,8 +1424,8 @@ otherwise default to /usr/share/lorax/dracut_hooks</p>
 initrd will be renamed with backup as a suffix before rebuilding.
 If backup is empty, the existing initrd files will be overwritten.
 If suffix is specified, the existing initrd is untouched and a new
-image is built with the filename &#8220;${prefix}-${kernel.version}.img&#8221;</p>
-<p>If the initrd doesn&#8217;t exist its name will be created based on the
+image is built with the filename “${prefix}-${kernel.version}.img”</p>
+<p>If the initrd doesn’t exist its name will be created based on the
 name of the kernel.</p>
 </dd></dl>
 
@@ -1449,7 +1449,7 @@ name of the kernel.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>string</strong> &#8211; String to lowercase</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>string</strong> – String to lowercase</td>
 </tr>
 </tbody>
 </table>
@@ -1489,7 +1489,7 @@ name of the kernel.</p>
 <dd><p>Bases: <a class="reference internal" href="#pylorax.base.DataHolder" title="pylorax.base.DataHolder"><code class="xref py py-class docutils literal"><span class="pre">pylorax.base.DataHolder</span></code></a></p>
 <dl class="attribute">
 <dt id="pylorax.ArchData.bcj_arch">
-<code class="descname">bcj_arch</code><em class="property"> = {'i386': 'x86', 'x86_64': 'x86', 'ppc': 'powerpc', 'ppc64': 'powerpc', 'ppc64le': 'powerpc', 'arm': 'arm', 'armhfp': 'arm'}</em><a class="headerlink" href="#pylorax.ArchData.bcj_arch" title="Permalink to this definition">¶</a></dt>
+<code class="descname">bcj_arch</code><em class="property"> = {'arm': 'arm', 'armhfp': 'arm', 'i386': 'x86', 'ppc': 'powerpc', 'ppc64': 'powerpc', 'ppc64le': 'powerpc', 'x86_64': 'x86'}</em><a class="headerlink" href="#pylorax.ArchData.bcj_arch" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1541,7 +1541,7 @@ Otherwise use the sharedir</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>templatedir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) &#8211; Top directory to search for templates</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>templatedir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Top directory to search for templates</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Path to templates</td>
 </tr>
@@ -1568,8 +1568,8 @@ lowest numbered directory entry is returned.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>logfile</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.6)"><em>string</em></a>) &#8211; filename to write the log to</li>
-<li><strong>theLogger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.6)"><em>logging.Logger</em></a>) &#8211; top-level logger</li>
+<li><strong>logfile</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.6)"><em>string</em></a>) – filename to write the log to</li>
+<li><strong>theLogger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.6)"><em>logging.Logger</em></a>) – top-level logger</li>
 </ul>
 </td>
 </tr>
@@ -1600,7 +1600,7 @@ lowest numbered directory entry is returned.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015, Red Hat, Inc..
+        &copy; Copyright 2018, Red Hat, Inc..
 
     </p>
   </div>
@@ -1622,7 +1622,7 @@ lowest numbered directory entry is returned.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'28.2',
+            VERSION:'29.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
