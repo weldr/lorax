@@ -1,5 +1,6 @@
 *.pyc
 src/pylorax/version.py*
+src/composer/version.py*
 *.swp
 .pylint.d/
 _build/

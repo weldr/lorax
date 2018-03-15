@@ -1,0 +1,137 @@
+#!/usr/bin/python
+#
+# composer-cli
+#
+# Copyright (C) 2018  Red Hat, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+import logging
+log = logging.getLogger("composer-cli")
+
+import os
+import sys
+import argparse
+
+from composer import vernum
+from composer.cli import main
+
+VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
+
+# Documentation for the commands
+epilog = """
+compose start <recipe> <type>    Start a compose using the selected recipe and output type.
+        types                    List the supported output types.
+        status                   List the status of all running and finished composes.
+        log <uuid> [<size>kB]    Show the last 1kB of the compose log.
+        cancel <uuid>            Cancel a running compose and delete any intermediate results.
+        delete <uuid,...>        Delete the listed compose results.
+        info <uuid>              Show detailed information on the compose.
+        metadata <uuid>          Download the metadata use to create the compose to <uuid>-metadata.tar
+        logs <uuid>              Download the compose logs to <uuid>-logs.tar
+        results <uuid>           Download all of the compose results; metadata, logs, and image to <uuid>.tar
+        image <uuid>             Download the output image from the compose. Filename depends on the type.
+recipes list                     List the names of the available recipes.
+        show <recipe,...>        Display the recipe in TOML format.
+        changes <recipe,...>     Display the changes for each recipe.
+        diff <recipe-name>       Display the differences between 2 versions of a recipe.
+             <from-commit>       Commit hash or NEWEST
+             <to-commit>         Commit hash, NEWEST, or WORKSPACE
+        save <recipe,...>        Save the recipe to a file, <recipe-name>.toml
+        delete <recipe>          Delete a recipe from the server
+        depsolve <recipe,...>    Display the packages needed to install the recipe.
+        push <recipe>            Push a recipe TOML file to the server.
+        freeze <recipe,...>      Display the frozen recipe's modules and packages.
+        freeze show <recipe,...> Display the frozen recipe in TOML format.
+        freeze save <recipe,...> Save the frozen recipe to a file, <recipe-name>.frozen.toml.
+        tag <recipe>             Tag the most recent recipe commit as a release.
+        undo <recipe> <commit>   Undo changes to a recipe by reverting to the selected commit.
+        workspace <recipe>       Push the recipe TOML to the temporary workspace storage.
+modules list                     List the available modules.
+projects list                    List the available projects.
+projects info <project,...>      Show details about the listed projects.
+"""
+
+def get_parser():
+    """ Return the ArgumentParser for composer-cli"""
+
+    parser = argparse.ArgumentParser(description="Lorax Composer commandline tool",
+                                     epilog=epilog,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter,
+                                     fromfile_prefix_chars="@")
+
+    parser.add_argument("-j", "--json", action="store_true", default=False,
+                        help="Output the raw JSON response instead of the normal output.")
+    parser.add_argument("-s", "--socket", default="/run/weldr/api.socket", metavar="SOCKET",
+                        help="Path to the socket file to listen on")
+    parser.add_argument("--log", dest="logfile", default="/var/log/lorax-composer/cli.log", metavar="LOG",
+                        help="Path to logfile (/var/log/lorax-composer/cli.log)")
+    parser.add_argument("-a", "--api", dest="api_version", default="0", metavar="APIVER",
+                        help="API Version to use")
+    parser.add_argument("--test", dest="testmode", default=0, type=int, metavar="TESTMODE",
+                        help="Pass test mode to compose. 1=Mock compose with fail. 2=Mock compose with finished.")
+    parser.add_argument("-V", action="store_true", dest="showver",
+                        help="show program's version number and exit")
+
+    # Commands are implemented by parsing the remaining arguments outside of argparse
+    parser.add_argument('args', nargs=argparse.REMAINDER)
+
+
+    return parser
+
+def setup_logging(logfile):
+    # Setup logging to console and to logfile
+    log.setLevel(logging.DEBUG)
+
+    sh = logging.StreamHandler()
+    sh.setLevel(logging.INFO)
+    fmt = logging.Formatter("%(asctime)s: %(message)s")
+    sh.setFormatter(fmt)
+    log.addHandler(sh)
+
+    fh = logging.FileHandler(filename=logfile)
+    fh.setLevel(logging.DEBUG)
+    fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
+    fh.setFormatter(fmt)
+    log.addHandler(fh)
+
+if __name__ == '__main__':
+    # parse the arguments
+    opts = get_parser().parse_args()
+
+    if opts.showver:
+        print(VERSION)
+        sys.exit(0)
+
+    logpath = os.path.abspath(os.path.dirname(opts.logfile))
+    if not os.path.isdir(logpath):
+        os.makedirs(logpath)
+    setup_logging(opts.logfile)
+    log.debug("opts=%s", opts)
+
+    errors = []
+
+    # Check to see if the socket exists and can be accessed
+    if not os.path.exists(opts.socket):
+        errors.append("%s does not exist" % opts.socket)
+    elif not os.access(opts.socket, os.R_OK|os.W_OK):
+        errors.append("This user cannot access %s" % opts.socket)
+
+    # No point in continuing if there are errors
+    if errors:
+        for e in errors:
+            log.error(e)
+        sys.exit(1)
+
+    sys.exit(main(opts))
