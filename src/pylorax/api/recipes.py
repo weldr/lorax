@@ -551,13 +551,13 @@ def commit_recipe_file(repo, branch, filename):
     return commit_recipe(repo, branch, recipe)
 
 def commit_recipe_directory(repo, branch, directory):
-    """Commit all *.toml files from a directory, if they aren't already in git.
+    r"""Commit all \*.toml files from a directory, if they aren't already in git.
 
     :param repo: Open repository
     :type repo: Git.Repository
     :param branch: Branch name
     :type branch: str
-    :param directory: The directory of *.toml recipes to commit
+    :param directory: The directory of \*.toml recipes to commit
     :type directory: str
     :returns: None
     :raises: Can raise errors from Ggit or RecipeFileError

@@ -219,9 +219,9 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_m
 
 # Supported output types
 def compose_types(share_dir):
-    """ Returns a list of the supported output types
+    r""" Returns a list of the supported output types
 
-    The output types come from the kickstart names in /usr/share/lorax/composer/*ks
+    The output types come from the kickstart names in /usr/share/lorax/composer/\*ks
     """
     return [os.path.basename(ks)[:-3] for ks in glob(joinpaths(share_dir, "composer/*.ks"))]
 
