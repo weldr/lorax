@@ -44,7 +44,7 @@ setup(name="lorax",
       url="https://rhinstaller.github.io/lorax/",
       download_url="https://github.com/rhinstaller/lorax/releases",
       license="GPLv2+",
-      packages=["pylorax", "pylorax.api"],
+      packages=["pylorax", "pylorax.api", "composer", "composer.cli"],
       package_dir={"" : "src"},
       data_files=data_files
       )

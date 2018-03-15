@@ -160,6 +160,7 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 
 %files -n composer-cli
 %{_bindir}/composer-cli
+%{python_sitelib}/composer/*
 
 %changelog
 * Thu Feb 22 2018 Brian C. Lane <bcl@redhat.com> 19.7.10-1
