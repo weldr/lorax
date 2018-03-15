@@ -863,7 +863,7 @@ DELETE `/api/v0/compose/delete/<uuids>`
   UUID-logs.tar
 
 `/api/v0/compose/image/<uuid>`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns the output image from the build. The filename is set to the filename
   from the build with the UUID as a prefix. eg. UUID-root.tar.xz or UUID-boot.iso.

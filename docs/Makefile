@@ -7,8 +7,8 @@ SPHINXBUILD   = sphinx-build
 SPHINXAPIDOC  = sphinx-apidoc
 PAPER         =
 BUILDDIR      = .
-SOURCEDIR     = ../src/pylorax
-MODULE_NAMES  = pylorax.rst pylorax.api.rst modules.rst
+SOURCEDIR     = ../src
+MODULE_NAMES  = pylorax.rst pylorax.api.rst modules.rst composer.rst composer.cli.rst
 
 # User-friendly check for sphinx-build
 ifeq ($(shell which $(SPHINXBUILD) >/dev/null 2>&1; echo $$?), 1)
