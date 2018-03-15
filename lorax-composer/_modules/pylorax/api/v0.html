@@ -1,0 +1,1672 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pylorax.api.v0 &mdash; Lorax 19.7.10 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '19.7.10',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Lorax 19.7.10 documentation" href="../../../index.html" />
+    <link rel="up" title="pylorax.api" href="../api.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Lorax 19.7.10 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../api.html" accesskey="U">pylorax.api</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pylorax.api.v0</h1><div class="highlight"><pre>
+<span class="c">#</span>
+<span class="c"># Copyright (C) 2017-2018  Red Hat, Inc.</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the GNU General Public License as published by</span>
+<span class="c"># the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># This program is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c"># GNU General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License</span>
+<span class="c"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c">#</span>
+<span class="sd">&quot;&quot;&quot; Setup v0 of the API server</span>
+
+<span class="sd">v0_api() must be called to setup the API routes for Flask</span>
+
+<span class="sd">Status Responses</span>
+<span class="sd">----------------</span>
+
+<span class="sd">Some requests only return a status/error response.</span>
+
+<span class="sd">  The response will be a status response with `status` set to true, or an</span>
+<span class="sd">  error response with it set to false and an error message included.</span>
+
+<span class="sd">  Example response::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;status&quot;: true</span>
+<span class="sd">      }</span>
+
+<span class="sd">  Error response::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;error&quot;: {</span>
+<span class="sd">          &quot;msg&quot;: &quot;ggit-error: Failed to remove entry. File isn&#39;t in the tree - jboss.toml (-1)&quot;</span>
+<span class="sd">        },</span>
+<span class="sd">        &quot;status&quot;: false</span>
+<span class="sd">      }</span>
+
+<span class="sd">API Routes</span>
+<span class="sd">----------</span>
+
+<span class="sd">All of the recipes routes support the optional `branch` argument. If it is not</span>
+<span class="sd">used then the API will use the `master` branch for recipes. If you want to create</span>
+<span class="sd">a new branch use the `new` or `workspace` routes with ?branch=&lt;branch-name&gt; to</span>
+<span class="sd">store the new recipe on the new branch.</span>
+
+<span class="sd">`/api/v0/test`</span>
+<span class="sd">^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Return a test string. It is not JSON encoded.</span>
+
+<span class="sd">`/api/v0/status`</span>
+<span class="sd">^^^^^^^^^^^^^^^^</span>
+<span class="sd">  Return the status of the API Server::</span>
+
+<span class="sd">      { &quot;api&quot;: &quot;0&quot;,</span>
+<span class="sd">        &quot;build&quot;: &quot;devel&quot;,</span>
+<span class="sd">        &quot;db_supported&quot;: false,</span>
+<span class="sd">        &quot;db_version&quot;: &quot;0&quot;,</span>
+<span class="sd">        &quot;schema_version&quot;: &quot;0&quot; }</span>
+
+<span class="sd">`/api/v0/recipes/list`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  List the available recipes::</span>
+
+<span class="sd">      { &quot;limit&quot;: 20,</span>
+<span class="sd">        &quot;offset&quot;: 0,</span>
+<span class="sd">        &quot;recipes&quot;: [</span>
+<span class="sd">          &quot;atlas&quot;,</span>
+<span class="sd">          &quot;development&quot;,</span>
+<span class="sd">          &quot;glusterfs&quot;,</span>
+<span class="sd">          &quot;http-server&quot;,</span>
+<span class="sd">          &quot;jboss&quot;,</span>
+<span class="sd">          &quot;kubernetes&quot; ],</span>
+<span class="sd">        &quot;total&quot;: 6 }</span>
+
+<span class="sd">`/api/v0/recipes/info/&lt;recipe_names&gt;`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Return the JSON representation of the recipe. This includes 3 top level</span>
+<span class="sd">  objects.  `changes` which lists whether or not the workspace is different from</span>
+<span class="sd">  the most recent commit. `recipes` which lists the JSON representation of the</span>
+<span class="sd">  recipe, and `errors` which will list any errors, like non-existant recipes.</span>
+
+<span class="sd">  Example::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;changes&quot;: [</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;changed&quot;: false,</span>
+<span class="sd">            &quot;name&quot;: &quot;glusterfs&quot;</span>
+<span class="sd">          }</span>
+<span class="sd">        ],</span>
+<span class="sd">        &quot;errors&quot;: [],</span>
+<span class="sd">        &quot;recipes&quot;: [</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;description&quot;: &quot;An example GlusterFS server with samba&quot;,</span>
+<span class="sd">            &quot;modules&quot;: [</span>
+<span class="sd">              {</span>
+<span class="sd">                &quot;name&quot;: &quot;glusterfs&quot;,</span>
+<span class="sd">                &quot;version&quot;: &quot;3.7.*&quot;</span>
+<span class="sd">              },</span>
+<span class="sd">              {</span>
+<span class="sd">                &quot;name&quot;: &quot;glusterfs-cli&quot;,</span>
+<span class="sd">                &quot;version&quot;: &quot;3.7.*&quot;</span>
+<span class="sd">              }</span>
+<span class="sd">            ],</span>
+<span class="sd">            &quot;name&quot;: &quot;glusterfs&quot;,</span>
+<span class="sd">            &quot;packages&quot;: [</span>
+<span class="sd">              {</span>
+<span class="sd">                &quot;name&quot;: &quot;2ping&quot;,</span>
+<span class="sd">                &quot;version&quot;: &quot;3.2.1&quot;</span>
+<span class="sd">              },</span>
+<span class="sd">              {</span>
+<span class="sd">                &quot;name&quot;: &quot;samba&quot;,</span>
+<span class="sd">                &quot;version&quot;: &quot;4.2.*&quot;</span>
+<span class="sd">              }</span>
+<span class="sd">            ],</span>
+<span class="sd">            &quot;version&quot;: &quot;0.0.6&quot;</span>
+<span class="sd">          }</span>
+<span class="sd">        ]</span>
+<span class="sd">      }</span>
+
+<span class="sd">  Error example::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;changes&quot;: [],</span>
+<span class="sd">        &quot;errors&quot;: [</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;msg&quot;: &quot;ggit-error: the path &#39;missing.toml&#39; does not exist in the given tree (-3)&quot;,</span>
+<span class="sd">            &quot;recipe&quot;: &quot;missing&quot;</span>
+<span class="sd">          }</span>
+<span class="sd">        ],</span>
+<span class="sd">        &quot;recipes&quot;: []</span>
+<span class="sd">      }</span>
+
+<span class="sd">`/api/v0/recipes/changes/&lt;recipe_names&gt;[?offset=0&amp;limit=20]`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Return the commits to a recipe. By default it returns the first 20 commits, this</span>
+<span class="sd">  can be changed by passing `offset` and/or `limit`. The response will include the</span>
+<span class="sd">  commit hash, summary, timestamp, and optionally the revision number. The commit</span>
+<span class="sd">  hash can be passed to `/api/v0/recipes/diff/` to retrieve the exact changes.</span>
+
+<span class="sd">  Example::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;errors&quot;: [],</span>
+<span class="sd">        &quot;limit&quot;: 20,</span>
+<span class="sd">        &quot;offset&quot;: 0,</span>
+<span class="sd">        &quot;recipes&quot;: [</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;changes&quot;: [</span>
+<span class="sd">              {</span>
+<span class="sd">                &quot;commit&quot;: &quot;e083921a7ed1cf2eec91ad12b9ad1e70ef3470be&quot;,</span>
+<span class="sd">                &quot;message&quot;: &quot;Recipe glusterfs, version 0.0.6 saved.&quot;,</span>
+<span class="sd">                &quot;revision&quot;: null,</span>
+<span class="sd">                &quot;timestamp&quot;: &quot;2017-11-23T00:18:13Z&quot;</span>
+<span class="sd">              },</span>
+<span class="sd">              {</span>
+<span class="sd">                &quot;commit&quot;: &quot;cee5f4c20fc33ea4d54bfecf56f4ad41ad15f4f3&quot;,</span>
+<span class="sd">                &quot;message&quot;: &quot;Recipe glusterfs, version 0.0.5 saved.&quot;,</span>
+<span class="sd">                &quot;revision&quot;: null,</span>
+<span class="sd">                &quot;timestamp&quot;: &quot;2017-11-11T01:00:28Z&quot;</span>
+<span class="sd">              },</span>
+<span class="sd">              {</span>
+<span class="sd">                &quot;commit&quot;: &quot;29b492f26ed35d80800b536623bafc51e2f0eff2&quot;,</span>
+<span class="sd">                &quot;message&quot;: &quot;Recipe glusterfs, version 0.0.4 saved.&quot;,</span>
+<span class="sd">                &quot;revision&quot;: null,</span>
+<span class="sd">                &quot;timestamp&quot;: &quot;2017-11-11T00:28:30Z&quot;</span>
+<span class="sd">              },</span>
+<span class="sd">              {</span>
+<span class="sd">                &quot;commit&quot;: &quot;03374adbf080fe34f5c6c29f2e49cc2b86958bf2&quot;,</span>
+<span class="sd">                &quot;message&quot;: &quot;Recipe glusterfs, version 0.0.3 saved.&quot;,</span>
+<span class="sd">                &quot;revision&quot;: null,</span>
+<span class="sd">                &quot;timestamp&quot;: &quot;2017-11-10T23:15:52Z&quot;</span>
+<span class="sd">              },</span>
+<span class="sd">              {</span>
+<span class="sd">                &quot;commit&quot;: &quot;0e08ecbb708675bfabc82952599a1712a843779d&quot;,</span>
+<span class="sd">                &quot;message&quot;: &quot;Recipe glusterfs, version 0.0.2 saved.&quot;,</span>
+<span class="sd">                &quot;revision&quot;: null,</span>
+<span class="sd">                &quot;timestamp&quot;: &quot;2017-11-10T23:14:56Z&quot;</span>
+<span class="sd">              },</span>
+<span class="sd">              {</span>
+<span class="sd">                &quot;commit&quot;: &quot;3e11eb87a63d289662cba4b1804a0947a6843379&quot;,</span>
+<span class="sd">                &quot;message&quot;: &quot;Recipe glusterfs, version 0.0.1 saved.&quot;,</span>
+<span class="sd">                &quot;revision&quot;: null,</span>
+<span class="sd">                &quot;timestamp&quot;: &quot;2017-11-08T00:02:47Z&quot;</span>
+<span class="sd">              }</span>
+<span class="sd">            ],</span>
+<span class="sd">            &quot;name&quot;: &quot;glusterfs&quot;,</span>
+<span class="sd">            &quot;total&quot;: 6</span>
+<span class="sd">          }</span>
+<span class="sd">        ]</span>
+<span class="sd">      }</span>
+
+<span class="sd">POST `/api/v0/recipes/new`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Create a new recipe, or update an existing recipe. This supports both JSON and TOML</span>
+<span class="sd">  for the recipe format. The recipe should be in the body of the request with the</span>
+<span class="sd">  `Content-Type` header set to either `application/json` or `text/x-toml`.</span>
+
+<span class="sd">  The response will be a status response with `status` set to true, or an</span>
+<span class="sd">  error response with it set to false and an error message included.</span>
+
+<span class="sd">DELETE `/api/v0/recipes/delete/&lt;recipe_name&gt;`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Delete a recipe. The recipe is deleted from the branch, and will no longer</span>
+<span class="sd">  be listed by the `list` route. A recipe can be undeleted using the `undo` route</span>
+<span class="sd">  to revert to a previous commit.</span>
+
+<span class="sd">  The response will be a status response with `status` set to true, or an</span>
+<span class="sd">  error response with it set to false and an error message included.</span>
+
+<span class="sd">POST `/api/v0/recipes/workspace`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Write a recipe to the temporary workspace. This works exactly the same as `new` except</span>
+<span class="sd">  that it does not create a commit. JSON and TOML bodies are supported.</span>
+
+<span class="sd">  The workspace is meant to be used as a temporary recipe storage for clients.</span>
+<span class="sd">  It will be read by the `info` and `diff` routes if it is different from the</span>
+<span class="sd">  most recent commit.</span>
+
+<span class="sd">  The response will be a status response with `status` set to true, or an</span>
+<span class="sd">  error response with it set to false and an error message included.</span>
+
+<span class="sd">DELETE `/api/v0/recipes/workspace/&lt;recipe_name&gt;`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Remove the temporary workspace copy of a recipe. The `info` route will now</span>
+<span class="sd">  return the most recent commit of the recipe. Any changes that were in the</span>
+<span class="sd">  workspace will be lost.</span>
+
+<span class="sd">  The response will be a status response with `status` set to true, or an</span>
+<span class="sd">  error response with it set to false and an error message included.</span>
+
+<span class="sd">POST `/api/v0/recipes/undo/&lt;recipe_name&gt;/&lt;commit&gt;`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  This will revert the recipe to a previous commit. The commit hash from the `changes`</span>
+<span class="sd">  route can be used in this request.</span>
+
+<span class="sd">  The response will be a status response with `status` set to true, or an</span>
+<span class="sd">  error response with it set to false and an error message included.</span>
+
+<span class="sd">POST `/api/v0/recipes/tag/&lt;recipe_name&gt;`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Tag a recipe as a new release. This uses git tags with a special format.</span>
+<span class="sd">  `refs/tags/&lt;branch&gt;/&lt;filename&gt;/r&lt;revision&gt;`. Only the most recent recipe commit</span>
+<span class="sd">  can be tagged. Revisions start at 1 and increment for each new tag</span>
+<span class="sd">  (per-recipe). If the commit has already been tagged it will return false.</span>
+
+<span class="sd">  The response will be a status response with `status` set to true, or an</span>
+<span class="sd">  error response with it set to false and an error message included.</span>
+
+<span class="sd">`/api/v0/recipes/diff/&lt;recipe_name&gt;/&lt;from_commit&gt;/&lt;to_commit&gt;`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Return the differences between two commits, or the workspace. The commit hash</span>
+<span class="sd">  from the `changes` response can be used here, or several special strings:</span>
+
+<span class="sd">  - NEWEST will select the newest git commit. This works for `from_commit` or `to_commit`</span>
+<span class="sd">  - WORKSPACE will select the workspace copy. This can only be used in `to_commit`</span>
+
+<span class="sd">  eg. `/api/v0/recipes/diff/glusterfs/NEWEST/WORKSPACE` will return the differences</span>
+<span class="sd">  between the most recent git commit and the contents of the workspace.</span>
+
+<span class="sd">  Each entry in the response&#39;s diff object contains the old recipe value and the new one.</span>
+<span class="sd">  If old is null and new is set, then it was added.</span>
+<span class="sd">  If new is null and old is set, then it was removed.</span>
+<span class="sd">  If both are set, then it was changed.</span>
+
+<span class="sd">  The old/new entries will have the name of the recipe field that was changed. This</span>
+<span class="sd">  can be one of: Name, Description, Version, Module, or Package.</span>
+<span class="sd">  The contents for these will be the old/new values for them.</span>
+
+<span class="sd">  In the example below the version was changed and the ping package was added.</span>
+
+<span class="sd">  Example::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;diff&quot;: [</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;new&quot;: {</span>
+<span class="sd">              &quot;Version&quot;: &quot;0.0.6&quot;</span>
+<span class="sd">            },</span>
+<span class="sd">            &quot;old&quot;: {</span>
+<span class="sd">              &quot;Version&quot;: &quot;0.0.5&quot;</span>
+<span class="sd">            }</span>
+<span class="sd">          },</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;new&quot;: {</span>
+<span class="sd">              &quot;Package&quot;: {</span>
+<span class="sd">                &quot;name&quot;: &quot;ping&quot;,</span>
+<span class="sd">                &quot;version&quot;: &quot;3.2.1&quot;</span>
+<span class="sd">              }</span>
+<span class="sd">            },</span>
+<span class="sd">            &quot;old&quot;: null</span>
+<span class="sd">          }</span>
+<span class="sd">        ]</span>
+<span class="sd">      }</span>
+
+<span class="sd">`/api/v0/recipes/freeze/&lt;recipe_names&gt;`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Return a JSON representation of the recipe with the package and module versions set</span>
+<span class="sd">  to the exact versions chosen by depsolving the recipe.</span>
+
+<span class="sd">  Example::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;errors&quot;: [],</span>
+<span class="sd">        &quot;recipes&quot;: [</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;recipe&quot;: {</span>
+<span class="sd">              &quot;description&quot;: &quot;An example GlusterFS server with samba&quot;,</span>
+<span class="sd">              &quot;modules&quot;: [</span>
+<span class="sd">                {</span>
+<span class="sd">                  &quot;name&quot;: &quot;glusterfs&quot;,</span>
+<span class="sd">                  &quot;version&quot;: &quot;3.8.4-18.4.el7.x86_64&quot;</span>
+<span class="sd">                },</span>
+<span class="sd">                {</span>
+<span class="sd">                  &quot;name&quot;: &quot;glusterfs-cli&quot;,</span>
+<span class="sd">                  &quot;version&quot;: &quot;3.8.4-18.4.el7.x86_64&quot;</span>
+<span class="sd">                }</span>
+<span class="sd">              ],</span>
+<span class="sd">              &quot;name&quot;: &quot;glusterfs&quot;,</span>
+<span class="sd">              &quot;packages&quot;: [</span>
+<span class="sd">                {</span>
+<span class="sd">                  &quot;name&quot;: &quot;ping&quot;,</span>
+<span class="sd">                  &quot;version&quot;: &quot;2:3.2.1-2.el7.noarch&quot;</span>
+<span class="sd">                },</span>
+<span class="sd">                {</span>
+<span class="sd">                  &quot;name&quot;: &quot;samba&quot;,</span>
+<span class="sd">                  &quot;version&quot;: &quot;4.6.2-8.el7.x86_64&quot;</span>
+<span class="sd">                }</span>
+<span class="sd">              ],</span>
+<span class="sd">              &quot;version&quot;: &quot;0.0.6&quot;</span>
+<span class="sd">            }</span>
+<span class="sd">          }</span>
+<span class="sd">        ]</span>
+<span class="sd">      }</span>
+
+<span class="sd">`/api/v0/recipes/depsolve/&lt;recipe_names&gt;`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Depsolve the recipe using yum, return the recipe used, and the NEVRAs of the packages</span>
+<span class="sd">  chosen to satisfy the recipe&#39;s requirements. The response will include a list of results,</span>
+<span class="sd">  with the full dependency list in `dependencies`, the NEVRAs for the recipe&#39;s direct modules</span>
+<span class="sd">  and packages in `modules`, and any error will be in `errors`.</span>
+
+<span class="sd">  Example::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;errors&quot;: [],</span>
+<span class="sd">        &quot;recipes&quot;: [</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;dependencies&quot;: [</span>
+<span class="sd">              {</span>
+<span class="sd">                &quot;arch&quot;: &quot;noarch&quot;,</span>
+<span class="sd">                &quot;epoch&quot;: &quot;0&quot;,</span>
+<span class="sd">                &quot;name&quot;: &quot;2ping&quot;,</span>
+<span class="sd">                &quot;release&quot;: &quot;2.el7&quot;,</span>
+<span class="sd">                &quot;version&quot;: &quot;3.2.1&quot;</span>
+<span class="sd">              },</span>
+<span class="sd">              {</span>
+<span class="sd">                &quot;arch&quot;: &quot;x86_64&quot;,</span>
+<span class="sd">                &quot;epoch&quot;: &quot;0&quot;,</span>
+<span class="sd">                &quot;name&quot;: &quot;acl&quot;,</span>
+<span class="sd">                &quot;release&quot;: &quot;12.el7&quot;,</span>
+<span class="sd">                &quot;version&quot;: &quot;2.2.51&quot;</span>
+<span class="sd">              },</span>
+<span class="sd">              {</span>
+<span class="sd">                &quot;arch&quot;: &quot;x86_64&quot;,</span>
+<span class="sd">                &quot;epoch&quot;: &quot;0&quot;,</span>
+<span class="sd">                &quot;name&quot;: &quot;audit-libs&quot;,</span>
+<span class="sd">                &quot;release&quot;: &quot;3.el7&quot;,</span>
+<span class="sd">                &quot;version&quot;: &quot;2.7.6&quot;</span>
+<span class="sd">              },</span>
+<span class="sd">              {</span>
+<span class="sd">                &quot;arch&quot;: &quot;x86_64&quot;,</span>
+<span class="sd">                &quot;epoch&quot;: &quot;0&quot;,</span>
+<span class="sd">                &quot;name&quot;: &quot;avahi-libs&quot;,</span>
+<span class="sd">                &quot;release&quot;: &quot;17.el7&quot;,</span>
+<span class="sd">                &quot;version&quot;: &quot;0.6.31&quot;</span>
+<span class="sd">              },</span>
+<span class="sd">              ...</span>
+<span class="sd">            ],</span>
+<span class="sd">            &quot;modules&quot;: [</span>
+<span class="sd">              {</span>
+<span class="sd">                &quot;arch&quot;: &quot;noarch&quot;,</span>
+<span class="sd">                &quot;epoch&quot;: &quot;0&quot;,</span>
+<span class="sd">                &quot;name&quot;: &quot;2ping&quot;,</span>
+<span class="sd">                &quot;release&quot;: &quot;2.el7&quot;,</span>
+<span class="sd">                &quot;version&quot;: &quot;3.2.1&quot;</span>
+<span class="sd">              },</span>
+<span class="sd">              {</span>
+<span class="sd">                &quot;arch&quot;: &quot;x86_64&quot;,</span>
+<span class="sd">                &quot;epoch&quot;: &quot;0&quot;,</span>
+<span class="sd">                &quot;name&quot;: &quot;glusterfs&quot;,</span>
+<span class="sd">                &quot;release&quot;: &quot;18.4.el7&quot;,</span>
+<span class="sd">                &quot;version&quot;: &quot;3.8.4&quot;</span>
+<span class="sd">              },</span>
+<span class="sd">              ...</span>
+<span class="sd">            ],</span>
+<span class="sd">            &quot;recipe&quot;: {</span>
+<span class="sd">              &quot;description&quot;: &quot;An example GlusterFS server with samba&quot;,</span>
+<span class="sd">              &quot;modules&quot;: [</span>
+<span class="sd">                {</span>
+<span class="sd">                  &quot;name&quot;: &quot;glusterfs&quot;,</span>
+<span class="sd">                  &quot;version&quot;: &quot;3.7.*&quot;</span>
+<span class="sd">                },</span>
+<span class="sd">             ...</span>
+<span class="sd">            }</span>
+<span class="sd">          }</span>
+<span class="sd">        ]</span>
+<span class="sd">      }</span>
+
+<span class="sd">`/api/v0/projects/list[?offset=0&amp;limit=20]`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  List all of the available projects. By default this returns the first 20 items,</span>
+<span class="sd">  but this can be changed by setting the `offset` and `limit` arguments.</span>
+
+<span class="sd">  Example::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;limit&quot;: 20,</span>
+<span class="sd">        &quot;offset&quot;: 0,</span>
+<span class="sd">        &quot;projects&quot;: [</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;description&quot;: &quot;0 A.D. (pronounced \&quot;zero ey-dee\&quot;) is a ...&quot;,</span>
+<span class="sd">            &quot;homepage&quot;: &quot;http://play0ad.com&quot;,</span>
+<span class="sd">            &quot;name&quot;: &quot;0ad&quot;,</span>
+<span class="sd">            &quot;summary&quot;: &quot;Cross-Platform RTS Game of Ancient Warfare&quot;,</span>
+<span class="sd">            &quot;upstream_vcs&quot;: &quot;UPSTREAM_VCS&quot;</span>
+<span class="sd">          },</span>
+<span class="sd">          ...</span>
+<span class="sd">        ],</span>
+<span class="sd">        &quot;total&quot;: 21770</span>
+<span class="sd">      }</span>
+
+<span class="sd">`/api/v0/projects/info/&lt;project_names&gt;`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Return information about the comma-separated list of projects. It includes the description</span>
+<span class="sd">  of the package along with the list of available builds.</span>
+
+<span class="sd">  Example::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;projects&quot;: [</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;builds&quot;: [</span>
+<span class="sd">              {</span>
+<span class="sd">                &quot;arch&quot;: &quot;x86_64&quot;,</span>
+<span class="sd">                &quot;build_config_ref&quot;: &quot;BUILD_CONFIG_REF&quot;,</span>
+<span class="sd">                &quot;build_env_ref&quot;: &quot;BUILD_ENV_REF&quot;,</span>
+<span class="sd">                &quot;build_time&quot;: &quot;2017-03-01T08:39:23&quot;,</span>
+<span class="sd">                &quot;changelog&quot;: &quot;- restore incremental backups correctly, files ...&quot;,</span>
+<span class="sd">                &quot;epoch&quot;: &quot;2&quot;,</span>
+<span class="sd">                &quot;metadata&quot;: {},</span>
+<span class="sd">                &quot;release&quot;: &quot;32.el7&quot;,</span>
+<span class="sd">                &quot;source&quot;: {</span>
+<span class="sd">                  &quot;license&quot;: &quot;GPLv3+&quot;,</span>
+<span class="sd">                  &quot;metadata&quot;: {},</span>
+<span class="sd">                  &quot;source_ref&quot;: &quot;SOURCE_REF&quot;,</span>
+<span class="sd">                  &quot;version&quot;: &quot;1.26&quot;</span>
+<span class="sd">                }</span>
+<span class="sd">              }</span>
+<span class="sd">            ],</span>
+<span class="sd">            &quot;description&quot;: &quot;The GNU tar program saves many ...&quot;,</span>
+<span class="sd">            &quot;homepage&quot;: &quot;http://www.gnu.org/software/tar/&quot;,</span>
+<span class="sd">            &quot;name&quot;: &quot;tar&quot;,</span>
+<span class="sd">            &quot;summary&quot;: &quot;A GNU file archiving program&quot;,</span>
+<span class="sd">            &quot;upstream_vcs&quot;: &quot;UPSTREAM_VCS&quot;</span>
+<span class="sd">          }</span>
+<span class="sd">        ]</span>
+<span class="sd">      }</span>
+
+<span class="sd">`/api/v0/projects/depsolve/&lt;project_names&gt;`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Depsolve the comma-separated list of projects and return the list of NEVRAs needed</span>
+<span class="sd">  to satisfy the request.</span>
+
+<span class="sd">  Example::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;projects&quot;: [</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;arch&quot;: &quot;noarch&quot;,</span>
+<span class="sd">            &quot;epoch&quot;: &quot;0&quot;,</span>
+<span class="sd">            &quot;name&quot;: &quot;basesystem&quot;,</span>
+<span class="sd">            &quot;release&quot;: &quot;7.el7&quot;,</span>
+<span class="sd">            &quot;version&quot;: &quot;10.0&quot;</span>
+<span class="sd">          },</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;arch&quot;: &quot;x86_64&quot;,</span>
+<span class="sd">            &quot;epoch&quot;: &quot;0&quot;,</span>
+<span class="sd">            &quot;name&quot;: &quot;bash&quot;,</span>
+<span class="sd">            &quot;release&quot;: &quot;28.el7&quot;,</span>
+<span class="sd">            &quot;version&quot;: &quot;4.2.46&quot;</span>
+<span class="sd">          },</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;arch&quot;: &quot;x86_64&quot;,</span>
+<span class="sd">            &quot;epoch&quot;: &quot;0&quot;,</span>
+<span class="sd">            &quot;name&quot;: &quot;filesystem&quot;,</span>
+<span class="sd">            &quot;release&quot;: &quot;21.el7&quot;,</span>
+<span class="sd">            &quot;version&quot;: &quot;3.2&quot;</span>
+<span class="sd">          },</span>
+<span class="sd">          ...</span>
+<span class="sd">        ]</span>
+<span class="sd">      }</span>
+
+<span class="sd">`/api/v0/modules/list[?offset=0&amp;limit=20]`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Return a list of all of the available modules. This includes the name and the</span>
+<span class="sd">  group_type, which is always &quot;rpm&quot; for lorax-composer. By default this returns</span>
+<span class="sd">  the first 20 items. This can be changed by setting the `offset` and `limit`</span>
+<span class="sd">  arguments.</span>
+
+<span class="sd">  Example::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;limit&quot;: 20,</span>
+<span class="sd">        &quot;modules&quot;: [</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;group_type&quot;: &quot;rpm&quot;,</span>
+<span class="sd">            &quot;name&quot;: &quot;0ad&quot;</span>
+<span class="sd">          },</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;group_type&quot;: &quot;rpm&quot;,</span>
+<span class="sd">            &quot;name&quot;: &quot;0ad-data&quot;</span>
+<span class="sd">          },</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;group_type&quot;: &quot;rpm&quot;,</span>
+<span class="sd">            &quot;name&quot;: &quot;0install&quot;</span>
+<span class="sd">          },</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;group_type&quot;: &quot;rpm&quot;,</span>
+<span class="sd">            &quot;name&quot;: &quot;2048-cli&quot;</span>
+<span class="sd">          },</span>
+<span class="sd">          ...</span>
+<span class="sd">        ]</span>
+<span class="sd">        &quot;total&quot;: 21770</span>
+<span class="sd">      }</span>
+
+<span class="sd">`/api/v0/modules/list/&lt;module_names&gt;[?offset=0&amp;limit=20]`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Return the list of comma-separated modules. Output is the same as `/modules/list`</span>
+
+<span class="sd">  Example::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;limit&quot;: 20,</span>
+<span class="sd">        &quot;modules&quot;: [</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;group_type&quot;: &quot;rpm&quot;,</span>
+<span class="sd">            &quot;name&quot;: &quot;tar&quot;</span>
+<span class="sd">          }</span>
+<span class="sd">        ],</span>
+<span class="sd">        &quot;offset&quot;: 0,</span>
+<span class="sd">        &quot;total&quot;: 1</span>
+<span class="sd">      }</span>
+
+<span class="sd">`/api/v0/modules/info/&lt;module_names&gt;`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Return the module&#39;s dependencies, and the information about the module.</span>
+
+<span class="sd">  Example::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;modules&quot;: [</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;dependencies&quot;: [</span>
+<span class="sd">              {</span>
+<span class="sd">                &quot;arch&quot;: &quot;noarch&quot;,</span>
+<span class="sd">                &quot;epoch&quot;: &quot;0&quot;,</span>
+<span class="sd">                &quot;name&quot;: &quot;basesystem&quot;,</span>
+<span class="sd">                &quot;release&quot;: &quot;7.el7&quot;,</span>
+<span class="sd">                &quot;version&quot;: &quot;10.0&quot;</span>
+<span class="sd">              },</span>
+<span class="sd">              {</span>
+<span class="sd">                &quot;arch&quot;: &quot;x86_64&quot;,</span>
+<span class="sd">                &quot;epoch&quot;: &quot;0&quot;,</span>
+<span class="sd">                &quot;name&quot;: &quot;bash&quot;,</span>
+<span class="sd">                &quot;release&quot;: &quot;28.el7&quot;,</span>
+<span class="sd">                &quot;version&quot;: &quot;4.2.46&quot;</span>
+<span class="sd">              },</span>
+<span class="sd">              ...</span>
+<span class="sd">            ],</span>
+<span class="sd">            &quot;description&quot;: &quot;The GNU tar program saves ...&quot;,</span>
+<span class="sd">            &quot;homepage&quot;: &quot;http://www.gnu.org/software/tar/&quot;,</span>
+<span class="sd">            &quot;name&quot;: &quot;tar&quot;,</span>
+<span class="sd">            &quot;summary&quot;: &quot;A GNU file archiving program&quot;,</span>
+<span class="sd">            &quot;upstream_vcs&quot;: &quot;UPSTREAM_VCS&quot;</span>
+<span class="sd">          }</span>
+<span class="sd">        ]</span>
+<span class="sd">      }</span>
+
+<span class="sd">POST `/api/v0/compose`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Start a compose. The content type should be &#39;application/json&#39; and the body of the POST</span>
+<span class="sd">  should look like this::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;recipe_name&quot;: &quot;http-server&quot;,</span>
+<span class="sd">        &quot;compose_type&quot;: &quot;tar&quot;,</span>
+<span class="sd">        &quot;branch&quot;: &quot;master&quot;</span>
+<span class="sd">      }</span>
+
+<span class="sd">  Pass it the name of the recipe, the type of output (from &#39;/api/v0/compose/types&#39;), and the</span>
+<span class="sd">  recipe branch to use. &#39;branch&#39; is optional and will default to master. It will create a new</span>
+<span class="sd">  build and add it to the queue. It returns the build uuid and a status if it succeeds::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;build_id&quot;: &quot;e6fa6db4-9c81-4b70-870f-a697ca405cdf&quot;,</span>
+<span class="sd">        &quot;status&quot;: true</span>
+<span class="sd">      }</span>
+
+<span class="sd">`/api/v0/compose/types`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Returns the list of supported output types that are valid for use with &#39;POST /api/v0/compose&#39;</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;types&quot;: [</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;enabled&quot;: true,</span>
+<span class="sd">            &quot;name&quot;: &quot;tar&quot;</span>
+<span class="sd">          }</span>
+<span class="sd">        ]</span>
+<span class="sd">      }</span>
+
+<span class="sd">`/api/v0/compose/queue`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Return the status of the build queue. It includes information about the builds waiting,</span>
+<span class="sd">  and the build that is running.</span>
+
+<span class="sd">  Example::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;new&quot;: [</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;id&quot;: &quot;45502a6d-06e8-48a5-a215-2b4174b3614b&quot;,</span>
+<span class="sd">            &quot;recipe&quot;: &quot;glusterfs&quot;,</span>
+<span class="sd">            &quot;queue_status&quot;: &quot;WAITING&quot;,</span>
+<span class="sd">            &quot;timestamp&quot;: 1517362647.4570868,</span>
+<span class="sd">            &quot;version&quot;: &quot;0.0.6&quot;</span>
+<span class="sd">          },</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;id&quot;: &quot;6d292bd0-bec7-4825-8d7d-41ef9c3e4b73&quot;,</span>
+<span class="sd">            &quot;recipe&quot;: &quot;kubernetes&quot;,</span>
+<span class="sd">            &quot;queue_status&quot;: &quot;WAITING&quot;,</span>
+<span class="sd">            &quot;timestamp&quot;: 1517362659.0034983,</span>
+<span class="sd">            &quot;version&quot;: &quot;0.0.1&quot;</span>
+<span class="sd">          }</span>
+<span class="sd">        ],</span>
+<span class="sd">        &quot;run&quot;: [</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;id&quot;: &quot;745712b2-96db-44c0-8014-fe925c35e795&quot;,</span>
+<span class="sd">            &quot;recipe&quot;: &quot;glusterfs&quot;,</span>
+<span class="sd">            &quot;queue_status&quot;: &quot;RUNNING&quot;,</span>
+<span class="sd">            &quot;timestamp&quot;: 1517362633.7965999,</span>
+<span class="sd">            &quot;version&quot;: &quot;0.0.6&quot;</span>
+<span class="sd">          }</span>
+<span class="sd">        ]</span>
+<span class="sd">      }</span>
+
+<span class="sd">`/api/v0/compose/finished`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Return the details on all of the finished composes on the system.</span>
+
+<span class="sd">  Example::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;finished&quot;: [</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;id&quot;: &quot;70b84195-9817-4b8a-af92-45e380f39894&quot;,</span>
+<span class="sd">            &quot;recipe&quot;: &quot;glusterfs&quot;,</span>
+<span class="sd">            &quot;queue_status&quot;: &quot;FINISHED&quot;,</span>
+<span class="sd">            &quot;timestamp&quot;: 1517351003.8210032,</span>
+<span class="sd">            &quot;version&quot;: &quot;0.0.6&quot;</span>
+<span class="sd">          },</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;id&quot;: &quot;e695affd-397f-4af9-9022-add2636e7459&quot;,</span>
+<span class="sd">            &quot;recipe&quot;: &quot;glusterfs&quot;,</span>
+<span class="sd">            &quot;queue_status&quot;: &quot;FINISHED&quot;,</span>
+<span class="sd">            &quot;timestamp&quot;: 1517362289.7193348,</span>
+<span class="sd">            &quot;version&quot;: &quot;0.0.6&quot;</span>
+<span class="sd">          }</span>
+<span class="sd">        ]</span>
+<span class="sd">      }</span>
+
+<span class="sd">`/api/v0/compose/failed`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Return the details on all of the failed composes on the system.</span>
+
+<span class="sd">  Example::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;failed&quot;: [</span>
+<span class="sd">           {</span>
+<span class="sd">            &quot;id&quot;: &quot;8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a&quot;,</span>
+<span class="sd">            &quot;recipe&quot;: &quot;http-server&quot;,</span>
+<span class="sd">            &quot;queue_status&quot;: &quot;FAILED&quot;,</span>
+<span class="sd">            &quot;timestamp&quot;: 1517523249.9301329,</span>
+<span class="sd">            &quot;version&quot;: &quot;0.0.2&quot;</span>
+<span class="sd">          }</span>
+<span class="sd">        ]</span>
+<span class="sd">      }</span>
+
+<span class="sd">`/api/v0/compose/status/&lt;uuids&gt;`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Return the details for each of the comma-separated list of uuids.</span>
+
+<span class="sd">  Example::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;uuids&quot;: [</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;id&quot;: &quot;8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a&quot;,</span>
+<span class="sd">            &quot;recipe&quot;: &quot;http-server&quot;,</span>
+<span class="sd">            &quot;queue_status&quot;: &quot;FINISHED&quot;,</span>
+<span class="sd">            &quot;timestamp&quot;: 1517523644.2384307,</span>
+<span class="sd">            &quot;version&quot;: &quot;0.0.2&quot;</span>
+<span class="sd">          },</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;id&quot;: &quot;45502a6d-06e8-48a5-a215-2b4174b3614b&quot;,</span>
+<span class="sd">            &quot;recipe&quot;: &quot;glusterfs&quot;,</span>
+<span class="sd">            &quot;queue_status&quot;: &quot;FINISHED&quot;,</span>
+<span class="sd">            &quot;timestamp&quot;: 1517363442.188399,</span>
+<span class="sd">            &quot;version&quot;: &quot;0.0.6&quot;</span>
+<span class="sd">          }</span>
+<span class="sd">        ]</span>
+<span class="sd">      }</span>
+
+<span class="sd">DELETE `/api/v0/recipes/cancel/&lt;uuid&gt;`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Cancel the build, if it is not finished, and delete the results. It will return a</span>
+<span class="sd">  status of True if it is successful.</span>
+
+<span class="sd">  Example::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;status&quot;: true,</span>
+<span class="sd">        &quot;uuid&quot;: &quot;03397f8d-acff-4cdb-bd31-f629b7a948f5&quot;</span>
+<span class="sd">      }</span>
+
+<span class="sd">DELETE `/api/v0/compose/delete/&lt;uuids&gt;`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Delete the list of comma-separated uuids from the compose results.</span>
+
+<span class="sd">  Example::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;errors&quot;: [],</span>
+<span class="sd">        &quot;uuids&quot;: [</span>
+<span class="sd">          {</span>
+<span class="sd">            &quot;status&quot;: true,</span>
+<span class="sd">            &quot;uuid&quot;: &quot;ae1bf7e3-7f16-4c9f-b36e-3726a1093fd0&quot;</span>
+<span class="sd">          }</span>
+<span class="sd">        ]</span>
+<span class="sd">      }</span>
+
+<span class="sd">`/api/v0/compose/info/&lt;uuid&gt;`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Get detailed information about the compose. The returned JSON string will</span>
+<span class="sd">  contain the following information:</span>
+
+<span class="sd">    * id - The uuid of the comoposition</span>
+<span class="sd">    * config - containing the configuration settings used to run Anaconda</span>
+<span class="sd">    * recipe - The depsolved recipe used to generate the kickstart</span>
+<span class="sd">    * commit - The (local) git commit hash for the recipe used</span>
+<span class="sd">    * deps - The NEVRA of all of the dependencies used in the composition</span>
+<span class="sd">    * compose_type - The type of output generated (tar, iso, etc.)</span>
+<span class="sd">    * queue_status - The final status of the composition (FINISHED or FAILED)</span>
+
+<span class="sd">  Example::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;commit&quot;: &quot;7078e521a54b12eae31c3fd028680da7a0815a4d&quot;,</span>
+<span class="sd">        &quot;compose_type&quot;: &quot;tar&quot;,</span>
+<span class="sd">        &quot;config&quot;: {</span>
+<span class="sd">          &quot;anaconda_args&quot;: &quot;&quot;,</span>
+<span class="sd">          &quot;armplatform&quot;: &quot;&quot;,</span>
+<span class="sd">          &quot;compress_args&quot;: [],</span>
+<span class="sd">          &quot;compression&quot;: &quot;xz&quot;,</span>
+<span class="sd">          &quot;image_name&quot;: &quot;root.tar.xz&quot;,</span>
+<span class="sd">          ...</span>
+<span class="sd">        },</span>
+<span class="sd">        &quot;deps&quot;: {</span>
+<span class="sd">          &quot;packages&quot;: [</span>
+<span class="sd">            {</span>
+<span class="sd">              &quot;arch&quot;: &quot;x86_64&quot;,</span>
+<span class="sd">              &quot;epoch&quot;: &quot;0&quot;,</span>
+<span class="sd">              &quot;name&quot;: &quot;acl&quot;,</span>
+<span class="sd">              &quot;release&quot;: &quot;14.el7&quot;,</span>
+<span class="sd">              &quot;version&quot;: &quot;2.2.51&quot;</span>
+<span class="sd">            }</span>
+<span class="sd">          ]</span>
+<span class="sd">        },</span>
+<span class="sd">        &quot;id&quot;: &quot;c30b7d80-523b-4a23-ad52-61b799739ce8&quot;,</span>
+<span class="sd">        &quot;queue_status&quot;: &quot;FINISHED&quot;,</span>
+<span class="sd">        &quot;recipe&quot;: {</span>
+<span class="sd">          &quot;description&quot;: &quot;An example kubernetes master&quot;,</span>
+<span class="sd">          ...</span>
+<span class="sd">        }</span>
+<span class="sd">      }</span>
+
+<span class="sd">`/api/v0/compose/metadata/&lt;uuid&gt;`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Returns a .tar of the metadata used for the build. This includes all the</span>
+<span class="sd">  information needed to reproduce the build, including the final kickstart</span>
+<span class="sd">  populated with repository and package NEVRA.</span>
+
+<span class="sd">  The mime type is set to &#39;application/x-tar&#39; and the filename is set to</span>
+<span class="sd">  UUID-metadata.tar</span>
+
+<span class="sd">  The .tar is uncompressed, but is not large.</span>
+
+<span class="sd">`/api/v0/compose/results/&lt;uuid&gt;`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Returns a .tar of the metadata, logs, and output image of the build. This</span>
+<span class="sd">  includes all the information needed to reproduce the build, including the</span>
+<span class="sd">  final kickstart populated with repository and package NEVRA. The output image</span>
+<span class="sd">  is already in compressed form so the returned tar is not compressed.</span>
+
+<span class="sd">  The mime type is set to &#39;application/x-tar&#39; and the filename is set to</span>
+<span class="sd">  UUID.tar</span>
+
+<span class="sd">`/api/v0/compose/logs/&lt;uuid&gt;`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Returns a .tar of the anaconda build logs. The tar is not compressed, but is</span>
+<span class="sd">  not large.</span>
+
+<span class="sd">  The mime type is set to &#39;application/x-tar&#39; and the filename is set to</span>
+<span class="sd">  UUID-logs.tar</span>
+
+<span class="sd">`/api/v0/compose/image/&lt;uuid&gt;`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Returns the output image from the build. The filename is set to the filename</span>
+<span class="sd">  from the build. eg. root.tar.xz or boot.iso.</span>
+
+<span class="sd">`/api/v0/compose/log/&lt;uuid&gt;[?size=kbytes]`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Returns the end of the anaconda.log. The size parameter is optional and defaults to 1Mbytes</span>
+<span class="sd">  if it is not included. The returned data is raw text from the end of the logfile, starting on</span>
+<span class="sd">  a line boundry.</span>
+
+<span class="sd">  Example::</span>
+
+<span class="sd">      12:59:24,222 INFO anaconda: Running Thread: AnaConfigurationThread (140629395244800)</span>
+<span class="sd">      12:59:24,223 INFO anaconda: Configuring installed system</span>
+<span class="sd">      12:59:24,912 INFO anaconda: Configuring installed system</span>
+<span class="sd">      12:59:24,912 INFO anaconda: Creating users</span>
+<span class="sd">      12:59:24,913 INFO anaconda: Clearing libuser.conf at /tmp/libuser.Dyy8Gj</span>
+<span class="sd">      12:59:25,154 INFO anaconda: Creating users</span>
+<span class="sd">      12:59:25,155 INFO anaconda: Configuring addons</span>
+<span class="sd">      12:59:25,155 INFO anaconda: Configuring addons</span>
+<span class="sd">      12:59:25,155 INFO anaconda: Generating initramfs</span>
+<span class="sd">      12:59:49,467 INFO anaconda: Generating initramfs</span>
+<span class="sd">      12:59:49,467 INFO anaconda: Running post-installation scripts</span>
+<span class="sd">      12:59:49,467 INFO anaconda: Running kickstart %%post script(s)</span>
+<span class="sd">      12:59:50,782 INFO anaconda: All kickstart %%post script(s) have been run</span>
+<span class="sd">      12:59:50,782 INFO anaconda: Running post-installation scripts</span>
+<span class="sd">      12:59:50,784 INFO anaconda: Thread Done: AnaConfigurationThread (140629395244800)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&quot;lorax-composer&quot;</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">send_file</span>
+
+<span class="kn">from</span> <span class="nn">pylorax.api.compose</span> <span class="kn">import</span> <span class="n">start_build</span><span class="p">,</span> <span class="n">compose_types</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.crossdomain</span> <span class="kn">import</span> <span class="n">crossdomain</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="kn">import</span> <span class="n">projects_list</span><span class="p">,</span> <span class="n">projects_info</span><span class="p">,</span> <span class="n">projects_depsolve</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="kn">import</span> <span class="n">modules_list</span><span class="p">,</span> <span class="n">modules_info</span><span class="p">,</span> <span class="n">ProjectsError</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.queue</span> <span class="kn">import</span> <span class="n">queue_status</span><span class="p">,</span> <span class="n">build_status</span><span class="p">,</span> <span class="n">uuid_delete</span><span class="p">,</span> <span class="n">uuid_status</span><span class="p">,</span> <span class="n">uuid_info</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.queue</span> <span class="kn">import</span> <span class="n">uuid_tar</span><span class="p">,</span> <span class="n">uuid_image</span><span class="p">,</span> <span class="n">uuid_cancel</span><span class="p">,</span> <span class="n">uuid_log</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="kn">import</span> <span class="n">list_branch_files</span><span class="p">,</span> <span class="n">read_recipe_commit</span><span class="p">,</span> <span class="n">recipe_filename</span><span class="p">,</span> <span class="n">list_commits</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="kn">import</span> <span class="n">recipe_from_dict</span><span class="p">,</span> <span class="n">recipe_from_toml</span><span class="p">,</span> <span class="n">commit_recipe</span><span class="p">,</span> <span class="n">delete_recipe</span><span class="p">,</span> <span class="n">revert_recipe</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="kn">import</span> <span class="n">tag_recipe_commit</span><span class="p">,</span> <span class="n">recipe_diff</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.workspace</span> <span class="kn">import</span> <span class="n">workspace_read</span><span class="p">,</span> <span class="n">workspace_write</span><span class="p">,</span> <span class="n">workspace_delete</span>
+
+<span class="c"># The API functions don&#39;t actually get called by any code here</span>
+<span class="c"># pylint: disable=unused-variable</span>
+
+<div class="viewcode-block" id="take_limits"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.v0.take_limits">[docs]</a><span class="k">def</span> <span class="nf">take_limits</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Apply offset and limit to an iterable object</span>
+
+<span class="sd">    :param iterable: The object to limit</span>
+<span class="sd">    :type iterable: iter</span>
+<span class="sd">    :param offset: The number of items to skip</span>
+<span class="sd">    :type offset: int</span>
+<span class="sd">    :param limit: The total number of items to return</span>
+<span class="sd">    :type limit: int</span>
+<span class="sd">    :returns: A subset of the iterable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">iterable</span><span class="p">[</span><span class="n">offset</span><span class="p">:][:</span><span class="n">limit</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="v0_api"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.v0.v0_api">[docs]</a><span class="k">def</span> <span class="nf">v0_api</span><span class="p">(</span><span class="n">api</span><span class="p">):</span>
+    <span class="c"># Note that Sphinx will not generate documentations for any of these.</span>
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/test&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_test</span><span class="p">():</span>
+        <span class="k">return</span> <span class="s">&quot;API v0 test&quot;</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/status&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_status</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">build</span><span class="o">=</span><span class="s">&quot;devel&quot;</span><span class="p">,</span> <span class="n">api</span><span class="o">=</span><span class="s">&quot;0&quot;</span><span class="p">,</span> <span class="n">db_version</span><span class="o">=</span><span class="s">&quot;0&quot;</span><span class="p">,</span> <span class="n">schema_version</span><span class="o">=</span><span class="s">&quot;0&quot;</span><span class="p">,</span> <span class="n">db_supported</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/recipes/list&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_recipes_list</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;List the available recipes on a branch.&quot;&quot;&quot;</span>
+        <span class="n">branch</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;branch&quot;</span><span class="p">,</span> <span class="s">&quot;master&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">limit</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;limit&quot;</span><span class="p">,</span> <span class="s">&quot;20&quot;</span><span class="p">))</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;offset&quot;</span><span class="p">,</span> <span class="s">&quot;0&quot;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">400</span>
+
+        <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="n">recipes</span> <span class="o">=</span> <span class="n">take_limits</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">],</span> <span class="n">list_branch_files</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">)),</span> <span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">recipes</span><span class="o">=</span><span class="n">recipes</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">recipes</span><span class="p">))</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/recipes/info/&lt;recipe_names&gt;&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_recipes_info</span><span class="p">(</span><span class="n">recipe_names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the contents of the recipe, or a list of recipes&quot;&quot;&quot;</span>
+        <span class="n">branch</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;branch&quot;</span><span class="p">,</span> <span class="s">&quot;master&quot;</span><span class="p">)</span>
+        <span class="n">recipes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">changes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">recipe_name</span> <span class="ow">in</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">recipe_names</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;,&quot;</span><span class="p">)]:</span>
+            <span class="n">exceptions</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="c"># Get the workspace version (if it exists)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                    <span class="n">ws_recipe</span> <span class="o">=</span> <span class="n">workspace_read</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">ws_recipe</span> <span class="o">=</span> <span class="bp">None</span>
+                <span class="n">exceptions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;(v0_recipes_info) </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+            <span class="c"># Get the git version (if it exists)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                    <span class="n">git_recipe</span> <span class="o">=</span> <span class="n">read_recipe_commit</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">git_recipe</span> <span class="o">=</span> <span class="bp">None</span>
+                <span class="n">exceptions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;(v0_recipes_info) </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">ws_recipe</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">git_recipe</span><span class="p">:</span>
+                <span class="c"># Neither recipe, return an error</span>
+                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;recipe&quot;</span><span class="p">:</span><span class="n">recipe_name</span><span class="p">,</span> <span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="s">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exceptions</span><span class="p">)})</span>
+            <span class="k">elif</span> <span class="n">ws_recipe</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">git_recipe</span><span class="p">:</span>
+                <span class="c"># No git recipe, return the workspace recipe</span>
+                <span class="n">changes</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;name&quot;</span><span class="p">:</span><span class="n">recipe_name</span><span class="p">,</span> <span class="s">&quot;changed&quot;</span><span class="p">:</span><span class="bp">True</span><span class="p">})</span>
+                <span class="n">recipes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ws_recipe</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">ws_recipe</span> <span class="ow">and</span> <span class="n">git_recipe</span><span class="p">:</span>
+                <span class="c"># No workspace recipe, no change, return the git recipe</span>
+                <span class="n">changes</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;name&quot;</span><span class="p">:</span><span class="n">recipe_name</span><span class="p">,</span> <span class="s">&quot;changed&quot;</span><span class="p">:</span><span class="bp">False</span><span class="p">})</span>
+                <span class="n">recipes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">git_recipe</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># Both exist, maybe changed, return the workspace recipe</span>
+                <span class="n">changes</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;name&quot;</span><span class="p">:</span><span class="n">recipe_name</span><span class="p">,</span> <span class="s">&quot;changed&quot;</span><span class="p">:</span><span class="n">ws_recipe</span> <span class="o">!=</span> <span class="n">git_recipe</span><span class="p">})</span>
+                <span class="n">recipes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ws_recipe</span><span class="p">)</span>
+
+        <span class="c"># Sort all the results by case-insensitive recipe name</span>
+        <span class="n">changes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">changes</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="n">recipes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">recipes</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">e</span><span class="p">[</span><span class="s">&quot;recipe&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">changes</span><span class="o">=</span><span class="n">changes</span><span class="p">,</span> <span class="n">recipes</span><span class="o">=</span><span class="n">recipes</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="n">errors</span><span class="p">)</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/recipes/changes/&lt;recipe_names&gt;&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_recipes_changes</span><span class="p">(</span><span class="n">recipe_names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the changes to a recipe or list of recipes&quot;&quot;&quot;</span>
+        <span class="n">branch</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;branch&quot;</span><span class="p">,</span> <span class="s">&quot;master&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">limit</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;limit&quot;</span><span class="p">,</span> <span class="s">&quot;20&quot;</span><span class="p">))</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;offset&quot;</span><span class="p">,</span> <span class="s">&quot;0&quot;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">400</span>
+
+        <span class="n">recipes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">recipe_name</span> <span class="ow">in</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">recipe_names</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;,&quot;</span><span class="p">)]:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">recipe_filename</span><span class="p">(</span><span class="n">recipe_name</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                    <span class="n">commits</span> <span class="o">=</span> <span class="n">take_limits</span><span class="p">(</span><span class="n">list_commits</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span> <span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;recipe&quot;</span><span class="p">:</span><span class="n">recipe_name</span><span class="p">,</span> <span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="n">e</span><span class="p">})</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;(v0_recipes_changes) </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">recipes</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;name&quot;</span><span class="p">:</span><span class="n">recipe_name</span><span class="p">,</span> <span class="s">&quot;changes&quot;</span><span class="p">:</span><span class="n">commits</span><span class="p">,</span> <span class="s">&quot;total&quot;</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">commits</span><span class="p">)})</span>
+
+        <span class="n">recipes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">recipes</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">e</span><span class="p">[</span><span class="s">&quot;recipe&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">recipes</span><span class="o">=</span><span class="n">recipes</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="n">errors</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">)</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/recipes/new&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;POST&quot;</span><span class="p">])</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_recipes_new</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Commit a new recipe&quot;&quot;&quot;</span>
+        <span class="n">branch</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;branch&quot;</span><span class="p">,</span> <span class="s">&quot;master&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s">&#39;Content-Type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;text/x-toml&quot;</span><span class="p">:</span>
+                <span class="n">recipe</span> <span class="o">=</span> <span class="n">recipe_from_toml</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">recipe</span> <span class="o">=</span> <span class="n">recipe_from_dict</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+
+            <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="n">commit_recipe</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe</span><span class="p">)</span>
+
+                <span class="c"># Read the recipe with new version and write it to the workspace</span>
+                <span class="n">recipe</span> <span class="o">=</span> <span class="n">read_recipe_commit</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">])</span>
+                <span class="n">workspace_write</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;(v0_recipes_new) </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">400</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/recipes/delete/&lt;recipe_name&gt;&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;DELETE&quot;</span><span class="p">])</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_recipes_delete</span><span class="p">(</span><span class="n">recipe_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Delete a recipe from git&quot;&quot;&quot;</span>
+        <span class="n">branch</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;branch&quot;</span><span class="p">,</span> <span class="s">&quot;master&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="n">delete_recipe</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;(v0_recipes_delete) </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">400</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/recipes/workspace&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;POST&quot;</span><span class="p">])</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_recipes_workspace</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Write a recipe to the workspace&quot;&quot;&quot;</span>
+        <span class="n">branch</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;branch&quot;</span><span class="p">,</span> <span class="s">&quot;master&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s">&#39;Content-Type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;text/x-toml&quot;</span><span class="p">:</span>
+                <span class="n">recipe</span> <span class="o">=</span> <span class="n">recipe_from_toml</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">recipe</span> <span class="o">=</span> <span class="n">recipe_from_dict</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+
+            <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="n">workspace_write</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;(v0_recipes_workspace) </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">400</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/recipes/workspace/&lt;recipe_name&gt;&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;DELETE&quot;</span><span class="p">])</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_recipes_delete_workspace</span><span class="p">(</span><span class="n">recipe_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Delete a recipe from the workspace&quot;&quot;&quot;</span>
+        <span class="n">branch</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;branch&quot;</span><span class="p">,</span> <span class="s">&quot;master&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="n">workspace_delete</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;(v0_recipes_delete_workspace) </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">400</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/recipes/undo/&lt;recipe_name&gt;/&lt;commit&gt;&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;POST&quot;</span><span class="p">])</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_recipes_undo</span><span class="p">(</span><span class="n">recipe_name</span><span class="p">,</span> <span class="n">commit</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Undo changes to a recipe by reverting to a previous commit.&quot;&quot;&quot;</span>
+        <span class="n">branch</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;branch&quot;</span><span class="p">,</span> <span class="s">&quot;master&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="n">revert_recipe</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">,</span> <span class="n">commit</span><span class="p">)</span>
+
+                <span class="c"># Read the new recipe and write it to the workspace</span>
+                <span class="n">recipe</span> <span class="o">=</span> <span class="n">read_recipe_commit</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">)</span>
+                <span class="n">workspace_write</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;(v0_recipes_undo) </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">400</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/recipes/tag/&lt;recipe_name&gt;&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;POST&quot;</span><span class="p">])</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_recipes_tag</span><span class="p">(</span><span class="n">recipe_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Tag a recipe&#39;s latest recipe commit as a &#39;revision&#39;&quot;&quot;&quot;</span>
+        <span class="n">branch</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;branch&quot;</span><span class="p">,</span> <span class="s">&quot;master&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="n">tag_recipe_commit</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;(v0_recipes_tag) </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">400</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/recipes/diff/&lt;recipe_name&gt;/&lt;from_commit&gt;/&lt;to_commit&gt;&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_recipes_diff</span><span class="p">(</span><span class="n">recipe_name</span><span class="p">,</span> <span class="n">from_commit</span><span class="p">,</span> <span class="n">to_commit</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the differences between two commits of a recipe&quot;&quot;&quot;</span>
+        <span class="n">branch</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;branch&quot;</span><span class="p">,</span> <span class="s">&quot;master&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">from_commit</span> <span class="o">==</span> <span class="s">&quot;NEWEST&quot;</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                    <span class="n">old_recipe</span> <span class="o">=</span> <span class="n">read_recipe_commit</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                    <span class="n">old_recipe</span> <span class="o">=</span> <span class="n">read_recipe_commit</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">,</span> <span class="n">from_commit</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;(v0_recipes_diff) </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">400</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">to_commit</span> <span class="o">==</span> <span class="s">&quot;WORKSPACE&quot;</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                    <span class="n">new_recipe</span> <span class="o">=</span> <span class="n">workspace_read</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">)</span>
+                <span class="c"># If there is no workspace, use the newest commit instead</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">new_recipe</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                        <span class="n">new_recipe</span> <span class="o">=</span> <span class="n">read_recipe_commit</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">to_commit</span> <span class="o">==</span> <span class="s">&quot;NEWEST&quot;</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                    <span class="n">new_recipe</span> <span class="o">=</span> <span class="n">read_recipe_commit</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                    <span class="n">new_recipe</span> <span class="o">=</span> <span class="n">read_recipe_commit</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">,</span> <span class="n">to_commit</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;(v0_recipes_diff) </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">400</span>
+
+        <span class="n">diff</span> <span class="o">=</span> <span class="n">recipe_diff</span><span class="p">(</span><span class="n">old_recipe</span><span class="p">,</span> <span class="n">new_recipe</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">diff</span><span class="o">=</span><span class="n">diff</span><span class="p">)</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/recipes/freeze/&lt;recipe_names&gt;&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_recipes_freeze</span><span class="p">(</span><span class="n">recipe_names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the recipe with the exact modules and packages selected by depsolve&quot;&quot;&quot;</span>
+        <span class="n">branch</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;branch&quot;</span><span class="p">,</span> <span class="s">&quot;master&quot;</span><span class="p">)</span>
+        <span class="n">recipes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">recipe_name</span> <span class="ow">in</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">recipe_names</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;,&quot;</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">lower</span><span class="p">())]:</span>
+            <span class="c"># get the recipe</span>
+            <span class="c"># Get the workspace version (if it exists)</span>
+            <span class="n">recipe</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                    <span class="n">recipe</span> <span class="o">=</span> <span class="n">workspace_read</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">recipe</span><span class="p">:</span>
+                <span class="c"># No workspace version, get the git version (if it exists)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                        <span class="n">recipe</span> <span class="o">=</span> <span class="n">read_recipe_commit</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;recipe&quot;</span><span class="p">:</span><span class="n">recipe_name</span><span class="p">,</span> <span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)})</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;(v0_recipes_freeze) </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+            <span class="c"># No recipe found, skip it.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">recipe</span><span class="p">:</span>
+                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;recipe&quot;</span><span class="p">:</span><span class="n">recipe_name</span><span class="p">,</span> <span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="s">&quot;Recipe not found&quot;</span><span class="p">})</span>
+                <span class="k">continue</span>
+
+            <span class="c"># Combine modules and packages and depsolve the list</span>
+            <span class="c"># TODO include the version/glob in the depsolving</span>
+            <span class="n">module_names</span> <span class="o">=</span> <span class="n">recipe</span><span class="o">.</span><span class="n">module_names</span>
+            <span class="n">package_names</span> <span class="o">=</span> <span class="n">recipe</span><span class="o">.</span><span class="n">package_names</span>
+            <span class="n">projects</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">module_names</span><span class="o">+</span><span class="n">package_names</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+            <span class="n">deps</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;YUMLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                    <span class="n">deps</span> <span class="o">=</span> <span class="n">projects_depsolve</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;YUMLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">yb</span><span class="p">,</span> <span class="n">projects</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">ProjectsError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;recipe&quot;</span><span class="p">:</span><span class="n">recipe_name</span><span class="p">,</span> <span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)})</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;(v0_recipes_freeze) </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+            <span class="n">recipes</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;recipe&quot;</span><span class="p">:</span> <span class="n">recipe</span><span class="o">.</span><span class="n">freeze</span><span class="p">(</span><span class="n">deps</span><span class="p">)})</span>
+
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">recipes</span><span class="o">=</span><span class="n">recipes</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="n">errors</span><span class="p">)</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/recipes/depsolve/&lt;recipe_names&gt;&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_recipes_depsolve</span><span class="p">(</span><span class="n">recipe_names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the dependencies for a recipe&quot;&quot;&quot;</span>
+        <span class="n">branch</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;branch&quot;</span><span class="p">,</span> <span class="s">&quot;master&quot;</span><span class="p">)</span>
+        <span class="n">recipes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">recipe_name</span> <span class="ow">in</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">recipe_names</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;,&quot;</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">lower</span><span class="p">())]:</span>
+            <span class="c"># get the recipe</span>
+            <span class="c"># Get the workspace version (if it exists)</span>
+            <span class="n">recipe</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                    <span class="n">recipe</span> <span class="o">=</span> <span class="n">workspace_read</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">recipe</span><span class="p">:</span>
+                <span class="c"># No workspace version, get the git version (if it exists)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                        <span class="n">recipe</span> <span class="o">=</span> <span class="n">read_recipe_commit</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;recipe&quot;</span><span class="p">:</span><span class="n">recipe_name</span><span class="p">,</span> <span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)})</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;(v0_recipes_depsolve) </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+            <span class="c"># No recipe found, skip it.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">recipe</span><span class="p">:</span>
+                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;recipe&quot;</span><span class="p">:</span><span class="n">recipe_name</span><span class="p">,</span> <span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="s">&quot;Recipe not found&quot;</span><span class="p">})</span>
+                <span class="k">continue</span>
+
+            <span class="c"># Combine modules and packages and depsolve the list</span>
+            <span class="c"># TODO include the version/glob in the depsolving</span>
+            <span class="n">module_names</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">m</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;modules&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="p">[])</span>
+            <span class="n">package_names</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;packages&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="p">[])</span>
+            <span class="n">projects</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">module_names</span><span class="o">+</span><span class="n">package_names</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+            <span class="n">deps</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;YUMLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                    <span class="n">deps</span> <span class="o">=</span> <span class="n">projects_depsolve</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;YUMLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">yb</span><span class="p">,</span> <span class="n">projects</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">ProjectsError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;recipe&quot;</span><span class="p">:</span><span class="n">recipe_name</span><span class="p">,</span> <span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)})</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;(v0_recipes_depsolve) </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+            <span class="c"># Get the NEVRA&#39;s of the modules and projects, add as &quot;modules&quot;</span>
+            <span class="n">modules</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">dep</span> <span class="ow">in</span> <span class="n">deps</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">dep</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">projects</span><span class="p">:</span>
+                    <span class="n">modules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dep</span><span class="p">)</span>
+            <span class="n">modules</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">modules</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">m</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+
+            <span class="n">recipes</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;recipe&quot;</span><span class="p">:</span><span class="n">recipe</span><span class="p">,</span> <span class="s">&quot;dependencies&quot;</span><span class="p">:</span><span class="n">deps</span><span class="p">,</span> <span class="s">&quot;modules&quot;</span><span class="p">:</span><span class="n">modules</span><span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">recipes</span><span class="o">=</span><span class="n">recipes</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="n">errors</span><span class="p">)</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/projects/list&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_projects_list</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;List all of the available projects/packages&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">limit</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;limit&quot;</span><span class="p">,</span> <span class="s">&quot;20&quot;</span><span class="p">))</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;offset&quot;</span><span class="p">,</span> <span class="s">&quot;0&quot;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">400</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;YUMLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="n">available</span> <span class="o">=</span> <span class="n">projects_list</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;YUMLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">yb</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">ProjectsError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;(v0_projects_list) </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">400</span>
+
+        <span class="n">projects</span> <span class="o">=</span> <span class="n">take_limits</span><span class="p">(</span><span class="n">available</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">projects</span><span class="o">=</span><span class="n">projects</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">available</span><span class="p">))</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/projects/info/&lt;project_names&gt;&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_projects_info</span><span class="p">(</span><span class="n">project_names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return detailed information about the listed projects&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;YUMLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="n">projects</span> <span class="o">=</span> <span class="n">projects_info</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;YUMLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">yb</span><span class="p">,</span> <span class="n">project_names</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;,&quot;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">ProjectsError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;(v0_projects_info) </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">400</span>
+
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">projects</span><span class="o">=</span><span class="n">projects</span><span class="p">)</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/projects/depsolve/&lt;project_names&gt;&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_projects_depsolve</span><span class="p">(</span><span class="n">project_names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return detailed information about the listed projects&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;YUMLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="n">deps</span> <span class="o">=</span> <span class="n">projects_depsolve</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;YUMLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">yb</span><span class="p">,</span> <span class="n">project_names</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;,&quot;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">ProjectsError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;(v0_projects_depsolve) </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">400</span>
+
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">projects</span><span class="o">=</span><span class="n">deps</span><span class="p">)</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/modules/list&quot;</span><span class="p">)</span>
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/modules/list/&lt;module_names&gt;&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_modules_list</span><span class="p">(</span><span class="n">module_names</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List available modules, filtering by module_names&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">limit</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;limit&quot;</span><span class="p">,</span> <span class="s">&quot;20&quot;</span><span class="p">))</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;offset&quot;</span><span class="p">,</span> <span class="s">&quot;0&quot;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">400</span>
+
+        <span class="k">if</span> <span class="n">module_names</span><span class="p">:</span>
+            <span class="n">module_names</span> <span class="o">=</span> <span class="n">module_names</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;,&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;YUMLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="n">available</span> <span class="o">=</span> <span class="n">modules_list</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;YUMLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">yb</span><span class="p">,</span> <span class="n">module_names</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">ProjectsError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;(v0_modules_list) </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">400</span>
+
+        <span class="n">modules</span> <span class="o">=</span> <span class="n">take_limits</span><span class="p">(</span><span class="n">available</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">modules</span><span class="o">=</span><span class="n">modules</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">available</span><span class="p">))</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/modules/info/&lt;module_names&gt;&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_modules_info</span><span class="p">(</span><span class="n">module_names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return detailed information about the listed modules&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;YUMLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="n">modules</span> <span class="o">=</span> <span class="n">modules_info</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;YUMLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">yb</span><span class="p">,</span> <span class="n">module_names</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;,&quot;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">ProjectsError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;(v0_modules_info) </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">400</span>
+
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">modules</span><span class="o">=</span><span class="n">modules</span><span class="p">)</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/compose&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;POST&quot;</span><span class="p">])</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_compose_start</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Start a compose</span>
+
+<span class="sd">        The body of the post should have these fields:</span>
+<span class="sd">          recipe_name   - The recipe name from /recipes/list/</span>
+<span class="sd">          compose_type  - The type of output to create, from /compose/types</span>
+<span class="sd">          branch        - Optional, defaults to master, selects the git branch to use for the recipe.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Passing ?test=1 will generate a fake FAILED compose.</span>
+        <span class="c"># Passing ?test=2 will generate a fake FINISHED compose.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">test_mode</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">,</span> <span class="s">&quot;0&quot;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">test_mode</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">compose</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">compose</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="s">&quot;Missing POST body&quot;</span><span class="p">}),</span> <span class="mi">400</span>
+
+        <span class="k">if</span> <span class="s">&quot;recipe_name&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">compose</span><span class="p">:</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;No &#39;recipe_name&#39; in the JSON request&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">recipe_name</span> <span class="o">=</span> <span class="n">compose</span><span class="p">[</span><span class="s">&quot;recipe_name&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s">&quot;branch&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">compose</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">compose</span><span class="p">[</span><span class="s">&quot;branch&quot;</span><span class="p">]:</span>
+            <span class="n">branch</span> <span class="o">=</span> <span class="s">&quot;master&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">branch</span> <span class="o">=</span> <span class="n">compose</span><span class="p">[</span><span class="s">&quot;branch&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s">&quot;compose_type&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">compose</span><span class="p">:</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;No &#39;compose_type&#39; in the JSON request&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">compose_type</span> <span class="o">=</span> <span class="n">compose</span><span class="p">[</span><span class="s">&quot;compose_type&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">errors</span><span class="p">)}),</span> <span class="mi">400</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">build_id</span> <span class="o">=</span> <span class="n">start_build</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;COMPOSER_CFG&quot;</span><span class="p">],</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;YUMLOCK&quot;</span><span class="p">],</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">],</span>
+                                   <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">,</span> <span class="n">compose_type</span><span class="p">,</span> <span class="n">test_mode</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">400</span>
+
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">build_id</span><span class="o">=</span><span class="n">build_id</span><span class="p">)</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/compose/types&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_compose_types</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Return the list of enabled output types</span>
+
+<span class="sd">        (only enabled types are returned)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">share_dir</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;COMPOSER_CFG&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;composer&quot;</span><span class="p">,</span> <span class="s">&quot;share_dir&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">types</span><span class="o">=</span><span class="p">[{</span><span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span> <span class="s">&quot;enabled&quot;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">compose_types</span><span class="p">(</span><span class="n">share_dir</span><span class="p">)])</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/compose/queue&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_compose_queue</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Return the status of the new and running queues&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">queue_status</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;COMPOSER_CFG&quot;</span><span class="p">]))</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/compose/finished&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_compose_finished</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Return the list of finished composes&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">finished</span><span class="o">=</span><span class="n">build_status</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;COMPOSER_CFG&quot;</span><span class="p">],</span> <span class="s">&quot;FINISHED&quot;</span><span class="p">))</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/compose/failed&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_compose_failed</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Return the list of failed composes&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">failed</span><span class="o">=</span><span class="n">build_status</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;COMPOSER_CFG&quot;</span><span class="p">],</span> <span class="s">&quot;FAILED&quot;</span><span class="p">))</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/compose/status/&lt;uuids&gt;&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_compose_status</span><span class="p">(</span><span class="n">uuids</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the status of the listed uuids&quot;&quot;&quot;</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">uuid</span> <span class="ow">in</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">uuids</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;,&quot;</span><span class="p">)]:</span>
+            <span class="n">details</span> <span class="o">=</span> <span class="n">uuid_status</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;COMPOSER_CFG&quot;</span><span class="p">],</span> <span class="n">uuid</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">details</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">details</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">uuids</span><span class="o">=</span><span class="n">results</span><span class="p">)</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/compose/cancel/&lt;uuid&gt;&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;DELETE&quot;</span><span class="p">])</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_compose_cancel</span><span class="p">(</span><span class="n">uuid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Cancel a running compose and delete its results directory&quot;&quot;&quot;</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">uuid_status</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;COMPOSER_CFG&quot;</span><span class="p">],</span> <span class="n">uuid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> is not a valid build uuid&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="p">),</span> <span class="mi">400</span>
+
+        <span class="k">if</span> <span class="n">status</span><span class="p">[</span><span class="s">&quot;queue_status&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;WAITING&quot;</span><span class="p">,</span> <span class="s">&quot;RUNNING&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">uuid</span><span class="o">=</span><span class="n">uuid</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s">&quot;Cannot cancel a build that is in the </span><span class="si">%s</span><span class="s"> state&quot;</span> <span class="o">%</span> <span class="n">status</span><span class="p">[</span><span class="s">&quot;queue_status&quot;</span><span class="p">])</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">uuid_cancel</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;COMPOSER_CFG&quot;</span><span class="p">],</span> <span class="n">uuid</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">uuid</span><span class="o">=</span><span class="n">uuid</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">uuid</span><span class="o">=</span><span class="n">uuid</span><span class="p">)</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/compose/delete/&lt;uuids&gt;&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;DELETE&quot;</span><span class="p">])</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_compose_delete</span><span class="p">(</span><span class="n">uuids</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Delete the compose results for the listed uuids&quot;&quot;&quot;</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">uuid</span> <span class="ow">in</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">uuids</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;,&quot;</span><span class="p">)]:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">uuid_status</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;COMPOSER_CFG&quot;</span><span class="p">],</span> <span class="n">uuid</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;uuid&quot;</span><span class="p">:</span> <span class="n">uuid</span><span class="p">,</span> <span class="s">&quot;msg&quot;</span><span class="p">:</span> <span class="s">&quot;Not a valid build uuid&quot;</span><span class="p">})</span>
+            <span class="k">elif</span> <span class="n">status</span><span class="p">[</span><span class="s">&quot;queue_status&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;FINISHED&quot;</span><span class="p">,</span> <span class="s">&quot;FAILED&quot;</span><span class="p">]:</span>
+                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;uuid&quot;</span><span class="p">:</span><span class="n">uuid</span><span class="p">,</span> <span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="s">&quot;Build not in FINISHED or FAILED.&quot;</span><span class="p">})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">uuid_delete</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;COMPOSER_CFG&quot;</span><span class="p">],</span> <span class="n">uuid</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;uuid&quot;</span><span class="p">:</span><span class="n">uuid</span><span class="p">,</span> <span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)})</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;uuid&quot;</span><span class="p">:</span><span class="n">uuid</span><span class="p">,</span> <span class="s">&quot;status&quot;</span><span class="p">:</span><span class="bp">True</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">uuids</span><span class="o">=</span><span class="n">results</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="n">errors</span><span class="p">)</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/compose/info/&lt;uuid&gt;&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_compose_info</span><span class="p">(</span><span class="n">uuid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return detailed info about a compose&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="n">uuid_info</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;COMPOSER_CFG&quot;</span><span class="p">],</span> <span class="n">uuid</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="o">**</span><span class="n">info</span><span class="p">)</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/compose/metadata/&lt;uuid&gt;&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_compose_metadata</span><span class="p">(</span><span class="n">uuid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a tar of the metadata for the build&quot;&quot;&quot;</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">uuid_status</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;COMPOSER_CFG&quot;</span><span class="p">],</span> <span class="n">uuid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> is not a valid build uuid&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="p">),</span> <span class="mi">400</span>
+        <span class="k">if</span> <span class="n">status</span><span class="p">[</span><span class="s">&quot;queue_status&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;FINISHED&quot;</span><span class="p">,</span> <span class="s">&quot;FAILED&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">uuid</span><span class="o">=</span><span class="n">uuid</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s">&quot;Build not in FINISHED or FAILED.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">uuid_tar</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;COMPOSER_CFG&quot;</span><span class="p">],</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">logs</span><span class="o">=</span><span class="bp">False</span><span class="p">),</span>
+                            <span class="n">mimetype</span><span class="o">=</span><span class="s">&quot;application/x-tar&quot;</span><span class="p">,</span>
+                            <span class="n">headers</span><span class="o">=</span><span class="p">[(</span><span class="s">&quot;Content-Disposition&quot;</span><span class="p">,</span> <span class="s">&quot;attachment; filename=</span><span class="si">%s</span><span class="s">-metadata.tar;&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="p">)],</span>
+                            <span class="n">direct_passthrough</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/compose/results/&lt;uuid&gt;&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_compose_results</span><span class="p">(</span><span class="n">uuid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a tar of the metadata and the results for the build&quot;&quot;&quot;</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">uuid_status</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;COMPOSER_CFG&quot;</span><span class="p">],</span> <span class="n">uuid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> is not a valid build uuid&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="p">),</span> <span class="mi">400</span>
+        <span class="k">elif</span> <span class="n">status</span><span class="p">[</span><span class="s">&quot;queue_status&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;FINISHED&quot;</span><span class="p">,</span> <span class="s">&quot;FAILED&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">uuid</span><span class="o">=</span><span class="n">uuid</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s">&quot;Build not in FINISHED or FAILED.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">uuid_tar</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;COMPOSER_CFG&quot;</span><span class="p">],</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">logs</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>
+                            <span class="n">mimetype</span><span class="o">=</span><span class="s">&quot;application/x-tar&quot;</span><span class="p">,</span>
+                            <span class="n">headers</span><span class="o">=</span><span class="p">[(</span><span class="s">&quot;Content-Disposition&quot;</span><span class="p">,</span> <span class="s">&quot;attachment; filename=</span><span class="si">%s</span><span class="s">.tar;&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="p">)],</span>
+                            <span class="n">direct_passthrough</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/compose/logs/&lt;uuid&gt;&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_compose_logs</span><span class="p">(</span><span class="n">uuid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a tar of the metadata for the build&quot;&quot;&quot;</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">uuid_status</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;COMPOSER_CFG&quot;</span><span class="p">],</span> <span class="n">uuid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> is not a valid build uuid&quot;</span><span class="p">),</span> <span class="mi">400</span>
+        <span class="k">elif</span> <span class="n">status</span><span class="p">[</span><span class="s">&quot;queue_status&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;FINISHED&quot;</span><span class="p">,</span> <span class="s">&quot;FAILED&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">uuid</span><span class="o">=</span><span class="n">uuid</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s">&quot;Build not in FINISHED or FAILED.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">uuid_tar</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;COMPOSER_CFG&quot;</span><span class="p">],</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">logs</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>
+                            <span class="n">mimetype</span><span class="o">=</span><span class="s">&quot;application/x-tar&quot;</span><span class="p">,</span>
+                            <span class="n">headers</span><span class="o">=</span><span class="p">[(</span><span class="s">&quot;Content-Disposition&quot;</span><span class="p">,</span> <span class="s">&quot;attachment; filename=</span><span class="si">%s</span><span class="s">-logs.tar;&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="p">)],</span>
+                            <span class="n">direct_passthrough</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/compose/image/&lt;uuid&gt;&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_compose_image</span><span class="p">(</span><span class="n">uuid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the output image for the build&quot;&quot;&quot;</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">uuid_status</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;COMPOSER_CFG&quot;</span><span class="p">],</span> <span class="n">uuid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> is not a valid build uuid&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="p">),</span> <span class="mi">400</span>
+        <span class="k">elif</span> <span class="n">status</span><span class="p">[</span><span class="s">&quot;queue_status&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;FINISHED&quot;</span><span class="p">,</span> <span class="s">&quot;FAILED&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">uuid</span><span class="o">=</span><span class="n">uuid</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s">&quot;Build not in FINISHED or FAILED.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">image_name</span><span class="p">,</span> <span class="n">image_path</span> <span class="o">=</span> <span class="n">uuid_image</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;COMPOSER_CFG&quot;</span><span class="p">],</span> <span class="n">uuid</span><span class="p">)</span>
+
+            <span class="c"># XXX - Will mime type guessing work for all our output?</span>
+            <span class="k">return</span> <span class="n">send_file</span><span class="p">(</span><span class="n">image_path</span><span class="p">,</span> <span class="n">as_attachment</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">attachment_filename</span><span class="o">=</span><span class="n">image_name</span><span class="p">,</span> <span class="n">add_etags</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/compose/log/&lt;uuid&gt;&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_compose_log_tail</span><span class="p">(</span><span class="n">uuid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the end of the main anaconda.log, defaults to 1Mbytes&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;size&quot;</span><span class="p">,</span> <span class="s">&quot;1024&quot;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;msg&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">400</span>
+
+        <span class="n">status</span> <span class="o">=</span> <span class="n">uuid_status</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;COMPOSER_CFG&quot;</span><span class="p">],</span> <span class="n">uuid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">status</span><span class="p">[</span><span class="s">&quot;queue_status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;WAITING&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">uuid</span><span class="o">=</span><span class="n">uuid</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s">&quot;Build has not started yet. No logs to view&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">uuid_log</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;COMPOSER_CFG&quot;</span><span class="p">],</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">size</span><span class="p">),</span> <span class="n">direct_passthrough</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">uuid</span><span class="o">=</span><span class="n">uuid</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Lorax 19.7.10 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../api.html" >pylorax.api</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2017, Red Hat, Inc..
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

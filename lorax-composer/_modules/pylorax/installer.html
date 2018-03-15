@@ -1,0 +1,482 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pylorax.installer &mdash; Lorax 19.7.10 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '19.7.10',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Lorax 19.7.10 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Lorax 19.7.10 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pylorax.installer</h1><div class="highlight"><pre>
+<span class="c">#</span>
+<span class="c"># Copyright (C) 2011-2017  Red Hat, Inc.</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the GNU General Public License as published by</span>
+<span class="c"># the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># This program is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c"># GNU General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License</span>
+<span class="c"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c">#</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&quot;pylorax&quot;</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+
+<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="kn">import</span> <span class="n">execWithRedirect</span><span class="p">,</span> <span class="n">execWithCapture</span>
+<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">get_loop_name</span><span class="p">,</span> <span class="n">dm_detach</span><span class="p">,</span> <span class="n">mount</span><span class="p">,</span> <span class="n">umount</span>
+<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">PartitionMount</span><span class="p">,</span> <span class="n">mksparse</span><span class="p">,</span> <span class="n">mkext4img</span><span class="p">,</span> <span class="n">loop_detach</span>
+<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="kn">import</span> <span class="n">mktar</span><span class="p">,</span> <span class="n">mkdiskfsimage</span><span class="p">,</span> <span class="n">mkqcow2</span>
+<span class="kn">from</span> <span class="nn">pylorax.logmonitor</span> <span class="kn">import</span> <span class="n">LogMonitor</span>
+<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="kn">import</span> <span class="n">joinpaths</span>
+<span class="kn">from</span> <span class="nn">pylorax.treebuilder</span> <span class="kn">import</span> <span class="n">udev_escape</span>
+
+<span class="n">ROOT_PATH</span> <span class="o">=</span> <span class="s">&quot;/mnt/sysimage/&quot;</span>
+
+<span class="c"># no-virt mode doesn&#39;t need libvirt, so make it optional</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">libvirt</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">libvirt</span> <span class="o">=</span> <span class="bp">None</span>
+
+
+<div class="viewcode-block" id="InstallError"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.InstallError">[docs]</a><span class="k">class</span> <span class="nc">InstallError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="IsoMountpoint"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.IsoMountpoint">[docs]</a><span class="k">class</span> <span class="nc">IsoMountpoint</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Mount the iso on a temporary directory and check to make sure the</span>
+<span class="sd">    vmlinuz and initrd.img files exist</span>
+<span class="sd">    Check the iso for a LiveOS directory and set a flag.</span>
+<span class="sd">    Extract the iso&#39;s label.</span>
+
+<span class="sd">    initrd_path can be used to point to a boot.iso tree with a newer</span>
+<span class="sd">    initrd.img than the iso has. The iso is still used for stage2.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">iso_path</span><span class="p">,</span> <span class="n">initrd_path</span><span class="o">=</span><span class="bp">None</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; iso_path is the path to a  boot.iso</span>
+<span class="sd">            initrd_path overrides mounting the iso for access to</span>
+<span class="sd">                        initrd and vmlinuz.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iso_path</span> <span class="o">=</span> <span class="n">iso_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initrd_path</span> <span class="o">=</span> <span class="n">initrd_path</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initrd_path</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span> <span class="o">=</span> <span class="n">mount</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iso_path</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="s">&quot;loop&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initrd_path</span>
+
+        <span class="n">kernel_list</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&quot;/isolinux/vmlinuz&quot;</span><span class="p">,</span> <span class="s">&quot;/isolinux/initrd.img&quot;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s">&quot;/ppc/ppc64/vmlinuz&quot;</span><span class="p">,</span> <span class="s">&quot;/ppc/ppc64/initrd.img&quot;</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="s">&quot;/repodata&quot;</span> <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">repo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">repo</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">liveos</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="s">&quot;/LiveOS&quot;</span> <span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">initrd</span> <span class="ow">in</span> <span class="n">kernel_list</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="n">kernel</span><span class="p">)</span> <span class="ow">and</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="n">initrd</span><span class="p">)):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="n">kernel</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">initrd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="n">initrd</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Missing kernel and initrd file in iso, failed&quot;</span>
+                                <span class="s">&quot; to search under: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kernel_list</span><span class="p">))</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">umount</span><span class="p">()</span>
+            <span class="k">raise</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_iso_label</span><span class="p">()</span>
+
+<div class="viewcode-block" id="IsoMountpoint.umount"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.IsoMountpoint.umount">[docs]</a>    <span class="k">def</span> <span class="nf">umount</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initrd_path</span><span class="p">:</span>
+            <span class="n">umount</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IsoMountpoint.get_iso_label"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.IsoMountpoint.get_iso_label">[docs]</a>    <span class="k">def</span> <span class="nf">get_iso_label</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the iso&#39;s label using isoinfo</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">isoinfo_output</span> <span class="o">=</span> <span class="n">execWithCapture</span><span class="p">(</span><span class="s">&quot;isoinfo&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;-d&quot;</span><span class="p">,</span> <span class="s">&quot;-i&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iso_path</span><span class="p">])</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span> <span class="n">isoinfo_output</span> <span class="p">)</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">isoinfo_output</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;Volume id: &quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">11</span><span class="p">:]</span>
+                <span class="k">return</span>
+
+</div></div>
+<div class="viewcode-block" id="VirtualInstall"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.VirtualInstall">[docs]</a><span class="k">class</span> <span class="nc">VirtualInstall</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run virt-install using an iso and kickstart(s)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">iso</span><span class="p">,</span> <span class="n">ks_paths</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">img_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> 
+                  <span class="n">kernel_args</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">memory</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">vnc</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                  <span class="n">log_check</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">virtio_host</span><span class="o">=</span><span class="s">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">virtio_port</span><span class="o">=</span><span class="mi">6080</span><span class="p">,</span>
+                  <span class="n">qcow2</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        iso is an instance of IsoMountpoint</span>
+<span class="sd">        ks_paths is a list of paths to a kickstart files. All are injected, the</span>
+<span class="sd">                 first one is the one executed.</span>
+<span class="sd">        disk_img is the path to a disk image (doesn&#39;t need to exist)</span>
+<span class="sd">        img_size is the size, in GiB, of the image if it doesn&#39;t exist</span>
+<span class="sd">        kernel_args are extra arguments to pass on the kernel cmdline</span>
+<span class="sd">        memory is the amount of ram to assign to the virt</span>
+<span class="sd">        vnc is passed to the --graphics command verbatim</span>
+<span class="sd">        arch is the optional architecture to use in the virt</span>
+<span class="sd">        log_check is a method that returns True of the log indicates an error</span>
+<span class="sd">        virtio_host and virtio_port are used to communicate with the log monitor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">virt_name</span> <span class="o">=</span> <span class="s">&quot;LiveOS-&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+        <span class="c"># add --graphics none later</span>
+        <span class="c"># add whatever serial cmds are needed later</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;-n&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">virt_name</span><span class="p">,</span>
+                 <span class="s">&quot;-r&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">memory</span><span class="p">),</span>
+                 <span class="s">&quot;--noreboot&quot;</span><span class="p">,</span>
+                 <span class="s">&quot;--noautoconsole&quot;</span><span class="p">]</span>
+
+        <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;--graphics&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">vnc</span><span class="p">:</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vnc</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;none&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">ks</span> <span class="ow">in</span> <span class="n">ks_paths</span><span class="p">:</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;--initrd-inject&quot;</span><span class="p">)</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ks</span><span class="p">)</span>
+
+        <span class="n">disk_opts</span> <span class="o">=</span> <span class="s">&quot;path={0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">disk_img</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">qcow2</span><span class="p">:</span>
+            <span class="n">disk_opts</span> <span class="o">+=</span> <span class="s">&quot;,format=qcow2&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">disk_opts</span> <span class="o">+=</span> <span class="s">&quot;,format=raw&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">disk_img</span><span class="p">):</span>
+            <span class="n">disk_opts</span> <span class="o">+=</span> <span class="s">&quot;,size={0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">img_size</span><span class="p">)</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;--disk&quot;</span><span class="p">)</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">disk_opts</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">iso</span><span class="o">.</span><span class="n">liveos</span><span class="p">:</span>
+            <span class="n">disk_opts</span> <span class="o">=</span> <span class="s">&quot;path={0},device=cdrom&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iso</span><span class="o">.</span><span class="n">iso_path</span><span class="p">)</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;--disk&quot;</span><span class="p">)</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">disk_opts</span><span class="p">)</span>
+
+        <span class="n">extra_args</span> <span class="o">=</span> <span class="s">&quot;ks=file:/{0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">ks_paths</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">vnc</span><span class="p">:</span>
+            <span class="n">extra_args</span> <span class="o">+=</span> <span class="s">&quot; inst.cmdline console=ttyS0&quot;</span>
+        <span class="k">if</span> <span class="n">kernel_args</span><span class="p">:</span>
+            <span class="n">extra_args</span> <span class="o">+=</span> <span class="s">&quot; &quot;</span><span class="o">+</span><span class="n">kernel_args</span>
+        <span class="k">if</span> <span class="n">iso</span><span class="o">.</span><span class="n">liveos</span><span class="p">:</span>
+            <span class="n">extra_args</span> <span class="o">+=</span> <span class="s">&quot; stage2=hd:LABEL={0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">udev_escape</span><span class="p">(</span><span class="n">iso</span><span class="o">.</span><span class="n">label</span><span class="p">))</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;--extra-args&quot;</span><span class="p">)</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">extra_args</span><span class="p">)</span>
+
+        <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;--location&quot;</span><span class="p">)</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">iso</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">)</span>
+
+        <span class="n">channel_args</span> <span class="o">=</span> <span class="s">&quot;tcp,host={0}:{1},mode=connect,target_type=virtio&quot;</span> \
+                       <span class="s">&quot;,name=org.fedoraproject.anaconda.log.0&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                       <span class="n">virtio_host</span><span class="p">,</span> <span class="n">virtio_port</span><span class="p">)</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;--channel&quot;</span><span class="p">)</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">channel_args</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">arch</span><span class="p">:</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;--arch&quot;</span><span class="p">)</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arch</span><span class="p">)</span>
+
+        <span class="n">rc</span> <span class="o">=</span> <span class="n">execWithRedirect</span><span class="p">(</span><span class="s">&quot;virt-install&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Problem starting virtual install&quot;</span><span class="p">)</span>
+
+        <span class="n">conn</span> <span class="o">=</span> <span class="n">libvirt</span><span class="o">.</span><span class="n">openReadOnly</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+        <span class="n">dom</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">lookupByName</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">virt_name</span><span class="p">)</span>
+
+        <span class="c"># TODO: If vnc has been passed, we should look up the port and print that</span>
+        <span class="c"># for the user at this point</span>
+
+        <span class="k">while</span> <span class="n">dom</span><span class="o">.</span><span class="n">isActive</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">log_check</span><span class="p">():</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+        <span class="k">print</span>
+
+        <span class="k">if</span> <span class="n">log_check</span><span class="p">():</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span> <span class="s">&quot;Installation error detected. See logfile.&quot;</span> <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span> <span class="s">&quot;Install finished. Or at least virt shut down.&quot;</span> <span class="p">)</span>
+
+<div class="viewcode-block" id="VirtualInstall.destroy"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.VirtualInstall.destroy">[docs]</a>    <span class="k">def</span> <span class="nf">destroy</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make sure the virt has been shut down and destroyed</span>
+
+<span class="sd">        Could use libvirt for this instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span> <span class="s">&quot;Shutting down </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">virt_name</span><span class="p">)</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="s">&quot;virsh&quot;</span><span class="p">,</span> <span class="s">&quot;destroy&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">virt_name</span><span class="p">])</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="s">&quot;virsh&quot;</span><span class="p">,</span> <span class="s">&quot;undefine&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">virt_name</span><span class="p">])</span>
+
+</div></div>
+<div class="viewcode-block" id="novirt_install"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.novirt_install">[docs]</a><span class="k">def</span> <span class="nf">novirt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span> <span class="n">repo_url</span><span class="p">,</span> <span class="n">callback_func</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Use Anaconda to install to a disk image</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">selinux</span>
+
+    <span class="c"># Set selinux to Permissive if it is Enforcing</span>
+    <span class="n">selinux_enforcing</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">if</span> <span class="n">selinux</span><span class="o">.</span><span class="n">is_selinux_enabled</span><span class="p">()</span> <span class="ow">and</span> <span class="n">selinux</span><span class="o">.</span><span class="n">security_getenforce</span><span class="p">():</span>
+        <span class="n">selinux_enforcing</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">selinux</span><span class="o">.</span><span class="n">security_setenforce</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c"># Clean up /tmp/ from previous runs to prevent stale info from being used</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;/tmp/yum.repos.d/&quot;</span><span class="p">,</span> <span class="s">&quot;/tmp/yum.cache/&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;--kickstart&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">ks</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&quot;--cmdline&quot;</span><span class="p">,</span> <span class="s">&quot;--repo&quot;</span><span class="p">,</span> <span class="n">repo_url</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">anaconda_args</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">anaconda_args</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">proxy</span><span class="p">:</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s">&quot;--proxy&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">proxy</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">armplatform</span><span class="p">:</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s">&quot;--armplatform&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">armplatform</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_iso</span> <span class="ow">or</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_fsimage</span><span class="p">:</span>
+        <span class="c"># Make a blank fs image</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s">&quot;--dirinstall&quot;</span><span class="p">]</span>
+
+        <span class="n">mkext4img</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">fs_label</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">disk_size</span> <span class="o">*</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">ROOT_PATH</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">ROOT_PATH</span><span class="p">)</span>
+        <span class="n">mount</span><span class="p">(</span><span class="n">disk_img</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="s">&quot;loop&quot;</span><span class="p">,</span> <span class="n">mnt</span><span class="o">=</span><span class="n">ROOT_PATH</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_tar</span><span class="p">:</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s">&quot;--dirinstall&quot;</span><span class="p">]</span>
+
+        <span class="c"># Install directly into ROOT_PATH, make sure it starts clean</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">ROOT_PATH</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">ROOT_PATH</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">ROOT_PATH</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">ROOT_PATH</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s">&quot;--image&quot;</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">]</span>
+
+        <span class="c"># Create the sparse image</span>
+        <span class="n">mksparse</span><span class="p">(</span><span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span> <span class="o">*</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="c"># Make sure anaconda has the right product and release</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&quot;ANACONDA_PRODUCTNAME&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">project</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&quot;ANACONDA_PRODUCTVERSION&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">releasever</span>
+    <span class="n">rc</span> <span class="o">=</span> <span class="n">execWithRedirect</span><span class="p">(</span><span class="s">&quot;anaconda&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">callback_func</span><span class="o">=</span><span class="n">callback_func</span><span class="p">)</span>
+
+    <span class="c"># Move the anaconda logs over to a log directory</span>
+    <span class="n">log_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">logfile</span><span class="p">))</span>
+    <span class="n">log_anaconda</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">log_dir</span><span class="p">,</span> <span class="s">&quot;anaconda&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">log_anaconda</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">log_anaconda</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;anaconda.log&quot;</span><span class="p">,</span> <span class="s">&quot;ifcfg.log&quot;</span><span class="p">,</span> <span class="s">&quot;program.log&quot;</span><span class="p">,</span> <span class="s">&quot;storage.log&quot;</span><span class="p">,</span>
+              <span class="s">&quot;packaging.log&quot;</span><span class="p">,</span> <span class="s">&quot;yum.log&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s">&quot;/tmp/&quot;</span><span class="o">+</span><span class="n">l</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="s">&quot;/tmp/&quot;</span><span class="o">+</span><span class="n">l</span><span class="p">,</span> <span class="n">log_anaconda</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="s">&quot;/tmp/&quot;</span><span class="o">+</span><span class="n">l</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_iso</span> <span class="ow">or</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_fsimage</span><span class="p">:</span>
+        <span class="n">umount</span><span class="p">(</span><span class="n">ROOT_PATH</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># If anaconda failed the disk image may still be in use by dm</span>
+        <span class="n">execWithRedirect</span><span class="p">(</span><span class="s">&quot;anaconda-cleanup&quot;</span><span class="p">,</span> <span class="p">[])</span>
+
+        <span class="k">if</span> <span class="n">disk_img</span><span class="p">:</span>
+            <span class="n">dm_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">disk_img</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">dm_path</span> <span class="o">=</span> <span class="s">&quot;/dev/mapper/&quot;</span><span class="o">+</span><span class="n">dm_name</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dm_path</span><span class="p">):</span>
+                <span class="n">dm_detach</span><span class="p">(</span><span class="n">dm_path</span><span class="p">)</span>
+                <span class="n">loop_detach</span><span class="p">(</span><span class="n">get_loop_name</span><span class="p">(</span><span class="n">disk_img</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">selinux_enforcing</span><span class="p">:</span>
+        <span class="n">selinux</span><span class="o">.</span><span class="n">security_setenforce</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">rc</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s">&quot;novirt_install failed&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_tar</span><span class="p">:</span>
+        <span class="n">compress_args</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">compress_args</span><span class="p">:</span>
+            <span class="n">compress_args</span> <span class="o">+=</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">rc</span> <span class="o">=</span> <span class="n">mktar</span><span class="p">(</span><span class="n">ROOT_PATH</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">compression</span><span class="p">,</span> <span class="n">compress_args</span><span class="p">)</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">ROOT_PATH</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;tar finished with rc=</span><span class="si">%d</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">rc</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">rc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s">&quot;novirt_install failed&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">opts</span><span class="o">.</span><span class="n">qcow2</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Converting </span><span class="si">%s</span><span class="s"> to qcow2&quot;</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">)</span>
+        <span class="n">qcow2_args</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">qcow2_args</span><span class="p">:</span>
+            <span class="n">qcow2_args</span> <span class="o">+=</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c"># convert the image to qcow2 format</span>
+        <span class="k">if</span> <span class="s">&quot;-O&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">qcow2_args</span><span class="p">:</span>
+            <span class="n">qcow2_args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s">&quot;-O&quot;</span><span class="p">,</span> <span class="s">&quot;qcow2&quot;</span><span class="p">])</span>
+        <span class="n">qcow2_img</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mktemp</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s">&quot;disk&quot;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s">&quot;.img&quot;</span><span class="p">)</span>
+        <span class="n">execWithRedirect</span><span class="p">(</span><span class="s">&quot;qemu-img&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;convert&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">qcow2_args</span> <span class="o">+</span> <span class="p">[</span><span class="n">disk_img</span><span class="p">,</span> <span class="n">qcow2_img</span><span class="p">],</span> <span class="n">raise_err</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">execWithRedirect</span><span class="p">(</span><span class="s">&quot;mv&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;-f&quot;</span><span class="p">,</span> <span class="n">qcow2_img</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">],</span> <span class="n">raise_err</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="virt_install"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.virt_install">[docs]</a><span class="k">def</span> <span class="nf">virt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">install_log</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Use virt-install to install to a disk image</span>
+
+<span class="sd">    install_log is the path to write the log from virt-install</span>
+<span class="sd">    disk_img is the full path to the final disk or filesystem image</span>
+<span class="sd">    disk_size is the size of the disk to create in GiB</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">iso_mount</span> <span class="o">=</span> <span class="n">IsoMountpoint</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">iso</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+    <span class="n">log_monitor</span> <span class="o">=</span> <span class="n">LogMonitor</span><span class="p">(</span><span class="n">install_log</span><span class="p">)</span>
+
+    <span class="n">kernel_args</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">kernel_args</span><span class="p">:</span>
+        <span class="n">kernel_args</span> <span class="o">+=</span> <span class="n">opts</span><span class="o">.</span><span class="n">kernel_args</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">proxy</span><span class="p">:</span>
+        <span class="n">kernel_args</span> <span class="o">+=</span> <span class="s">&quot; proxy=&quot;</span><span class="o">+</span><span class="n">opts</span><span class="o">.</span><span class="n">proxy</span>
+
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">qcow2</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_fsimage</span><span class="p">:</span>
+        <span class="c"># virt-install can&#39;t take all the qcow2 options so create the image first</span>
+        <span class="n">qcow2_args</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">qcow2_args</span><span class="p">:</span>
+            <span class="n">qcow2_args</span> <span class="o">+=</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">mkqcow2</span><span class="p">(</span><span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="o">*</span><span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">,</span> <span class="n">qcow2_args</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_fsimage</span> <span class="ow">or</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_tar</span><span class="p">:</span>
+        <span class="n">diskimg_path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mktemp</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s">&quot;disk&quot;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s">&quot;.img&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">diskimg_path</span> <span class="o">=</span> <span class="n">disk_img</span>
+
+    <span class="n">virt</span> <span class="o">=</span> <span class="n">VirtualInstall</span><span class="p">(</span><span class="n">iso_mount</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">ks</span><span class="p">,</span> <span class="n">diskimg_path</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span>
+                           <span class="n">kernel_args</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">ram</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">vnc</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">arch</span><span class="p">,</span>
+                           <span class="n">log_check</span> <span class="o">=</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">log_check</span><span class="p">,</span>
+                           <span class="n">virtio_host</span> <span class="o">=</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
+                           <span class="n">virtio_port</span> <span class="o">=</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
+                           <span class="n">qcow2</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">qcow2</span><span class="p">)</span>
+
+    <span class="n">virt</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+    <span class="n">log_monitor</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+    <span class="n">iso_mount</span><span class="o">.</span><span class="n">umount</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">log_check</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s">&quot;virt_install failed&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_fsimage</span><span class="p">:</span>
+        <span class="n">mkdiskfsimage</span><span class="p">(</span><span class="n">diskimg_path</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">fs_label</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">diskimg_path</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_tar</span><span class="p">:</span>
+        <span class="n">compress_args</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">compress_args</span><span class="p">:</span>
+            <span class="n">compress_args</span> <span class="o">+=</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">PartitionMount</span><span class="p">(</span><span class="n">diskimg_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">img_mount</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">img_mount</span> <span class="ow">and</span> <span class="n">img_mount</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">:</span>
+                <span class="n">rc</span> <span class="o">=</span> <span class="n">mktar</span><span class="p">(</span><span class="n">img_mount</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">compression</span><span class="p">,</span> <span class="n">compress_args</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">diskimg_path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">rc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s">&quot;virt_install failed&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Lorax 19.7.10 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2017, Red Hat, Inc..
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

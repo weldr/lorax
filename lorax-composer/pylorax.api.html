@@ -1,0 +1,3038 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>api Package &mdash; Lorax 19.7.10 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '19.7.10',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Lorax 19.7.10 documentation" href="index.html" />
+    <link rel="up" title="pylorax Package" href="pylorax.html" />
+    <link rel="prev" title="pylorax Package" href="pylorax.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pylorax.html" title="pylorax Package"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Lorax 19.7.10 documentation</a> &raquo;</li>
+          <li><a href="modules.html" >pylorax</a> &raquo;</li>
+          <li><a href="pylorax.html" accesskey="U">pylorax Package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="api-package">
+<h1>api Package<a class="headerlink" href="#api-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">api</span></tt> Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-pylorax.api"></span><dl class="function">
+<dt id="pylorax.api.crossdomain">
+<tt class="descclassname">pylorax.api.</tt><tt class="descname">crossdomain</tt><big>(</big><em>origin</em>, <em>methods=None</em>, <em>headers=None</em>, <em>max_age=21600</em>, <em>attach_to_all=True</em>, <em>automatic_options=True</em><big>)</big><a class="headerlink" href="#pylorax.api.crossdomain" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.api.compose">
+<span id="compose-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">compose</span></tt> Module<a class="headerlink" href="#module-pylorax.api.compose" title="Permalink to this headline">¶</a></h2>
+<p>Setup for composing an image</p>
+<div class="section" id="adding-new-output-types">
+<h3>Adding New Output Types<a class="headerlink" href="#adding-new-output-types" title="Permalink to this headline">¶</a></h3>
+<p>The new output type must add a kickstart template to ./share/composer/ where the
+name of the kickstart (without the trailing .ks) matches the entry in compose_args.</p>
+<p>The kickstart should not have any url or repo entries, these will be added at build
+time. The %packages section should be the last thing, and while it can contain mandatory
+packages required by the output type, it should not have the trailing %end because the
+package NEVRAs will be appended to it at build time.</p>
+<p>compose_args should have a name matching the kickstart, and it should set the novirt_install
+parameters needed to generate the desired output. Other types should be set to False.</p>
+<dl class="function">
+<dt id="pylorax.api.compose.compose_args">
+<tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">compose_args</tt><big>(</big><em>compose_type</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#compose_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.compose_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the settings to pass to novirt_install for the compose type</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>compose_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The type of compose to create, from <cite>compose_types()</cite></td>
+</tr>
+</tbody>
+</table>
+<p>This will return a dict of options that match the ArgumentParser options for livemedia-creator.
+These are the ones the define the type of output, it&#8217;s filename, etc.
+Other options will be filled in by <cite>make_compose()</cite></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.compose_types">
+<tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">compose_types</tt><big>(</big><em>share_dir</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#compose_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.compose_types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of the supported output types</p>
+<p>The output types come from the kickstart names in /usr/share/lorax/composer/<a href="#id2"><span class="problematic" id="id3">*</span></a>ks</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.move_compose_results">
+<tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">move_compose_results</tt><big>(</big><em>cfg</em>, <em>results_dir</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#move_compose_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.move_compose_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move the final image to the results_dir and cleanup the unneeded compose files</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cfg</strong> (<em>DataHolder</em>) &#8211; Build configuration</li>
+<li><strong>results_dir</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Directory to put the results into</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.repo_to_ks">
+<tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">repo_to_ks</tt><big>(</big><em>r</em>, <em>url='url'</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#repo_to_ks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.repo_to_ks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a kickstart line with the correct args.</p>
+<p>Set url to &#8220;baseurl&#8221; if it is a repo, leave it as &#8220;url&#8221; for the installation url.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.start_build">
+<tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">start_build</tt><big>(</big><em>cfg</em>, <em>yumlock</em>, <em>gitlock</em>, <em>branch</em>, <em>recipe_name</em>, <em>compose_type</em>, <em>test_mode=0</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#start_build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.start_build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start the build</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cfg</strong> (<em>ComposerConfig</em>) &#8211; Configuration object</li>
+<li><strong>yumlock</strong> (<em>YumLock</em>) &#8211; Lock and YumBase for depsolving</li>
+<li><strong>recipe</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The recipe to build</li>
+<li><strong>compose_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The type of output to create from the recipe</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Unique ID for the build that can be used to track its status</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-pylorax.api.config">
+<span id="config-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">config</span></tt> Module<a class="headerlink" href="#module-pylorax.api.config" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pylorax.api.config.ComposerConfig">
+<em class="property">class </em><tt class="descclassname">pylorax.api.config.</tt><tt class="descname">ComposerConfig</tt><big>(</big><em>defaults=None</em>, <em>dict_type=&lt;class 'collections.OrderedDict'&gt;</em>, <em>allow_no_value=False</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/config.html#ComposerConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.config.ComposerConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/configparser.html#ConfigParser.SafeConfigParser" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">ConfigParser.SafeConfigParser</span></tt></a></p>
+<dl class="method">
+<dt id="pylorax.api.config.ComposerConfig.get_default">
+<tt class="descname">get_default</tt><big>(</big><em>section</em>, <em>option</em>, <em>default</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/config.html#ComposerConfig.get_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.config.ComposerConfig.get_default" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.config.configure">
+<tt class="descclassname">pylorax.api.config.</tt><tt class="descname">configure</tt><big>(</big><em>conf_file='/etc/lorax/composer.conf'</em>, <em>root_dir='/'</em>, <em>test_config=False</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/config.html#configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.config.configure" title="Permalink to this definition">¶</a></dt>
+<dd><p>lorax-composer configuration</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>conf_file</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the config file overriding the default settings</li>
+<li><strong>root_dir</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Directory to prepend to paths, defaults to /</li>
+<li><strong>test_config</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to skip reading conf_file</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.config.make_queue_dirs">
+<tt class="descclassname">pylorax.api.config.</tt><tt class="descname">make_queue_dirs</tt><big>(</big><em>conf</em>, <em>gid</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/config.html#make_queue_dirs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.config.make_queue_dirs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make any missing queue directories</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>conf</strong> (<em>ComposerConfig</em>) &#8211; The configuration to use</li>
+<li><strong>gid</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; Group ID that has access to the queue directories</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list of errors</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.config.make_yum_dirs">
+<tt class="descclassname">pylorax.api.config.</tt><tt class="descname">make_yum_dirs</tt><big>(</big><em>conf</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/config.html#make_yum_dirs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.config.make_yum_dirs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make any missing yum directories</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>conf</strong> (<em>ComposerConfig</em>) &#8211; The configuration to use</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.api.crossdomain">
+<span id="crossdomain-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">crossdomain</span></tt> Module<a class="headerlink" href="#module-pylorax.api.crossdomain" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pylorax.api.crossdomain.crossdomain">
+<tt class="descclassname">pylorax.api.crossdomain.</tt><tt class="descname">crossdomain</tt><big>(</big><em>origin</em>, <em>methods=None</em>, <em>headers=None</em>, <em>max_age=21600</em>, <em>attach_to_all=True</em>, <em>automatic_options=True</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/crossdomain.html#crossdomain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.crossdomain.crossdomain" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.api.projects">
+<span id="projects-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">projects</span></tt> Module<a class="headerlink" href="#module-pylorax.api.projects" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="pylorax.api.projects.ProjectsError">
+<em class="property">exception </em><tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">ProjectsError</tt><a class="reference internal" href="_modules/pylorax/api/projects.html#ProjectsError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.ProjectsError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.projects.api_changelog">
+<tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">api_changelog</tt><big>(</big><em>changelog</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#api_changelog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.api_changelog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the changelog to a string</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>changelog</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#tuple" title="(in Python v2.7)"><em>tuple</em></a>) &#8211; A list of time, author, string tuples.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The most recent changelog text or &#8220;&#8221;</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+<p>This returns only the most recent changelog entry.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.projects.api_time">
+<tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">api_time</tt><big>(</big><em>t</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#api_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.api_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert time since epoch to a string</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; Seconds since epoch</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Time string</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.projects.dep_evra">
+<tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">dep_evra</tt><big>(</big><em>dep</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#dep_evra"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.dep_evra" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the epoch:version-release.arch for the dep</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dep</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; dependency dict</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">epoch:version-release.arch</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.projects.dep_nevra">
+<tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">dep_nevra</tt><big>(</big><em>dep</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#dep_nevra"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.dep_nevra" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name-epoch:version-release.arch</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.projects.modules_info">
+<tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">modules_info</tt><big>(</big><em>yb</em>, <em>module_names</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#modules_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.modules_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return details about a module, including dependencies</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>yb</strong> (<em>YumBase</em>) &#8211; yum base object</li>
+<li><strong>module_names</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Names of the modules to get info about</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of dicts with module details and dependencies.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of dicts</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.projects.modules_list">
+<tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">modules_list</tt><big>(</big><em>yb</em>, <em>module_names</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#modules_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.modules_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of modules</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>yb</strong> (<em>YumBase</em>) &#8211; yum base object</li>
+<li><strong>offset</strong> &#8211; Number of modules to skip</li>
+<li><strong>limit</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; Maximum number of modules to return</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of module information and total count</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple of a list of dicts and an Int</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Modules don&#8217;t exist in RHEL7 so this only returns projects
+and sets the type to &#8220;rpm&#8221;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.projects.projects_depsolve">
+<tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">projects_depsolve</tt><big>(</big><em>yb</em>, <em>project_names</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#projects_depsolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.projects_depsolve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the dependencies for a list of projects</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>yb</strong> (<em>YumBase</em>) &#8211; yum base object</li>
+<li><strong>project_names</strong> (<em>List of Strings</em>) &#8211; The projects to find the dependencies for</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">NEVRA&#8217;s of the project and its dependencies</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of dicts</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.projects.projects_info">
+<tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">projects_info</tt><big>(</big><em>yb</em>, <em>project_names</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#projects_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.projects_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return details about specific projects</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>yb</strong> (<em>YumBase</em>) &#8211; yum base object</li>
+<li><strong>project_names</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; List of names of projects to get info about</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of project info dicts with yaps_to_project as well as epoch, version, release, etc.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of dicts</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.projects.projects_list">
+<tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">projects_list</tt><big>(</big><em>yb</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#projects_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.projects_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of projects</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>yb</strong> (<em>YumBase</em>) &#8211; yum base object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of project info dicts with name, summary, description, homepage, upstream_vcs</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list of dicts</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.projects.tm_to_dep">
+<tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">tm_to_dep</tt><big>(</big><em>tm</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#tm_to_dep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.tm_to_dep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the info from a TransactionMember object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tm</strong> (<em>TransactionMember</em>) &#8211; A Yum transaction object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dict with name, epoch, version, release, arch</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.projects.yaps_to_module">
+<tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">yaps_to_module</tt><big>(</big><em>yaps</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#yaps_to_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.yaps_to_module" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the name from a YumAvailablePackageSqlite object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>yaps</strong> (<em>YumAvailablePackageSqlite</em>) &#8211; Yum object with package details</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dict with name, and group_type</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+<p>group_type is hard-coded to &#8220;rpm&#8221;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.projects.yaps_to_project">
+<tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">yaps_to_project</tt><big>(</big><em>yaps</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#yaps_to_project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.yaps_to_project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the details from a YumAvailablePackageSqlite object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>yaps</strong> (<em>YumAvailablePackageSqlite</em>) &#8211; Yum object with package details</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dict with the name, summary, description, and url.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+<p>upstream_vcs is hard-coded to UPSTREAM_VCS</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.projects.yaps_to_project_info">
+<tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">yaps_to_project_info</tt><big>(</big><em>yaps</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#yaps_to_project_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.yaps_to_project_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the details from a YumAvailablePackageSqlite object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>yaps</strong> (<em>YumAvailablePackageSqlite</em>) &#8211; Yum object with package details</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dict with the project details, as well as epoch, release, arch, build_time, changelog, ...</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+<p>metadata entries are hard-coded to {}</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.api.queue">
+<span id="queue-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">queue</span></tt> Module<a class="headerlink" href="#module-pylorax.api.queue" title="Permalink to this headline">¶</a></h2>
+<p>Functions to monitor compose queue and run anaconda</p>
+<dl class="function">
+<dt id="pylorax.api.queue.build_status">
+<tt class="descclassname">pylorax.api.queue.</tt><tt class="descname">build_status</tt><big>(</big><em>cfg</em>, <em>status_filter=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/queue.html#build_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.queue.build_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the details of finished or failed builds</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cfg</strong> (<em>ComposerConfig</em>) &#8211; Configuration settings</li>
+<li><strong>status_filter</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; What builds to return. None == all, &#8220;FINISHED&#8221;, or &#8220;FAILED&#8221;</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A list of the build details (from compose_details)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of dicts</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>This returns a list of build details for each of the matching builds on the
+system. It does not return the status of builds that have not been finished.
+Use queue_status() for those.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.queue.compose_detail">
+<tt class="descclassname">pylorax.api.queue.</tt><tt class="descname">compose_detail</tt><big>(</big><em>results_dir</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/queue.html#compose_detail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.queue.compose_detail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return details about the build.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>results_dir</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The directory containing the metadata and results for the build</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dictionary with details about the compose</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+<p>The following details are included in the dict:</p>
+<ul class="simple">
+<li>id - The uuid of the comoposition</li>
+<li>queue_status - The final status of the composition (FINISHED or FAILED)</li>
+<li>timestamp - The time of the last status change</li>
+<li>compose_type - The type of output generated (tar, iso, etc.)</li>
+<li>recipe - Recipe name</li>
+<li>version - Recipe version</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.queue.get_compose_type">
+<tt class="descclassname">pylorax.api.queue.</tt><tt class="descname">get_compose_type</tt><big>(</big><em>results_dir</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/queue.html#get_compose_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.queue.get_compose_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the type of composition.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>results_dir</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The directory containing the metadata and results for the build</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The type of compose (eg. &#8216;tar&#8217;)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body">RuntimeError if no kickstart template can be found.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.queue.make_compose">
+<tt class="descclassname">pylorax.api.queue.</tt><tt class="descname">make_compose</tt><big>(</big><em>cfg</em>, <em>results_dir</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/queue.html#make_compose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.queue.make_compose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run anaconda with the final-kickstart.ks from results_dir</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cfg</strong> (<em>DataHolder</em>) &#8211; Configuration settings</li>
+<li><strong>results_dir</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The directory containing the metadata and results for the build</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Nothing</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">May raise various exceptions</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>This takes the final-kickstart.ks, and the settings in config.toml and runs Anaconda
+in no-virt mode (directly on the host operating system). Exceptions should be caught
+at the higer level.</p>
+<p>If there is a failure, the build artifacts will be cleaned up, and any logs will be
+moved into logs/anaconda/ and their ownership will be set to the user from the cfg
+object.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.queue.monitor">
+<tt class="descclassname">pylorax.api.queue.</tt><tt class="descname">monitor</tt><big>(</big><em>cfg</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/queue.html#monitor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.queue.monitor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Monitor the queue for new compose requests</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cfg</strong> (<em>DataHolder</em>) &#8211; Configuration settings</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Does not return</td>
+</tr>
+</tbody>
+</table>
+<p>The queue has 2 subdirectories, new and run. When a compose is ready to be run
+a symlink to the uniquely named results directory should be placed in ./queue/new/</p>
+<p>When the it is ready to be run (it is checked every 30 seconds or after a previous
+compose is finished) the symlink will be moved into ./queue/run/ and a STATUS file
+will be created in the results directory.</p>
+<p>STATUS can contain one of: RUNNING, FINISHED, FAILED</p>
+<p>If the system is restarted while a compose is running it will move any old symlinks
+from ./queue/run/ to ./queue/new/ and rerun them.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.queue.queue_status">
+<tt class="descclassname">pylorax.api.queue.</tt><tt class="descname">queue_status</tt><big>(</big><em>cfg</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/queue.html#queue_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.queue.queue_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return details about what is in the queue.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cfg</strong> (<em>ComposerConfig</em>) &#8211; Configuration settings</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of the new composes, and a list of the running composes</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+<p>This returns a dict with 2 lists. &#8220;new&#8221; is the list of uuids that are waiting to be built,
+and &#8220;run&#8221; has the uuids that are being built (currently limited to 1 at a time).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.queue.start_queue_monitor">
+<tt class="descclassname">pylorax.api.queue.</tt><tt class="descname">start_queue_monitor</tt><big>(</big><em>cfg</em>, <em>uid</em>, <em>gid</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/queue.html#start_queue_monitor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.queue.start_queue_monitor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start the queue monitor as a mp process</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cfg</strong> (<em>ComposerConfig</em>) &#8211; Configuration settings</li>
+<li><strong>uid</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; User ID that owns the queue</li>
+<li><strong>gid</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; Group ID that owns the queue</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.queue.uuid_cancel">
+<tt class="descclassname">pylorax.api.queue.</tt><tt class="descname">uuid_cancel</tt><big>(</big><em>cfg</em>, <em>uuid</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/queue.html#uuid_cancel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.queue.uuid_cancel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cancel a build and delete its results</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cfg</strong> (<em>ComposerConfig</em>) &#8211; Configuration settings</li>
+<li><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The UUID of the build</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if it was canceled and deleted</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Only call this if the build status is WAITING or RUNNING</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.queue.uuid_delete">
+<tt class="descclassname">pylorax.api.queue.</tt><tt class="descname">uuid_delete</tt><big>(</big><em>cfg</em>, <em>uuid</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/queue.html#uuid_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.queue.uuid_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete all of the results from a compose</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cfg</strong> (<em>ComposerConfig</em>) &#8211; Configuration settings</li>
+<li><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The UUID of the build</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if it was deleted</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">bool</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">This will raise an error if the delete failed</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.queue.uuid_image">
+<tt class="descclassname">pylorax.api.queue.</tt><tt class="descname">uuid_image</tt><big>(</big><em>cfg</em>, <em>uuid</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/queue.html#uuid_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.queue.uuid_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the filename and full path of the build&#8217;s image file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cfg</strong> (<em>ComposerConfig</em>) &#8211; Configuration settings</li>
+<li><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The UUID of the build</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The image filename and full path</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">tuple of strings</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">RuntimeError if there was a problem (eg. invalid uuid, missing config file)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.queue.uuid_info">
+<tt class="descclassname">pylorax.api.queue.</tt><tt class="descname">uuid_info</tt><big>(</big><em>cfg</em>, <em>uuid</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/queue.html#uuid_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.queue.uuid_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return information about the composition</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cfg</strong> (<em>ComposerConfig</em>) &#8211; Configuration settings</li>
+<li><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The UUID of the build</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">dictionary of information about the composition</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">dict</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">RuntimeError if there was a problem</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>This will return a dict with the following fields populated:</p>
+<ul class="simple">
+<li>id - The uuid of the comoposition</li>
+<li>config - containing the configuration settings used to run Anaconda</li>
+<li>recipe - The depsolved recipe used to generate the kickstart</li>
+<li>commit - The (local) git commit hash for the recipe used</li>
+<li>deps - The NEVRA of all of the dependencies used in the composition</li>
+<li>compose_type - The type of output generated (tar, iso, etc.)</li>
+<li>queue_status - The final status of the composition (FINISHED or FAILED)</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.queue.uuid_log">
+<tt class="descclassname">pylorax.api.queue.</tt><tt class="descname">uuid_log</tt><big>(</big><em>cfg</em>, <em>uuid</em>, <em>size=1024</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/queue.html#uuid_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.queue.uuid_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return <cite>size</cite> kbytes from the end of the anaconda.log</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cfg</strong> (<em>ComposerConfig</em>) &#8211; Configuration settings</li>
+<li><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The UUID of the build</li>
+<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; Number of kbytes to read. Default is 1024</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Up to <cite>size</cite> kbytes from the end of the log</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">str</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">RuntimeError if there was a problem (eg. no log file available)</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>This function tries to return lines from the end of the log, it will
+attempt to start on a line boundry, and may return less than <cite>size</cite> kbytes.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.queue.uuid_status">
+<tt class="descclassname">pylorax.api.queue.</tt><tt class="descname">uuid_status</tt><big>(</big><em>cfg</em>, <em>uuid</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/queue.html#uuid_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.queue.uuid_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the details of a specific UUID compose</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cfg</strong> (<em>ComposerConfig</em>) &#8211; Configuration settings</li>
+<li><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The UUID of the build</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Details about the build</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict or None</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns the same dict as <cite>compose_details()</cite></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.queue.uuid_tar">
+<tt class="descclassname">pylorax.api.queue.</tt><tt class="descname">uuid_tar</tt><big>(</big><em>cfg</em>, <em>uuid</em>, <em>metadata=False</em>, <em>image=False</em>, <em>logs=False</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/queue.html#uuid_tar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.queue.uuid_tar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a tar of the build data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cfg</strong> (<em>ComposerConfig</em>) &#8211; Configuration settings</li>
+<li><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The UUID of the build</li>
+<li><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to true to include all the metadata needed to reproduce the build</li>
+<li><strong>image</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to true to include the output image</li>
+<li><strong>logs</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to true to include the logs from the build</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A stream of bytes from tar</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">A generator</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">RuntimeError if there was a problem (eg. missing config file)</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>This yields an uncompressed tar&#8217;s data to the caller. It includes
+the selected data to the caller by returning the Popen stdout from the tar process.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.api.recipes">
+<span id="recipes-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">recipes</span></tt> Module<a class="headerlink" href="#module-pylorax.api.recipes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pylorax.api.recipes.CommitDetails">
+<em class="property">class </em><tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">CommitDetails</tt><big>(</big><em>commit</em>, <em>timestamp</em>, <em>message</em>, <em>revision=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#CommitDetails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.CommitDetails" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pylorax.html#pylorax.base.DataHolder" title="pylorax.base.DataHolder"><tt class="xref py py-class docutils literal"><span class="pre">pylorax.base.DataHolder</span></tt></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="pylorax.api.recipes.CommitTimeValError">
+<em class="property">exception </em><tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">CommitTimeValError</tt><a class="reference internal" href="_modules/pylorax/api/recipes.html#CommitTimeValError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.CommitTimeValError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pylorax.api.recipes.Recipe">
+<em class="property">class </em><tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">Recipe</tt><big>(</big><em>name</em>, <em>description</em>, <em>version</em>, <em>modules</em>, <em>packages</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#Recipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.Recipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">dict</span></tt></a></p>
+<p>A Recipe of package and modules</p>
+<p>This is a subclass of dict that enforces the constructor arguments
+and adds a .filename property to return the recipe&#8217;s filename,
+and a .toml() function to return the recipe as a TOML string.</p>
+<dl class="method">
+<dt id="pylorax.api.recipes.Recipe.bump_version">
+<tt class="descname">bump_version</tt><big>(</big><em>old_version=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#Recipe.bump_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.Recipe.bump_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>semver recipe version number bump</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>old_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; An optional old version number</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The new version number or None</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body">ValueError</td>
+</tr>
+</tbody>
+</table>
+<p>If neither have a version, 0.0.1 is returned
+If there is no old version the new version is checked and returned
+If there is no new version, but there is a old one, bump its patch level
+If the old and new versions are the same, bump the patch level
+If they are different, check and return the new version</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pylorax.api.recipes.Recipe.filename">
+<tt class="descname">filename</tt><a class="reference internal" href="_modules/pylorax/api/recipes.html#Recipe.filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.Recipe.filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the Recipe&#8217;s filename</p>
+<p>Replaces spaces in the name with &#8216;-&#8216; and appends .toml</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.api.recipes.Recipe.freeze">
+<tt class="descname">freeze</tt><big>(</big><em>deps</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#Recipe.freeze"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.Recipe.freeze" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new Recipe with full module and package NEVRA</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>deps</strong> (<em>list(</em>) &#8211; A list of dependency NEVRA to use to fill in the modules and packages</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A new Recipe object</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Recipe</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pylorax.api.recipes.Recipe.module_names">
+<tt class="descname">module_names</tt><a class="reference internal" href="_modules/pylorax/api/recipes.html#Recipe.module_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.Recipe.module_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the names of the modules</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pylorax.api.recipes.Recipe.package_names">
+<tt class="descname">package_names</tt><a class="reference internal" href="_modules/pylorax/api/recipes.html#Recipe.package_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.Recipe.package_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the names of the packages</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylorax.api.recipes.Recipe.toml">
+<tt class="descname">toml</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#Recipe.toml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.Recipe.toml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the Recipe in TOML format</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="pylorax.api.recipes.RecipeError">
+<em class="property">exception </em><tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">RecipeError</tt><a class="reference internal" href="_modules/pylorax/api/recipes.html#RecipeError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.RecipeError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="pylorax.api.recipes.RecipeFileError">
+<em class="property">exception </em><tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">RecipeFileError</tt><a class="reference internal" href="_modules/pylorax/api/recipes.html#RecipeFileError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.RecipeFileError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pylorax.api.recipes.RecipeModule">
+<em class="property">class </em><tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">RecipeModule</tt><big>(</big><em>name</em>, <em>version</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#RecipeModule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.RecipeModule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">dict</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pylorax.api.recipes.RecipePackage">
+<em class="property">class </em><tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">RecipePackage</tt><big>(</big><em>name</em>, <em>version</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#RecipePackage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.RecipePackage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pylorax.api.recipes.RecipeModule" title="pylorax.api.recipes.RecipeModule"><tt class="xref py py-class docutils literal"><span class="pre">pylorax.api.recipes.RecipeModule</span></tt></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.commit_recipe">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">commit_recipe</tt><big>(</big><em>repo</em>, <em>branch</em>, <em>recipe</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#commit_recipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.commit_recipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Commit a recipe to a branch</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
+<li><strong>recipe</strong> (<em>Recipe</em>) &#8211; Recipe to commit</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">OId of the new commit</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">Git.OId</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Can raise errors from Ggit</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.commit_recipe_directory">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">commit_recipe_directory</tt><big>(</big><em>repo</em>, <em>branch</em>, <em>directory</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#commit_recipe_directory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.commit_recipe_directory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Commit all <a href="#id4"><span class="problematic" id="id5">*</span></a>.toml files from a directory, if they aren&#8217;t already in git.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
+<li><strong>directory</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The directory of <a href="#id6"><span class="problematic" id="id7">*</span></a>.toml recipes to commit</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">None</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Can raise errors from Ggit or RecipeFileError</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Files with Toml or RecipeFileErrors will be skipped, and the remainder will
+be tried.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.commit_recipe_file">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">commit_recipe_file</tt><big>(</big><em>repo</em>, <em>branch</em>, <em>filename</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#commit_recipe_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.commit_recipe_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Commit a recipe file to a branch</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
+<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the recipe file to commit</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">OId of the new commit</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">Git.OId</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Can raise errors from Ggit or RecipeFileError</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.delete_file">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">delete_file</tt><big>(</big><em>repo</em>, <em>branch</em>, <em>filename</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#delete_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.delete_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a file from a branch.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
+<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; filename to delete</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">OId of the new commit</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">Git.OId</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Can raise errors from Ggit</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.delete_recipe">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">delete_recipe</tt><big>(</big><em>repo</em>, <em>branch</em>, <em>recipe_name</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#delete_recipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.delete_recipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a recipe from a branch.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
+<li><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Recipe name to delete</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">OId of the new commit</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">Git.OId</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Can raise errors from Ggit</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.diff_items">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">diff_items</tt><big>(</big><em>title</em>, <em>old_items</em>, <em>new_items</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#diff_items"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.diff_items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the differences between two lists of dicts.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>title</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Title of the entry</li>
+<li><strong>old_items</strong> (<em>list(dict)</em>) &#8211; List of item dicts with &#8220;name&#8221; field</li>
+<li><strong>new_items</strong> (<em>list(dict)</em>) &#8211; List of item dicts with &#8220;name&#8221; field</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of diff dicts with old/new entries</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list(dict)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.find_commit_tag">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">find_commit_tag</tt><big>(</big><em>repo</em>, <em>branch</em>, <em>filename</em>, <em>commit_id</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#find_commit_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.find_commit_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the tag that matches the commit_id</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
+<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; filename to revert</li>
+<li><strong>commit_id</strong> (<em>Git.OId</em>) &#8211; The commit id to check</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The tag or None if there isn&#8217;t one</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str or None</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>There should be only 1 tag pointing to a commit, but there may not
+be a tag at all.</p>
+<p>The tag will look like: &#8216;refs/tags/&lt;branch&gt;/&lt;filename&gt;/r&lt;revision&gt;&#8217;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.find_name">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">find_name</tt><big>(</big><em>name</em>, <em>lst</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#find_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.find_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the dict matching the name in a list and return it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Name to search for</li>
+<li><strong>lst</strong> &#8211; List of dict&#8217;s with &#8220;name&#8221; field</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">First dict with matching name, or None</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict or None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.get_commit_details">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">get_commit_details</tt><big>(</big><em>commit</em>, <em>revision=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#get_commit_details"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.get_commit_details" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the details about a specific commit.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>commit</strong> (<em>Git.Commit</em>) &#8211; The commit to get details from</li>
+<li><strong>revision</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; Optional commit revision</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Details about the commit</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">CommitDetails</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">CommitTimeValError or Ggit exceptions</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.get_revision_from_tag">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">get_revision_from_tag</tt><big>(</big><em>tag</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#get_revision_from_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.get_revision_from_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the revision number from a tag</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tag</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The tag to exract the revision from</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The integer revision or None</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int or None</td>
+</tr>
+</tbody>
+</table>
+<p>The revision is the part after the r in &#8216;branch/filename/rXXX&#8217;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.gfile">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">gfile</tt><big>(</big><em>path</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#gfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.gfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a string path to GFile for use with Git</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.head_commit">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">head_commit</tt><big>(</big><em>repo</em>, <em>branch</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#head_commit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.head_commit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the branch&#8217;s HEAD Commit Object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Branch&#8217;s head commit</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">Git.Commit</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Can raise errors from Ggit</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.is_commit_tag">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">is_commit_tag</tt><big>(</big><em>repo</em>, <em>commit_id</em>, <em>tag</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#is_commit_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.is_commit_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check to see if a tag points to a specific commit.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>commit_id</strong> (<em>Git.OId</em>) &#8211; The commit id to check</li>
+<li><strong>tag</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The tag to check</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if the tag points to the commit, False otherwise</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.is_parent_diff">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">is_parent_diff</tt><big>(</big><em>repo</em>, <em>filename</em>, <em>tree</em>, <em>parent</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#is_parent_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.is_parent_diff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check to see if the commit is different from its parents</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; filename to revert</li>
+<li><strong>tree</strong> (<em>Git.Tree</em>) &#8211; The commit&#8217;s tree</li>
+<li><strong>parent</strong> (<em>Git.Commit</em>) &#8211; The commit&#8217;s parent commit</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Retuns :</th><td class="field-body"><p class="first">True if filename in the commit is different from its parents</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.list_branch_files">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">list_branch_files</tt><big>(</big><em>repo</em>, <em>branch</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#list_branch_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.list_branch_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a sorted list of the files on the branch HEAD</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A sorted list of the filenames</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">list(str)</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Can raise errors from Ggit</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.list_commit_files">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">list_commit_files</tt><big>(</big><em>repo</em>, <em>commit</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#list_commit_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.list_commit_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a sorted list of the files on a commit</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>commit</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The commit hash to list</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A sorted list of the filenames</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">list(str)</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Can raise errors from Ggit</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.list_commits">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">list_commits</tt><big>(</big><em>repo</em>, <em>branch</em>, <em>filename</em>, <em>limit=0</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#list_commits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.list_commits" title="Permalink to this definition">¶</a></dt>
+<dd><p>List the commit history of a file on a branch.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
+<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; filename to revert</li>
+<li><strong>limit</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; Number of commits to return (0=all)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A list of commit details</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">list(CommitDetails)</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Can raise errors from Ggit</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.open_or_create_repo">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">open_or_create_repo</tt><big>(</big><em>path</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#open_or_create_repo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.open_or_create_repo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open an existing repo, or create a new one</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; path to recipe directory</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A repository object</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Git.Repository</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body">Can raise errors from Ggit</td>
+</tr>
+</tbody>
+</table>
+<p>A bare git repo will be created in the git directory of the specified path.
+If a repo already exists it will be opened and returned instead of
+creating a new one.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.prepare_commit">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">prepare_commit</tt><big>(</big><em>repo</em>, <em>branch</em>, <em>builder</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#prepare_commit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.prepare_commit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare for a commit</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
+<li><strong>builder</strong> (<em>TreeBuilder</em>) &#8211; instance of TreeBuilder</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">(Tree, Sig, Ref)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">tuple</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Can raise errors from Ggit</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.read_commit">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">read_commit</tt><big>(</big><em>repo</em>, <em>branch</em>, <em>filename</em>, <em>commit=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#read_commit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.read_commit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the contents of a file on a specific branch or commit.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
+<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; filename to read</li>
+<li><strong>commit</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Optional commit hash</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The commit id, and the contents of the commit</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">tuple(str, str)</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Can raise errors from Ggit</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>If no commit is passed the master:filename is returned, otherwise it will be
+commit:filename</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.read_commit_spec">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">read_commit_spec</tt><big>(</big><em>repo</em>, <em>spec</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#read_commit_spec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.read_commit_spec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the raw content of the blob specified by the spec</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>spec</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Git revparse spec</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Contents of the commit</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">str</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Can raise errors from Ggit</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>eg. To read the README file from master the spec is &#8220;master:README&#8221;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.read_recipe_and_id">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">read_recipe_and_id</tt><big>(</big><em>repo</em>, <em>branch</em>, <em>recipe_name</em>, <em>commit=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#read_recipe_and_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.read_recipe_and_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a recipe commit and its id from git</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
+<li><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Recipe name to read</li>
+<li><strong>commit</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Optional commit hash</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The commit id, and a Recipe object</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">tuple(str, Recipe)</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Can raise errors from Ggit</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>If no commit is passed the master:filename is returned, otherwise it will be
+commit:filename</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.read_recipe_commit">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">read_recipe_commit</tt><big>(</big><em>repo</em>, <em>branch</em>, <em>recipe_name</em>, <em>commit=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#read_recipe_commit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.read_recipe_commit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a recipe commit from git and return a Recipe object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
+<li><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Recipe name to read</li>
+<li><strong>commit</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Optional commit hash</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A Recipe object</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">Recipe</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Can raise errors from Ggit</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>If no commit is passed the master:filename is returned, otherwise it will be
+commit:filename</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.recipe_diff">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">recipe_diff</tt><big>(</big><em>old_recipe</em>, <em>new_recipe</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#recipe_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.recipe_diff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Diff two versions of a recipe</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>old_recipe</strong> (<em>Recipe</em>) &#8211; The old version of the recipe</li>
+<li><strong>new_recipe</strong> (<em>Recipe</em>) &#8211; The new version of the recipe</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A list of diff dict entries with old/new</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list(dict)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.recipe_filename">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">recipe_filename</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#recipe_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.recipe_filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the toml filename for a recipe</p>
+<p>Replaces spaces with &#8216;-&#8216; and appends &#8216;.toml&#8217;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.recipe_from_dict">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">recipe_from_dict</tt><big>(</big><em>recipe_dict</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#recipe_from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.recipe_from_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Recipe object from a plain dict.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>recipe_dict</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; A plain dict of the recipe</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A Recipe object</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Recipe</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body">RecipeError</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.recipe_from_file">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">recipe_from_file</tt><big>(</big><em>recipe_path</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#recipe_from_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.recipe_from_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a recipe file as a Recipe object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>recipe_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the recipe fila</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A Recipe object</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Recipe</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.recipe_from_toml">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">recipe_from_toml</tt><big>(</big><em>recipe_str</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#recipe_from_toml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.recipe_from_toml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Recipe object from a toml string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>recipe_str</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The Recipe TOML string</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A Recipe object</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Recipe</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body">TomlError</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.revert_file">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">revert_file</tt><big>(</big><em>repo</em>, <em>branch</em>, <em>filename</em>, <em>commit</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#revert_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.revert_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Revert the contents of a file to that of a previous commit</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
+<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; filename to revert</li>
+<li><strong>commit</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Commit hash</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">OId of the new commit</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">Git.OId</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Can raise errors from Ggit</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.revert_recipe">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">revert_recipe</tt><big>(</big><em>repo</em>, <em>branch</em>, <em>recipe_name</em>, <em>commit</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#revert_recipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.revert_recipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Revert the contents of a recipe to that of a previous commit</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
+<li><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Recipe name to revert</li>
+<li><strong>commit</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Commit hash</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">OId of the new commit</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">Git.OId</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Can raise errors from Ggit</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.tag_file_commit">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">tag_file_commit</tt><big>(</big><em>repo</em>, <em>branch</em>, <em>filename</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#tag_file_commit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.tag_file_commit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tag a file&#8217;s most recent commit</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
+<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Filename to tag</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Tag id or None if it failed.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">Git.OId</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Can raise errors from Ggit</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>This uses git tags, of the form <cite>refs/tags/&lt;branch&gt;/&lt;filename&gt;/r&lt;revision&gt;</cite>
+Only the most recent recipe commit can be tagged to prevent out of order tagging.
+Revisions start at 1 and increment for each new commit that is tagged.
+If the commit has already been tagged it will return false.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.tag_recipe_commit">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">tag_recipe_commit</tt><big>(</big><em>repo</em>, <em>branch</em>, <em>recipe_name</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#tag_recipe_commit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.tag_recipe_commit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tag a file&#8217;s most recent commit</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
+<li><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Recipe name to tag</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Tag id or None if it failed.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">Git.OId</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Can raise errors from Ggit</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Uses tag_file_commit()</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.write_commit">
+<tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">write_commit</tt><big>(</big><em>repo</em>, <em>branch</em>, <em>filename</em>, <em>message</em>, <em>content</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#write_commit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.write_commit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a new commit to a repository&#8217;s branch</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
+<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; full path of the file to add</li>
+<li><strong>message</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The commit message</li>
+<li><strong>content</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The data to write</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">OId of the new commit</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">Git.OId</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">Can raise errors from Ggit</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.api.server">
+<span id="server-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">server</span></tt> Module<a class="headerlink" href="#module-pylorax.api.server" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pylorax.api.server.GitLock">
+<em class="property">class </em><tt class="descclassname">pylorax.api.server.</tt><tt class="descname">GitLock</tt><a class="headerlink" href="#pylorax.api.server.GitLock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">tuple</span></tt></p>
+<p>GitLock(repo, lock, dir)</p>
+<dl class="attribute">
+<dt id="pylorax.api.server.GitLock.dir">
+<tt class="descname">dir</tt><a class="headerlink" href="#pylorax.api.server.GitLock.dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pylorax.api.server.GitLock.lock">
+<tt class="descname">lock</tt><a class="headerlink" href="#pylorax.api.server.GitLock.lock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pylorax.api.server.GitLock.repo">
+<tt class="descname">repo</tt><a class="headerlink" href="#pylorax.api.server.GitLock.repo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.api.v0">
+<span id="v0-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">v0</span></tt> Module<a class="headerlink" href="#module-pylorax.api.v0" title="Permalink to this headline">¶</a></h2>
+<p>Setup v0 of the API server</p>
+<p>v0_api() must be called to setup the API routes for Flask</p>
+<div class="section" id="status-responses">
+<h3>Status Responses<a class="headerlink" href="#status-responses" title="Permalink to this headline">¶</a></h3>
+<p>Some requests only return a status/error response.</p>
+<blockquote>
+<div><p>The response will be a status response with <cite>status</cite> set to true, or an
+error response with it set to false and an error message included.</p>
+<p>Example response:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;status&quot;</span><span class="p">:</span> <span class="n">true</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Error response:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;error&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s">&quot;msg&quot;</span><span class="p">:</span> <span class="s">&quot;ggit-error: Failed to remove entry. File isn&#39;t in the tree - jboss.toml (-1)&quot;</span>
+  <span class="p">},</span>
+  <span class="s">&quot;status&quot;</span><span class="p">:</span> <span class="n">false</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="api-routes">
+<h3>API Routes<a class="headerlink" href="#api-routes" title="Permalink to this headline">¶</a></h3>
+<p>All of the recipes routes support the optional <cite>branch</cite> argument. If it is not
+used then the API will use the <cite>master</cite> branch for recipes. If you want to create
+a new branch use the <cite>new</cite> or <cite>workspace</cite> routes with ?branch=&lt;branch-name&gt; to
+store the new recipe on the new branch.</p>
+<div class="section" id="api-v0-test">
+<h4><cite>/api/v0/test</cite><a class="headerlink" href="#api-v0-test" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div>Return a test string. It is not JSON encoded.</div></blockquote>
+</div>
+<div class="section" id="api-v0-status">
+<h4><cite>/api/v0/status</cite><a class="headerlink" href="#api-v0-status" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Return the status of the API Server:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span> <span class="s">&quot;api&quot;</span><span class="p">:</span> <span class="s">&quot;0&quot;</span><span class="p">,</span>
+  <span class="s">&quot;build&quot;</span><span class="p">:</span> <span class="s">&quot;devel&quot;</span><span class="p">,</span>
+  <span class="s">&quot;db_supported&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+  <span class="s">&quot;db_version&quot;</span><span class="p">:</span> <span class="s">&quot;0&quot;</span><span class="p">,</span>
+  <span class="s">&quot;schema_version&quot;</span><span class="p">:</span> <span class="s">&quot;0&quot;</span> <span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="api-v0-recipes-list">
+<h4><cite>/api/v0/recipes/list</cite><a class="headerlink" href="#api-v0-recipes-list" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>List the available recipes:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span> <span class="s">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+  <span class="s">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s">&quot;recipes&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s">&quot;atlas&quot;</span><span class="p">,</span>
+    <span class="s">&quot;development&quot;</span><span class="p">,</span>
+    <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
+    <span class="s">&quot;http-server&quot;</span><span class="p">,</span>
+    <span class="s">&quot;jboss&quot;</span><span class="p">,</span>
+    <span class="s">&quot;kubernetes&quot;</span> <span class="p">],</span>
+  <span class="s">&quot;total&quot;</span><span class="p">:</span> <span class="mi">6</span> <span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="api-v0-recipes-info-recipe-names">
+<h4><cite>/api/v0/recipes/info/&lt;recipe_names&gt;</cite><a class="headerlink" href="#api-v0-recipes-info-recipe-names" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Return the JSON representation of the recipe. This includes 3 top level
+objects.  <cite>changes</cite> which lists whether or not the workspace is different from
+the most recent commit. <cite>recipes</cite> which lists the JSON representation of the
+recipe, and <cite>errors</cite> which will list any errors, like non-existant recipes.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;changes&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s">&quot;changed&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+      <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="s">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="s">&quot;recipes&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;An example GlusterFS server with samba&quot;</span><span class="p">,</span>
+      <span class="s">&quot;modules&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
+          <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;3.7.*&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs-cli&quot;</span><span class="p">,</span>
+          <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;3.7.*&quot;</span>
+        <span class="p">}</span>
+      <span class="p">],</span>
+      <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
+      <span class="s">&quot;packages&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;2ping&quot;</span><span class="p">,</span>
+          <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;3.2.1&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;samba&quot;</span><span class="p">,</span>
+          <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;4.2.*&quot;</span>
+        <span class="p">}</span>
+      <span class="p">],</span>
+      <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.6&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Error example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;changes&quot;</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="s">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s">&quot;msg&quot;</span><span class="p">:</span> <span class="s">&quot;ggit-error: the path &#39;missing.toml&#39; does not exist in the given tree (-3)&quot;</span><span class="p">,</span>
+      <span class="s">&quot;recipe&quot;</span><span class="p">:</span> <span class="s">&quot;missing&quot;</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="s">&quot;recipes&quot;</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="api-v0-recipes-changes-recipe-names-offset-0-limit-20">
+<h4><cite>/api/v0/recipes/changes/&lt;recipe_names&gt;[?offset=0&amp;limit=20]</cite><a class="headerlink" href="#api-v0-recipes-changes-recipe-names-offset-0-limit-20" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Return the commits to a recipe. By default it returns the first 20 commits, this
+can be changed by passing <cite>offset</cite> and/or <cite>limit</cite>. The response will include the
+commit hash, summary, timestamp, and optionally the revision number. The commit
+hash can be passed to <cite>/api/v0/recipes/diff/</cite> to retrieve the exact changes.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="s">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+  <span class="s">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s">&quot;recipes&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s">&quot;changes&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s">&quot;commit&quot;</span><span class="p">:</span> <span class="s">&quot;e083921a7ed1cf2eec91ad12b9ad1e70ef3470be&quot;</span><span class="p">,</span>
+          <span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="s">&quot;Recipe glusterfs, version 0.0.6 saved.&quot;</span><span class="p">,</span>
+          <span class="s">&quot;revision&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s">&quot;2017-11-23T00:18:13Z&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="s">&quot;commit&quot;</span><span class="p">:</span> <span class="s">&quot;cee5f4c20fc33ea4d54bfecf56f4ad41ad15f4f3&quot;</span><span class="p">,</span>
+          <span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="s">&quot;Recipe glusterfs, version 0.0.5 saved.&quot;</span><span class="p">,</span>
+          <span class="s">&quot;revision&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s">&quot;2017-11-11T01:00:28Z&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="s">&quot;commit&quot;</span><span class="p">:</span> <span class="s">&quot;29b492f26ed35d80800b536623bafc51e2f0eff2&quot;</span><span class="p">,</span>
+          <span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="s">&quot;Recipe glusterfs, version 0.0.4 saved.&quot;</span><span class="p">,</span>
+          <span class="s">&quot;revision&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s">&quot;2017-11-11T00:28:30Z&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="s">&quot;commit&quot;</span><span class="p">:</span> <span class="s">&quot;03374adbf080fe34f5c6c29f2e49cc2b86958bf2&quot;</span><span class="p">,</span>
+          <span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="s">&quot;Recipe glusterfs, version 0.0.3 saved.&quot;</span><span class="p">,</span>
+          <span class="s">&quot;revision&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s">&quot;2017-11-10T23:15:52Z&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="s">&quot;commit&quot;</span><span class="p">:</span> <span class="s">&quot;0e08ecbb708675bfabc82952599a1712a843779d&quot;</span><span class="p">,</span>
+          <span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="s">&quot;Recipe glusterfs, version 0.0.2 saved.&quot;</span><span class="p">,</span>
+          <span class="s">&quot;revision&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s">&quot;2017-11-10T23:14:56Z&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="s">&quot;commit&quot;</span><span class="p">:</span> <span class="s">&quot;3e11eb87a63d289662cba4b1804a0947a6843379&quot;</span><span class="p">,</span>
+          <span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="s">&quot;Recipe glusterfs, version 0.0.1 saved.&quot;</span><span class="p">,</span>
+          <span class="s">&quot;revision&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s">&quot;2017-11-08T00:02:47Z&quot;</span>
+        <span class="p">}</span>
+      <span class="p">],</span>
+      <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
+      <span class="s">&quot;total&quot;</span><span class="p">:</span> <span class="mi">6</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="post-api-v0-recipes-new">
+<h4>POST <cite>/api/v0/recipes/new</cite><a class="headerlink" href="#post-api-v0-recipes-new" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Create a new recipe, or update an existing recipe. This supports both JSON and TOML
+for the recipe format. The recipe should be in the body of the request with the
+<cite>Content-Type</cite> header set to either <cite>application/json</cite> or <cite>text/x-toml</cite>.</p>
+<p>The response will be a status response with <cite>status</cite> set to true, or an
+error response with it set to false and an error message included.</p>
+</div></blockquote>
+</div>
+<div class="section" id="delete-api-v0-recipes-delete-recipe-name">
+<h4>DELETE <cite>/api/v0/recipes/delete/&lt;recipe_name&gt;</cite><a class="headerlink" href="#delete-api-v0-recipes-delete-recipe-name" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Delete a recipe. The recipe is deleted from the branch, and will no longer
+be listed by the <cite>list</cite> route. A recipe can be undeleted using the <cite>undo</cite> route
+to revert to a previous commit.</p>
+<p>The response will be a status response with <cite>status</cite> set to true, or an
+error response with it set to false and an error message included.</p>
+</div></blockquote>
+</div>
+<div class="section" id="post-api-v0-recipes-workspace">
+<h4>POST <cite>/api/v0/recipes/workspace</cite><a class="headerlink" href="#post-api-v0-recipes-workspace" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Write a recipe to the temporary workspace. This works exactly the same as <cite>new</cite> except
+that it does not create a commit. JSON and TOML bodies are supported.</p>
+<p>The workspace is meant to be used as a temporary recipe storage for clients.
+It will be read by the <cite>info</cite> and <cite>diff</cite> routes if it is different from the
+most recent commit.</p>
+<p>The response will be a status response with <cite>status</cite> set to true, or an
+error response with it set to false and an error message included.</p>
+</div></blockquote>
+</div>
+<div class="section" id="delete-api-v0-recipes-workspace-recipe-name">
+<h4>DELETE <cite>/api/v0/recipes/workspace/&lt;recipe_name&gt;</cite><a class="headerlink" href="#delete-api-v0-recipes-workspace-recipe-name" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Remove the temporary workspace copy of a recipe. The <cite>info</cite> route will now
+return the most recent commit of the recipe. Any changes that were in the
+workspace will be lost.</p>
+<p>The response will be a status response with <cite>status</cite> set to true, or an
+error response with it set to false and an error message included.</p>
+</div></blockquote>
+</div>
+<div class="section" id="post-api-v0-recipes-undo-recipe-name-commit">
+<h4>POST <cite>/api/v0/recipes/undo/&lt;recipe_name&gt;/&lt;commit&gt;</cite><a class="headerlink" href="#post-api-v0-recipes-undo-recipe-name-commit" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>This will revert the recipe to a previous commit. The commit hash from the <cite>changes</cite>
+route can be used in this request.</p>
+<p>The response will be a status response with <cite>status</cite> set to true, or an
+error response with it set to false and an error message included.</p>
+</div></blockquote>
+</div>
+<div class="section" id="post-api-v0-recipes-tag-recipe-name">
+<h4>POST <cite>/api/v0/recipes/tag/&lt;recipe_name&gt;</cite><a class="headerlink" href="#post-api-v0-recipes-tag-recipe-name" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Tag a recipe as a new release. This uses git tags with a special format.
+<cite>refs/tags/&lt;branch&gt;/&lt;filename&gt;/r&lt;revision&gt;</cite>. Only the most recent recipe commit
+can be tagged. Revisions start at 1 and increment for each new tag
+(per-recipe). If the commit has already been tagged it will return false.</p>
+<p>The response will be a status response with <cite>status</cite> set to true, or an
+error response with it set to false and an error message included.</p>
+</div></blockquote>
+</div>
+<div class="section" id="api-v0-recipes-diff-recipe-name-from-commit-to-commit">
+<h4><cite>/api/v0/recipes/diff/&lt;recipe_name&gt;/&lt;from_commit&gt;/&lt;to_commit&gt;</cite><a class="headerlink" href="#api-v0-recipes-diff-recipe-name-from-commit-to-commit" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Return the differences between two commits, or the workspace. The commit hash
+from the <cite>changes</cite> response can be used here, or several special strings:</p>
+<ul class="simple">
+<li>NEWEST will select the newest git commit. This works for <cite>from_commit</cite> or <cite>to_commit</cite></li>
+<li>WORKSPACE will select the workspace copy. This can only be used in <cite>to_commit</cite></li>
+</ul>
+<p>eg. <cite>/api/v0/recipes/diff/glusterfs/NEWEST/WORKSPACE</cite> will return the differences
+between the most recent git commit and the contents of the workspace.</p>
+<p>Each entry in the response&#8217;s diff object contains the old recipe value and the new one.
+If old is null and new is set, then it was added.
+If new is null and old is set, then it was removed.
+If both are set, then it was changed.</p>
+<p>The old/new entries will have the name of the recipe field that was changed. This
+can be one of: Name, Description, Version, Module, or Package.
+The contents for these will be the old/new values for them.</p>
+<p>In the example below the version was changed and the ping package was added.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;diff&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s">&quot;new&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&quot;Version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.6&quot;</span>
+      <span class="p">},</span>
+      <span class="s">&quot;old&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&quot;Version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.5&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s">&quot;new&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&quot;Package&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;ping&quot;</span><span class="p">,</span>
+          <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;3.2.1&quot;</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s">&quot;old&quot;</span><span class="p">:</span> <span class="n">null</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="api-v0-recipes-freeze-recipe-names">
+<h4><cite>/api/v0/recipes/freeze/&lt;recipe_names&gt;</cite><a class="headerlink" href="#api-v0-recipes-freeze-recipe-names" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Return a JSON representation of the recipe with the package and module versions set
+to the exact versions chosen by depsolving the recipe.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="s">&quot;recipes&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s">&quot;recipe&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;An example GlusterFS server with samba&quot;</span><span class="p">,</span>
+        <span class="s">&quot;modules&quot;</span><span class="p">:</span> <span class="p">[</span>
+          <span class="p">{</span>
+            <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
+            <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;3.8.4-18.4.el7.x86_64&quot;</span>
+          <span class="p">},</span>
+          <span class="p">{</span>
+            <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs-cli&quot;</span><span class="p">,</span>
+            <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;3.8.4-18.4.el7.x86_64&quot;</span>
+          <span class="p">}</span>
+        <span class="p">],</span>
+        <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
+        <span class="s">&quot;packages&quot;</span><span class="p">:</span> <span class="p">[</span>
+          <span class="p">{</span>
+            <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;ping&quot;</span><span class="p">,</span>
+            <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;2:3.2.1-2.el7.noarch&quot;</span>
+          <span class="p">},</span>
+          <span class="p">{</span>
+            <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;samba&quot;</span><span class="p">,</span>
+            <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;4.6.2-8.el7.x86_64&quot;</span>
+          <span class="p">}</span>
+        <span class="p">],</span>
+        <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.6&quot;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="api-v0-recipes-depsolve-recipe-names">
+<h4><cite>/api/v0/recipes/depsolve/&lt;recipe_names&gt;</cite><a class="headerlink" href="#api-v0-recipes-depsolve-recipe-names" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Depsolve the recipe using yum, return the recipe used, and the NEVRAs of the packages
+chosen to satisfy the recipe&#8217;s requirements. The response will include a list of results,
+with the full dependency list in <cite>dependencies</cite>, the NEVRAs for the recipe&#8217;s direct modules
+and packages in <cite>modules</cite>, and any error will be in <cite>errors</cite>.</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>{
+  "errors": [],
+  "recipes": [
+    {
+      "dependencies": [
+        {
+          "arch": "noarch",
+          "epoch": "0",
+          "name": "2ping",
+          "release": "2.el7",
+          "version": "3.2.1"
+        },
+        {
+          "arch": "x86_64",
+          "epoch": "0",
+          "name": "acl",
+          "release": "12.el7",
+          "version": "2.2.51"
+        },
+        {
+          "arch": "x86_64",
+          "epoch": "0",
+          "name": "audit-libs",
+          "release": "3.el7",
+          "version": "2.7.6"
+        },
+        {
+          "arch": "x86_64",
+          "epoch": "0",
+          "name": "avahi-libs",
+          "release": "17.el7",
+          "version": "0.6.31"
+        },
+        ...
+      ],
+      "modules": [
+        {
+          "arch": "noarch",
+          "epoch": "0",
+          "name": "2ping",
+          "release": "2.el7",
+          "version": "3.2.1"
+        },
+        {
+          "arch": "x86_64",
+          "epoch": "0",
+          "name": "glusterfs",
+          "release": "18.4.el7",
+          "version": "3.8.4"
+        },
+        ...
+      ],
+      "recipe": {
+        "description": "An example GlusterFS server with samba",
+        "modules": [
+          {
+            "name": "glusterfs",
+            "version": "3.7.*"
+          },
+       ...
+      }
+    }
+  ]
+}</pre>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="api-v0-projects-list-offset-0-limit-20">
+<h4><cite>/api/v0/projects/list[?offset=0&amp;limit=20]</cite><a class="headerlink" href="#api-v0-projects-list-offset-0-limit-20" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>List all of the available projects. By default this returns the first 20 items,
+but this can be changed by setting the <cite>offset</cite> and <cite>limit</cite> arguments.</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>{
+  "limit": 20,
+  "offset": 0,
+  "projects": [
+    {
+      "description": "0 A.D. (pronounced "zero ey-dee") is a ...",
+      "homepage": "http://play0ad.com",
+      "name": "0ad",
+      "summary": "Cross-Platform RTS Game of Ancient Warfare",
+      "upstream_vcs": "UPSTREAM_VCS"
+    },
+    ...
+  ],
+  "total": 21770
+}</pre>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="api-v0-projects-info-project-names">
+<h4><cite>/api/v0/projects/info/&lt;project_names&gt;</cite><a class="headerlink" href="#api-v0-projects-info-project-names" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Return information about the comma-separated list of projects. It includes the description
+of the package along with the list of available builds.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;projects&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s">&quot;builds&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s">&quot;arch&quot;</span><span class="p">:</span> <span class="s">&quot;x86_64&quot;</span><span class="p">,</span>
+          <span class="s">&quot;build_config_ref&quot;</span><span class="p">:</span> <span class="s">&quot;BUILD_CONFIG_REF&quot;</span><span class="p">,</span>
+          <span class="s">&quot;build_env_ref&quot;</span><span class="p">:</span> <span class="s">&quot;BUILD_ENV_REF&quot;</span><span class="p">,</span>
+          <span class="s">&quot;build_time&quot;</span><span class="p">:</span> <span class="s">&quot;2017-03-01T08:39:23&quot;</span><span class="p">,</span>
+          <span class="s">&quot;changelog&quot;</span><span class="p">:</span> <span class="s">&quot;- restore incremental backups correctly, files ...&quot;</span><span class="p">,</span>
+          <span class="s">&quot;epoch&quot;</span><span class="p">:</span> <span class="s">&quot;2&quot;</span><span class="p">,</span>
+          <span class="s">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{},</span>
+          <span class="s">&quot;release&quot;</span><span class="p">:</span> <span class="s">&quot;32.el7&quot;</span><span class="p">,</span>
+          <span class="s">&quot;source&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&quot;license&quot;</span><span class="p">:</span> <span class="s">&quot;GPLv3+&quot;</span><span class="p">,</span>
+            <span class="s">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s">&quot;source_ref&quot;</span><span class="p">:</span> <span class="s">&quot;SOURCE_REF&quot;</span><span class="p">,</span>
+            <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;1.26&quot;</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">],</span>
+      <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;The GNU tar program saves many ...&quot;</span><span class="p">,</span>
+      <span class="s">&quot;homepage&quot;</span><span class="p">:</span> <span class="s">&quot;http://www.gnu.org/software/tar/&quot;</span><span class="p">,</span>
+      <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;tar&quot;</span><span class="p">,</span>
+      <span class="s">&quot;summary&quot;</span><span class="p">:</span> <span class="s">&quot;A GNU file archiving program&quot;</span><span class="p">,</span>
+      <span class="s">&quot;upstream_vcs&quot;</span><span class="p">:</span> <span class="s">&quot;UPSTREAM_VCS&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="api-v0-projects-depsolve-project-names">
+<h4><cite>/api/v0/projects/depsolve/&lt;project_names&gt;</cite><a class="headerlink" href="#api-v0-projects-depsolve-project-names" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Depsolve the comma-separated list of projects and return the list of NEVRAs needed
+to satisfy the request.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;projects&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s">&quot;arch&quot;</span><span class="p">:</span> <span class="s">&quot;noarch&quot;</span><span class="p">,</span>
+      <span class="s">&quot;epoch&quot;</span><span class="p">:</span> <span class="s">&quot;0&quot;</span><span class="p">,</span>
+      <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;basesystem&quot;</span><span class="p">,</span>
+      <span class="s">&quot;release&quot;</span><span class="p">:</span> <span class="s">&quot;7.el7&quot;</span><span class="p">,</span>
+      <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;10.0&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s">&quot;arch&quot;</span><span class="p">:</span> <span class="s">&quot;x86_64&quot;</span><span class="p">,</span>
+      <span class="s">&quot;epoch&quot;</span><span class="p">:</span> <span class="s">&quot;0&quot;</span><span class="p">,</span>
+      <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;bash&quot;</span><span class="p">,</span>
+      <span class="s">&quot;release&quot;</span><span class="p">:</span> <span class="s">&quot;28.el7&quot;</span><span class="p">,</span>
+      <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;4.2.46&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s">&quot;arch&quot;</span><span class="p">:</span> <span class="s">&quot;x86_64&quot;</span><span class="p">,</span>
+      <span class="s">&quot;epoch&quot;</span><span class="p">:</span> <span class="s">&quot;0&quot;</span><span class="p">,</span>
+      <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;filesystem&quot;</span><span class="p">,</span>
+      <span class="s">&quot;release&quot;</span><span class="p">:</span> <span class="s">&quot;21.el7&quot;</span><span class="p">,</span>
+      <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;3.2&quot;</span>
+    <span class="p">},</span>
+    <span class="o">...</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="api-v0-modules-list-offset-0-limit-20">
+<h4><cite>/api/v0/modules/list[?offset=0&amp;limit=20]</cite><a class="headerlink" href="#api-v0-modules-list-offset-0-limit-20" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Return a list of all of the available modules. This includes the name and the
+group_type, which is always &#8220;rpm&#8221; for lorax-composer. By default this returns
+the first 20 items. This can be changed by setting the <cite>offset</cite> and <cite>limit</cite>
+arguments.</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>{
+  "limit": 20,
+  "modules": [
+    {
+      "group_type": "rpm",
+      "name": "0ad"
+    },
+    {
+      "group_type": "rpm",
+      "name": "0ad-data"
+    },
+    {
+      "group_type": "rpm",
+      "name": "0install"
+    },
+    {
+      "group_type": "rpm",
+      "name": "2048-cli"
+    },
+    ...
+  ]
+  "total": 21770
+}</pre>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="api-v0-modules-list-module-names-offset-0-limit-20">
+<h4><cite>/api/v0/modules/list/&lt;module_names&gt;[?offset=0&amp;limit=20]</cite><a class="headerlink" href="#api-v0-modules-list-module-names-offset-0-limit-20" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Return the list of comma-separated modules. Output is the same as <cite>/modules/list</cite></p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+  <span class="s">&quot;modules&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s">&quot;group_type&quot;</span><span class="p">:</span> <span class="s">&quot;rpm&quot;</span><span class="p">,</span>
+      <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;tar&quot;</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="s">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s">&quot;total&quot;</span><span class="p">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="api-v0-modules-info-module-names">
+<h4><cite>/api/v0/modules/info/&lt;module_names&gt;</cite><a class="headerlink" href="#api-v0-modules-info-module-names" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Return the module&#8217;s dependencies, and the information about the module.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;modules&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s">&quot;dependencies&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s">&quot;arch&quot;</span><span class="p">:</span> <span class="s">&quot;noarch&quot;</span><span class="p">,</span>
+          <span class="s">&quot;epoch&quot;</span><span class="p">:</span> <span class="s">&quot;0&quot;</span><span class="p">,</span>
+          <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;basesystem&quot;</span><span class="p">,</span>
+          <span class="s">&quot;release&quot;</span><span class="p">:</span> <span class="s">&quot;7.el7&quot;</span><span class="p">,</span>
+          <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;10.0&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="s">&quot;arch&quot;</span><span class="p">:</span> <span class="s">&quot;x86_64&quot;</span><span class="p">,</span>
+          <span class="s">&quot;epoch&quot;</span><span class="p">:</span> <span class="s">&quot;0&quot;</span><span class="p">,</span>
+          <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;bash&quot;</span><span class="p">,</span>
+          <span class="s">&quot;release&quot;</span><span class="p">:</span> <span class="s">&quot;28.el7&quot;</span><span class="p">,</span>
+          <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;4.2.46&quot;</span>
+        <span class="p">},</span>
+        <span class="o">...</span>
+      <span class="p">],</span>
+      <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;The GNU tar program saves ...&quot;</span><span class="p">,</span>
+      <span class="s">&quot;homepage&quot;</span><span class="p">:</span> <span class="s">&quot;http://www.gnu.org/software/tar/&quot;</span><span class="p">,</span>
+      <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;tar&quot;</span><span class="p">,</span>
+      <span class="s">&quot;summary&quot;</span><span class="p">:</span> <span class="s">&quot;A GNU file archiving program&quot;</span><span class="p">,</span>
+      <span class="s">&quot;upstream_vcs&quot;</span><span class="p">:</span> <span class="s">&quot;UPSTREAM_VCS&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="post-api-v0-compose">
+<h4>POST <cite>/api/v0/compose</cite><a class="headerlink" href="#post-api-v0-compose" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Start a compose. The content type should be &#8216;application/json&#8217; and the body of the POST
+should look like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;recipe_name&quot;</span><span class="p">:</span> <span class="s">&quot;http-server&quot;</span><span class="p">,</span>
+  <span class="s">&quot;compose_type&quot;</span><span class="p">:</span> <span class="s">&quot;tar&quot;</span><span class="p">,</span>
+  <span class="s">&quot;branch&quot;</span><span class="p">:</span> <span class="s">&quot;master&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Pass it the name of the recipe, the type of output (from &#8216;/api/v0/compose/types&#8217;), and the
+recipe branch to use. &#8216;branch&#8217; is optional and will default to master. It will create a new
+build and add it to the queue. It returns the build uuid and a status if it succeeds:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;build_id&quot;</span><span class="p">:</span> <span class="s">&quot;e6fa6db4-9c81-4b70-870f-a697ca405cdf&quot;</span><span class="p">,</span>
+  <span class="s">&quot;status&quot;</span><span class="p">:</span> <span class="n">true</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="api-v0-compose-types">
+<h4><cite>/api/v0/compose/types</cite><a class="headerlink" href="#api-v0-compose-types" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Returns the list of supported output types that are valid for use with &#8216;POST /api/v0/compose&#8217;</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>{</dt>
+<dd><dl class="first docutils">
+<dt>&#8220;types&#8221;: [</dt>
+<dd><dl class="first docutils">
+<dt>{</dt>
+<dd>&#8220;enabled&#8221;: true,
+&#8220;name&#8221;: &#8220;tar&#8221;</dd>
+</dl>
+<p class="last">}</p>
+</dd>
+</dl>
+<p class="last">]</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="api-v0-compose-queue">
+<h4><cite>/api/v0/compose/queue</cite><a class="headerlink" href="#api-v0-compose-queue" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Return the status of the build queue. It includes information about the builds waiting,
+and the build that is running.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;new&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;45502a6d-06e8-48a5-a215-2b4174b3614b&quot;</span><span class="p">,</span>
+      <span class="s">&quot;recipe&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
+      <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s">&quot;WAITING&quot;</span><span class="p">,</span>
+      <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517362647.4570868</span><span class="p">,</span>
+      <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.6&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;6d292bd0-bec7-4825-8d7d-41ef9c3e4b73&quot;</span><span class="p">,</span>
+      <span class="s">&quot;recipe&quot;</span><span class="p">:</span> <span class="s">&quot;kubernetes&quot;</span><span class="p">,</span>
+      <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s">&quot;WAITING&quot;</span><span class="p">,</span>
+      <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517362659.0034983</span><span class="p">,</span>
+      <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.1&quot;</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="s">&quot;run&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;745712b2-96db-44c0-8014-fe925c35e795&quot;</span><span class="p">,</span>
+      <span class="s">&quot;recipe&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
+      <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s">&quot;RUNNING&quot;</span><span class="p">,</span>
+      <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517362633.7965999</span><span class="p">,</span>
+      <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.6&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="api-v0-compose-finished">
+<h4><cite>/api/v0/compose/finished</cite><a class="headerlink" href="#api-v0-compose-finished" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Return the details on all of the finished composes on the system.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;finished&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;70b84195-9817-4b8a-af92-45e380f39894&quot;</span><span class="p">,</span>
+      <span class="s">&quot;recipe&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
+      <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s">&quot;FINISHED&quot;</span><span class="p">,</span>
+      <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517351003.8210032</span><span class="p">,</span>
+      <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.6&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;e695affd-397f-4af9-9022-add2636e7459&quot;</span><span class="p">,</span>
+      <span class="s">&quot;recipe&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
+      <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s">&quot;FINISHED&quot;</span><span class="p">,</span>
+      <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517362289.7193348</span><span class="p">,</span>
+      <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.6&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="api-v0-compose-failed">
+<h4><cite>/api/v0/compose/failed</cite><a class="headerlink" href="#api-v0-compose-failed" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Return the details on all of the failed composes on the system.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;failed&quot;</span><span class="p">:</span> <span class="p">[</span>
+     <span class="p">{</span>
+      <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a&quot;</span><span class="p">,</span>
+      <span class="s">&quot;recipe&quot;</span><span class="p">:</span> <span class="s">&quot;http-server&quot;</span><span class="p">,</span>
+      <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s">&quot;FAILED&quot;</span><span class="p">,</span>
+      <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517523249.9301329</span><span class="p">,</span>
+      <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.2&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="api-v0-compose-status-uuids">
+<h4><cite>/api/v0/compose/status/&lt;uuids&gt;</cite><a class="headerlink" href="#api-v0-compose-status-uuids" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Return the details for each of the comma-separated list of uuids.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;uuids&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a&quot;</span><span class="p">,</span>
+      <span class="s">&quot;recipe&quot;</span><span class="p">:</span> <span class="s">&quot;http-server&quot;</span><span class="p">,</span>
+      <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s">&quot;FINISHED&quot;</span><span class="p">,</span>
+      <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517523644.2384307</span><span class="p">,</span>
+      <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.2&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;45502a6d-06e8-48a5-a215-2b4174b3614b&quot;</span><span class="p">,</span>
+      <span class="s">&quot;recipe&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
+      <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s">&quot;FINISHED&quot;</span><span class="p">,</span>
+      <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517363442.188399</span><span class="p">,</span>
+      <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.6&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="delete-api-v0-recipes-cancel-uuid">
+<h4>DELETE <cite>/api/v0/recipes/cancel/&lt;uuid&gt;</cite><a class="headerlink" href="#delete-api-v0-recipes-cancel-uuid" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Cancel the build, if it is not finished, and delete the results. It will return a
+status of True if it is successful.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;status&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+  <span class="s">&quot;uuid&quot;</span><span class="p">:</span> <span class="s">&quot;03397f8d-acff-4cdb-bd31-f629b7a948f5&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="delete-api-v0-compose-delete-uuids">
+<h4>DELETE <cite>/api/v0/compose/delete/&lt;uuids&gt;</cite><a class="headerlink" href="#delete-api-v0-compose-delete-uuids" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Delete the list of comma-separated uuids from the compose results.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+  <span class="s">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="s">&quot;uuids&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s">&quot;status&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+      <span class="s">&quot;uuid&quot;</span><span class="p">:</span> <span class="s">&quot;ae1bf7e3-7f16-4c9f-b36e-3726a1093fd0&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="api-v0-compose-info-uuid">
+<h4><cite>/api/v0/compose/info/&lt;uuid&gt;</cite><a class="headerlink" href="#api-v0-compose-info-uuid" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Get detailed information about the compose. The returned JSON string will
+contain the following information:</p>
+<blockquote>
+<div><ul class="simple">
+<li>id - The uuid of the comoposition</li>
+<li>config - containing the configuration settings used to run Anaconda</li>
+<li>recipe - The depsolved recipe used to generate the kickstart</li>
+<li>commit - The (local) git commit hash for the recipe used</li>
+<li>deps - The NEVRA of all of the dependencies used in the composition</li>
+<li>compose_type - The type of output generated (tar, iso, etc.)</li>
+<li>queue_status - The final status of the composition (FINISHED or FAILED)</li>
+</ul>
+</div></blockquote>
+<p>Example:</p>
+<div class="highlight-python"><pre>{
+  "commit": "7078e521a54b12eae31c3fd028680da7a0815a4d",
+  "compose_type": "tar",
+  "config": {
+    "anaconda_args": "",
+    "armplatform": "",
+    "compress_args": [],
+    "compression": "xz",
+    "image_name": "root.tar.xz",
+    ...
+  },
+  "deps": {
+    "packages": [
+      {
+        "arch": "x86_64",
+        "epoch": "0",
+        "name": "acl",
+        "release": "14.el7",
+        "version": "2.2.51"
+      }
+    ]
+  },
+  "id": "c30b7d80-523b-4a23-ad52-61b799739ce8",
+  "queue_status": "FINISHED",
+  "recipe": {
+    "description": "An example kubernetes master",
+    ...
+  }
+}</pre>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="api-v0-compose-metadata-uuid">
+<h4><cite>/api/v0/compose/metadata/&lt;uuid&gt;</cite><a class="headerlink" href="#api-v0-compose-metadata-uuid" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Returns a .tar of the metadata used for the build. This includes all the
+information needed to reproduce the build, including the final kickstart
+populated with repository and package NEVRA.</p>
+<p>The mime type is set to &#8216;application/x-tar&#8217; and the filename is set to
+UUID-metadata.tar</p>
+<p>The .tar is uncompressed, but is not large.</p>
+</div></blockquote>
+</div>
+<div class="section" id="api-v0-compose-results-uuid">
+<h4><cite>/api/v0/compose/results/&lt;uuid&gt;</cite><a class="headerlink" href="#api-v0-compose-results-uuid" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Returns a .tar of the metadata, logs, and output image of the build. This
+includes all the information needed to reproduce the build, including the
+final kickstart populated with repository and package NEVRA. The output image
+is already in compressed form so the returned tar is not compressed.</p>
+<p>The mime type is set to &#8216;application/x-tar&#8217; and the filename is set to
+UUID.tar</p>
+</div></blockquote>
+</div>
+<div class="section" id="api-v0-compose-logs-uuid">
+<h4><cite>/api/v0/compose/logs/&lt;uuid&gt;</cite><a class="headerlink" href="#api-v0-compose-logs-uuid" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Returns a .tar of the anaconda build logs. The tar is not compressed, but is
+not large.</p>
+<p>The mime type is set to &#8216;application/x-tar&#8217; and the filename is set to
+UUID-logs.tar</p>
+</div></blockquote>
+</div>
+<div class="section" id="api-v0-compose-image-uuid">
+<h4><cite>/api/v0/compose/image/&lt;uuid&gt;</cite><a class="headerlink" href="#api-v0-compose-image-uuid" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div>Returns the output image from the build. The filename is set to the filename
+from the build. eg. root.tar.xz or boot.iso.</div></blockquote>
+</div>
+<div class="section" id="api-v0-compose-log-uuid-size-kbytes">
+<h4><cite>/api/v0/compose/log/&lt;uuid&gt;[?size=kbytes]</cite><a class="headerlink" href="#api-v0-compose-log-uuid-size-kbytes" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Returns the end of the anaconda.log. The size parameter is optional and defaults to 1Mbytes
+if it is not included. The returned data is raw text from the end of the logfile, starting on
+a line boundry.</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>12:59:24,222 INFO anaconda: Running Thread: AnaConfigurationThread (140629395244800)
+12:59:24,223 INFO anaconda: Configuring installed system
+12:59:24,912 INFO anaconda: Configuring installed system
+12:59:24,912 INFO anaconda: Creating users
+12:59:24,913 INFO anaconda: Clearing libuser.conf at /tmp/libuser.Dyy8Gj
+12:59:25,154 INFO anaconda: Creating users
+12:59:25,155 INFO anaconda: Configuring addons
+12:59:25,155 INFO anaconda: Configuring addons
+12:59:25,155 INFO anaconda: Generating initramfs
+12:59:49,467 INFO anaconda: Generating initramfs
+12:59:49,467 INFO anaconda: Running post-installation scripts
+12:59:49,467 INFO anaconda: Running kickstart %%post script(s)
+12:59:50,782 INFO anaconda: All kickstart %%post script(s) have been run
+12:59:50,782 INFO anaconda: Running post-installation scripts
+12:59:50,784 INFO anaconda: Thread Done: AnaConfigurationThread (140629395244800)</pre>
+</div>
+</div></blockquote>
+<dl class="function">
+<dt id="pylorax.api.v0.take_limits">
+<tt class="descclassname">pylorax.api.v0.</tt><tt class="descname">take_limits</tt><big>(</big><em>iterable</em>, <em>offset</em>, <em>limit</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/v0.html#take_limits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.take_limits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply offset and limit to an iterable object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>iterable</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#iter" title="(in Python v2.7)"><em>iter</em></a>) &#8211; The object to limit</li>
+<li><strong>offset</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The number of items to skip</li>
+<li><strong>limit</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The total number of items to return</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A subset of the iterable</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_api">
+<tt class="descclassname">pylorax.api.v0.</tt><tt class="descname">v0_api</tt><big>(</big><em>api</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_api"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_api" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+</div>
+<div class="section" id="module-pylorax.api.workspace">
+<span id="workspace-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">workspace</span></tt> Module<a class="headerlink" href="#module-pylorax.api.workspace" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pylorax.api.workspace.workspace_delete">
+<tt class="descclassname">pylorax.api.workspace.</tt><tt class="descname">workspace_delete</tt><big>(</big><em>repo</em>, <em>branch</em>, <em>recipe_name</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/workspace.html#workspace_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.workspace.workspace_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete the recipe from the workspace</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
+<li><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The name of the recipe</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">None</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">IO related errors</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.workspace.workspace_dir">
+<tt class="descclassname">pylorax.api.workspace.</tt><tt class="descname">workspace_dir</tt><big>(</big><em>repo</em>, <em>branch</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/workspace.html#workspace_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.workspace.workspace_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the workspace&#8217;s path from a Repository and branch</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The path to the branch&#8217;s workspace directory</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.workspace.workspace_read">
+<tt class="descclassname">pylorax.api.workspace.</tt><tt class="descname">workspace_read</tt><big>(</big><em>repo</em>, <em>branch</em>, <em>recipe_name</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/workspace.html#workspace_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.workspace.workspace_read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a Recipe from the branch&#8217;s workspace</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
+<li><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The name of the recipe</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The workspace copy of the recipe, or None if it doesn&#8217;t exist</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">Recipe or None</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">RecipeFileError</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.workspace.workspace_write">
+<tt class="descclassname">pylorax.api.workspace.</tt><tt class="descname">workspace_write</tt><big>(</big><em>repo</em>, <em>branch</em>, <em>recipe</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/workspace.html#workspace_write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.workspace.workspace_write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a recipe to the workspace</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
+<li><strong>recipe</strong> (<em>Recipe</em>) &#8211; The recipe to write to the workspace</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">None</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">IO related errors</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.api.yumbase">
+<span id="yumbase-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">yumbase</span></tt> Module<a class="headerlink" href="#module-pylorax.api.yumbase" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pylorax.api.yumbase.get_base_object">
+<tt class="descclassname">pylorax.api.yumbase.</tt><tt class="descname">get_base_object</tt><big>(</big><em>conf</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/yumbase.html#get_base_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.yumbase.get_base_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the Yum object with settings from the config file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>conf</strong> (<em>ComposerParser</em>) &#8211; configuration object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A Yum base object</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">YumBase</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">api Package</a><ul>
+<li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">api</span></tt> Package</a></li>
+<li><a class="reference internal" href="#module-pylorax.api.compose"><tt class="docutils literal"><span class="pre">compose</span></tt> Module</a><ul>
+<li><a class="reference internal" href="#adding-new-output-types">Adding New Output Types</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pylorax.api.config"><tt class="docutils literal"><span class="pre">config</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-pylorax.api.crossdomain"><tt class="docutils literal"><span class="pre">crossdomain</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-pylorax.api.projects"><tt class="docutils literal"><span class="pre">projects</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-pylorax.api.queue"><tt class="docutils literal"><span class="pre">queue</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-pylorax.api.recipes"><tt class="docutils literal"><span class="pre">recipes</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-pylorax.api.server"><tt class="docutils literal"><span class="pre">server</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-pylorax.api.v0"><tt class="docutils literal"><span class="pre">v0</span></tt> Module</a><ul>
+<li><a class="reference internal" href="#status-responses">Status Responses</a></li>
+<li><a class="reference internal" href="#api-routes">API Routes</a><ul>
+<li><a class="reference internal" href="#api-v0-test"><cite>/api/v0/test</cite></a></li>
+<li><a class="reference internal" href="#api-v0-status"><cite>/api/v0/status</cite></a></li>
+<li><a class="reference internal" href="#api-v0-recipes-list"><cite>/api/v0/recipes/list</cite></a></li>
+<li><a class="reference internal" href="#api-v0-recipes-info-recipe-names"><cite>/api/v0/recipes/info/&lt;recipe_names&gt;</cite></a></li>
+<li><a class="reference internal" href="#api-v0-recipes-changes-recipe-names-offset-0-limit-20"><cite>/api/v0/recipes/changes/&lt;recipe_names&gt;[?offset=0&amp;limit=20]</cite></a></li>
+<li><a class="reference internal" href="#post-api-v0-recipes-new">POST <cite>/api/v0/recipes/new</cite></a></li>
+<li><a class="reference internal" href="#delete-api-v0-recipes-delete-recipe-name">DELETE <cite>/api/v0/recipes/delete/&lt;recipe_name&gt;</cite></a></li>
+<li><a class="reference internal" href="#post-api-v0-recipes-workspace">POST <cite>/api/v0/recipes/workspace</cite></a></li>
+<li><a class="reference internal" href="#delete-api-v0-recipes-workspace-recipe-name">DELETE <cite>/api/v0/recipes/workspace/&lt;recipe_name&gt;</cite></a></li>
+<li><a class="reference internal" href="#post-api-v0-recipes-undo-recipe-name-commit">POST <cite>/api/v0/recipes/undo/&lt;recipe_name&gt;/&lt;commit&gt;</cite></a></li>
+<li><a class="reference internal" href="#post-api-v0-recipes-tag-recipe-name">POST <cite>/api/v0/recipes/tag/&lt;recipe_name&gt;</cite></a></li>
+<li><a class="reference internal" href="#api-v0-recipes-diff-recipe-name-from-commit-to-commit"><cite>/api/v0/recipes/diff/&lt;recipe_name&gt;/&lt;from_commit&gt;/&lt;to_commit&gt;</cite></a></li>
+<li><a class="reference internal" href="#api-v0-recipes-freeze-recipe-names"><cite>/api/v0/recipes/freeze/&lt;recipe_names&gt;</cite></a></li>
+<li><a class="reference internal" href="#api-v0-recipes-depsolve-recipe-names"><cite>/api/v0/recipes/depsolve/&lt;recipe_names&gt;</cite></a></li>
+<li><a class="reference internal" href="#api-v0-projects-list-offset-0-limit-20"><cite>/api/v0/projects/list[?offset=0&amp;limit=20]</cite></a></li>
+<li><a class="reference internal" href="#api-v0-projects-info-project-names"><cite>/api/v0/projects/info/&lt;project_names&gt;</cite></a></li>
+<li><a class="reference internal" href="#api-v0-projects-depsolve-project-names"><cite>/api/v0/projects/depsolve/&lt;project_names&gt;</cite></a></li>
+<li><a class="reference internal" href="#api-v0-modules-list-offset-0-limit-20"><cite>/api/v0/modules/list[?offset=0&amp;limit=20]</cite></a></li>
+<li><a class="reference internal" href="#api-v0-modules-list-module-names-offset-0-limit-20"><cite>/api/v0/modules/list/&lt;module_names&gt;[?offset=0&amp;limit=20]</cite></a></li>
+<li><a class="reference internal" href="#api-v0-modules-info-module-names"><cite>/api/v0/modules/info/&lt;module_names&gt;</cite></a></li>
+<li><a class="reference internal" href="#post-api-v0-compose">POST <cite>/api/v0/compose</cite></a></li>
+<li><a class="reference internal" href="#api-v0-compose-types"><cite>/api/v0/compose/types</cite></a></li>
+<li><a class="reference internal" href="#api-v0-compose-queue"><cite>/api/v0/compose/queue</cite></a></li>
+<li><a class="reference internal" href="#api-v0-compose-finished"><cite>/api/v0/compose/finished</cite></a></li>
+<li><a class="reference internal" href="#api-v0-compose-failed"><cite>/api/v0/compose/failed</cite></a></li>
+<li><a class="reference internal" href="#api-v0-compose-status-uuids"><cite>/api/v0/compose/status/&lt;uuids&gt;</cite></a></li>
+<li><a class="reference internal" href="#delete-api-v0-recipes-cancel-uuid">DELETE <cite>/api/v0/recipes/cancel/&lt;uuid&gt;</cite></a></li>
+<li><a class="reference internal" href="#delete-api-v0-compose-delete-uuids">DELETE <cite>/api/v0/compose/delete/&lt;uuids&gt;</cite></a></li>
+<li><a class="reference internal" href="#api-v0-compose-info-uuid"><cite>/api/v0/compose/info/&lt;uuid&gt;</cite></a></li>
+<li><a class="reference internal" href="#api-v0-compose-metadata-uuid"><cite>/api/v0/compose/metadata/&lt;uuid&gt;</cite></a></li>
+<li><a class="reference internal" href="#api-v0-compose-results-uuid"><cite>/api/v0/compose/results/&lt;uuid&gt;</cite></a></li>
+<li><a class="reference internal" href="#api-v0-compose-logs-uuid"><cite>/api/v0/compose/logs/&lt;uuid&gt;</cite></a></li>
+<li><a class="reference internal" href="#api-v0-compose-image-uuid"><cite>/api/v0/compose/image/&lt;uuid&gt;</cite></a></li>
+<li><a class="reference internal" href="#api-v0-compose-log-uuid-size-kbytes"><cite>/api/v0/compose/log/&lt;uuid&gt;[?size=kbytes]</cite></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pylorax.api.workspace"><tt class="docutils literal"><span class="pre">workspace</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-pylorax.api.yumbase"><tt class="docutils literal"><span class="pre">yumbase</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pylorax.html"
+                        title="previous chapter">pylorax Package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/pylorax.api.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pylorax.html" title="pylorax Package"
+             >previous</a> |</li>
+        <li><a href="index.html">Lorax 19.7.10 documentation</a> &raquo;</li>
+          <li><a href="modules.html" >pylorax</a> &raquo;</li>
+          <li><a href="pylorax.html" >pylorax Package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2017, Red Hat, Inc..
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

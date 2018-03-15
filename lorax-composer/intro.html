@@ -1,0 +1,172 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction to Lorax &mdash; Lorax 19.7.10 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '19.7.10',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Lorax 19.7.10 documentation" href="index.html" />
+    <link rel="next" title="lorax-composer" href="lorax-composer.html" />
+    <link rel="prev" title="Welcome to Lorax’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="lorax-composer.html" title="lorax-composer"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Lorax’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Lorax 19.7.10 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="introduction-to-lorax">
+<h1>Introduction to Lorax<a class="headerlink" href="#introduction-to-lorax" title="Permalink to this headline">¶</a></h1>
+<p>I am the Lorax.  I speak for the trees [and images].</p>
+<p>Lorax is used to build the Anaconda Installer boot.iso, it consists of a
+library, pylorax, a set of templates, and the lorax script. Its operation
+is driven by a customized set of Mako templates that lists the packages
+to be installed, steps to execute to remove unneeded files, and creation
+of the iso for all of the supported architectures.</p>
+</div>
+<div class="section" id="before-lorax">
+<h1>Before Lorax<a class="headerlink" href="#before-lorax" title="Permalink to this headline">¶</a></h1>
+<p>Tree building tools such as pungi and revisor rely on &#8216;buildinstall&#8217; in
+anaconda/scripts/ to produce the boot images and other such control files
+in the final tree.  The existing buildinstall scripts written in a mix of
+bash and Python are unmaintainable.  Lorax is an attempt to replace them
+with something more flexible.</p>
+<p>EXISTING WORKFLOW:</p>
+<p>pungi and other tools call scripts/buildinstall, which in turn call other
+scripts to do the image building and data generation.  Here&#8217;s how it
+currently looks:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>-&gt; buildinstall</dt>
+<dd><ul class="first simple">
+<li>process command line options</li>
+<li>write temporary yum.conf to point to correct repo</li>
+<li>find anaconda release RPM</li>
+<li>unpack RPM, pull in those versions of upd-instroot, mk-images,
+maketreeinfo.py, makestamp.py, and buildinstall</li>
+</ul>
+<p>-&gt; call upd-instroot</p>
+<p>-&gt; call maketreeinfo.py</p>
+<p>-&gt; call mk-images (which figures out which mk-images.ARCH to call)</p>
+<p>-&gt; call makestamp.py</p>
+<ul class="last simple">
+<li>clean up</li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+<p>PROBLEMS:</p>
+<p>The existing workflow presents some problems with maintaining the scripts.
+First, almost all knowledge of what goes in to the stage 1 and stage 2
+images lives in upd-instroot.  The mk-images* scripts copy things from the
+root created by upd-instroot in order to build the stage 1 image, though
+it&#8217;s not completely clear from reading the scripts.</p>
+<p>NEW IDEAS:</p>
+<p>Create a new central driver with all information living in Python modules.
+Configuration files will provide the knowledge previously contained in the
+upd-instroot and mk-images* scripts.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction to Lorax</a></li>
+<li><a class="reference internal" href="#before-lorax">Before Lorax</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to Lorax&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="lorax-composer.html"
+                        title="next chapter">lorax-composer</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/intro.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="lorax-composer.html" title="lorax-composer"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Lorax’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">Lorax 19.7.10 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2017, Red Hat, Inc..
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

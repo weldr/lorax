@@ -1,0 +1,978 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pylorax.api.recipes &mdash; Lorax 19.7.10 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '19.7.10',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Lorax 19.7.10 documentation" href="../../../index.html" />
+    <link rel="up" title="pylorax.api" href="../api.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Lorax 19.7.10 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../api.html" accesskey="U">pylorax.api</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pylorax.api.recipes</h1><div class="highlight"><pre>
+<span class="c">#</span>
+<span class="c"># Copyright (C) 2017  Red Hat, Inc.</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the GNU General Public License as published by</span>
+<span class="c"># the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># This program is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c"># GNU General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License</span>
+<span class="c"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c">#</span>
+
+<span class="kn">import</span> <span class="nn">gi</span>
+<span class="n">gi</span><span class="o">.</span><span class="n">require_version</span><span class="p">(</span><span class="s">&quot;Ggit&quot;</span><span class="p">,</span> <span class="s">&quot;1.0&quot;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">gi.repository</span> <span class="kn">import</span> <span class="n">Ggit</span> <span class="k">as</span> <span class="n">Git</span>
+<span class="kn">from</span> <span class="nn">gi.repository</span> <span class="kn">import</span> <span class="n">Gio</span>
+<span class="kn">from</span> <span class="nn">gi.repository</span> <span class="kn">import</span> <span class="n">GLib</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pytoml</span> <span class="kn">as</span> <span class="nn">toml</span>
+<span class="kn">import</span> <span class="nn">semantic_version</span> <span class="kn">as</span> <span class="nn">semver</span>
+
+<span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="kn">import</span> <span class="n">dep_evra</span>
+<span class="kn">from</span> <span class="nn">pylorax.base</span> <span class="kn">import</span> <span class="n">DataHolder</span>
+<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="kn">import</span> <span class="n">joinpaths</span>
+
+
+<div class="viewcode-block" id="CommitTimeValError"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.CommitTimeValError">[docs]</a><span class="k">class</span> <span class="nc">CommitTimeValError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="RecipeFileError"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.RecipeFileError">[docs]</a><span class="k">class</span> <span class="nc">RecipeFileError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="RecipeError"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.RecipeError">[docs]</a><span class="k">class</span> <span class="nc">RecipeError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+</div>
+<div class="viewcode-block" id="Recipe"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.Recipe">[docs]</a><span class="k">class</span> <span class="nc">Recipe</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A Recipe of package and modules</span>
+
+<span class="sd">    This is a subclass of dict that enforces the constructor arguments</span>
+<span class="sd">    and adds a .filename property to return the recipe&#39;s filename,</span>
+<span class="sd">    and a .toml() function to return the recipe as a TOML string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">modules</span><span class="p">,</span> <span class="n">packages</span><span class="p">):</span>
+        <span class="c"># Check that version is empty or semver compatible</span>
+        <span class="k">if</span> <span class="n">version</span><span class="p">:</span>
+            <span class="n">semver</span><span class="o">.</span><span class="n">Version</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
+
+        <span class="c"># Make sure modules and packages are listed by their case-insensitive names</span>
+        <span class="k">if</span> <span class="n">modules</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">modules</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">modules</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">m</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">packages</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">packages</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">packages</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="nb">dict</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                            <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+                            <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span>
+                            <span class="n">modules</span><span class="o">=</span><span class="n">modules</span><span class="p">,</span>
+                            <span class="n">packages</span><span class="o">=</span><span class="n">packages</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Recipe.package_names"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.Recipe.package_names">[docs]</a>    <span class="k">def</span> <span class="nf">package_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the names of the packages&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="s">&quot;packages&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="p">[])</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Recipe.module_names"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.Recipe.module_names">[docs]</a>    <span class="k">def</span> <span class="nf">module_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the names of the modules&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">m</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="s">&quot;modules&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="p">[])</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Recipe.filename"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.Recipe.filename">[docs]</a>    <span class="k">def</span> <span class="nf">filename</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the Recipe&#39;s filename</span>
+
+<span class="sd">        Replaces spaces in the name with &#39;-&#39; and appends .toml</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">recipe_filename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="Recipe.toml"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.Recipe.toml">[docs]</a>    <span class="k">def</span> <span class="nf">toml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the Recipe in TOML format&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">toml</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&quot;UTF-8&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Recipe.bump_version"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.Recipe.bump_version">[docs]</a>    <span class="k">def</span> <span class="nf">bump_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_version</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;semver recipe version number bump</span>
+
+<span class="sd">        :param old_version: An optional old version number</span>
+<span class="sd">        :type old_version: str</span>
+<span class="sd">        :returns: The new version number or None</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises: ValueError</span>
+
+<span class="sd">        If neither have a version, 0.0.1 is returned</span>
+<span class="sd">        If there is no old version the new version is checked and returned</span>
+<span class="sd">        If there is no new version, but there is a old one, bump its patch level</span>
+<span class="sd">        If the old and new versions are the same, bump the patch level</span>
+<span class="sd">        If they are different, check and return the new version</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;version&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">new_version</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">old_version</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;0.0.1&quot;</span>
+
+        <span class="k">elif</span> <span class="n">new_version</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">old_version</span><span class="p">:</span>
+            <span class="n">semver</span><span class="o">.</span><span class="n">Version</span><span class="p">(</span><span class="n">new_version</span><span class="p">)</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_version</span>
+
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">new_version</span> <span class="ow">or</span> <span class="n">new_version</span> <span class="o">==</span> <span class="n">old_version</span><span class="p">:</span>
+            <span class="n">new_version</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">semver</span><span class="o">.</span><span class="n">Version</span><span class="p">(</span><span class="n">old_version</span><span class="p">)</span><span class="o">.</span><span class="n">next_patch</span><span class="p">())</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_version</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">semver</span><span class="o">.</span><span class="n">Version</span><span class="p">(</span><span class="n">new_version</span><span class="p">)</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_version</span>
+
+        <span class="c"># Return the new version</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">semver</span><span class="o">.</span><span class="n">Version</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">]))</span>
+</div>
+<div class="viewcode-block" id="Recipe.freeze"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.Recipe.freeze">[docs]</a>    <span class="k">def</span> <span class="nf">freeze</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deps</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return a new Recipe with full module and package NEVRA</span>
+
+<span class="sd">        :param deps: A list of dependency NEVRA to use to fill in the modules and packages</span>
+<span class="sd">        :type deps: list(</span>
+<span class="sd">        :returns: A new Recipe object</span>
+<span class="sd">        :rtype: Recipe</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">module_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">module_names</span>
+        <span class="n">package_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">package_names</span>
+
+        <span class="n">new_modules</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">new_packages</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">dep</span> <span class="ow">in</span> <span class="n">deps</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dep</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">package_names</span><span class="p">:</span>
+                <span class="n">new_packages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">RecipePackage</span><span class="p">(</span><span class="n">dep</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">dep_evra</span><span class="p">(</span><span class="n">dep</span><span class="p">)))</span>
+            <span class="k">elif</span> <span class="n">dep</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">module_names</span><span class="p">:</span>
+                <span class="n">new_modules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">RecipeModule</span><span class="p">(</span><span class="n">dep</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">dep_evra</span><span class="p">(</span><span class="n">dep</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">Recipe</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="s">&quot;description&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">],</span>
+                      <span class="n">new_modules</span><span class="p">,</span> <span class="n">new_packages</span><span class="p">)</span>
+</div></div>
+<div class="viewcode-block" id="RecipeModule"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.RecipeModule">[docs]</a><span class="k">class</span> <span class="nc">RecipeModule</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
+        <span class="nb">dict</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="RecipePackage"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.RecipePackage">[docs]</a><span class="k">class</span> <span class="nc">RecipePackage</span><span class="p">(</span><span class="n">RecipeModule</span><span class="p">):</span>
+    <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="recipe_from_file"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.recipe_from_file">[docs]</a><span class="k">def</span> <span class="nf">recipe_from_file</span><span class="p">(</span><span class="n">recipe_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a recipe file as a Recipe object</span>
+
+<span class="sd">    :param recipe_path: Path to the recipe fila</span>
+<span class="sd">    :type recipe_path: str</span>
+<span class="sd">    :returns: A Recipe object</span>
+<span class="sd">    :rtype: Recipe</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">recipe_path</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">recipe_from_toml</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</div>
+<div class="viewcode-block" id="recipe_from_toml"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.recipe_from_toml">[docs]</a><span class="k">def</span> <span class="nf">recipe_from_toml</span><span class="p">(</span><span class="n">recipe_str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a Recipe object from a toml string.</span>
+
+<span class="sd">    :param recipe_str: The Recipe TOML string</span>
+<span class="sd">    :type recipe_str: str</span>
+<span class="sd">    :returns: A Recipe object</span>
+<span class="sd">    :rtype: Recipe</span>
+<span class="sd">    :raises: TomlError</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">recipe_dict</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">recipe_str</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">recipe_from_dict</span><span class="p">(</span><span class="n">recipe_dict</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="recipe_from_dict"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.recipe_from_dict">[docs]</a><span class="k">def</span> <span class="nf">recipe_from_dict</span><span class="p">(</span><span class="n">recipe_dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a Recipe object from a plain dict.</span>
+
+<span class="sd">    :param recipe_dict: A plain dict of the recipe</span>
+<span class="sd">    :type recipe_dict: dict</span>
+<span class="sd">    :returns: A Recipe object</span>
+<span class="sd">    :rtype: Recipe</span>
+<span class="sd">    :raises: RecipeError</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Make RecipeModule objects from the toml</span>
+    <span class="c"># The TOML may not have modules or packages in it. Set them to None in this case</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">recipe_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;modules&quot;</span><span class="p">):</span>
+            <span class="n">modules</span> <span class="o">=</span> <span class="p">[</span><span class="n">RecipeModule</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">),</span> <span class="n">m</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;version&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">recipe_dict</span><span class="p">[</span><span class="s">&quot;modules&quot;</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">modules</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">recipe_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;packages&quot;</span><span class="p">):</span>
+            <span class="n">packages</span> <span class="o">=</span> <span class="p">[</span><span class="n">RecipePackage</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">),</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;version&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">recipe_dict</span><span class="p">[</span><span class="s">&quot;packages&quot;</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">packages</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">recipe_dict</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="n">recipe_dict</span><span class="p">[</span><span class="s">&quot;description&quot;</span><span class="p">]</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="n">recipe_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;version&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">RecipeError</span><span class="p">(</span><span class="s">&quot;There was a problem parsing the recipe: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">Recipe</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">modules</span><span class="p">,</span> <span class="n">packages</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="gfile"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.gfile">[docs]</a><span class="k">def</span> <span class="nf">gfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert a string path to GFile for use with Git&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Gio</span><span class="o">.</span><span class="n">file_new_for_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="recipe_filename"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.recipe_filename">[docs]</a><span class="k">def</span> <span class="nf">recipe_filename</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the toml filename for a recipe</span>
+
+<span class="sd">    Replaces spaces with &#39;-&#39; and appends &#39;.toml&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># XXX Raise and error if this is empty?</span>
+    <span class="k">return</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="s">&quot;-&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;.toml&quot;</span>
+</div>
+<div class="viewcode-block" id="head_commit"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.head_commit">[docs]</a><span class="k">def</span> <span class="nf">head_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the branch&#39;s HEAD Commit Object</span>
+
+<span class="sd">    :param repo: Open repository</span>
+<span class="sd">    :type repo: Git.Repository</span>
+<span class="sd">    :param branch: Branch name</span>
+<span class="sd">    :type branch: str</span>
+<span class="sd">    :returns: Branch&#39;s head commit</span>
+<span class="sd">    :rtype: Git.Commit</span>
+<span class="sd">    :raises: Can raise errors from Ggit</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">branch_obj</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">lookup_branch</span><span class="p">(</span><span class="n">branch</span><span class="p">,</span> <span class="n">Git</span><span class="o">.</span><span class="n">BranchType</span><span class="o">.</span><span class="n">LOCAL</span><span class="p">)</span>
+    <span class="n">commit_id</span> <span class="o">=</span> <span class="n">branch_obj</span><span class="o">.</span><span class="n">get_target</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">repo</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">commit_id</span><span class="p">,</span> <span class="n">Git</span><span class="o">.</span><span class="n">Commit</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="prepare_commit"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.prepare_commit">[docs]</a><span class="k">def</span> <span class="nf">prepare_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">builder</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Prepare for a commit</span>
+
+<span class="sd">    :param repo: Open repository</span>
+<span class="sd">    :type repo: Git.Repository</span>
+<span class="sd">    :param branch: Branch name</span>
+<span class="sd">    :type branch: str</span>
+<span class="sd">    :param builder: instance of TreeBuilder</span>
+<span class="sd">    :type builder: TreeBuilder</span>
+<span class="sd">    :returns: (Tree, Sig, Ref)</span>
+<span class="sd">    :rtype: tuple</span>
+<span class="sd">    :raises: Can raise errors from Ggit</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tree_id</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">tree_id</span><span class="p">,</span> <span class="n">Git</span><span class="o">.</span><span class="n">Tree</span><span class="p">)</span>
+    <span class="n">sig</span> <span class="o">=</span> <span class="n">Git</span><span class="o">.</span><span class="n">Signature</span><span class="o">.</span><span class="n">new_now</span><span class="p">(</span><span class="s">&quot;bdcs-api-server&quot;</span><span class="p">,</span> <span class="s">&quot;user-email&quot;</span><span class="p">)</span>
+    <span class="n">ref</span> <span class="o">=</span> <span class="s">&quot;refs/heads/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">branch</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">ref</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="open_or_create_repo"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.open_or_create_repo">[docs]</a><span class="k">def</span> <span class="nf">open_or_create_repo</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Open an existing repo, or create a new one</span>
+
+<span class="sd">    :param path: path to recipe directory</span>
+<span class="sd">    :type path: string</span>
+<span class="sd">    :returns: A repository object</span>
+<span class="sd">    :rtype: Git.Repository</span>
+<span class="sd">    :raises: Can raise errors from Ggit</span>
+
+<span class="sd">    A bare git repo will be created in the git directory of the specified path.</span>
+<span class="sd">    If a repo already exists it will be opened and returned instead of</span>
+<span class="sd">    creating a new one.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Git</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+    <span class="n">git_path</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">&quot;git&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">git_path</span><span class="p">,</span> <span class="s">&quot;HEAD&quot;</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">Git</span><span class="o">.</span><span class="n">Repository</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">gfile</span><span class="p">(</span><span class="n">git_path</span><span class="p">))</span>
+
+    <span class="n">repo</span> <span class="o">=</span> <span class="n">Git</span><span class="o">.</span><span class="n">Repository</span><span class="o">.</span><span class="n">init_repository</span><span class="p">(</span><span class="n">gfile</span><span class="p">(</span><span class="n">git_path</span><span class="p">),</span> <span class="bp">True</span><span class="p">)</span>
+
+    <span class="c"># Make an initial empty commit</span>
+    <span class="n">sig</span> <span class="o">=</span> <span class="n">Git</span><span class="o">.</span><span class="n">Signature</span><span class="o">.</span><span class="n">new_now</span><span class="p">(</span><span class="s">&quot;bdcs-api-server&quot;</span><span class="p">,</span> <span class="s">&quot;user-email&quot;</span><span class="p">)</span>
+    <span class="n">tree_id</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">get_index</span><span class="p">()</span><span class="o">.</span><span class="n">write_tree</span><span class="p">()</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">tree_id</span><span class="p">,</span> <span class="n">Git</span><span class="o">.</span><span class="n">Tree</span><span class="p">)</span>
+    <span class="n">repo</span><span class="o">.</span><span class="n">create_commit</span><span class="p">(</span><span class="s">&quot;HEAD&quot;</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="s">&quot;UTF-8&quot;</span><span class="p">,</span> <span class="s">&quot;Initial Recipe repository commit&quot;</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="k">return</span> <span class="n">repo</span>
+</div>
+<div class="viewcode-block" id="write_commit"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.write_commit">[docs]</a><span class="k">def</span> <span class="nf">write_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Make a new commit to a repository&#39;s branch</span>
+
+<span class="sd">    :param repo: Open repository</span>
+<span class="sd">    :type repo: Git.Repository</span>
+<span class="sd">    :param branch: Branch name</span>
+<span class="sd">    :type branch: str</span>
+<span class="sd">    :param filename: full path of the file to add</span>
+<span class="sd">    :type filename: str</span>
+<span class="sd">    :param message: The commit message</span>
+<span class="sd">    :type message: str</span>
+<span class="sd">    :param content: The data to write</span>
+<span class="sd">    :type content: str</span>
+<span class="sd">    :returns: OId of the new commit</span>
+<span class="sd">    :rtype: Git.OId</span>
+<span class="sd">    :raises: Can raise errors from Ggit</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">parent_commit</span> <span class="o">=</span> <span class="n">head_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">GLib</span><span class="o">.</span><span class="n">GError</span><span class="p">:</span>
+        <span class="c"># Branch doesn&#39;t exist, make a new one based on master</span>
+        <span class="n">master_head</span> <span class="o">=</span> <span class="n">head_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="s">&quot;master&quot;</span><span class="p">)</span>
+        <span class="n">repo</span><span class="o">.</span><span class="n">create_branch</span><span class="p">(</span><span class="n">branch</span><span class="p">,</span> <span class="n">master_head</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">parent_commit</span> <span class="o">=</span> <span class="n">head_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">)</span>
+
+    <span class="n">parent_commit</span> <span class="o">=</span> <span class="n">head_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">)</span>
+    <span class="n">blob_id</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">create_blob_from_buffer</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+
+    <span class="c"># Use treebuilder to make a new entry for this filename and blob</span>
+    <span class="n">parent_tree</span> <span class="o">=</span> <span class="n">parent_commit</span><span class="o">.</span><span class="n">get_tree</span><span class="p">()</span>
+    <span class="n">builder</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">create_tree_builder_from_tree</span><span class="p">(</span><span class="n">parent_tree</span><span class="p">)</span>
+    <span class="n">builder</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">blob_id</span><span class="p">,</span> <span class="n">Git</span><span class="o">.</span><span class="n">FileMode</span><span class="o">.</span><span class="n">BLOB</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">ref</span><span class="p">)</span> <span class="o">=</span> <span class="n">prepare_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">builder</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">repo</span><span class="o">.</span><span class="n">create_commit</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="s">&quot;UTF-8&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="p">[</span><span class="n">parent_commit</span><span class="p">])</span>
+</div>
+<div class="viewcode-block" id="read_commit_spec"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.read_commit_spec">[docs]</a><span class="k">def</span> <span class="nf">read_commit_spec</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">spec</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the raw content of the blob specified by the spec</span>
+
+<span class="sd">    :param repo: Open repository</span>
+<span class="sd">    :type repo: Git.Repository</span>
+<span class="sd">    :param spec: Git revparse spec</span>
+<span class="sd">    :type spec: str</span>
+<span class="sd">    :returns: Contents of the commit</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    :raises: Can raise errors from Ggit</span>
+
+<span class="sd">    eg. To read the README file from master the spec is &quot;master:README&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">commit_id</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">revparse</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span>
+    <span class="n">blob</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">commit_id</span><span class="p">,</span> <span class="n">Git</span><span class="o">.</span><span class="n">Blob</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">blob</span><span class="o">.</span><span class="n">get_raw_content</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="read_commit"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.read_commit">[docs]</a><span class="k">def</span> <span class="nf">read_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the contents of a file on a specific branch or commit.</span>
+
+<span class="sd">    :param repo: Open repository</span>
+<span class="sd">    :type repo: Git.Repository</span>
+<span class="sd">    :param branch: Branch name</span>
+<span class="sd">    :type branch: str</span>
+<span class="sd">    :param filename: filename to read</span>
+<span class="sd">    :type filename: str</span>
+<span class="sd">    :param commit: Optional commit hash</span>
+<span class="sd">    :type commit: str</span>
+<span class="sd">    :returns: The commit id, and the contents of the commit</span>
+<span class="sd">    :rtype: tuple(str, str)</span>
+<span class="sd">    :raises: Can raise errors from Ggit</span>
+
+<span class="sd">    If no commit is passed the master:filename is returned, otherwise it will be</span>
+<span class="sd">    commit:filename</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">commit</span><span class="p">:</span>
+        <span class="c"># Find the most recent commit for filename on the selected branch</span>
+        <span class="n">commits</span> <span class="o">=</span> <span class="n">list_commits</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">commits</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">RecipeError</span><span class="p">(</span><span class="s">&quot;No commits for </span><span class="si">%s</span><span class="s"> on the </span><span class="si">%s</span><span class="s"> branch.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">branch</span><span class="p">))</span>
+        <span class="n">commit</span> <span class="o">=</span> <span class="n">commits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">commit</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">commit</span><span class="p">,</span> <span class="n">read_commit_spec</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">commit</span><span class="p">,</span> <span class="n">filename</span><span class="p">)))</span>
+</div>
+<div class="viewcode-block" id="read_recipe_commit"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.read_recipe_commit">[docs]</a><span class="k">def</span> <span class="nf">read_recipe_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read a recipe commit from git and return a Recipe object</span>
+
+<span class="sd">    :param repo: Open repository</span>
+<span class="sd">    :type repo: Git.Repository</span>
+<span class="sd">    :param branch: Branch name</span>
+<span class="sd">    :type branch: str</span>
+<span class="sd">    :param recipe_name: Recipe name to read</span>
+<span class="sd">    :type recipe_name: str</span>
+<span class="sd">    :param commit: Optional commit hash</span>
+<span class="sd">    :type commit: str</span>
+<span class="sd">    :returns: A Recipe object</span>
+<span class="sd">    :rtype: Recipe</span>
+<span class="sd">    :raises: Can raise errors from Ggit</span>
+
+<span class="sd">    If no commit is passed the master:filename is returned, otherwise it will be</span>
+<span class="sd">    commit:filename</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">recipe_toml</span><span class="p">)</span> <span class="o">=</span> <span class="n">read_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_filename</span><span class="p">(</span><span class="n">recipe_name</span><span class="p">),</span> <span class="n">commit</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">recipe_from_toml</span><span class="p">(</span><span class="n">recipe_toml</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="read_recipe_and_id"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.read_recipe_and_id">[docs]</a><span class="k">def</span> <span class="nf">read_recipe_and_id</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read a recipe commit and its id from git</span>
+
+<span class="sd">    :param repo: Open repository</span>
+<span class="sd">    :type repo: Git.Repository</span>
+<span class="sd">    :param branch: Branch name</span>
+<span class="sd">    :type branch: str</span>
+<span class="sd">    :param recipe_name: Recipe name to read</span>
+<span class="sd">    :type recipe_name: str</span>
+<span class="sd">    :param commit: Optional commit hash</span>
+<span class="sd">    :type commit: str</span>
+<span class="sd">    :returns: The commit id, and a Recipe object</span>
+<span class="sd">    :rtype: tuple(str, Recipe)</span>
+<span class="sd">    :raises: Can raise errors from Ggit</span>
+
+<span class="sd">    If no commit is passed the master:filename is returned, otherwise it will be</span>
+<span class="sd">    commit:filename</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="p">(</span><span class="n">commit_id</span><span class="p">,</span> <span class="n">recipe_toml</span><span class="p">)</span> <span class="o">=</span> <span class="n">read_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_filename</span><span class="p">(</span><span class="n">recipe_name</span><span class="p">),</span> <span class="n">commit</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">commit_id</span><span class="p">,</span> <span class="n">recipe_from_toml</span><span class="p">(</span><span class="n">recipe_toml</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="list_branch_files"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.list_branch_files">[docs]</a><span class="k">def</span> <span class="nf">list_branch_files</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a sorted list of the files on the branch HEAD</span>
+
+<span class="sd">    :param repo: Open repository</span>
+<span class="sd">    :type repo: Git.Repository</span>
+<span class="sd">    :param branch: Branch name</span>
+<span class="sd">    :type branch: str</span>
+<span class="sd">    :returns: A sorted list of the filenames</span>
+<span class="sd">    :rtype: list(str)</span>
+<span class="sd">    :raises: Can raise errors from Ggit</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">commit</span> <span class="o">=</span> <span class="n">head_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">)</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">list_commit_files</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">commit</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="list_commit_files"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.list_commit_files">[docs]</a><span class="k">def</span> <span class="nf">list_commit_files</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">commit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a sorted list of the files on a commit</span>
+
+<span class="sd">    :param repo: Open repository</span>
+<span class="sd">    :type repo: Git.Repository</span>
+<span class="sd">    :param commit: The commit hash to list</span>
+<span class="sd">    :type commit: str</span>
+<span class="sd">    :returns: A sorted list of the filenames</span>
+<span class="sd">    :rtype: list(str)</span>
+<span class="sd">    :raises: Can raise errors from Ggit</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">commit_id</span> <span class="o">=</span> <span class="n">Git</span><span class="o">.</span><span class="n">OId</span><span class="o">.</span><span class="n">new_from_string</span><span class="p">(</span><span class="n">commit</span><span class="p">)</span>
+    <span class="n">commit_obj</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">commit_id</span><span class="p">,</span> <span class="n">Git</span><span class="o">.</span><span class="n">Commit</span><span class="p">)</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">commit_obj</span><span class="o">.</span><span class="n">get_tree</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">tree</span><span class="o">.</span><span class="n">size</span><span class="p">())])</span>
+</div>
+<div class="viewcode-block" id="delete_recipe"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.delete_recipe">[docs]</a><span class="k">def</span> <span class="nf">delete_recipe</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Delete a recipe from a branch.</span>
+
+<span class="sd">    :param repo: Open repository</span>
+<span class="sd">    :type repo: Git.Repository</span>
+<span class="sd">    :param branch: Branch name</span>
+<span class="sd">    :type branch: str</span>
+<span class="sd">    :param recipe_name: Recipe name to delete</span>
+<span class="sd">    :type recipe_name: str</span>
+<span class="sd">    :returns: OId of the new commit</span>
+<span class="sd">    :rtype: Git.OId</span>
+<span class="sd">    :raises: Can raise errors from Ggit</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">delete_file</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_filename</span><span class="p">(</span><span class="n">recipe_name</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="delete_file"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.delete_file">[docs]</a><span class="k">def</span> <span class="nf">delete_file</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Delete a file from a branch.</span>
+
+<span class="sd">    :param repo: Open repository</span>
+<span class="sd">    :type repo: Git.Repository</span>
+<span class="sd">    :param branch: Branch name</span>
+<span class="sd">    :type branch: str</span>
+<span class="sd">    :param filename: filename to delete</span>
+<span class="sd">    :type filename: str</span>
+<span class="sd">    :returns: OId of the new commit</span>
+<span class="sd">    :rtype: Git.OId</span>
+<span class="sd">    :raises: Can raise errors from Ggit</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parent_commit</span> <span class="o">=</span> <span class="n">head_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">)</span>
+    <span class="n">parent_tree</span> <span class="o">=</span> <span class="n">parent_commit</span><span class="o">.</span><span class="n">get_tree</span><span class="p">()</span>
+    <span class="n">builder</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">create_tree_builder_from_tree</span><span class="p">(</span><span class="n">parent_tree</span><span class="p">)</span>
+    <span class="n">builder</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">ref</span><span class="p">)</span> <span class="o">=</span> <span class="n">prepare_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">builder</span><span class="p">)</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s">&quot;Recipe </span><span class="si">%s</span><span class="s"> deleted&quot;</span> <span class="o">%</span> <span class="n">filename</span>
+    <span class="k">return</span> <span class="n">repo</span><span class="o">.</span><span class="n">create_commit</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="s">&quot;UTF-8&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="p">[</span><span class="n">parent_commit</span><span class="p">])</span>
+</div>
+<div class="viewcode-block" id="revert_recipe"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.revert_recipe">[docs]</a><span class="k">def</span> <span class="nf">revert_recipe</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">,</span> <span class="n">commit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Revert the contents of a recipe to that of a previous commit</span>
+
+<span class="sd">    :param repo: Open repository</span>
+<span class="sd">    :type repo: Git.Repository</span>
+<span class="sd">    :param branch: Branch name</span>
+<span class="sd">    :type branch: str</span>
+<span class="sd">    :param recipe_name: Recipe name to revert</span>
+<span class="sd">    :type recipe_name: str</span>
+<span class="sd">    :param commit: Commit hash</span>
+<span class="sd">    :type commit: str</span>
+<span class="sd">    :returns: OId of the new commit</span>
+<span class="sd">    :rtype: Git.OId</span>
+<span class="sd">    :raises: Can raise errors from Ggit</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">revert_file</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_filename</span><span class="p">(</span><span class="n">recipe_name</span><span class="p">),</span> <span class="n">commit</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="revert_file"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.revert_file">[docs]</a><span class="k">def</span> <span class="nf">revert_file</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">commit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Revert the contents of a file to that of a previous commit</span>
+
+<span class="sd">    :param repo: Open repository</span>
+<span class="sd">    :type repo: Git.Repository</span>
+<span class="sd">    :param branch: Branch name</span>
+<span class="sd">    :type branch: str</span>
+<span class="sd">    :param filename: filename to revert</span>
+<span class="sd">    :type filename: str</span>
+<span class="sd">    :param commit: Commit hash</span>
+<span class="sd">    :type commit: str</span>
+<span class="sd">    :returns: OId of the new commit</span>
+<span class="sd">    :rtype: Git.OId</span>
+<span class="sd">    :raises: Can raise errors from Ggit</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">commit_id</span> <span class="o">=</span> <span class="n">Git</span><span class="o">.</span><span class="n">OId</span><span class="o">.</span><span class="n">new_from_string</span><span class="p">(</span><span class="n">commit</span><span class="p">)</span>
+    <span class="n">commit_obj</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">commit_id</span><span class="p">,</span> <span class="n">Git</span><span class="o">.</span><span class="n">Commit</span><span class="p">)</span>
+    <span class="n">revert_tree</span> <span class="o">=</span> <span class="n">commit_obj</span><span class="o">.</span><span class="n">get_tree</span><span class="p">()</span>
+    <span class="n">entry</span> <span class="o">=</span> <span class="n">revert_tree</span><span class="o">.</span><span class="n">get_by_name</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">blob_id</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span>
+    <span class="n">parent_commit</span> <span class="o">=</span> <span class="n">head_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">)</span>
+
+    <span class="c"># Use treebuilder to modify the tree</span>
+    <span class="n">parent_tree</span> <span class="o">=</span> <span class="n">parent_commit</span><span class="o">.</span><span class="n">get_tree</span><span class="p">()</span>
+    <span class="n">builder</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">create_tree_builder_from_tree</span><span class="p">(</span><span class="n">parent_tree</span><span class="p">)</span>
+    <span class="n">builder</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">blob_id</span><span class="p">,</span> <span class="n">Git</span><span class="o">.</span><span class="n">FileMode</span><span class="o">.</span><span class="n">BLOB</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">ref</span><span class="p">)</span> <span class="o">=</span> <span class="n">prepare_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">builder</span><span class="p">)</span>
+    <span class="n">commit_hash</span> <span class="o">=</span> <span class="n">commit_id</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s">&quot;Recipe </span><span class="si">%s</span><span class="s"> reverted to commit </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">commit_hash</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">repo</span><span class="o">.</span><span class="n">create_commit</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="s">&quot;UTF-8&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="p">[</span><span class="n">parent_commit</span><span class="p">])</span>
+</div>
+<div class="viewcode-block" id="commit_recipe"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.commit_recipe">[docs]</a><span class="k">def</span> <span class="nf">commit_recipe</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Commit a recipe to a branch</span>
+
+<span class="sd">    :param repo: Open repository</span>
+<span class="sd">    :type repo: Git.Repository</span>
+<span class="sd">    :param branch: Branch name</span>
+<span class="sd">    :type branch: str</span>
+<span class="sd">    :param recipe: Recipe to commit</span>
+<span class="sd">    :type recipe: Recipe</span>
+<span class="sd">    :returns: OId of the new commit</span>
+<span class="sd">    :rtype: Git.OId</span>
+<span class="sd">    :raises: Can raise errors from Ggit</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">old_recipe</span> <span class="o">=</span> <span class="n">read_recipe_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">])</span>
+        <span class="n">old_version</span> <span class="o">=</span> <span class="n">old_recipe</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">old_version</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">recipe</span><span class="o">.</span><span class="n">bump_version</span><span class="p">(</span><span class="n">old_version</span><span class="p">)</span>
+    <span class="n">recipe_toml</span> <span class="o">=</span> <span class="n">recipe</span><span class="o">.</span><span class="n">toml</span><span class="p">()</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s">&quot;Recipe </span><span class="si">%s</span><span class="s">, version </span><span class="si">%s</span><span class="s"> saved.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">recipe</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">write_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">recipe_toml</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="commit_recipe_file"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.commit_recipe_file">[docs]</a><span class="k">def</span> <span class="nf">commit_recipe_file</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Commit a recipe file to a branch</span>
+
+<span class="sd">    :param repo: Open repository</span>
+<span class="sd">    :type repo: Git.Repository</span>
+<span class="sd">    :param branch: Branch name</span>
+<span class="sd">    :type branch: str</span>
+<span class="sd">    :param filename: Path to the recipe file to commit</span>
+<span class="sd">    :type filename: str</span>
+<span class="sd">    :returns: OId of the new commit</span>
+<span class="sd">    :rtype: Git.OId</span>
+<span class="sd">    :raises: Can raise errors from Ggit or RecipeFileError</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">recipe</span> <span class="o">=</span> <span class="n">recipe_from_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">RecipeFileError</span>
+
+    <span class="k">return</span> <span class="n">commit_recipe</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="commit_recipe_directory"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.commit_recipe_directory">[docs]</a><span class="k">def</span> <span class="nf">commit_recipe_directory</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">directory</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Commit all *.toml files from a directory, if they aren&#39;t already in git.</span>
+
+<span class="sd">    :param repo: Open repository</span>
+<span class="sd">    :type repo: Git.Repository</span>
+<span class="sd">    :param branch: Branch name</span>
+<span class="sd">    :type branch: str</span>
+<span class="sd">    :param directory: The directory of *.toml recipes to commit</span>
+<span class="sd">    :type directory: str</span>
+<span class="sd">    :returns: None</span>
+<span class="sd">    :raises: Can raise errors from Ggit or RecipeFileError</span>
+
+<span class="sd">    Files with Toml or RecipeFileErrors will be skipped, and the remainder will</span>
+<span class="sd">    be tried.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dir_files</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&quot;.toml&quot;</span><span class="p">)])</span>
+    <span class="n">branch_files</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">list_branch_files</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">))</span>
+    <span class="n">new_files</span> <span class="o">=</span> <span class="n">dir_files</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">branch_files</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">new_files</span><span class="p">:</span>
+        <span class="c"># Skip files with errors, but try the others</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">commit_recipe_file</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">RecipeFileError</span><span class="p">,</span> <span class="n">toml</span><span class="o">.</span><span class="n">TomlError</span><span class="p">):</span>
+            <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="tag_recipe_commit"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.tag_recipe_commit">[docs]</a><span class="k">def</span> <span class="nf">tag_recipe_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Tag a file&#39;s most recent commit</span>
+
+<span class="sd">    :param repo: Open repository</span>
+<span class="sd">    :type repo: Git.Repository</span>
+<span class="sd">    :param branch: Branch name</span>
+<span class="sd">    :type branch: str</span>
+<span class="sd">    :param recipe_name: Recipe name to tag</span>
+<span class="sd">    :type recipe_name: str</span>
+<span class="sd">    :returns: Tag id or None if it failed.</span>
+<span class="sd">    :rtype: Git.OId</span>
+<span class="sd">    :raises: Can raise errors from Ggit</span>
+
+<span class="sd">    Uses tag_file_commit()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">tag_file_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_filename</span><span class="p">(</span><span class="n">recipe_name</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="tag_file_commit"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.tag_file_commit">[docs]</a><span class="k">def</span> <span class="nf">tag_file_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Tag a file&#39;s most recent commit</span>
+
+<span class="sd">    :param repo: Open repository</span>
+<span class="sd">    :type repo: Git.Repository</span>
+<span class="sd">    :param branch: Branch name</span>
+<span class="sd">    :type branch: str</span>
+<span class="sd">    :param filename: Filename to tag</span>
+<span class="sd">    :type filename: str</span>
+<span class="sd">    :returns: Tag id or None if it failed.</span>
+<span class="sd">    :rtype: Git.OId</span>
+<span class="sd">    :raises: Can raise errors from Ggit</span>
+
+<span class="sd">    This uses git tags, of the form `refs/tags/&lt;branch&gt;/&lt;filename&gt;/r&lt;revision&gt;`</span>
+<span class="sd">    Only the most recent recipe commit can be tagged to prevent out of order tagging.</span>
+<span class="sd">    Revisions start at 1 and increment for each new commit that is tagged.</span>
+<span class="sd">    If the commit has already been tagged it will return false.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">file_commits</span> <span class="o">=</span> <span class="n">list_commits</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">file_commits</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="c"># Find the most recently tagged version (may not be one) and add 1 to it.</span>
+    <span class="k">for</span> <span class="n">details</span> <span class="ow">in</span> <span class="n">file_commits</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">details</span><span class="o">.</span><span class="n">revision</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">new_revision</span> <span class="o">=</span> <span class="n">details</span><span class="o">.</span><span class="n">revision</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">break</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">new_revision</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">/r</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">branch</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">new_revision</span><span class="p">)</span>
+    <span class="n">sig</span> <span class="o">=</span> <span class="n">Git</span><span class="o">.</span><span class="n">Signature</span><span class="o">.</span><span class="n">new_now</span><span class="p">(</span><span class="s">&quot;bdcs-api-server&quot;</span><span class="p">,</span> <span class="s">&quot;user-email&quot;</span><span class="p">)</span>
+    <span class="n">commit_id</span> <span class="o">=</span> <span class="n">Git</span><span class="o">.</span><span class="n">OId</span><span class="o">.</span><span class="n">new_from_string</span><span class="p">(</span><span class="n">file_commits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">commit</span><span class="p">)</span>
+    <span class="n">commit</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">commit_id</span><span class="p">,</span> <span class="n">Git</span><span class="o">.</span><span class="n">Commit</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">repo</span><span class="o">.</span><span class="n">create_tag</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">commit</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">Git</span><span class="o">.</span><span class="n">CreateFlags</span><span class="o">.</span><span class="n">NONE</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="find_commit_tag"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.find_commit_tag">[docs]</a><span class="k">def</span> <span class="nf">find_commit_tag</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">commit_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find the tag that matches the commit_id</span>
+
+<span class="sd">    :param repo: Open repository</span>
+<span class="sd">    :type repo: Git.Repository</span>
+<span class="sd">    :param branch: Branch name</span>
+<span class="sd">    :type branch: str</span>
+<span class="sd">    :param filename: filename to revert</span>
+<span class="sd">    :type filename: str</span>
+<span class="sd">    :param commit_id: The commit id to check</span>
+<span class="sd">    :type commit_id: Git.OId</span>
+<span class="sd">    :returns: The tag or None if there isn&#39;t one</span>
+<span class="sd">    :rtype: str or None</span>
+
+<span class="sd">    There should be only 1 tag pointing to a commit, but there may not</span>
+<span class="sd">    be a tag at all.</span>
+
+<span class="sd">    The tag will look like: &#39;refs/tags/&lt;branch&gt;/&lt;filename&gt;/r&lt;revision&gt;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">/r*&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">branch</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">repo</span><span class="o">.</span><span class="n">list_tags_match</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_commit_tag</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">commit_id</span><span class="p">,</span> <span class="n">t</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">tags</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="is_commit_tag"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.is_commit_tag">[docs]</a><span class="k">def</span> <span class="nf">is_commit_tag</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">commit_id</span><span class="p">,</span> <span class="n">tag</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check to see if a tag points to a specific commit.</span>
+
+<span class="sd">    :param repo: Open repository</span>
+<span class="sd">    :type repo: Git.Repository</span>
+<span class="sd">    :param commit_id: The commit id to check</span>
+<span class="sd">    :type commit_id: Git.OId</span>
+<span class="sd">    :param tag: The tag to check</span>
+<span class="sd">    :type tag: str</span>
+<span class="sd">    :returns: True if the tag points to the commit, False otherwise</span>
+<span class="sd">    :rtype: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ref</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">lookup_reference</span><span class="p">(</span><span class="s">&quot;refs/tags/&quot;</span> <span class="o">+</span> <span class="n">tag</span><span class="p">)</span>
+    <span class="n">tag_id</span> <span class="o">=</span> <span class="n">ref</span><span class="o">.</span><span class="n">get_target</span><span class="p">()</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">tag_id</span><span class="p">,</span> <span class="n">Git</span><span class="o">.</span><span class="n">Tag</span><span class="p">)</span>
+    <span class="n">target_id</span> <span class="o">=</span> <span class="n">tag</span><span class="o">.</span><span class="n">get_target_id</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">commit_id</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="n">target_id</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+</div>
+<div class="viewcode-block" id="get_revision_from_tag"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.get_revision_from_tag">[docs]</a><span class="k">def</span> <span class="nf">get_revision_from_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the revision number from a tag</span>
+
+<span class="sd">    :param tag: The tag to exract the revision from</span>
+<span class="sd">    :type tag: str</span>
+<span class="sd">    :returns: The integer revision or None</span>
+<span class="sd">    :rtype: int or None</span>
+
+<span class="sd">    The revision is the part after the r in &#39;branch/filename/rXXX&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">tag</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">tag</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s">&#39;r&#39;</span><span class="p">,</span><span class="mi">2</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="CommitDetails"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.CommitDetails">[docs]</a><span class="k">class</span> <span class="nc">CommitDetails</span><span class="p">(</span><span class="n">DataHolder</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commit</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">DataHolder</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                            <span class="n">commit</span> <span class="o">=</span> <span class="n">commit</span><span class="p">,</span>
+                            <span class="n">timestamp</span> <span class="o">=</span> <span class="n">timestamp</span><span class="p">,</span>
+                            <span class="n">message</span> <span class="o">=</span> <span class="n">message</span><span class="p">,</span>
+                            <span class="n">revision</span> <span class="o">=</span> <span class="n">revision</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="list_commits"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.list_commits">[docs]</a><span class="k">def</span> <span class="nf">list_commits</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;List the commit history of a file on a branch.</span>
+
+<span class="sd">    :param repo: Open repository</span>
+<span class="sd">    :type repo: Git.Repository</span>
+<span class="sd">    :param branch: Branch name</span>
+<span class="sd">    :type branch: str</span>
+<span class="sd">    :param filename: filename to revert</span>
+<span class="sd">    :type filename: str</span>
+<span class="sd">    :param limit: Number of commits to return (0=all)</span>
+<span class="sd">    :type limit: int</span>
+<span class="sd">    :returns: A list of commit details</span>
+<span class="sd">    :rtype: list(CommitDetails)</span>
+<span class="sd">    :raises: Can raise errors from Ggit</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">revwalk</span> <span class="o">=</span> <span class="n">Git</span><span class="o">.</span><span class="n">RevisionWalker</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">repo</span><span class="p">)</span>
+    <span class="n">revwalk</span><span class="o">.</span><span class="n">set_sort_mode</span><span class="p">(</span><span class="n">Git</span><span class="o">.</span><span class="n">SortMode</span><span class="o">.</span><span class="n">TIME</span><span class="p">)</span>
+    <span class="n">branch_ref</span> <span class="o">=</span> <span class="s">&quot;refs/heads/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">branch</span>
+    <span class="n">revwalk</span><span class="o">.</span><span class="n">push_ref</span><span class="p">(</span><span class="n">branch_ref</span><span class="p">)</span>
+
+    <span class="n">commits</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">commit_id</span> <span class="o">=</span> <span class="n">revwalk</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">commit_id</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">commit</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">commit_id</span><span class="p">,</span> <span class="n">Git</span><span class="o">.</span><span class="n">Commit</span><span class="p">)</span>
+
+        <span class="n">parents</span> <span class="o">=</span> <span class="n">commit</span><span class="o">.</span><span class="n">get_parents</span><span class="p">()</span>
+        <span class="c"># No parents? Must be the first commit.</span>
+        <span class="k">if</span> <span class="n">parents</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">tree</span> <span class="o">=</span> <span class="n">commit</span><span class="o">.</span><span class="n">get_tree</span><span class="p">()</span>
+        <span class="c"># Is the filename in this tree? If not, move on.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">tree</span><span class="o">.</span><span class="n">get_by_name</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+            <span class="k">continue</span>
+
+        <span class="c"># Is filename different in all of the parent commits?</span>
+        <span class="n">parent_commits</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">parents</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">parents</span><span class="o">.</span><span class="n">get_size</span><span class="p">()))</span>
+        <span class="n">is_diff</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">pc</span><span class="p">:</span> <span class="n">is_parent_diff</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">pc</span><span class="p">),</span> <span class="n">parent_commits</span><span class="p">))</span>
+        <span class="c"># No changes from parents, skip it.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_diff</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">tag</span> <span class="o">=</span> <span class="n">find_commit_tag</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">commit</span><span class="o">.</span><span class="n">get_id</span><span class="p">())</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">commits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">get_commit_details</span><span class="p">(</span><span class="n">commit</span><span class="p">,</span> <span class="n">get_revision_from_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">)))</span>
+            <span class="k">if</span> <span class="n">limit</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">commits</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">limit</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="k">except</span> <span class="n">CommitTimeValError</span><span class="p">:</span>
+            <span class="c"># Skip any commits that have trouble converting the time</span>
+            <span class="c"># TODO - log details about this failure</span>
+            <span class="k">pass</span>
+
+    <span class="c"># These will be in reverse time sort order thanks to revwalk</span>
+    <span class="k">return</span> <span class="n">commits</span>
+</div>
+<div class="viewcode-block" id="get_commit_details"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.get_commit_details">[docs]</a><span class="k">def</span> <span class="nf">get_commit_details</span><span class="p">(</span><span class="n">commit</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the details about a specific commit.</span>
+
+<span class="sd">    :param commit: The commit to get details from</span>
+<span class="sd">    :type commit: Git.Commit</span>
+<span class="sd">    :param revision: Optional commit revision</span>
+<span class="sd">    :type revision: int</span>
+<span class="sd">    :returns: Details about the commit</span>
+<span class="sd">    :rtype: CommitDetails</span>
+<span class="sd">    :raises: CommitTimeValError or Ggit exceptions</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="n">commit</span><span class="o">.</span><span class="n">get_message</span><span class="p">()</span>
+    <span class="n">commit_str</span> <span class="o">=</span> <span class="n">commit</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
+    <span class="n">sig</span> <span class="o">=</span> <span class="n">commit</span><span class="o">.</span><span class="n">get_committer</span><span class="p">()</span>
+
+    <span class="n">datetime</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
+    <span class="c"># XXX What do we do with timezone?</span>
+    <span class="n">_timezone</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">get_time_zone</span><span class="p">()</span>
+    <span class="n">timeval</span> <span class="o">=</span> <span class="n">GLib</span><span class="o">.</span><span class="n">TimeVal</span><span class="p">()</span>
+    <span class="n">ok</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">to_timeval</span><span class="p">(</span><span class="n">timeval</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ok</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">CommitTimeValError</span>
+    <span class="n">time_str</span> <span class="o">=</span> <span class="n">timeval</span><span class="o">.</span><span class="n">to_iso8601</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">CommitDetails</span><span class="p">(</span><span class="n">commit_str</span><span class="p">,</span> <span class="n">time_str</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">revision</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="is_parent_diff"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.is_parent_diff">[docs]</a><span class="k">def</span> <span class="nf">is_parent_diff</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check to see if the commit is different from its parents</span>
+
+<span class="sd">    :param repo: Open repository</span>
+<span class="sd">    :type repo: Git.Repository</span>
+<span class="sd">    :param filename: filename to revert</span>
+<span class="sd">    :type filename: str</span>
+<span class="sd">    :param tree: The commit&#39;s tree</span>
+<span class="sd">    :type tree: Git.Tree</span>
+<span class="sd">    :param parent: The commit&#39;s parent commit</span>
+<span class="sd">    :type parent: Git.Commit</span>
+<span class="sd">    :retuns: True if filename in the commit is different from its parents</span>
+<span class="sd">    :rtype: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">diff_opts</span> <span class="o">=</span> <span class="n">Git</span><span class="o">.</span><span class="n">DiffOptions</span><span class="o">.</span><span class="n">new</span><span class="p">()</span>
+    <span class="n">diff_opts</span><span class="o">.</span><span class="n">set_pathspec</span><span class="p">([</span><span class="n">filename</span><span class="p">])</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">Git</span><span class="o">.</span><span class="n">Diff</span><span class="o">.</span><span class="n">new_tree_to_tree</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">parent</span><span class="o">.</span><span class="n">get_tree</span><span class="p">(),</span> <span class="n">tree</span><span class="p">,</span> <span class="n">diff_opts</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">diff</span><span class="o">.</span><span class="n">get_num_deltas</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span>
+</div>
+<div class="viewcode-block" id="find_name"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.find_name">[docs]</a><span class="k">def</span> <span class="nf">find_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">lst</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find the dict matching the name in a list and return it.</span>
+
+<span class="sd">    :param name: Name to search for</span>
+<span class="sd">    :type name: str</span>
+<span class="sd">    :param lst: List of dict&#39;s with &quot;name&quot; field</span>
+<span class="sd">    :returns: First dict with matching name, or None</span>
+<span class="sd">    :rtype: dict or None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">e</span>
+    <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="diff_items"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.diff_items">[docs]</a><span class="k">def</span> <span class="nf">diff_items</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">old_items</span><span class="p">,</span> <span class="n">new_items</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the differences between two lists of dicts.</span>
+
+<span class="sd">    :param title: Title of the entry</span>
+<span class="sd">    :type title: str</span>
+<span class="sd">    :param old_items: List of item dicts with &quot;name&quot; field</span>
+<span class="sd">    :type old_items: list(dict)</span>
+<span class="sd">    :param new_items: List of item dicts with &quot;name&quot; field</span>
+<span class="sd">    :type new_items: list(dict)</span>
+<span class="sd">    :returns: List of diff dicts with old/new entries</span>
+<span class="sd">    :rtype: list(dict)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">diffs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">old_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">old_items</span><span class="p">)</span>
+    <span class="n">new_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">new_items</span><span class="p">)</span>
+
+    <span class="n">added_items</span> <span class="o">=</span> <span class="n">new_names</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">old_names</span><span class="p">)</span>
+    <span class="n">added_items</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">added_items</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+
+    <span class="n">removed_items</span> <span class="o">=</span> <span class="n">old_names</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">new_names</span><span class="p">)</span>
+    <span class="n">removed_items</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">removed_items</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+
+    <span class="n">same_items</span> <span class="o">=</span> <span class="n">old_names</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">new_names</span><span class="p">)</span>
+    <span class="n">same_items</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">same_items</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">added_items</span><span class="p">:</span>
+        <span class="n">diffs</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;old&quot;</span><span class="p">:</span><span class="bp">None</span><span class="p">,</span>
+                      <span class="s">&quot;new&quot;</span><span class="p">:{</span><span class="n">title</span><span class="p">:</span><span class="n">find_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">new_items</span><span class="p">)}})</span>
+
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">removed_items</span><span class="p">:</span>
+        <span class="n">diffs</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;old&quot;</span><span class="p">:{</span><span class="n">title</span><span class="p">:</span><span class="n">find_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">old_items</span><span class="p">)},</span>
+                      <span class="s">&quot;new&quot;</span><span class="p">:</span><span class="bp">None</span><span class="p">})</span>
+
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">same_items</span><span class="p">:</span>
+        <span class="n">old_item</span> <span class="o">=</span> <span class="n">find_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">old_items</span><span class="p">)</span>
+        <span class="n">new_item</span> <span class="o">=</span> <span class="n">find_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">new_items</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">old_item</span> <span class="o">!=</span> <span class="n">new_item</span><span class="p">:</span>
+            <span class="n">diffs</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;old&quot;</span><span class="p">:{</span><span class="n">title</span><span class="p">:</span><span class="n">old_item</span><span class="p">},</span>
+                          <span class="s">&quot;new&quot;</span><span class="p">:{</span><span class="n">title</span><span class="p">:</span><span class="n">new_item</span><span class="p">}})</span>
+
+    <span class="k">return</span> <span class="n">diffs</span>
+
+</div>
+<div class="viewcode-block" id="recipe_diff"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.recipe_diff">[docs]</a><span class="k">def</span> <span class="nf">recipe_diff</span><span class="p">(</span><span class="n">old_recipe</span><span class="p">,</span> <span class="n">new_recipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Diff two versions of a recipe</span>
+
+<span class="sd">    :param old_recipe: The old version of the recipe</span>
+<span class="sd">    :type old_recipe: Recipe</span>
+<span class="sd">    :param new_recipe: The new version of the recipe</span>
+<span class="sd">    :type new_recipe: Recipe</span>
+<span class="sd">    :returns: A list of diff dict entries with old/new</span>
+<span class="sd">    :rtype: list(dict)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">diffs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c"># These cannot be added or removed, just different</span>
+    <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">,</span> <span class="s">&quot;description&quot;</span><span class="p">,</span> <span class="s">&quot;version&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">old_recipe</span><span class="p">[</span><span class="n">element</span><span class="p">]</span> <span class="o">!=</span> <span class="n">new_recipe</span><span class="p">[</span><span class="n">element</span><span class="p">]:</span>
+            <span class="n">diffs</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;old&quot;</span><span class="p">:{</span><span class="n">element</span><span class="o">.</span><span class="n">title</span><span class="p">():</span><span class="n">old_recipe</span><span class="p">[</span><span class="n">element</span><span class="p">]},</span>
+                          <span class="s">&quot;new&quot;</span><span class="p">:{</span><span class="n">element</span><span class="o">.</span><span class="n">title</span><span class="p">():</span><span class="n">new_recipe</span><span class="p">[</span><span class="n">element</span><span class="p">]}})</span>
+
+    <span class="n">diffs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">diff_items</span><span class="p">(</span><span class="s">&quot;Module&quot;</span><span class="p">,</span> <span class="n">old_recipe</span><span class="p">[</span><span class="s">&quot;modules&quot;</span><span class="p">],</span> <span class="n">new_recipe</span><span class="p">[</span><span class="s">&quot;modules&quot;</span><span class="p">]))</span>
+    <span class="n">diffs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">diff_items</span><span class="p">(</span><span class="s">&quot;Package&quot;</span><span class="p">,</span> <span class="n">old_recipe</span><span class="p">[</span><span class="s">&quot;packages&quot;</span><span class="p">],</span> <span class="n">new_recipe</span><span class="p">[</span><span class="s">&quot;packages&quot;</span><span class="p">]))</span>
+
+    <span class="k">return</span> <span class="n">diffs</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Lorax 19.7.10 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../api.html" >pylorax.api</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2017, Red Hat, Inc..
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
