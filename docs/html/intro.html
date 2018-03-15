@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Introduction to Lorax &mdash; Lorax 28.2 documentation</title>
+  <title>Introduction to Lorax &mdash; Lorax 29.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Lorax 28.2 documentation" href="index.html"/>
+    <link rel="top" title="Lorax 29.0 documentation" href="index.html"/>
         <link rel="next" title="Lorax" href="lorax.html"/>
         <link rel="prev" title="Welcome to Lorax’s documentation!" href="index.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                28.2
+                29.0
               </div>
             
           
@@ -171,14 +171,14 @@ of the iso for all of the supported architectures.</p>
 </div>
 <div class="section" id="before-lorax">
 <h1>Before Lorax<a class="headerlink" href="#before-lorax" title="Permalink to this headline">¶</a></h1>
-<p>Tree building tools such as pungi and revisor rely on &#8216;buildinstall&#8217; in
+<p>Tree building tools such as pungi and revisor rely on ‘buildinstall’ in
 anaconda/scripts/ to produce the boot images and other such control files
 in the final tree.  The existing buildinstall scripts written in a mix of
 bash and Python are unmaintainable.  Lorax is an attempt to replace them
 with something more flexible.</p>
 <p>EXISTING WORKFLOW:</p>
 <p>pungi and other tools call scripts/buildinstall, which in turn call other
-scripts to do the image building and data generation.  Here&#8217;s how it
+scripts to do the image building and data generation.  Here’s how it
 currently looks:</p>
 <blockquote>
 <div><dl class="docutils">
@@ -205,7 +205,7 @@ maketreeinfo.py, makestamp.py, and buildinstall</li>
 First, almost all knowledge of what goes in to the stage 1 and stage 2
 images lives in upd-instroot.  The mk-images* scripts copy things from the
 root created by upd-instroot in order to build the stage 1 image, though
-it&#8217;s not completely clear from reading the scripts.</p>
+it’s not completely clear from reading the scripts.</p>
 <p>NEW IDEAS:</p>
 <p>Create a new central driver with all information living in Python modules.
 Configuration files will provide the knowledge previously contained in the
@@ -234,7 +234,7 @@ upd-instroot and mk-images* scripts.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015, Red Hat, Inc..
+        &copy; Copyright 2018, Red Hat, Inc..
 
     </p>
   </div>
@@ -256,7 +256,7 @@ upd-instroot and mk-images* scripts.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'28.2',
+            VERSION:'29.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

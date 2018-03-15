@@ -17,6 +17,11 @@ Contents:
    product-images
    modules
 
+Documentation for other Lorax Branches
+======================================
+
+* `Fedora 28 </f28-branch/>`_
+* `lorax-composer </lorax-composer/>`_
 
 Indices and tables
 ==================
