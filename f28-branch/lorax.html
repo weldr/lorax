@@ -1,0 +1,543 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Lorax &mdash; Lorax 28.9 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Lorax 28.9 documentation" href="index.html"/>
+        <link rel="next" title="livemedia-creator" href="livemedia-creator.html"/>
+        <link rel="prev" title="Introduction to Lorax" href="intro.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Lorax
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                28.9
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction to Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html#before-lorax">Before Lorax</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Lorax</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#lorax-cmdline-arguments">lorax cmdline arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#quickstart">Quickstart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-inside-of-mock">Running inside of mock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-it-works">How it works</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#runtime-install-tmpl">runtime-install.tmpl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#runtime-postinstall-tmpl">runtime-postinstall.tmpl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#runtime-cleanup-tmpl">runtime-cleanup.tmpl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-squashfs-filesystem">The squashfs filesystem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#iso-creation">iso creation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#custom-templates">Custom Templates</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="livemedia-creator.html">livemedia-creator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="product-images.html">Product and Updates Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">pylorax</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Lorax</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Lorax</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/lorax.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="lorax">
+<h1>Lorax<a class="headerlink" href="#lorax" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Authors:</th><td class="field-body">Brian C. Lane &lt;<a class="reference external" href="mailto:bcl&#37;&#52;&#48;redhat&#46;com">bcl<span>&#64;</span>redhat<span>&#46;</span>com</a>&gt;</td>
+</tr>
+</tbody>
+</table>
+<p>“I am the Lorax.  I speak for the trees [and images].”</p>
+<p>The <a class="reference external" href="https://github.com/rhinstaller/lorax">lorax</a> tool is used to create the
+<a class="reference external" href="https://github.com/rhinstaller/anaconda">Anaconda</a> installer boot.iso as
+well as the basic release tree, and .treeinfo metadata file. Its dependencies
+are fairly light-weight because it needs to be able to run in a mock chroot
+environment. It is best to run lorax from the same release as is being targeted
+because the templates may have release specific logic in them. eg. Use the
+rawhide version to build the boot.iso for rawhide, along with the rawhide
+repositories.</p>
+<div class="section" id="lorax-cmdline-arguments">
+<h2>lorax cmdline arguments<a class="headerlink" href="#lorax-cmdline-arguments" title="Permalink to this headline">¶</a></h2>
+<p>Create the Anaconda boot.iso</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">lorax</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">-</span><span class="n">p</span> <span class="n">PRODUCT</span> <span class="o">-</span><span class="n">v</span> <span class="n">VERSION</span> <span class="o">-</span><span class="n">r</span> <span class="n">RELEASE</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">REPOSITORY</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">repo</span> <span class="n">REPOSITORY</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">m</span> <span class="n">REPOSITORY</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="n">VARIANT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">b</span> <span class="n">URL</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">isfinal</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">CONFIGFILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span> <span class="n">HOST</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">i</span> <span class="n">PACKAGE</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">-</span><span class="n">e</span> <span class="n">PACKAGE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">buildarch</span> <span class="n">ARCH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">volid</span> <span class="n">VOLID</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">macboot</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">nomacboot</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">noupgrade</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">logfile</span> <span class="n">LOGFILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tmp</span> <span class="n">TMP</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">cachedir</span> <span class="n">CACHEDIR</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workdir</span> <span class="n">WORKDIR</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">template</span> <span class="n">ADD_TEMPLATES</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">template</span><span class="o">-</span><span class="n">var</span> <span class="n">ADD_TEMPLATE_VARS</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">arch</span><span class="o">-</span><span class="n">template</span> <span class="n">ADD_ARCH_TEMPLATES</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">arch</span><span class="o">-</span><span class="n">template</span><span class="o">-</span><span class="n">var</span> <span class="n">ADD_ARCH_TEMPLATE_VARS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">noverify</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">sharedir</span> <span class="n">SHAREDIR</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">enablerepo</span> <span class="p">[</span><span class="n">repo</span><span class="p">]]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">disablerepo</span> <span class="p">[</span><span class="n">repo</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">rootfs</span><span class="o">-</span><span class="n">size</span> <span class="n">ROOTFS_SIZE</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">noverifyssl</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span>
+             <span class="n">OUTPUTDIR</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>Positional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>outputdir</kbd></td>
+<td>Output directory</td></tr>
+</tbody>
+</table>
+</dd>
+<dt>Options:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-p</span>, <span class="option">--product</span></kbd></td>
+<td>product name</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-v</span>, <span class="option">--version</span></kbd></td>
+<td>version identifier</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-r</span>, <span class="option">--release</span></kbd></td>
+<td>release information</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-s=[]</span>, <span class="option">--source=[]</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>source repository (may be listed multiple times)</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--repo=[]</span></kbd></td>
+<td>source dnf repository file</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-m=[]</span>, <span class="option">--mirrorlist=[]</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>mirrorlist repository (may be listed multiple times)</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-t=</span>, <span class="option">--variant=</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>variant name</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-b=your distribution provided bug reporting tool</span>, <span class="option">--bugurl=your distribution provided bug reporting tool</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>bug reporting URL for the product</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--isfinal=False</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Undocumented</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-c=/etc/lorax/lorax.conf</span>, <span class="option">--config=/etc/lorax/lorax.conf</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>config file</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--proxy</span></kbd></td>
+<td>repo proxy url:port</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-i=[]</span>, <span class="option">--installpkgs=[]</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>package glob to install before runtime-install.tmpl runs. (may be listed multiple times)</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-e=[]</span>, <span class="option">--excludepkgs=[]</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>package glob to remove before runtime-install.tmpl runs. (may be listed multiple times)</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--buildarch</span></kbd></td>
+<td>build architecture</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--volid</span></kbd></td>
+<td>volume id</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--macboot=True</span></kbd></td>
+<td>Undocumented</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--nomacboot=True</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Undocumented</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--noupgrade=True</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Undocumented</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--logfile=./lorax.log</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Path to logfile</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--tmp=/var/tmp</span></kbd></td>
+<td>Top level temporary directory</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--cachedir</span></kbd></td>
+<td>DNF cache directory. Default is a temporary dir.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--workdir</span></kbd></td>
+<td>Work directory, overrides –tmp. Default is a temporary dir under /var/tmp</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--force=False</span></kbd></td>
+<td>Run even when the destination directory exists</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--add-template=[]</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Additional template for runtime image</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--add-template-var=[]</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Set variable for runtime image template</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--add-arch-template=[]</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Additional template for architecture-specific image</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--add-arch-template-var=[]</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Set variable for architecture-specific image</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--noverify=True</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Do not verify the install root</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--sharedir</span></kbd></td>
+<td>Directory containing all the templates. Overrides config file sharedir</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--enablerepo=[]</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Names of repos to enable</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--disablerepo=[]</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Names of repos to disable</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--rootfs-size=2</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Size of root filesystem in GiB. Defaults to 2.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--noverifyssl=False</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Do not verify SSL certificates</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-V</span></kbd></td>
+<td>show program’s version number and exit</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<div class="section" id="quickstart">
+<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
+<p>Run this as root to create a boot.iso in <code class="docutils literal"><span class="pre">./results/</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">dnf</span> <span class="n">install</span> <span class="n">lorax</span>
+<span class="n">setenforce</span> <span class="mi">0</span>
+<span class="n">lorax</span> <span class="o">-</span><span class="n">p</span> <span class="n">Fedora</span> <span class="o">-</span><span class="n">v</span> <span class="mi">23</span> <span class="o">-</span><span class="n">r</span> <span class="mi">23</span> \
+<span class="o">-</span><span class="n">s</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">dl</span><span class="o">.</span><span class="n">fedoraproject</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">pub</span><span class="o">/</span><span class="n">fedora</span><span class="o">/</span><span class="n">linux</span><span class="o">/</span><span class="n">releases</span><span class="o">/</span><span class="mi">23</span><span class="o">/</span><span class="n">Everything</span><span class="o">/</span><span class="n">x86_64</span><span class="o">/</span><span class="n">os</span><span class="o">/</span> \
+<span class="o">-</span><span class="n">s</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">dl</span><span class="o">.</span><span class="n">fedoraproject</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">pub</span><span class="o">/</span><span class="n">fedora</span><span class="o">/</span><span class="n">linux</span><span class="o">/</span><span class="n">updates</span><span class="o">/</span><span class="mi">23</span><span class="o">/</span><span class="n">x86_64</span><span class="o">/</span> \
+<span class="o">./</span><span class="n">results</span><span class="o">/</span>
+<span class="n">setenforce</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>You can add your own repos with <code class="docutils literal"><span class="pre">-s</span></code> and packages with higher NVRs will
+override the ones in the distribution repositories.</p>
+<p>Under <code class="docutils literal"><span class="pre">./results/</span></code> will be the release tree files: .discinfo, .treeinfo, everything that
+goes onto the boot.iso, the pxeboot directory, and the boot.iso under <code class="docutils literal"><span class="pre">./images/</span></code>.</p>
+</div>
+<div class="section" id="running-inside-of-mock">
+<h2>Running inside of mock<a class="headerlink" href="#running-inside-of-mock" title="Permalink to this headline">¶</a></h2>
+<p>If you are using lorax with mock v1.3.4 or later you will need to pass
+<code class="docutils literal"><span class="pre">--old-chroot</span></code> to mock. Mock now defaults to using systemd-nspawn which cannot
+create the needed loop device nodes. Passing <code class="docutils literal"><span class="pre">--old-chroot</span></code> will use the old
+system where <code class="docutils literal"><span class="pre">/dev/loop*</span></code> is setup for you.</p>
+</div>
+<div class="section" id="how-it-works">
+<h2>How it works<a class="headerlink" href="#how-it-works" title="Permalink to this headline">¶</a></h2>
+<p>Lorax uses <a class="reference external" href="https://github.com/rpm-software-management/dnf">dnf</a> to install
+packages into a temporary directory, sets up configuration files, it then
+removes unneeded files to save space, and creates a squashfs filesystem of the
+files.  The iso is then built using a generic initramfs and the kernel from the
+selected repositories.</p>
+<p>To drive these processes Lorax uses a custom template system, based on <a class="reference external" href="http://www.makotemplates.org/">Mako
+templates</a> with the addition of custom
+commands (documented in <a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner" title="pylorax.ltmpl.LoraxTemplateRunner"><code class="xref py py-class docutils literal"><span class="pre">pylorax.ltmpl.LoraxTemplateRunner</span></code></a>). Mako
+supports <code class="docutils literal"><span class="pre">%if/%endif</span></code> blocks as well as free-form python code inside <code class="docutils literal"><span class="pre">&lt;%</span>
+<span class="pre">%&gt;</span></code> tags and variable substitution with <code class="docutils literal"><span class="pre">${}</span></code>. The default templates are
+shipped with lorax in <code class="docutils literal"><span class="pre">/usr/share/lorax/templates.d/99-generic/</span></code> and use the
+<code class="docutils literal"><span class="pre">.tmpl</span></code> extension.</p>
+<div class="section" id="runtime-install-tmpl">
+<h3>runtime-install.tmpl<a class="headerlink" href="#runtime-install-tmpl" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal"><span class="pre">runtime-install.tmpl</span></code> template lists packages to be installed using the
+<code class="docutils literal"><span class="pre">installpkg</span></code> command.  This template is fairly simple, installing common packages and
+architecture specific packages. It must end with the <code class="docutils literal"><span class="pre">run_pkg_transaction</span></code>
+command which tells dnf to download and install the packages.</p>
+</div>
+<div class="section" id="runtime-postinstall-tmpl">
+<h3>runtime-postinstall.tmpl<a class="headerlink" href="#runtime-postinstall-tmpl" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal"><span class="pre">runtime-postinstall.tmpl</span></code> template is where the system configuration
+happens. The installer environment is similar to a normal running system, but
+needs some special handling. Configuration files are setup, systemd is told to
+start the anaconda.target instead of a default system target, and a number of
+unneeded services are disabled, some of which can interfere with the
+installation. A number of template commands are used here:</p>
+<ul class="simple">
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.append" title="pylorax.ltmpl.LoraxTemplateRunner.append"><code class="xref py py-func docutils literal"><span class="pre">append</span></code></a> to add text to a file.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.chmod" title="pylorax.ltmpl.LoraxTemplateRunner.chmod"><code class="xref py py-func docutils literal"><span class="pre">chmod</span></code></a> changes the file’s mode.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.gconfset" title="pylorax.ltmpl.LoraxTemplateRunner.gconfset"><code class="xref py py-func docutils literal"><span class="pre">gconfset</span></code></a> runs gconfset.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.install" title="pylorax.ltmpl.LoraxTemplateRunner.install"><code class="xref py py-func docutils literal"><span class="pre">install</span></code></a> to install a file into the installroot.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.mkdir" title="pylorax.ltmpl.LoraxTemplateRunner.mkdir"><code class="xref py py-func docutils literal"><span class="pre">mkdir</span></code></a> makes a new directory.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.move" title="pylorax.ltmpl.LoraxTemplateRunner.move"><code class="xref py py-func docutils literal"><span class="pre">move</span></code></a> to move a file into the installroot</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.replace" title="pylorax.ltmpl.LoraxTemplateRunner.replace"><code class="xref py py-func docutils literal"><span class="pre">replace</span></code></a> does text substitution in a file</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.remove" title="pylorax.ltmpl.LoraxTemplateRunner.remove"><code class="xref py py-func docutils literal"><span class="pre">remove</span></code></a> deletes a file</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.runcmd" title="pylorax.ltmpl.LoraxTemplateRunner.runcmd"><code class="xref py py-func docutils literal"><span class="pre">runcmd</span></code></a> run arbitrary commands.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.symlink" title="pylorax.ltmpl.LoraxTemplateRunner.symlink"><code class="xref py py-func docutils literal"><span class="pre">symlink</span></code></a> creates a symlink</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.systemctl" title="pylorax.ltmpl.LoraxTemplateRunner.systemctl"><code class="xref py py-func docutils literal"><span class="pre">systemctl</span></code></a> runs systemctl in the installroot</li>
+</ul>
+</div>
+<div class="section" id="runtime-cleanup-tmpl">
+<h3>runtime-cleanup.tmpl<a class="headerlink" href="#runtime-cleanup-tmpl" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal"><span class="pre">runtime-cleanup.tmpl</span></code> template is used to remove files that aren’t strictly needed
+by the installation environment. In addition to the <code class="docutils literal"><span class="pre">remove</span></code> template command it uses:</p>
+<ul class="simple">
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.removepkg" title="pylorax.ltmpl.LoraxTemplateRunner.removepkg"><code class="xref py py-func docutils literal"><span class="pre">removepkg</span></code></a>
+remove all of a specific package’s contents. A package may be pulled in as a dependency, but
+not really used. eg. sound support.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.removefrom" title="pylorax.ltmpl.LoraxTemplateRunner.removefrom"><code class="xref py py-func docutils literal"><span class="pre">removefrom</span></code></a>
+Removes some files from a package. A file glob can be used, or the –allbut option to
+remove everything except a select few.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.removekmod" title="pylorax.ltmpl.LoraxTemplateRunner.removekmod"><code class="xref py py-func docutils literal"><span class="pre">removekmod</span></code></a>
+Removes kernel modules</li>
+</ul>
+</div>
+<div class="section" id="the-squashfs-filesystem">
+<h3>The squashfs filesystem<a class="headerlink" href="#the-squashfs-filesystem" title="Permalink to this headline">¶</a></h3>
+<p>After <code class="docutils literal"><span class="pre">runtime-*.tmpl</span></code> templates have finished their work lorax creates an
+empty ext4 filesystem, copies the remaining files to it, and makes a squashfs
+filesystem of it. This file is the / of the boot.iso’s installer environment
+and is what is in the LiveOS/squashfs.img file on the iso.</p>
+</div>
+<div class="section" id="iso-creation">
+<h3>iso creation<a class="headerlink" href="#iso-creation" title="Permalink to this headline">¶</a></h3>
+<p>The iso creation is handled by another set of templates. The one used depends
+on the architecture that the iso is being created for. They are also stored in
+<code class="docutils literal"><span class="pre">/usr/share/lorax/templates.d/99-generic</span></code> and are named after the arch, like
+<code class="docutils literal"><span class="pre">x86.tmpl</span></code> and <code class="docutils literal"><span class="pre">aarch64.tmpl</span></code>. They handle creation of the tree, copying
+configuration template files, configuration variable substitution, treeinfo
+metadata (via the <a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.treeinfo" title="pylorax.ltmpl.LoraxTemplateRunner.treeinfo"><code class="xref py py-func docutils literal"><span class="pre">treeinfo</span></code></a>
+template command). Kernel and initrd are copied from the installroot to their
+final locations and then mkisofs is run to create the boot.iso</p>
+</div>
+</div>
+<div class="section" id="custom-templates">
+<h2>Custom Templates<a class="headerlink" href="#custom-templates" title="Permalink to this headline">¶</a></h2>
+<p>The default set of templates and configuration files from the lorax-generic-templates package
+are shipped in the <code class="docutils literal"><span class="pre">/usr/share/lorax/templates.d/99-generic/</span></code> directory. You can
+make a copy of them and place them into another directory under <code class="docutils literal"><span class="pre">templates.d</span></code>
+and they will be used instead if their sort order is below all other directories. This
+allows multiple packages to ship lorax templates without conflict. You can (and probably
+should) select the specific template directory by passing <code class="docutils literal"><span class="pre">--sharedir</span></code> to lorax.</p>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="livemedia-creator.html" class="btn btn-neutral float-right" title="livemedia-creator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="intro.html" class="btn btn-neutral" title="Introduction to Lorax" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Red Hat, Inc..
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'28.9',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,287 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Introduction to Lorax &mdash; Lorax 28.9 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Lorax 28.9 documentation" href="index.html"/>
+        <link rel="next" title="Lorax" href="lorax.html"/>
+        <link rel="prev" title="Welcome to Lorax’s documentation!" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Lorax
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                28.9
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction to Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#before-lorax">Before Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lorax.html">Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="livemedia-creator.html">livemedia-creator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="product-images.html">Product and Updates Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">pylorax</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Lorax</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Introduction to Lorax</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/intro.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="introduction-to-lorax">
+<h1>Introduction to Lorax<a class="headerlink" href="#introduction-to-lorax" title="Permalink to this headline">¶</a></h1>
+<p>I am the Lorax.  I speak for the trees [and images].</p>
+<p>Lorax is used to build the Anaconda Installer boot.iso, it consists of a
+library, pylorax, a set of templates, and the lorax script. Its operation
+is driven by a customized set of Mako templates that lists the packages
+to be installed, steps to execute to remove unneeded files, and creation
+of the iso for all of the supported architectures.</p>
+</div>
+<div class="section" id="before-lorax">
+<h1>Before Lorax<a class="headerlink" href="#before-lorax" title="Permalink to this headline">¶</a></h1>
+<p>Tree building tools such as pungi and revisor rely on ‘buildinstall’ in
+anaconda/scripts/ to produce the boot images and other such control files
+in the final tree.  The existing buildinstall scripts written in a mix of
+bash and Python are unmaintainable.  Lorax is an attempt to replace them
+with something more flexible.</p>
+<p>EXISTING WORKFLOW:</p>
+<p>pungi and other tools call scripts/buildinstall, which in turn call other
+scripts to do the image building and data generation.  Here’s how it
+currently looks:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>-&gt; buildinstall</dt>
+<dd><ul class="first simple">
+<li>process command line options</li>
+<li>write temporary yum.conf to point to correct repo</li>
+<li>find anaconda release RPM</li>
+<li>unpack RPM, pull in those versions of upd-instroot, mk-images,
+maketreeinfo.py, makestamp.py, and buildinstall</li>
+</ul>
+<p>-&gt; call upd-instroot</p>
+<p>-&gt; call maketreeinfo.py</p>
+<p>-&gt; call mk-images (which figures out which mk-images.ARCH to call)</p>
+<p>-&gt; call makestamp.py</p>
+<ul class="last simple">
+<li>clean up</li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+<p>PROBLEMS:</p>
+<p>The existing workflow presents some problems with maintaining the scripts.
+First, almost all knowledge of what goes in to the stage 1 and stage 2
+images lives in upd-instroot.  The mk-images* scripts copy things from the
+root created by upd-instroot in order to build the stage 1 image, though
+it’s not completely clear from reading the scripts.</p>
+<p>NEW IDEAS:</p>
+<p>Create a new central driver with all information living in Python modules.
+Configuration files will provide the knowledge previously contained in the
+upd-instroot and mk-images* scripts.</p>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="lorax.html" class="btn btn-neutral float-right" title="Lorax" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Welcome to Lorax’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Red Hat, Inc..
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'28.9',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

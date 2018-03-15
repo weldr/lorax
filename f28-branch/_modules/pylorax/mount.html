@@ -1,0 +1,331 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pylorax.mount &mdash; Lorax 28.9 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Lorax 28.9 documentation" href="../../index.html"/>
+        <link rel="up" title="pylorax" href="../pylorax.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Lorax
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                28.9
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction to Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html#before-lorax">Before Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../lorax.html">Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../livemedia-creator.html">livemedia-creator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../product-images.html">Product and Updates Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">pylorax</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Lorax</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../pylorax.html">pylorax</a> &raquo;</li>
+        
+      <li>pylorax.mount</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pylorax.mount</h1><div class="highlight"><pre>
+<span></span><span class="c1"># mount.py</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C) 2011-2015  Red Hat, Inc.</span>
+<span class="c1">#</span>
+<span class="c1"># This program is free software; you can redistribute it and/or modify</span>
+<span class="c1"># it under the terms of the GNU General Public License as published by</span>
+<span class="c1"># the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c1"># (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># This program is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="c1"># Author(s): Brian C. Lane &lt;bcl@redhat.com&gt;</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;livemedia-creator&quot;</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="k">import</span> <span class="n">mount</span><span class="p">,</span> <span class="n">umount</span>
+<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="k">import</span> <span class="n">execWithCapture</span>
+
+<div class="viewcode-block" id="IsoMountpoint"><a class="viewcode-back" href="../../pylorax.html#pylorax.mount.IsoMountpoint">[docs]</a><span class="k">class</span> <span class="nc">IsoMountpoint</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Mount the iso and check to make sure the vmlinuz and initrd.img files exist</span>
+
+<span class="sd">    Also check the iso for a a stage2 image and set a flag and extract the</span>
+<span class="sd">    iso&#39;s label.</span>
+
+<span class="sd">    stage2 can be either LiveOS/squashfs.img or images/install.img</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iso_path</span><span class="p">,</span> <span class="n">initrd_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Mount the iso</span>
+
+<span class="sd">        :param str iso_path: Path to the iso to mount</span>
+<span class="sd">        :param str initrd_path: Optional path to initrd</span>
+
+<span class="sd">        initrd_path can be used to point to a tree with a newer</span>
+<span class="sd">        initrd.img than the iso has. The iso is still used for stage2.</span>
+
+<span class="sd">        self.kernel and self.initrd point to the kernel and initrd.</span>
+<span class="sd">        self.stage2 is set to True if there is a stage2 image.</span>
+<span class="sd">        self.repo is the path to the mounted iso if there is a /repodata dir.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iso_path</span> <span class="o">=</span> <span class="n">iso_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initrd_path</span> <span class="o">=</span> <span class="n">initrd_path</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initrd_path</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span> <span class="o">=</span> <span class="n">mount</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iso_path</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="s2">&quot;loop&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initrd_path</span>
+
+        <span class="n">kernel_list</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;/isolinux/vmlinuz&quot;</span><span class="p">,</span> <span class="s2">&quot;/isolinux/initrd.img&quot;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s2">&quot;/ppc/ppc64/vmlinuz&quot;</span><span class="p">,</span> <span class="s2">&quot;/ppc/ppc64/initrd.img&quot;</span><span class="p">)]</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="s2">&quot;/repodata&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">repo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">repo</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stage2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="s2">&quot;/LiveOS/squashfs.img&quot;</span><span class="p">)</span> <span class="ow">or</span> \
+                      <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="s2">&quot;/images/install.img&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">initrd</span> <span class="ow">in</span> <span class="n">kernel_list</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="n">kernel</span><span class="p">)</span> <span class="ow">and</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="n">initrd</span><span class="p">)):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="n">kernel</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">initrd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="n">initrd</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Missing kernel and initrd file in iso, failed&quot;</span>
+                                <span class="s2">&quot; to search under: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kernel_list</span><span class="p">))</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">umount</span><span class="p">()</span>
+            <span class="k">raise</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_iso_label</span><span class="p">()</span>
+
+<div class="viewcode-block" id="IsoMountpoint.umount"><a class="viewcode-back" href="../../pylorax.html#pylorax.mount.IsoMountpoint.umount">[docs]</a>    <span class="k">def</span> <span class="nf">umount</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Unmount the iso&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initrd_path</span><span class="p">:</span>
+            <span class="n">umount</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IsoMountpoint.get_iso_label"><a class="viewcode-back" href="../../pylorax.html#pylorax.mount.IsoMountpoint.get_iso_label">[docs]</a>    <span class="k">def</span> <span class="nf">get_iso_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the iso&#39;s label using isoinfo</span>
+
+<span class="sd">        Sets self.label if one is found</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">isoinfo_output</span> <span class="o">=</span> <span class="n">execWithCapture</span><span class="p">(</span><span class="s2">&quot;isoinfo&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;-d&quot;</span><span class="p">,</span> <span class="s2">&quot;-i&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iso_path</span><span class="p">])</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">isoinfo_output</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">isoinfo_output</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;Volume id: &quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">11</span><span class="p">:]</span>
+                <span class="k">return</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Red Hat, Inc..
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'28.9',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
