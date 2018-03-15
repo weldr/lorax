@@ -50,9 +50,9 @@ def compose_cmd(opts):
         log.error("Unknown compose command: %s", opts.args[1])
         return 1
 
-    return cmd_map[opts.args[1]](opts.socket, opts.api_version, opts.args[2:], opts.json)
+    return cmd_map[opts.args[1]](opts.socket, opts.api_version, opts.args[2:], opts.json, opts.testmode)
 
-def compose_status(socket_path, api_version, args, show_json=False):
+def compose_status(socket_path, api_version, args, show_json=False, testmode=0):
     """Return the status of all known composes
 
     :param socket_path: Path to the Unix socket to use for API communication
@@ -130,7 +130,7 @@ def compose_types(socket_path, api_version, args, show_json=False):
 
     print("Compose Types: " + ", ".join([t["name"] for t in result["types"]]))
 
-def compose_start(socket_path, api_version, args, show_json=False):
+def compose_start(socket_path, api_version, args, show_json=False, testmode=0):
     """Start a new compose using the selected recipe and type
 
     :param socket_path: Path to the Unix socket to use for API communication
@@ -156,7 +156,11 @@ def compose_start(socket_path, api_version, args, show_json=False):
         "compose_type": args[1],
         "branch": "master"
         }
-    api_route = client.api_url(api_version, "/compose")
+    if testmode:
+        test_url = "?test=%d" % testmode
+    else:
+        test_url = ""
+    api_route = client.api_url(api_version, "/compose" + test_url)
     result = client.post_url_json(socket_path, api_route, json.dumps(config))
 
     if show_json:
@@ -173,7 +177,7 @@ def compose_start(socket_path, api_version, args, show_json=False):
     print("Compose %s added to the queue" % result["build_id"])
     return 0
 
-def compose_log(socket_path, api_version, args, show_json=False):
+def compose_log(socket_path, api_version, args, show_json=False, testmode=0):
     """Show the last part of the compose log
 
     :param socket_path: Path to the Unix socket to use for API communication
@@ -207,7 +211,7 @@ def compose_log(socket_path, api_version, args, show_json=False):
 
     print(result)
 
-def compose_cancel(socket_path, api_version, args, show_json=False):
+def compose_cancel(socket_path, api_version, args, show_json=False, testmode=0):
     """Cancel a running compose
 
     :param socket_path: Path to the Unix socket to use for API communication
@@ -231,7 +235,7 @@ def compose_cancel(socket_path, api_version, args, show_json=False):
     result = client.delete_url_json(socket_path, api_route)
     return handle_api_result(result, show_json)
 
-def compose_delete(socket_path, api_version, args, show_json=False):
+def compose_delete(socket_path, api_version, args, show_json=False, testmode=0):
     """Delete a finished compose's results
 
     :param socket_path: Path to the Unix socket to use for API communication
@@ -268,7 +272,7 @@ def compose_delete(socket_path, api_version, args, show_json=False):
     else:
         return 0
 
-def compose_details(socket_path, api_version, args, show_json=False):
+def compose_details(socket_path, api_version, args, show_json=False, testmode=0):
     """Return detailed information about the compose
 
     :param socket_path: Path to the Unix socket to use for API communication
@@ -311,7 +315,7 @@ def compose_details(socket_path, api_version, args, show_json=False):
     for d in result["deps"]["packages"]:
         print("    " + packageNEVRA(d))
 
-def compose_metadata(socket_path, api_version, args, show_json=False):
+def compose_metadata(socket_path, api_version, args, show_json=False, testmode=0):
     """Download a tar file of the compose's metadata
 
     :param socket_path: Path to the Unix socket to use for API communication
@@ -334,7 +338,7 @@ def compose_metadata(socket_path, api_version, args, show_json=False):
     api_route = client.api_url(api_version, "/compose/metadata/%s" % args[0])
     return client.download_file(socket_path, api_route)
 
-def compose_results(socket_path, api_version, args, show_json=False):
+def compose_results(socket_path, api_version, args, show_json=False, testmode=0):
     """Download a tar file of the compose's results
 
     :param socket_path: Path to the Unix socket to use for API communication
@@ -358,7 +362,7 @@ def compose_results(socket_path, api_version, args, show_json=False):
     api_route = client.api_url(api_version, "/compose/results/%s" % args[0])
     return client.download_file(socket_path, api_route, sys.stdout.isatty())
 
-def compose_logs(socket_path, api_version, args, show_json=False):
+def compose_logs(socket_path, api_version, args, show_json=False, testmode=0):
     """Download a tar of the compose's logs
 
     :param socket_path: Path to the Unix socket to use for API communication
@@ -381,7 +385,7 @@ def compose_logs(socket_path, api_version, args, show_json=False):
     api_route = client.api_url(api_version, "/compose/logs/%s" % args[0])
     return client.download_file(socket_path, api_route, sys.stdout.isatty())
 
-def compose_image(socket_path, api_version, args, show_json=False):
+def compose_image(socket_path, api_version, args, show_json=False, testmode=0):
     """Download the compose's output image
 
     :param socket_path: Path to the Unix socket to use for API communication
