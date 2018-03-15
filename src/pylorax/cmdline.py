@@ -279,7 +279,7 @@ def lmc_parser(dracut_default=""):
                         help="Substituted for @TITLE@ in bootloader config files")
     parser.add_argument("--project", default="Linux",
                         help="substituted for @PROJECT@ in bootloader config files")
-    parser.add_argument("--releasever", default="25",
+    parser.add_argument("--releasever", default="28",
                         help="substituted for @VERSION@ in bootloader config files")
     parser.add_argument("--volid", default=None, help="volume id")
     parser.add_argument("--squashfs_args",
