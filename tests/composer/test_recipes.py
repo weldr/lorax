@@ -18,14 +18,17 @@ import unittest
 
 from composer.cli.recipes import prettyDiffEntry
 
-diff_entries = [{'new': {'Version': '0.3.1'}, 'old': {'Version': '0.1.1'}},
+diff_entries = [{'new': {'Description': 'Shiny new description'}, 'old': {'Description': 'Old reliable description'}},
+                {'new': {'Version': '0.3.1'}, 'old': {'Version': '0.1.1'}},
                 {'new': {'Module': {'name': 'openssh', 'version': '2.8.1'}}, 'old': None},
                 {'new': None, 'old': {'Module': {'name': 'bash', 'version': '4.*'}}},
                 {'new': {'Module': {'name': 'httpd', 'version': '3.8.*'}},
                  'old': {'Module': {'name': 'httpd', 'version': '3.7.*'}}},
                 {'new': {'Package': {'name': 'git', 'version': '2.13.*'}}, 'old': None}]
 
-diff_result = ['Changed Version 0.1.1 -> 0.1.1',
+diff_result = [
+    'Changed Description "Old reliable description" -> "Shiny new description"',
+    'Changed Version 0.1.1 -> 0.3.1',
     'Added Module openssh 2.8.1',
     'Removed Module bash 4.*',
     'Changed Module httpd 3.7.* -> 3.8.*',
