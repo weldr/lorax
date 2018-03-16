@@ -214,9 +214,9 @@ def prettyDiffEntry(diff):
     def details(diff):
         if change(diff) == "Changed":
             if name(diff) == "Description":
-                return '"%s" -> "%s"' % (diff["old"][name(diff)], diff["old"][name(diff)])
+                return '"%s" -> "%s"' % (diff["old"][name(diff)], diff["new"][name(diff)])
             elif name(diff) == "Version":
-                return "%s -> %s" % (diff["old"][name(diff)], diff["old"][name(diff)])
+                return "%s -> %s" % (diff["old"][name(diff)], diff["new"][name(diff)])
             elif name(diff) in ["Module", "Package"]:
                 return "%s %s -> %s" % (diff["old"][name(diff)]["name"], diff["old"][name(diff)]["version"],
                                         diff["new"][name(diff)]["version"])
