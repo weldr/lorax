@@ -1,0 +1,51 @@
+cli Package
+===========
+
+:mod:`cli` Package
+------------------
+
+.. automodule:: composer.cli
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`compose` Module
+---------------------
+
+.. automodule:: composer.cli.compose
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`modules` Module
+---------------------
+
+.. automodule:: composer.cli.modules
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`projects` Module
+----------------------
+
+.. automodule:: composer.cli.projects
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`recipes` Module
+---------------------
+
+.. automodule:: composer.cli.recipes
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`utilities` Module
+-----------------------
+
+.. automodule:: composer.cli.utilities
+    :members:
+    :undoc-members:
+    :show-inheritance:
+

@@ -1,0 +1,160 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>composer.unix_socket &mdash; Lorax 19.7.11 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '19.7.11',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Lorax 19.7.11 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for composer.unix_socket</h1><div class="highlight"><pre>
+<span class="c">#</span>
+<span class="c"># Copyright (C) 2018  Red Hat, Inc.</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the GNU General Public License as published by</span>
+<span class="c"># the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># This program is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c"># GNU General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License</span>
+<span class="c"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c">#</span>
+<span class="kn">import</span> <span class="nn">httplib</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">urllib3</span>
+
+
+<span class="c"># These 2 classes were adapted and simplified for use with just urllib3.</span>
+<span class="c"># Originally from https://github.com/msabramo/requests-unixsocket/blob/master/requests_unixsocket/adapters.py</span>
+
+<span class="c"># The following was adapted from some code from docker-py</span>
+<span class="c"># https://github.com/docker/docker-py/blob/master/docker/transport/unixconn.py</span>
+<div class="viewcode-block" id="UnixHTTPConnection"><a class="viewcode-back" href="../../composer.html#composer.unix_socket.UnixHTTPConnection">[docs]</a><span class="k">class</span> <span class="nc">UnixHTTPConnection</span><span class="p">(</span><span class="n">httplib</span><span class="o">.</span><span class="n">HTTPConnection</span><span class="p">,</span> <span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">socket_path</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create an HTTP connection to a unix domain socket</span>
+
+<span class="sd">        :param socket_path: The path to the Unix domain socket</span>
+<span class="sd">        :param timeout: Number of seconds to timeout the connection</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">UnixHTTPConnection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket_path</span> <span class="o">=</span> <span class="n">socket_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sock</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c"># base class does not have d&#39;tor</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<div class="viewcode-block" id="UnixHTTPConnection.connect"><a class="viewcode-back" href="../../composer.html#composer.unix_socket.UnixHTTPConnection.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_UNIX</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">socket_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sock</span> <span class="o">=</span> <span class="n">sock</span>
+</div></div>
+<div class="viewcode-block" id="UnixHTTPConnectionPool"><a class="viewcode-back" href="../../composer.html#composer.unix_socket.UnixHTTPConnectionPool">[docs]</a><span class="k">class</span> <span class="nc">UnixHTTPConnectionPool</span><span class="p">(</span><span class="n">urllib3</span><span class="o">.</span><span class="n">connectionpool</span><span class="o">.</span><span class="n">HTTPConnectionPool</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">socket_path</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a connection pool using a Unix domain socket</span>
+
+<span class="sd">        :param socket_path: The path to the Unix domain socket</span>
+<span class="sd">        :param timeout: Number of seconds to timeout the connection</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">UnixHTTPConnectionPool</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket_path</span> <span class="o">=</span> <span class="n">socket_path</span>
+
+    <span class="k">def</span> <span class="nf">_new_conn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">UnixHTTPConnection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">socket_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">http</span> <span class="o">=</span> <span class="n">UnixHTTPConnectionPool</span><span class="p">(</span><span class="s">&quot;/var/run/weldr/api.socket&quot;</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s">&quot;GET&quot;</span><span class="p">,</span> <span class="s">&quot;/api/v0/recipes/list&quot;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2018, Red Hat, Inc..
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

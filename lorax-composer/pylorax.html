@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pylorax Package &mdash; Lorax 19.7.10 documentation</title>
+    <title>pylorax Package &mdash; Lorax 19.7.11 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '19.7.10',
+        VERSION:     '19.7.11',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,10 +25,10 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.10 documentation" href="index.html" />
-    <link rel="up" title="pylorax" href="modules.html" />
+    <link rel="top" title="Lorax 19.7.11 documentation" href="index.html" />
+    <link rel="up" title="src" href="modules.html" />
     <link rel="next" title="api Package" href="pylorax.api.html" />
-    <link rel="prev" title="pylorax" href="modules.html" /> 
+    <link rel="prev" title="cli Package" href="composer.cli.html" /> 
   </head>
   <body>
     <div class="related">
@@ -44,10 +44,10 @@
           <a href="pylorax.api.html" title="api Package"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="modules.html" title="pylorax"
+          <a href="composer.cli.html" title="cli Package"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.10 documentation</a> &raquo;</li>
-          <li><a href="modules.html" accesskey="U">pylorax</a> &raquo;</li> 
+        <li><a href="index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+          <li><a href="modules.html" accesskey="U">src</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -59,52 +59,52 @@
   <div class="section" id="pylorax-package">
 <h1>pylorax Package<a class="headerlink" href="#pylorax-package" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id1">
-<h2><tt class="xref py py-mod docutils literal"><span class="pre">pylorax</span></tt> Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-pylorax.__init__"></span><dl class="class">
-<dt id="pylorax.__init__.ArchData">
-<em class="property">class </em><tt class="descclassname">pylorax.__init__.</tt><tt class="descname">ArchData</tt><big>(</big><em>buildarch</em><big>)</big><a class="reference internal" href="_modules/pylorax/__init__.html#ArchData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.__init__.ArchData" title="Permalink to this definition">¶</a></dt>
+<h2><a class="reference internal" href="#module-pylorax" title="pylorax"><tt class="xref py py-mod docutils literal"><span class="pre">pylorax</span></tt></a> Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-pylorax"></span><dl class="class">
+<dt id="pylorax.ArchData">
+<em class="property">class </em><tt class="descclassname">pylorax.</tt><tt class="descname">ArchData</tt><big>(</big><em>buildarch</em><big>)</big><a class="reference internal" href="_modules/pylorax.html#ArchData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ArchData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pylorax.base.DataHolder" title="pylorax.base.DataHolder"><tt class="xref py py-class docutils literal"><span class="pre">pylorax.base.DataHolder</span></tt></a></p>
 <dl class="attribute">
-<dt id="pylorax.__init__.ArchData.bcj_arch">
-<tt class="descname">bcj_arch</tt><em class="property"> = {'ppc': 'powerpc', 'x86_64': 'x86', 'i386': 'x86', 'armhfp': 'arm', 'ppc64le': 'powerpc', 'ppc64': 'powerpc', 'arm': 'arm'}</em><a class="headerlink" href="#pylorax.__init__.ArchData.bcj_arch" title="Permalink to this definition">¶</a></dt>
+<dt id="pylorax.ArchData.bcj_arch">
+<tt class="descname">bcj_arch</tt><em class="property"> = {'ppc': 'powerpc', 'x86_64': 'x86', 'i386': 'x86', 'armhfp': 'arm', 'ppc64le': 'powerpc', 'ppc64': 'powerpc', 'arm': 'arm'}</em><a class="headerlink" href="#pylorax.ArchData.bcj_arch" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="pylorax.__init__.ArchData.lib64_arches">
-<tt class="descname">lib64_arches</tt><em class="property"> = ('x86_64', 'ppc64', 'ppc64le', 's390x', 'ia64', 'aarch64')</em><a class="headerlink" href="#pylorax.__init__.ArchData.lib64_arches" title="Permalink to this definition">¶</a></dt>
+<dt id="pylorax.ArchData.lib64_arches">
+<tt class="descname">lib64_arches</tt><em class="property"> = ('x86_64', 'ppc64', 'ppc64le', 's390x', 'ia64', 'aarch64')</em><a class="headerlink" href="#pylorax.ArchData.lib64_arches" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="pylorax.__init__.Lorax">
-<em class="property">class </em><tt class="descclassname">pylorax.__init__.</tt><tt class="descname">Lorax</tt><a class="reference internal" href="_modules/pylorax/__init__.html#Lorax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.__init__.Lorax" title="Permalink to this definition">¶</a></dt>
+<dt id="pylorax.Lorax">
+<em class="property">class </em><tt class="descclassname">pylorax.</tt><tt class="descname">Lorax</tt><a class="reference internal" href="_modules/pylorax.html#Lorax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.Lorax" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pylorax.base.BaseLoraxClass" title="pylorax.base.BaseLoraxClass"><tt class="xref py py-class docutils literal"><span class="pre">pylorax.base.BaseLoraxClass</span></tt></a></p>
 <dl class="method">
-<dt id="pylorax.__init__.Lorax.configure">
-<tt class="descname">configure</tt><big>(</big><em>conf_file='/etc/lorax/lorax.conf'</em><big>)</big><a class="reference internal" href="_modules/pylorax/__init__.html#Lorax.configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.__init__.Lorax.configure" title="Permalink to this definition">¶</a></dt>
+<dt id="pylorax.Lorax.configure">
+<tt class="descname">configure</tt><big>(</big><em>conf_file='/etc/lorax/lorax.conf'</em><big>)</big><a class="reference internal" href="_modules/pylorax.html#Lorax.configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.Lorax.configure" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="pylorax.__init__.Lorax.init_file_logging">
-<tt class="descname">init_file_logging</tt><big>(</big><em>logdir</em>, <em>logname='pylorax.log'</em><big>)</big><a class="reference internal" href="_modules/pylorax/__init__.html#Lorax.init_file_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.__init__.Lorax.init_file_logging" title="Permalink to this definition">¶</a></dt>
+<dt id="pylorax.Lorax.init_file_logging">
+<tt class="descname">init_file_logging</tt><big>(</big><em>logdir</em>, <em>logname='pylorax.log'</em><big>)</big><a class="reference internal" href="_modules/pylorax.html#Lorax.init_file_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.Lorax.init_file_logging" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="pylorax.__init__.Lorax.init_stream_logging">
-<tt class="descname">init_stream_logging</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pylorax/__init__.html#Lorax.init_stream_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.__init__.Lorax.init_stream_logging" title="Permalink to this definition">¶</a></dt>
+<dt id="pylorax.Lorax.init_stream_logging">
+<tt class="descname">init_stream_logging</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pylorax.html#Lorax.init_stream_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.Lorax.init_stream_logging" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="pylorax.__init__.Lorax.run">
-<tt class="descname">run</tt><big>(</big><em>ybo</em>, <em>product</em>, <em>version</em>, <em>release</em>, <em>variant=''</em>, <em>bugurl=''</em>, <em>isfinal=False</em>, <em>workdir=None</em>, <em>outputdir=None</em>, <em>buildarch=None</em>, <em>volid=None</em>, <em>domacboot=False</em>, <em>doupgrade=True</em>, <em>remove_temp=False</em>, <em>installpkgs=None</em>, <em>size=2</em>, <em>add_templates=None</em>, <em>add_template_vars=None</em>, <em>add_arch_templates=None</em>, <em>add_arch_template_vars=None</em>, <em>template_tempdir=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/__init__.html#Lorax.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.__init__.Lorax.run" title="Permalink to this definition">¶</a></dt>
+<dt id="pylorax.Lorax.run">
+<tt class="descname">run</tt><big>(</big><em>ybo</em>, <em>product</em>, <em>version</em>, <em>release</em>, <em>variant=''</em>, <em>bugurl=''</em>, <em>isfinal=False</em>, <em>workdir=None</em>, <em>outputdir=None</em>, <em>buildarch=None</em>, <em>volid=None</em>, <em>domacboot=False</em>, <em>doupgrade=True</em>, <em>remove_temp=False</em>, <em>installpkgs=None</em>, <em>size=2</em>, <em>add_templates=None</em>, <em>add_template_vars=None</em>, <em>add_arch_templates=None</em>, <em>add_arch_template_vars=None</em>, <em>template_tempdir=None</em><big>)</big><a class="reference internal" href="_modules/pylorax.html#Lorax.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.Lorax.run" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="function">
-<dt id="pylorax.__init__.get_buildarch">
-<tt class="descclassname">pylorax.__init__.</tt><tt class="descname">get_buildarch</tt><big>(</big><em>ybo</em><big>)</big><a class="reference internal" href="_modules/pylorax/__init__.html#get_buildarch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.__init__.get_buildarch" title="Permalink to this definition">¶</a></dt>
+<dt id="pylorax.get_buildarch">
+<tt class="descclassname">pylorax.</tt><tt class="descname">get_buildarch</tt><big>(</big><em>ybo</em><big>)</big><a class="reference internal" href="_modules/pylorax.html#get_buildarch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.get_buildarch" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -116,27 +116,27 @@
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></a></p>
 <dl class="method">
 <dt id="pylorax.base.BaseLoraxClass.pcritical">
-<tt class="descname">pcritical</tt><big>(</big><em>msg</em>, <em>fobj=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x7ff04f808150&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.pcritical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.pcritical" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">pcritical</tt><big>(</big><em>msg</em>, <em>fobj=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x7f4f7f21e150&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.pcritical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.pcritical" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="pylorax.base.BaseLoraxClass.pdebug">
-<tt class="descname">pdebug</tt><big>(</big><em>msg</em>, <em>fobj=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x7ff04f808150&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.pdebug"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.pdebug" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">pdebug</tt><big>(</big><em>msg</em>, <em>fobj=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x7f4f7f21e150&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.pdebug"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.pdebug" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="pylorax.base.BaseLoraxClass.perror">
-<tt class="descname">perror</tt><big>(</big><em>msg</em>, <em>fobj=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x7ff04f808150&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.perror"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.perror" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">perror</tt><big>(</big><em>msg</em>, <em>fobj=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x7f4f7f21e150&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.perror"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.perror" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="pylorax.base.BaseLoraxClass.pinfo">
-<tt class="descname">pinfo</tt><big>(</big><em>msg</em>, <em>fobj=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x7ff04f808150&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.pinfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.pinfo" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">pinfo</tt><big>(</big><em>msg</em>, <em>fobj=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x7f4f7f21e150&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.pinfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.pinfo" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="pylorax.base.BaseLoraxClass.pwarning">
-<tt class="descname">pwarning</tt><big>(</big><em>msg</em>, <em>fobj=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x7ff04f808150&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.pwarning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.pwarning" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">pwarning</tt><big>(</big><em>msg</em>, <em>fobj=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x7f4f7f21e150&gt;</em><big>)</big><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.pwarning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.pwarning" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1557,8 +1557,8 @@ image is built with the filename &#8220;${prefix}-${kernel.version}.img&#8221;</
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="modules.html"
-                        title="previous chapter">pylorax</a></p>
+  <p class="topless"><a href="composer.cli.html"
+                        title="previous chapter">cli Package</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="pylorax.api.html"
                         title="next chapter">api Package</a></p>
@@ -1597,14 +1597,14 @@ image is built with the filename &#8220;${prefix}-${kernel.version}.img&#8221;</
           <a href="pylorax.api.html" title="api Package"
              >next</a> |</li>
         <li class="right" >
-          <a href="modules.html" title="pylorax"
+          <a href="composer.cli.html" title="cli Package"
              >previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.10 documentation</a> &raquo;</li>
-          <li><a href="modules.html" >pylorax</a> &raquo;</li> 
+        <li><a href="index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+          <li><a href="modules.html" >src</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2017, Red Hat, Inc..
+        &copy; Copyright 2018, Red Hat, Inc..
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

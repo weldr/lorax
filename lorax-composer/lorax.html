@@ -1,0 +1,265 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Lorax &mdash; Lorax 19.7.11 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '19.7.11',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Lorax 19.7.11 documentation" href="index.html" />
+    <link rel="next" title="livemedia-creator" href="livemedia-creator.html" />
+    <link rel="prev" title="Introduction to Lorax" href="intro.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="livemedia-creator.html" title="livemedia-creator"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="intro.html" title="Introduction to Lorax"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Lorax 19.7.11 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="lorax">
+<h1>Lorax<a class="headerlink" href="#lorax" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Authors:</th><td class="field-body">Brian C. Lane &lt;<a class="reference external" href="mailto:bcl&#37;&#52;&#48;redhat&#46;com">bcl<span>&#64;</span>redhat<span>&#46;</span>com</a>&gt;</td>
+</tr>
+</tbody>
+</table>
+<p>&#8220;I am the Lorax.  I speak for the trees [and images].&#8221;</p>
+<p>The <a class="reference external" href="https://github.com/rhinstaller/lorax">lorax</a> tool is used to create the
+<a class="reference external" href="https://github.com/rhinstaller/anaconda">Anaconda</a> installer boot.iso as
+well as the basic release tree, and .treeinfo metadata file. Its dependencies
+are fairly light-weight because it needs to be able to run in a mock chroot
+environment. It is best to run lorax from the same release as is being targeted
+because the templates may have release specific logic in them. eg. Use the
+rawhide version to build the boot.iso for rawhide, along with the rawhide
+repositories.</p>
+<div class="section" id="lorax-cmdline-arguments">
+<h2>lorax cmdline arguments<a class="headerlink" href="#lorax-cmdline-arguments" title="Permalink to this headline">¶</a></h2>
+<p>See the output from <tt class="docutils literal"><span class="pre">lorax</span> <span class="pre">--help</span></tt> for the commandline arguments.</p>
+</div>
+<div class="section" id="quickstart">
+<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
+<p>Run this as root to create a boot.iso in <tt class="docutils literal"><span class="pre">./results/</span></tt>:</p>
+<div class="highlight-python"><pre>yum install lorax
+setenforce 0
+lorax -p RHEL -v 7 -r 7 \
+-s http://mirror.centos.org/centos-7/7/os/x86_64/ \
+-s http://mirror.centos.org/centos-7/7/updates/x86_64/ \
+./results/
+setenforce 1</pre>
+</div>
+<p>You can add your own repos with <tt class="docutils literal"><span class="pre">-s</span></tt> and packages with higher NVRs will
+override the ones in the distribution repositories.</p>
+<p>Under <tt class="docutils literal"><span class="pre">./results/</span></tt> will be the release tree files: .discinfo, .treeinfo, everything that
+goes onto the boot.iso, the pxeboot directory, and the boot.iso under <tt class="docutils literal"><span class="pre">./images/</span></tt>.</p>
+</div>
+<div class="section" id="running-inside-of-mock">
+<h2>Running inside of mock<a class="headerlink" href="#running-inside-of-mock" title="Permalink to this headline">¶</a></h2>
+<p>If you are using lorax with mock v1.3.4 or later you will need to pass
+<tt class="docutils literal"><span class="pre">--old-chroot</span></tt> to mock. Mock now defaults to using systemd-nspawn which cannot
+create the needed loop device nodes. Passing <tt class="docutils literal"><span class="pre">--old-chroot</span></tt> will use the old
+system where <tt class="docutils literal"><span class="pre">/dev/loop*</span></tt> is setup for you.</p>
+</div>
+<div class="section" id="how-it-works">
+<h2>How it works<a class="headerlink" href="#how-it-works" title="Permalink to this headline">¶</a></h2>
+<p>Lorax uses <a class="reference external" href="https://github.com/rpm-software-management/yum">yum</a> to install
+packages into a temporary directory, sets up configuration files, it then
+removes unneeded files to save space, and creates a squashfs filesystem of the
+files.  The iso is then built using a generic initramfs and the kernel from the
+selected repositories.</p>
+<p>To drive these processes Lorax uses a custom template system, based on <a class="reference external" href="http://www.makotemplates.org/">Mako
+templates</a> with the addition of custom
+commands (documented in <a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner" title="pylorax.ltmpl.LoraxTemplateRunner"><tt class="xref py py-class docutils literal"><span class="pre">pylorax.ltmpl.LoraxTemplateRunner</span></tt></a>). Mako
+supports <tt class="docutils literal"><span class="pre">%if/%endif</span></tt> blocks as well as free-form python code inside <tt class="docutils literal"><span class="pre">&lt;%</span>
+<span class="pre">%&gt;</span></tt> tags and variable substitution with <tt class="docutils literal"><span class="pre">${}</span></tt>. The default templates are
+shipped with lorax in <tt class="docutils literal"><span class="pre">/usr/share/lorax/</span></tt> and use the
+<tt class="docutils literal"><span class="pre">.tmpl</span></tt> extension.</p>
+<div class="section" id="runtime-install-tmpl">
+<h3>runtime-install.tmpl<a class="headerlink" href="#runtime-install-tmpl" title="Permalink to this headline">¶</a></h3>
+<p>The <tt class="docutils literal"><span class="pre">runtime-install.tmpl</span></tt> template lists packages to be installed using the
+<tt class="docutils literal"><span class="pre">installpkg</span></tt> command.  This template is fairly simple, installing common packages and
+architecture specific packages. It must end with the <tt class="docutils literal"><span class="pre">run_pkg_transaction</span></tt>
+command which tells dnf to download and install the packages.</p>
+</div>
+<div class="section" id="runtime-postinstall-tmpl">
+<h3>runtime-postinstall.tmpl<a class="headerlink" href="#runtime-postinstall-tmpl" title="Permalink to this headline">¶</a></h3>
+<p>The <tt class="docutils literal"><span class="pre">runtime-postinstall.tmpl</span></tt> template is where the system configuration
+happens. The installer environment is similar to a normal running system, but
+needs some special handling. Configuration files are setup, systemd is told to
+start the anaconda.target instead of a default system target, and a number of
+unneeded services are disabled, some of which can interfere with the
+installation. A number of template commands are used here:</p>
+<ul class="simple">
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.append" title="pylorax.ltmpl.LoraxTemplateRunner.append"><tt class="xref py py-func docutils literal"><span class="pre">append</span></tt></a> to add text to a file.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.chmod" title="pylorax.ltmpl.LoraxTemplateRunner.chmod"><tt class="xref py py-func docutils literal"><span class="pre">chmod</span></tt></a> changes the file&#8217;s mode.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.gconfset" title="pylorax.ltmpl.LoraxTemplateRunner.gconfset"><tt class="xref py py-func docutils literal"><span class="pre">gconfset</span></tt></a> runs gconfset.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.install" title="pylorax.ltmpl.LoraxTemplateRunner.install"><tt class="xref py py-func docutils literal"><span class="pre">install</span></tt></a> to install a file into the installroot.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.mkdir" title="pylorax.ltmpl.LoraxTemplateRunner.mkdir"><tt class="xref py py-func docutils literal"><span class="pre">mkdir</span></tt></a> makes a new directory.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.move" title="pylorax.ltmpl.LoraxTemplateRunner.move"><tt class="xref py py-func docutils literal"><span class="pre">move</span></tt></a> to move a file into the installroot</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.replace" title="pylorax.ltmpl.LoraxTemplateRunner.replace"><tt class="xref py py-func docutils literal"><span class="pre">replace</span></tt></a> does text substitution in a file</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.remove" title="pylorax.ltmpl.LoraxTemplateRunner.remove"><tt class="xref py py-func docutils literal"><span class="pre">remove</span></tt></a> deletes a file</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.runcmd" title="pylorax.ltmpl.LoraxTemplateRunner.runcmd"><tt class="xref py py-func docutils literal"><span class="pre">runcmd</span></tt></a> run arbitrary commands.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.symlink" title="pylorax.ltmpl.LoraxTemplateRunner.symlink"><tt class="xref py py-func docutils literal"><span class="pre">symlink</span></tt></a> creates a symlink</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.systemctl" title="pylorax.ltmpl.LoraxTemplateRunner.systemctl"><tt class="xref py py-func docutils literal"><span class="pre">systemctl</span></tt></a> runs systemctl in the installroot</li>
+</ul>
+</div>
+<div class="section" id="runtime-cleanup-tmpl">
+<h3>runtime-cleanup.tmpl<a class="headerlink" href="#runtime-cleanup-tmpl" title="Permalink to this headline">¶</a></h3>
+<p>The <tt class="docutils literal"><span class="pre">runtime-cleanup.tmpl</span></tt> template is used to remove files that aren&#8217;t strictly needed
+by the installation environment. In addition to the <tt class="docutils literal"><span class="pre">remove</span></tt> template command it uses:</p>
+<ul class="simple">
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.removepkg" title="pylorax.ltmpl.LoraxTemplateRunner.removepkg"><tt class="xref py py-func docutils literal"><span class="pre">removepkg</span></tt></a>
+remove all of a specific package&#8217;s contents. A package may be pulled in as a dependency, but
+not really used. eg. sound support.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.removefrom" title="pylorax.ltmpl.LoraxTemplateRunner.removefrom"><tt class="xref py py-func docutils literal"><span class="pre">removefrom</span></tt></a>
+Removes some files from a package. A file glob can be used, or the &#8211;allbut option to
+remove everything except a select few.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.removekmod" title="pylorax.ltmpl.LoraxTemplateRunner.removekmod"><tt class="xref py py-func docutils literal"><span class="pre">removekmod</span></tt></a>
+Removes kernel modules</li>
+</ul>
+</div>
+<div class="section" id="the-squashfs-filesystem">
+<h3>The squashfs filesystem<a class="headerlink" href="#the-squashfs-filesystem" title="Permalink to this headline">¶</a></h3>
+<p>After <tt class="docutils literal"><span class="pre">runtime-*.tmpl</span></tt> templates have finished their work lorax creates an
+empty ext4 filesystem, copies the remaining files to it, and makes a squashfs
+filesystem of it. This file is the / of the boot.iso&#8217;s installer environment
+and is what is in the LiveOS/squashfs.img file on the iso.</p>
+</div>
+<div class="section" id="iso-creation">
+<h3>iso creation<a class="headerlink" href="#iso-creation" title="Permalink to this headline">¶</a></h3>
+<p>The iso creation is handled by another set of templates. The one used depends
+on the architecture that the iso is being created for. They are also stored in
+<tt class="docutils literal"><span class="pre">/usr/share/lorax/</span></tt> and are named after the arch, like
+<tt class="docutils literal"><span class="pre">x86.tmpl</span></tt> and <tt class="docutils literal"><span class="pre">aarch64.tmpl</span></tt>. They handle creation of the tree, copying
+configuration template files, configuration variable substitution, treeinfo
+metadata (via the <a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.treeinfo" title="pylorax.ltmpl.LoraxTemplateRunner.treeinfo"><tt class="xref py py-func docutils literal"><span class="pre">treeinfo</span></tt></a>
+template command). Kernel and initrd are copied from the installroot to their
+final locations and then mkisofs is run to create the boot.iso</p>
+</div>
+</div>
+<div class="section" id="custom-templates">
+<h2>Custom Templates<a class="headerlink" href="#custom-templates" title="Permalink to this headline">¶</a></h2>
+<p>The default set of templates and configuration files are shipped in the
+<tt class="docutils literal"><span class="pre">/usr/share/lorax/</span></tt> directory. You can make a copy of them and place them
+into another directory and then select the new template directory by passing
+<tt class="docutils literal"><span class="pre">--sharedir</span></tt> to lorax.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Lorax</a><ul>
+<li><a class="reference internal" href="#lorax-cmdline-arguments">lorax cmdline arguments</a></li>
+<li><a class="reference internal" href="#quickstart">Quickstart</a></li>
+<li><a class="reference internal" href="#running-inside-of-mock">Running inside of mock</a></li>
+<li><a class="reference internal" href="#how-it-works">How it works</a><ul>
+<li><a class="reference internal" href="#runtime-install-tmpl">runtime-install.tmpl</a></li>
+<li><a class="reference internal" href="#runtime-postinstall-tmpl">runtime-postinstall.tmpl</a></li>
+<li><a class="reference internal" href="#runtime-cleanup-tmpl">runtime-cleanup.tmpl</a></li>
+<li><a class="reference internal" href="#the-squashfs-filesystem">The squashfs filesystem</a></li>
+<li><a class="reference internal" href="#iso-creation">iso creation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#custom-templates">Custom Templates</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="intro.html"
+                        title="previous chapter">Introduction to Lorax</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="livemedia-creator.html"
+                        title="next chapter">livemedia-creator</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/lorax.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="livemedia-creator.html" title="livemedia-creator"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="intro.html" title="Introduction to Lorax"
+             >previous</a> |</li>
+        <li><a href="index.html">Lorax 19.7.11 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2018, Red Hat, Inc..
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

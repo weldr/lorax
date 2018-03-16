@@ -1,0 +1,179 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>composer.cli.utilities &mdash; Lorax 19.7.11 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '19.7.11',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Lorax 19.7.11 documentation" href="../../../index.html" />
+    <link rel="up" title="composer.cli" href="../cli.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../cli.html" accesskey="U">composer.cli</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for composer.cli.utilities</h1><div class="highlight"><pre>
+<span class="c">#</span>
+<span class="c"># Copyright (C) 2018  Red Hat, Inc.</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the GNU General Public License as published by</span>
+<span class="c"># the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># This program is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c"># GNU General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License</span>
+<span class="c"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c">#</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&quot;composer-cli&quot;</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+
+<div class="viewcode-block" id="argify"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.utilities.argify">[docs]</a><span class="k">def</span> <span class="nf">argify</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Take a list of human args and return a list with each item</span>
+
+<span class="sd">    :param args: list of strings with possible commas and spaces</span>
+<span class="sd">    :type args: list of str</span>
+<span class="sd">    :returns: List of all the items</span>
+<span class="sd">    :rtype: list of str</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    [&quot;one,two&quot;, &quot;three&quot;, &quot;,four&quot;, &quot;,five,&quot;] returns [&quot;one&quot;, &quot;two&quot;, &quot;three&quot;, &quot;four&quot;, &quot;five&quot;]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span> <span class="p">[</span><span class="n">arg</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">args</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">entry</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;,&quot;</span><span class="p">)])</span>
+</div>
+<div class="viewcode-block" id="toml_filename"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.utilities.toml_filename">[docs]</a><span class="k">def</span> <span class="nf">toml_filename</span><span class="p">(</span><span class="n">recipe_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert a recipe name into a filename.toml</span>
+
+<span class="sd">    :param recipe_name: The recipe&#39;s name</span>
+<span class="sd">    :type recipe_name: str</span>
+<span class="sd">    :returns: The recipe name with &#39; &#39; converted to - and .toml appended</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">recipe_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="s">&quot;-&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;.toml&quot;</span>
+</div>
+<div class="viewcode-block" id="frozen_toml_filename"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.utilities.frozen_toml_filename">[docs]</a><span class="k">def</span> <span class="nf">frozen_toml_filename</span><span class="p">(</span><span class="n">recipe_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert a recipe name into a filename.toml</span>
+
+<span class="sd">    :param recipe_name: The recipe&#39;s name</span>
+<span class="sd">    :type recipe_name: str</span>
+<span class="sd">    :returns: The recipe name with &#39; &#39; converted to - and .toml appended</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">recipe_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="s">&quot;-&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;.frozen.toml&quot;</span>
+</div>
+<div class="viewcode-block" id="handle_api_result"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.utilities.handle_api_result">[docs]</a><span class="k">def</span> <span class="nf">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Log any errors, return the correct value</span>
+
+<span class="sd">    :param result: JSON result from the http query</span>
+<span class="sd">    :type result: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">show_json</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;error&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s">&quot;error&quot;</span><span class="p">][</span><span class="s">&quot;msg&quot;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+</div>
+<div class="viewcode-block" id="packageNEVRA"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.utilities.packageNEVRA">[docs]</a><span class="k">def</span> <span class="nf">packageNEVRA</span><span class="p">(</span><span class="n">pkg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the package info as a NEVRA</span>
+
+<span class="sd">    :param pkg: The package details</span>
+<span class="sd">    :type pkg: dict</span>
+<span class="sd">    :returns: name-[epoch:]version-release-arch</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">pkg</span><span class="p">[</span><span class="s">&quot;epoch&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">-</span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="s">-</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pkg</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">pkg</span><span class="p">[</span><span class="s">&quot;epoch&quot;</span><span class="p">],</span> <span class="n">pkg</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">],</span> <span class="n">pkg</span><span class="p">[</span><span class="s">&quot;release&quot;</span><span class="p">],</span> <span class="n">pkg</span><span class="p">[</span><span class="s">&quot;arch&quot;</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">-</span><span class="si">%s</span><span class="s">-</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pkg</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">pkg</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">],</span> <span class="n">pkg</span><span class="p">[</span><span class="s">&quot;release&quot;</span><span class="p">],</span> <span class="n">pkg</span><span class="p">[</span><span class="s">&quot;arch&quot;</span><span class="p">])</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../cli.html" >composer.cli</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2018, Red Hat, Inc..
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

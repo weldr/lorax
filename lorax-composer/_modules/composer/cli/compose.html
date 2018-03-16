@@ -1,0 +1,506 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>composer.cli.compose &mdash; Lorax 19.7.11 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '19.7.11',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Lorax 19.7.11 documentation" href="../../../index.html" />
+    <link rel="up" title="composer.cli" href="../cli.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../cli.html" accesskey="U">composer.cli</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for composer.cli.compose</h1><div class="highlight"><pre>
+<span class="c">#</span>
+<span class="c"># Copyright (C) 2018  Red Hat, Inc.</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the GNU General Public License as published by</span>
+<span class="c"># the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># This program is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c"># GNU General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License</span>
+<span class="c"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c">#</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&quot;composer-cli&quot;</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="kn">from</span> <span class="nn">composer</span> <span class="kn">import</span> <span class="n">http_client</span> <span class="k">as</span> <span class="n">client</span>
+<span class="kn">from</span> <span class="nn">composer.cli.utilities</span> <span class="kn">import</span> <span class="n">argify</span><span class="p">,</span> <span class="n">handle_api_result</span><span class="p">,</span> <span class="n">packageNEVRA</span>
+
+<div class="viewcode-block" id="compose_cmd"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_cmd">[docs]</a><span class="k">def</span> <span class="nf">compose_cmd</span><span class="p">(</span><span class="n">opts</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Process compose commands</span>
+
+<span class="sd">    :param opts: Cmdline arguments</span>
+<span class="sd">    :type opts: argparse.Namespace</span>
+<span class="sd">    :returns: Value to return from sys.exit()</span>
+<span class="sd">    :rtype: int</span>
+
+<span class="sd">    This dispatches the compose commands to a function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cmd_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&quot;status&quot;</span><span class="p">:</span>   <span class="n">compose_status</span><span class="p">,</span>
+        <span class="s">&quot;types&quot;</span><span class="p">:</span>    <span class="n">compose_types</span><span class="p">,</span>
+        <span class="s">&quot;start&quot;</span><span class="p">:</span>    <span class="n">compose_start</span><span class="p">,</span>
+        <span class="s">&quot;log&quot;</span><span class="p">:</span>      <span class="n">compose_log</span><span class="p">,</span>
+        <span class="s">&quot;cancel&quot;</span><span class="p">:</span>   <span class="n">compose_cancel</span><span class="p">,</span>
+        <span class="s">&quot;delete&quot;</span><span class="p">:</span>   <span class="n">compose_delete</span><span class="p">,</span>
+        <span class="s">&quot;details&quot;</span><span class="p">:</span>  <span class="n">compose_details</span><span class="p">,</span>
+        <span class="s">&quot;metadata&quot;</span><span class="p">:</span> <span class="n">compose_metadata</span><span class="p">,</span>
+        <span class="s">&quot;results&quot;</span><span class="p">:</span>  <span class="n">compose_results</span><span class="p">,</span>
+        <span class="s">&quot;logs&quot;</span><span class="p">:</span>     <span class="n">compose_logs</span><span class="p">,</span>
+        <span class="s">&quot;image&quot;</span><span class="p">:</span>    <span class="n">compose_image</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cmd_map</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Unknown compose command: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">cmd_map</span><span class="p">[</span><span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]](</span><span class="n">opts</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">api_version</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="p">:],</span> <span class="n">opts</span><span class="o">.</span><span class="n">json</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">testmode</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="compose_status"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_status">[docs]</a><span class="k">def</span> <span class="nf">compose_status</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the status of all known composes</span>
+
+<span class="sd">    :param socket_path: Path to the Unix socket to use for API communication</span>
+<span class="sd">    :type socket_path: str</span>
+<span class="sd">    :param api_version: Version of the API to talk to. eg. &quot;0&quot;</span>
+<span class="sd">    :type api_version: str</span>
+<span class="sd">    :param args: List of remaining arguments from the cmdline</span>
+<span class="sd">    :type args: list of str</span>
+<span class="sd">    :param show_json: Set to True to show the JSON output instead of the human readable output</span>
+<span class="sd">    :type show_json: bool</span>
+
+<span class="sd">    This doesn&#39;t map directly to an API command, it combines the results from queue, finished,</span>
+<span class="sd">    and failed so raw JSON output is not available.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">get_status</span><span class="p">(</span><span class="n">compose</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="n">compose</span><span class="p">[</span><span class="s">&quot;id&quot;</span><span class="p">],</span>
+                <span class="s">&quot;recipe&quot;</span><span class="p">:</span> <span class="n">compose</span><span class="p">[</span><span class="s">&quot;recipe&quot;</span><span class="p">],</span>
+                <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="n">compose</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">],</span>
+                <span class="s">&quot;status&quot;</span><span class="p">:</span> <span class="n">compose</span><span class="p">[</span><span class="s">&quot;queue_status&quot;</span><span class="p">]}</span>
+
+    <span class="c"># Sort the status in a specific order</span>
+    <span class="k">def</span> <span class="nf">sort_status</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;RUNNING&quot;</span><span class="p">,</span> <span class="s">&quot;WAITING&quot;</span><span class="p">,</span> <span class="s">&quot;FINISHED&quot;</span><span class="p">,</span> <span class="s">&quot;FAILED&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s">&quot;status&quot;</span><span class="p">]),</span> <span class="n">a</span><span class="p">[</span><span class="s">&quot;recipe&quot;</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">])</span>
+
+    <span class="n">status</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c"># Get the composes currently in the queue</span>
+    <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose/queue&quot;</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
+    <span class="n">status</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">get_status</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;run&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;new&quot;</span><span class="p">]))</span>
+
+    <span class="c"># Get the list of finished composes</span>
+    <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose/finished&quot;</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
+    <span class="n">status</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">get_status</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;finished&quot;</span><span class="p">]))</span>
+
+    <span class="c"># Get the list of failed composes</span>
+    <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose/failed&quot;</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
+    <span class="n">status</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">get_status</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;failed&quot;</span><span class="p">]))</span>
+
+    <span class="c"># Sort them by status (running, waiting, finished, failed) and then by name and version.</span>
+    <span class="n">status</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">sort_status</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">show_json</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="c"># Print them as UUID RECIPE STATUS</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">status</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> </span><span class="si">%-8s</span><span class="s"> </span><span class="si">%-15s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s">&quot;id&quot;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s">&quot;status&quot;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s">&quot;recipe&quot;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">]))</span>
+
+</div>
+<div class="viewcode-block" id="compose_types"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_types">[docs]</a><span class="k">def</span> <span class="nf">compose_types</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return information about the supported compose types</span>
+
+<span class="sd">    :param socket_path: Path to the Unix socket to use for API communication</span>
+<span class="sd">    :type socket_path: str</span>
+<span class="sd">    :param api_version: Version of the API to talk to. eg. &quot;0&quot;</span>
+<span class="sd">    :type api_version: str</span>
+<span class="sd">    :param args: List of remaining arguments from the cmdline</span>
+<span class="sd">    :type args: list of str</span>
+<span class="sd">    :param show_json: Set to True to show the JSON output instead of the human readable output</span>
+<span class="sd">    :type show_json: bool</span>
+
+<span class="sd">    Add additional details to types that are known to composer-cli. Raw JSON output does not</span>
+<span class="sd">    include this extra information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose/types&quot;</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">show_json</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Compose Types: &quot;</span> <span class="o">+</span> <span class="s">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;types&quot;</span><span class="p">]]))</span>
+</div>
+<div class="viewcode-block" id="compose_start"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_start">[docs]</a><span class="k">def</span> <span class="nf">compose_start</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Start a new compose using the selected recipe and type</span>
+
+<span class="sd">    :param socket_path: Path to the Unix socket to use for API communication</span>
+<span class="sd">    :type socket_path: str</span>
+<span class="sd">    :param api_version: Version of the API to talk to. eg. &quot;0&quot;</span>
+<span class="sd">    :type api_version: str</span>
+<span class="sd">    :param args: List of remaining arguments from the cmdline</span>
+<span class="sd">    :type args: list of str</span>
+<span class="sd">    :param show_json: Set to True to show the JSON output instead of the human readable output</span>
+<span class="sd">    :type show_json: bool</span>
+
+<span class="sd">    compose start &lt;recipe-name&gt; &lt;compose-type&gt;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;start is missing the recipe name and output type&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;start is missing the output type&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&quot;recipe_name&quot;</span><span class="p">:</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="s">&quot;compose_type&quot;</span><span class="p">:</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="s">&quot;branch&quot;</span><span class="p">:</span> <span class="s">&quot;master&quot;</span>
+        <span class="p">}</span>
+    <span class="k">if</span> <span class="n">testmode</span><span class="p">:</span>
+        <span class="n">test_url</span> <span class="o">=</span> <span class="s">&quot;?test=</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">testmode</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">test_url</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+    <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose&quot;</span> <span class="o">+</span> <span class="n">test_url</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">config</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">show_json</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;error&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s">&quot;error&quot;</span><span class="p">][</span><span class="s">&quot;msg&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">False</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Compose </span><span class="si">%s</span><span class="s"> added to the queue&quot;</span> <span class="o">%</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;build_id&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="mi">0</span>
+</div>
+<div class="viewcode-block" id="compose_log"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_log">[docs]</a><span class="k">def</span> <span class="nf">compose_log</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Show the last part of the compose log</span>
+
+<span class="sd">    :param socket_path: Path to the Unix socket to use for API communication</span>
+<span class="sd">    :type socket_path: str</span>
+<span class="sd">    :param api_version: Version of the API to talk to. eg. &quot;0&quot;</span>
+<span class="sd">    :type api_version: str</span>
+<span class="sd">    :param args: List of remaining arguments from the cmdline</span>
+<span class="sd">    :type args: list of str</span>
+<span class="sd">    :param show_json: Set to True to show the JSON output instead of the human readable output</span>
+<span class="sd">    :type show_json: bool</span>
+
+<span class="sd">    compose log &lt;uuid&gt; [&lt;size&gt;kB]</span>
+
+<span class="sd">    This will display the last 1kB of the compose&#39;s log file. Can be used to follow progress</span>
+<span class="sd">    during the build.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;log is missing the compose build id&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">log_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Log size must be an integer.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">log_size</span> <span class="o">=</span> <span class="mi">1024</span>
+
+    <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose/log/</span><span class="si">%s</span><span class="s">?size=</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">log_size</span><span class="p">))</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_url_raw</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="compose_cancel"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_cancel">[docs]</a><span class="k">def</span> <span class="nf">compose_cancel</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Cancel a running compose</span>
+
+<span class="sd">    :param socket_path: Path to the Unix socket to use for API communication</span>
+<span class="sd">    :type socket_path: str</span>
+<span class="sd">    :param api_version: Version of the API to talk to. eg. &quot;0&quot;</span>
+<span class="sd">    :type api_version: str</span>
+<span class="sd">    :param args: List of remaining arguments from the cmdline</span>
+<span class="sd">    :type args: list of str</span>
+<span class="sd">    :param show_json: Set to True to show the JSON output instead of the human readable output</span>
+<span class="sd">    :type show_json: bool</span>
+
+<span class="sd">    compose cancel &lt;uuid&gt;</span>
+
+<span class="sd">    This will cancel a running compose. It does nothing if the compose has finished.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;cancel is missing the compose build id&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose/cancel/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">delete_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="compose_delete"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_delete">[docs]</a><span class="k">def</span> <span class="nf">compose_delete</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Delete a finished compose&#39;s results</span>
+
+<span class="sd">    :param socket_path: Path to the Unix socket to use for API communication</span>
+<span class="sd">    :type socket_path: str</span>
+<span class="sd">    :param api_version: Version of the API to talk to. eg. &quot;0&quot;</span>
+<span class="sd">    :type api_version: str</span>
+<span class="sd">    :param args: List of remaining arguments from the cmdline</span>
+<span class="sd">    :type args: list of str</span>
+<span class="sd">    :param show_json: Set to True to show the JSON output instead of the human readable output</span>
+<span class="sd">    :type show_json: bool</span>
+
+<span class="sd">    compose delete &lt;uuid,...&gt;</span>
+
+<span class="sd">    Delete the listed compose results. It will only delete results for composes that have finished</span>
+<span class="sd">    or failed, not a running compose.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;delete is missing the compose build id&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose/delete/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">argify</span><span class="p">(</span><span class="n">args</span><span class="p">))))</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">delete_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">show_json</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="c"># Print any errors</span>
+    <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;errors&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">[</span><span class="s">&quot;uuid&quot;</span><span class="p">],</span> <span class="n">err</span><span class="p">[</span><span class="s">&quot;msg&quot;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;errors&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+</div>
+<div class="viewcode-block" id="compose_details"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_details">[docs]</a><span class="k">def</span> <span class="nf">compose_details</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return detailed information about the compose</span>
+
+<span class="sd">    :param socket_path: Path to the Unix socket to use for API communication</span>
+<span class="sd">    :type socket_path: str</span>
+<span class="sd">    :param api_version: Version of the API to talk to. eg. &quot;0&quot;</span>
+<span class="sd">    :type api_version: str</span>
+<span class="sd">    :param args: List of remaining arguments from the cmdline</span>
+<span class="sd">    :type args: list of str</span>
+<span class="sd">    :param show_json: Set to True to show the JSON output instead of the human readable output</span>
+<span class="sd">    :type show_json: bool</span>
+
+<span class="sd">    compose details &lt;uuid&gt;</span>
+
+<span class="sd">    This returns information about the compose, including the recipe and the dependencies.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;details is missing the compose build id&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose/info/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">show_json</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> </span><span class="si">%-8s</span><span class="s"> </span><span class="si">%-15s</span><span class="s"> </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s">&quot;id&quot;</span><span class="p">],</span> 
+                                   <span class="n">result</span><span class="p">[</span><span class="s">&quot;queue_status&quot;</span><span class="p">],</span>
+                                   <span class="n">result</span><span class="p">[</span><span class="s">&quot;recipe&quot;</span><span class="p">][</span><span class="s">&quot;name&quot;</span><span class="p">],</span>
+                                   <span class="n">result</span><span class="p">[</span><span class="s">&quot;recipe&quot;</span><span class="p">][</span><span class="s">&quot;version&quot;</span><span class="p">],</span>
+                                   <span class="n">result</span><span class="p">[</span><span class="s">&quot;compose_type&quot;</span><span class="p">]))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Recipe Packages:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;recipe&quot;</span><span class="p">][</span><span class="s">&quot;packages&quot;</span><span class="p">]:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;    </span><span class="si">%s</span><span class="s">-</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">]))</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Recipe Modules:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;recipe&quot;</span><span class="p">][</span><span class="s">&quot;modules&quot;</span><span class="p">]:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;    </span><span class="si">%s</span><span class="s">-</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">]))</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Dependencies:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;deps&quot;</span><span class="p">][</span><span class="s">&quot;packages&quot;</span><span class="p">]:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;    &quot;</span> <span class="o">+</span> <span class="n">packageNEVRA</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="compose_metadata"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_metadata">[docs]</a><span class="k">def</span> <span class="nf">compose_metadata</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Download a tar file of the compose&#39;s metadata</span>
+
+<span class="sd">    :param socket_path: Path to the Unix socket to use for API communication</span>
+<span class="sd">    :type socket_path: str</span>
+<span class="sd">    :param api_version: Version of the API to talk to. eg. &quot;0&quot;</span>
+<span class="sd">    :type api_version: str</span>
+<span class="sd">    :param args: List of remaining arguments from the cmdline</span>
+<span class="sd">    :type args: list of str</span>
+<span class="sd">    :param show_json: Set to True to show the JSON output instead of the human readable output</span>
+<span class="sd">    :type show_json: bool</span>
+
+<span class="sd">    compose metadata &lt;uuid&gt;</span>
+
+<span class="sd">    Saves the metadata as uuid-metadata.tar</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;metadata is missing the compose build id&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose/metadata/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">client</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="compose_results"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_results">[docs]</a><span class="k">def</span> <span class="nf">compose_results</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Download a tar file of the compose&#39;s results</span>
+
+<span class="sd">    :param socket_path: Path to the Unix socket to use for API communication</span>
+<span class="sd">    :type socket_path: str</span>
+<span class="sd">    :param api_version: Version of the API to talk to. eg. &quot;0&quot;</span>
+<span class="sd">    :type api_version: str</span>
+<span class="sd">    :param args: List of remaining arguments from the cmdline</span>
+<span class="sd">    :type args: list of str</span>
+<span class="sd">    :param show_json: Set to True to show the JSON output instead of the human readable output</span>
+<span class="sd">    :type show_json: bool</span>
+
+<span class="sd">    compose results &lt;uuid&gt;</span>
+
+<span class="sd">    The results includes the metadata, output image, and logs.</span>
+<span class="sd">    It is saved as uuid.tar</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;results is missing the compose build id&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose/results/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">client</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">isatty</span><span class="p">())</span>
+</div>
+<div class="viewcode-block" id="compose_logs"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_logs">[docs]</a><span class="k">def</span> <span class="nf">compose_logs</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Download a tar of the compose&#39;s logs</span>
+
+<span class="sd">    :param socket_path: Path to the Unix socket to use for API communication</span>
+<span class="sd">    :type socket_path: str</span>
+<span class="sd">    :param api_version: Version of the API to talk to. eg. &quot;0&quot;</span>
+<span class="sd">    :type api_version: str</span>
+<span class="sd">    :param args: List of remaining arguments from the cmdline</span>
+<span class="sd">    :type args: list of str</span>
+<span class="sd">    :param show_json: Set to True to show the JSON output instead of the human readable output</span>
+<span class="sd">    :type show_json: bool</span>
+
+<span class="sd">    compose logs &lt;uuid&gt;</span>
+
+<span class="sd">    Saves the logs as uuid-logs.tar</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;logs is missing the compose build id&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose/logs/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">client</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">isatty</span><span class="p">())</span>
+</div>
+<div class="viewcode-block" id="compose_image"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_image">[docs]</a><span class="k">def</span> <span class="nf">compose_image</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Download the compose&#39;s output image</span>
+
+<span class="sd">    :param socket_path: Path to the Unix socket to use for API communication</span>
+<span class="sd">    :type socket_path: str</span>
+<span class="sd">    :param api_version: Version of the API to talk to. eg. &quot;0&quot;</span>
+<span class="sd">    :type api_version: str</span>
+<span class="sd">    :param args: List of remaining arguments from the cmdline</span>
+<span class="sd">    :type args: list of str</span>
+<span class="sd">    :param show_json: Set to True to show the JSON output instead of the human readable output</span>
+<span class="sd">    :type show_json: bool</span>
+
+<span class="sd">    compose image &lt;uuid&gt;</span>
+
+<span class="sd">    This downloads only the result image, saving it as the image name, which depends on the type</span>
+<span class="sd">    of compose that was selected.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;logs is missing the compose build id&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose/image/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">client</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">isatty</span><span class="p">())</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../cli.html" >composer.cli</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2018, Red Hat, Inc..
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

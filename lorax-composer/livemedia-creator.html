@@ -1,0 +1,457 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>livemedia-creator &mdash; Lorax 19.7.11 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '19.7.11',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Lorax 19.7.11 documentation" href="index.html" />
+    <link rel="next" title="lorax-composer" href="lorax-composer.html" />
+    <link rel="prev" title="Lorax" href="lorax.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="lorax-composer.html" title="lorax-composer"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="lorax.html" title="Lorax"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Lorax 19.7.11 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="livemedia-creator">
+<h1>livemedia-creator<a class="headerlink" href="#livemedia-creator" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Authors:</th><td class="field-body">Brian C. Lane &lt;<a class="reference external" href="mailto:bcl&#37;&#52;&#48;redhat&#46;com">bcl<span>&#64;</span>redhat<span>&#46;</span>com</a>&gt;</td>
+</tr>
+</tbody>
+</table>
+<p>livemedia-creator uses <a class="reference external" href="https://github.com/rhinstaller/anaconda">Anaconda</a>,
+<a class="reference external" href="https://github.com/rhinstaller/pykickstart">kickstart</a> and <a class="reference external" href="https://github.com/rhinstaller/lorax">Lorax</a> to create bootable media that use the
+same install path as a normal system installation. It can be used to make live
+isos, bootable (partitioned) disk images, tarfiles, and filesystem images for
+use with virtualization and container solutions like libvirt, docker, and
+OpenStack.</p>
+<p>The general idea is to use virt-install with kickstart and an Anaconda boot.iso to
+install into a disk image and then use the disk image to create the bootable
+media.</p>
+<p>livemedia-creator &#8211;help will describe all of the options available. At the
+minimum you need:</p>
+<p><tt class="docutils literal"><span class="pre">--make-iso</span></tt> to create a final bootable .iso or one of the other <tt class="docutils literal"><span class="pre">--make-*</span></tt> options.</p>
+<p><tt class="docutils literal"><span class="pre">--iso</span></tt> to specify the Anaconda install media to use with virt-install.</p>
+<p><tt class="docutils literal"><span class="pre">--ks</span></tt> to select the kickstart file describing what to install.</p>
+<p>To use livemedia-creator with virtualization you will need to have virt-install installed.</p>
+<p>If you are going to be using Anaconda directly, with <tt class="docutils literal"><span class="pre">--no-virt</span></tt> mode, make sure
+you have the anaconda-tui package installed.</p>
+<p>Conventions used in this document:</p>
+<p><tt class="docutils literal"><span class="pre">lmc</span></tt> is an abbreviation for livemedia-creator.</p>
+<p><tt class="docutils literal"><span class="pre">builder</span></tt> is the system where livemedia-creator is being run</p>
+<p><tt class="docutils literal"><span class="pre">image</span></tt> is the disk image being created by running livemedia-creator</p>
+<div class="section" id="livemedia-creator-cmdline-arguments">
+<h2>livemedia-creator cmdline arguments<a class="headerlink" href="#livemedia-creator-cmdline-arguments" title="Permalink to this headline">¶</a></h2>
+<p>See the output from <tt class="docutils literal"><span class="pre">livemedia-creator</span> <span class="pre">--help</span></tt> for the commandline arguments.</p>
+</div>
+<div class="section" id="quickstart">
+<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
+<p>Run this to create a bootable live iso:</p>
+<div class="highlight-python"><pre>sudo livemedia-creator --make-iso \
+--iso=/extra/iso/boot.iso --ks=./docs/rhel7-livemedia.ks</pre>
+</div>
+<p>You can run it directly from the lorax git repo like this:</p>
+<div class="highlight-python"><pre>sudo PATH=./src/sbin/:$PATH PYTHONPATH=./src/ ./src/sbin/livemedia-creator \
+--make-iso --iso=/extra/iso/boot.iso \
+--ks=./docs/rhel7-livemedia.ks --lorax-templates=./share/</pre>
+</div>
+<p>You can observe the installation using vnc. The logs will show what port was
+chosen, or you can use a specific port by passing it. eg. <tt class="docutils literal"><span class="pre">--vnc</span> <span class="pre">vnc:127.0.0.1:5</span></tt></p>
+<p>This is usually a good idea when testing changes to the kickstart. lmc tries
+to monitor the logs for fatal errors, but may not catch everything.</p>
+</div>
+<div class="section" id="how-iso-creation-works">
+<h2>How ISO creation works<a class="headerlink" href="#how-iso-creation-works" title="Permalink to this headline">¶</a></h2>
+<p>There are 2 stages, the install stage which produces a disk or filesystem image
+as its output, and the boot media creation which uses the image as its input.
+Normally you would run both stages, but it is possible to stop after the
+install stage, by using <tt class="docutils literal"><span class="pre">--image-only</span></tt>, or to skip the install stage and use
+a previously created disk image by passing <tt class="docutils literal"><span class="pre">--disk-image</span></tt> or <tt class="docutils literal"><span class="pre">--fs-image</span></tt></p>
+<p>When creating an iso virt-install boots using the passed Anaconda installer iso
+and installs the system based on the kickstart. The <tt class="docutils literal"><span class="pre">%post</span></tt> section of the
+kickstart is used to customize the installed system in the same way that
+current spin-kickstarts do.</p>
+<p>livemedia-creator monitors the install process for problems by watching the
+install logs. They are written to the current directory or to the base
+directory specified by the &#8211;logfile command. You can also monitor the install
+by using a vnc client. This is recommended when first modifying a kickstart,
+since there are still places where Anaconda may get stuck without the log
+monitor catching it.</p>
+<p>The output from this process is a partitioned disk image. kpartx can be used
+to mount and examine it when there is a problem with the install. It can also
+be booted using kvm.</p>
+<p>When creating an iso the disk image&#8217;s / partition is copied into a formatted
+filesystem image which is then used as the input to lorax for creation of the
+final media.</p>
+<p>The final image is created by lorax, using the templates in /usr/share/lorax/live/
+or the live directory below the directory specified by <tt class="docutils literal"><span class="pre">--lorax-templates</span></tt>. The
+templates are written using the Mako template system with some extra commands
+added by lorax.</p>
+</div>
+<div class="section" id="kickstarts">
+<h2>Kickstarts<a class="headerlink" href="#kickstarts" title="Permalink to this headline">¶</a></h2>
+<p>The docs/ directory includes several example kickstarts, one to create a live
+desktop iso using GNOME, and another to create a minimal disk image. When
+creating your own kickstarts you should start with the minimal example, it
+includes several needed packages that are not always included by dependencies.</p>
+<p>Or you can use existing spin kickstarts to create live media with a few
+changes. Here are the steps I used to convert the Fedora XFCE spin.</p>
+<ol class="arabic">
+<li><p class="first">Flatten the xfce kickstart using ksflatten</p>
+</li>
+<li><p class="first">Add zerombr so you don&#8217;t get the disk init dialog</p>
+</li>
+<li><p class="first">Add clearpart &#8211;all</p>
+</li>
+<li><p class="first">Add swap partition</p>
+</li>
+<li><p class="first">bootloader target</p>
+</li>
+<li><p class="first">Add shutdown to the kickstart</p>
+</li>
+<li><p class="first">Add network &#8211;bootproto=dhcp &#8211;activate to activate the network
+This works for F16 builds but for F15 and before you need to pass
+something on the cmdline that activate the network, like sshd:</p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">livemedia-creator</span> <span class="pre">--kernel-args=&quot;sshd&quot;</span></tt></p>
+</div></blockquote>
+</li>
+<li><p class="first">Add a root password:</p>
+<div class="highlight-python"><pre>rootpw rootme
+network --bootproto=dhcp --activate
+zerombr
+clearpart --all
+bootloader --location=mbr
+part swap --size=512
+shutdown</pre>
+</div>
+</li>
+<li><p class="first">In the livesys script section of the %post remove the root password. This
+really depends on how the spin wants to work. You could add the live user
+that you create to the %wheel group so that sudo works if you wanted to.</p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">passwd</span> <span class="pre">-d</span> <span class="pre">root</span> <span class="pre">&gt;</span> <span class="pre">/dev/null</span></tt></p>
+</div></blockquote>
+</li>
+<li><p class="first">Remove /etc/fstab in %post, dracut handles mounting the rootfs</p>
+<p><tt class="docutils literal"><span class="pre">cat</span> <span class="pre">/dev/null</span> <span class="pre">&gt;</span> <span class="pre">/dev/fstab</span></tt></p>
+<p>Do this only for live iso&#8217;s, the filesystem will be mounted read only if
+there is no /etc/fstab</p>
+</li>
+<li><p class="first">Don&#8217;t delete initramfs files from /boot in %post</p>
+</li>
+<li><p class="first">When creating live iso&#8217;s you need to have, at least, these packages in the %package section::
+dracut-config-generic
+dracut-live
+-dracut-config-rescue
+grub-efi
+memtest86+
+syslinux</p>
+</li>
+</ol>
+<p>One drawback to using virt-install is that it pulls the packages from the repo
+each time you run it. To speed things up you either need a local mirror of the
+packages, or you can use a caching proxy. When using a proxy you pass it to
+livemedia-creator like this:</p>
+<blockquote>
+<div><tt class="docutils literal"><span class="pre">--proxy=http://proxy.yourdomain.com:3128</span></tt></div></blockquote>
+<p>You also need to use a specific mirror instead of mirrormanager so that the
+packages will get cached, so your kickstart url would look like:</p>
+<blockquote>
+<div><tt class="docutils literal"><span class="pre">url</span> <span class="pre">--url=&quot;http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/x86_64/os/&quot;</span></tt></div></blockquote>
+<p>You can also add an update repo, but don&#8217;t name it updates. Add &#8211;proxy to it
+as well.</p>
+</div>
+<div class="section" id="anaconda-image-install-no-virt">
+<h2>Anaconda image install (no-virt)<a class="headerlink" href="#anaconda-image-install-no-virt" title="Permalink to this headline">¶</a></h2>
+<p>You can create images without using virt-install by passing <tt class="docutils literal"><span class="pre">--no-virt</span></tt> on
+the cmdline. This will use Anaconda&#8217;s directory install feature to handle the
+install.  There are a couple of things to keep in mind when doing this:</p>
+<ol class="arabic simple">
+<li>It will be most reliable when building images for the same release that the
+host is running. Because Anaconda has expectations about the system it is
+running under you may encounter strange bugs if you try to build newer or
+older releases.</li>
+<li>Make sure selinux is set to permissive or disabled. It won&#8217;t install
+correctly with selinux set to enforcing yet.</li>
+<li>It may totally trash your host. So far I haven&#8217;t had this happen, but the
+possibility exists that a bug in Anaconda could result in it operating on
+real devices. I recommend running it in a virt or on a system that you can
+afford to lose all data from.</li>
+</ol>
+<p>The logs from anaconda will be placed in an ./anaconda/ directory in either
+the current directory or in the directory used for &#8211;logfile</p>
+<p>Example cmdline:</p>
+<p><tt class="docutils literal"><span class="pre">sudo</span> <span class="pre">livemedia-creator</span> <span class="pre">--make-iso</span> <span class="pre">--no-virt</span> <span class="pre">--ks=./rhel7-livemedia.ks</span></tt></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Using no-virt to create a partitioned disk image (eg. &#8211;make-disk or
+&#8211;make-vagrant) will only create disks usable on the host platform (BIOS
+or UEFI). You can create BIOS partitioned disk images on UEFI by using
+virt.</p>
+</div>
+</div>
+<div class="section" id="ami-images">
+<h2>AMI Images<a class="headerlink" href="#ami-images" title="Permalink to this headline">¶</a></h2>
+<p>Amazon EC2 images can be created by using the &#8211;make-ami switch and an appropriate
+kickstart file. All of the work to customize the image is handled by the kickstart.
+The example currently included was modified from the cloud-kickstarts version so
+that it would work with livemedia-creator.</p>
+<p>Example cmdline:</p>
+<p><tt class="docutils literal"><span class="pre">sudo</span> <span class="pre">livemedia-creator</span> <span class="pre">--make-ami</span> <span class="pre">--iso=/path/to/boot.iso</span> <span class="pre">--ks=./docs/rhel7-livemedia-ec2.ks</span></tt></p>
+<p>This will produce an ami-root.img file in the working directory.</p>
+<p>At this time I have not tested the image with EC2. Feedback would be welcome.</p>
+</div>
+<div class="section" id="appliance-creation">
+<h2>Appliance Creation<a class="headerlink" href="#appliance-creation" title="Permalink to this headline">¶</a></h2>
+<p>livemedia-creator can now replace appliance-tools by using the &#8211;make-appliance
+switch. This will create the partitioned disk image and an XML file that can be
+used with virt-image to setup a virtual system.</p>
+<p>The XML is generated using the Mako template from
+/usr/share/lorax/appliance/libvirt.xml You can use a different template by
+passing <tt class="docutils literal"><span class="pre">--app-template</span> <span class="pre">&lt;template</span> <span class="pre">path&gt;</span></tt></p>
+<p>Documentation on the Mako template system can be found at the <a class="reference external" href="http://docs.makotemplates.org/en/latest/index.html">Mako site</a></p>
+<p>The name of the final output XML is appliance.xml, this can be changed with
+<tt class="docutils literal"><span class="pre">--app-file</span> <span class="pre">&lt;file</span> <span class="pre">path&gt;</span></tt></p>
+<p>The following variables are passed to the template:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">disks</span></tt></dt>
+<dd><p class="first">A list of disk_info about each disk.
+Each entry has the following attributes:</p>
+<blockquote class="last">
+<div><p><tt class="docutils literal"><span class="pre">name</span></tt>
+base name of the disk image file</p>
+<p><tt class="docutils literal"><span class="pre">format</span></tt>
+&#8220;raw&#8221;</p>
+<p><tt class="docutils literal"><span class="pre">checksum_type</span></tt>
+&#8220;sha256&#8221;</p>
+<p><tt class="docutils literal"><span class="pre">checksum</span></tt>
+sha256 checksum of the disk image</p>
+</div></blockquote>
+</dd>
+</dl>
+<p><tt class="docutils literal"><span class="pre">name</span></tt>
+Name of appliance, from &#8211;app-name argument</p>
+<p><tt class="docutils literal"><span class="pre">arch</span></tt>
+Architecture</p>
+<p><tt class="docutils literal"><span class="pre">memory</span></tt>
+Memory in KB (from <tt class="docutils literal"><span class="pre">--ram</span></tt>)</p>
+<p><tt class="docutils literal"><span class="pre">vcpus</span></tt>
+from <tt class="docutils literal"><span class="pre">--vcpus</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">networks</span></tt>
+list of networks from the kickstart or []</p>
+<p><tt class="docutils literal"><span class="pre">title</span></tt>
+from <tt class="docutils literal"><span class="pre">--title</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">project</span></tt>
+from <tt class="docutils literal"><span class="pre">--project</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">releasever</span></tt>
+from <tt class="docutils literal"><span class="pre">--releasever</span></tt></p>
+</div></blockquote>
+<p>The created image can be imported into libvirt using:</p>
+<blockquote>
+<div><tt class="docutils literal"><span class="pre">virt-image</span> <span class="pre">appliance.xml</span></tt></div></blockquote>
+<p>You can also create qcow2 appliance images using <tt class="docutils literal"><span class="pre">--image-type=qcow2</span></tt>, for example:</p>
+<div class="highlight-python"><pre>sudo livemedia-creator --make-appliance --iso=/path/to/boot.iso --ks=./docs/rhel7-minimal.ks \
+--image-type=qcow2 --app-file=minimal-test.xml --image-name=minimal-test.img</pre>
+</div>
+</div>
+<div class="section" id="filesystem-image-creation">
+<h2>Filesystem Image Creation<a class="headerlink" href="#filesystem-image-creation" title="Permalink to this headline">¶</a></h2>
+<p>livemedia-creator can be used to create un-partitined filesystem images using
+the <tt class="docutils literal"><span class="pre">--make-fsimage</span></tt> option. As of version 21.8 this works with both virt and
+no-virt modes of operation. Previously it was only available with no-virt.</p>
+<p>Kickstarts should have a single / partition with no extra mountpoints.</p>
+<blockquote>
+<div><tt class="docutils literal"><span class="pre">livemedia-creator</span> <span class="pre">--make-fsimage</span> <span class="pre">--iso=/path/to/boot.iso</span> <span class="pre">--ks=./docs/rhel7-minimal.ks</span></tt></div></blockquote>
+<p>You can name the output image with <tt class="docutils literal"><span class="pre">--image-name</span></tt> and set a label on the filesystem with <tt class="docutils literal"><span class="pre">--fs-label</span></tt></p>
+</div>
+<div class="section" id="tar-file-creation">
+<h2>TAR File Creation<a class="headerlink" href="#tar-file-creation" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">--make-tar</span></tt> command can be used to create a tar of the root filesystem. By
+default it is compressed using xz, but this can be changed using the
+<tt class="docutils literal"><span class="pre">--compression</span></tt> and <tt class="docutils literal"><span class="pre">--compress-arg</span></tt> options. This option works with both virt and
+no-virt install methods.</p>
+<p>As with <tt class="docutils literal"><span class="pre">--make-fsimage</span></tt> the kickstart should be limited to a single / partition.</p>
+<p>For example:</p>
+<div class="highlight-python"><pre>livemedia-creator --make-tar --iso=/path/to/boot.iso --ks=./docs/rhel7-minimal.ks \
+--image-name=rhel7-root.tar.xz</pre>
+</div>
+</div>
+<div class="section" id="live-image-for-pxe-boot">
+<h2>Live Image for PXE Boot<a class="headerlink" href="#live-image-for-pxe-boot" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">--make-pxe-live</span></tt> command will produce squashfs image containing live root
+filesystem that can be used for pxe boot. Directory with results will contain
+the live image, kernel image, initrd image and template of pxe configuration
+for the images.</p>
+</div>
+<div class="section" id="atomic-live-image-for-pxe-boot">
+<h2>Atomic Live Image for PXE Boot<a class="headerlink" href="#atomic-live-image-for-pxe-boot" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">--make-ostree-live</span></tt> command will produce the same result as <tt class="docutils literal"><span class="pre">--make-pxe-live</span></tt>
+for installations of Atomic Host.  Example kickstart for such an installation
+using Atomic installer iso with local repo included in the image can be found
+in docs/rhel-atomic-pxe-live.ks.</p>
+<p>The PXE images can also be created with <tt class="docutils literal"><span class="pre">--no-virt</span></tt> by using the example
+kickstart in docs/rhel-atomic-pxe-live-novirt.ks. This also works inside the
+mock environment.</p>
+</div>
+<div class="section" id="debugging-problems">
+<h2>Debugging problems<a class="headerlink" href="#debugging-problems" title="Permalink to this headline">¶</a></h2>
+<p>Sometimes an installation will get stuck. When using virt-install the logs will
+be written to ./virt-install.log and most of the time any problems that happen
+will be near the end of the file. lmc tries to detect common errors and will
+cancel the installation when they happen. But not everything can be caught.
+When creating a new kickstart it is helpful to use vnc so that you can monitor
+the installation as it happens, and if it gets stuck without lmc detecting the
+problem you can switch to tty1 and examine the system directly.</p>
+<p>If it does get stuck the best way to cancel is to use kill -9 on the virt-install pid,
+lmc will detect that the process died and cleanup.</p>
+<p>If lmc didn&#8217;t handle the cleanup for some reason you can do this:
+1. <tt class="docutils literal"><span class="pre">sudo</span> <span class="pre">umount</span> <span class="pre">/tmp/lmc-XXXX</span></tt> to unmount the iso from its mountpoint.
+2. <tt class="docutils literal"><span class="pre">sudo</span> <span class="pre">rm</span> <span class="pre">-rf</span> <span class="pre">/tmp/lmc-XXXX</span></tt>
+3. <tt class="docutils literal"><span class="pre">sudo</span> <span class="pre">rm</span> <span class="pre">/var/tmp/lmc-disk-XXXXX</span></tt> to remove the disk image.</p>
+<p>Note that lmc uses the lmc- prefix for all of its temporary files and
+directories to make it easier to find and clean up leftovers.</p>
+<p>The logs from the virt-install run are stored in virt-install.log, logs from
+livemedia-creator are in livemedia.log and program.log</p>
+<p>You can add <tt class="docutils literal"><span class="pre">--image-only</span></tt> to skip the .iso creation and examine the resulting
+disk image. Or you can pass <tt class="docutils literal"><span class="pre">--keep-image</span></tt> to keep it around after the iso has
+been created.</p>
+<p>Cleaning up aborted <tt class="docutils literal"><span class="pre">--no-virt</span></tt> installs can sometimes be accomplished by
+running the <tt class="docutils literal"><span class="pre">anaconda-cleanup</span></tt> script. As of Fedora 18 anaconda is
+multi-threaded and it can sometimes become stuck and refuse to exit. When this
+happens you can usually clean up by first killing the anaconda process then
+running <tt class="docutils literal"><span class="pre">anaconda-cleanup</span></tt>.</p>
+</div>
+<div class="section" id="hacking">
+<h2>Hacking<a class="headerlink" href="#hacking" title="Permalink to this headline">¶</a></h2>
+<p>Development on this will take place as part of the lorax project, and on the
+anaconda-devel-list mailing list, and <a class="reference external" href="https://github.com/rhinstaller/lorax">on github</a></p>
+<p>Feedback, enhancements and bugs are welcome.  You can use <a class="reference external" href="https://bugzilla.redhat.com/enter_bug.cgi?product=Fedora&amp;component=lorax">bugzilla</a> to
+report bugs against the lorax component.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">livemedia-creator</a><ul>
+<li><a class="reference internal" href="#livemedia-creator-cmdline-arguments">livemedia-creator cmdline arguments</a></li>
+<li><a class="reference internal" href="#quickstart">Quickstart</a></li>
+<li><a class="reference internal" href="#how-iso-creation-works">How ISO creation works</a></li>
+<li><a class="reference internal" href="#kickstarts">Kickstarts</a></li>
+<li><a class="reference internal" href="#anaconda-image-install-no-virt">Anaconda image install (no-virt)</a></li>
+<li><a class="reference internal" href="#ami-images">AMI Images</a></li>
+<li><a class="reference internal" href="#appliance-creation">Appliance Creation</a></li>
+<li><a class="reference internal" href="#filesystem-image-creation">Filesystem Image Creation</a></li>
+<li><a class="reference internal" href="#tar-file-creation">TAR File Creation</a></li>
+<li><a class="reference internal" href="#live-image-for-pxe-boot">Live Image for PXE Boot</a></li>
+<li><a class="reference internal" href="#atomic-live-image-for-pxe-boot">Atomic Live Image for PXE Boot</a></li>
+<li><a class="reference internal" href="#debugging-problems">Debugging problems</a></li>
+<li><a class="reference internal" href="#hacking">Hacking</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="lorax.html"
+                        title="previous chapter">Lorax</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="lorax-composer.html"
+                        title="next chapter">lorax-composer</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/livemedia-creator.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="lorax-composer.html" title="lorax-composer"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="lorax.html" title="Lorax"
+             >previous</a> |</li>
+        <li><a href="index.html">Lorax 19.7.11 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2018, Red Hat, Inc..
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

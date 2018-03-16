@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>api Package &mdash; Lorax 19.7.10 documentation</title>
+    <title>api Package &mdash; Lorax 19.7.11 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '19.7.10',
+        VERSION:     '19.7.11',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.10 documentation" href="index.html" />
+    <link rel="top" title="Lorax 19.7.11 documentation" href="index.html" />
     <link rel="up" title="pylorax Package" href="pylorax.html" />
     <link rel="prev" title="pylorax Package" href="pylorax.html" /> 
   </head>
@@ -42,8 +42,8 @@
         <li class="right" >
           <a href="pylorax.html" title="pylorax Package"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.10 documentation</a> &raquo;</li>
-          <li><a href="modules.html" >pylorax</a> &raquo;</li>
+        <li><a href="index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+          <li><a href="modules.html" >src</a> &raquo;</li>
           <li><a href="pylorax.html" accesskey="U">pylorax Package</a> &raquo;</li> 
       </ul>
     </div>  
@@ -97,7 +97,7 @@ Other options will be filled in by <cite>make_compose()</cite></p>
 <dt id="pylorax.api.compose.compose_types">
 <tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">compose_types</tt><big>(</big><em>share_dir</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#compose_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.compose_types" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of the supported output types</p>
-<p>The output types come from the kickstart names in /usr/share/lorax/composer/<a href="#id2"><span class="problematic" id="id3">*</span></a>ks</p>
+<p>The output types come from the kickstart names in /usr/share/lorax/composer/*ks</p>
 </dd></dl>
 
 <dl class="function">
@@ -1020,7 +1020,7 @@ If they are different, check and return the new version</p>
 <dl class="function">
 <dt id="pylorax.api.recipes.commit_recipe_directory">
 <tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">commit_recipe_directory</tt><big>(</big><em>repo</em>, <em>branch</em>, <em>directory</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#commit_recipe_directory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.commit_recipe_directory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Commit all <a href="#id4"><span class="problematic" id="id5">*</span></a>.toml files from a directory, if they aren&#8217;t already in git.</p>
+<dd><p>Commit all *.toml files from a directory, if they aren&#8217;t already in git.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1028,7 +1028,7 @@ If they are different, check and return the new version</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) &#8211; Open repository</li>
 <li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Branch name</li>
-<li><strong>directory</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The directory of <a href="#id6"><span class="problematic" id="id7">*</span></a>.toml recipes to commit</li>
+<li><strong>directory</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The directory of *.toml recipes to commit</li>
 </ul>
 </td>
 </tr>
@@ -2737,7 +2737,7 @@ UUID-logs.tar</p>
 <h4><cite>/api/v0/compose/image/&lt;uuid&gt;</cite><a class="headerlink" href="#api-v0-compose-image-uuid" title="Permalink to this headline">¶</a></h4>
 <blockquote>
 <div>Returns the output image from the build. The filename is set to the filename
-from the build. eg. root.tar.xz or boot.iso.</div></blockquote>
+from the build with the UUID as a prefix. eg. UUID-root.tar.xz or UUID-boot.iso.</div></blockquote>
 </div>
 <div class="section" id="api-v0-compose-log-uuid-size-kbytes">
 <h4><cite>/api/v0/compose/log/&lt;uuid&gt;[?size=kbytes]</cite><a class="headerlink" href="#api-v0-compose-log-uuid-size-kbytes" title="Permalink to this headline">¶</a></h4>
@@ -3025,13 +3025,13 @@ a line boundry.</p>
         <li class="right" >
           <a href="pylorax.html" title="pylorax Package"
              >previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.10 documentation</a> &raquo;</li>
-          <li><a href="modules.html" >pylorax</a> &raquo;</li>
+        <li><a href="index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+          <li><a href="modules.html" >src</a> &raquo;</li>
           <li><a href="pylorax.html" >pylorax Package</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2017, Red Hat, Inc..
+        &copy; Copyright 2018, Red Hat, Inc..
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

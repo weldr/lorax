@@ -4,7 +4,7 @@ pylorax Package
 :mod:`pylorax` Package
 ----------------------
 
-.. automodule:: pylorax.__init__
+.. automodule:: pylorax
     :members:
     :undoc-members:
     :show-inheritance:

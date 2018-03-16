@@ -1,0 +1,290 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>composer.http_client &mdash; Lorax 19.7.11 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '19.7.11',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Lorax 19.7.11 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for composer.http_client</h1><div class="highlight"><pre>
+<span class="c">#</span>
+<span class="c"># Copyright (C) 2018  Red Hat, Inc.</span>
+<span class="c">#</span>
+<span class="c"># This program is free software; you can redistribute it and/or modify</span>
+<span class="c"># it under the terms of the GNU General Public License as published by</span>
+<span class="c"># the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c"># (at your option) any later version.</span>
+<span class="c">#</span>
+<span class="c"># This program is distributed in the hope that it will be useful,</span>
+<span class="c"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c"># GNU General Public License for more details.</span>
+<span class="c">#</span>
+<span class="c"># You should have received a copy of the GNU General Public License</span>
+<span class="c"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c">#</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&quot;composer-cli&quot;</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="kn">from</span> <span class="nn">composer.unix_socket</span> <span class="kn">import</span> <span class="n">UnixHTTPConnectionPool</span>
+
+<div class="viewcode-block" id="api_url"><a class="viewcode-back" href="../../composer.html#composer.http_client.api_url">[docs]</a><span class="k">def</span> <span class="nf">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the versioned path to the API route</span>
+
+<span class="sd">    :param api_version: The version of the API to talk to. eg. &quot;0&quot;</span>
+<span class="sd">    :type api_version: str</span>
+<span class="sd">    :param url: The API route to talk to</span>
+<span class="sd">    :type url: str</span>
+<span class="sd">    :returns: The full url to use for the route and API version</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="s">&quot;/api/v</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="n">url</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="get_url_raw"><a class="viewcode-back" href="../../composer.html#composer.http_client.get_url_raw">[docs]</a><span class="k">def</span> <span class="nf">get_url_raw</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the raw results of a GET request</span>
+
+<span class="sd">    :param socket_path: Path to the Unix socket to use for API communication</span>
+<span class="sd">    :type socket_path: str</span>
+<span class="sd">    :param url: URL to request</span>
+<span class="sd">    :type url: str</span>
+<span class="sd">    :returns: The raw response from the server</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">http</span> <span class="o">=</span> <span class="n">UnixHTTPConnectionPool</span><span class="p">(</span><span class="n">socket_path</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">r</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="get_url_json"><a class="viewcode-back" href="../../composer.html#composer.http_client.get_url_json">[docs]</a><span class="k">def</span> <span class="nf">get_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the JSON results of a GET request</span>
+
+<span class="sd">    :param socket_path: Path to the Unix socket to use for API communication</span>
+<span class="sd">    :type socket_path: str</span>
+<span class="sd">    :param url: URL to request</span>
+<span class="sd">    :type url: str</span>
+<span class="sd">    :returns: The json response from the server</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">http</span> <span class="o">=</span> <span class="n">UnixHTTPConnectionPool</span><span class="p">(</span><span class="n">socket_path</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="delete_url_json"><a class="viewcode-back" href="../../composer.html#composer.http_client.delete_url_json">[docs]</a><span class="k">def</span> <span class="nf">delete_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Send a DELETE request to the url and return JSON response</span>
+
+<span class="sd">    :param socket_path: Path to the Unix socket to use for API communication</span>
+<span class="sd">    :type socket_path: str</span>
+<span class="sd">    :param url: URL to send DELETE to</span>
+<span class="sd">    :type url: str</span>
+<span class="sd">    :returns: The json response from the server</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">http</span> <span class="o">=</span> <span class="n">UnixHTTPConnectionPool</span><span class="p">(</span><span class="n">socket_path</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s">&quot;DELETE&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;utf-8&quot;</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="post_url"><a class="viewcode-back" href="../../composer.html#composer.http_client.post_url">[docs]</a><span class="k">def</span> <span class="nf">post_url</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;POST raw data to the URL</span>
+
+<span class="sd">    :param socket_path: Path to the Unix socket to use for API communication</span>
+<span class="sd">    :type socket_path: str</span>
+<span class="sd">    :param url: URL to send POST to</span>
+<span class="sd">    :type url: str</span>
+<span class="sd">    :param body: The data for the body of the POST</span>
+<span class="sd">    :type body: str</span>
+<span class="sd">    :returns: The json response from the server</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">http</span> <span class="o">=</span> <span class="n">UnixHTTPConnectionPool</span><span class="p">(</span><span class="n">socket_path</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s">&quot;POST&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span>
+                     <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&quot;utf-8&quot;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;utf-8&quot;</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="post_url_toml"><a class="viewcode-back" href="../../composer.html#composer.http_client.post_url_toml">[docs]</a><span class="k">def</span> <span class="nf">post_url_toml</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;POST a TOML recipe to the URL</span>
+
+<span class="sd">    :param socket_path: Path to the Unix socket to use for API communication</span>
+<span class="sd">    :type socket_path: str</span>
+<span class="sd">    :param url: URL to send POST to</span>
+<span class="sd">    :type url: str</span>
+<span class="sd">    :param body: The data for the body of the POST</span>
+<span class="sd">    :type body: str</span>
+<span class="sd">    :returns: The json response from the server</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">http</span> <span class="o">=</span> <span class="n">UnixHTTPConnectionPool</span><span class="p">(</span><span class="n">socket_path</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s">&quot;POST&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span>
+                     <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&quot;utf-8&quot;</span><span class="p">),</span>
+                     <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s">&quot;text/x-toml&quot;</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;utf-8&quot;</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="post_url_json"><a class="viewcode-back" href="../../composer.html#composer.http_client.post_url_json">[docs]</a><span class="k">def</span> <span class="nf">post_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;POST some JSON data to the URL</span>
+
+<span class="sd">    :param socket_path: Path to the Unix socket to use for API communication</span>
+<span class="sd">    :type socket_path: str</span>
+<span class="sd">    :param url: URL to send POST to</span>
+<span class="sd">    :type url: str</span>
+<span class="sd">    :param body: The data for the body of the POST</span>
+<span class="sd">    :type body: str</span>
+<span class="sd">    :returns: The json response from the server</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">http</span> <span class="o">=</span> <span class="n">UnixHTTPConnectionPool</span><span class="p">(</span><span class="n">socket_path</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s">&quot;POST&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span>
+                     <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&quot;utf-8&quot;</span><span class="p">),</span>
+                     <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s">&quot;application/json&quot;</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;utf-8&quot;</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="get_filename"><a class="viewcode-back" href="../../composer.html#composer.http_client.get_filename">[docs]</a><span class="k">def</span> <span class="nf">get_filename</span><span class="p">(</span><span class="n">headers</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the filename from the response header</span>
+
+<span class="sd">    :param response: The urllib3 response object</span>
+<span class="sd">    :type response: Response</span>
+<span class="sd">    :raises: RuntimeError if it cannot find a filename in the header</span>
+<span class="sd">    :returns: Filename from content-disposition header</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Headers = </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s">&quot;content-disposition&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;No Content-Disposition header; cannot get filename&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">k</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">headers</span><span class="p">[</span><span class="s">&quot;content-disposition&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;;&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s">&quot;=&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s">&quot;filename&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;No filename= found in content-disposition header&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+        <span class="k">raise</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Error parsing filename from content-disposition header: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="download_file"><a class="viewcode-back" href="../../composer.html#composer.http_client.download_file">[docs]</a><span class="k">def</span> <span class="nf">download_file</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Download a file, saving it to the CWD with the included filename</span>
+
+<span class="sd">    :param socket_path: Path to the Unix socket to use for API communication</span>
+<span class="sd">    :type socket_path: str</span>
+<span class="sd">    :param url: URL to send POST to</span>
+<span class="sd">    :type url: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">http</span> <span class="o">=</span> <span class="n">UnixHTTPConnectionPool</span><span class="p">(</span><span class="n">socket_path</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">preload_content</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">400</span><span class="p">:</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;utf-8&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">err</span><span class="p">[</span><span class="s">&quot;status&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">err</span><span class="p">[</span><span class="s">&quot;error&quot;</span><span class="p">][</span><span class="s">&quot;msg&quot;</span><span class="p">])</span>
+
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">get_filename</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> exists, skipping download&quot;</span> <span class="o">%</span> <span class="n">filename</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">progress</span><span class="p">:</span>
+                <span class="n">data_written</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">data_written</span> <span class="o">&gt;</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">:</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: </span><span class="si">%0.2f</span><span class="s"> MB    </span><span class="se">\r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">data_written</span> <span class="o">/</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: </span><span class="si">%0.2f</span><span class="s"> kB</span><span class="se">\r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">data_written</span> <span class="o">/</span> <span class="mi">1024</span><span class="p">))</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">r</span><span class="o">.</span><span class="n">release_conn</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="mi">0</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2018, Red Hat, Inc..
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

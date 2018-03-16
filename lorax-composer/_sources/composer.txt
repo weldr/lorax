@@ -1,0 +1,34 @@
+composer Package
+================
+
+:mod:`composer` Package
+-----------------------
+
+.. automodule:: composer
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`http_client` Module
+-------------------------
+
+.. automodule:: composer.http_client
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`unix_socket` Module
+-------------------------
+
+.. automodule:: composer.unix_socket
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+
+    composer.cli
+

@@ -1,0 +1,385 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>composer Package &mdash; Lorax 19.7.11 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '19.7.11',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Lorax 19.7.11 documentation" href="index.html" />
+    <link rel="up" title="src" href="modules.html" />
+    <link rel="next" title="cli Package" href="composer.cli.html" />
+    <link rel="prev" title="src" href="modules.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="composer.cli.html" title="cli Package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="src"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+          <li><a href="modules.html" accesskey="U">src</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="composer-package">
+<h1>composer Package<a class="headerlink" href="#composer-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2><a class="reference internal" href="#module-composer" title="composer"><tt class="xref py py-mod docutils literal"><span class="pre">composer</span></tt></a> Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-composer"></span></div>
+<div class="section" id="module-composer.http_client">
+<span id="http-client-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">http_client</span></tt> Module<a class="headerlink" href="#module-composer.http_client" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="composer.http_client.api_url">
+<tt class="descclassname">composer.http_client.</tt><tt class="descname">api_url</tt><big>(</big><em>api_version</em>, <em>url</em><big>)</big><a class="reference internal" href="_modules/composer/http_client.html#api_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.api_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the versioned path to the API route</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The version of the API to talk to. eg. &#8220;0&#8221;</li>
+<li><strong>url</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The API route to talk to</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The full url to use for the route and API version</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.http_client.delete_url_json">
+<tt class="descclassname">composer.http_client.</tt><tt class="descname">delete_url_json</tt><big>(</big><em>socket_path</em>, <em>url</em><big>)</big><a class="reference internal" href="_modules/composer/http_client.html#delete_url_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.delete_url_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send a DELETE request to the url and return JSON response</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
+<li><strong>url</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; URL to send DELETE to</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The json response from the server</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.http_client.download_file">
+<tt class="descclassname">composer.http_client.</tt><tt class="descname">download_file</tt><big>(</big><em>socket_path</em>, <em>url</em>, <em>progress=True</em><big>)</big><a class="reference internal" href="_modules/composer/http_client.html#download_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.download_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download a file, saving it to the CWD with the included filename</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
+<li><strong>url</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; URL to send POST to</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.http_client.get_filename">
+<tt class="descclassname">composer.http_client.</tt><tt class="descname">get_filename</tt><big>(</big><em>headers</em><big>)</big><a class="reference internal" href="_modules/composer/http_client.html#get_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.get_filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the filename from the response header</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>response</strong> (<em>Response</em>) &#8211; The urllib3 response object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body">RuntimeError if it cannot find a filename in the header</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Filename from content-disposition header</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.http_client.get_url_json">
+<tt class="descclassname">composer.http_client.</tt><tt class="descname">get_url_json</tt><big>(</big><em>socket_path</em>, <em>url</em><big>)</big><a class="reference internal" href="_modules/composer/http_client.html#get_url_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.get_url_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the JSON results of a GET request</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
+<li><strong>url</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; URL to request</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The json response from the server</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.http_client.get_url_raw">
+<tt class="descclassname">composer.http_client.</tt><tt class="descname">get_url_raw</tt><big>(</big><em>socket_path</em>, <em>url</em><big>)</big><a class="reference internal" href="_modules/composer/http_client.html#get_url_raw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.get_url_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the raw results of a GET request</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
+<li><strong>url</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; URL to request</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The raw response from the server</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.http_client.post_url">
+<tt class="descclassname">composer.http_client.</tt><tt class="descname">post_url</tt><big>(</big><em>socket_path</em>, <em>url</em>, <em>body</em><big>)</big><a class="reference internal" href="_modules/composer/http_client.html#post_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.post_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>POST raw data to the URL</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
+<li><strong>url</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; URL to send POST to</li>
+<li><strong>body</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The data for the body of the POST</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The json response from the server</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.http_client.post_url_json">
+<tt class="descclassname">composer.http_client.</tt><tt class="descname">post_url_json</tt><big>(</big><em>socket_path</em>, <em>url</em>, <em>body</em><big>)</big><a class="reference internal" href="_modules/composer/http_client.html#post_url_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.post_url_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>POST some JSON data to the URL</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
+<li><strong>url</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; URL to send POST to</li>
+<li><strong>body</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The data for the body of the POST</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The json response from the server</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.http_client.post_url_toml">
+<tt class="descclassname">composer.http_client.</tt><tt class="descname">post_url_toml</tt><big>(</big><em>socket_path</em>, <em>url</em>, <em>body</em><big>)</big><a class="reference internal" href="_modules/composer/http_client.html#post_url_toml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.post_url_toml" title="Permalink to this definition">¶</a></dt>
+<dd><p>POST a TOML recipe to the URL</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
+<li><strong>url</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; URL to send POST to</li>
+<li><strong>body</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The data for the body of the POST</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The json response from the server</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-composer.unix_socket">
+<span id="unix-socket-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">unix_socket</span></tt> Module<a class="headerlink" href="#module-composer.unix_socket" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="composer.unix_socket.UnixHTTPConnection">
+<em class="property">class </em><tt class="descclassname">composer.unix_socket.</tt><tt class="descname">UnixHTTPConnection</tt><big>(</big><em>socket_path</em>, <em>timeout=60</em><big>)</big><a class="reference internal" href="_modules/composer/unix_socket.html#UnixHTTPConnection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.unix_socket.UnixHTTPConnection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/httplib.html#httplib.HTTPConnection" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">httplib.HTTPConnection</span></tt></a>, <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></a></p>
+<dl class="method">
+<dt id="composer.unix_socket.UnixHTTPConnection.connect">
+<tt class="descname">connect</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/composer/unix_socket.html#UnixHTTPConnection.connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.unix_socket.UnixHTTPConnection.connect" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="composer.unix_socket.UnixHTTPConnectionPool">
+<em class="property">class </em><tt class="descclassname">composer.unix_socket.</tt><tt class="descname">UnixHTTPConnectionPool</tt><big>(</big><em>socket_path</em>, <em>timeout=60</em><big>)</big><a class="reference internal" href="_modules/composer/unix_socket.html#UnixHTTPConnectionPool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.unix_socket.UnixHTTPConnectionPool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">urllib3.connectionpool.HTTPConnectionPool</span></tt></p>
+</dd></dl>
+
+</div>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="composer.cli.html">cli Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="composer.cli.html#id1"><tt class="docutils literal"><span class="pre">cli</span></tt> Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="composer.cli.html#module-composer.cli.compose"><tt class="docutils literal"><span class="pre">compose</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="composer.cli.html#module-composer.cli.modules"><tt class="docutils literal"><span class="pre">modules</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="composer.cli.html#module-composer.cli.projects"><tt class="docutils literal"><span class="pre">projects</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="composer.cli.html#module-composer.cli.recipes"><tt class="docutils literal"><span class="pre">recipes</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="composer.cli.html#module-composer.cli.utilities"><tt class="docutils literal"><span class="pre">utilities</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">composer Package</a><ul>
+<li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">composer</span></tt> Package</a></li>
+<li><a class="reference internal" href="#module-composer.http_client"><tt class="docutils literal"><span class="pre">http_client</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-composer.unix_socket"><tt class="docutils literal"><span class="pre">unix_socket</span></tt> Module</a></li>
+<li><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="modules.html"
+                        title="previous chapter">src</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="composer.cli.html"
+                        title="next chapter">cli Package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/composer.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="composer.cli.html" title="cli Package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="src"
+             >previous</a> |</li>
+        <li><a href="index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+          <li><a href="modules.html" >src</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2018, Red Hat, Inc..
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
