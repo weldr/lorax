@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.7.10
+Version:        19.7.11
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -163,6 +163,33 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python_sitelib}/composer/*
 
 %changelog
+* Fri Mar 16 2018 Brian C. Lane <bcl@redhat.com> 19.7.11-1
+- Fix prettyDiffEntry output (bcl)
+- Fix the prettyDiffEntry test so that it fails correctly (bcl)
+- Default composer-cli log should be in ./composer-cli.log (bcl)
+- Update Sphinx documentation for composer.cli (bcl)
+- Update docs/ with lorax, livemedia-creator, and product-images (bcl)
+- Install the composer-cli library and include it in the rpm (bcl)
+- Add --test option to composer-cli (bcl)
+- Make sure lorax-composer tests only use temporary directories (bcl)
+- Add some tests for composer-cli (bcl)
+- Refactor get_filename so it can be tested (bcl)
+- Fix bug in prettyDiffEntry output (bcl)
+- composer-cli: Handle download errors (bcl)
+- Add a pid file for lorax-composer (bcl)
+- Cleanup more /tmp/ files when running with --no-virt (bcl)
+- lorax-composer: Update the yum metadata at startup (bcl)
+- Fix the error responses from lorax-composer (bcl)
+- Check to make sure image file exists for /compose/image/ (bcl)
+- Install anaconda-tui in the test Docker image (bcl)
+- Add UUID prefix to /compose/image/ download filename. (bcl)
+- Add support for composer-cli compose commands. (bcl)
+- Add support for modules list, projects list, and projects info (bcl)
+- Add composer-cli utility and implement the recipes commands (bcl)
+- Add ?format=toml support to /recipes/freeze (bcl)
+- Fix epoch to ouput an int instead of a str (bcl)
+- Add ?format=toml support to /recipes/info/ (bcl)
+
 * Thu Feb 22 2018 Brian C. Lane <bcl@redhat.com> 19.7.10-1
 - Add the partitioned-disk.ks file for the new output type (bcl)
 - lorax-composer: Add partitioned-disk output support (bcl)
