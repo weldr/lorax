@@ -7,8 +7,12 @@ Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
 License:        GPLv2+
-URL:            http://git.fedorahosted.org/git/?p=lorax.git
-Source0:        https://fedorahosted.org/releases/l/o/%{name}/%{name}-%{version}.tar.gz
+URL:            https://github.com/weldr/lorax
+# To generate Source0 do:
+# git clone https://github.com/weldr/lorax
+# git checkout -b archive-branch lorax-%%{version}-%%{release}
+# tito build --tgz
+Source0:        %{name}-%{version}.tar.gz
 
 BuildRequires:  python2-devel
 BuildRequires:  python-sphinx yum python-mako pykickstart
