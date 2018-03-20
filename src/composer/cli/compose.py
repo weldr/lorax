@@ -63,6 +63,8 @@ def compose_status(socket_path, api_version, args, show_json=False, testmode=0):
     :type args: list of str
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
+    :param testmode: unused in this function
+    :type testmode: int
 
     This doesn't map directly to an API command, it combines the results from queue, finished,
     and failed so raw JSON output is not available.
@@ -107,7 +109,7 @@ def compose_status(socket_path, api_version, args, show_json=False, testmode=0):
         print("%s %-8s %-15s %s" % (c["id"], c["status"], c["recipe"], c["version"]))
 
 
-def compose_types(socket_path, api_version, args, show_json=False):
+def compose_types(socket_path, api_version, args, show_json=False, testmode=0):
     """Return information about the supported compose types
 
     :param socket_path: Path to the Unix socket to use for API communication
@@ -118,6 +120,8 @@ def compose_types(socket_path, api_version, args, show_json=False):
     :type args: list of str
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
+    :param testmode: unused in this function
+    :type testmode: int
 
     Add additional details to types that are known to composer-cli. Raw JSON output does not
     include this extra information.
@@ -141,6 +145,8 @@ def compose_start(socket_path, api_version, args, show_json=False, testmode=0):
     :type args: list of str
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
+    :param testmode: Set to 1 to simulate a failed compose, set to 2 to simulate a finished one.
+    :type testmode: int
 
     compose start <recipe-name> <compose-type>
     """
@@ -188,6 +194,8 @@ def compose_log(socket_path, api_version, args, show_json=False, testmode=0):
     :type args: list of str
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
+    :param testmode: unused in this function
+    :type testmode: int
 
     compose log <uuid> [<size>kB]
 
@@ -222,6 +230,8 @@ def compose_cancel(socket_path, api_version, args, show_json=False, testmode=0):
     :type args: list of str
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
+    :param testmode: unused in this function
+    :type testmode: int
 
     compose cancel <uuid>
 
@@ -246,6 +256,8 @@ def compose_delete(socket_path, api_version, args, show_json=False, testmode=0):
     :type args: list of str
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
+    :param testmode: unused in this function
+    :type testmode: int
 
     compose delete <uuid,...>
 
@@ -283,6 +295,8 @@ def compose_details(socket_path, api_version, args, show_json=False, testmode=0)
     :type args: list of str
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
+    :param testmode: unused in this function
+    :type testmode: int
 
     compose details <uuid>
 
@@ -326,6 +340,8 @@ def compose_metadata(socket_path, api_version, args, show_json=False, testmode=0
     :type args: list of str
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
+    :param testmode: unused in this function
+    :type testmode: int
 
     compose metadata <uuid>
 
@@ -349,6 +365,8 @@ def compose_results(socket_path, api_version, args, show_json=False, testmode=0)
     :type args: list of str
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
+    :param testmode: unused in this function
+    :type testmode: int
 
     compose results <uuid>
 
@@ -373,6 +391,8 @@ def compose_logs(socket_path, api_version, args, show_json=False, testmode=0):
     :type args: list of str
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
+    :param testmode: unused in this function
+    :type testmode: int
 
     compose logs <uuid>
 
@@ -396,6 +416,8 @@ def compose_image(socket_path, api_version, args, show_json=False, testmode=0):
     :type args: list of str
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
+    :param testmode: unused in this function
+    :type testmode: int
 
     compose image <uuid>
 
