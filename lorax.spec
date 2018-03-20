@@ -97,6 +97,7 @@ Requires: libgit2-glib
 Requires: python-flask
 Requires: python-gevent
 Requires: anaconda-tui
+Requires: qemu-img
 
 %{?systemd_requires}
 BuildRequires: systemd
