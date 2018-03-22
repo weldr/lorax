@@ -1585,7 +1585,9 @@ def v0_api(api):
             return jsonify(status=False, error={"msg":str(e)}), 400
 
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
-        if status is None or status["queue_status"] == "WAITING":
+        if status is None:
+            return jsonify(status=False, error={"msg":"%s is not a valid build uuid" % uuid}), 400
+        elif status["queue_status"] == "WAITING":
             return jsonify(status=False, uuid=uuid, msg="Build has not started yet. No logs to view")
         try:
             return Response(uuid_log(api.config["COMPOSER_CFG"], uuid, size), direct_passthrough=True)
