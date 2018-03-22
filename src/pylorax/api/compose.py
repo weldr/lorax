@@ -341,6 +341,26 @@ def compose_args(compose_type):
                                  "app_template":            None,
                                  "app_file":                None
                                 },
+            "ext4-filesystem":  {"make_iso":                False,
+                                 "make_disk":               False,
+                                 "make_fsimage":            True,
+                                 "make_appliance":          False,
+                                 "make_ami":                False,
+                                 "make_tar":                False,
+                                 "make_pxe_live":           False,
+                                 "make_ostree_live":        False,
+                                 "ostree":                  False,
+                                 "live_rootfs_keep_size":   False,
+                                 "live_rootfs_size":        0,
+                                 "qcow2":                   False,
+                                 "qcow2_args":              [],
+                                 "image_name":              "filesystem.img",
+                                 "fs_label":                "",
+                                 "image_only":              True,
+                                 "app_name":                None,
+                                 "app_template":            None,
+                                 "app_file":                None
+                                },
             }
     return _MAP[compose_type]
 
@@ -357,7 +377,7 @@ def move_compose_results(cfg, results_dir):
     elif cfg["make_iso"]:
         # Output from live iso is always a boot.iso under images/, move and rename it
         shutil.move(joinpaths(cfg["result_dir"], "images/boot.iso"), joinpaths(results_dir, cfg["image_name"]))
-    elif cfg["make_disk"]:
+    elif cfg["make_disk"] or cfg["make_fsimage"]:
         shutil.move(joinpaths(cfg["result_dir"], cfg["image_name"]), joinpaths(results_dir, cfg["image_name"]))
 
 
