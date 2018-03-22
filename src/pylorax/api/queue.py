@@ -385,7 +385,7 @@ def uuid_cancel(cfg, uuid):
     started = time.time()
     while True:
         status = uuid_status(cfg, uuid)
-        if status["queue_status"] == "FAILED":
+        if status is None or status["queue_status"] == "FAILED":
             break
 
         # Is this taking too long? Exit anyway and try to cleanup.
@@ -565,6 +565,9 @@ def uuid_log(cfg, uuid, size=1024):
     # While a build is running the logs will be in /tmp/anaconda.log and when it
     # has finished they will be in the results directory
     status = uuid_status(cfg, uuid)
+    if status is None:
+        raise RuntimeError("Status is missing for %s" % uuid)
+
     if status["queue_status"] == "RUNNING":
         log_path = "/tmp/anaconda.log"
     else:
