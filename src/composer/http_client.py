@@ -47,6 +47,11 @@ def get_url_raw(socket_path, url):
     """
     http = UnixHTTPConnectionPool(socket_path)
     r = http.request("GET", url)
+    if r.status == 400:
+        err = json.loads(r.data.decode("utf-8"))
+        if "status" in err and err["status"] == False:
+            raise RuntimeError(err["error"]["msg"])
+
     return r.data.decode('utf-8')
 
 def get_url_json(socket_path, url):
