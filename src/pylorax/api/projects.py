@@ -212,6 +212,54 @@ def projects_depsolve(yb, project_names):
         yb.closeRpmDB()
     return deps
 
+def estimate_size(packages, block_size=4096):
+    """Estimate the installed size of a package list
+
+    :param packages: The packages to be installed
+    :type packages: list of TransactionMember objects
+    :param block_size: The block size to use for rounding up file sizes.
+    :type block_size: int
+    :returns: The estimated size of installed packages
+    :rtype: int
+
+    Estimating actual requirements is difficult without the actual file sizes, which
+    yum doesn't provide access to. So use the file count and block size to estimate
+    a minimum size for each package.
+    """
+    installed_size = 0
+    for p in packages:
+        installed_size += len(p.po.filelist) * block_size
+        installed_size += p.po.installedsize
+    return installed_size
+
+def projects_depsolve_with_size(yb, project_names, with_core=True):
+    """Return the dependencies and installed size for a list of projects
+
+    :param yb: yum base object
+    :type yb: YumBase
+    :param project_names: The projects to find the dependencies for
+    :type project_names: List of Strings
+    :returns: installed size and a list of NEVRA's of the project and its dependencies
+    :rtype: tuple of (int, list of dicts)
+    """
+    try:
+        # This resets the transaction
+        yb.closeRpmDB()
+        for p in project_names:
+            yb.install(pattern=p)
+        if with_core:
+            yb.selectGroup("core", group_package_types=['mandatory', 'default', 'optional'])
+        (rc, msg) = yb.buildTransaction()
+        if rc not in [0, 1, 2]:
+            raise ProjectsError("There was a problem depsolving %s: %s" % (project_names, msg))
+        yb.tsInfo.makelists()
+        installed_size = estimate_size(yb.tsInfo.installed + yb.tsInfo.depinstalled)
+        deps = sorted(map(tm_to_dep, yb.tsInfo.installed + yb.tsInfo.depinstalled), key=lambda p: p["name"].lower())
+    except YumBaseError as e:
+        raise ProjectsError("There was a problem depsolving %s: %s" % (project_names, str(e)))
+    finally:
+        yb.closeRpmDB()
+    return (installed_size, deps)
 
 def modules_list(yb, module_names):
     """Return a list of modules

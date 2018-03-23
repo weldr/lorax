@@ -34,9 +34,6 @@ zerombr
 # Partition clearing information
 clearpart --all
 # Disk partitioning information
-part biosboot --size=1
-part / --fstype="ext4" --size=5000
-part swap --size=1000
 
 %post
 # FIXME: it'd be better to get this installed from a package
