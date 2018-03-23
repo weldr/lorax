@@ -35,13 +35,18 @@ log = logging.getLogger("lorax-composer")
 
 import os
 from glob import glob
+from math import ceil
 import pytoml as toml
 import shutil
 from uuid import uuid4
 
 from pyanaconda.simpleconfig import SimpleConfigFile
 
-from pylorax.api.projects import projects_depsolve, dep_nevra
+# Use pykickstart to calculate disk image size
+from pykickstart.parser import KickstartParser
+from pykickstart.version import makeVersion, RHEL7
+
+from pylorax.api.projects import projects_depsolve_with_size, dep_nevra
 from pylorax.api.projects import ProjectsError
 from pylorax.api.recipes import read_recipe_and_id
 from pylorax.imgutils import default_image_name
@@ -118,10 +123,31 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_m
     deps = []
     try:
         with yumlock.lock:
-            deps = projects_depsolve(yumlock.yb, projects)
+            (installed_size, deps) = projects_depsolve_with_size(yumlock.yb, projects, with_core=False)
     except ProjectsError as e:
         log.error("start_build depsolve: %s", str(e))
         raise RuntimeError("Problem depsolving %s: %s" % (recipe["name"], str(e)))
+
+    # Read the kickstart template for this type
+    ks_template_path = joinpaths(share_dir, "composer", compose_type) + ".ks"
+    ks_template = open(ks_template_path, "r").read()
+
+    # How much space will the packages in the default template take?
+    ks_version = makeVersion(RHEL7)
+    ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+    ks.readKickstartFromString(ks_template+"\n%end\n")
+    try:
+        with yumlock.lock:
+            (template_size, _) = projects_depsolve_with_size(yumlock.yb, ks.handler.packages.packageList,
+                                                             with_core=not ks.handler.packages.nocore)
+    except ProjectsError as e:
+        log.error("start_build depsolve: %s", str(e))
+        raise RuntimeError("Problem depsolving %s: %s" % (recipe["name"], str(e)))
+    log.debug("installed_size = %d, template_size=%d", installed_size, template_size)
+
+    # Minimum LMC disk size is 1GiB, and anaconda bumps the estimated size up by 35% (which doesn't always work).
+    installed_size = max(1024**3, int((installed_size+template_size) * 1.4))
+    log.debug("/ partition size = %d", installed_size)
 
     # Create the results directory
     build_id = str(uuid4())
@@ -144,15 +170,13 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_m
     with open(recipe_path, "w") as f:
         f.write(frozen_recipe.toml())
 
-    # Read the kickstart template for this type and copy it into the results
-    ks_template_path = joinpaths(share_dir, "composer", compose_type) + ".ks"
-    shutil.copy(ks_template_path, results_dir)
-    ks_template = open(ks_template_path, "r").read()
-
     # Write out the dependencies to the results dir
     deps_path = joinpaths(results_dir, "deps.toml")
     with open(deps_path, "w") as f:
         f.write(toml.dumps({"packages":deps}).encode("UTF-8"))
+
+    # Save a copy of the original kickstart
+    shutil.copy(ks_template_path, results_dir)
 
     # Create the final kickstart with repos and package list
     ks_path = joinpaths(results_dir, "final-kickstart.ks")
@@ -169,6 +193,9 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_m
             ks_repo = repo_to_ks(r, "baseurl")
             log.debug("repo composer-%s = %s", idx, ks_repo)
             f.write('repo --name="composer-%s" %s\n' % (idx, ks_repo))
+
+        # Write the root partition and it's size in MB (rounded up)
+        f.write('part / --fstype="ext4" --size=%d\n' % ceil(installed_size / 1024**2))
 
         f.write(ks_template)
 
