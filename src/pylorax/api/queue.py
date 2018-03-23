@@ -245,6 +245,7 @@ def compose_detail(results_dir):
     * compose_type - The type of output generated (tar, iso, etc.)
     * recipe - Recipe name
     * version - Recipe version
+    * image_size - Size of the image, if finished. 0 otherwise.
     """
     build_id = os.path.basename(os.path.abspath(results_dir))
     status = open(joinpaths(results_dir, "STATUS")).read().strip()
@@ -463,11 +464,7 @@ def uuid_info(cfg, uuid):
         raise RuntimeError("Missing deps.toml for %s" % uuid)
     deps_dict = toml.loads(open(deps_path, "r").read())
 
-    compose_type = get_compose_type(uuid_dir)
-    status_path = joinpaths(uuid_dir, "STATUS")
-    if not os.path.exists(status_path):
-        raise RuntimeError("Missing status for %s" % uuid)
-    status = open(status_path).read().strip()
+    details = compose_detail(uuid_dir)
 
     commit_path = joinpaths(uuid_dir, "COMMIT")
     if not os.path.exists(commit_path):
@@ -479,8 +476,9 @@ def uuid_info(cfg, uuid):
             "recipe":       frozen_dict,
             "commit":       commit_id,
             "deps":         deps_dict,
-            "compose_type": compose_type,
-            "queue_status": status
+            "compose_type": details["compose_type"],
+            "queue_status": details["queue_status"],
+            "image_size":   details["image_size"]
     }
 
 def uuid_tar(cfg, uuid, metadata=False, image=False, logs=False):
