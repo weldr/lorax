@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import inspect
 import unittest
 from flask import Flask
 from datetime import timedelta
@@ -97,7 +96,7 @@ class CrossdomainTest(unittest.TestCase):
 
         # when attach_to_all is False the decorator will not assign
         # the Access-Control-* headers to the response
-        for header, value in response.headers:
+        for header, _ in response.headers:
             self.assertFalse(header.startswith('Access-Control-'))
 
 

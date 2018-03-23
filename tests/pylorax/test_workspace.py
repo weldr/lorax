@@ -72,7 +72,7 @@ class WorkspaceTest(unittest.TestCase):
         # The recipe was written by the workspace_write test.
         with self.assertRaises(recipes.RecipeFileError):
             with mock.patch('pylorax.api.workspace.recipe_from_toml', side_effect=IOError('TESTING')):
-                recipe = workspace_read(self.repo, "master", "http-server")
+                workspace_read(self.repo, "master", "http-server")
 
     def test_05_workspace_delete(self):
         """Test the workspace_delete function"""

@@ -518,8 +518,8 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(200, response.status_code)
         self.assertTrue(len(response.data) > 1024)
         # look for some well known strings inside the documentation
-        self.assertRegexpMatches(response.data, "Lorax [\d.]+ documentation")
-        self.assertRegexpMatches(response.data, "Copyright \d+, Red Hat, Inc.")
+        self.assertRegexpMatches(response.data, r"Lorax [\d.]+ documentation")
+        self.assertRegexpMatches(response.data, r"Copyright \d+, Red Hat, Inc.")
 
     def test_api_docs(self):
         """Test the /api/docs/"""
