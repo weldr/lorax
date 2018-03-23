@@ -74,6 +74,7 @@ def compose_status(socket_path, api_version, args, show_json=False, testmode=0):
                 "recipe": compose["recipe"],
                 "version": compose["version"],
                 "compose_type": compose["compose_type"],
+                "image_size": compose["image_size"],
                 "status": compose["queue_status"]}
 
     # Sort the status in a specific order
@@ -107,7 +108,13 @@ def compose_status(socket_path, api_version, args, show_json=False, testmode=0):
 
     # Print them as UUID RECIPE STATUS
     for c in status:
-        print("%s %-8s %-15s %s %s" % (c["id"], c["status"], c["recipe"], c["version"], c["compose_type"]))
+        if c["image_size"] > 0:
+            image_size = str(c["image_size"])
+        else:
+            image_size = ""
+
+        print("%s %-8s %-15s %s %-16s %s" % (c["id"], c["status"], c["recipe"], c["version"], c["compose_type"],
+                                             image_size))
 
 
 def compose_types(socket_path, api_version, args, show_json=False, testmode=0):
@@ -321,11 +328,18 @@ def compose_details(socket_path, api_version, args, show_json=False, testmode=0)
         print(result["error"]["msg"])
         return 1
 
-    print("%s %-8s %-15s %s %s" % (result["id"], 
-                                   result["queue_status"],
-                                   result["recipe"]["name"],
-                                   result["recipe"]["version"],
-                                   result["compose_type"]))
+    if result["image_size"] > 0:
+        image_size = str(result["image_size"])
+    else:
+        image_size = ""
+
+
+    print("%s %-8s %-15s %s %-16s %s" % (result["id"],
+                                         result["queue_status"],
+                                         result["recipe"]["name"],
+                                         result["recipe"]["version"],
+                                         result["compose_type"],
+                                         image_size))
     print("Recipe Packages:")
     for p in result["recipe"]["packages"]:
         print("    %s-%s" % (p["name"], p["version"]))
