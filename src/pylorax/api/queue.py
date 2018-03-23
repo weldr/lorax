@@ -253,12 +253,19 @@ def compose_detail(results_dir):
 
     compose_type = get_compose_type(results_dir)
 
+    image_path = get_image_name(results_dir)[1]
+    if status == "FINISHED" and os.path.exists(image_path):
+        image_size = os.stat(image_path).st_size
+    else:
+        image_size = 0
+
     return {"id":           build_id,
             "queue_status": status,
             "timestamp":    mtime,
             "compose_type": compose_type,
             "recipe":       recipe["name"],
-            "version":      recipe["version"]
+            "version":      recipe["version"],
+            "image_size":   image_size
             }
 
 def queue_status(cfg):
@@ -530,6 +537,18 @@ def uuid_image(cfg, uuid):
     :raises: RuntimeError if there was a problem (eg. invalid uuid, missing config file)
     """
     uuid_dir = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid)
+    return get_image_name(uuid_dir)
+
+def get_image_name(uuid_dir):
+    """Return the filename and full path of the build's image file
+
+    :param uuid: The UUID of the build
+    :type uuid: str
+    :returns: The image filename and full path
+    :rtype: tuple of strings
+    :raises: RuntimeError if there was a problem (eg. invalid uuid, missing config file)
+    """
+    uuid = os.path.basename(os.path.abspath(uuid_dir))
     if not os.path.exists(uuid_dir):
         raise RuntimeError("%s is not a valid build_id" % uuid)
 
