@@ -73,12 +73,13 @@ def compose_status(socket_path, api_version, args, show_json=False, testmode=0):
         return {"id": compose["id"],
                 "recipe": compose["recipe"],
                 "version": compose["version"],
+                "compose_type": compose["compose_type"],
                 "status": compose["queue_status"]}
 
     # Sort the status in a specific order
     def sort_status(a):
         order = ["RUNNING", "WAITING", "FINISHED", "FAILED"]
-        return (order.index(a["status"]), a["recipe"], a["version"])
+        return (order.index(a["status"]), a["recipe"], a["version"], a["compose_type"])
 
     status = []
 
@@ -106,7 +107,7 @@ def compose_status(socket_path, api_version, args, show_json=False, testmode=0):
 
     # Print them as UUID RECIPE STATUS
     for c in status:
-        print("%s %-8s %-15s %s" % (c["id"], c["status"], c["recipe"], c["version"]))
+        print("%s %-8s %-15s %s %s" % (c["id"], c["status"], c["recipe"], c["version"], c["compose_type"]))
 
 
 def compose_types(socket_path, api_version, args, show_json=False, testmode=0):
@@ -215,9 +216,14 @@ def compose_log(socket_path, api_version, args, show_json=False, testmode=0):
         log_size = 1024
 
     api_route = client.api_url(api_version, "/compose/log/%s?size=%d" % (args[0], log_size))
-    result = client.get_url_raw(socket_path, api_route)
+    try:
+        result = client.get_url_raw(socket_path, api_route)
+    except RuntimeError as e:
+        print(str(e))
+        return 1
 
     print(result)
+    return 0
 
 def compose_cancel(socket_path, api_version, args, show_json=False, testmode=0):
     """Cancel a running compose
@@ -311,6 +317,9 @@ def compose_details(socket_path, api_version, args, show_json=False, testmode=0)
     if show_json:
         print(json.dumps(result, indent=4))
         return 0
+    if "status" in result:
+        print(result["error"]["msg"])
+        return 1
 
     print("%s %-8s %-15s %s %s" % (result["id"], 
                                    result["queue_status"],

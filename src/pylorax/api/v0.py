@@ -1473,7 +1473,7 @@ def v0_api(api):
         try:
             uuid_cancel(api.config["COMPOSER_CFG"], uuid)
         except Exception as e:
-            return jsonify(status=False, uuid=uuid, msg=str(e))
+            return jsonify(status=False, uuid=uuid, error={"msg":str(e)}),400
         else:
             return jsonify(status=True, uuid=uuid)
 
@@ -1505,7 +1505,7 @@ def v0_api(api):
         try:
             info = uuid_info(api.config["COMPOSER_CFG"], uuid)
         except Exception as e:
-            return jsonify(status=False, msg=str(e))
+            return jsonify(status=False, error={"msg":str(e)}), 400
 
         return jsonify(**info)
 
@@ -1585,9 +1585,11 @@ def v0_api(api):
             return jsonify(status=False, error={"msg":str(e)}), 400
 
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
-        if status is None or status["queue_status"] == "WAITING":
-            return jsonify(status=False, uuid=uuid, msg="Build has not started yet. No logs to view")
+        if status is None:
+            return jsonify(status=False, error={"msg":"%s is not a valid build uuid" % uuid}), 400
+        elif status["queue_status"] == "WAITING":
+            return jsonify(status=False, uuid=uuid, error={"msg":"Build has not started yet. No logs to view"})
         try:
             return Response(uuid_log(api.config["COMPOSER_CFG"], uuid, size), direct_passthrough=True)
         except RuntimeError as e:
-            return jsonify(status=False, uuid=uuid, msg=str(e))
+            return jsonify(status=False, uuid=uuid, error={"msg":str(e)}), 400

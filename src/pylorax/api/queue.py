@@ -105,7 +105,7 @@ def monitor(cfg):
                 make_compose(cfg, os.path.realpath(dst))
                 log.info("Finished building %s, results are in %s", dst, os.path.realpath(dst))
                 open(joinpaths(dst, "STATUS"), "w").write("FINISHED\n")
-            except Exception as e:
+            except Exception:
                 import traceback
                 log.error("traceback: %s", traceback.format_exc())
 
@@ -235,6 +235,7 @@ def compose_detail(results_dir):
     :type results_dir: str
     :returns: A dictionary with details about the compose
     :rtype: dict
+    :raises: IOError if it cannot read the directory, STATUS, or recipe file.
 
     The following details are included in the dict:
 
@@ -245,10 +246,6 @@ def compose_detail(results_dir):
     * recipe - Recipe name
     * version - Recipe version
     """
-    # Just in case it went away
-    if not os.path.exists(results_dir):
-        return {}
-
     build_id = os.path.basename(os.path.abspath(results_dir))
     status = open(joinpaths(results_dir, "STATUS")).read().strip()
     mtime = os.stat(joinpaths(results_dir, "STATUS")).st_mtime
@@ -279,9 +276,25 @@ def queue_status(cfg):
     new_queue = [os.path.realpath(p) for p in glob(joinpaths(queue_dir, "new/*"))]
     run_queue = [os.path.realpath(p) for p in glob(joinpaths(queue_dir, "run/*"))]
 
+    new_details = []
+    for n in new_queue:
+        try:
+            d = compose_detail(n)
+        except IOError:
+            continue
+        new_details.append(d)
+
+    run_details = []
+    for r in run_queue:
+        try:
+            d = compose_detail(r)
+        except IOError:
+            continue
+        run_details.append(r)
+
     return {
-        "new":  [compose_detail(n) for n in new_queue],
-        "run":  [compose_detail(r) for r in run_queue]
+        "new": new_details,
+        "run": run_details
     }
 
 def uuid_status(cfg, uuid):
@@ -297,9 +310,9 @@ def uuid_status(cfg, uuid):
     Returns the same dict as `compose_details()`
     """
     uuid_dir = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid)
-    if os.path.exists(uuid_dir):
+    try:
         return compose_detail(uuid_dir)
-    else:
+    except IOError:
         return None
 
 def build_status(cfg, status_filter=None):
@@ -326,9 +339,12 @@ def build_status(cfg, status_filter=None):
     for build in glob(result_dir + "/*"):
         log.debug("Checking status of build %s", build)
 
-        status = open(joinpaths(build, "STATUS"), "r").read().strip()
-        if status in status_filter:
-            results.append(compose_detail(build))
+        try:
+            status = open(joinpaths(build, "STATUS"), "r").read().strip()
+            if status in status_filter:
+                results.append(compose_detail(build))
+        except IOError:
+            pass
     return results
 
 def uuid_cancel(cfg, uuid):
@@ -369,7 +385,7 @@ def uuid_cancel(cfg, uuid):
     started = time.time()
     while True:
         status = uuid_status(cfg, uuid)
-        if status["queue_status"] == "FAILED":
+        if status is None or status["queue_status"] == "FAILED":
             break
 
         # Is this taking too long? Exit anyway and try to cleanup.
@@ -441,9 +457,14 @@ def uuid_info(cfg, uuid):
     deps_dict = toml.loads(open(deps_path, "r").read())
 
     compose_type = get_compose_type(uuid_dir)
-    status = open(joinpaths(uuid_dir, "STATUS")).read().strip()
+    status_path = joinpaths(uuid_dir, "STATUS")
+    if not os.path.exists(status_path):
+        raise RuntimeError("Missing status for %s" % uuid)
+    status = open(status_path).read().strip()
 
     commit_path = joinpaths(uuid_dir, "COMMIT")
+    if not os.path.exists(commit_path):
+        raise RuntimeError("Missing commit hash for %s" % uuid)
     commit_id = open(commit_path, "r").read().strip()
 
     return {"id":           uuid,
@@ -544,6 +565,9 @@ def uuid_log(cfg, uuid, size=1024):
     # While a build is running the logs will be in /tmp/anaconda.log and when it
     # has finished they will be in the results directory
     status = uuid_status(cfg, uuid)
+    if status is None:
+        raise RuntimeError("Status is missing for %s" % uuid)
+
     if status["queue_status"] == "RUNNING":
         log_path = "/tmp/anaconda.log"
     else:
