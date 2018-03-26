@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.7.11
+Version:        19.7.12
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -168,6 +168,22 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python_sitelib}/composer/*
 
 %changelog
+* Mon Mar 26 2018 Brian C. Lane <bcl@redhat.com> 19.7.12-1
+- Add support for building ext4 filesystem images. (bcl)
+- Add the image size to the composer-cli status output (bcl)
+- Add image_size to the compose/info JSON (bcl)
+- Add image size to the compose details (bcl)
+- Removed the fixed partition size from composer ks templates (bcl)
+- Fix some pylint warnings (bcl)
+- Add the compose type to the output from compose status (bcl)
+- Fix composer-cli handling of log and detail errors. (bcl)
+- Fix a couple of error responses (bcl)
+- Add missing checks on return value from uuid_status (bcl)
+- Fix handling of missing STATUS file (bcl)
+- Fix compose types command (bcl)
+- Add qcow2 image type (bcl)
+- Update the URL in lorax.spec to point to new Lorax location (bcl)
+
 * Fri Mar 16 2018 Brian C. Lane <bcl@redhat.com> 19.7.11-1
 - Fix prettyDiffEntry output (bcl)
 - Fix the prettyDiffEntry test so that it fails correctly (bcl)
