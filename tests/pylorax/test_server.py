@@ -82,15 +82,15 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(data, status_dict)
 
     def test_02_recipes_list(self):
-        """Test the /api/v0/recipes/list route"""
+        """Test the /api/v0/blueprints/list route"""
         list_dict = {"recipes":["atlas", "development", "glusterfs", "http-server", "jboss", "kubernetes"],
                      "limit":20, "offset":0, "total":6}
-        resp = self.server.get("/api/v0/recipes/list")
+        resp = self.server.get("/api/v0/blueprints/list")
         data = json.loads(resp.data)
         self.assertEqual(data, list_dict)
 
     def test_03_recipes_info(self):
-        """Test the /api/v0/recipes/info route"""
+        """Test the /api/v0/blueprints/info route"""
         info_dict_1 = {"changes":[{"changed":False, "name":"http-server"}],
                        "errors":[],
                        "recipes":[{"description":"An example http server with PHP and MySQL support.",
@@ -104,7 +104,7 @@ class ServerTestCase(unittest.TestCase):
                                                 {"name": "rsync", "version": "3.0.*"},
                                                 {"name": "tmux", "version": "2.2"}],
                                    "version": "0.0.1"}]}
-        resp = self.server.get("/api/v0/recipes/info/http-server")
+        resp = self.server.get("/api/v0/blueprints/info/http-server")
         data = json.loads(resp.data)
         self.assertEqual(data, info_dict_1)
 
@@ -129,7 +129,7 @@ class ServerTestCase(unittest.TestCase):
                                                 {"name": "tmux", "version": "2.2"}],
                                    "version": "0.0.1"},
                                  ]}
-        resp = self.server.get("/api/v0/recipes/info/http-server,glusterfs")
+        resp = self.server.get("/api/v0/blueprints/info/http-server,glusterfs")
         data = json.loads(resp.data)
         self.assertEqual(data, info_dict_2)
 
@@ -137,13 +137,13 @@ class ServerTestCase(unittest.TestCase):
                 "errors":[{"recipe":"missing-recipe", "msg":"No commits for missing-recipe.toml on the master branch."}],
                        "recipes":[]
                       }
-        resp = self.server.get("/api/v0/recipes/info/missing-recipe")
+        resp = self.server.get("/api/v0/blueprints/info/missing-recipe")
         data = json.loads(resp.data)
         self.assertEqual(data, info_dict_3)
 
     def test_04_recipes_changes(self):
-        """Test the /api/v0/recipes/changes route"""
-        resp = self.server.get("/api/v0/recipes/changes/http-server")
+        """Test the /api/v0/blueprints/changes route"""
+        resp = self.server.get("/api/v0/blueprints/changes/http-server")
         data = json.loads(resp.data)
 
         # Can't compare a whole dict since commit hash and timestamps will change.
@@ -157,13 +157,13 @@ class ServerTestCase(unittest.TestCase):
 
     def test_04a_recipes_diff_empty_ws(self):
         """Test the /api/v0/diff/NEWEST/WORKSPACE with empty workspace"""
-        resp = self.server.get("/api/v0/recipes/diff/glusterfs/NEWEST/WORKSPACE")
+        resp = self.server.get("/api/v0/blueprints/diff/glusterfs/NEWEST/WORKSPACE")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         self.assertEqual(data, {"diff": []})
 
     def test_05_recipes_new_json(self):
-        """Test the /api/v0/recipes/new route with json recipe"""
+        """Test the /api/v0/blueprints/new route with json recipe"""
         test_recipe = {"description": "An example GlusterFS server with samba",
                        "name":"glusterfs",
                        "version": "0.2.0",
@@ -172,13 +172,13 @@ class ServerTestCase(unittest.TestCase):
                        "packages":[{"name":"samba", "version":"4.2.*"},
                                    {"name":"tmux", "version":"2.2"}]}
 
-        resp = self.server.post("/api/v0/recipes/new",
+        resp = self.server.post("/api/v0/blueprints/new",
                                 data=json.dumps(test_recipe),
                                 content_type="application/json")
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
 
-        resp = self.server.get("/api/v0/recipes/info/glusterfs")
+        resp = self.server.get("/api/v0/blueprints/info/glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         recipes = data.get("recipes")
@@ -186,15 +186,15 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(recipes[0], test_recipe)
 
     def test_06_recipes_new_toml(self):
-        """Test the /api/v0/recipes/new route with toml recipe"""
+        """Test the /api/v0/blueprints/new route with toml recipe"""
         test_recipe = open(joinpaths(self.examples_path, "glusterfs.toml"), "rb").read()
-        resp = self.server.post("/api/v0/recipes/new",
+        resp = self.server.post("/api/v0/blueprints/new",
                                 data=test_recipe,
                                 content_type="text/x-toml")
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
 
-        resp = self.server.get("/api/v0/recipes/info/glusterfs")
+        resp = self.server.get("/api/v0/blueprints/info/glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         recipes = data.get("recipes")
@@ -207,7 +207,7 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(recipes[0], test_recipe)
 
     def test_07_recipes_ws_json(self):
-        """Test the /api/v0/recipes/workspace route with json recipe"""
+        """Test the /api/v0/blueprints/workspace route with json recipe"""
         test_recipe = {"description": "An example GlusterFS server with samba, ws version",
                        "name":"glusterfs",
                        "version": "0.3.0",
@@ -216,13 +216,13 @@ class ServerTestCase(unittest.TestCase):
                        "packages":[{"name":"samba", "version":"4.2.*"},
                                    {"name":"tmux", "version":"2.2"}]}
 
-        resp = self.server.post("/api/v0/recipes/workspace",
+        resp = self.server.post("/api/v0/blueprints/workspace",
                                 data=json.dumps(test_recipe),
                                 content_type="application/json")
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
 
-        resp = self.server.get("/api/v0/recipes/info/glusterfs")
+        resp = self.server.get("/api/v0/blueprints/info/glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         recipes = data.get("recipes")
@@ -233,7 +233,7 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(changes[0], {"name":"glusterfs", "changed":True})
 
     def test_08_recipes_ws_toml(self):
-        """Test the /api/v0/recipes/workspace route with toml recipe"""
+        """Test the /api/v0/blueprints/workspace route with toml recipe"""
         test_recipe = {"description": "An example GlusterFS server with samba, ws version",
                        "name":"glusterfs",
                        "version": "0.4.0",
@@ -242,13 +242,13 @@ class ServerTestCase(unittest.TestCase):
                        "packages":[{"name":"samba", "version":"4.2.*"},
                                    {"name":"tmux", "version":"2.2"}]}
 
-        resp = self.server.post("/api/v0/recipes/workspace",
+        resp = self.server.post("/api/v0/blueprints/workspace",
                                 data=json.dumps(test_recipe),
                                 content_type="application/json")
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
 
-        resp = self.server.get("/api/v0/recipes/info/glusterfs")
+        resp = self.server.get("/api/v0/blueprints/info/glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         recipes = data.get("recipes")
@@ -259,17 +259,17 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(changes[0], {"name":"glusterfs", "changed":True})
 
     def test_09_recipes_ws_delete(self):
-        """Test DELETE /api/v0/recipes/workspace/<recipe_name>"""
+        """Test DELETE /api/v0/blueprints/workspace/<blueprint_name>"""
         # Write to the workspace first, just use the test_recipes_ws_json test for this
         self.test_07_recipes_ws_json()
 
         # Delete it
-        resp = self.server.delete("/api/v0/recipes/workspace/glusterfs")
+        resp = self.server.delete("/api/v0/blueprints/workspace/glusterfs")
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
 
         # Make sure it isn't the workspace copy and that changed is False
-        resp = self.server.get("/api/v0/recipes/info/glusterfs")
+        resp = self.server.get("/api/v0/blueprints/info/glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         recipes = data.get("recipes")
@@ -280,21 +280,21 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(changes[0], {"name":"glusterfs", "changed":False})
 
     def test_10_recipes_delete(self):
-        """Test DELETE /api/v0/recipes/delete/<recipe_name>"""
-        resp = self.server.delete("/api/v0/recipes/delete/glusterfs")
+        """Test DELETE /api/v0/blueprints/delete/<blueprint_name>"""
+        resp = self.server.delete("/api/v0/blueprints/delete/glusterfs")
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
 
         # Make sure glusterfs is no longer in the list of recipes
-        resp = self.server.get("/api/v0/recipes/list")
+        resp = self.server.get("/api/v0/blueprints/list")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         recipes = data.get("recipes")
         self.assertEqual("glusterfs" in recipes, False)
 
     def test_11_recipes_undo(self):
-        """Test POST /api/v0/recipes/undo/<recipe_name/<commit>"""
-        resp = self.server.get("/api/v0/recipes/changes/glusterfs")
+        """Test POST /api/v0/blueprints/undo/<blueprint_name>/<commit>"""
+        resp = self.server.get("/api/v0/blueprints/changes/glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
 
@@ -306,11 +306,11 @@ class ServerTestCase(unittest.TestCase):
 
         # Revert it to the first commit
         commit = changes[-1]["commit"]
-        resp = self.server.post("/api/v0/recipes/undo/glusterfs/%s" % commit)
+        resp = self.server.post("/api/v0/blueprints/undo/glusterfs/%s" % commit)
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
 
-        resp = self.server.get("/api/v0/recipes/changes/glusterfs")
+        resp = self.server.get("/api/v0/blueprints/changes/glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
 
@@ -323,12 +323,12 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(changes[0]["message"], expected_msg)
 
     def test_12_recipes_tag(self):
-        """Test POST /api/v0/recipes/tag/<recipe_name>"""
-        resp = self.server.post("/api/v0/recipes/tag/glusterfs")
+        """Test POST /api/v0/blueprints/tag/<blueprint_name>"""
+        resp = self.server.post("/api/v0/blueprints/tag/glusterfs")
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
 
-        resp = self.server.get("/api/v0/recipes/changes/glusterfs")
+        resp = self.server.get("/api/v0/blueprints/changes/glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
 
@@ -340,8 +340,8 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(changes[0]["revision"], 1)
 
     def test_13_recipes_diff(self):
-        """Test /api/v0/recipes/diff/<recipe_name>/<from_commit>/<to_commit>"""
-        resp = self.server.get("/api/v0/recipes/changes/glusterfs")
+        """Test /api/v0/blueprints/diff/<blueprint_name>/<from_commit>/<to_commit>"""
+        resp = self.server.get("/api/v0/blueprints/changes/glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         recipes = data.get("recipes")
@@ -355,7 +355,7 @@ class ServerTestCase(unittest.TestCase):
         self.assertNotEqual(to_commit, None)
 
         # Get the differences between the two commits
-        resp = self.server.get("/api/v0/recipes/diff/glusterfs/%s/%s" % (from_commit, to_commit))
+        resp = self.server.get("/api/v0/blueprints/diff/glusterfs/%s/%s" % (from_commit, to_commit))
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         self.assertEqual(data, {"diff": [{"new": {"Version": "0.0.1"}, "old": {"Version": "0.2.1"}}]})
@@ -369,14 +369,14 @@ class ServerTestCase(unittest.TestCase):
                        "packages":[{"name":"samba", "version":"4.2.*"},
                                    {"name":"tmux", "version":"2.2"}]}
 
-        resp = self.server.post("/api/v0/recipes/workspace",
+        resp = self.server.post("/api/v0/blueprints/workspace",
                                 data=json.dumps(test_recipe),
                                 content_type="application/json")
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
 
         # Get the differences between the newest commit and the workspace
-        resp = self.server.get("/api/v0/recipes/diff/glusterfs/NEWEST/WORKSPACE")
+        resp = self.server.get("/api/v0/blueprints/diff/glusterfs/NEWEST/WORKSPACE")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         result = {"diff": [{"new": {"Description": "An example GlusterFS server with samba, ws version"},
@@ -388,8 +388,8 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(data, result)
 
     def test_14_recipes_depsolve(self):
-        """Test /api/v0/recipes/depsolve/<recipe_names>"""
-        resp = self.server.get("/api/v0/recipes/depsolve/glusterfs")
+        """Test /api/v0/blueprints/depsolve/<blueprint_names>"""
+        resp = self.server.get("/api/v0/blueprints/depsolve/glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         recipes = data.get("recipes")
@@ -400,17 +400,17 @@ class ServerTestCase(unittest.TestCase):
         self.assertFalse(data.get("errors"))
 
     def test_14_recipes_depsolve_empty(self):
-        """Test /api/v0/recipes/depsolve/<recipe_names> on empty recipe"""
+        """Test /api/v0/blueprints/depsolve/<blueprint_names> on empty recipe"""
         test_recipe = {"description": "An empty recipe",
                        "name":"void",
                        "version": "0.1.0"}
-        resp = self.server.post("/api/v0/recipes/new",
+        resp = self.server.post("/api/v0/blueprints/new",
                                 data=json.dumps(test_recipe),
                                 content_type="application/json")
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
 
-        resp = self.server.get("/api/v0/recipes/depsolve/void")
+        resp = self.server.get("/api/v0/blueprints/depsolve/void")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         recipes = data.get("recipes")
@@ -423,8 +423,8 @@ class ServerTestCase(unittest.TestCase):
         self.assertFalse(data.get("errors"))
 
     def test_15_recipes_freeze(self):
-        """Test /api/v0/recipes/freeze/<recipe_names>"""
-        resp = self.server.get("/api/v0/recipes/freeze/glusterfs")
+        """Test /api/v0/blueprints/freeze/<blueprint_names>"""
+        resp = self.server.get("/api/v0/blueprints/freeze/glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         recipes = data.get("recipes")
@@ -488,7 +488,7 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(modules[0]["dependencies"][0]["name"], "basesystem")
 
     def test_recipe_new_branch(self):
-        """Test the /api/v0/recipes/new route with a new branch"""
+        """Test the /api/v0/blueprints/new route with a new branch"""
         test_recipe = {"description": "An example GlusterFS server with samba",
                        "name":"glusterfs",
                        "version": "0.2.0",
@@ -497,13 +497,13 @@ class ServerTestCase(unittest.TestCase):
                        "packages":[{"name":"samba", "version":"4.2.*"},
                                    {"name":"tmux", "version":"2.2"}]}
 
-        resp = self.server.post("/api/v0/recipes/new?branch=test",
+        resp = self.server.post("/api/v0/blueprints/new?branch=test",
                                 data=json.dumps(test_recipe),
                                 content_type="application/json")
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
 
-        resp = self.server.get("/api/v0/recipes/info/glusterfs?branch=test")
+        resp = self.server.get("/api/v0/blueprints/info/glusterfs?branch=test")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         recipes = data.get("recipes")
