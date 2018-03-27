@@ -940,10 +940,10 @@ def v0_api(api):
     def v0_status():
         return jsonify(build="devel", api="0", db_version="0", schema_version="0", db_supported=False)
 
-    @api.route("/api/v0/recipes/list")
+    @api.route("/api/v0/blueprints/list")
     @crossdomain(origin="*")
-    def v0_recipes_list():
-        """List the available recipes on a branch."""
+    def v0_blueprints_list():
+        """List the available blueprints on a branch."""
         branch = request.args.get("branch", "master")
         try:
             limit = int(request.args.get("limit", "20"))
@@ -955,16 +955,16 @@ def v0_api(api):
             recipes = take_limits(map(lambda f: f[:-5], list_branch_files(api.config["GITLOCK"].repo, branch)), offset, limit)
         return jsonify(recipes=recipes, limit=limit, offset=offset, total=len(recipes))
 
-    @api.route("/api/v0/recipes/info/<recipe_names>")
+    @api.route("/api/v0/blueprints/info/<blueprint_names>")
     @crossdomain(origin="*")
-    def v0_recipes_info(recipe_names):
-        """Return the contents of the recipe, or a list of recipes"""
+    def v0_blueprints_info(blueprint_names):
+        """Return the contents of the blueprint, or a list of blueprints"""
         branch = request.args.get("branch", "master")
         out_fmt = request.args.get("format", "json")
         recipes = []
         changes = []
         errors = []
-        for recipe_name in [n.strip() for n in recipe_names.split(",")]:
+        for recipe_name in [n.strip() for n in blueprint_names.split(",")]:
             exceptions = []
             # Get the workspace version (if it exists)
             try:
@@ -1011,10 +1011,10 @@ def v0_api(api):
         else:
             return jsonify(changes=changes, recipes=recipes, errors=errors)
 
-    @api.route("/api/v0/recipes/changes/<recipe_names>")
+    @api.route("/api/v0/blueprints/changes/<blueprint_names>")
     @crossdomain(origin="*")
-    def v0_recipes_changes(recipe_names):
-        """Return the changes to a recipe or list of recipes"""
+    def v0_blueprints_changes(blueprint_names):
+        """Return the changes to a blueprint or list of blueprints"""
         branch = request.args.get("branch", "master")
         try:
             limit = int(request.args.get("limit", "20"))
@@ -1024,7 +1024,7 @@ def v0_api(api):
 
         recipes = []
         errors = []
-        for recipe_name in [n.strip() for n in recipe_names.split(",")]:
+        for recipe_name in [n.strip() for n in blueprint_names.split(",")]:
             filename = recipe_filename(recipe_name)
             try:
                 with api.config["GITLOCK"].lock:
@@ -1040,10 +1040,10 @@ def v0_api(api):
 
         return jsonify(recipes=recipes, errors=errors, offset=offset, limit=limit)
 
-    @api.route("/api/v0/recipes/new", methods=["POST"])
+    @api.route("/api/v0/blueprints/new", methods=["POST"])
     @crossdomain(origin="*")
-    def v0_recipes_new():
-        """Commit a new recipe"""
+    def v0_blueprints_new():
+        """Commit a new blueprint"""
         branch = request.args.get("branch", "master")
         try:
             if request.headers['Content-Type'] == "text/x-toml":
@@ -1063,24 +1063,24 @@ def v0_api(api):
         else:
             return jsonify(status=True)
 
-    @api.route("/api/v0/recipes/delete/<recipe_name>", methods=["DELETE"])
+    @api.route("/api/v0/blueprints/delete/<blueprint_name>", methods=["DELETE"])
     @crossdomain(origin="*")
-    def v0_recipes_delete(recipe_name):
-        """Delete a recipe from git"""
+    def v0_blueprints_delete(blueprint_name):
+        """Delete a blueprint from git"""
         branch = request.args.get("branch", "master")
         try:
             with api.config["GITLOCK"].lock:
-                delete_recipe(api.config["GITLOCK"].repo, branch, recipe_name)
+                delete_recipe(api.config["GITLOCK"].repo, branch, blueprint_name)
         except Exception as e:
             log.error("(v0_recipes_delete) %s", str(e))
             return jsonify(status=False, error={"msg":str(e)}), 400
         else:
             return jsonify(status=True)
 
-    @api.route("/api/v0/recipes/workspace", methods=["POST"])
+    @api.route("/api/v0/blueprints/workspace", methods=["POST"])
     @crossdomain(origin="*")
-    def v0_recipes_workspace():
-        """Write a recipe to the workspace"""
+    def v0_blueprints_workspace():
+        """Write a blueprint to the workspace"""
         branch = request.args.get("branch", "master")
         try:
             if request.headers['Content-Type'] == "text/x-toml":
@@ -1096,31 +1096,31 @@ def v0_api(api):
         else:
             return jsonify(status=True)
 
-    @api.route("/api/v0/recipes/workspace/<recipe_name>", methods=["DELETE"])
+    @api.route("/api/v0/blueprints/workspace/<blueprint_name>", methods=["DELETE"])
     @crossdomain(origin="*")
-    def v0_recipes_delete_workspace(recipe_name):
-        """Delete a recipe from the workspace"""
+    def v0_blueprints_delete_workspace(blueprint_name):
+        """Delete a blueprint from the workspace"""
         branch = request.args.get("branch", "master")
         try:
             with api.config["GITLOCK"].lock:
-                workspace_delete(api.config["GITLOCK"].repo, branch, recipe_name)
+                workspace_delete(api.config["GITLOCK"].repo, branch, blueprint_name)
         except Exception as e:
             log.error("(v0_recipes_delete_workspace) %s", str(e))
             return jsonify(status=False, error={"msg":str(e)}), 400
         else:
             return jsonify(status=True)
 
-    @api.route("/api/v0/recipes/undo/<recipe_name>/<commit>", methods=["POST"])
+    @api.route("/api/v0/blueprints/undo/<blueprint_name>/<commit>", methods=["POST"])
     @crossdomain(origin="*")
-    def v0_recipes_undo(recipe_name, commit):
-        """Undo changes to a recipe by reverting to a previous commit."""
+    def v0_blueprints_undo(blueprint_name, commit):
+        """Undo changes to a blueprint by reverting to a previous commit."""
         branch = request.args.get("branch", "master")
         try:
             with api.config["GITLOCK"].lock:
-                revert_recipe(api.config["GITLOCK"].repo, branch, recipe_name, commit)
+                revert_recipe(api.config["GITLOCK"].repo, branch, blueprint_name, commit)
 
                 # Read the new recipe and write it to the workspace
-                recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, recipe_name)
+                recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
                 workspace_write(api.config["GITLOCK"].repo, branch, recipe)
         except Exception as e:
             log.error("(v0_recipes_undo) %s", str(e))
@@ -1128,32 +1128,32 @@ def v0_api(api):
         else:
             return jsonify(status=True)
 
-    @api.route("/api/v0/recipes/tag/<recipe_name>", methods=["POST"])
+    @api.route("/api/v0/blueprints/tag/<blueprint_name>", methods=["POST"])
     @crossdomain(origin="*")
-    def v0_recipes_tag(recipe_name):
-        """Tag a recipe's latest recipe commit as a 'revision'"""
+    def v0_blueprints_tag(blueprint_name):
+        """Tag a blueprint's latest blueprint commit as a 'revision'"""
         branch = request.args.get("branch", "master")
         try:
             with api.config["GITLOCK"].lock:
-                tag_recipe_commit(api.config["GITLOCK"].repo, branch, recipe_name)
+                tag_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
         except Exception as e:
             log.error("(v0_recipes_tag) %s", str(e))
             return jsonify(status=False, error={"msg":str(e)}), 400
         else:
             return jsonify(status=True)
 
-    @api.route("/api/v0/recipes/diff/<recipe_name>/<from_commit>/<to_commit>")
+    @api.route("/api/v0/blueprints/diff/<blueprint_name>/<from_commit>/<to_commit>")
     @crossdomain(origin="*")
-    def v0_recipes_diff(recipe_name, from_commit, to_commit):
-        """Return the differences between two commits of a recipe"""
+    def v0_blueprints_diff(blueprint_name, from_commit, to_commit):
+        """Return the differences between two commits of a blueprint"""
         branch = request.args.get("branch", "master")
         try:
             if from_commit == "NEWEST":
                 with api.config["GITLOCK"].lock:
-                    old_recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, recipe_name)
+                    old_recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
             else:
                 with api.config["GITLOCK"].lock:
-                    old_recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, recipe_name, from_commit)
+                    old_recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name, from_commit)
         except Exception as e:
             log.error("(v0_recipes_diff) %s", str(e))
             return jsonify(status=False, error={"msg":str(e)}), 400
@@ -1161,17 +1161,17 @@ def v0_api(api):
         try:
             if to_commit == "WORKSPACE":
                 with api.config["GITLOCK"].lock:
-                    new_recipe = workspace_read(api.config["GITLOCK"].repo, branch, recipe_name)
+                    new_recipe = workspace_read(api.config["GITLOCK"].repo, branch, blueprint_name)
                 # If there is no workspace, use the newest commit instead
                 if not new_recipe:
                     with api.config["GITLOCK"].lock:
-                        new_recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, recipe_name)
+                        new_recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
             elif to_commit == "NEWEST":
                 with api.config["GITLOCK"].lock:
-                    new_recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, recipe_name)
+                    new_recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
             else:
                 with api.config["GITLOCK"].lock:
-                    new_recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, recipe_name, to_commit)
+                    new_recipe = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name, to_commit)
         except Exception as e:
             log.error("(v0_recipes_diff) %s", str(e))
             return jsonify(status=False, error={"msg":str(e)}), 400
@@ -1179,15 +1179,15 @@ def v0_api(api):
         diff = recipe_diff(old_recipe, new_recipe)
         return jsonify(diff=diff)
 
-    @api.route("/api/v0/recipes/freeze/<recipe_names>")
+    @api.route("/api/v0/blueprints/freeze/<blueprint_names>")
     @crossdomain(origin="*")
-    def v0_recipes_freeze(recipe_names):
-        """Return the recipe with the exact modules and packages selected by depsolve"""
+    def v0_blueprints_freeze(blueprint_names):
+        """Return the blueprint with the exact modules and packages selected by depsolve"""
         branch = request.args.get("branch", "master")
         out_fmt = request.args.get("format", "json")
         recipes = []
         errors = []
-        for recipe_name in [n.strip() for n in sorted(recipe_names.split(","), key=lambda n: n.lower())]:
+        for recipe_name in [n.strip() for n in sorted(blueprint_names.split(","), key=lambda n: n.lower())]:
             # get the recipe
             # Get the workspace version (if it exists)
             recipe = None
@@ -1232,14 +1232,14 @@ def v0_api(api):
         else:
             return jsonify(recipes=recipes, errors=errors)
 
-    @api.route("/api/v0/recipes/depsolve/<recipe_names>")
+    @api.route("/api/v0/blueprints/depsolve/<blueprint_names>")
     @crossdomain(origin="*")
-    def v0_recipes_depsolve(recipe_names):
-        """Return the dependencies for a recipe"""
+    def v0_blueprints_depsolve(blueprint_names):
+        """Return the dependencies for a blueprint"""
         branch = request.args.get("branch", "master")
         recipes = []
         errors = []
-        for recipe_name in [n.strip() for n in sorted(recipe_names.split(","), key=lambda n: n.lower())]:
+        for recipe_name in [n.strip() for n in sorted(blueprint_names.split(","), key=lambda n: n.lower())]:
             # get the recipe
             # Get the workspace version (if it exists)
             recipe = None
