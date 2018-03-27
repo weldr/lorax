@@ -44,10 +44,10 @@ Some requests only return a status/error response.
 API Routes
 ----------
 
-All of the recipes routes support the optional `branch` argument. If it is not
-used then the API will use the `master` branch for recipes. If you want to create
+All of the blueprints routes support the optional `branch` argument. If it is not
+used then the API will use the `master` branch for blueprints. If you want to create
 a new branch use the `new` or `workspace` routes with ?branch=<branch-name> to
-store the new recipe on the new branch.
+store the new blueprint on the new branch.
 
 `/api/v0/test`
 ^^^^^^^^^^^^^^
@@ -64,14 +64,14 @@ store the new recipe on the new branch.
         "db_version": "0",
         "schema_version": "0" }
 
-`/api/v0/recipes/list`
-^^^^^^^^^^^^^^^^^^^^^^
+`/api/v0/blueprints/list`
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  List the available recipes::
+  List the available blueprints::
 
       { "limit": 20,
         "offset": 0,
-        "recipes": [
+        "blueprints": [
           "atlas",
           "development",
           "glusterfs",
@@ -80,13 +80,13 @@ store the new recipe on the new branch.
           "kubernetes" ],
         "total": 6 }
 
-`/api/v0/recipes/info/<recipe_names>`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+`/api/v0/blueprints/info/<blueprint_names>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  Return the JSON representation of the recipe. This includes 3 top level
+  Return the JSON representation of the blueprint. This includes 3 top level
   objects.  `changes` which lists whether or not the workspace is different from
-  the most recent commit. `recipes` which lists the JSON representation of the
-  recipe, and `errors` which will list any errors, like non-existant recipes.
+  the most recent commit. `blueprints` which lists the JSON representation of the
+  blueprint, and `errors` which will list any errors, like non-existant blueprints.
 
   Example::
 
@@ -98,7 +98,7 @@ store the new recipe on the new branch.
           }
         ],
         "errors": [],
-        "recipes": [
+        "blueprints": [
           {
             "description": "An example GlusterFS server with samba",
             "modules": [
@@ -134,19 +134,19 @@ store the new recipe on the new branch.
         "errors": [
           {
             "msg": "ggit-error: the path 'missing.toml' does not exist in the given tree (-3)",
-            "recipe": "missing"
+            "blueprint": "missing"
           }
         ],
-        "recipes": []
+        "blueprints": []
       }
 
-`/api/v0/recipes/changes/<recipe_names>[?offset=0&limit=20]`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+`/api/v0/blueprints/changes/<blueprint_names>[?offset=0&limit=20]`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  Return the commits to a recipe. By default it returns the first 20 commits, this
+  Return the commits to a blueprint. By default it returns the first 20 commits, this
   can be changed by passing `offset` and/or `limit`. The response will include the
   commit hash, summary, timestamp, and optionally the revision number. The commit
-  hash can be passed to `/api/v0/recipes/diff/` to retrieve the exact changes.
+  hash can be passed to `/api/v0/blueprints/diff/` to retrieve the exact changes.
 
   Example::
 
@@ -154,42 +154,42 @@ store the new recipe on the new branch.
         "errors": [],
         "limit": 20,
         "offset": 0,
-        "recipes": [
+        "blueprints": [
           {
             "changes": [
               {
                 "commit": "e083921a7ed1cf2eec91ad12b9ad1e70ef3470be",
-                "message": "Recipe glusterfs, version 0.0.6 saved.",
+                "message": "blueprint glusterfs, version 0.0.6 saved.",
                 "revision": null,
                 "timestamp": "2017-11-23T00:18:13Z"
               },
               {
                 "commit": "cee5f4c20fc33ea4d54bfecf56f4ad41ad15f4f3",
-                "message": "Recipe glusterfs, version 0.0.5 saved.",
+                "message": "blueprint glusterfs, version 0.0.5 saved.",
                 "revision": null,
                 "timestamp": "2017-11-11T01:00:28Z"
               },
               {
                 "commit": "29b492f26ed35d80800b536623bafc51e2f0eff2",
-                "message": "Recipe glusterfs, version 0.0.4 saved.",
+                "message": "blueprint glusterfs, version 0.0.4 saved.",
                 "revision": null,
                 "timestamp": "2017-11-11T00:28:30Z"
               },
               {
                 "commit": "03374adbf080fe34f5c6c29f2e49cc2b86958bf2",
-                "message": "Recipe glusterfs, version 0.0.3 saved.",
+                "message": "blueprint glusterfs, version 0.0.3 saved.",
                 "revision": null,
                 "timestamp": "2017-11-10T23:15:52Z"
               },
               {
                 "commit": "0e08ecbb708675bfabc82952599a1712a843779d",
-                "message": "Recipe glusterfs, version 0.0.2 saved.",
+                "message": "blueprint glusterfs, version 0.0.2 saved.",
                 "revision": null,
                 "timestamp": "2017-11-10T23:14:56Z"
               },
               {
                 "commit": "3e11eb87a63d289662cba4b1804a0947a6843379",
-                "message": "Recipe glusterfs, version 0.0.1 saved.",
+                "message": "blueprint glusterfs, version 0.0.1 saved.",
                 "revision": null,
                 "timestamp": "2017-11-08T00:02:47Z"
               }
@@ -200,71 +200,71 @@ store the new recipe on the new branch.
         ]
       }
 
-POST `/api/v0/recipes/new`
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+POST `/api/v0/blueprints/new`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  Create a new recipe, or update an existing recipe. This supports both JSON and TOML
-  for the recipe format. The recipe should be in the body of the request with the
+  Create a new blueprint, or update an existing blueprint. This supports both JSON and TOML
+  for the blueprint format. The blueprint should be in the body of the request with the
   `Content-Type` header set to either `application/json` or `text/x-toml`.
 
   The response will be a status response with `status` set to true, or an
   error response with it set to false and an error message included.
 
-DELETE `/api/v0/recipes/delete/<recipe_name>`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+DELETE `/api/v0/blueprints/delete/<blueprint_name>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  Delete a recipe. The recipe is deleted from the branch, and will no longer
-  be listed by the `list` route. A recipe can be undeleted using the `undo` route
+  Delete a blueprint. The blueprint is deleted from the branch, and will no longer
+  be listed by the `list` route. A blueprint can be undeleted using the `undo` route
   to revert to a previous commit.
 
   The response will be a status response with `status` set to true, or an
   error response with it set to false and an error message included.
 
-POST `/api/v0/recipes/workspace`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+POST `/api/v0/blueprints/workspace`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  Write a recipe to the temporary workspace. This works exactly the same as `new` except
+  Write a blueprint to the temporary workspace. This works exactly the same as `new` except
   that it does not create a commit. JSON and TOML bodies are supported.
 
-  The workspace is meant to be used as a temporary recipe storage for clients.
+  The workspace is meant to be used as a temporary blueprint storage for clients.
   It will be read by the `info` and `diff` routes if it is different from the
   most recent commit.
 
   The response will be a status response with `status` set to true, or an
   error response with it set to false and an error message included.
 
-DELETE `/api/v0/recipes/workspace/<recipe_name>`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+DELETE `/api/v0/blueprints/workspace/<blueprint_name>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  Remove the temporary workspace copy of a recipe. The `info` route will now
-  return the most recent commit of the recipe. Any changes that were in the
+  Remove the temporary workspace copy of a blueprint. The `info` route will now
+  return the most recent commit of the blueprint. Any changes that were in the
   workspace will be lost.
 
   The response will be a status response with `status` set to true, or an
   error response with it set to false and an error message included.
 
-POST `/api/v0/recipes/undo/<recipe_name>/<commit>`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+POST `/api/v0/blueprints/undo/<blueprint_name>/<commit>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  This will revert the recipe to a previous commit. The commit hash from the `changes`
+  This will revert the blueprint to a previous commit. The commit hash from the `changes`
   route can be used in this request.
 
   The response will be a status response with `status` set to true, or an
   error response with it set to false and an error message included.
 
-POST `/api/v0/recipes/tag/<recipe_name>`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+POST `/api/v0/blueprints/tag/<blueprint_name>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  Tag a recipe as a new release. This uses git tags with a special format.
-  `refs/tags/<branch>/<filename>/r<revision>`. Only the most recent recipe commit
+  Tag a blueprint as a new release. This uses git tags with a special format.
+  `refs/tags/<branch>/<filename>/r<revision>`. Only the most recent blueprint commit
   can be tagged. Revisions start at 1 and increment for each new tag
-  (per-recipe). If the commit has already been tagged it will return false.
+  (per-blueprint). If the commit has already been tagged it will return false.
 
   The response will be a status response with `status` set to true, or an
   error response with it set to false and an error message included.
 
-`/api/v0/recipes/diff/<recipe_name>/<from_commit>/<to_commit>`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+`/api/v0/blueprints/diff/<blueprint_name>/<from_commit>/<to_commit>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Return the differences between two commits, or the workspace. The commit hash
   from the `changes` response can be used here, or several special strings:
@@ -272,15 +272,15 @@ POST `/api/v0/recipes/tag/<recipe_name>`
   - NEWEST will select the newest git commit. This works for `from_commit` or `to_commit`
   - WORKSPACE will select the workspace copy. This can only be used in `to_commit`
 
-  eg. `/api/v0/recipes/diff/glusterfs/NEWEST/WORKSPACE` will return the differences
+  eg. `/api/v0/blueprints/diff/glusterfs/NEWEST/WORKSPACE` will return the differences
   between the most recent git commit and the contents of the workspace.
 
-  Each entry in the response's diff object contains the old recipe value and the new one.
+  Each entry in the response's diff object contains the old blueprint value and the new one.
   If old is null and new is set, then it was added.
   If new is null and old is set, then it was removed.
   If both are set, then it was changed.
 
-  The old/new entries will have the name of the recipe field that was changed. This
+  The old/new entries will have the name of the blueprint field that was changed. This
   can be one of: Name, Description, Version, Module, or Package.
   The contents for these will be the old/new values for them.
 
@@ -310,19 +310,19 @@ POST `/api/v0/recipes/tag/<recipe_name>`
         ]
       }
 
-`/api/v0/recipes/freeze/<recipe_names>`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+`/api/v0/blueprints/freeze/<blueprint_names>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  Return a JSON representation of the recipe with the package and module versions set
-  to the exact versions chosen by depsolving the recipe.
+  Return a JSON representation of the blueprint with the package and module versions set
+  to the exact versions chosen by depsolving the blueprint.
 
   Example::
 
       {
         "errors": [],
-        "recipes": [
+        "blueprints": [
           {
-            "recipe": {
+            "blueprint": {
               "description": "An example GlusterFS server with samba",
               "modules": [
                 {
@@ -351,19 +351,19 @@ POST `/api/v0/recipes/tag/<recipe_name>`
         ]
       }
 
-`/api/v0/recipes/depsolve/<recipe_names>`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+`/api/v0/blueprints/depsolve/<blueprint_names>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  Depsolve the recipe using yum, return the recipe used, and the NEVRAs of the packages
-  chosen to satisfy the recipe's requirements. The response will include a list of results,
-  with the full dependency list in `dependencies`, the NEVRAs for the recipe's direct modules
+  Depsolve the blueprint using yum, return the blueprint used, and the NEVRAs of the packages
+  chosen to satisfy the blueprint's requirements. The response will include a list of results,
+  with the full dependency list in `dependencies`, the NEVRAs for the blueprint's direct modules
   and packages in `modules`, and any error will be in `errors`.
 
   Example::
 
       {
         "errors": [],
-        "recipes": [
+        "blueprints": [
           {
             "dependencies": [
               {
@@ -413,7 +413,7 @@ POST `/api/v0/recipes/tag/<recipe_name>`
               },
               ...
             ],
-            "recipe": {
+            "blueprint": {
               "description": "An example GlusterFS server with samba",
               "modules": [
                 {
@@ -619,13 +619,13 @@ POST `/api/v0/compose`
   should look like this::
 
       {
-        "recipe_name": "http-server",
+        "blueprint_name": "http-server",
         "compose_type": "tar",
         "branch": "master"
       }
 
-  Pass it the name of the recipe, the type of output (from '/api/v0/compose/types'), and the
-  recipe branch to use. 'branch' is optional and will default to master. It will create a new
+  Pass it the name of the blueprint, the type of output (from '/api/v0/compose/types'), and the
+  blueprint branch to use. 'branch' is optional and will default to master. It will create a new
   build and add it to the queue. It returns the build uuid and a status if it succeeds::
 
       {
@@ -659,14 +659,14 @@ POST `/api/v0/compose`
         "new": [
           {
             "id": "45502a6d-06e8-48a5-a215-2b4174b3614b",
-            "recipe": "glusterfs",
+            "blueprint": "glusterfs",
             "queue_status": "WAITING",
             "timestamp": 1517362647.4570868,
             "version": "0.0.6"
           },
           {
             "id": "6d292bd0-bec7-4825-8d7d-41ef9c3e4b73",
-            "recipe": "kubernetes",
+            "blueprint": "kubernetes",
             "queue_status": "WAITING",
             "timestamp": 1517362659.0034983,
             "version": "0.0.1"
@@ -675,7 +675,7 @@ POST `/api/v0/compose`
         "run": [
           {
             "id": "745712b2-96db-44c0-8014-fe925c35e795",
-            "recipe": "glusterfs",
+            "blueprint": "glusterfs",
             "queue_status": "RUNNING",
             "timestamp": 1517362633.7965999,
             "version": "0.0.6"
@@ -694,14 +694,14 @@ POST `/api/v0/compose`
         "finished": [
           {
             "id": "70b84195-9817-4b8a-af92-45e380f39894",
-            "recipe": "glusterfs",
+            "blueprint": "glusterfs",
             "queue_status": "FINISHED",
             "timestamp": 1517351003.8210032,
             "version": "0.0.6"
           },
           {
             "id": "e695affd-397f-4af9-9022-add2636e7459",
-            "recipe": "glusterfs",
+            "blueprint": "glusterfs",
             "queue_status": "FINISHED",
             "timestamp": 1517362289.7193348,
             "version": "0.0.6"
@@ -720,7 +720,7 @@ POST `/api/v0/compose`
         "failed": [
            {
             "id": "8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a",
-            "recipe": "http-server",
+            "blueprint": "http-server",
             "queue_status": "FAILED",
             "timestamp": 1517523249.9301329,
             "version": "0.0.2"
@@ -739,14 +739,14 @@ POST `/api/v0/compose`
         "uuids": [
           {
             "id": "8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a",
-            "recipe": "http-server",
+            "blueprint": "http-server",
             "queue_status": "FINISHED",
             "timestamp": 1517523644.2384307,
             "version": "0.0.2"
           },
           {
             "id": "45502a6d-06e8-48a5-a215-2b4174b3614b",
-            "recipe": "glusterfs",
+            "blueprint": "glusterfs",
             "queue_status": "FINISHED",
             "timestamp": 1517363442.188399,
             "version": "0.0.6"
@@ -754,8 +754,8 @@ POST `/api/v0/compose`
         ]
       }
 
-DELETE `/api/v0/recipes/cancel/<uuid>`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+DELETE `/api/v0/blueprints/cancel/<uuid>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Cancel the build, if it is not finished, and delete the results. It will return a
   status of True if it is successful.
@@ -792,8 +792,8 @@ DELETE `/api/v0/compose/delete/<uuids>`
 
     * id - The uuid of the comoposition
     * config - containing the configuration settings used to run Anaconda
-    * recipe - The depsolved recipe used to generate the kickstart
-    * commit - The (local) git commit hash for the recipe used
+    * blueprint - The depsolved blueprint used to generate the kickstart
+    * commit - The (local) git commit hash for the blueprint used
     * deps - The NEVRA of all of the dependencies used in the composition
     * compose_type - The type of output generated (tar, iso, etc.)
     * queue_status - The final status of the composition (FINISHED or FAILED)
@@ -824,7 +824,7 @@ DELETE `/api/v0/compose/delete/<uuids>`
         },
         "id": "c30b7d80-523b-4a23-ad52-61b799739ce8",
         "queue_status": "FINISHED",
-        "recipe": {
+        "blueprint": {
           "description": "An example kubernetes master",
           ...
         }
