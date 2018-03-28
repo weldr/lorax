@@ -71,7 +71,7 @@ def compose_status(socket_path, api_version, args, show_json=False, testmode=0):
     """
     def get_status(compose):
         return {"id": compose["id"],
-                "recipe": compose["recipe"],
+                "blueprint": compose["blueprint"],
                 "version": compose["version"],
                 "compose_type": compose["compose_type"],
                 "image_size": compose["image_size"],
@@ -80,7 +80,7 @@ def compose_status(socket_path, api_version, args, show_json=False, testmode=0):
     # Sort the status in a specific order
     def sort_status(a):
         order = ["RUNNING", "WAITING", "FINISHED", "FAILED"]
-        return (order.index(a["status"]), a["recipe"], a["version"], a["compose_type"])
+        return (order.index(a["status"]), a["blueprint"], a["version"], a["compose_type"])
 
     status = []
 
@@ -106,14 +106,14 @@ def compose_status(socket_path, api_version, args, show_json=False, testmode=0):
         print(json.dumps(status, indent=4))
         return 0
 
-    # Print them as UUID RECIPE STATUS
+    # Print them as UUID blueprint STATUS
     for c in status:
         if c["image_size"] > 0:
             image_size = str(c["image_size"])
         else:
             image_size = ""
 
-        print("%s %-8s %-15s %s %-16s %s" % (c["id"], c["status"], c["recipe"], c["version"], c["compose_type"],
+        print("%s %-8s %-15s %s %-16s %s" % (c["id"], c["status"], c["blueprint"], c["version"], c["compose_type"],
                                              image_size))
 
 
@@ -143,7 +143,7 @@ def compose_types(socket_path, api_version, args, show_json=False, testmode=0):
     print("Compose Types: " + ", ".join([t["name"] for t in result["types"]]))
 
 def compose_start(socket_path, api_version, args, show_json=False, testmode=0):
-    """Start a new compose using the selected recipe and type
+    """Start a new compose using the selected blueprint and type
 
     :param socket_path: Path to the Unix socket to use for API communication
     :type socket_path: str
@@ -156,17 +156,17 @@ def compose_start(socket_path, api_version, args, show_json=False, testmode=0):
     :param testmode: Set to 1 to simulate a failed compose, set to 2 to simulate a finished one.
     :type testmode: int
 
-    compose start <recipe-name> <compose-type>
+    compose start <blueprint-name> <compose-type>
     """
     if len(args) == 0:
-        log.error("start is missing the recipe name and output type")
+        log.error("start is missing the blueprint name and output type")
         return 1
     if len(args) == 1:
         log.error("start is missing the output type")
         return 1
 
     config = {
-        "recipe_name": args[0],
+        "blueprint_name": args[0],
         "compose_type": args[1],
         "branch": "master"
         }
@@ -313,7 +313,7 @@ def compose_details(socket_path, api_version, args, show_json=False, testmode=0)
 
     compose details <uuid>
 
-    This returns information about the compose, including the recipe and the dependencies.
+    This returns information about the compose, including the blueprint and the dependencies.
     """
     if len(args) == 0:
         log.error("details is missing the compose build id")
@@ -336,16 +336,16 @@ def compose_details(socket_path, api_version, args, show_json=False, testmode=0)
 
     print("%s %-8s %-15s %s %-16s %s" % (result["id"],
                                          result["queue_status"],
-                                         result["recipe"]["name"],
-                                         result["recipe"]["version"],
+                                         result["blueprint"]["name"],
+                                         result["blueprint"]["version"],
                                          result["compose_type"],
                                          image_size))
-    print("Recipe Packages:")
-    for p in result["recipe"]["packages"]:
+    print("Packages:")
+    for p in result["blueprint"]["packages"]:
         print("    %s-%s" % (p["name"], p["version"]))
 
-    print("Recipe Modules:")
-    for m in result["recipe"]["modules"]:
+    print("Modules:")
+    for m in result["blueprint"]["modules"]:
         print("    %s-%s" % (m["name"], m["version"]))
 
     print("Dependencies:")

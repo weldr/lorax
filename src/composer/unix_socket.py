@@ -59,8 +59,3 @@ class UnixHTTPConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
 
     def _new_conn(self):
         return UnixHTTPConnection(self.socket_path, self.timeout)
-
-if __name__ == '__main__':
-    http = UnixHTTPConnectionPool("/var/run/weldr/api.socket")
-    r = http.request("GET", "/api/v0/recipes/list")
-    print(r.data)

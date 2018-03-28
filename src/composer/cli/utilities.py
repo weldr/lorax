@@ -33,25 +33,25 @@ def argify(args):
     """
     return filter(lambda i: i, [arg for entry in args for arg in entry.split(",")])
 
-def toml_filename(recipe_name):
-    """Convert a recipe name into a filename.toml
+def toml_filename(blueprint_name):
+    """Convert a blueprint name into a filename.toml
 
-    :param recipe_name: The recipe's name
-    :type recipe_name: str
-    :returns: The recipe name with ' ' converted to - and .toml appended
+    :param blueprint_name: The blueprint's name
+    :type blueprint_name: str
+    :returns: The blueprint name with ' ' converted to - and .toml appended
     :rtype: str
     """
-    return recipe_name.replace(" ", "-") + ".toml"
+    return blueprint_name.replace(" ", "-") + ".toml"
 
-def frozen_toml_filename(recipe_name):
-    """Convert a recipe name into a filename.toml
+def frozen_toml_filename(blueprint_name):
+    """Convert a blueprint name into a filename.toml
 
-    :param recipe_name: The recipe's name
-    :type recipe_name: str
-    :returns: The recipe name with ' ' converted to - and .toml appended
+    :param blueprint_name: The blueprint's name
+    :type blueprint_name: str
+    :returns: The blueprint name with ' ' converted to - and .toml appended
     :rtype: str
     """
-    return recipe_name.replace(" ", "-") + ".frozen.toml"
+    return blueprint_name.replace(" ", "-") + ".frozen.toml"
 
 def handle_api_result(result, show_json=False):
     """Log any errors, return the correct value

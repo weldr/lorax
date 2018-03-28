@@ -20,13 +20,13 @@
 import logging
 log = logging.getLogger("composer-cli")
 
-from composer.cli.recipes import recipes_cmd
+from composer.cli.blueprints import blueprints_cmd
 from composer.cli.modules import modules_cmd
 from composer.cli.projects import projects_cmd
 from composer.cli.compose import compose_cmd
 
 command_map = {
-    "recipes": recipes_cmd,
+    "blueprints": blueprints_cmd,
     "modules": modules_cmd,
     "projects": projects_cmd,
     "compose": compose_cmd
