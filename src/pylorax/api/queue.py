@@ -235,7 +235,7 @@ def compose_detail(results_dir):
     :type results_dir: str
     :returns: A dictionary with details about the compose
     :rtype: dict
-    :raises: IOError if it cannot read the directory, STATUS, or recipe file.
+    :raises: IOError if it cannot read the directory, STATUS, or blueprint file.
 
     The following details are included in the dict:
 
@@ -243,14 +243,14 @@ def compose_detail(results_dir):
     * queue_status - The final status of the composition (FINISHED or FAILED)
     * timestamp - The time of the last status change
     * compose_type - The type of output generated (tar, iso, etc.)
-    * recipe - Recipe name
-    * version - Recipe version
+    * blueprint - Blueprint name
+    * version - Blueprint version
     * image_size - Size of the image, if finished. 0 otherwise.
     """
     build_id = os.path.basename(os.path.abspath(results_dir))
     status = open(joinpaths(results_dir, "STATUS")).read().strip()
     mtime = os.stat(joinpaths(results_dir, "STATUS")).st_mtime
-    recipe = recipe_from_file(joinpaths(results_dir, "recipe.toml"))
+    blueprint = recipe_from_file(joinpaths(results_dir, "blueprint.toml"))
 
     compose_type = get_compose_type(results_dir)
 
@@ -264,8 +264,8 @@ def compose_detail(results_dir):
             "queue_status": status,
             "timestamp":    mtime,
             "compose_type": compose_type,
-            "recipe":       recipe["name"],
-            "version":      recipe["version"],
+            "blueprint":    blueprint["name"],
+            "version":      blueprint["version"],
             "image_size":   image_size
             }
 
@@ -438,8 +438,8 @@ def uuid_info(cfg, uuid):
 
     * id - The uuid of the comoposition
     * config - containing the configuration settings used to run Anaconda
-    * recipe - The depsolved recipe used to generate the kickstart
-    * commit - The (local) git commit hash for the recipe used
+    * blueprint - The depsolved blueprint used to generate the kickstart
+    * commit - The (local) git commit hash for the blueprint used
     * deps - The NEVRA of all of the dependencies used in the composition
     * compose_type - The type of output generated (tar, iso, etc.)
     * queue_status - The final status of the composition (FINISHED or FAILED)
@@ -473,7 +473,7 @@ def uuid_info(cfg, uuid):
 
     return {"id":           uuid,
             "config":       cfg_dict,
-            "recipe":       frozen_dict,
+            "blueprint":    frozen_dict,
             "commit":       commit_id,
             "deps":         deps_dict,
             "compose_type": details["compose_type"],

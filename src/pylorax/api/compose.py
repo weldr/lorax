@@ -160,7 +160,7 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_m
         f.write(commit_id)
 
     # Write the original recipe
-    recipe_path = joinpaths(results_dir, "recipe.toml")
+    recipe_path = joinpaths(results_dir, "blueprint.toml")
     with open(recipe_path, "w") as f:
         f.write(recipe.toml())
 
@@ -239,7 +239,7 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_m
     if test_mode > 0:
         open(joinpaths(results_dir, "TEST"), "w").write("%s" % test_mode)
 
-    log.info("Adding %s with recipe %s output type %s to compose queue", build_id, recipe["name"], compose_type)
+    log.info("Adding %s (%s %s) to compose queue", build_id, recipe["name"], compose_type)
     os.symlink(results_dir, joinpaths(lib_dir, "queue/new/", build_id))
 
     return build_id
