@@ -300,7 +300,7 @@ version = "2.7.*"
 
         commits = recipes.list_commits(self.repo, "master", "http-server.toml")
         self.assertEqual(len(commits), 2, "Wrong number of commits: %s" % commits)
-        self.assertEqual(commits[0].message, "Recipe http-server.toml reverted to commit %s" % revert_to)
+        self.assertEqual(commits[0].message, "http-server.toml reverted to commit %s" % revert_to)
 
     def test_10_tag_new_commit(self):
         """Test tagging a newer commit of a recipe"""

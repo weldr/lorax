@@ -53,14 +53,14 @@ class ServerTestCase(unittest.TestCase):
         server.config['TESTING'] = True
         self.server = server.test_client()
 
-        self.examples_path = "./tests/pylorax/recipes/"
+        self.examples_path = "./tests/pylorax/blueprints/"
 
         # Copy the shared files over to the directory tree we are using
         share_path = "./share/composer/"
         for f in glob(joinpaths(share_path, "*")):
             shutil.copy(f, joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), "composer"))
 
-        # Import the example recipes
+        # Import the example blueprints
         commit_recipe_directory(server.config["GITLOCK"].repo, "master", self.examples_path)
 
         start_queue_monitor(server.config["COMPOSER_CFG"], 0, 0)
@@ -81,19 +81,19 @@ class ServerTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertEqual(data, status_dict)
 
-    def test_02_recipes_list(self):
+    def test_02_blueprints_list(self):
         """Test the /api/v0/blueprints/list route"""
-        list_dict = {"recipes":["atlas", "development", "glusterfs", "http-server", "jboss", "kubernetes"],
+        list_dict = {"blueprints":["atlas", "development", "glusterfs", "http-server", "jboss", "kubernetes"],
                      "limit":20, "offset":0, "total":6}
         resp = self.server.get("/api/v0/blueprints/list")
         data = json.loads(resp.data)
         self.assertEqual(data, list_dict)
 
-    def test_03_recipes_info(self):
+    def test_03_blueprints_info(self):
         """Test the /api/v0/blueprints/info route"""
         info_dict_1 = {"changes":[{"changed":False, "name":"http-server"}],
                        "errors":[],
-                       "recipes":[{"description":"An example http server with PHP and MySQL support.",
+                       "blueprints":[{"description":"An example http server with PHP and MySQL support.",
                                    "modules":[{"name":"httpd", "version":"2.4.*"},
                                               {"name":"mod_auth_kerb", "version":"5.4"},
                                               {"name":"mod_ssl", "version":"2.4.*"},
@@ -111,7 +111,7 @@ class ServerTestCase(unittest.TestCase):
         info_dict_2 = {"changes":[{"changed":False, "name":"glusterfs"},
                                   {"changed":False, "name":"http-server"}],
                        "errors":[],
-                       "recipes":[{"description": "An example GlusterFS server with samba",
+                       "blueprints":[{"description": "An example GlusterFS server with samba",
                                    "modules":[{"name":"glusterfs", "version":"3.7.*"},
                                               {"name":"glusterfs-cli", "version":"3.7.*"}],
                                    "name":"glusterfs",
@@ -134,14 +134,14 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(data, info_dict_2)
 
         info_dict_3 = {"changes":[],
-                "errors":[{"recipe":"missing-recipe", "msg":"No commits for missing-recipe.toml on the master branch."}],
-                       "recipes":[]
+                "errors":[{"blueprint":"missing-blueprint", "msg":"No commits for missing-blueprint.toml on the master branch."}],
+                       "blueprints":[]
                       }
-        resp = self.server.get("/api/v0/blueprints/info/missing-recipe")
+        resp = self.server.get("/api/v0/blueprints/info/missing-blueprint")
         data = json.loads(resp.data)
         self.assertEqual(data, info_dict_3)
 
-    def test_04_recipes_changes(self):
+    def test_04_blueprints_changes(self):
         """Test the /api/v0/blueprints/changes route"""
         resp = self.server.get("/api/v0/blueprints/changes/http-server")
         data = json.loads(resp.data)
@@ -151,20 +151,20 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(data["limit"], 20)
         self.assertEqual(data["offset"], 0)
         self.assertEqual(len(data["errors"]), 0)
-        self.assertEqual(len(data["recipes"]), 1)
-        self.assertEqual(data["recipes"][0]["name"], "http-server")
-        self.assertEqual(len(data["recipes"][0]["changes"]), 1)
+        self.assertEqual(len(data["blueprints"]), 1)
+        self.assertEqual(data["blueprints"][0]["name"], "http-server")
+        self.assertEqual(len(data["blueprints"][0]["changes"]), 1)
 
-    def test_04a_recipes_diff_empty_ws(self):
+    def test_04a_blueprints_diff_empty_ws(self):
         """Test the /api/v0/diff/NEWEST/WORKSPACE with empty workspace"""
         resp = self.server.get("/api/v0/blueprints/diff/glusterfs/NEWEST/WORKSPACE")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         self.assertEqual(data, {"diff": []})
 
-    def test_05_recipes_new_json(self):
-        """Test the /api/v0/blueprints/new route with json recipe"""
-        test_recipe = {"description": "An example GlusterFS server with samba",
+    def test_05_blueprints_new_json(self):
+        """Test the /api/v0/blueprints/new route with json blueprint"""
+        test_blueprint = {"description": "An example GlusterFS server with samba",
                        "name":"glusterfs",
                        "version": "0.2.0",
                        "modules":[{"name":"glusterfs", "version":"3.7.*"},
@@ -173,7 +173,7 @@ class ServerTestCase(unittest.TestCase):
                                    {"name":"tmux", "version":"2.2"}]}
 
         resp = self.server.post("/api/v0/blueprints/new",
-                                data=json.dumps(test_recipe),
+                                data=json.dumps(test_blueprint),
                                 content_type="application/json")
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
@@ -181,15 +181,15 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/blueprints/info/glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
-        recipes = data.get("recipes")
-        self.assertEqual(len(recipes), 1)
-        self.assertEqual(recipes[0], test_recipe)
+        blueprints = data.get("blueprints")
+        self.assertEqual(len(blueprints), 1)
+        self.assertEqual(blueprints[0], test_blueprint)
 
-    def test_06_recipes_new_toml(self):
-        """Test the /api/v0/blueprints/new route with toml recipe"""
-        test_recipe = open(joinpaths(self.examples_path, "glusterfs.toml"), "rb").read()
+    def test_06_blueprints_new_toml(self):
+        """Test the /api/v0/blueprints/new route with toml blueprint"""
+        test_blueprint = open(joinpaths(self.examples_path, "glusterfs.toml"), "rb").read()
         resp = self.server.post("/api/v0/blueprints/new",
-                                data=test_recipe,
+                                data=test_blueprint,
                                 content_type="text/x-toml")
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
@@ -197,18 +197,18 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/blueprints/info/glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
-        recipes = data.get("recipes")
-        self.assertEqual(len(recipes), 1)
+        blueprints = data.get("blueprints")
+        self.assertEqual(len(blueprints), 1)
 
-        # Returned recipe has had its version bumped to 0.2.1
-        test_recipe = toml.loads(test_recipe)
-        test_recipe["version"] = "0.2.1"
+        # Returned blueprint has had its version bumped to 0.2.1
+        test_blueprint = toml.loads(test_blueprint)
+        test_blueprint["version"] = "0.2.1"
 
-        self.assertEqual(recipes[0], test_recipe)
+        self.assertEqual(blueprints[0], test_blueprint)
 
-    def test_07_recipes_ws_json(self):
-        """Test the /api/v0/blueprints/workspace route with json recipe"""
-        test_recipe = {"description": "An example GlusterFS server with samba, ws version",
+    def test_07_blueprints_ws_json(self):
+        """Test the /api/v0/blueprints/workspace route with json blueprint"""
+        test_blueprint = {"description": "An example GlusterFS server with samba, ws version",
                        "name":"glusterfs",
                        "version": "0.3.0",
                        "modules":[{"name":"glusterfs", "version":"3.7.*"},
@@ -217,7 +217,7 @@ class ServerTestCase(unittest.TestCase):
                                    {"name":"tmux", "version":"2.2"}]}
 
         resp = self.server.post("/api/v0/blueprints/workspace",
-                                data=json.dumps(test_recipe),
+                                data=json.dumps(test_blueprint),
                                 content_type="application/json")
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
@@ -225,16 +225,16 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/blueprints/info/glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
-        recipes = data.get("recipes")
-        self.assertEqual(len(recipes), 1)
-        self.assertEqual(recipes[0], test_recipe)
+        blueprints = data.get("blueprints")
+        self.assertEqual(len(blueprints), 1)
+        self.assertEqual(blueprints[0], test_blueprint)
         changes = data.get("changes")
         self.assertEqual(len(changes), 1)
         self.assertEqual(changes[0], {"name":"glusterfs", "changed":True})
 
-    def test_08_recipes_ws_toml(self):
-        """Test the /api/v0/blueprints/workspace route with toml recipe"""
-        test_recipe = {"description": "An example GlusterFS server with samba, ws version",
+    def test_08_blueprints_ws_toml(self):
+        """Test the /api/v0/blueprints/workspace route with toml blueprint"""
+        test_blueprint = {"description": "An example GlusterFS server with samba, ws version",
                        "name":"glusterfs",
                        "version": "0.4.0",
                        "modules":[{"name":"glusterfs", "version":"3.7.*"},
@@ -243,7 +243,7 @@ class ServerTestCase(unittest.TestCase):
                                    {"name":"tmux", "version":"2.2"}]}
 
         resp = self.server.post("/api/v0/blueprints/workspace",
-                                data=json.dumps(test_recipe),
+                                data=json.dumps(test_blueprint),
                                 content_type="application/json")
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
@@ -251,17 +251,17 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/blueprints/info/glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
-        recipes = data.get("recipes")
-        self.assertEqual(len(recipes), 1)
-        self.assertEqual(recipes[0], test_recipe)
+        blueprints = data.get("blueprints")
+        self.assertEqual(len(blueprints), 1)
+        self.assertEqual(blueprints[0], test_blueprint)
         changes = data.get("changes")
         self.assertEqual(len(changes), 1)
         self.assertEqual(changes[0], {"name":"glusterfs", "changed":True})
 
-    def test_09_recipes_ws_delete(self):
+    def test_09_blueprints_ws_delete(self):
         """Test DELETE /api/v0/blueprints/workspace/<blueprint_name>"""
-        # Write to the workspace first, just use the test_recipes_ws_json test for this
-        self.test_07_recipes_ws_json()
+        # Write to the workspace first, just use the test_blueprints_ws_json test for this
+        self.test_07_blueprints_ws_json()
 
         # Delete it
         resp = self.server.delete("/api/v0/blueprints/workspace/glusterfs")
@@ -272,36 +272,36 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/blueprints/info/glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
-        recipes = data.get("recipes")
-        self.assertEqual(len(recipes), 1)
-        self.assertEqual(recipes[0]["version"], "0.2.1")
+        blueprints = data.get("blueprints")
+        self.assertEqual(len(blueprints), 1)
+        self.assertEqual(blueprints[0]["version"], "0.2.1")
         changes = data.get("changes")
         self.assertEqual(len(changes), 1)
         self.assertEqual(changes[0], {"name":"glusterfs", "changed":False})
 
-    def test_10_recipes_delete(self):
+    def test_10_blueprints_delete(self):
         """Test DELETE /api/v0/blueprints/delete/<blueprint_name>"""
         resp = self.server.delete("/api/v0/blueprints/delete/glusterfs")
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
 
-        # Make sure glusterfs is no longer in the list of recipes
+        # Make sure glusterfs is no longer in the list of blueprints
         resp = self.server.get("/api/v0/blueprints/list")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
-        recipes = data.get("recipes")
-        self.assertEqual("glusterfs" in recipes, False)
+        blueprints = data.get("blueprints")
+        self.assertEqual("glusterfs" in blueprints, False)
 
-    def test_11_recipes_undo(self):
+    def test_11_blueprints_undo(self):
         """Test POST /api/v0/blueprints/undo/<blueprint_name>/<commit>"""
         resp = self.server.get("/api/v0/blueprints/changes/glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
 
         # Revert it to the first commit
-        recipes = data.get("recipes")
-        self.assertNotEqual(recipes, None)
-        changes = recipes[0].get("changes")
+        blueprints = data.get("blueprints")
+        self.assertNotEqual(blueprints, None)
+        changes = blueprints[0].get("changes")
         self.assertEqual(len(changes) > 1, True)
 
         # Revert it to the first commit
@@ -314,15 +314,15 @@ class ServerTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
 
-        recipes = data.get("recipes")
-        self.assertNotEqual(recipes, None)
-        changes = recipes[0].get("changes")
+        blueprints = data.get("blueprints")
+        self.assertNotEqual(blueprints, None)
+        changes = blueprints[0].get("changes")
         self.assertEqual(len(changes) > 1, True)
 
-        expected_msg = "Recipe glusterfs.toml reverted to commit %s" % commit
+        expected_msg = "glusterfs.toml reverted to commit %s" % commit
         self.assertEqual(changes[0]["message"], expected_msg)
 
-    def test_12_recipes_tag(self):
+    def test_12_blueprints_tag(self):
         """Test POST /api/v0/blueprints/tag/<blueprint_name>"""
         resp = self.server.post("/api/v0/blueprints/tag/glusterfs")
         data = json.loads(resp.data)
@@ -333,20 +333,20 @@ class ServerTestCase(unittest.TestCase):
         self.assertNotEqual(data, None)
 
         # Revert it to the first commit
-        recipes = data.get("recipes")
-        self.assertNotEqual(recipes, None)
-        changes = recipes[0].get("changes")
+        blueprints = data.get("blueprints")
+        self.assertNotEqual(blueprints, None)
+        changes = blueprints[0].get("changes")
         self.assertEqual(len(changes) > 1, True)
         self.assertEqual(changes[0]["revision"], 1)
 
-    def test_13_recipes_diff(self):
+    def test_13_blueprints_diff(self):
         """Test /api/v0/blueprints/diff/<blueprint_name>/<from_commit>/<to_commit>"""
         resp = self.server.get("/api/v0/blueprints/changes/glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
-        recipes = data.get("recipes")
-        self.assertNotEqual(recipes, None)
-        changes = recipes[0].get("changes")
+        blueprints = data.get("blueprints")
+        self.assertNotEqual(blueprints, None)
+        changes = blueprints[0].get("changes")
         self.assertEqual(len(changes) >= 2, True)
 
         from_commit = changes[1].get("commit")
@@ -361,7 +361,7 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(data, {"diff": [{"new": {"Version": "0.0.1"}, "old": {"Version": "0.2.1"}}]})
 
         # Write to the workspace and check the diff
-        test_recipe = {"description": "An example GlusterFS server with samba, ws version",
+        test_blueprint = {"description": "An example GlusterFS server with samba, ws version",
                        "name":"glusterfs",
                        "version": "0.3.0",
                        "modules":[{"name":"glusterfs", "version":"3.7.*"},
@@ -370,7 +370,7 @@ class ServerTestCase(unittest.TestCase):
                                    {"name":"tmux", "version":"2.2"}]}
 
         resp = self.server.post("/api/v0/blueprints/workspace",
-                                data=json.dumps(test_recipe),
+                                data=json.dumps(test_blueprint),
                                 content_type="application/json")
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
@@ -387,25 +387,25 @@ class ServerTestCase(unittest.TestCase):
                              "old": None}]}
         self.assertEqual(data, result)
 
-    def test_14_recipes_depsolve(self):
+    def test_14_blueprints_depsolve(self):
         """Test /api/v0/blueprints/depsolve/<blueprint_names>"""
         resp = self.server.get("/api/v0/blueprints/depsolve/glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
-        recipes = data.get("recipes")
-        self.assertNotEqual(recipes, None)
-        self.assertEqual(len(recipes), 1)
-        self.assertEqual(recipes[0]["recipe"]["name"], "glusterfs")
-        self.assertEqual(len(recipes[0]["dependencies"]) > 10, True)
+        blueprints = data.get("blueprints")
+        self.assertNotEqual(blueprints, None)
+        self.assertEqual(len(blueprints), 1)
+        self.assertEqual(blueprints[0]["blueprint"]["name"], "glusterfs")
+        self.assertEqual(len(blueprints[0]["dependencies"]) > 10, True)
         self.assertFalse(data.get("errors"))
 
-    def test_14_recipes_depsolve_empty(self):
-        """Test /api/v0/blueprints/depsolve/<blueprint_names> on empty recipe"""
-        test_recipe = {"description": "An empty recipe",
+    def test_14_blueprints_depsolve_empty(self):
+        """Test /api/v0/blueprints/depsolve/<blueprint_names> on empty blueprint"""
+        test_blueprint = {"description": "An empty blueprint",
                        "name":"void",
                        "version": "0.1.0"}
         resp = self.server.post("/api/v0/blueprints/new",
-                                data=json.dumps(test_recipe),
+                                data=json.dumps(test_blueprint),
                                 content_type="application/json")
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
@@ -413,25 +413,25 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/blueprints/depsolve/void")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
-        recipes = data.get("recipes")
-        self.assertNotEqual(recipes, None)
-        self.assertEqual(len(recipes), 1)
-        self.assertEqual(recipes[0]["recipe"]["name"], "void")
-        self.assertEqual(recipes[0]["recipe"]["packages"], [])
-        self.assertEqual(recipes[0]["recipe"]["modules"], [])
-        self.assertEqual(recipes[0]["dependencies"], [])
+        blueprints = data.get("blueprints")
+        self.assertNotEqual(blueprints, None)
+        self.assertEqual(len(blueprints), 1)
+        self.assertEqual(blueprints[0]["blueprint"]["name"], "void")
+        self.assertEqual(blueprints[0]["blueprint"]["packages"], [])
+        self.assertEqual(blueprints[0]["blueprint"]["modules"], [])
+        self.assertEqual(blueprints[0]["dependencies"], [])
         self.assertFalse(data.get("errors"))
 
-    def test_15_recipes_freeze(self):
+    def test_15_blueprints_freeze(self):
         """Test /api/v0/blueprints/freeze/<blueprint_names>"""
         resp = self.server.get("/api/v0/blueprints/freeze/glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
-        recipes = data.get("recipes")
-        self.assertNotEqual(recipes, None)
-        self.assertEqual(len(recipes), 1)
-        self.assertEqual(recipes[0]["recipe"]["name"], "glusterfs")
-        evra = recipes[0]["recipe"]["modules"][0]["version"]
+        blueprints = data.get("blueprints")
+        self.assertNotEqual(blueprints, None)
+        self.assertEqual(len(blueprints), 1)
+        self.assertEqual(blueprints[0]["blueprint"]["name"], "glusterfs")
+        evra = blueprints[0]["blueprint"]["modules"][0]["version"]
         self.assertEqual(len(evra) > 10, True)
 
     def test_projects_list(self):
@@ -487,9 +487,9 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(modules[0]["name"], "bash")
         self.assertEqual(modules[0]["dependencies"][0]["name"], "basesystem")
 
-    def test_recipe_new_branch(self):
+    def test_blueprint_new_branch(self):
         """Test the /api/v0/blueprints/new route with a new branch"""
-        test_recipe = {"description": "An example GlusterFS server with samba",
+        test_blueprint = {"description": "An example GlusterFS server with samba",
                        "name":"glusterfs",
                        "version": "0.2.0",
                        "modules":[{"name":"glusterfs", "version":"3.7.*"},
@@ -498,7 +498,7 @@ class ServerTestCase(unittest.TestCase):
                                    {"name":"tmux", "version":"2.2"}]}
 
         resp = self.server.post("/api/v0/blueprints/new?branch=test",
-                                data=json.dumps(test_recipe),
+                                data=json.dumps(test_blueprint),
                                 content_type="application/json")
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
@@ -506,9 +506,9 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/blueprints/info/glusterfs?branch=test")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
-        recipes = data.get("recipes")
-        self.assertEqual(len(recipes), 1)
-        self.assertEqual(recipes[0], test_recipe)
+        blueprints = data.get("blueprints")
+        self.assertEqual(len(blueprints), 1)
+        self.assertEqual(blueprints[0], test_blueprint)
 
     def assert_documentation(self, response):
         """
@@ -564,7 +564,7 @@ class ServerTestCase(unittest.TestCase):
 
     def test_compose_02_create_failed(self):
         """Test the /api/v0/compose routes with a failed test compose"""
-        test_compose = {"recipe_name": "glusterfs",
+        test_compose = {"blueprint_name": "glusterfs",
                         "compose_type": "tar",
                         "branch": "master"}
 
@@ -650,7 +650,7 @@ class ServerTestCase(unittest.TestCase):
 
     def test_compose_03_create_finished(self):
         """Test the /api/v0/compose routes with a finished test compose"""
-        test_compose = {"recipe_name": "glusterfs",
+        test_compose = {"blueprint_name": "glusterfs",
                         "compose_type": "tar",
                         "branch": "master"}
 
