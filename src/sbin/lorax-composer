@@ -67,8 +67,8 @@ def get_parser():
                         help="Path to lorax-composer configuration file.")
     parser.add_argument( "--releasever", default=None, metavar="STRING",
                          help="Release version to use for $releasever in yum repository urls" )
-    parser.add_argument("RECIPES", metavar="RECIPES",
-                        help="Path to the recipes")
+    parser.add_argument("BLUEPRINTS", metavar="BLUEPRINTS",
+                        help="Path to the blueprints")
 
     return parser
 
@@ -208,10 +208,10 @@ if __name__ == '__main__':
     server.config["COMPOSER_CFG"] = configure(conf_file=opts.config)
 
     # Make sure the git repo can be accessed by the API uid/gid
-    if os.path.exists(opts.RECIPES):
-        repodir_stat = os.stat(opts.RECIPES)
+    if os.path.exists(opts.BLUEPRINTS):
+        repodir_stat = os.stat(opts.BLUEPRINTS)
         if repodir_stat.st_gid != gid or repodir_stat.st_uid != uid:
-            subprocess.call(["chown", "-R", "%s:%s" % (opts.user, opts.group), opts.RECIPES])
+            subprocess.call(["chown", "-R", "%s:%s" % (opts.user, opts.group), opts.BLUEPRINTS])
 
     # If the user passed in a releasever set it in the configuration
     if opts.releasever:
@@ -254,14 +254,14 @@ if __name__ == '__main__':
     server.config["YUMLOCK"] = YumLock(yb=yb, lock=Lock())
 
     # Setup access to the git repo
-    server.config["REPO_DIR"] = opts.RECIPES
+    server.config["REPO_DIR"] = opts.BLUEPRINTS
     repo = open_or_create_repo(server.config["REPO_DIR"])
-    server.config["GITLOCK"] = GitLock(repo=repo, lock=Lock(), dir=opts.RECIPES)
+    server.config["GITLOCK"] = GitLock(repo=repo, lock=Lock(), dir=opts.BLUEPRINTS)
 
-    # Import example recipes
-    commit_recipe_directory(server.config["GITLOCK"].repo, "master", opts.RECIPES)
+    # Import example blueprints
+    commit_recipe_directory(server.config["GITLOCK"].repo, "master", opts.BLUEPRINTS)
 
-    log.info("Starting %s on %s with recipes from %s", VERSION, opts.socket, opts.RECIPES)
+    log.info("Starting %s on %s with blueprints from %s", VERSION, opts.socket, opts.BLUEPRINTS)
     http_server = WSGIServer(listener, server, log=LogWrapper(server_log))
     # The server writes directly to a file object, so point to our log directory
     http_server.serve_forever()
