@@ -100,7 +100,7 @@ def post_url(socket_path, url, body):
     return json.loads(r.data.decode("utf-8"))
 
 def post_url_toml(socket_path, url, body):
-    """POST a TOML recipe to the URL
+    """POST a TOML string to the URL
 
     :param socket_path: Path to the Unix socket to use for API communication
     :type socket_path: str

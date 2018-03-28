@@ -16,7 +16,7 @@
 #
 import unittest
 
-from composer.cli.recipes import prettyDiffEntry
+from composer.cli.blueprints import prettyDiffEntry
 
 diff_entries = [{'new': {'Description': 'Shiny new description'}, 'old': {'Description': 'Old reliable description'}},
                 {'new': {'Version': '0.3.1'}, 'old': {'Version': '0.1.1'}},
@@ -34,7 +34,7 @@ diff_result = [
     'Changed Module httpd 3.7.* -> 3.8.*',
     'Added Package git 2.13.*']
 
-class RecipesTest(unittest.TestCase):
+class BlueprintsTest(unittest.TestCase):
     def test_prettyDiffEntry(self):
         """Return a nice representation of a diff entry"""
         self.assertEqual([prettyDiffEntry(entry) for entry in diff_entries], diff_result)

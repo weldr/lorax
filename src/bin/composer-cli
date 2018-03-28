@@ -31,36 +31,36 @@ VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
 
 # Documentation for the commands
 epilog = """
-compose start <recipe> <type>    Start a compose using the selected recipe and output type.
-        types                    List the supported output types.
-        status                   List the status of all running and finished composes.
-        log <uuid> [<size>kB]    Show the last 1kB of the compose log.
-        cancel <uuid>            Cancel a running compose and delete any intermediate results.
-        delete <uuid,...>        Delete the listed compose results.
-        info <uuid>              Show detailed information on the compose.
-        metadata <uuid>          Download the metadata use to create the compose to <uuid>-metadata.tar
-        logs <uuid>              Download the compose logs to <uuid>-logs.tar
-        results <uuid>           Download all of the compose results; metadata, logs, and image to <uuid>.tar
-        image <uuid>             Download the output image from the compose. Filename depends on the type.
-recipes list                     List the names of the available recipes.
-        show <recipe,...>        Display the recipe in TOML format.
-        changes <recipe,...>     Display the changes for each recipe.
-        diff <recipe-name>       Display the differences between 2 versions of a recipe.
-             <from-commit>       Commit hash or NEWEST
-             <to-commit>         Commit hash, NEWEST, or WORKSPACE
-        save <recipe,...>        Save the recipe to a file, <recipe-name>.toml
-        delete <recipe>          Delete a recipe from the server
-        depsolve <recipe,...>    Display the packages needed to install the recipe.
-        push <recipe>            Push a recipe TOML file to the server.
-        freeze <recipe,...>      Display the frozen recipe's modules and packages.
-        freeze show <recipe,...> Display the frozen recipe in TOML format.
-        freeze save <recipe,...> Save the frozen recipe to a file, <recipe-name>.frozen.toml.
-        tag <recipe>             Tag the most recent recipe commit as a release.
-        undo <recipe> <commit>   Undo changes to a recipe by reverting to the selected commit.
-        workspace <recipe>       Push the recipe TOML to the temporary workspace storage.
-modules list                     List the available modules.
-projects list                    List the available projects.
-projects info <project,...>      Show details about the listed projects.
+compose start <blueprint> <type>    Start a compose using the selected blueprint and output type.
+        types                       List the supported output types.
+        status                      List the status of all running and finished composes.
+        log <uuid> [<size>kB]       Show the last 1kB of the compose log.
+        cancel <uuid>               Cancel a running compose and delete any intermediate results.
+        delete <uuid,...>           Delete the listed compose results.
+        info <uuid>                 Show detailed information on the compose.
+        metadata <uuid>             Download the metadata use to create the compose to <uuid>-metadata.tar
+        logs <uuid>                 Download the compose logs to <uuid>-logs.tar
+        results <uuid>              Download all of the compose results; metadata, logs, and image to <uuid>.tar
+        image <uuid>                Download the output image from the compose. Filename depends on the type.
+blueprints list                     List the names of the available blueprints.
+        show <blueprint,...>        Display the blueprint in TOML format.
+        changes <blueprint,...>     Display the changes for each blueprint.
+        diff <blueprint-name>       Display the differences between 2 versions of a blueprint.
+             <from-commit>          Commit hash or NEWEST
+             <to-commit>            Commit hash, NEWEST, or WORKSPACE
+        save <blueprint,...>        Save the blueprint to a file, <blueprint-name>.toml
+        delete <blueprint>          Delete a blueprint from the server
+        depsolve <blueprint,...>    Display the packages needed to install the blueprint.
+        push <blueprint>            Push a blueprint TOML file to the server.
+        freeze <blueprint,...>      Display the frozen blueprint's modules and packages.
+        freeze show <blueprint,...> Display the frozen blueprint in TOML format.
+        freeze save <blueprint,...> Save the frozen blueprint to a file, <blueprint-name>.frozen.toml.
+        tag <blueprint>             Tag the most recent blueprint commit as a release.
+        undo <blueprint> <commit>   Undo changes to a blueprint by reverting to the selected commit.
+        workspace <blueprint>       Push the blueprint TOML to the temporary workspace storage.
+modules list                        List the available modules.
+projects list                       List the available projects.
+projects info <project,...>         Show details about the listed projects.
 """
 
 def get_parser():

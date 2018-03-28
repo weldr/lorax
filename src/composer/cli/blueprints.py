@@ -24,38 +24,38 @@ from composer import http_client as client
 from composer.cli.utilities import argify, frozen_toml_filename, toml_filename, handle_api_result
 from composer.cli.utilities import packageNEVRA
 
-def recipes_cmd(opts):
-    """Process recipes commands
+def blueprints_cmd(opts):
+    """Process blueprints commands
 
     :param opts: Cmdline arguments
     :type opts: argparse.Namespace
     :returns: Value to return from sys.exit()
     :rtype: int
 
-    This dispatches the recipes commands to a function
+    This dispatches the blueprints commands to a function
     """
     cmd_map = {
-        "list":      recipes_list,
-        "show":      recipes_show,
-        "changes":   recipes_changes,
-        "diff":      recipes_diff,
-        "save":      recipes_save,
-        "delete":    recipes_delete,
-        "depsolve":  recipes_depsolve,
-        "push":      recipes_push,
-        "freeze":    recipes_freeze,
-        "tag":       recipes_tag,
-        "undo":      recipes_undo,
-        "workspace": recipes_workspace
+        "list":      blueprints_list,
+        "show":      blueprints_show,
+        "changes":   blueprints_changes,
+        "diff":      blueprints_diff,
+        "save":      blueprints_save,
+        "delete":    blueprints_delete,
+        "depsolve":  blueprints_depsolve,
+        "push":      blueprints_push,
+        "freeze":    blueprints_freeze,
+        "tag":       blueprints_tag,
+        "undo":      blueprints_undo,
+        "workspace": blueprints_workspace
         }
     if opts.args[1] not in cmd_map:
-        log.error("Unknown recipes command: %s", opts.args[1])
+        log.error("Unknown blueprints command: %s", opts.args[1])
         return 1
 
     return cmd_map[opts.args[1]](opts.socket, opts.api_version, opts.args[2:], opts.json)
 
-def recipes_list(socket_path, api_version, args, show_json=False):
-    """Output the list of available recipes
+def blueprints_list(socket_path, api_version, args, show_json=False):
+    """Output the list of available blueprints
 
     :param socket_path: Path to the Unix socket to use for API communication
     :type socket_path: str
@@ -66,20 +66,20 @@ def recipes_list(socket_path, api_version, args, show_json=False):
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
 
-    recipes list
+    blueprints list
     """
-    api_route = client.api_url(api_version, "/recipes/list")
+    api_route = client.api_url(api_version, "/blueprints/list")
     result = client.get_url_json(socket_path, api_route)
     if show_json:
         print(json.dumps(result, indent=4))
         return 0
 
-    print("Recipes: " + ", ".join([r for r in result["recipes"]]))
+    print("blueprints: " + ", ".join([r for r in result["blueprints"]]))
 
     return 0
 
-def recipes_show(socket_path, api_version, args, show_json=False):
-    """Show the recipes, in TOML format
+def blueprints_show(socket_path, api_version, args, show_json=False):
+    """Show the blueprints, in TOML format
 
     :param socket_path: Path to the Unix socket to use for API communication
     :type socket_path: str
@@ -90,18 +90,18 @@ def recipes_show(socket_path, api_version, args, show_json=False):
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
 
-    recipes show <recipe,...>        Display the recipe in TOML format.
+    blueprints show <blueprint,...>        Display the blueprint in TOML format.
 
-    Multiple recipes will be separated by \n\n
+    Multiple blueprints will be separated by \n\n
     """
-    for recipe in argify(args):
-        api_route = client.api_url(api_version, "/recipes/info/%s?format=toml" % recipe)
+    for blueprint in argify(args):
+        api_route = client.api_url(api_version, "/blueprints/info/%s?format=toml" % blueprint)
         print(client.get_url_raw(socket_path, api_route) + "\n\n")
 
     return 0
 
-def recipes_changes(socket_path, api_version, args, show_json=False):
-    """Display the changes for each of the recipes
+def blueprints_changes(socket_path, api_version, args, show_json=False):
+    """Display the changes for each of the blueprints
 
     :param socket_path: Path to the Unix socket to use for API communication
     :type socket_path: str
@@ -112,25 +112,25 @@ def recipes_changes(socket_path, api_version, args, show_json=False):
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
 
-    recipes changes <recipe,...>     Display the changes for each recipe.
+    blueprints changes <blueprint,...>     Display the changes for each blueprint.
     """
-    api_route = client.api_url(api_version, "/recipes/changes/%s" % (",".join(argify(args))))
+    api_route = client.api_url(api_version, "/blueprints/changes/%s" % (",".join(argify(args))))
     result = client.get_url_json(socket_path, api_route)
     if show_json:
         print(json.dumps(result, indent=4))
         return 0
 
-    for recipe in result["recipes"]:
-        print(recipe["name"])
-        for change in recipe["changes"]:
+    for blueprint in result["blueprints"]:
+        print(blueprint["name"])
+        for change in blueprint["changes"]:
             prettyCommitDetails(change)
 
     return 0
 
 def prettyCommitDetails(change, indent=4):
-    """Print the recipe's change in a nice way
+    """Print the blueprint's change in a nice way
 
-    :param change: The individual recipe change dict
+    :param change: The individual blueprint change dict
     :type change: dict
     :param indent: Number of spaces to indent
     :type indent: int
@@ -144,8 +144,8 @@ def prettyCommitDetails(change, indent=4):
     print " " * indent + change["timestamp"] + "  " + change["commit"] + revision()
     print " " * indent + change["message"] + "\n"
 
-def recipes_diff(socket_path, api_version, args, show_json=False):
-    """Display the differences between 2 versions of a recipe
+def blueprints_diff(socket_path, api_version, args, show_json=False):
+    """Display the differences between 2 versions of a blueprint
 
     :param socket_path: Path to the Unix socket to use for API communication
     :type socket_path: str
@@ -156,21 +156,21 @@ def recipes_diff(socket_path, api_version, args, show_json=False):
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
 
-    recipes diff <recipe-name>       Display the differences between 2 versions of a recipe.
+    blueprints diff <blueprint-name>       Display the differences between 2 versions of a blueprint.
                  <from-commit>       Commit hash or NEWEST
                  <to-commit>         Commit hash, NEWEST, or WORKSPACE
     """
     if len(args) == 0:
-        log.error("recipes diff is missing the recipe name, from commit, and to commit")
+        log.error("blueprints diff is missing the blueprint name, from commit, and to commit")
         return 1
     elif len(args) == 1:
-        log.error("recipes diff is missing the from commit, and the to commit")
+        log.error("blueprints diff is missing the from commit, and the to commit")
         return 1
     elif len(args) == 2:
-        log.error("recipes diff is missing the to commit")
+        log.error("blueprints diff is missing the to commit")
         return 1
 
-    api_route = client.api_url(api_version, "/recipes/diff/%s/%s/%s" % (args[0], args[1], args[2]))
+    api_route = client.api_url(api_version, "/blueprints/diff/%s/%s/%s" % (args[0], args[1], args[2]))
     result = client.get_url_json(socket_path, api_route)
 
     if show_json:
@@ -235,8 +235,8 @@ def prettyDiffEntry(diff):
 
     return change(diff) + " " + name(diff) + " " + details(diff)
 
-def recipes_save(socket_path, api_version, args, show_json=False):
-    """Save the recipe to a TOML file
+def blueprints_save(socket_path, api_version, args, show_json=False):
+    """Save the blueprint to a TOML file
 
     :param socket_path: Path to the Unix socket to use for API communication
     :type socket_path: str
@@ -247,17 +247,17 @@ def recipes_save(socket_path, api_version, args, show_json=False):
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
 
-    recipes save <recipe,...>        Save the recipe to a file, <recipe-name>.toml
+    blueprints save <blueprint,...>        Save the blueprint to a file, <blueprint-name>.toml
     """
-    for recipe in argify(args):
-        api_route = client.api_url(api_version, "/recipes/info/%s?format=toml" % recipe)
-        recipe_toml = client.get_url_raw(socket_path, api_route)
-        open(toml_filename(recipe), "w").write(recipe_toml)
+    for blueprint in argify(args):
+        api_route = client.api_url(api_version, "/blueprints/info/%s?format=toml" % blueprint)
+        blueprint_toml = client.get_url_raw(socket_path, api_route)
+        open(toml_filename(blueprint), "w").write(blueprint_toml)
 
     return 0
 
-def recipes_delete(socket_path, api_version, args, show_json=False):
-    """Delete a recipe from the server
+def blueprints_delete(socket_path, api_version, args, show_json=False):
+    """Delete a blueprint from the server
 
     :param socket_path: Path to the Unix socket to use for API communication
     :type socket_path: str
@@ -268,15 +268,15 @@ def recipes_delete(socket_path, api_version, args, show_json=False):
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
 
-    delete <recipe>          Delete a recipe from the server
+    delete <blueprint>          Delete a blueprint from the server
     """
-    api_route = client.api_url(api_version, "/recipes/delete/%s" % args[0])
+    api_route = client.api_url(api_version, "/blueprints/delete/%s" % args[0])
     result = client.delete_url_json(socket_path, api_route)
 
     return handle_api_result(result, show_json)
 
-def recipes_depsolve(socket_path, api_version, args, show_json=False):
-    """Display the packages needed to install the recipe
+def blueprints_depsolve(socket_path, api_version, args, show_json=False):
+    """Display the packages needed to install the blueprint
 
     :param socket_path: Path to the Unix socket to use for API communication
     :type socket_path: str
@@ -287,27 +287,27 @@ def recipes_depsolve(socket_path, api_version, args, show_json=False):
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
 
-    recipes depsolve <recipe,...>    Display the packages needed to install the recipe.
+    blueprints depsolve <blueprint,...>    Display the packages needed to install the blueprint.
     """
-    api_route = client.api_url(api_version, "/recipes/depsolve/%s" % (",".join(argify(args))))
+    api_route = client.api_url(api_version, "/blueprints/depsolve/%s" % (",".join(argify(args))))
     result = client.get_url_json(socket_path, api_route)
 
     if show_json:
         print(json.dumps(result, indent=4))
         return 0
 
-    for recipe in result["recipes"]:
-        if recipe["recipe"].get("version", ""):
-            print("Recipe: %s v%s" % (recipe["recipe"]["name"], recipe["recipe"]["version"]))
+    for blueprint in result["blueprints"]:
+        if blueprint["blueprint"].get("version", ""):
+            print("blueprint: %s v%s" % (blueprint["blueprint"]["name"], blueprint["blueprint"]["version"]))
         else:
-            print("Recipe: %s" % (recipe["recipe"]["name"]))
-        for dep in recipe["dependencies"]:
+            print("blueprint: %s" % (blueprint["blueprint"]["name"]))
+        for dep in blueprint["dependencies"]:
             print("    " + packageNEVRA(dep))
 
     return 0
 
-def recipes_push(socket_path, api_version, args, show_json=False):
-    """Push a recipe TOML file to the server, updating the recipe
+def blueprints_push(socket_path, api_version, args, show_json=False):
+    """Push a blueprint TOML file to the server, updating the blueprint
 
     :param socket_path: Path to the Unix socket to use for API communication
     :type socket_path: str
@@ -318,24 +318,24 @@ def recipes_push(socket_path, api_version, args, show_json=False):
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
 
-    push <recipe>            Push a recipe TOML file to the server.
+    push <blueprint>            Push a blueprint TOML file to the server.
     """
-    api_route = client.api_url(api_version, "/recipes/new")
+    api_route = client.api_url(api_version, "/blueprints/new")
     rval = 0
-    for recipe in argify(args):
-        if not os.path.exists(recipe):
-            log.error("Missing recipe file: %s", recipe)
+    for blueprint in argify(args):
+        if not os.path.exists(blueprint):
+            log.error("Missing blueprint file: %s", blueprint)
             continue
-        recipe_toml = open(recipe, "r").read()
+        blueprint_toml = open(blueprint, "r").read()
 
-        result = client.post_url_toml(socket_path, api_route, recipe_toml)
+        result = client.post_url_toml(socket_path, api_route, blueprint_toml)
         if handle_api_result(result, show_json):
             rval = 1
 
     return rval
 
-def recipes_freeze(socket_path, api_version, args, show_json=False):
-    """Handle the recipes freeze commands
+def blueprints_freeze(socket_path, api_version, args, show_json=False):
+    """Handle the blueprints freeze commands
 
     :param socket_path: Path to the Unix socket to use for API communication
     :type socket_path: str
@@ -346,41 +346,41 @@ def recipes_freeze(socket_path, api_version, args, show_json=False):
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
 
-    recipes freeze <recipe,...>      Display the frozen recipe's modules and packages.
-    recipes freeze show <recipe,...> Display the frozen recipe in TOML format.
-    recipes freeze save <recipe,...> Save the frozen recipe to a file, <recipe-name>.frozen.toml.
+    blueprints freeze <blueprint,...>      Display the frozen blueprint's modules and packages.
+    blueprints freeze show <blueprint,...> Display the frozen blueprint in TOML format.
+    blueprints freeze save <blueprint,...> Save the frozen blueprint to a file, <blueprint-name>.frozen.toml.
     """
     if args[0] == "show":
-        return recipes_freeze_show(socket_path, api_version, args[1:], show_json)
+        return blueprints_freeze_show(socket_path, api_version, args[1:], show_json)
     elif args[0] == "save":
-        return recipes_freeze_save(socket_path, api_version, args[1:], show_json)
+        return blueprints_freeze_save(socket_path, api_version, args[1:], show_json)
 
     if len(args) == 0:
-        log.error("freeze is missing the recipe name")
+        log.error("freeze is missing the blueprint name")
         return 1
 
-    api_route = client.api_url(api_version, "/recipes/freeze/%s" % (",".join(argify(args))))
+    api_route = client.api_url(api_version, "/blueprints/freeze/%s" % (",".join(argify(args))))
     result = client.get_url_json(socket_path, api_route)
 
     if show_json:
         print(json.dumps(result, indent=4))
     else:
-        for entry in result["recipes"]:
-            recipe = entry["recipe"]
-            if recipe.get("version", ""):
-                print("Recipe: %s v%s" % (recipe["name"], recipe["version"]))
+        for entry in result["blueprints"]:
+            blueprint = entry["blueprint"]
+            if blueprint.get("version", ""):
+                print("blueprint: %s v%s" % (blueprint["name"], blueprint["version"]))
             else:
-                print("Recipe: %s" % (recipe["name"]))
+                print("blueprint: %s" % (blueprint["name"]))
 
-            for m in recipe["modules"]:
+            for m in blueprint["modules"]:
                 print("    %s-%s" % (m["name"], m["version"]))
 
-            for p in recipe["packages"]:
+            for p in blueprint["packages"]:
                 print("    %s-%s" % (p["name"], p["version"]))
 
         # Print any errors
         for err in result.get("errors", []):
-            log.error("%s: %s", err["recipe"], err["msg"])
+            log.error("%s: %s", err["blueprint"], err["msg"])
 
     # Return a 1 if there are any errors
     if result.get("errors", []):
@@ -388,8 +388,8 @@ def recipes_freeze(socket_path, api_version, args, show_json=False):
     else:
         return 0
 
-def recipes_freeze_show(socket_path, api_version, args, show_json=False):
-    """Show the frozen recipe in TOML format
+def blueprints_freeze_show(socket_path, api_version, args, show_json=False):
+    """Show the frozen blueprint in TOML format
 
     :param socket_path: Path to the Unix socket to use for API communication
     :type socket_path: str
@@ -400,20 +400,20 @@ def recipes_freeze_show(socket_path, api_version, args, show_json=False):
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
 
-    recipes freeze show <recipe,...> Display the frozen recipe in TOML format.
+    blueprints freeze show <blueprint,...> Display the frozen blueprint in TOML format.
     """
     if len(args) == 0:
-        log.error("freeze show is missing the recipe name")
+        log.error("freeze show is missing the blueprint name")
         return 1
 
-    for recipe in argify(args):
-        api_route = client.api_url(api_version, "/recipes/freeze/%s?format=toml" % recipe)
+    for blueprint in argify(args):
+        api_route = client.api_url(api_version, "/blueprints/freeze/%s?format=toml" % blueprint)
         print(client.get_url_raw(socket_path, api_route))
 
     return 0
 
-def recipes_freeze_save(socket_path, api_version, args, show_json=False):
-    """Save the frozen recipe to a TOML file
+def blueprints_freeze_save(socket_path, api_version, args, show_json=False):
+    """Save the frozen blueprint to a TOML file
 
     :param socket_path: Path to the Unix socket to use for API communication
     :type socket_path: str
@@ -424,21 +424,21 @@ def recipes_freeze_save(socket_path, api_version, args, show_json=False):
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
 
-    recipes freeze save <recipe,...> Save the frozen recipe to a file, <recipe-name>.frozen.toml.
+    blueprints freeze save <blueprint,...> Save the frozen blueprint to a file, <blueprint-name>.frozen.toml.
     """
     if len(args) == 0:
-        log.error("freeze save is missing the recipe name")
+        log.error("freeze save is missing the blueprint name")
         return 1
 
-    for recipe in argify(args):
-        api_route = client.api_url(api_version, "/recipes/freeze/%s?format=toml" % recipe)
-        recipe_toml = client.get_url_raw(socket_path, api_route)
-        open(frozen_toml_filename(recipe), "w").write(recipe_toml)
+    for blueprint in argify(args):
+        api_route = client.api_url(api_version, "/blueprints/freeze/%s?format=toml" % blueprint)
+        blueprint_toml = client.get_url_raw(socket_path, api_route)
+        open(frozen_toml_filename(blueprint), "w").write(blueprint_toml)
 
     return 0
 
-def recipes_tag(socket_path, api_version, args, show_json=False):
-    """Tag the most recent recipe commit as a release
+def blueprints_tag(socket_path, api_version, args, show_json=False):
+    """Tag the most recent blueprint commit as a release
 
     :param socket_path: Path to the Unix socket to use for API communication
     :type socket_path: str
@@ -449,15 +449,15 @@ def recipes_tag(socket_path, api_version, args, show_json=False):
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
 
-    recipes tag <recipe>             Tag the most recent recipe commit as a release.
+    blueprints tag <blueprint>             Tag the most recent blueprint commit as a release.
     """
-    api_route = client.api_url(api_version, "/recipes/tag/%s" % args[0])
+    api_route = client.api_url(api_version, "/blueprints/tag/%s" % args[0])
     result = client.post_url(socket_path, api_route, "")
 
     return handle_api_result(result, show_json)
 
-def recipes_undo(socket_path, api_version, args, show_json=False):
-    """Undo changes to a recipe
+def blueprints_undo(socket_path, api_version, args, show_json=False):
+    """Undo changes to a blueprint
 
     :param socket_path: Path to the Unix socket to use for API communication
     :type socket_path: str
@@ -468,22 +468,22 @@ def recipes_undo(socket_path, api_version, args, show_json=False):
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
 
-    recipes undo <recipe> <commit>   Undo changes to a recipe by reverting to the selected commit.
+    blueprints undo <blueprint> <commit>   Undo changes to a blueprint by reverting to the selected commit.
     """
     if len(args) == 0:
-        log.error("undo is missing the recipe name and commit hash")
+        log.error("undo is missing the blueprint name and commit hash")
         return 1
     elif len(args) == 1:
         log.error("undo is missing commit hash")
         return 1
 
-    api_route = client.api_url(api_version, "/recipes/undo/%s/%s" % (args[0], args[1]))
+    api_route = client.api_url(api_version, "/blueprints/undo/%s/%s" % (args[0], args[1]))
     result = client.post_url(socket_path, api_route, "")
 
     return handle_api_result(result, show_json)
 
-def recipes_workspace(socket_path, api_version, args, show_json=False):
-    """Push the recipe TOML to the temporary workspace storage
+def blueprints_workspace(socket_path, api_version, args, show_json=False):
+    """Push the blueprint TOML to the temporary workspace storage
 
     :param socket_path: Path to the Unix socket to use for API communication
     :type socket_path: str
@@ -494,17 +494,17 @@ def recipes_workspace(socket_path, api_version, args, show_json=False):
     :param show_json: Set to True to show the JSON output instead of the human readable output
     :type show_json: bool
 
-    recipes workspace <recipe>       Push the recipe TOML to the temporary workspace storage.
+    blueprints workspace <blueprint>       Push the blueprint TOML to the temporary workspace storage.
     """
-    api_route = client.api_url(api_version, "/recipes/workspace")
+    api_route = client.api_url(api_version, "/blueprints/workspace")
     rval = 0
-    for recipe in argify(args):
-        if not os.path.exists(recipe):
-            log.error("Missing recipe file: %s", recipe)
+    for blueprint in argify(args):
+        if not os.path.exists(blueprint):
+            log.error("Missing blueprint file: %s", blueprint)
             continue
-        recipe_toml = open(recipe, "r").read()
+        blueprint_toml = open(blueprint, "r").read()
 
-        result = client.post_url_toml(socket_path, api_route, recipe_toml)
+        result = client.post_url_toml(socket_path, api_route, blueprint_toml)
         if show_json:
             print(json.dumps(result, indent=4))
         elif result.get("error", False):
