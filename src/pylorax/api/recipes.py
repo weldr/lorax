@@ -503,7 +503,7 @@ def revert_file(repo, branch, filename, commit):
     builder.insert(filename, blob_id, Git.FileMode.BLOB)
     (tree, sig, ref) = prepare_commit(repo, branch, builder)
     commit_hash = commit_id.to_string()
-    message = "Recipe %s reverted to commit %s" % (filename, commit_hash)
+    message = "%s reverted to commit %s" % (filename, commit_hash)
     return repo.create_commit(ref, sig, sig, "UTF-8", message, tree, [parent_commit])
 
 def commit_recipe(repo, branch, recipe):
