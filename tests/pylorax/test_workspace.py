@@ -31,7 +31,7 @@ class WorkspaceTest(unittest.TestCase):
         self.repo = recipes.open_or_create_repo(self.repo_dir)
 
         self.results_path = "./tests/pylorax/results/"
-        self.examples_path = "./tests/pylorax/recipes/"
+        self.examples_path = "./tests/pylorax/blueprints/"
 
         recipe_path = joinpaths(self.examples_path, "http-server.toml")
         f = open(recipe_path, 'rb')

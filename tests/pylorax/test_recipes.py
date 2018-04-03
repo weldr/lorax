@@ -152,7 +152,7 @@ class GitRecipesTest(unittest.TestCase):
         self.repo = recipes.open_or_create_repo(self.repo_dir)
 
         self.results_path = "./tests/pylorax/results/"
-        self.examples_path = "./tests/pylorax/recipes/"
+        self.examples_path = "./tests/pylorax/blueprints/"
         self.new_recipe = os.path.join(self.examples_path, 'python-testing.toml')
 
     @classmethod
