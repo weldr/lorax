@@ -49,21 +49,6 @@ used then the API will use the `master` branch for blueprints. If you want to cr
 a new branch use the `new` or `workspace` routes with ?branch=<branch-name> to
 store the new blueprint on the new branch.
 
-`/api/v0/test`
-^^^^^^^^^^^^^^
-
-  Return a test string. It is not JSON encoded.
-
-`/api/v0/status`
-^^^^^^^^^^^^^^^^
-  Return the status of the API Server::
-
-      { "api": "0",
-        "build": "devel",
-        "db_supported": false,
-        "db_version": "0",
-        "schema_version": "0" }
-
 `/api/v0/blueprints/list`
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -930,16 +915,6 @@ def take_limits(iterable, offset, limit):
 
 def v0_api(api):
     # Note that Sphinx will not generate documentations for any of these.
-    @api.route("/api/v0/test")
-    @crossdomain(origin="*")
-    def v0_test():
-        return "API v0 test"
-
-    @api.route("/api/v0/status")
-    @crossdomain(origin="*")
-    def v0_status():
-        return jsonify(build="devel", api="0", db_version="0", schema_version="0", db_supported=False)
-
     @api.route("/api/v0/blueprints/list")
     @crossdomain(origin="*")
     def v0_blueprints_list():

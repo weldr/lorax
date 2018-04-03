@@ -69,17 +69,13 @@ class ServerTestCase(unittest.TestCase):
     def tearDownClass(self):
         shutil.rmtree(server.config["REPO_DIR"])
 
-    def test_00_hello(self):
-        """Test /"""
-        resp = self.server.get("/")
-        self.assertEqual(resp.data, 'Hello, World!')
-
     def test_01_status(self):
-        """Test the /api/v0/status route"""
-        status_dict = {"build":"devel", "api":"0", "db_version":"0", "schema_version":"0", "db_supported":False}
-        resp = self.server.get("/api/v0/status")
+        """Test the /api/status route"""
+        status_fields = ["build", "api", "db_version", "schema_version", "db_supported", "backend"]
+        resp = self.server.get("/api/status")
         data = json.loads(resp.data)
-        self.assertEqual(data, status_dict)
+        # Just make sure the fields are present
+        self.assertEqual(sorted(data.keys()), sorted(status_fields))
 
     def test_02_blueprints_list(self):
         """Test the /api/v0/blueprints/list route"""

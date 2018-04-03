@@ -18,10 +18,11 @@ import logging
 log = logging.getLogger("lorax-composer")
 
 from collections import namedtuple
-from flask import Flask, send_from_directory
+from flask import Flask, jsonify, redirect, send_from_directory
 from glob import glob
 import os
 
+from pylorax import vernum
 from pylorax.api.crossdomain import crossdomain
 from pylorax.api.v0 import v0_api
 from pylorax.sysutils import joinpaths
@@ -34,9 +35,8 @@ server = Flask(__name__)
 __all__ = ["server", "GitLock"]
 
 @server.route('/')
-@crossdomain(origin="*")
-def hello_world():
-    return 'Hello, World!'
+def server_root():
+    redirect("/api/docs/")
 
 @server.route("/api/docs/")
 @server.route("/api/docs/<path:path>")
@@ -51,5 +51,27 @@ def api_docs(path=None):
     if not path:
         path="index.html"
     return send_from_directory(docs_path, path)
+
+@server.route("/api/status")
+@crossdomain(origin="*")
+def v0_status():
+    """
+    `/api/v0/status`
+    ^^^^^^^^^^^^^^^^
+    Return the status of the API Server::
+
+          { "api": "0",
+            "build": "devel",
+            "db_supported": true,
+            "db_version": "0",
+            "schema_version": "0",
+            "backend": "lorax-composer"}
+    """
+    return jsonify(backend="lorax-composer",
+                   build=vernum,
+                   api="0",
+                   db_version="0",
+                   schema_version="0",
+                   db_supported=True)
 
 v0_api(server)
