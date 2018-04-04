@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.7.12
+Version:        19.7.13
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -168,6 +168,19 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python_sitelib}/composer/*
 
 %changelog
+* Wed Apr 04 2018 Brian C. Lane <bcl@redhat.com> 19.7.13-1
+- Move status to /api/status (bcl)
+- Update the path for the test blueprints (bcl)
+- Drop part command from tar kickstart template. (bcl)
+- Update the queue to use blueprint.toml (bcl)
+- Update composer-cli to use blueprint instead of recipe (bcl)
+- Update lorax-composer docs for recipe -> blueprint change. (bcl)
+- Change the API code to use blueprint (bcl)
+- Update the tests for the recipe -> blueprint change (bcl)
+- Change the tests for /recipes/ routes to /blueprints/ (bcl)
+- Change the /recipes/ routes to /blueprints/ (bcl)
+- Change recipe in API documentation to blueprint (bcl)
+
 * Mon Mar 26 2018 Brian C. Lane <bcl@redhat.com> 19.7.12-1
 - Add support for building ext4 filesystem images. (bcl)
 - Add the image size to the composer-cli status output (bcl)
