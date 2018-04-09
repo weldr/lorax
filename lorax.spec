@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        29.0
+Version:        29.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -155,6 +155,14 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Mon Apr 09 2018 Brian C. Lane <bcl@redhat.com> 29.1-1
+- Fix anaconda metapackage name (mkolman@redhat.com)
+- Include the anaconda-install-env-deps metapackage (mkolman@redhat.com)
+- Update the URL in lorax.spec to point to new Lorax location (bcl@redhat.com)
+- lorax's gh-pages are under ./lorax/ so make the links relative
+  (bcl@redhat.com)
+- New lorax documentation - 29.0 (bcl@redhat.com)
+
 * Thu Mar 15 2018 Brian C. Lane <bcl@redhat.com> 29.0-1
 - Update Copyright year to 2018 in Sphinx docs (bcl@redhat.com)
 - Add links to documentation for previous versions (bcl@redhat.com)
