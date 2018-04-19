@@ -69,7 +69,6 @@ install ${configdir}/mapping ${BOOTDIR}
     treeinfo images-${kernel.arch} zimage
 %endfor
 
-mkdir images/
 # Create optional product.img and updates.img
 <% filegraft=""; images=["product", "updates"] %>
 %for img in images:
