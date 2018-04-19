@@ -5,13 +5,7 @@ BOOTDIR="ppc"
 GRUBDIR="boot/grub"
 STAGE2IMG="images/install.img"
 MACDIR=GRUBDIR+"/powerpc-ieee1275"
-NETBOOTDIR="images/netboot"
 LORAXDIR="usr/share/lorax/"
-
-WRAPPER="usr/sbin/wrapper"
-WRAPPER_DATA="usr/"+libdir+"/kernel-wrapper"
-
-prepboot = ""
 
 ## NOTE: yaboot freaks out and stops parsing its config if it sees a '\',
 ## so we can't use the udev escape sequences in the root arg.
@@ -51,11 +45,11 @@ mkdir ${BOOTDIR}
 install ${configdir}/bootinfo.txt ${BOOTDIR}
 
 mkdir ${GRUBDIR}/powerpc-ieee1275
-runcmd grub2-mkimage -O powerpc-ieee1275 -d  /usr/lib/grub/powerpc-ieee1275 -p '()/boot/grub' \
--o ${outroot}/${GRUBDIR}/powerpc-ieee1275/core.elf iso9660 ext2 ofnet net tftp http
+## "()" means the current device to grub2
+runcmd grub2-mkimage --format=powerpc-ieee1275 --directory=/usr/lib/grub/powerpc-ieee1275 --prefix="()/"${GRUBDIR} \
+--output=${outroot}/${GRUBDIR}/powerpc-ieee1275/core.elf iso9660 ext2 ofnet net tftp http
 install /usr/lib/grub/powerpc-ieee1275/*.mod ${GRUBDIR}/powerpc-ieee1275
 install /usr/lib/grub/powerpc-ieee1275/*.lst ${GRUBDIR}/powerpc-ieee1275
-
 
 install ${configdir}/grub.cfg.in     ${GRUBDIR}/grub.cfg
 replace @PRODUCT@ '${product.name}'  ${GRUBDIR}/grub.cfg
@@ -70,28 +64,16 @@ install ${configdir}/mapping ${BOOTDIR}
 ## Install kernel and bootloader config (in separate places for each arch)
 %for kernel in kernels:
     <%
-      bits = 64 if kernel.arch in ("ppc64", "ppc64le") else 32
+      bits = 64
       ## separate dirs/images for each arch
       KERNELDIR=BOOTDIR+"/ppc%s" % bits
-      NETIMG=NETBOOTDIR+"/ppc%s.img" % bits
     %>
     ## install kernel
-    mkdir ${KERNELDIR} ${NETBOOTDIR}
+    mkdir ${KERNELDIR}
     installkernel images-${kernel.arch} ${kernel.path} ${KERNELDIR}/vmlinuz
     installinitrd images-${kernel.arch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
 
-    ## kernel-wrapper magic that makes the netboot combined ppc{32,64}.img
-    runcmd ${inroot}/${WRAPPER} -p of \
-           -D ${inroot}/${WRAPPER_DATA} \
-           -i ${outroot}/${KERNELDIR}/initrd.img \
-              ${outroot}/${KERNELDIR}/vmlinuz \
-           -o ${outroot}/${NETIMG}
-    treeinfo images-${kernel.arch} zimage ${NETIMG}
-    ## PReP is 32-bit only
-    %if bits == 32:
-        ## Yes, this is supposed to be a relative path
-        <% prepboot="-prep-boot " + NETIMG %>
-    %endif
+    treeinfo images-${kernel.arch} zimage
 %endfor
 
 # Create optional product.img and updates.img
@@ -119,7 +101,7 @@ install ${configdir}/mapping ${BOOTDIR}
 
 ## make boot.iso
 runcmd mkisofs -o ${outroot}/images/boot.iso -chrp-boot -U \
-        ${prepboot} -part -hfs -T -r -l -J \
+        -part -hfs -T -r -l -J \
         -A "${product.name} ${product.version}" -sysid PPC -V '${isolabel}' \
         -volset "${product.version}" -volset-size 1 -volset-seqno 1 \
         -hfs-volid ${product.version} -hfs-bless ${outroot}/${MACDIR} \
@@ -127,9 +109,7 @@ runcmd mkisofs -o ${outroot}/images/boot.iso -chrp-boot -U \
         -no-desktop -allow-multidot ${udfargs} -graft-points \
         ${BOOTDIR}=${outroot}/${BOOTDIR} \
         ${GRUBDIR}=${outroot}/${GRUBDIR} \
-        ${NETBOOTDIR}=${outroot}/${NETBOOTDIR} \
         ${STAGE2IMG}=${outroot}/${STAGE2IMG} ${filegraft}
-
 
 %for kernel in kernels:
     treeinfo images-${kernel.arch} boot.iso images/boot.iso
