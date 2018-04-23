@@ -61,8 +61,9 @@ def handle_api_result(result, show_json=False):
     """
     if show_json:
         print(json.dumps(result, indent=4))
-    elif result.get("error", False):
-        log.error(result["error"]["msg"])
+
+    for err in result.get("errors", []):
+        log.error(err)
 
     if result["status"] == True:
         return 0
