@@ -181,11 +181,10 @@ def compose_start(socket_path, api_version, args, show_json=False, testmode=0):
         print(json.dumps(result, indent=4))
         return 0
 
-    if result.get("error", False):
-        log.error(result["error"]["msg"])
-        return 1
+    for err in result.get("errors", []):
+        log.error(err)
 
-    if result["status"] == False:
+    if result["status"] == False or result.get("errors", False):
         return 1
 
     print("Compose %s added to the queue" % result["build_id"])
@@ -290,7 +289,7 @@ def compose_delete(socket_path, api_version, args, show_json=False, testmode=0):
 
     # Print any errors
     for err in result.get("errors", []):
-        log.error("%s: %s", err["uuid"], err["msg"])
+        log.error(err)
 
     if result.get("errors", []):
         return 1
@@ -324,8 +323,11 @@ def compose_details(socket_path, api_version, args, show_json=False, testmode=0)
     if show_json:
         print(json.dumps(result, indent=4))
         return 0
-    if "status" in result:
-        print(result["error"]["msg"])
+
+    for err in result.get("errors", []):
+        log.error(err)
+
+    if result.get("errors", []):
         return 1
 
     if result["image_size"] > 0:

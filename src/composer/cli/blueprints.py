@@ -177,8 +177,10 @@ def blueprints_diff(socket_path, api_version, args, show_json=False):
         print(json.dumps(result, indent=4))
         return 0
 
-    if result.get("error", False):
-        log.error(result["error"]["msg"])
+    for err in result.get("errors", []):
+        log.error(err)
+
+    if result.get("errors", False):
         return 1
 
     for diff in result["diff"]:
@@ -380,7 +382,7 @@ def blueprints_freeze(socket_path, api_version, args, show_json=False):
 
         # Print any errors
         for err in result.get("errors", []):
-            log.error("%s: %s", err["blueprint"], err["msg"])
+            log.error(err)
 
     # Return a 1 if there are any errors
     if result.get("errors", []):
@@ -507,8 +509,9 @@ def blueprints_workspace(socket_path, api_version, args, show_json=False):
         result = client.post_url_toml(socket_path, api_route, blueprint_toml)
         if show_json:
             print(json.dumps(result, indent=4))
-        elif result.get("error", False):
-            log.error(result["error"]["msg"])
+
+        for err in result.get("errors", []):
+            log.error(err)
 
         # Any errors results in returning a 1, but we continue with the rest first
         if not result.get("status", False):
