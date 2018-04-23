@@ -130,7 +130,7 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(data, info_dict_2)
 
         info_dict_3 = {"changes":[],
-                "errors":[{"blueprint":"missing-blueprint", "msg":"No commits for missing-blueprint.toml on the master branch."}],
+                       "errors":["missing-blueprint: No commits for missing-blueprint.toml on the master branch."],
                        "blueprints":[]
                       }
         resp = self.server.get("/api/v0/blueprints/info/missing-blueprint")
@@ -558,7 +558,89 @@ class ServerTestCase(unittest.TestCase):
         self.assertNotEqual(data, None)
         self.assertEqual({"name": "tar", "enabled": True} in data["types"], True)
 
-    def test_compose_02_create_failed(self):
+    def test_compose_02_bad_type(self):
+        """Test that using an unsupported image type failes"""
+        test_compose = {"blueprint_name": "glusterfs",
+                        "compose_type": "snakes",
+                        "branch": "master"}
+
+        resp = self.server.post("/api/v0/compose?test=1",
+                                data=json.dumps(test_compose),
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["status"], False, "Failed to fail to start test compose: %s" % data)
+        self.assertEqual(data["errors"], ["Invalid compose type (snakes), must be one of ['live-iso', 'partitioned-disk', 'tar', 'qcow2', 'ext4-filesystem']"],
+                                         "Failed to get errors: %s" % data)
+
+    def test_compose_03_status_fail(self):
+        """Test that requesting a status for a bad uuid is empty"""
+        resp = self.server.get("/api/v0/compose/status/NO-UUID-TO-SEE-HERE")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["uuids"], [], "Failed to get empty result bad uuid: %s" % data)
+
+    def test_compose_04_cancel_fail(self):
+        """Test that requesting a cancel for a bad uuid fails."""
+        resp = self.server.delete("/api/v0/compose/cancel/NO-UUID-TO-SEE-HERE")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["status"], False, "Failed to get an error for a bad uuid: %s" % data)
+        self.assertEqual(data["errors"], ["NO-UUID-TO-SEE-HERE is not a valid build uuid"], "Failed to get errors: %s" % data)
+
+    def test_compose_05_delete_fail(self):
+        """Test that requesting a delete for a bad uuid fails."""
+        resp = self.server.delete("/api/v0/compose/delete/NO-UUID-TO-SEE-HERE")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["errors"], ["no-uuid-to-see-here is not a valid build uuid"],
+                         "Failed to get an error for a bad uuid: %s" % data)
+
+    def test_compose_06_info_fail(self):
+        """Test that requesting info for a bad uuid fails."""
+        resp = self.server.get("/api/v0/compose/info/NO-UUID-TO-SEE-HERE")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["status"], False, "Failed to get an error for a bad uuid: %s" % data)
+        self.assertEqual(data["errors"], ["NO-UUID-TO-SEE-HERE is not a valid build_id"],
+                                         "Failed to get errors: %s" % data)
+
+    def test_compose_07_metadata_fail(self):
+        """Test that requesting metadata for a bad uuid fails."""
+        resp = self.server.get("/api/v0/compose/metadata/NO-UUID-TO-SEE-HERE")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["status"], False, "Failed to get an error for a bad uuid: %s" % data)
+        self.assertEqual(data["errors"], ["NO-UUID-TO-SEE-HERE is not a valid build uuid"],
+                                         "Failed to get errors: %s" % data)
+
+    def test_compose_08_results_fail(self):
+        """Test that requesting results for a bad uuid fails."""
+        resp = self.server.get("/api/v0/compose/results/NO-UUID-TO-SEE-HERE")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["status"], False, "Failed to get an error for a bad uuid: %s" % data)
+        self.assertEqual(data["errors"], ["NO-UUID-TO-SEE-HERE is not a valid build uuid"], "Failed to get errors: %s" % data)
+
+    def test_compose_09_logs_fail(self):
+        """Test that requesting logs for a bad uuid fails."""
+        resp = self.server.get("/api/v0/compose/logs/NO-UUID-TO-SEE-HERE")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["status"], False, "Failed to get an error for a bad uuid: %s" % data)
+        self.assertEqual(data["errors"], ["NO-UUID-TO-SEE-HERE is not a valid build uuid"],
+                                         "Failed to get errors: %s" % data)
+
+    def test_compose_10_log_fail(self):
+        """Test that requesting log for a bad uuid fails."""
+        resp = self.server.get("/api/v0/compose/log/NO-UUID-TO-SEE-HERE")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["status"], False, "Failed to get an error for a bad uuid: %s" % data)
+        self.assertEqual(data["errors"], ["NO-UUID-TO-SEE-HERE is not a valid build uuid"],
+                                         "Failed to get errors: %s" % data)
+
+    def test_compose_11_create_failed(self):
         """Test the /api/v0/compose routes with a failed test compose"""
         test_compose = {"blueprint_name": "glusterfs",
                         "compose_type": "tar",
@@ -644,7 +726,7 @@ class ServerTestCase(unittest.TestCase):
         self.assertNotEqual(data, None)
         self.assertEqual(data["failed"], [], "Failed to delete the failed build: %s" % data)
 
-    def test_compose_03_create_finished(self):
+    def test_compose_12_create_finished(self):
         """Test the /api/v0/compose routes with a finished test compose"""
         test_compose = {"blueprint_name": "glusterfs",
                         "compose_type": "tar",
