@@ -250,7 +250,7 @@ def compose_types(share_dir):
 
     The output types come from the kickstart names in /usr/share/lorax/composer/\*ks
     """
-    return [os.path.basename(ks)[:-3] for ks in glob(joinpaths(share_dir, "composer/*.ks"))]
+    return sorted([os.path.basename(ks)[:-3] for ks in glob(joinpaths(share_dir, "composer/*.ks"))])
 
 def compose_args(compose_type):
     """ Returns the settings to pass to novirt_install for the compose type
