@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.7.13
+Version:        19.7.14
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -168,6 +168,11 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python_sitelib}/composer/*
 
 %changelog
+* Wed Apr 25 2018 Brian C. Lane <bcl@redhat.com> 19.7.14-1
+- Sort the list of supported output types (bcl)
+- Add some tests for error conditions. (bcl)
+- Update the error responses to just return lists of strings. (bcl)
+
 * Wed Apr 04 2018 Brian C. Lane <bcl@redhat.com> 19.7.13-1
 - Move status to /api/status (bcl)
 - Update the path for the test blueprints (bcl)
