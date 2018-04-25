@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>composer.cli &mdash; Lorax 19.7.11 documentation</title>
+    <title>composer.cli &mdash; Lorax 19.7.14 documentation</title>
     
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '19.7.11',
+        VERSION:     '19.7.14',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.11 documentation" href="../../index.html" />
+    <link rel="top" title="Lorax 19.7.14 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Lorax 19.7.14 documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -71,13 +71,13 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&quot;composer-cli&quot;</span><span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">composer.cli.recipes</span> <span class="kn">import</span> <span class="n">recipes_cmd</span>
+<span class="kn">from</span> <span class="nn">composer.cli.blueprints</span> <span class="kn">import</span> <span class="n">blueprints_cmd</span>
 <span class="kn">from</span> <span class="nn">composer.cli.modules</span> <span class="kn">import</span> <span class="n">modules_cmd</span>
 <span class="kn">from</span> <span class="nn">composer.cli.projects</span> <span class="kn">import</span> <span class="n">projects_cmd</span>
 <span class="kn">from</span> <span class="nn">composer.cli.compose</span> <span class="kn">import</span> <span class="n">compose_cmd</span>
 
 <span class="n">command_map</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s">&quot;recipes&quot;</span><span class="p">:</span> <span class="n">recipes_cmd</span><span class="p">,</span>
+    <span class="s">&quot;blueprints&quot;</span><span class="p">:</span> <span class="n">blueprints_cmd</span><span class="p">,</span>
     <span class="s">&quot;modules&quot;</span><span class="p">:</span> <span class="n">modules_cmd</span><span class="p">,</span>
     <span class="s">&quot;projects&quot;</span><span class="p">:</span> <span class="n">projects_cmd</span><span class="p">,</span>
     <span class="s">&quot;compose&quot;</span><span class="p">:</span> <span class="n">compose_cmd</span>
@@ -138,7 +138,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Lorax 19.7.14 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

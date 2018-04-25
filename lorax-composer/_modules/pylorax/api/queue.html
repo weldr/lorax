@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pylorax.api.queue &mdash; Lorax 19.7.11 documentation</title>
+    <title>pylorax.api.queue &mdash; Lorax 19.7.14 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '19.7.11',
+        VERSION:     '19.7.14',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.11 documentation" href="../../../index.html" />
+    <link rel="top" title="Lorax 19.7.14 documentation" href="../../../index.html" />
     <link rel="up" title="pylorax.api" href="../api.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.14 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../../pylorax.html" >pylorax</a> &raquo;</li>
           <li><a href="../api.html" accesskey="U">pylorax.api</a> &raquo;</li> 
@@ -158,7 +158,7 @@
                 <span class="n">make_compose</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">dst</span><span class="p">))</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Finished building </span><span class="si">%s</span><span class="s">, results are in </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">dst</span><span class="p">))</span>
                 <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="s">&quot;STATUS&quot;</span><span class="p">),</span> <span class="s">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;FINISHED</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="kn">import</span> <span class="nn">traceback</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;traceback: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
 
@@ -288,6 +288,7 @@
 <span class="sd">    :type results_dir: str</span>
 <span class="sd">    :returns: A dictionary with details about the compose</span>
 <span class="sd">    :rtype: dict</span>
+<span class="sd">    :raises: IOError if it cannot read the directory, STATUS, or blueprint file.</span>
 
 <span class="sd">    The following details are included in the dict:</span>
 
@@ -295,26 +296,30 @@
 <span class="sd">    * queue_status - The final status of the composition (FINISHED or FAILED)</span>
 <span class="sd">    * timestamp - The time of the last status change</span>
 <span class="sd">    * compose_type - The type of output generated (tar, iso, etc.)</span>
-<span class="sd">    * recipe - Recipe name</span>
-<span class="sd">    * version - Recipe version</span>
+<span class="sd">    * blueprint - Blueprint name</span>
+<span class="sd">    * version - Blueprint version</span>
+<span class="sd">    * image_size - Size of the image, if finished. 0 otherwise.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c"># Just in case it went away</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">results_dir</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{}</span>
-
     <span class="n">build_id</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">results_dir</span><span class="p">))</span>
     <span class="n">status</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="s">&quot;STATUS&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
     <span class="n">mtime</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="s">&quot;STATUS&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">st_mtime</span>
-    <span class="n">recipe</span> <span class="o">=</span> <span class="n">recipe_from_file</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="s">&quot;recipe.toml&quot;</span><span class="p">))</span>
+    <span class="n">blueprint</span> <span class="o">=</span> <span class="n">recipe_from_file</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="s">&quot;blueprint.toml&quot;</span><span class="p">))</span>
 
     <span class="n">compose_type</span> <span class="o">=</span> <span class="n">get_compose_type</span><span class="p">(</span><span class="n">results_dir</span><span class="p">)</span>
+
+    <span class="n">image_path</span> <span class="o">=</span> <span class="n">get_image_name</span><span class="p">(</span><span class="n">results_dir</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="s">&quot;FINISHED&quot;</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">image_path</span><span class="p">):</span>
+        <span class="n">image_size</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">image_size</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="k">return</span> <span class="p">{</span><span class="s">&quot;id&quot;</span><span class="p">:</span>           <span class="n">build_id</span><span class="p">,</span>
             <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="p">,</span>
             <span class="s">&quot;timestamp&quot;</span><span class="p">:</span>    <span class="n">mtime</span><span class="p">,</span>
             <span class="s">&quot;compose_type&quot;</span><span class="p">:</span> <span class="n">compose_type</span><span class="p">,</span>
-            <span class="s">&quot;recipe&quot;</span><span class="p">:</span>       <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span>
-            <span class="s">&quot;version&quot;</span><span class="p">:</span>      <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">]</span>
+            <span class="s">&quot;blueprint&quot;</span><span class="p">:</span>    <span class="n">blueprint</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span>
+            <span class="s">&quot;version&quot;</span><span class="p">:</span>      <span class="n">blueprint</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">],</span>
+            <span class="s">&quot;image_size&quot;</span><span class="p">:</span>   <span class="n">image_size</span>
             <span class="p">}</span>
 </div>
 <div class="viewcode-block" id="queue_status"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.queue_status">[docs]</a><span class="k">def</span> <span class="nf">queue_status</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
@@ -332,9 +337,25 @@
     <span class="n">new_queue</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">queue_dir</span><span class="p">,</span> <span class="s">&quot;new/*&quot;</span><span class="p">))]</span>
     <span class="n">run_queue</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">queue_dir</span><span class="p">,</span> <span class="s">&quot;run/*&quot;</span><span class="p">))]</span>
 
+    <span class="n">new_details</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">new_queue</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">compose_detail</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">new_details</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
+    <span class="n">run_details</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">run_queue</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">compose_detail</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">run_details</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s">&quot;new&quot;</span><span class="p">:</span>  <span class="p">[</span><span class="n">compose_detail</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">new_queue</span><span class="p">],</span>
-        <span class="s">&quot;run&quot;</span><span class="p">:</span>  <span class="p">[</span><span class="n">compose_detail</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">run_queue</span><span class="p">]</span>
+        <span class="s">&quot;new&quot;</span><span class="p">:</span> <span class="n">new_details</span><span class="p">,</span>
+        <span class="s">&quot;run&quot;</span><span class="p">:</span> <span class="n">run_details</span>
     <span class="p">}</span>
 </div>
 <div class="viewcode-block" id="uuid_status"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.uuid_status">[docs]</a><span class="k">def</span> <span class="nf">uuid_status</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">):</span>
@@ -350,9 +371,9 @@
 <span class="sd">    Returns the same dict as `compose_details()`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">uuid_dir</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;composer&quot;</span><span class="p">,</span> <span class="s">&quot;lib_dir&quot;</span><span class="p">),</span> <span class="s">&quot;results&quot;</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">uuid_dir</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">compose_detail</span><span class="p">(</span><span class="n">uuid_dir</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
+    <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">None</span>
 </div>
 <div class="viewcode-block" id="build_status"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.build_status">[docs]</a><span class="k">def</span> <span class="nf">build_status</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">status_filter</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
@@ -379,9 +400,12 @@
     <span class="k">for</span> <span class="n">build</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">result_dir</span> <span class="o">+</span> <span class="s">&quot;/*&quot;</span><span class="p">):</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Checking status of build </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">build</span><span class="p">)</span>
 
-        <span class="n">status</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">build</span><span class="p">,</span> <span class="s">&quot;STATUS&quot;</span><span class="p">),</span> <span class="s">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">status_filter</span><span class="p">:</span>
-            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">compose_detail</span><span class="p">(</span><span class="n">build</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">build</span><span class="p">,</span> <span class="s">&quot;STATUS&quot;</span><span class="p">),</span> <span class="s">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">status_filter</span><span class="p">:</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">compose_detail</span><span class="p">(</span><span class="n">build</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+            <span class="k">pass</span>
     <span class="k">return</span> <span class="n">results</span>
 </div>
 <div class="viewcode-block" id="uuid_cancel"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.uuid_cancel">[docs]</a><span class="k">def</span> <span class="nf">uuid_cancel</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">):</span>
@@ -422,7 +446,7 @@
     <span class="n">started</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
         <span class="n">status</span> <span class="o">=</span> <span class="n">uuid_status</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">status</span><span class="p">[</span><span class="s">&quot;queue_status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;FAILED&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">status</span><span class="p">[</span><span class="s">&quot;queue_status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;FAILED&quot;</span><span class="p">:</span>
             <span class="k">break</span>
 
         <span class="c"># Is this taking too long? Exit anyway and try to cleanup.</span>
@@ -467,8 +491,8 @@
 
 <span class="sd">    * id - The uuid of the comoposition</span>
 <span class="sd">    * config - containing the configuration settings used to run Anaconda</span>
-<span class="sd">    * recipe - The depsolved recipe used to generate the kickstart</span>
-<span class="sd">    * commit - The (local) git commit hash for the recipe used</span>
+<span class="sd">    * blueprint - The depsolved blueprint used to generate the kickstart</span>
+<span class="sd">    * commit - The (local) git commit hash for the blueprint used</span>
 <span class="sd">    * deps - The NEVRA of all of the dependencies used in the composition</span>
 <span class="sd">    * compose_type - The type of output generated (tar, iso, etc.)</span>
 <span class="sd">    * queue_status - The final status of the composition (FINISHED or FAILED)</span>
@@ -493,19 +517,21 @@
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Missing deps.toml for </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="p">)</span>
     <span class="n">deps_dict</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">deps_path</span><span class="p">,</span> <span class="s">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
 
-    <span class="n">compose_type</span> <span class="o">=</span> <span class="n">get_compose_type</span><span class="p">(</span><span class="n">uuid_dir</span><span class="p">)</span>
-    <span class="n">status</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">uuid_dir</span><span class="p">,</span> <span class="s">&quot;STATUS&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">details</span> <span class="o">=</span> <span class="n">compose_detail</span><span class="p">(</span><span class="n">uuid_dir</span><span class="p">)</span>
 
     <span class="n">commit_path</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">uuid_dir</span><span class="p">,</span> <span class="s">&quot;COMMIT&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">commit_path</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Missing commit hash for </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="p">)</span>
     <span class="n">commit_id</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">commit_path</span><span class="p">,</span> <span class="s">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="p">{</span><span class="s">&quot;id&quot;</span><span class="p">:</span>           <span class="n">uuid</span><span class="p">,</span>
             <span class="s">&quot;config&quot;</span><span class="p">:</span>       <span class="n">cfg_dict</span><span class="p">,</span>
-            <span class="s">&quot;recipe&quot;</span><span class="p">:</span>       <span class="n">frozen_dict</span><span class="p">,</span>
+            <span class="s">&quot;blueprint&quot;</span><span class="p">:</span>    <span class="n">frozen_dict</span><span class="p">,</span>
             <span class="s">&quot;commit&quot;</span><span class="p">:</span>       <span class="n">commit_id</span><span class="p">,</span>
             <span class="s">&quot;deps&quot;</span><span class="p">:</span>         <span class="n">deps_dict</span><span class="p">,</span>
-            <span class="s">&quot;compose_type&quot;</span><span class="p">:</span> <span class="n">compose_type</span><span class="p">,</span>
-            <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="n">status</span>
+            <span class="s">&quot;compose_type&quot;</span><span class="p">:</span> <span class="n">details</span><span class="p">[</span><span class="s">&quot;compose_type&quot;</span><span class="p">],</span>
+            <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="n">details</span><span class="p">[</span><span class="s">&quot;queue_status&quot;</span><span class="p">],</span>
+            <span class="s">&quot;image_size&quot;</span><span class="p">:</span>   <span class="n">details</span><span class="p">[</span><span class="s">&quot;image_size&quot;</span><span class="p">]</span>
     <span class="p">}</span>
 </div>
 <div class="viewcode-block" id="uuid_tar"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.uuid_tar">[docs]</a><span class="k">def</span> <span class="nf">uuid_tar</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">logs</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
@@ -562,6 +588,18 @@
 <span class="sd">    :raises: RuntimeError if there was a problem (eg. invalid uuid, missing config file)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">uuid_dir</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;composer&quot;</span><span class="p">,</span> <span class="s">&quot;lib_dir&quot;</span><span class="p">),</span> <span class="s">&quot;results&quot;</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">get_image_name</span><span class="p">(</span><span class="n">uuid_dir</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="get_image_name"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.get_image_name">[docs]</a><span class="k">def</span> <span class="nf">get_image_name</span><span class="p">(</span><span class="n">uuid_dir</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the filename and full path of the build&#39;s image file</span>
+
+<span class="sd">    :param uuid: The UUID of the build</span>
+<span class="sd">    :type uuid: str</span>
+<span class="sd">    :returns: The image filename and full path</span>
+<span class="sd">    :rtype: tuple of strings</span>
+<span class="sd">    :raises: RuntimeError if there was a problem (eg. invalid uuid, missing config file)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">uuid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">uuid_dir</span><span class="p">))</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">uuid_dir</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> is not a valid build_id&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="p">)</span>
 
@@ -597,6 +635,9 @@
     <span class="c"># While a build is running the logs will be in /tmp/anaconda.log and when it</span>
     <span class="c"># has finished they will be in the results directory</span>
     <span class="n">status</span> <span class="o">=</span> <span class="n">uuid_status</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Status is missing for </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">status</span><span class="p">[</span><span class="s">&quot;queue_status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;RUNNING&quot;</span><span class="p">:</span>
         <span class="n">log_path</span> <span class="o">=</span> <span class="s">&quot;/tmp/anaconda.log&quot;</span>
     <span class="k">else</span><span class="p">:</span>
@@ -647,7 +688,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.14 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../../pylorax.html" >pylorax</a> &raquo;</li>
           <li><a href="../api.html" >pylorax.api</a> &raquo;</li> 

@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lorax-composer &mdash; Lorax 19.7.11 documentation</title>
+    <title>lorax-composer &mdash; Lorax 19.7.14 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '19.7.11',
+        VERSION:     '19.7.14',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.11 documentation" href="index.html" />
+    <link rel="top" title="Lorax 19.7.14 documentation" href="index.html" />
     <link rel="next" title="Product and Updates Images" href="product-images.html" />
     <link rel="prev" title="livemedia-creator" href="livemedia-creator.html" /> 
   </head>
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="livemedia-creator.html" title="livemedia-creator"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.11 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Lorax 19.7.14 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -90,18 +90,18 @@ messages as well as extra debugging info and API requests.</p>
 <li>Remove any pre-existing socket directory with <tt class="docutils literal"><span class="pre">rm</span> <span class="pre">-rf</span> <span class="pre">/run/weldr/</span></tt>
 A new directory with correct permissions will be created the first time the server runs.</li>
 <li>Either start it via systemd with <tt class="docutils literal"><span class="pre">systemctl</span> <span class="pre">start</span> <span class="pre">lorax-composer</span></tt> or
-run it directly with <tt class="docutils literal"><span class="pre">lorax-composer</span> <span class="pre">/path/to/recipes/</span></tt></li>
+run it directly with <tt class="docutils literal"><span class="pre">lorax-composer</span> <span class="pre">/path/to/blueprints/</span></tt></li>
 </ol>
-<p>The <tt class="docutils literal"><span class="pre">/path/to/recipes/</span></tt> is where the recipe&#8217;s git repo will be created, and
-all the recipes created with the <tt class="docutils literal"><span class="pre">/api/v0/recipes/new</span></tt> route will be stored.
-If there are recipe <tt class="docutils literal"><span class="pre">.toml</span></tt> files in the top level of the directory they will
-be imported into the recipe git storage.</p>
+<p>The <tt class="docutils literal"><span class="pre">/path/to/blueprints/</span></tt> is where the blueprint&#8217;s git repo will be created, and
+all the blueprints created with the <tt class="docutils literal"><span class="pre">/api/v0/blueprints/new</span></tt> route will be stored.
+If there are blueprint <tt class="docutils literal"><span class="pre">.toml</span></tt> files in the top level of the directory they will
+be imported into the blueprint git storage.</p>
 </div>
 <div class="section" id="composing-images">
 <h2>Composing Images<a class="headerlink" href="#composing-images" title="Permalink to this headline">¶</a></h2>
 <p>As of version 19.7.7 lorax-composer can create <tt class="docutils literal"><span class="pre">tar</span></tt> output images. You can use curl to start
 a compose like this:</p>
-<div class="highlight-python"><pre>curl --unix-socket /run/weldr/api.socket -X POST -H "Content-Type: application/json" -d '{"recipe_name": "http-server", "compose_type": "tar", "branch": "master"}' http:///api/v0/compose</pre>
+<div class="highlight-python"><pre>curl --unix-socket /run/weldr/api.socket -X POST -H "Content-Type: application/json" -d '{"blueprint_name": "http-server", "compose_type": "tar", "branch": "master"}' http:///api/v0/compose</pre>
 </div>
 <p>And then monitor it by passing the returned build UUID to <tt class="docutils literal"><span class="pre">/compose/status/&lt;uuid&gt;</span></tt>.</p>
 <p>Version 19.7.10 adds support for <tt class="docutils literal"><span class="pre">live-iso</span></tt> and <tt class="docutils literal"><span class="pre">partitioned-disk</span></tt></p>
@@ -139,7 +139,7 @@ in <tt class="docutils literal"><span class="pre">./docs/rhel7-minimal.ks</span>
 commands, they will be added by the compose process. Make sure the bootloader
 packages are included in the <tt class="docutils literal"><span class="pre">%packages</span></tt> section at the end of the kickstart,
 and you will want to leave off the <tt class="docutils literal"><span class="pre">%end</span></tt> so that the compose can append the
-list of packages from the recipe.</p>
+list of packages from the blueprint.</p>
 <p>The new <tt class="docutils literal"><span class="pre">_MAP</span></tt> entry should be a copy of one of the existing entries, but with <tt class="docutils literal"><span class="pre">make_disk</span></tt> set
 to <tt class="docutils literal"><span class="pre">True</span></tt>. Make sure that none of the other <tt class="docutils literal"><span class="pre">make_*</span></tt> options are <tt class="docutils literal"><span class="pre">True</span></tt>. The <tt class="docutils literal"><span class="pre">image_name</span></tt> is
 what the name of the final image will be.</p>
@@ -215,7 +215,7 @@ the contents of the iso as well as the boot.iso itself.</p>
         <li class="right" >
           <a href="livemedia-creator.html" title="livemedia-creator"
              >previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.11 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Lorax 19.7.14 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

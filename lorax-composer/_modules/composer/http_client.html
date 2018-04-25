@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>composer.http_client &mdash; Lorax 19.7.11 documentation</title>
+    <title>composer.http_client &mdash; Lorax 19.7.14 documentation</title>
     
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '19.7.11',
+        VERSION:     '19.7.14',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.11 documentation" href="../../index.html" />
+    <link rel="top" title="Lorax 19.7.14 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Lorax 19.7.14 documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -98,6 +98,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">http</span> <span class="o">=</span> <span class="n">UnixHTTPConnectionPool</span><span class="p">(</span><span class="n">socket_path</span><span class="p">)</span>
     <span class="n">r</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">400</span><span class="p">:</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;utf-8&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="s">&quot;status&quot;</span> <span class="ow">in</span> <span class="n">err</span> <span class="ow">and</span> <span class="n">err</span><span class="p">[</span><span class="s">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">err</span><span class="p">[</span><span class="s">&quot;errors&quot;</span><span class="p">]))</span>
+
     <span class="k">return</span> <span class="n">r</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="get_url_json"><a class="viewcode-back" href="../../composer.html#composer.http_client.get_url_json">[docs]</a><span class="k">def</span> <span class="nf">get_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
@@ -146,7 +151,7 @@
     <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;utf-8&quot;</span><span class="p">))</span>
 </div>
 <div class="viewcode-block" id="post_url_toml"><a class="viewcode-back" href="../../composer.html#composer.http_client.post_url_toml">[docs]</a><span class="k">def</span> <span class="nf">post_url_toml</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;POST a TOML recipe to the URL</span>
+    <span class="sd">&quot;&quot;&quot;POST a TOML string to the URL</span>
 
 <span class="sd">    :param socket_path: Path to the Unix socket to use for API communication</span>
 <span class="sd">    :type socket_path: str</span>
@@ -218,7 +223,7 @@
     <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">400</span><span class="p">:</span>
         <span class="n">err</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;utf-8&quot;</span><span class="p">))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">err</span><span class="p">[</span><span class="s">&quot;status&quot;</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">err</span><span class="p">[</span><span class="s">&quot;error&quot;</span><span class="p">][</span><span class="s">&quot;msg&quot;</span><span class="p">])</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">err</span><span class="p">[</span><span class="s">&quot;errors&quot;</span><span class="p">]))</span>
 
     <span class="n">filename</span> <span class="o">=</span> <span class="n">get_filename</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
@@ -278,7 +283,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Lorax 19.7.14 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

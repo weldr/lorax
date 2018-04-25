@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>composer.cli.utilities &mdash; Lorax 19.7.11 documentation</title>
+    <title>composer.cli.utilities &mdash; Lorax 19.7.14 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '19.7.11',
+        VERSION:     '19.7.14',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.11 documentation" href="../../../index.html" />
+    <link rel="top" title="Lorax 19.7.14 documentation" href="../../../index.html" />
     <link rel="up" title="composer.cli" href="../cli.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.14 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../cli.html" accesskey="U">composer.cli</a> &raquo;</li> 
       </ul>
@@ -85,25 +85,25 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span> <span class="p">[</span><span class="n">arg</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">args</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">entry</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;,&quot;</span><span class="p">)])</span>
 </div>
-<div class="viewcode-block" id="toml_filename"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.utilities.toml_filename">[docs]</a><span class="k">def</span> <span class="nf">toml_filename</span><span class="p">(</span><span class="n">recipe_name</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Convert a recipe name into a filename.toml</span>
+<div class="viewcode-block" id="toml_filename"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.utilities.toml_filename">[docs]</a><span class="k">def</span> <span class="nf">toml_filename</span><span class="p">(</span><span class="n">blueprint_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert a blueprint name into a filename.toml</span>
 
-<span class="sd">    :param recipe_name: The recipe&#39;s name</span>
-<span class="sd">    :type recipe_name: str</span>
-<span class="sd">    :returns: The recipe name with &#39; &#39; converted to - and .toml appended</span>
+<span class="sd">    :param blueprint_name: The blueprint&#39;s name</span>
+<span class="sd">    :type blueprint_name: str</span>
+<span class="sd">    :returns: The blueprint name with &#39; &#39; converted to - and .toml appended</span>
 <span class="sd">    :rtype: str</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">recipe_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="s">&quot;-&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;.toml&quot;</span>
+    <span class="k">return</span> <span class="n">blueprint_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="s">&quot;-&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;.toml&quot;</span>
 </div>
-<div class="viewcode-block" id="frozen_toml_filename"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.utilities.frozen_toml_filename">[docs]</a><span class="k">def</span> <span class="nf">frozen_toml_filename</span><span class="p">(</span><span class="n">recipe_name</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Convert a recipe name into a filename.toml</span>
+<div class="viewcode-block" id="frozen_toml_filename"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.utilities.frozen_toml_filename">[docs]</a><span class="k">def</span> <span class="nf">frozen_toml_filename</span><span class="p">(</span><span class="n">blueprint_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert a blueprint name into a filename.toml</span>
 
-<span class="sd">    :param recipe_name: The recipe&#39;s name</span>
-<span class="sd">    :type recipe_name: str</span>
-<span class="sd">    :returns: The recipe name with &#39; &#39; converted to - and .toml appended</span>
+<span class="sd">    :param blueprint_name: The blueprint&#39;s name</span>
+<span class="sd">    :type blueprint_name: str</span>
+<span class="sd">    :returns: The blueprint name with &#39; &#39; converted to - and .toml appended</span>
 <span class="sd">    :rtype: str</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">recipe_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="s">&quot;-&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;.frozen.toml&quot;</span>
+    <span class="k">return</span> <span class="n">blueprint_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="s">&quot;-&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;.frozen.toml&quot;</span>
 </div>
 <div class="viewcode-block" id="handle_api_result"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.utilities.handle_api_result">[docs]</a><span class="k">def</span> <span class="nf">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Log any errors, return the correct value</span>
@@ -113,8 +113,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">show_json</span><span class="p">:</span>
         <span class="k">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
-    <span class="k">elif</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;error&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s">&quot;error&quot;</span><span class="p">][</span><span class="s">&quot;msg&quot;</span><span class="p">])</span>
+
+    <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;errors&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
         <span class="k">return</span> <span class="mi">0</span>
@@ -166,7 +167,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.14 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../cli.html" >composer.cli</a> &raquo;</li> 
       </ul>

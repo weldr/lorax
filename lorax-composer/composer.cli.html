@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>cli Package &mdash; Lorax 19.7.11 documentation</title>
+    <title>cli Package &mdash; Lorax 19.7.14 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '19.7.11',
+        VERSION:     '19.7.14',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.11 documentation" href="index.html" />
+    <link rel="top" title="Lorax 19.7.14 documentation" href="index.html" />
     <link rel="up" title="composer Package" href="composer.html" />
     <link rel="next" title="pylorax Package" href="pylorax.html" />
     <link rel="prev" title="composer Package" href="composer.html" /> 
@@ -46,7 +46,7 @@
         <li class="right" >
           <a href="composer.html" title="composer Package"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+        <li><a href="index.html">Lorax 19.7.14 documentation</a> &raquo;</li>
           <li><a href="modules.html" >src</a> &raquo;</li>
           <li><a href="composer.html" accesskey="U">composer Package</a> &raquo;</li> 
       </ul>
@@ -76,6 +76,363 @@
 </dd></dl>
 
 </div>
+<div class="section" id="module-composer.cli.blueprints">
+<span id="blueprints-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">blueprints</span></tt> Module<a class="headerlink" href="#module-composer.cli.blueprints" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="composer.cli.blueprints.blueprints_changes">
+<tt class="descclassname">composer.cli.blueprints.</tt><tt class="descname">blueprints_changes</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_changes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_changes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display the changes for each of the blueprints</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
+<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
+<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
+<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>blueprints changes &lt;blueprint,...&gt;     Display the changes for each blueprint.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.blueprints.blueprints_cmd">
+<tt class="descclassname">composer.cli.blueprints.</tt><tt class="descname">blueprints_cmd</tt><big>(</big><em>opts</em><big>)</big><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process blueprints commands</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>opts</strong> (<a class="reference external" href="https://docs.python.org/2/library/argparse.html#argparse.Namespace" title="(in Python v2.7)"><em>argparse.Namespace</em></a>) &#8211; Cmdline arguments</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Value to return from sys.exit()</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+<p>This dispatches the blueprints commands to a function</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.blueprints.blueprints_delete">
+<tt class="descclassname">composer.cli.blueprints.</tt><tt class="descname">blueprints_delete</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a blueprint from the server</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
+<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
+<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
+<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>delete &lt;blueprint&gt;          Delete a blueprint from the server</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.blueprints.blueprints_depsolve">
+<tt class="descclassname">composer.cli.blueprints.</tt><tt class="descname">blueprints_depsolve</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_depsolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_depsolve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display the packages needed to install the blueprint</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
+<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
+<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
+<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>blueprints depsolve &lt;blueprint,...&gt;    Display the packages needed to install the blueprint.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.blueprints.blueprints_diff">
+<tt class="descclassname">composer.cli.blueprints.</tt><tt class="descname">blueprints_diff</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_diff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display the differences between 2 versions of a blueprint</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
+<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
+<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
+<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>blueprints diff &lt;blueprint-name&gt;       Display the differences between 2 versions of a blueprint.</dt>
+<dd>&lt;from-commit&gt;       Commit hash or NEWEST
+&lt;to-commit&gt;         Commit hash, NEWEST, or WORKSPACE</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.blueprints.blueprints_freeze">
+<tt class="descclassname">composer.cli.blueprints.</tt><tt class="descname">blueprints_freeze</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_freeze"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_freeze" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle the blueprints freeze commands</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
+<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
+<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
+<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>blueprints freeze &lt;blueprint,...&gt;      Display the frozen blueprint&#8217;s modules and packages.
+blueprints freeze show &lt;blueprint,...&gt; Display the frozen blueprint in TOML format.
+blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file, &lt;blueprint-name&gt;.frozen.toml.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.blueprints.blueprints_freeze_save">
+<tt class="descclassname">composer.cli.blueprints.</tt><tt class="descname">blueprints_freeze_save</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_freeze_save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_freeze_save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the frozen blueprint to a TOML file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
+<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
+<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
+<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file, &lt;blueprint-name&gt;.frozen.toml.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.blueprints.blueprints_freeze_show">
+<tt class="descclassname">composer.cli.blueprints.</tt><tt class="descname">blueprints_freeze_show</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_freeze_show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_freeze_show" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show the frozen blueprint in TOML format</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
+<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
+<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
+<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>blueprints freeze show &lt;blueprint,...&gt; Display the frozen blueprint in TOML format.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.blueprints.blueprints_list">
+<tt class="descclassname">composer.cli.blueprints.</tt><tt class="descname">blueprints_list</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output the list of available blueprints</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
+<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
+<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
+<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>blueprints list</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.blueprints.blueprints_push">
+<tt class="descclassname">composer.cli.blueprints.</tt><tt class="descname">blueprints_push</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_push"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_push" title="Permalink to this definition">¶</a></dt>
+<dd><p>Push a blueprint TOML file to the server, updating the blueprint</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
+<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
+<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
+<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>push &lt;blueprint&gt;            Push a blueprint TOML file to the server.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.blueprints.blueprints_save">
+<tt class="descclassname">composer.cli.blueprints.</tt><tt class="descname">blueprints_save</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the blueprint to a TOML file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
+<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
+<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
+<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>blueprints save &lt;blueprint,...&gt;        Save the blueprint to a file, &lt;blueprint-name&gt;.toml</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.blueprints.blueprints_show">
+<tt class="descclassname">composer.cli.blueprints.</tt><tt class="descname">blueprints_show</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_show" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show the blueprints, in TOML format</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
+<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
+<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
+<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>blueprints show &lt;blueprint,...&gt;        Display the blueprint in TOML format.</p>
+<p>Multiple blueprints will be separated by</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.blueprints.blueprints_tag">
+<tt class="descclassname">composer.cli.blueprints.</tt><tt class="descname">blueprints_tag</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tag the most recent blueprint commit as a release</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
+<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
+<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
+<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>blueprints tag &lt;blueprint&gt;             Tag the most recent blueprint commit as a release.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.blueprints.blueprints_undo">
+<tt class="descclassname">composer.cli.blueprints.</tt><tt class="descname">blueprints_undo</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_undo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_undo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Undo changes to a blueprint</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
+<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
+<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
+<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>blueprints undo &lt;blueprint&gt; &lt;commit&gt;   Undo changes to a blueprint by reverting to the selected commit.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.blueprints.blueprints_workspace">
+<tt class="descclassname">composer.cli.blueprints.</tt><tt class="descname">blueprints_workspace</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/blueprints.html#blueprints_workspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.blueprints_workspace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Push the blueprint TOML to the temporary workspace storage</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
+<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
+<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
+<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>blueprints workspace &lt;blueprint&gt;       Push the blueprint TOML to the temporary workspace storage.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.blueprints.prettyCommitDetails">
+<tt class="descclassname">composer.cli.blueprints.</tt><tt class="descname">prettyCommitDetails</tt><big>(</big><em>change</em>, <em>indent=4</em><big>)</big><a class="reference internal" href="_modules/composer/cli/blueprints.html#prettyCommitDetails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.prettyCommitDetails" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print the blueprint&#8217;s change in a nice way</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>change</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; The individual blueprint change dict</li>
+<li><strong>indent</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; Number of spaces to indent</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.blueprints.prettyDiffEntry">
+<tt class="descclassname">composer.cli.blueprints.</tt><tt class="descname">prettyDiffEntry</tt><big>(</big><em>diff</em><big>)</big><a class="reference internal" href="_modules/composer/cli/blueprints.html#prettyDiffEntry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.prettyDiffEntry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate nice diff entry string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>diff</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; Difference entry dict</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Nice string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
 <div class="section" id="module-composer.cli.compose">
 <span id="compose-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">compose</span></tt> Module<a class="headerlink" href="#module-composer.cli.compose" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
@@ -91,6 +448,7 @@
 <li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
 <li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
 <li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+<li><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; unused in this function</li>
 </ul>
 </td>
 </tr>
@@ -132,6 +490,7 @@
 <li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
 <li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
 <li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+<li><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; unused in this function</li>
 </ul>
 </td>
 </tr>
@@ -155,13 +514,14 @@ or failed, not a running compose.</p>
 <li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
 <li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
 <li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+<li><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; unused in this function</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
 <p>compose details &lt;uuid&gt;</p>
-<p>This returns information about the compose, including the recipe and the dependencies.</p>
+<p>This returns information about the compose, including the blueprint and the dependencies.</p>
 </dd></dl>
 
 <dl class="function">
@@ -177,6 +537,7 @@ or failed, not a running compose.</p>
 <li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
 <li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
 <li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+<li><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; unused in this function</li>
 </ul>
 </td>
 </tr>
@@ -200,6 +561,7 @@ of compose that was selected.</p>
 <li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
 <li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
 <li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+<li><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; unused in this function</li>
 </ul>
 </td>
 </tr>
@@ -223,6 +585,7 @@ during the build.</p>
 <li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
 <li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
 <li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+<li><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; unused in this function</li>
 </ul>
 </td>
 </tr>
@@ -245,6 +608,7 @@ during the build.</p>
 <li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
 <li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
 <li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+<li><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; unused in this function</li>
 </ul>
 </td>
 </tr>
@@ -267,6 +631,7 @@ during the build.</p>
 <li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
 <li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
 <li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+<li><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; unused in this function</li>
 </ul>
 </td>
 </tr>
@@ -280,7 +645,7 @@ It is saved as uuid.tar</p>
 <dl class="function">
 <dt id="composer.cli.compose.compose_start">
 <tt class="descclassname">composer.cli.compose.</tt><tt class="descname">compose_start</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em>, <em>testmode=0</em><big>)</big><a class="reference internal" href="_modules/composer/cli/compose.html#compose_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_start" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start a new compose using the selected recipe and type</p>
+<dd><p>Start a new compose using the selected blueprint and type</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -290,12 +655,13 @@ It is saved as uuid.tar</p>
 <li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
 <li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
 <li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+<li><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; Set to 1 to simulate a failed compose, set to 2 to simulate a finished one.</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
-<p>compose start &lt;recipe-name&gt; &lt;compose-type&gt;</p>
+<p>compose start &lt;blueprint-name&gt; &lt;compose-type&gt;</p>
 </dd></dl>
 
 <dl class="function">
@@ -311,6 +677,7 @@ It is saved as uuid.tar</p>
 <li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
 <li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
 <li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+<li><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; unused in this function</li>
 </ul>
 </td>
 </tr>
@@ -322,7 +689,7 @@ and failed so raw JSON output is not available.</p>
 
 <dl class="function">
 <dt id="composer.cli.compose.compose_types">
-<tt class="descclassname">composer.cli.compose.</tt><tt class="descname">compose_types</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/compose.html#compose_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_types" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">composer.cli.compose.</tt><tt class="descname">compose_types</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em>, <em>testmode=0</em><big>)</big><a class="reference internal" href="_modules/composer/cli/compose.html#compose_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_types" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return information about the supported compose types</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -333,6 +700,7 @@ and failed so raw JSON output is not available.</p>
 <li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
 <li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
 <li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
+<li><strong>testmode</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; unused in this function</li>
 </ul>
 </td>
 </tr>
@@ -427,363 +795,6 @@ include this extra information.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-composer.cli.recipes">
-<span id="recipes-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">recipes</span></tt> Module<a class="headerlink" href="#module-composer.cli.recipes" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="composer.cli.recipes.prettyCommitDetails">
-<tt class="descclassname">composer.cli.recipes.</tt><tt class="descname">prettyCommitDetails</tt><big>(</big><em>change</em>, <em>indent=4</em><big>)</big><a class="reference internal" href="_modules/composer/cli/recipes.html#prettyCommitDetails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.recipes.prettyCommitDetails" title="Permalink to this definition">¶</a></dt>
-<dd><p>Print the recipe&#8217;s change in a nice way</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>change</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; The individual recipe change dict</li>
-<li><strong>indent</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; Number of spaces to indent</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="composer.cli.recipes.prettyDiffEntry">
-<tt class="descclassname">composer.cli.recipes.</tt><tt class="descname">prettyDiffEntry</tt><big>(</big><em>diff</em><big>)</big><a class="reference internal" href="_modules/composer/cli/recipes.html#prettyDiffEntry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.recipes.prettyDiffEntry" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate nice diff entry string.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>diff</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; Difference entry dict</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Nice string</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="composer.cli.recipes.recipes_changes">
-<tt class="descclassname">composer.cli.recipes.</tt><tt class="descname">recipes_changes</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/recipes.html#recipes_changes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.recipes.recipes_changes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Display the changes for each of the recipes</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
-<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
-<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
-<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>recipes changes &lt;recipe,...&gt;     Display the changes for each recipe.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="composer.cli.recipes.recipes_cmd">
-<tt class="descclassname">composer.cli.recipes.</tt><tt class="descname">recipes_cmd</tt><big>(</big><em>opts</em><big>)</big><a class="reference internal" href="_modules/composer/cli/recipes.html#recipes_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.recipes.recipes_cmd" title="Permalink to this definition">¶</a></dt>
-<dd><p>Process recipes commands</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>opts</strong> (<a class="reference external" href="https://docs.python.org/2/library/argparse.html#argparse.Namespace" title="(in Python v2.7)"><em>argparse.Namespace</em></a>) &#8211; Cmdline arguments</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Value to return from sys.exit()</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
-</tr>
-</tbody>
-</table>
-<p>This dispatches the recipes commands to a function</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="composer.cli.recipes.recipes_delete">
-<tt class="descclassname">composer.cli.recipes.</tt><tt class="descname">recipes_delete</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/recipes.html#recipes_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.recipes.recipes_delete" title="Permalink to this definition">¶</a></dt>
-<dd><p>Delete a recipe from the server</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
-<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
-<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
-<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>delete &lt;recipe&gt;          Delete a recipe from the server</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="composer.cli.recipes.recipes_depsolve">
-<tt class="descclassname">composer.cli.recipes.</tt><tt class="descname">recipes_depsolve</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/recipes.html#recipes_depsolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.recipes.recipes_depsolve" title="Permalink to this definition">¶</a></dt>
-<dd><p>Display the packages needed to install the recipe</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
-<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
-<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
-<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>recipes depsolve &lt;recipe,...&gt;    Display the packages needed to install the recipe.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="composer.cli.recipes.recipes_diff">
-<tt class="descclassname">composer.cli.recipes.</tt><tt class="descname">recipes_diff</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/recipes.html#recipes_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.recipes.recipes_diff" title="Permalink to this definition">¶</a></dt>
-<dd><p>Display the differences between 2 versions of a recipe</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
-<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
-<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
-<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="docutils">
-<dt>recipes diff &lt;recipe-name&gt;       Display the differences between 2 versions of a recipe.</dt>
-<dd>&lt;from-commit&gt;       Commit hash or NEWEST
-&lt;to-commit&gt;         Commit hash, NEWEST, or WORKSPACE</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="composer.cli.recipes.recipes_freeze">
-<tt class="descclassname">composer.cli.recipes.</tt><tt class="descname">recipes_freeze</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/recipes.html#recipes_freeze"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.recipes.recipes_freeze" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handle the recipes freeze commands</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
-<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
-<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
-<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>recipes freeze &lt;recipe,...&gt;      Display the frozen recipe&#8217;s modules and packages.
-recipes freeze show &lt;recipe,...&gt; Display the frozen recipe in TOML format.
-recipes freeze save &lt;recipe,...&gt; Save the frozen recipe to a file, &lt;recipe-name&gt;.frozen.toml.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="composer.cli.recipes.recipes_freeze_save">
-<tt class="descclassname">composer.cli.recipes.</tt><tt class="descname">recipes_freeze_save</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/recipes.html#recipes_freeze_save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.recipes.recipes_freeze_save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save the frozen recipe to a TOML file</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
-<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
-<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
-<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>recipes freeze save &lt;recipe,...&gt; Save the frozen recipe to a file, &lt;recipe-name&gt;.frozen.toml.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="composer.cli.recipes.recipes_freeze_show">
-<tt class="descclassname">composer.cli.recipes.</tt><tt class="descname">recipes_freeze_show</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/recipes.html#recipes_freeze_show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.recipes.recipes_freeze_show" title="Permalink to this definition">¶</a></dt>
-<dd><p>Show the frozen recipe in TOML format</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
-<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
-<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
-<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>recipes freeze show &lt;recipe,...&gt; Display the frozen recipe in TOML format.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="composer.cli.recipes.recipes_list">
-<tt class="descclassname">composer.cli.recipes.</tt><tt class="descname">recipes_list</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/recipes.html#recipes_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.recipes.recipes_list" title="Permalink to this definition">¶</a></dt>
-<dd><p>Output the list of available recipes</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
-<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
-<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
-<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>recipes list</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="composer.cli.recipes.recipes_push">
-<tt class="descclassname">composer.cli.recipes.</tt><tt class="descname">recipes_push</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/recipes.html#recipes_push"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.recipes.recipes_push" title="Permalink to this definition">¶</a></dt>
-<dd><p>Push a recipe TOML file to the server, updating the recipe</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
-<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
-<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
-<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>push &lt;recipe&gt;            Push a recipe TOML file to the server.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="composer.cli.recipes.recipes_save">
-<tt class="descclassname">composer.cli.recipes.</tt><tt class="descname">recipes_save</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/recipes.html#recipes_save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.recipes.recipes_save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save the recipe to a TOML file</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
-<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
-<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
-<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>recipes save &lt;recipe,...&gt;        Save the recipe to a file, &lt;recipe-name&gt;.toml</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="composer.cli.recipes.recipes_show">
-<tt class="descclassname">composer.cli.recipes.</tt><tt class="descname">recipes_show</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/recipes.html#recipes_show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.recipes.recipes_show" title="Permalink to this definition">¶</a></dt>
-<dd><p>Show the recipes, in TOML format</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
-<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
-<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
-<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>recipes show &lt;recipe,...&gt;        Display the recipe in TOML format.</p>
-<p>Multiple recipes will be separated by</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="composer.cli.recipes.recipes_tag">
-<tt class="descclassname">composer.cli.recipes.</tt><tt class="descname">recipes_tag</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/recipes.html#recipes_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.recipes.recipes_tag" title="Permalink to this definition">¶</a></dt>
-<dd><p>Tag the most recent recipe commit as a release</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
-<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
-<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
-<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>recipes tag &lt;recipe&gt;             Tag the most recent recipe commit as a release.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="composer.cli.recipes.recipes_undo">
-<tt class="descclassname">composer.cli.recipes.</tt><tt class="descname">recipes_undo</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/recipes.html#recipes_undo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.recipes.recipes_undo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Undo changes to a recipe</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
-<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
-<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
-<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>recipes undo &lt;recipe&gt; &lt;commit&gt;   Undo changes to a recipe by reverting to the selected commit.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="composer.cli.recipes.recipes_workspace">
-<tt class="descclassname">composer.cli.recipes.</tt><tt class="descname">recipes_workspace</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><big>)</big><a class="reference internal" href="_modules/composer/cli/recipes.html#recipes_workspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.recipes.recipes_workspace" title="Permalink to this definition">¶</a></dt>
-<dd><p>Push the recipe TOML to the temporary workspace storage</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
-<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Version of the API to talk to. eg. &#8220;0&#8221;</li>
-<li><strong>args</strong> (<em>list of str</em>) &#8211; List of remaining arguments from the cmdline</li>
-<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Set to True to show the JSON output instead of the human readable output</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>recipes workspace &lt;recipe&gt;       Push the recipe TOML to the temporary workspace storage.</p>
-</dd></dl>
-
-</div>
 <div class="section" id="module-composer.cli.utilities">
 <span id="utilities-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">utilities</span></tt> Module<a class="headerlink" href="#module-composer.cli.utilities" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
@@ -808,15 +819,15 @@ recipes freeze save &lt;recipe,...&gt; Save the frozen recipe to a file, &lt;rec
 
 <dl class="function">
 <dt id="composer.cli.utilities.frozen_toml_filename">
-<tt class="descclassname">composer.cli.utilities.</tt><tt class="descname">frozen_toml_filename</tt><big>(</big><em>recipe_name</em><big>)</big><a class="reference internal" href="_modules/composer/cli/utilities.html#frozen_toml_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.utilities.frozen_toml_filename" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert a recipe name into a filename.toml</p>
+<tt class="descclassname">composer.cli.utilities.</tt><tt class="descname">frozen_toml_filename</tt><big>(</big><em>blueprint_name</em><big>)</big><a class="reference internal" href="_modules/composer/cli/utilities.html#frozen_toml_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.utilities.frozen_toml_filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a blueprint name into a filename.toml</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The recipe&#8217;s name</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>blueprint_name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The blueprint&#8217;s name</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The recipe name with &#8216; &#8216; converted to - and .toml appended</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The blueprint name with &#8216; &#8216; converted to - and .toml appended</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
 </tr>
@@ -858,15 +869,15 @@ recipes freeze save &lt;recipe,...&gt; Save the frozen recipe to a file, &lt;rec
 
 <dl class="function">
 <dt id="composer.cli.utilities.toml_filename">
-<tt class="descclassname">composer.cli.utilities.</tt><tt class="descname">toml_filename</tt><big>(</big><em>recipe_name</em><big>)</big><a class="reference internal" href="_modules/composer/cli/utilities.html#toml_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.utilities.toml_filename" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert a recipe name into a filename.toml</p>
+<tt class="descclassname">composer.cli.utilities.</tt><tt class="descname">toml_filename</tt><big>(</big><em>blueprint_name</em><big>)</big><a class="reference internal" href="_modules/composer/cli/utilities.html#toml_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.utilities.toml_filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a blueprint name into a filename.toml</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The recipe&#8217;s name</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>blueprint_name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The blueprint&#8217;s name</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The recipe name with &#8216; &#8216; converted to - and .toml appended</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The blueprint name with &#8216; &#8216; converted to - and .toml appended</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
 </tr>
@@ -887,10 +898,10 @@ recipes freeze save &lt;recipe,...&gt; Save the frozen recipe to a file, &lt;rec
   <ul>
 <li><a class="reference internal" href="#">cli Package</a><ul>
 <li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">cli</span></tt> Package</a></li>
+<li><a class="reference internal" href="#module-composer.cli.blueprints"><tt class="docutils literal"><span class="pre">blueprints</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-composer.cli.compose"><tt class="docutils literal"><span class="pre">compose</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-composer.cli.modules"><tt class="docutils literal"><span class="pre">modules</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-composer.cli.projects"><tt class="docutils literal"><span class="pre">projects</span></tt> Module</a></li>
-<li><a class="reference internal" href="#module-composer.cli.recipes"><tt class="docutils literal"><span class="pre">recipes</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-composer.cli.utilities"><tt class="docutils literal"><span class="pre">utilities</span></tt> Module</a></li>
 </ul>
 </li>
@@ -939,7 +950,7 @@ recipes freeze save &lt;recipe,...&gt; Save the frozen recipe to a file, &lt;rec
         <li class="right" >
           <a href="composer.html" title="composer Package"
              >previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+        <li><a href="index.html">Lorax 19.7.14 documentation</a> &raquo;</li>
           <li><a href="modules.html" >src</a> &raquo;</li>
           <li><a href="composer.html" >composer Package</a> &raquo;</li> 
       </ul>

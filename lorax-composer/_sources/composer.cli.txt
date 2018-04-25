@@ -9,6 +9,14 @@ cli Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`blueprints` Module
+------------------------
+
+.. automodule:: composer.cli.blueprints
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`compose` Module
 ---------------------
 
@@ -29,14 +37,6 @@ cli Package
 ----------------------
 
 .. automodule:: composer.cli.projects
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`recipes` Module
----------------------
-
-.. automodule:: composer.cli.recipes
     :members:
     :undoc-members:
     :show-inheritance:

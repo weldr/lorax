@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>composer.cli.compose &mdash; Lorax 19.7.11 documentation</title>
+    <title>composer.cli.compose &mdash; Lorax 19.7.14 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '19.7.11',
+        VERSION:     '19.7.14',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.11 documentation" href="../../../index.html" />
+    <link rel="top" title="Lorax 19.7.14 documentation" href="../../../index.html" />
     <link rel="up" title="composer.cli" href="../cli.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.14 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../cli.html" accesskey="U">composer.cli</a> &raquo;</li> 
       </ul>
@@ -115,20 +115,24 @@
 <span class="sd">    :type args: list of str</span>
 <span class="sd">    :param show_json: Set to True to show the JSON output instead of the human readable output</span>
 <span class="sd">    :type show_json: bool</span>
+<span class="sd">    :param testmode: unused in this function</span>
+<span class="sd">    :type testmode: int</span>
 
 <span class="sd">    This doesn&#39;t map directly to an API command, it combines the results from queue, finished,</span>
 <span class="sd">    and failed so raw JSON output is not available.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">get_status</span><span class="p">(</span><span class="n">compose</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span><span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="n">compose</span><span class="p">[</span><span class="s">&quot;id&quot;</span><span class="p">],</span>
-                <span class="s">&quot;recipe&quot;</span><span class="p">:</span> <span class="n">compose</span><span class="p">[</span><span class="s">&quot;recipe&quot;</span><span class="p">],</span>
+                <span class="s">&quot;blueprint&quot;</span><span class="p">:</span> <span class="n">compose</span><span class="p">[</span><span class="s">&quot;blueprint&quot;</span><span class="p">],</span>
                 <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="n">compose</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">],</span>
+                <span class="s">&quot;compose_type&quot;</span><span class="p">:</span> <span class="n">compose</span><span class="p">[</span><span class="s">&quot;compose_type&quot;</span><span class="p">],</span>
+                <span class="s">&quot;image_size&quot;</span><span class="p">:</span> <span class="n">compose</span><span class="p">[</span><span class="s">&quot;image_size&quot;</span><span class="p">],</span>
                 <span class="s">&quot;status&quot;</span><span class="p">:</span> <span class="n">compose</span><span class="p">[</span><span class="s">&quot;queue_status&quot;</span><span class="p">]}</span>
 
     <span class="c"># Sort the status in a specific order</span>
     <span class="k">def</span> <span class="nf">sort_status</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
         <span class="n">order</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;RUNNING&quot;</span><span class="p">,</span> <span class="s">&quot;WAITING&quot;</span><span class="p">,</span> <span class="s">&quot;FINISHED&quot;</span><span class="p">,</span> <span class="s">&quot;FAILED&quot;</span><span class="p">]</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s">&quot;status&quot;</span><span class="p">]),</span> <span class="n">a</span><span class="p">[</span><span class="s">&quot;recipe&quot;</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s">&quot;status&quot;</span><span class="p">]),</span> <span class="n">a</span><span class="p">[</span><span class="s">&quot;blueprint&quot;</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="s">&quot;compose_type&quot;</span><span class="p">])</span>
 
     <span class="n">status</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -154,12 +158,18 @@
         <span class="k">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
         <span class="k">return</span> <span class="mi">0</span>
 
-    <span class="c"># Print them as UUID RECIPE STATUS</span>
+    <span class="c"># Print them as UUID blueprint STATUS</span>
     <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">status</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> </span><span class="si">%-8s</span><span class="s"> </span><span class="si">%-15s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s">&quot;id&quot;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s">&quot;status&quot;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s">&quot;recipe&quot;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="n">c</span><span class="p">[</span><span class="s">&quot;image_size&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">image_size</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s">&quot;image_size&quot;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">image_size</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> </span><span class="si">%-8s</span><span class="s"> </span><span class="si">%-15s</span><span class="s"> </span><span class="si">%s</span><span class="s"> </span><span class="si">%-16s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s">&quot;id&quot;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s">&quot;status&quot;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s">&quot;blueprint&quot;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s">&quot;compose_type&quot;</span><span class="p">],</span>
+                                             <span class="n">image_size</span><span class="p">))</span>
 
 </div>
-<div class="viewcode-block" id="compose_types"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_types">[docs]</a><span class="k">def</span> <span class="nf">compose_types</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="compose_types"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_types">[docs]</a><span class="k">def</span> <span class="nf">compose_types</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return information about the supported compose types</span>
 
 <span class="sd">    :param socket_path: Path to the Unix socket to use for API communication</span>
@@ -170,6 +180,8 @@
 <span class="sd">    :type args: list of str</span>
 <span class="sd">    :param show_json: Set to True to show the JSON output instead of the human readable output</span>
 <span class="sd">    :type show_json: bool</span>
+<span class="sd">    :param testmode: unused in this function</span>
+<span class="sd">    :type testmode: int</span>
 
 <span class="sd">    Add additional details to types that are known to composer-cli. Raw JSON output does not</span>
 <span class="sd">    include this extra information.</span>
@@ -183,7 +195,7 @@
     <span class="k">print</span><span class="p">(</span><span class="s">&quot;Compose Types: &quot;</span> <span class="o">+</span> <span class="s">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;types&quot;</span><span class="p">]]))</span>
 </div>
 <div class="viewcode-block" id="compose_start"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_start">[docs]</a><span class="k">def</span> <span class="nf">compose_start</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Start a new compose using the selected recipe and type</span>
+    <span class="sd">&quot;&quot;&quot;Start a new compose using the selected blueprint and type</span>
 
 <span class="sd">    :param socket_path: Path to the Unix socket to use for API communication</span>
 <span class="sd">    :type socket_path: str</span>
@@ -193,18 +205,20 @@
 <span class="sd">    :type args: list of str</span>
 <span class="sd">    :param show_json: Set to True to show the JSON output instead of the human readable output</span>
 <span class="sd">    :type show_json: bool</span>
+<span class="sd">    :param testmode: Set to 1 to simulate a failed compose, set to 2 to simulate a finished one.</span>
+<span class="sd">    :type testmode: int</span>
 
-<span class="sd">    compose start &lt;recipe-name&gt; &lt;compose-type&gt;</span>
+<span class="sd">    compose start &lt;blueprint-name&gt; &lt;compose-type&gt;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;start is missing the recipe name and output type&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;start is missing the blueprint name and output type&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;start is missing the output type&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="mi">1</span>
 
     <span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s">&quot;recipe_name&quot;</span><span class="p">:</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="s">&quot;blueprint_name&quot;</span><span class="p">:</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
         <span class="s">&quot;compose_type&quot;</span><span class="p">:</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
         <span class="s">&quot;branch&quot;</span><span class="p">:</span> <span class="s">&quot;master&quot;</span>
         <span class="p">}</span>
@@ -219,11 +233,10 @@
         <span class="k">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
         <span class="k">return</span> <span class="mi">0</span>
 
-    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;error&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s">&quot;error&quot;</span><span class="p">][</span><span class="s">&quot;msg&quot;</span><span class="p">])</span>
-        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;errors&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">False</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">False</span> <span class="ow">or</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;errors&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
         <span class="k">return</span> <span class="mi">1</span>
 
     <span class="k">print</span><span class="p">(</span><span class="s">&quot;Compose </span><span class="si">%s</span><span class="s"> added to the queue&quot;</span> <span class="o">%</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;build_id&quot;</span><span class="p">])</span>
@@ -240,6 +253,8 @@
 <span class="sd">    :type args: list of str</span>
 <span class="sd">    :param show_json: Set to True to show the JSON output instead of the human readable output</span>
 <span class="sd">    :type show_json: bool</span>
+<span class="sd">    :param testmode: unused in this function</span>
+<span class="sd">    :type testmode: int</span>
 
 <span class="sd">    compose log &lt;uuid&gt; [&lt;size&gt;kB]</span>
 
@@ -259,9 +274,14 @@
         <span class="n">log_size</span> <span class="o">=</span> <span class="mi">1024</span>
 
     <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose/log/</span><span class="si">%s</span><span class="s">?size=</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">log_size</span><span class="p">))</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_url_raw</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_url_raw</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="k">return</span> <span class="mi">1</span>
 
     <span class="k">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mi">0</span>
 </div>
 <div class="viewcode-block" id="compose_cancel"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_cancel">[docs]</a><span class="k">def</span> <span class="nf">compose_cancel</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Cancel a running compose</span>
@@ -274,6 +294,8 @@
 <span class="sd">    :type args: list of str</span>
 <span class="sd">    :param show_json: Set to True to show the JSON output instead of the human readable output</span>
 <span class="sd">    :type show_json: bool</span>
+<span class="sd">    :param testmode: unused in this function</span>
+<span class="sd">    :type testmode: int</span>
 
 <span class="sd">    compose cancel &lt;uuid&gt;</span>
 
@@ -298,6 +320,8 @@
 <span class="sd">    :type args: list of str</span>
 <span class="sd">    :param show_json: Set to True to show the JSON output instead of the human readable output</span>
 <span class="sd">    :type show_json: bool</span>
+<span class="sd">    :param testmode: unused in this function</span>
+<span class="sd">    :type testmode: int</span>
 
 <span class="sd">    compose delete &lt;uuid,...&gt;</span>
 
@@ -317,7 +341,7 @@
 
     <span class="c"># Print any errors</span>
     <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;errors&quot;</span><span class="p">,</span> <span class="p">[]):</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">[</span><span class="s">&quot;uuid&quot;</span><span class="p">],</span> <span class="n">err</span><span class="p">[</span><span class="s">&quot;msg&quot;</span><span class="p">])</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;errors&quot;</span><span class="p">,</span> <span class="p">[]):</span>
         <span class="k">return</span> <span class="mi">1</span>
@@ -335,10 +359,12 @@
 <span class="sd">    :type args: list of str</span>
 <span class="sd">    :param show_json: Set to True to show the JSON output instead of the human readable output</span>
 <span class="sd">    :type show_json: bool</span>
+<span class="sd">    :param testmode: unused in this function</span>
+<span class="sd">    :type testmode: int</span>
 
 <span class="sd">    compose details &lt;uuid&gt;</span>
 
-<span class="sd">    This returns information about the compose, including the recipe and the dependencies.</span>
+<span class="sd">    This returns information about the compose, including the blueprint and the dependencies.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;details is missing the compose build id&quot;</span><span class="p">)</span>
@@ -350,17 +376,30 @@
         <span class="k">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
         <span class="k">return</span> <span class="mi">0</span>
 
-    <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> </span><span class="si">%-8s</span><span class="s"> </span><span class="si">%-15s</span><span class="s"> </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s">&quot;id&quot;</span><span class="p">],</span> 
-                                   <span class="n">result</span><span class="p">[</span><span class="s">&quot;queue_status&quot;</span><span class="p">],</span>
-                                   <span class="n">result</span><span class="p">[</span><span class="s">&quot;recipe&quot;</span><span class="p">][</span><span class="s">&quot;name&quot;</span><span class="p">],</span>
-                                   <span class="n">result</span><span class="p">[</span><span class="s">&quot;recipe&quot;</span><span class="p">][</span><span class="s">&quot;version&quot;</span><span class="p">],</span>
-                                   <span class="n">result</span><span class="p">[</span><span class="s">&quot;compose_type&quot;</span><span class="p">]))</span>
-    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Recipe Packages:&quot;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;recipe&quot;</span><span class="p">][</span><span class="s">&quot;packages&quot;</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;errors&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;errors&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;image_size&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">image_size</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s">&quot;image_size&quot;</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">image_size</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+
+
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> </span><span class="si">%-8s</span><span class="s"> </span><span class="si">%-15s</span><span class="s"> </span><span class="si">%s</span><span class="s"> </span><span class="si">%-16s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s">&quot;id&quot;</span><span class="p">],</span>
+                                         <span class="n">result</span><span class="p">[</span><span class="s">&quot;queue_status&quot;</span><span class="p">],</span>
+                                         <span class="n">result</span><span class="p">[</span><span class="s">&quot;blueprint&quot;</span><span class="p">][</span><span class="s">&quot;name&quot;</span><span class="p">],</span>
+                                         <span class="n">result</span><span class="p">[</span><span class="s">&quot;blueprint&quot;</span><span class="p">][</span><span class="s">&quot;version&quot;</span><span class="p">],</span>
+                                         <span class="n">result</span><span class="p">[</span><span class="s">&quot;compose_type&quot;</span><span class="p">],</span>
+                                         <span class="n">image_size</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Packages:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;blueprint&quot;</span><span class="p">][</span><span class="s">&quot;packages&quot;</span><span class="p">]:</span>
         <span class="k">print</span><span class="p">(</span><span class="s">&quot;    </span><span class="si">%s</span><span class="s">-</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">]))</span>
 
-    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Recipe Modules:&quot;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;recipe&quot;</span><span class="p">][</span><span class="s">&quot;modules&quot;</span><span class="p">]:</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Modules:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;blueprint&quot;</span><span class="p">][</span><span class="s">&quot;modules&quot;</span><span class="p">]:</span>
         <span class="k">print</span><span class="p">(</span><span class="s">&quot;    </span><span class="si">%s</span><span class="s">-</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">]))</span>
 
     <span class="k">print</span><span class="p">(</span><span class="s">&quot;Dependencies:&quot;</span><span class="p">)</span>
@@ -378,6 +417,8 @@
 <span class="sd">    :type args: list of str</span>
 <span class="sd">    :param show_json: Set to True to show the JSON output instead of the human readable output</span>
 <span class="sd">    :type show_json: bool</span>
+<span class="sd">    :param testmode: unused in this function</span>
+<span class="sd">    :type testmode: int</span>
 
 <span class="sd">    compose metadata &lt;uuid&gt;</span>
 
@@ -401,6 +442,8 @@
 <span class="sd">    :type args: list of str</span>
 <span class="sd">    :param show_json: Set to True to show the JSON output instead of the human readable output</span>
 <span class="sd">    :type show_json: bool</span>
+<span class="sd">    :param testmode: unused in this function</span>
+<span class="sd">    :type testmode: int</span>
 
 <span class="sd">    compose results &lt;uuid&gt;</span>
 
@@ -425,6 +468,8 @@
 <span class="sd">    :type args: list of str</span>
 <span class="sd">    :param show_json: Set to True to show the JSON output instead of the human readable output</span>
 <span class="sd">    :type show_json: bool</span>
+<span class="sd">    :param testmode: unused in this function</span>
+<span class="sd">    :type testmode: int</span>
 
 <span class="sd">    compose logs &lt;uuid&gt;</span>
 
@@ -448,6 +493,8 @@
 <span class="sd">    :type args: list of str</span>
 <span class="sd">    :param show_json: Set to True to show the JSON output instead of the human readable output</span>
 <span class="sd">    :type show_json: bool</span>
+<span class="sd">    :param testmode: unused in this function</span>
+<span class="sd">    :type testmode: int</span>
 
 <span class="sd">    compose image &lt;uuid&gt;</span>
 
@@ -493,7 +540,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.14 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../cli.html" >composer.cli</a> &raquo;</li> 
       </ul>

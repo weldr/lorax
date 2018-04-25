@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>api Package &mdash; Lorax 19.7.11 documentation</title>
+    <title>api Package &mdash; Lorax 19.7.14 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '19.7.11',
+        VERSION:     '19.7.14',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.11 documentation" href="index.html" />
+    <link rel="top" title="Lorax 19.7.14 documentation" href="index.html" />
     <link rel="up" title="pylorax Package" href="pylorax.html" />
     <link rel="prev" title="pylorax Package" href="pylorax.html" /> 
   </head>
@@ -42,7 +42,7 @@
         <li class="right" >
           <a href="pylorax.html" title="pylorax Package"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+        <li><a href="index.html">Lorax 19.7.14 documentation</a> &raquo;</li>
           <li><a href="modules.html" >src</a> &raquo;</li>
           <li><a href="pylorax.html" accesskey="U">pylorax Package</a> &raquo;</li> 
       </ul>
@@ -304,6 +304,33 @@ Other options will be filled in by <cite>make_compose()</cite></p>
 </dd></dl>
 
 <dl class="function">
+<dt id="pylorax.api.projects.estimate_size">
+<tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">estimate_size</tt><big>(</big><em>packages</em>, <em>block_size=4096</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#estimate_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.estimate_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimate the installed size of a package list</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>packages</strong> (<em>list of TransactionMember objects</em>) &#8211; The packages to be installed</li>
+<li><strong>block_size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The block size to use for rounding up file sizes.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The estimated size of installed packages</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Estimating actual requirements is difficult without the actual file sizes, which
+yum doesn&#8217;t provide access to. So use the file count and block size to estimate
+a minimum size for each package.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="pylorax.api.projects.modules_info">
 <tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">modules_info</tt><big>(</big><em>yb</em>, <em>module_names</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#modules_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.modules_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return details about a module, including dependencies</p>
@@ -372,6 +399,30 @@ and sets the type to &#8220;rpm&#8221;</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of dicts</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.projects.projects_depsolve_with_size">
+<tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">projects_depsolve_with_size</tt><big>(</big><em>yb</em>, <em>project_names</em>, <em>with_core=True</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#projects_depsolve_with_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.projects_depsolve_with_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the dependencies and installed size for a list of projects</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>yb</strong> (<em>YumBase</em>) &#8211; yum base object</li>
+<li><strong>project_names</strong> (<em>List of Strings</em>) &#8211; The projects to find the dependencies for</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">installed size and a list of NEVRA&#8217;s of the project and its dependencies</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple of (int, list of dicts)</p>
 </td>
 </tr>
 </tbody>
@@ -540,6 +591,8 @@ Use queue_status() for those.</p>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
 </tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body">IOError if it cannot read the directory, STATUS, or blueprint file.</td>
+</tr>
 </tbody>
 </table>
 <p>The following details are included in the dict:</p>
@@ -548,8 +601,9 @@ Use queue_status() for those.</p>
 <li>queue_status - The final status of the composition (FINISHED or FAILED)</li>
 <li>timestamp - The time of the last status change</li>
 <li>compose_type - The type of output generated (tar, iso, etc.)</li>
-<li>recipe - Recipe name</li>
-<li>version - Recipe version</li>
+<li>blueprint - Blueprint name</li>
+<li>version - Blueprint version</li>
+<li>image_size - Size of the image, if finished. 0 otherwise.</li>
 </ul>
 </dd></dl>
 
@@ -568,6 +622,26 @@ Use queue_status() for those.</p>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body">RuntimeError if no kickstart template can be found.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.queue.get_image_name">
+<tt class="descclassname">pylorax.api.queue.</tt><tt class="descname">get_image_name</tt><big>(</big><em>uuid_dir</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/queue.html#get_image_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.queue.get_image_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the filename and full path of the build&#8217;s image file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The UUID of the build</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The image filename and full path</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple of strings</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body">RuntimeError if there was a problem (eg. invalid uuid, missing config file)</td>
 </tr>
 </tbody>
 </table>
@@ -777,8 +851,8 @@ and &#8220;run&#8221; has the uuids that are being built (currently limited to 1
 <ul class="simple">
 <li>id - The uuid of the comoposition</li>
 <li>config - containing the configuration settings used to run Anaconda</li>
-<li>recipe - The depsolved recipe used to generate the kickstart</li>
-<li>commit - The (local) git commit hash for the recipe used</li>
+<li>blueprint - The depsolved blueprint used to generate the kickstart</li>
+<li>commit - The (local) git commit hash for the blueprint used</li>
 <li>deps - The NEVRA of all of the dependencies used in the composition</li>
 <li>compose_type - The type of output generated (tar, iso, etc.)</li>
 <li>queue_status - The final status of the composition (FINISHED or FAILED)</li>
@@ -1875,47 +1949,26 @@ error response with it set to false and an error message included.</p>
 </pre></div>
 </div>
 <p>Error response:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
-  <span class="s">&quot;error&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s">&quot;msg&quot;</span><span class="p">:</span> <span class="s">&quot;ggit-error: Failed to remove entry. File isn&#39;t in the tree - jboss.toml (-1)&quot;</span>
-  <span class="p">},</span>
-  <span class="s">&quot;status&quot;</span><span class="p">:</span> <span class="n">false</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-python"><pre>{
+  "errors": ["ggit-error: Failed to remove entry. File isn't in the tree - jboss.toml (-1)"]
+  "status": false
+}</pre>
 </div>
 </div></blockquote>
 </div>
 <div class="section" id="api-routes">
 <h3>API Routes<a class="headerlink" href="#api-routes" title="Permalink to this headline">¶</a></h3>
-<p>All of the recipes routes support the optional <cite>branch</cite> argument. If it is not
-used then the API will use the <cite>master</cite> branch for recipes. If you want to create
+<p>All of the blueprints routes support the optional <cite>branch</cite> argument. If it is not
+used then the API will use the <cite>master</cite> branch for blueprints. If you want to create
 a new branch use the <cite>new</cite> or <cite>workspace</cite> routes with ?branch=&lt;branch-name&gt; to
-store the new recipe on the new branch.</p>
-<div class="section" id="api-v0-test">
-<h4><cite>/api/v0/test</cite><a class="headerlink" href="#api-v0-test" title="Permalink to this headline">¶</a></h4>
+store the new blueprint on the new branch.</p>
+<div class="section" id="api-v0-blueprints-list">
+<h4><cite>/api/v0/blueprints/list</cite><a class="headerlink" href="#api-v0-blueprints-list" title="Permalink to this headline">¶</a></h4>
 <blockquote>
-<div>Return a test string. It is not JSON encoded.</div></blockquote>
-</div>
-<div class="section" id="api-v0-status">
-<h4><cite>/api/v0/status</cite><a class="headerlink" href="#api-v0-status" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>Return the status of the API Server:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span> <span class="s">&quot;api&quot;</span><span class="p">:</span> <span class="s">&quot;0&quot;</span><span class="p">,</span>
-  <span class="s">&quot;build&quot;</span><span class="p">:</span> <span class="s">&quot;devel&quot;</span><span class="p">,</span>
-  <span class="s">&quot;db_supported&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
-  <span class="s">&quot;db_version&quot;</span><span class="p">:</span> <span class="s">&quot;0&quot;</span><span class="p">,</span>
-  <span class="s">&quot;schema_version&quot;</span><span class="p">:</span> <span class="s">&quot;0&quot;</span> <span class="p">}</span>
-</pre></div>
-</div>
-</div></blockquote>
-</div>
-<div class="section" id="api-v0-recipes-list">
-<h4><cite>/api/v0/recipes/list</cite><a class="headerlink" href="#api-v0-recipes-list" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>List the available recipes:</p>
+<div><p>List the available blueprints:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="p">{</span> <span class="s">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
   <span class="s">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="s">&quot;recipes&quot;</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s">&quot;blueprints&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="s">&quot;atlas&quot;</span><span class="p">,</span>
     <span class="s">&quot;development&quot;</span><span class="p">,</span>
     <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
@@ -1927,13 +1980,13 @@ store the new recipe on the new branch.</p>
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="api-v0-recipes-info-recipe-names">
-<h4><cite>/api/v0/recipes/info/&lt;recipe_names&gt;</cite><a class="headerlink" href="#api-v0-recipes-info-recipe-names" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="api-v0-blueprints-info-blueprint-names">
+<h4><cite>/api/v0/blueprints/info/&lt;blueprint_names&gt;</cite><a class="headerlink" href="#api-v0-blueprints-info-blueprint-names" title="Permalink to this headline">¶</a></h4>
 <blockquote>
-<div><p>Return the JSON representation of the recipe. This includes 3 top level
+<div><p>Return the JSON representation of the blueprint. This includes 3 top level
 objects.  <cite>changes</cite> which lists whether or not the workspace is different from
-the most recent commit. <cite>recipes</cite> which lists the JSON representation of the
-recipe, and <cite>errors</cite> which will list any errors, like non-existant recipes.</p>
+the most recent commit. <cite>blueprints</cite> which lists the JSON representation of the
+blueprint, and <cite>errors</cite> which will list any errors, like non-existant blueprints.</p>
 <p>Example:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
   <span class="s">&quot;changes&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -1943,7 +1996,7 @@ recipe, and <cite>errors</cite> which will list any errors, like non-existant re
     <span class="p">}</span>
   <span class="p">],</span>
   <span class="s">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[],</span>
-  <span class="s">&quot;recipes&quot;</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s">&quot;blueprints&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="p">{</span>
       <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;An example GlusterFS server with samba&quot;</span><span class="p">,</span>
       <span class="s">&quot;modules&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -1974,68 +2027,62 @@ recipe, and <cite>errors</cite> which will list any errors, like non-existant re
 </pre></div>
 </div>
 <p>Error example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
-  <span class="s">&quot;changes&quot;</span><span class="p">:</span> <span class="p">[],</span>
-  <span class="s">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-      <span class="s">&quot;msg&quot;</span><span class="p">:</span> <span class="s">&quot;ggit-error: the path &#39;missing.toml&#39; does not exist in the given tree (-3)&quot;</span><span class="p">,</span>
-      <span class="s">&quot;recipe&quot;</span><span class="p">:</span> <span class="s">&quot;missing&quot;</span>
-    <span class="p">}</span>
-  <span class="p">],</span>
-  <span class="s">&quot;recipes&quot;</span><span class="p">:</span> <span class="p">[]</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-python"><pre>{
+  "changes": [],
+  "errors": ["ggit-error: the path 'missing.toml' does not exist in the given tree (-3)"]
+  "blueprints": []
+}</pre>
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="api-v0-recipes-changes-recipe-names-offset-0-limit-20">
-<h4><cite>/api/v0/recipes/changes/&lt;recipe_names&gt;[?offset=0&amp;limit=20]</cite><a class="headerlink" href="#api-v0-recipes-changes-recipe-names-offset-0-limit-20" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="api-v0-blueprints-changes-blueprint-names-offset-0-limit-20">
+<h4><cite>/api/v0/blueprints/changes/&lt;blueprint_names&gt;[?offset=0&amp;limit=20]</cite><a class="headerlink" href="#api-v0-blueprints-changes-blueprint-names-offset-0-limit-20" title="Permalink to this headline">¶</a></h4>
 <blockquote>
-<div><p>Return the commits to a recipe. By default it returns the first 20 commits, this
+<div><p>Return the commits to a blueprint. By default it returns the first 20 commits, this
 can be changed by passing <cite>offset</cite> and/or <cite>limit</cite>. The response will include the
 commit hash, summary, timestamp, and optionally the revision number. The commit
-hash can be passed to <cite>/api/v0/recipes/diff/</cite> to retrieve the exact changes.</p>
+hash can be passed to <cite>/api/v0/blueprints/diff/</cite> to retrieve the exact changes.</p>
 <p>Example:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
   <span class="s">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[],</span>
   <span class="s">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
   <span class="s">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="s">&quot;recipes&quot;</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s">&quot;blueprints&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="p">{</span>
       <span class="s">&quot;changes&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="p">{</span>
           <span class="s">&quot;commit&quot;</span><span class="p">:</span> <span class="s">&quot;e083921a7ed1cf2eec91ad12b9ad1e70ef3470be&quot;</span><span class="p">,</span>
-          <span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="s">&quot;Recipe glusterfs, version 0.0.6 saved.&quot;</span><span class="p">,</span>
+          <span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="s">&quot;blueprint glusterfs, version 0.0.6 saved.&quot;</span><span class="p">,</span>
           <span class="s">&quot;revision&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
           <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s">&quot;2017-11-23T00:18:13Z&quot;</span>
         <span class="p">},</span>
         <span class="p">{</span>
           <span class="s">&quot;commit&quot;</span><span class="p">:</span> <span class="s">&quot;cee5f4c20fc33ea4d54bfecf56f4ad41ad15f4f3&quot;</span><span class="p">,</span>
-          <span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="s">&quot;Recipe glusterfs, version 0.0.5 saved.&quot;</span><span class="p">,</span>
+          <span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="s">&quot;blueprint glusterfs, version 0.0.5 saved.&quot;</span><span class="p">,</span>
           <span class="s">&quot;revision&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
           <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s">&quot;2017-11-11T01:00:28Z&quot;</span>
         <span class="p">},</span>
         <span class="p">{</span>
           <span class="s">&quot;commit&quot;</span><span class="p">:</span> <span class="s">&quot;29b492f26ed35d80800b536623bafc51e2f0eff2&quot;</span><span class="p">,</span>
-          <span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="s">&quot;Recipe glusterfs, version 0.0.4 saved.&quot;</span><span class="p">,</span>
+          <span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="s">&quot;blueprint glusterfs, version 0.0.4 saved.&quot;</span><span class="p">,</span>
           <span class="s">&quot;revision&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
           <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s">&quot;2017-11-11T00:28:30Z&quot;</span>
         <span class="p">},</span>
         <span class="p">{</span>
           <span class="s">&quot;commit&quot;</span><span class="p">:</span> <span class="s">&quot;03374adbf080fe34f5c6c29f2e49cc2b86958bf2&quot;</span><span class="p">,</span>
-          <span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="s">&quot;Recipe glusterfs, version 0.0.3 saved.&quot;</span><span class="p">,</span>
+          <span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="s">&quot;blueprint glusterfs, version 0.0.3 saved.&quot;</span><span class="p">,</span>
           <span class="s">&quot;revision&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
           <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s">&quot;2017-11-10T23:15:52Z&quot;</span>
         <span class="p">},</span>
         <span class="p">{</span>
           <span class="s">&quot;commit&quot;</span><span class="p">:</span> <span class="s">&quot;0e08ecbb708675bfabc82952599a1712a843779d&quot;</span><span class="p">,</span>
-          <span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="s">&quot;Recipe glusterfs, version 0.0.2 saved.&quot;</span><span class="p">,</span>
+          <span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="s">&quot;blueprint glusterfs, version 0.0.2 saved.&quot;</span><span class="p">,</span>
           <span class="s">&quot;revision&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
           <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s">&quot;2017-11-10T23:14:56Z&quot;</span>
         <span class="p">},</span>
         <span class="p">{</span>
           <span class="s">&quot;commit&quot;</span><span class="p">:</span> <span class="s">&quot;3e11eb87a63d289662cba4b1804a0947a6843379&quot;</span><span class="p">,</span>
-          <span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="s">&quot;Recipe glusterfs, version 0.0.1 saved.&quot;</span><span class="p">,</span>
+          <span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="s">&quot;blueprint glusterfs, version 0.0.1 saved.&quot;</span><span class="p">,</span>
           <span class="s">&quot;revision&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
           <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s">&quot;2017-11-08T00:02:47Z&quot;</span>
         <span class="p">}</span>
@@ -2049,70 +2096,70 @@ hash can be passed to <cite>/api/v0/recipes/diff/</cite> to retrieve the exact c
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="post-api-v0-recipes-new">
-<h4>POST <cite>/api/v0/recipes/new</cite><a class="headerlink" href="#post-api-v0-recipes-new" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="post-api-v0-blueprints-new">
+<h4>POST <cite>/api/v0/blueprints/new</cite><a class="headerlink" href="#post-api-v0-blueprints-new" title="Permalink to this headline">¶</a></h4>
 <blockquote>
-<div><p>Create a new recipe, or update an existing recipe. This supports both JSON and TOML
-for the recipe format. The recipe should be in the body of the request with the
+<div><p>Create a new blueprint, or update an existing blueprint. This supports both JSON and TOML
+for the blueprint format. The blueprint should be in the body of the request with the
 <cite>Content-Type</cite> header set to either <cite>application/json</cite> or <cite>text/x-toml</cite>.</p>
 <p>The response will be a status response with <cite>status</cite> set to true, or an
 error response with it set to false and an error message included.</p>
 </div></blockquote>
 </div>
-<div class="section" id="delete-api-v0-recipes-delete-recipe-name">
-<h4>DELETE <cite>/api/v0/recipes/delete/&lt;recipe_name&gt;</cite><a class="headerlink" href="#delete-api-v0-recipes-delete-recipe-name" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="delete-api-v0-blueprints-delete-blueprint-name">
+<h4>DELETE <cite>/api/v0/blueprints/delete/&lt;blueprint_name&gt;</cite><a class="headerlink" href="#delete-api-v0-blueprints-delete-blueprint-name" title="Permalink to this headline">¶</a></h4>
 <blockquote>
-<div><p>Delete a recipe. The recipe is deleted from the branch, and will no longer
-be listed by the <cite>list</cite> route. A recipe can be undeleted using the <cite>undo</cite> route
+<div><p>Delete a blueprint. The blueprint is deleted from the branch, and will no longer
+be listed by the <cite>list</cite> route. A blueprint can be undeleted using the <cite>undo</cite> route
 to revert to a previous commit.</p>
 <p>The response will be a status response with <cite>status</cite> set to true, or an
 error response with it set to false and an error message included.</p>
 </div></blockquote>
 </div>
-<div class="section" id="post-api-v0-recipes-workspace">
-<h4>POST <cite>/api/v0/recipes/workspace</cite><a class="headerlink" href="#post-api-v0-recipes-workspace" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="post-api-v0-blueprints-workspace">
+<h4>POST <cite>/api/v0/blueprints/workspace</cite><a class="headerlink" href="#post-api-v0-blueprints-workspace" title="Permalink to this headline">¶</a></h4>
 <blockquote>
-<div><p>Write a recipe to the temporary workspace. This works exactly the same as <cite>new</cite> except
+<div><p>Write a blueprint to the temporary workspace. This works exactly the same as <cite>new</cite> except
 that it does not create a commit. JSON and TOML bodies are supported.</p>
-<p>The workspace is meant to be used as a temporary recipe storage for clients.
+<p>The workspace is meant to be used as a temporary blueprint storage for clients.
 It will be read by the <cite>info</cite> and <cite>diff</cite> routes if it is different from the
 most recent commit.</p>
 <p>The response will be a status response with <cite>status</cite> set to true, or an
 error response with it set to false and an error message included.</p>
 </div></blockquote>
 </div>
-<div class="section" id="delete-api-v0-recipes-workspace-recipe-name">
-<h4>DELETE <cite>/api/v0/recipes/workspace/&lt;recipe_name&gt;</cite><a class="headerlink" href="#delete-api-v0-recipes-workspace-recipe-name" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="delete-api-v0-blueprints-workspace-blueprint-name">
+<h4>DELETE <cite>/api/v0/blueprints/workspace/&lt;blueprint_name&gt;</cite><a class="headerlink" href="#delete-api-v0-blueprints-workspace-blueprint-name" title="Permalink to this headline">¶</a></h4>
 <blockquote>
-<div><p>Remove the temporary workspace copy of a recipe. The <cite>info</cite> route will now
-return the most recent commit of the recipe. Any changes that were in the
+<div><p>Remove the temporary workspace copy of a blueprint. The <cite>info</cite> route will now
+return the most recent commit of the blueprint. Any changes that were in the
 workspace will be lost.</p>
 <p>The response will be a status response with <cite>status</cite> set to true, or an
 error response with it set to false and an error message included.</p>
 </div></blockquote>
 </div>
-<div class="section" id="post-api-v0-recipes-undo-recipe-name-commit">
-<h4>POST <cite>/api/v0/recipes/undo/&lt;recipe_name&gt;/&lt;commit&gt;</cite><a class="headerlink" href="#post-api-v0-recipes-undo-recipe-name-commit" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="post-api-v0-blueprints-undo-blueprint-name-commit">
+<h4>POST <cite>/api/v0/blueprints/undo/&lt;blueprint_name&gt;/&lt;commit&gt;</cite><a class="headerlink" href="#post-api-v0-blueprints-undo-blueprint-name-commit" title="Permalink to this headline">¶</a></h4>
 <blockquote>
-<div><p>This will revert the recipe to a previous commit. The commit hash from the <cite>changes</cite>
+<div><p>This will revert the blueprint to a previous commit. The commit hash from the <cite>changes</cite>
 route can be used in this request.</p>
 <p>The response will be a status response with <cite>status</cite> set to true, or an
 error response with it set to false and an error message included.</p>
 </div></blockquote>
 </div>
-<div class="section" id="post-api-v0-recipes-tag-recipe-name">
-<h4>POST <cite>/api/v0/recipes/tag/&lt;recipe_name&gt;</cite><a class="headerlink" href="#post-api-v0-recipes-tag-recipe-name" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="post-api-v0-blueprints-tag-blueprint-name">
+<h4>POST <cite>/api/v0/blueprints/tag/&lt;blueprint_name&gt;</cite><a class="headerlink" href="#post-api-v0-blueprints-tag-blueprint-name" title="Permalink to this headline">¶</a></h4>
 <blockquote>
-<div><p>Tag a recipe as a new release. This uses git tags with a special format.
-<cite>refs/tags/&lt;branch&gt;/&lt;filename&gt;/r&lt;revision&gt;</cite>. Only the most recent recipe commit
+<div><p>Tag a blueprint as a new release. This uses git tags with a special format.
+<cite>refs/tags/&lt;branch&gt;/&lt;filename&gt;/r&lt;revision&gt;</cite>. Only the most recent blueprint commit
 can be tagged. Revisions start at 1 and increment for each new tag
-(per-recipe). If the commit has already been tagged it will return false.</p>
+(per-blueprint). If the commit has already been tagged it will return false.</p>
 <p>The response will be a status response with <cite>status</cite> set to true, or an
 error response with it set to false and an error message included.</p>
 </div></blockquote>
 </div>
-<div class="section" id="api-v0-recipes-diff-recipe-name-from-commit-to-commit">
-<h4><cite>/api/v0/recipes/diff/&lt;recipe_name&gt;/&lt;from_commit&gt;/&lt;to_commit&gt;</cite><a class="headerlink" href="#api-v0-recipes-diff-recipe-name-from-commit-to-commit" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="api-v0-blueprints-diff-blueprint-name-from-commit-to-commit">
+<h4><cite>/api/v0/blueprints/diff/&lt;blueprint_name&gt;/&lt;from_commit&gt;/&lt;to_commit&gt;</cite><a class="headerlink" href="#api-v0-blueprints-diff-blueprint-name-from-commit-to-commit" title="Permalink to this headline">¶</a></h4>
 <blockquote>
 <div><p>Return the differences between two commits, or the workspace. The commit hash
 from the <cite>changes</cite> response can be used here, or several special strings:</p>
@@ -2120,13 +2167,13 @@ from the <cite>changes</cite> response can be used here, or several special stri
 <li>NEWEST will select the newest git commit. This works for <cite>from_commit</cite> or <cite>to_commit</cite></li>
 <li>WORKSPACE will select the workspace copy. This can only be used in <cite>to_commit</cite></li>
 </ul>
-<p>eg. <cite>/api/v0/recipes/diff/glusterfs/NEWEST/WORKSPACE</cite> will return the differences
+<p>eg. <cite>/api/v0/blueprints/diff/glusterfs/NEWEST/WORKSPACE</cite> will return the differences
 between the most recent git commit and the contents of the workspace.</p>
-<p>Each entry in the response&#8217;s diff object contains the old recipe value and the new one.
+<p>Each entry in the response&#8217;s diff object contains the old blueprint value and the new one.
 If old is null and new is set, then it was added.
 If new is null and old is set, then it was removed.
 If both are set, then it was changed.</p>
-<p>The old/new entries will have the name of the recipe field that was changed. This
+<p>The old/new entries will have the name of the blueprint field that was changed. This
 can be one of: Name, Description, Version, Module, or Package.
 The contents for these will be the old/new values for them.</p>
 <p>In the example below the version was changed and the ping package was added.</p>
@@ -2156,17 +2203,17 @@ The contents for these will be the old/new values for them.</p>
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="api-v0-recipes-freeze-recipe-names">
-<h4><cite>/api/v0/recipes/freeze/&lt;recipe_names&gt;</cite><a class="headerlink" href="#api-v0-recipes-freeze-recipe-names" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="api-v0-blueprints-freeze-blueprint-names">
+<h4><cite>/api/v0/blueprints/freeze/&lt;blueprint_names&gt;</cite><a class="headerlink" href="#api-v0-blueprints-freeze-blueprint-names" title="Permalink to this headline">¶</a></h4>
 <blockquote>
-<div><p>Return a JSON representation of the recipe with the package and module versions set
-to the exact versions chosen by depsolving the recipe.</p>
+<div><p>Return a JSON representation of the blueprint with the package and module versions set
+to the exact versions chosen by depsolving the blueprint.</p>
 <p>Example:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
   <span class="s">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[],</span>
-  <span class="s">&quot;recipes&quot;</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s">&quot;blueprints&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="p">{</span>
-      <span class="s">&quot;recipe&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s">&quot;blueprint&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;An example GlusterFS server with samba&quot;</span><span class="p">,</span>
         <span class="s">&quot;modules&quot;</span><span class="p">:</span> <span class="p">[</span>
           <span class="p">{</span>
@@ -2198,17 +2245,17 @@ to the exact versions chosen by depsolving the recipe.</p>
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="api-v0-recipes-depsolve-recipe-names">
-<h4><cite>/api/v0/recipes/depsolve/&lt;recipe_names&gt;</cite><a class="headerlink" href="#api-v0-recipes-depsolve-recipe-names" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="api-v0-blueprints-depsolve-blueprint-names">
+<h4><cite>/api/v0/blueprints/depsolve/&lt;blueprint_names&gt;</cite><a class="headerlink" href="#api-v0-blueprints-depsolve-blueprint-names" title="Permalink to this headline">¶</a></h4>
 <blockquote>
-<div><p>Depsolve the recipe using yum, return the recipe used, and the NEVRAs of the packages
-chosen to satisfy the recipe&#8217;s requirements. The response will include a list of results,
-with the full dependency list in <cite>dependencies</cite>, the NEVRAs for the recipe&#8217;s direct modules
+<div><p>Depsolve the blueprint using yum, return the blueprint used, and the NEVRAs of the packages
+chosen to satisfy the blueprint&#8217;s requirements. The response will include a list of results,
+with the full dependency list in <cite>dependencies</cite>, the NEVRAs for the blueprint&#8217;s direct modules
 and packages in <cite>modules</cite>, and any error will be in <cite>errors</cite>.</p>
 <p>Example:</p>
 <div class="highlight-python"><pre>{
   "errors": [],
-  "recipes": [
+  "blueprints": [
     {
       "dependencies": [
         {
@@ -2258,7 +2305,7 @@ and packages in <cite>modules</cite>, and any error will be in <cite>errors</cit
         },
         ...
       ],
-      "recipe": {
+      "blueprint": {
         "description": "An example GlusterFS server with samba",
         "modules": [
           {
@@ -2469,14 +2516,14 @@ arguments.</p>
 <div><p>Start a compose. The content type should be &#8216;application/json&#8217; and the body of the POST
 should look like this:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
-  <span class="s">&quot;recipe_name&quot;</span><span class="p">:</span> <span class="s">&quot;http-server&quot;</span><span class="p">,</span>
+  <span class="s">&quot;blueprint_name&quot;</span><span class="p">:</span> <span class="s">&quot;http-server&quot;</span><span class="p">,</span>
   <span class="s">&quot;compose_type&quot;</span><span class="p">:</span> <span class="s">&quot;tar&quot;</span><span class="p">,</span>
   <span class="s">&quot;branch&quot;</span><span class="p">:</span> <span class="s">&quot;master&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Pass it the name of the recipe, the type of output (from &#8216;/api/v0/compose/types&#8217;), and the
-recipe branch to use. &#8216;branch&#8217; is optional and will default to master. It will create a new
+<p>Pass it the name of the blueprint, the type of output (from &#8216;/api/v0/compose/types&#8217;), and the
+blueprint branch to use. &#8216;branch&#8217; is optional and will default to master. It will create a new
 build and add it to the queue. It returns the build uuid and a status if it succeeds:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
   <span class="s">&quot;build_id&quot;</span><span class="p">:</span> <span class="s">&quot;e6fa6db4-9c81-4b70-870f-a697ca405cdf&quot;</span><span class="p">,</span>
@@ -2520,14 +2567,14 @@ and the build that is running.</p>
   <span class="s">&quot;new&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="p">{</span>
       <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;45502a6d-06e8-48a5-a215-2b4174b3614b&quot;</span><span class="p">,</span>
-      <span class="s">&quot;recipe&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
+      <span class="s">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
       <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s">&quot;WAITING&quot;</span><span class="p">,</span>
       <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517362647.4570868</span><span class="p">,</span>
       <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.6&quot;</span>
     <span class="p">},</span>
     <span class="p">{</span>
       <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;6d292bd0-bec7-4825-8d7d-41ef9c3e4b73&quot;</span><span class="p">,</span>
-      <span class="s">&quot;recipe&quot;</span><span class="p">:</span> <span class="s">&quot;kubernetes&quot;</span><span class="p">,</span>
+      <span class="s">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s">&quot;kubernetes&quot;</span><span class="p">,</span>
       <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s">&quot;WAITING&quot;</span><span class="p">,</span>
       <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517362659.0034983</span><span class="p">,</span>
       <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.1&quot;</span>
@@ -2536,7 +2583,7 @@ and the build that is running.</p>
   <span class="s">&quot;run&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="p">{</span>
       <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;745712b2-96db-44c0-8014-fe925c35e795&quot;</span><span class="p">,</span>
-      <span class="s">&quot;recipe&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
+      <span class="s">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
       <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s">&quot;RUNNING&quot;</span><span class="p">,</span>
       <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517362633.7965999</span><span class="p">,</span>
       <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.6&quot;</span>
@@ -2556,14 +2603,14 @@ and the build that is running.</p>
   <span class="s">&quot;finished&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="p">{</span>
       <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;70b84195-9817-4b8a-af92-45e380f39894&quot;</span><span class="p">,</span>
-      <span class="s">&quot;recipe&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
+      <span class="s">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
       <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s">&quot;FINISHED&quot;</span><span class="p">,</span>
       <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517351003.8210032</span><span class="p">,</span>
       <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.6&quot;</span>
     <span class="p">},</span>
     <span class="p">{</span>
       <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;e695affd-397f-4af9-9022-add2636e7459&quot;</span><span class="p">,</span>
-      <span class="s">&quot;recipe&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
+      <span class="s">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
       <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s">&quot;FINISHED&quot;</span><span class="p">,</span>
       <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517362289.7193348</span><span class="p">,</span>
       <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.6&quot;</span>
@@ -2583,7 +2630,7 @@ and the build that is running.</p>
   <span class="s">&quot;failed&quot;</span><span class="p">:</span> <span class="p">[</span>
      <span class="p">{</span>
       <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a&quot;</span><span class="p">,</span>
-      <span class="s">&quot;recipe&quot;</span><span class="p">:</span> <span class="s">&quot;http-server&quot;</span><span class="p">,</span>
+      <span class="s">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s">&quot;http-server&quot;</span><span class="p">,</span>
       <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s">&quot;FAILED&quot;</span><span class="p">,</span>
       <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517523249.9301329</span><span class="p">,</span>
       <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.2&quot;</span>
@@ -2603,14 +2650,14 @@ and the build that is running.</p>
   <span class="s">&quot;uuids&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="p">{</span>
       <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a&quot;</span><span class="p">,</span>
-      <span class="s">&quot;recipe&quot;</span><span class="p">:</span> <span class="s">&quot;http-server&quot;</span><span class="p">,</span>
+      <span class="s">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s">&quot;http-server&quot;</span><span class="p">,</span>
       <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s">&quot;FINISHED&quot;</span><span class="p">,</span>
       <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517523644.2384307</span><span class="p">,</span>
       <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.2&quot;</span>
     <span class="p">},</span>
     <span class="p">{</span>
       <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;45502a6d-06e8-48a5-a215-2b4174b3614b&quot;</span><span class="p">,</span>
-      <span class="s">&quot;recipe&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
+      <span class="s">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
       <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s">&quot;FINISHED&quot;</span><span class="p">,</span>
       <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517363442.188399</span><span class="p">,</span>
       <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.6&quot;</span>
@@ -2621,8 +2668,8 @@ and the build that is running.</p>
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="delete-api-v0-recipes-cancel-uuid">
-<h4>DELETE <cite>/api/v0/recipes/cancel/&lt;uuid&gt;</cite><a class="headerlink" href="#delete-api-v0-recipes-cancel-uuid" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="delete-api-v0-blueprints-cancel-uuid">
+<h4>DELETE <cite>/api/v0/blueprints/cancel/&lt;uuid&gt;</cite><a class="headerlink" href="#delete-api-v0-blueprints-cancel-uuid" title="Permalink to this headline">¶</a></h4>
 <blockquote>
 <div><p>Cancel the build, if it is not finished, and delete the results. It will return a
 status of True if it is successful.</p>
@@ -2662,8 +2709,8 @@ contain the following information:</p>
 <div><ul class="simple">
 <li>id - The uuid of the comoposition</li>
 <li>config - containing the configuration settings used to run Anaconda</li>
-<li>recipe - The depsolved recipe used to generate the kickstart</li>
-<li>commit - The (local) git commit hash for the recipe used</li>
+<li>blueprint - The depsolved blueprint used to generate the kickstart</li>
+<li>commit - The (local) git commit hash for the blueprint used</li>
 <li>deps - The NEVRA of all of the dependencies used in the composition</li>
 <li>compose_type - The type of output generated (tar, iso, etc.)</li>
 <li>queue_status - The final status of the composition (FINISHED or FAILED)</li>
@@ -2694,7 +2741,7 @@ contain the following information:</p>
   },
   "id": "c30b7d80-523b-4a23-ad52-61b799739ce8",
   "queue_status": "FINISHED",
-  "recipe": {
+  "blueprint": {
     "description": "An example kubernetes master",
     ...
   }
@@ -2944,20 +2991,18 @@ a line boundry.</p>
 <li><a class="reference internal" href="#module-pylorax.api.v0"><tt class="docutils literal"><span class="pre">v0</span></tt> Module</a><ul>
 <li><a class="reference internal" href="#status-responses">Status Responses</a></li>
 <li><a class="reference internal" href="#api-routes">API Routes</a><ul>
-<li><a class="reference internal" href="#api-v0-test"><cite>/api/v0/test</cite></a></li>
-<li><a class="reference internal" href="#api-v0-status"><cite>/api/v0/status</cite></a></li>
-<li><a class="reference internal" href="#api-v0-recipes-list"><cite>/api/v0/recipes/list</cite></a></li>
-<li><a class="reference internal" href="#api-v0-recipes-info-recipe-names"><cite>/api/v0/recipes/info/&lt;recipe_names&gt;</cite></a></li>
-<li><a class="reference internal" href="#api-v0-recipes-changes-recipe-names-offset-0-limit-20"><cite>/api/v0/recipes/changes/&lt;recipe_names&gt;[?offset=0&amp;limit=20]</cite></a></li>
-<li><a class="reference internal" href="#post-api-v0-recipes-new">POST <cite>/api/v0/recipes/new</cite></a></li>
-<li><a class="reference internal" href="#delete-api-v0-recipes-delete-recipe-name">DELETE <cite>/api/v0/recipes/delete/&lt;recipe_name&gt;</cite></a></li>
-<li><a class="reference internal" href="#post-api-v0-recipes-workspace">POST <cite>/api/v0/recipes/workspace</cite></a></li>
-<li><a class="reference internal" href="#delete-api-v0-recipes-workspace-recipe-name">DELETE <cite>/api/v0/recipes/workspace/&lt;recipe_name&gt;</cite></a></li>
-<li><a class="reference internal" href="#post-api-v0-recipes-undo-recipe-name-commit">POST <cite>/api/v0/recipes/undo/&lt;recipe_name&gt;/&lt;commit&gt;</cite></a></li>
-<li><a class="reference internal" href="#post-api-v0-recipes-tag-recipe-name">POST <cite>/api/v0/recipes/tag/&lt;recipe_name&gt;</cite></a></li>
-<li><a class="reference internal" href="#api-v0-recipes-diff-recipe-name-from-commit-to-commit"><cite>/api/v0/recipes/diff/&lt;recipe_name&gt;/&lt;from_commit&gt;/&lt;to_commit&gt;</cite></a></li>
-<li><a class="reference internal" href="#api-v0-recipes-freeze-recipe-names"><cite>/api/v0/recipes/freeze/&lt;recipe_names&gt;</cite></a></li>
-<li><a class="reference internal" href="#api-v0-recipes-depsolve-recipe-names"><cite>/api/v0/recipes/depsolve/&lt;recipe_names&gt;</cite></a></li>
+<li><a class="reference internal" href="#api-v0-blueprints-list"><cite>/api/v0/blueprints/list</cite></a></li>
+<li><a class="reference internal" href="#api-v0-blueprints-info-blueprint-names"><cite>/api/v0/blueprints/info/&lt;blueprint_names&gt;</cite></a></li>
+<li><a class="reference internal" href="#api-v0-blueprints-changes-blueprint-names-offset-0-limit-20"><cite>/api/v0/blueprints/changes/&lt;blueprint_names&gt;[?offset=0&amp;limit=20]</cite></a></li>
+<li><a class="reference internal" href="#post-api-v0-blueprints-new">POST <cite>/api/v0/blueprints/new</cite></a></li>
+<li><a class="reference internal" href="#delete-api-v0-blueprints-delete-blueprint-name">DELETE <cite>/api/v0/blueprints/delete/&lt;blueprint_name&gt;</cite></a></li>
+<li><a class="reference internal" href="#post-api-v0-blueprints-workspace">POST <cite>/api/v0/blueprints/workspace</cite></a></li>
+<li><a class="reference internal" href="#delete-api-v0-blueprints-workspace-blueprint-name">DELETE <cite>/api/v0/blueprints/workspace/&lt;blueprint_name&gt;</cite></a></li>
+<li><a class="reference internal" href="#post-api-v0-blueprints-undo-blueprint-name-commit">POST <cite>/api/v0/blueprints/undo/&lt;blueprint_name&gt;/&lt;commit&gt;</cite></a></li>
+<li><a class="reference internal" href="#post-api-v0-blueprints-tag-blueprint-name">POST <cite>/api/v0/blueprints/tag/&lt;blueprint_name&gt;</cite></a></li>
+<li><a class="reference internal" href="#api-v0-blueprints-diff-blueprint-name-from-commit-to-commit"><cite>/api/v0/blueprints/diff/&lt;blueprint_name&gt;/&lt;from_commit&gt;/&lt;to_commit&gt;</cite></a></li>
+<li><a class="reference internal" href="#api-v0-blueprints-freeze-blueprint-names"><cite>/api/v0/blueprints/freeze/&lt;blueprint_names&gt;</cite></a></li>
+<li><a class="reference internal" href="#api-v0-blueprints-depsolve-blueprint-names"><cite>/api/v0/blueprints/depsolve/&lt;blueprint_names&gt;</cite></a></li>
 <li><a class="reference internal" href="#api-v0-projects-list-offset-0-limit-20"><cite>/api/v0/projects/list[?offset=0&amp;limit=20]</cite></a></li>
 <li><a class="reference internal" href="#api-v0-projects-info-project-names"><cite>/api/v0/projects/info/&lt;project_names&gt;</cite></a></li>
 <li><a class="reference internal" href="#api-v0-projects-depsolve-project-names"><cite>/api/v0/projects/depsolve/&lt;project_names&gt;</cite></a></li>
@@ -2970,7 +3015,7 @@ a line boundry.</p>
 <li><a class="reference internal" href="#api-v0-compose-finished"><cite>/api/v0/compose/finished</cite></a></li>
 <li><a class="reference internal" href="#api-v0-compose-failed"><cite>/api/v0/compose/failed</cite></a></li>
 <li><a class="reference internal" href="#api-v0-compose-status-uuids"><cite>/api/v0/compose/status/&lt;uuids&gt;</cite></a></li>
-<li><a class="reference internal" href="#delete-api-v0-recipes-cancel-uuid">DELETE <cite>/api/v0/recipes/cancel/&lt;uuid&gt;</cite></a></li>
+<li><a class="reference internal" href="#delete-api-v0-blueprints-cancel-uuid">DELETE <cite>/api/v0/blueprints/cancel/&lt;uuid&gt;</cite></a></li>
 <li><a class="reference internal" href="#delete-api-v0-compose-delete-uuids">DELETE <cite>/api/v0/compose/delete/&lt;uuids&gt;</cite></a></li>
 <li><a class="reference internal" href="#api-v0-compose-info-uuid"><cite>/api/v0/compose/info/&lt;uuid&gt;</cite></a></li>
 <li><a class="reference internal" href="#api-v0-compose-metadata-uuid"><cite>/api/v0/compose/metadata/&lt;uuid&gt;</cite></a></li>
@@ -3025,7 +3070,7 @@ a line boundry.</p>
         <li class="right" >
           <a href="pylorax.html" title="pylorax Package"
              >previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.11 documentation</a> &raquo;</li>
+        <li><a href="index.html">Lorax 19.7.14 documentation</a> &raquo;</li>
           <li><a href="modules.html" >src</a> &raquo;</li>
           <li><a href="pylorax.html" >pylorax Package</a> &raquo;</li> 
       </ul>
