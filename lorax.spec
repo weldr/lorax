@@ -131,12 +131,15 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 
 %post composer
 %systemd_post lorax-composer.service
+%systemd_post lorax-composer.socket
 
 %preun composer
 %systemd_preun lorax-composer.service
+%systemd_preun lorax-composer.socket
 
 %postun composer
 %systemd_postun_with_restart lorax-composer.service
+%systemd_postun_with_restart lorax-composer.socket
 
 %files
 %defattr(-,root,root,-)
@@ -162,6 +165,8 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python_sitelib}/pylorax/api/*
 %{_sbindir}/lorax-composer
 %{_unitdir}/lorax-composer.service
+%{_unitdir}/lorax-composer.socket
+%{_tmpfilesdir}/lorax-composer.conf
 
 %files -n composer-cli
 %{_bindir}/composer-cli
