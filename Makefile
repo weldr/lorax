@@ -61,6 +61,9 @@ local:
 	@rm -rf /var/tmp/$(PKGNAME)-$(VERSION)
 	@echo "The archive is in $(PKGNAME)-$(VERSION).tar.gz"
 
+test-in-docker:
+	sudo docker build -t welder/lorax:latest -f Dockerfile.test .
+
 ci: check test
 
 .PHONY: docs
