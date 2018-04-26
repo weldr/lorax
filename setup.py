@@ -8,7 +8,9 @@ import sys
 # config file
 data_files = [("/etc/lorax", ["etc/lorax.conf"]),
               ("/etc/lorax", ["etc/composer.conf"]),
-              ("/usr/lib/systemd/system", ["systemd/lorax-composer.service"])]
+              ("/usr/lib/systemd/system", ["systemd/lorax-composer.service",
+                                           "systemd/lorax-composer.socket"]),
+              ("/usr/lib/temfiles.d/", ["systemd/lorax-composer.conf"])]
 
 # shared files
 for root, dnames, fnames in os.walk("share"):
