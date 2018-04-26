@@ -27,7 +27,7 @@ Requires:       dosfstools
 Requires:       e2fsprogs
 Requires:       findutils
 Requires:       gawk
-Requires:       genisoimage
+Requires:       xorrisofs
 Requires:       glib2
 Requires:       glibc
 Requires:       glibc-common
@@ -59,7 +59,8 @@ Requires:       hfsplus-tools
 %endif
 
 %ifarch %{ix86} x86_64
-Requires:       syslinux >= 6.02-4
+Requires:       syslinux >= 6.03-1
+Requires:       syslinux-nonlinux >= 6.03-1
 %endif
 
 %ifarch ppc64le

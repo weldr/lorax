@@ -9,16 +9,6 @@ LORAXDIR="usr/share/lorax/"
 from os.path import basename
 %>
 
-## Test ${runtime_img} to see if udf is needed
-<%
-    import os
-    from pylorax.sysutils import joinpaths
-    if os.stat(joinpaths(inroot, runtime_img)).st_size >= 4*1024**3:
-        udfargs = "-allow-limited-size"
-    else:
-        udfargs = ""
-%>
-
 mkdir images
 install ${runtime_img} ${STAGE2IMG}
 treeinfo stage2 mainimage ${STAGE2IMG}
@@ -77,8 +67,8 @@ mkdir ${KERNELDIR}
 
 %if exists("boot/efi/EFI/*/gcdaa64.efi"):
 ## make boot.iso
-runcmd mkisofs -o ${outroot}/images/boot.iso \
-       ${efiargs} -R -J -V '${isolabel}' -T ${udfargs} \
+runcmd xorrisofs -o ${outroot}/images/boot.iso \
+       ${efiargs} -R -J -V '${isolabel}' \
        -graft-points \
        ${KERNELDIR}=${outroot}/${KERNELDIR} \
        ${STAGE2IMG}=${outroot}/${STAGE2IMG} \

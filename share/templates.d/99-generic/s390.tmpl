@@ -68,10 +68,10 @@ runcmd mk-s390-cdboot -i ${outroot}/${KERNELDIR}/kernel.img \
                       -o ${outroot}/${BOOTDIR}/cdboot.img
 
 ## make boot.iso
-runcmd mkisofs -o ${outroot}/images/boot.iso \
+runcmd xorrisofs -o ${outroot}/images/boot.iso \
        -b ${BOOTDIR}/cdboot.img -c ${BOOTDIR}/boot.cat \
        -boot-load-size 4 -no-emul-boot \
-       -R -J -V '${isolabel}' -T -graft-points \
+       -R -J -V '${isolabel}' -graft-points \
        ${BOOTDIR}=${outroot}/${BOOTDIR} \
        ${filegraft}
 treeinfo images-${basearch} boot.iso images/boot.iso

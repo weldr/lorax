@@ -17,16 +17,6 @@ isolabel = ''.join(ch if valid_label(ch) else '-' for ch in isolabel)
 from os.path import basename
 %>
 
-## Test ${runtime_img} to see if udf is needed
-<%
-    import os
-    from pylorax.sysutils import joinpaths
-    if os.stat(joinpaths(inroot, runtime_img)).st_size >= 4*1024**3:
-        udfargs = "-allow-limited-size"
-    else:
-        udfargs = ""
-%>
-
 mkdir ${LIVEDIR}
 install ${runtime_img} ${LIVEDIR}/squashfs.img
 treeinfo stage2 mainimage ${LIVEDIR}/squashfs.img
@@ -69,7 +59,7 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
 %endif
 
 ## WHeeeeeeee, EFI.
-<% efiargs=""; efigraft=""; efihybrid=""; efiarch32=None; efiarch64=None %>
+<% efiargs=""; efigraft=""; efiarch32=None; efiarch64=None %>
 %if exists("boot/efi/EFI/*/gcdia32.efi"):
     <% efiarch32 = 'IA32' %>
 %endif
@@ -79,18 +69,17 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
 %if (efiarch32 or efiarch64) and basearch != 'i386':
     <%
     efigraft="EFI/BOOT={0}/EFI/BOOT".format(outroot)
-    images = ["images/efiboot.img"]
+    images = [("images/efiboot.img", "-isohybrid-gpt-basdat")]
     if domacboot:
-        images.append("images/macboot.img")
+        images.append(("images/macboot.img", "-isohybrid-gpt-hfsplus"))
     %>
-    %for img in images:
+    %for img, hybrid in images:
         <%
-        efiargs += " -eltorito-alt-boot -e {0} -no-emul-boot".format(img)
+        efiargs += " -eltorito-alt-boot -e {0} -no-emul-boot {1}".format(img, hybrid)
         efigraft += " {0}={1}/{0}".format(img,outroot)
         %>
         treeinfo images-${basearch} ${img|basename} ${img}
     %endfor
-    <% efihybrid = "--uefi --mac" if domacboot else "--uefi" %>
     <%include file="efi.tmpl" args="configdir=configdir, KERNELDIR=KERNELDIR, efiarch32=efiarch32, efiarch64=efiarch64, isolabel=isolabel"/>
 %endif
 
@@ -115,14 +104,14 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
 %endfor
 
 ## make boot.iso
-runcmd mkisofs -o ${outroot}/images/boot.iso \
+runcmd xorrisofs -o ${outroot}/images/boot.iso \
+       -isohybrid-mbr /usr/share/syslinux/isohdpfx.bin \
        -b ${BOOTDIR}/isolinux.bin -c ${BOOTDIR}/boot.cat \
        -boot-load-size 4 -boot-info-table -no-emul-boot \
-       ${efiargs} -R -J -V '${isolabel}' -T ${udfargs} \
+       ${efiargs} -R -J -V '${isolabel}' \
        -graft-points \
        ${BOOTDIR}=${outroot}/${BOOTDIR} \
        ${KERNELDIR}=${outroot}/${KERNELDIR} \
        ${LIVEDIR}=${outroot}/${LIVEDIR} \
        ${efigraft} ${filegraft}
-runcmd isohybrid ${efihybrid} ${outroot}/images/boot.iso
 treeinfo images-${basearch} boot.iso images/boot.iso
