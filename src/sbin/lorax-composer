@@ -228,14 +228,27 @@ if __name__ == '__main__':
             log.error(e)
         sys.exit(1)
 
-    # Setup the Unix Domain Socket, remove old one, set ownership and permissions
-    if os.path.exists(opts.socket):
-        os.unlink(opts.socket)
-    listener = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    listener.bind(opts.socket)
-    os.chmod(opts.socket, 0o660)
-    os.chown(opts.socket, 0, gid)
-    listener.listen(1)
+    # Did systemd pass any extra fds (for socket activation)?
+    try:
+        fds = int(os.environ['LISTEN_FDS'])
+    except (ValueError, KeyError):
+        fds = 0
+
+    if fds == 1:
+        # Inherit the fd passed by systemd
+        listener = socket.fromfd(3, socket.AF_UNIX, socket.SOCK_STREAM)
+    elif fds > 1:
+        log.error("lorax-composer only supports inheriting 1 fd from systemd.")
+        sys.exit(1)
+    else:
+        # Setup the Unix Domain Socket, remove old one, set ownership and permissions
+        if os.path.exists(opts.socket):
+            os.unlink(opts.socket)
+        listener = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        listener.bind(opts.socket)
+        os.chmod(opts.socket, 0o660)
+        os.chown(opts.socket, 0, gid)
+        listener.listen(1)
 
     start_queue_monitor(server.config["COMPOSER_CFG"], uid, gid)
 
