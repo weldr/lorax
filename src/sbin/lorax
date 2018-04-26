@@ -34,6 +34,7 @@ import dnf.logging
 import librepo
 import pylorax
 from pylorax.cmdline import lorax_parser
+import selinux
 
 def setup_logging(opts):
     pylorax.setup_logging(opts.logfile, log)
@@ -70,6 +71,11 @@ def main():
         parser.error("config file %s doesn't exist." % opts.config)
 
     setup_logging(opts)
+
+    log.info("checking the selinux mode")
+    if selinux.is_selinux_enabled() and selinux.security_getenforce():
+        log.critical("selinux must be disabled or in Permissive mode")
+        sys.exit(1)
 
     if not opts.workdir:
         tempfile.tempdir = opts.tmp
