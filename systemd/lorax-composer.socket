@@ -1,0 +1,12 @@
+[Unit]
+Description=lorax-composer socket activation
+
+[Socket]
+ListenStream=/run/weldr/api.socket
+SocketUser=root
+SocketGroup=weldr
+SocketMode=0660
+DirectoryMode=0750
+
+[Install]
+WantedBy=sockets.target
