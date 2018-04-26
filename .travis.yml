@@ -1,0 +1,23 @@
+sudo: required
+language: python
+services:
+  - docker
+
+script:
+  - make test-in-docker
+
+after_success:
+  - |
+
+        sudo docker create --name results-cont welder/lorax /bin/echo
+        sudo docker cp results-cont:/lorax/.coverage .coverage.docker
+        sudo docker rm results-cont
+
+        pip install coverage coveralls
+        coverage combine
+        coveralls
+
+notifications:
+  email:
+    on_failure: change
+    on_success: never
