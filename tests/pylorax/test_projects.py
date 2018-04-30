@@ -44,7 +44,7 @@ class Yaps(object):
     version = "version"
 
     def returnChangelog(self):
-        return [[0,1,"Heavy!"]]
+        return [[0, 1, "Heavy!"]]
 
 
 class TM(object):
@@ -74,7 +74,7 @@ class ProjectsTest(unittest.TestCase):
         self.assertEqual(api_time(499222800), "1985-10-27T01:00:00")
 
     def test_api_changelog(self):
-        self.assertEqual(api_changelog([[0,1,"Heavy!"], [0, 1, "Light!"]]), "Heavy!")
+        self.assertEqual(api_changelog([[0, 1, "Heavy!"], [0, 1, "Light!"]]), "Heavy!")
 
     def test_api_changelog_empty_list(self):
         self.assertEqual(api_changelog([]), '')
