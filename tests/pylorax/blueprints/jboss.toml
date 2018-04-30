@@ -1,0 +1,14 @@
+name = "jboss"
+description = "An example jboss server"
+
+[[modules]]
+name = "jboss-servlet-3.0-api"
+version = "1.0.*"
+
+[[modules]]
+name = "jboss-interceptors-1.1-api"
+version = "1.0.*"
+
+[[modules]]
+name = "java-1.8.0-openjdk"
+version = "1.8.0.*"
