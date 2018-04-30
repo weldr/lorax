@@ -19,7 +19,7 @@ import shutil
 import tempfile
 import unittest
 
-import ConfigParser
+import configparser
 
 from pylorax.api.config import configure, make_yum_dirs
 from pylorax.api.yumbase import get_base_object
@@ -48,7 +48,7 @@ use_system_repos = False
         self.yb = get_base_object(config)
 
         # will read the stored yum config file
-        self.yumconf = ConfigParser.ConfigParser()
+        self.yumconf = configparser.ConfigParser()
         self.yumconf.read([config.get("composer", "yum_conf")])
 
     @classmethod
