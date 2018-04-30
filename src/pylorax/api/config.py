@@ -44,8 +44,8 @@ def configure(conf_file="/etc/lorax/composer.conf", root_dir="/", test_config=Fa
     conf.add_section("composer")
     conf.set("composer", "share_dir", os.path.realpath(joinpaths(root_dir, "/usr/share/lorax/")))
     conf.set("composer", "lib_dir", os.path.realpath(joinpaths(root_dir, "/var/lib/lorax/composer/")))
-    conf.set("composer", "yum_conf", os.path.realpath(joinpaths(root_dir, "/var/tmp/composer/yum.conf")))
-    conf.set("composer", "yum_root", os.path.realpath(joinpaths(root_dir, "/var/tmp/composer/yum/root/")))
+    conf.set("composer", "dnf_conf", os.path.realpath(joinpaths(root_dir, "/var/tmp/composer/dnf.conf")))
+    conf.set("composer", "dnf_root", os.path.realpath(joinpaths(root_dir, "/var/tmp/composer/dnf/root/")))
     conf.set("composer", "repo_dir", os.path.realpath(joinpaths(root_dir, "/var/tmp/composer/repos.d/")))
     conf.set("composer", "cache_dir", os.path.realpath(joinpaths(root_dir, "/var/tmp/composer/cache/")))
 
@@ -64,14 +64,14 @@ def configure(conf_file="/etc/lorax/composer.conf", root_dir="/", test_config=Fa
 
     return conf
 
-def make_yum_dirs(conf):
-    """Make any missing yum directories
+def make_dnf_dirs(conf):
+    """Make any missing dnf directories
 
     :param conf: The configuration to use
     :type conf: ComposerConfig
     :returns: None
     """
-    for p in ["yum_conf", "repo_dir", "cache_dir", "yum_root"]:
+    for p in ["dnf_conf", "repo_dir", "cache_dir", "dnf_root"]:
         p_dir = os.path.dirname(conf.get("composer", p))
         if not os.path.exists(p_dir):
             os.makedirs(p_dir)
