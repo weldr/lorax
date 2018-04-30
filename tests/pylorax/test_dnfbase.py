@@ -21,19 +21,19 @@ import unittest
 
 import configparser
 
-from pylorax.api.config import configure, make_yum_dirs
-from pylorax.api.yumbase import get_base_object
+from pylorax.api.config import configure, make_dnf_dirs
+from pylorax.api.dnfbase import get_base_object
 
 
 class YumbaseTest(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        self.tmp_dir = tempfile.mkdtemp(prefix="lorax.test.yumbase.")
+        self.tmp_dir = tempfile.mkdtemp(prefix="lorax.test.dnfbase.")
         conf_file = os.path.join(self.tmp_dir, 'test.conf')
         open(conf_file, 'w').write("""[composer]
 # releasever different from the current default
 releasever = 6
-[yum]
+[dnf]
 proxy = https://proxy.example.com
 sslverify = False
 [repos]
@@ -42,47 +42,47 @@ use_system_repos = False
 
         # will read the above configuration
         config = configure(conf_file=conf_file, root_dir=self.tmp_dir)
-        make_yum_dirs(config)
+        make_dnf_dirs(config)
 
-        # will read composer config and store a yum config file
-        self.yb = get_base_object(config)
+        # will read composer config and store a dnf config file
+        self.dbo = get_base_object(config)
 
-        # will read the stored yum config file
-        self.yumconf = configparser.ConfigParser()
-        self.yumconf.read([config.get("composer", "yum_conf")])
+        # will read the stored dnf config file
+        self.dnfconf = configparser.ConfigParser()
+        self.dnfconf.read([config.get("composer", "dnf_conf")])
 
     @classmethod
     def tearDownClass(self):
         shutil.rmtree(self.tmp_dir)
 
-    def test_stores_yum_proxy_from_composer_config(self):
-        self.assertEqual('https://proxy.example.com', self.yumconf.get('main', 'proxy'))
+    def test_stores_dnf_proxy_from_composer_config(self):
+        self.assertEqual('https://proxy.example.com', self.dnfconf.get('main', 'proxy'))
 
     def test_disables_sslverify_if_composer_disables_it(self):
-        self.assertEqual('0', self.yumconf.get('main', 'sslverify'))
+        self.assertEqual(False, self.dnfconf.getboolean('main', 'sslverify'))
 
     def test_sets_releasever_from_composer(self):
-        self.assertEqual('6', self.yb.conf.yumvar['releasever'])
+        self.assertEqual('6', self.dbo.conf.releasever)
 
     def test_doesnt_use_system_repos(self):
         # no other repos defined for this test
-        self.assertEqual({}, self.yb._repos.repos)
+        self.assertEqual({}, self.dbo.repos)
 
 
 class CreateYumDirsTest(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        self.tmp_dir = tempfile.mkdtemp(prefix="lorax.test.yumbase.")
+        self.tmp_dir = tempfile.mkdtemp(prefix="lorax.test.dnfbase.")
 
     @classmethod
     def tearDownClass(self):
         shutil.rmtree(self.tmp_dir)
 
-    def test_creates_missing_yum_root_directory(self):
+    def test_creates_missing_dnf_root_directory(self):
         config = configure(test_config=True, root_dir=self.tmp_dir)
 
         # will create the above directory if missing
-        make_yum_dirs(config)
+        make_dnf_dirs(config)
         _ = get_base_object(config)
 
-        self.assertTrue(os.path.exists(self.tmp_dir + '/var/tmp/composer/yum/root'))
+        self.assertTrue(os.path.exists(self.tmp_dir + '/var/tmp/composer/dnf/root'))
