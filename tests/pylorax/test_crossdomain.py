@@ -76,14 +76,14 @@ class CrossdomainTest(unittest.TestCase):
     def test_02_with_headers_specified(self):
         response = self.server.get("/02")
         self.assertEqual(200, response.status_code)
-        self.assertEqual('Hello, World!', response.data)
+        self.assertEqual(b'Hello, World!', response.data)
 
         self.assertEqual('TESTING', response.headers['Access-Control-Allow-Headers'])
 
     def test_03_with_max_age_as_timedelta(self):
         response = self.server.get("/03")
         self.assertEqual(200, response.status_code)
-        self.assertEqual('Hello, World!', response.data)
+        self.assertEqual(b'Hello, World!', response.data)
 
         expected_max_age = int(timedelta(days=7).total_seconds())
         actual_max_age = int(response.headers['Access-Control-Max-Age'])
@@ -92,7 +92,7 @@ class CrossdomainTest(unittest.TestCase):
     def test_04_attach_to_all_false(self):
         response = self.server.get("/04")
         self.assertEqual(200, response.status_code)
-        self.assertEqual('Hello, World!', response.data)
+        self.assertEqual(b'Hello, World!', response.data)
 
         # when attach_to_all is False the decorator will not assign
         # the Access-Control-* headers to the response
@@ -103,15 +103,17 @@ class CrossdomainTest(unittest.TestCase):
     def test_05_options_request(self):
         response = self.server.options("/05")
         self.assertEqual(200, response.status_code)
-        self.assertEqual('Hello, World!', response.data)
+        self.assertEqual(b'Hello, World!', response.data)
 
-        self.assertEqual(response.headers['Access-Control-Allow-Methods'], 'HEAD, OPTIONS, GET')
+        # Not always in the same order, so test individually
+        for m in ["HEAD", "OPTIONS", "GET"]:
+            self.assertIn(m, response.headers['Access-Control-Allow-Methods'])
 
 
     def test_06_with_origin_as_list(self):
         response = self.server.get("/06")
         self.assertEqual(200, response.status_code)
-        self.assertEqual('Hello, World!', response.data)
+        self.assertEqual(b'Hello, World!', response.data)
 
         for header, value in response.headers:
             if header == 'Access-Control-Allow-Origin':
