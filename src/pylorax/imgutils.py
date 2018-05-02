@@ -483,3 +483,37 @@ def mkhfsimg(rootdir, outfile, size=None, label="", mountargs="", graft=None):
     graft = graft or {}
     mkfsimage("hfsplus", rootdir, outfile, size, mountargs=mountargs,
               mkfsargs=["-v", label], graft=graft)
+
+def mkfsimage_from_disk(diskimage, fsimage, img_size=None, label="Anaconda"):
+    """
+    Copy the / partition of a partitioned disk image to an un-partitioned
+    disk image.
+
+    :param str diskimage: The full path to partitioned disk image with a /
+    :param str fsimage: The full path of the output fs image file
+    :param int img_size: Optional size of the fsimage in MiB or None to make
+       it as small as possible
+    :param str label: The label to apply to the image. Defaults to "Anaconda"
+    """
+    with PartitionMount(diskimage) as img_mount:
+        if not img_mount or not img_mount.mount_dir:
+            return None
+
+        logger.info("Creating fsimage %s (%s)", fsimage, img_size or "minimized")
+        if img_size:
+            # convert to Bytes
+            img_size *= 1024**2
+
+        mkext4img(img_mount.mount_dir, fsimage, size=img_size, label=label)
+
+def default_image_name(compression, basename):
+    """ Return a default image name with the correct suffix for the compression type.
+
+    :param str compression: Compression type
+    :param str basename: Base filename
+    :returns: basename with compression suffix
+
+    If the compression is unknown it defaults to xz
+    """
+    SUFFIXES = {"xz": ".xz", "gzip": ".gz", "bzip2": ".bz2", "lzma": ".lzma"}
+    return basename + SUFFIXES.get(compression, ".xz")

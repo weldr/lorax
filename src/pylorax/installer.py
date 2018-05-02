@@ -17,20 +17,20 @@
 import logging
 log = logging.getLogger("pylorax")
 
+import glob
+import json
+from math import ceil
 import os
-import tempfile
 import subprocess
 import shutil
-import glob
 import socket
+import tempfile
 
 # Use the Lorax treebuilder branch for iso creation
-from pylorax.creator import create_vagrant_metadata, update_vagrant_metadata, make_fsimage
 from pylorax.executils import execWithRedirect, execReadlines
 from pylorax.imgutils import PartitionMount, mksparse, mkext4img, loop_detach
 from pylorax.imgutils import get_loop_name, dm_detach, mount, umount
-from pylorax.imgutils import mkqemu_img, mktar
-from pylorax.imgutils import mkcpio
+from pylorax.imgutils import mkqemu_img, mktar, mkcpio, mkfsimage_from_disk
 from pylorax.monitor import LogMonitor
 from pylorax.mount import IsoMountpoint
 from pylorax.sysutils import joinpaths
@@ -41,6 +41,40 @@ ROOT_PATH = "/mnt/sysimage/"
 
 class InstallError(Exception):
     pass
+
+
+def create_vagrant_metadata(path, size=0):
+    """ Create a default Vagrant metadata.json file
+
+    :param str path: Path to metadata.json file
+    :param int size: Disk size in MiB
+    """
+    metadata = { "provider":"libvirt", "format":"qcow2", "virtual_size": ceil(size / 1024) }
+    with open(path, "wt") as f:
+        json.dump(metadata, f, indent=4)
+
+
+def update_vagrant_metadata(path, size):
+    """ Update the Vagrant metadata.json file
+
+    :param str path: Path to metadata.json file
+    :param int size: Disk size in MiB
+
+    This function makes sure that the provider, format and virtual size of the
+    metadata file are set correctly. All other values are left untouched.
+    """
+    with open(path, "rt") as f:
+        try:
+            metadata = json.load(f)
+        except ValueError as e:
+            log.error("Problem reading metadata file %s: %s", path, e)
+            return
+
+    metadata["provider"] = "libvirt"
+    metadata["format"] = "qcow2"
+    metadata["virtual_size"] = ceil(size / 1024)
+    with open(path, "wt") as f:
+        json.dump(metadata, f, indent=4)
 
 
 def find_free_port(start=5900, end=5999, host="127.0.0.1"):
@@ -513,7 +547,7 @@ def virt_install(opts, install_log, disk_img, disk_size):
         raise InstallError(msg)
 
     if opts.make_fsimage:
-        make_fsimage(diskimg_path, disk_img, disk_size, label=opts.fs_label)
+        mkfsimage_from_disk(diskimg_path, disk_img, disk_size, label=opts.fs_label)
         os.unlink(diskimg_path)
     elif opts.make_tar:
         compress_args = []
