@@ -20,41 +20,18 @@
 import logging
 log = logging.getLogger("livemedia-creator")
 
+import glob
 import os
+import selinux
 import sys
 import tempfile
-import shutil
-import glob
-import selinux
-
-# Use pykickstart to calculate disk image size
-from pykickstart.parser import KickstartParser
-from pykickstart.version import makeVersion
-from pykickstart.constants import KS_SHUTDOWN
 
 # Use the Lorax treebuilder branch for iso creation
 from pylorax import setup_logging, find_templates, vernum
 from pylorax.cmdline import lmc_parser
-from pylorax.creator import make_image, make_squashfs, make_livecd, make_runtime, make_appliance, make_live_images
-from pylorax.creator import calculate_disk_size
-from pylorax.imgutils import PartitionMount
-from pylorax.imgutils import Mount
-from pylorax.imgutils import copytree
-from pylorax.installer import InstallError
+from pylorax.creator import run_creator
+from pylorax.imgutils import default_image_name
 from pylorax.sysutils import joinpaths
-
-
-def default_image_name(compression, basename):
-    """ Return a default image name with the correct suffix for the compression type.
-
-    :param str compression: Compression type
-    :param str basename: Base filename
-    :returns: basename with compression suffix
-
-    If the compression is unknown it defaults to xz
-    """
-    SUFFIXES = {"xz": ".xz", "gzip": ".gz", "bzip2": ".bz2", "lzma": ".lzma"}
-    return basename + SUFFIXES.get(compression, ".xz")
 
 
 def main():
@@ -213,121 +190,12 @@ def main():
     tempfile.tempdir = opts.tmp
     disk_img = None
 
-    # Parse the kickstart
-    if opts.ks:
-        ks_version = makeVersion()
-        ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
-        ks.readKickstart(opts.ks[0])
-
-    # live iso usually needs dracut-live so warn the user if it is missing
-    if opts.ks and opts.make_iso:
-        if "dracut-live" not in ks.handler.packages.packageList:
-            log.error("dracut-live package is missing from the kickstart.")
-            sys.exit(1)
-
-    # Make the disk or filesystem image
-    if not opts.disk_image and not opts.fs_image:
-        errors = []
-        if opts.no_virt and ks.handler.method.method not in ("url", "nfs") \
-           and not ks.handler.ostreesetup.seen:
-            errors.append("Only url, nfs and ostreesetup install methods are currently supported."
-                          "Please fix your kickstart file." )
-
-        if ks.handler.method.method in ("url", "nfs") and not ks.handler.network.seen:
-            errors.append("The kickstart must activate networking if "
-                          "the url or nfs install method is used.")
-
-        if ks.handler.displaymode.displayMode is not None:
-            errors.append("The kickstart must not set a display mode (text, cmdline, "
-                          "graphical), this will interfere with livemedia-creator.")
-
-        if opts.make_fsimage or (opts.make_pxe_live and opts.no_virt):
-            # Make sure the kickstart isn't using autopart and only has a / mountpoint
-            part_ok = not any(p for p in ks.handler.partition.partitions
-                                 if p.mountpoint not in ["/", "swap"])
-            if not part_ok or ks.handler.autopart.seen:
-                errors.append("Filesystem images must use a single / part, not autopart or "
-                              "multiple partitions. swap is allowed but not used.")
-
-        if not opts.no_virt and ks.handler.reboot.action != KS_SHUTDOWN:
-            errors.append("The kickstart must include shutdown when using virt installation.")
-
-        if errors:
-            list(log.error(e) for e in errors)
-            sys.exit(1)
-
-        # Make the image. Output of this is either a partitioned disk image or a fsimage
-        try:
-            disk_img = make_image(opts, ks)
-        except InstallError as e:
-            log.error("ERROR: Image creation failed: %s", e)
-            sys.exit(1)
-
-    result_dir = None
-    if not opts.image_only:
-        if opts.make_iso:
-            work_dir = tempfile.mkdtemp(prefix="lmc-work-")
-            log.info("working dir is %s", work_dir)
-
-            if (opts.fs_image or opts.no_virt) and not opts.disk_image:
-                # Create iso from a filesystem image
-                disk_img = opts.fs_image or disk_img
-
-                if not make_squashfs(opts, disk_img, work_dir):
-                    log.error("squashfs.img creation failed")
-                    sys.exit(1)
-
-                with Mount(disk_img, opts="loop") as mount_dir:
-                    result_dir = make_livecd(opts, mount_dir, work_dir)
-            else:
-                # Create iso from a partitioned disk image
-                disk_img = opts.disk_image or disk_img
-                with PartitionMount(disk_img) as img_mount:
-                    if img_mount and img_mount.mount_dir:
-                        make_runtime(opts, img_mount.mount_dir, work_dir, calculate_disk_size(opts, ks)/1024.0)
-                        result_dir = make_livecd(opts, img_mount.mount_dir, work_dir)
-
-            # --iso-only removes the extra build artifacts, keeping only the boot.iso
-            if opts.iso_only and result_dir:
-                boot_iso = joinpaths(result_dir, "images/boot.iso")
-                if not os.path.exists(boot_iso):
-                    log.error("%s is missing, skipping --iso-only.", boot_iso)
-                else:
-                    iso_dir = tempfile.mkdtemp(prefix="lmc-result-")
-                    dest_file = joinpaths(iso_dir, opts.iso_name or "boot.iso")
-                    shutil.move(boot_iso, dest_file)
-                    shutil.rmtree(result_dir)
-                    result_dir = iso_dir
-
-            # cleanup the mess
-            # cleanup work_dir?
-            if disk_img and not (opts.keep_image or opts.disk_image or opts.fs_image):
-                os.unlink(disk_img)
-                log.info("Disk image erased")
-                disk_img = None
-        elif opts.make_appliance:
-            if not opts.ks:
-                networks = []
-            else:
-                networks = ks.handler.network.network
-            make_appliance(opts.disk_image or disk_img, opts.app_name,
-                           opts.app_template, opts.app_file, networks, opts.ram,
-                           opts.vcpus or 1, opts.arch, opts.title, opts.project, opts.releasever)
-        elif opts.make_pxe_live:
-            work_dir = tempfile.mkdtemp(prefix="lmc-work-")
-            log.info("working dir is %s", work_dir)
-            disk_img = opts.fs_image or opts.disk_image or disk_img
-            log.debug("disk image is %s", disk_img)
-
-            result_dir = make_live_images(opts, work_dir, disk_img)
-            if result_dir is None:
-                log.error("Creating PXE live image failed.")
-                sys.exit(1)
-
-        if opts.result_dir != opts.tmp and result_dir:
-            copytree(result_dir, opts.result_dir, preserve=False)
-            shutil.rmtree(result_dir)
-            result_dir = None
+    try:
+        # TODO - Better API than passing in opts
+        (result_dir, disk_img) = run_creator(opts)
+    except Exception as e:                                  # pylint: disable=broad-except
+        log.error(str(e))
+        sys.exit(1)
 
     log.info("SUMMARY")
     log.info("-------")
