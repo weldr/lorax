@@ -47,6 +47,8 @@ def get_base_object(conf):
     dbc.installroot = dnfroot
     if not os.path.isdir(dnfroot):
         os.makedirs(dnfroot)
+    if not os.path.isdir(repodir):
+        os.makedirs(repodir)
 
     dbc.cachedir = cachedir
     dbc.reposdir = [repodir]
