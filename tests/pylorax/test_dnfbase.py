@@ -25,7 +25,7 @@ from pylorax.api.config import configure, make_dnf_dirs
 from pylorax.api.dnfbase import get_base_object
 
 
-class YumbaseTest(unittest.TestCase):
+class DnfbaseNoSystemReposTest(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.tmp_dir = tempfile.mkdtemp(prefix="lorax.test.dnfbase.")
@@ -69,7 +69,32 @@ use_system_repos = False
         self.assertEqual({}, self.dbo.repos)
 
 
-class CreateYumDirsTest(unittest.TestCase):
+class DnfbaseSystemReposTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        self.tmp_dir = tempfile.mkdtemp(prefix="lorax.test.dnfbase.")
+
+        # will read the above configuration
+        config = configure(root_dir=self.tmp_dir)
+        make_dnf_dirs(config)
+
+        # will read composer config and store a dnf config file
+        self.dbo = get_base_object(config)
+
+        # will read the stored dnf config file
+        self.dnfconf = configparser.ConfigParser()
+        self.dnfconf.read([config.get("composer", "dnf_conf")])
+
+    @classmethod
+    def tearDownClass(self):
+        shutil.rmtree(self.tmp_dir)
+
+    def test_uses_system_repos(self):
+        # no other repos defined for this test
+        self.assertTrue(len(self.dbo.repos) > 0)
+
+
+class CreateDnfDirsTest(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.tmp_dir = tempfile.mkdtemp(prefix="lorax.test.dnfbase.")
