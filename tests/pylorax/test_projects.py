@@ -15,23 +15,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import os
-import mock
-import time
 import shutil
 import tempfile
+import time
 import unittest
 
-from yum.Errors import YumBaseError
-
-from pylorax.api.config import configure, make_yum_dirs
-from pylorax.api.projects import api_time, api_changelog, yaps_to_project, yaps_to_project_info
-from pylorax.api.projects import tm_to_dep, yaps_to_module, projects_list, projects_info, projects_depsolve
+from pylorax.api.config import configure, make_dnf_dirs
+from pylorax.api.projects import api_time, api_changelog, pkg_to_project, pkg_to_project_info, pkg_to_dep
+from pylorax.api.projects import proj_to_module, projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError, dep_evra, dep_nevra
-from pylorax.api.yumbase import get_base_object
+from pylorax.api.dnfbase import get_base_object
 
-
-class Yaps(object):
-    """Test class for yaps tests"""
+class Package(object):
+    """Test class for hawkey.Package tests"""
     name = "name"
     summary = "summary"
     description = "description"
@@ -43,26 +39,13 @@ class Yaps(object):
     license = "license"
     version = "version"
 
-    def returnChangelog(self):
-        return [[0, 1, "Heavy!"]]
-
-
-class TM(object):
-    """Test class for tm test"""
-    name = "name"
-    epoch = 1
-    version = "version"
-    release = "release"
-    arch = "arch"
-
-
 class ProjectsTest(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.tmp_dir = tempfile.mkdtemp(prefix="lorax.test.repo.")
         self.config = configure(root_dir=self.tmp_dir, test_config=True)
-        make_yum_dirs(self.config)
-        self.yb = get_base_object(self.config)
+        make_dnf_dirs(self.config)
+        self.dbo = get_base_object(self.config)
         os.environ["TZ"] = "UTC"
         time.tzset()
 
@@ -82,22 +65,22 @@ class ProjectsTest(unittest.TestCase):
     def test_api_changelog_missing_text_entry(self):
         self.assertEqual(api_changelog([('now', 'atodorov')]), '')
 
-    def test_yaps_to_project(self):
+    def test_pkg_to_project(self):
         result = {"name":"name",
                   "summary":"summary",
                   "description":"description",
                   "homepage":"url",
                   "upstream_vcs":"UPSTREAM_VCS"}
 
-        y = Yaps()
-        self.assertEqual(yaps_to_project(y), result)
+        pkg = Package()
+        self.assertEqual(pkg_to_project(pkg), result)
 
-    def test_yaps_to_project_info(self):
+    def test_pkg_to_project_info(self):
         build = {"epoch":1,
                  "release":"release",
                  "arch":"arch",
                  "build_time":"1985-10-27T01:00:00",
-                 "changelog":"Heavy!",
+                 "changelog":"CHANGELOG_NEEDED",
                  "build_config_ref": "BUILD_CONFIG_REF",
                  "build_env_ref":    "BUILD_ENV_REF",
                  "metadata":    {},
@@ -113,25 +96,25 @@ class ProjectsTest(unittest.TestCase):
                   "upstream_vcs":"UPSTREAM_VCS",
                   "builds": [build]}
 
-        y = Yaps()
-        self.assertEqual(yaps_to_project_info(y), result)
+        pkg = Package()
+        self.assertEqual(pkg_to_project_info(pkg), result)
 
-    def test_tm_to_dep(self):
+    def test_pkg_to_dep(self):
         result = {"name":"name",
                   "epoch":1,
                   "version":"version",
                   "release":"release",
                   "arch":"arch"}
 
-        tm = TM()
-        self.assertEqual(tm_to_dep(tm), result)
+        pkg = Package()
+        self.assertEqual(pkg_to_dep(pkg), result)
 
-    def test_yaps_to_module(self):
+    def test_proj_to_module(self):
         result = {"name":"name",
                   "group_type":"rpm"}
 
-        y = Yaps()
-        self.assertEqual(yaps_to_module(y), result)
+        proj = pkg_to_project(Package())
+        self.assertEqual(proj_to_module(proj), result)
 
     def test_dep_evra(self):
         dep = {"arch": "noarch",
@@ -158,59 +141,40 @@ class ProjectsTest(unittest.TestCase):
         self.assertEqual(dep_nevra(dep), "basesystem-10.0-7.el7.noarch")
 
     def test_projects_list(self):
-        projects = projects_list(self.yb)
+        projects = projects_list(self.dbo)
         self.assertEqual(len(projects) > 10, True)
 
-    def test_projects_list_yum_raises_exception(self):
-        with self.assertRaises(ProjectsError):
-            with mock.patch.object(self.yb, 'doPackageLists', side_effect=YumBaseError('TESTING')):
-                projects_list(self.yb)
-
     def test_projects_info(self):
-        projects = projects_info(self.yb, ["bash"])
+        projects = projects_info(self.dbo, ["bash"])
 
         self.assertEqual(projects[0]["name"], "bash")
         self.assertEqual(projects[0]["builds"][0]["source"]["license"], "GPLv3+")
 
-    def test_projects_info_yum_raises_exception(self):
-        with self.assertRaises(ProjectsError):
-            with mock.patch.object(self.yb, 'doPackageLists', side_effect=YumBaseError('TESTING')):
-                projects_info(self.yb, ["bash"])
-
     def test_projects_depsolve(self):
-        deps = projects_depsolve(self.yb, ["bash"])
+        deps = projects_depsolve(self.dbo, ["bash"])
 
         self.assertEqual(deps[0]["name"], "basesystem")
 
     def test_projects_depsolve_fail(self):
         with self.assertRaises(ProjectsError):
-            projects_depsolve(self.yb, ["nada-package"])
+            projects_depsolve(self.dbo, ["nada-package"])
 
-    def test_modules_list(self):
-        modules = modules_list(self.yb, None)
+    def test_modules_list_all(self):
+        modules = modules_list(self.dbo, None)
 
         self.assertEqual(len(modules) > 10, True)
         self.assertEqual(modules[0]["group_type"], "rpm")
 
-        modules = modules_list(self.yb, ["g*"])
+    def test_modules_list_glob(self):
+        modules = modules_list(self.dbo, ["g*"])
         self.assertEqual(modules[0]["name"].startswith("g"), True)
 
-    def test_modules_list_yum_raises_exception(self):
-        with self.assertRaises(ProjectsError):
-            with mock.patch.object(self.yb, 'doPackageLists', side_effect=YumBaseError('TESTING')):
-                modules_list(self.yb, None)
-
     def test_modules_info(self):
-        modules = modules_info(self.yb, ["bash"])
+        modules = modules_info(self.dbo, ["bash"])
 
         print(modules)
         self.assertEqual(modules[0]["name"], "bash")
         self.assertEqual(modules[0]["dependencies"][0]["name"], "basesystem")
-
-    def test_modules_info_yum_raises_exception(self):
-        with self.assertRaises(ProjectsError):
-            with mock.patch.object(self.yb, 'doPackageLists', side_effect=YumBaseError('TESTING')):
-                modules_info(self.yb, ["bash"])
 
 
 class ConfigureTest(unittest.TestCase):
