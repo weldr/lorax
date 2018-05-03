@@ -24,17 +24,19 @@ import unittest
 
 from flask import json
 import pytoml as toml
-from pylorax.api.config import configure, make_yum_dirs, make_queue_dirs
+from pylorax.api.config import configure, make_dnf_dirs, make_queue_dirs
 from pylorax.api.queue import start_queue_monitor
 from pylorax.api.recipes import open_or_create_repo, commit_recipe_directory
-from pylorax.api.server import server, GitLock, YumLock
-from pylorax.api.yumbase import get_base_object
+from pylorax.api.server import server, GitLock, DNFLock
+from pylorax.api.dnfbase import get_base_object
 from pylorax.sysutils import joinpaths
 
 class ServerTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
+        self.maxDiff = None
+
         repo_dir = tempfile.mkdtemp(prefix="lorax.test.repo.")
         server.config["REPO_DIR"] = repo_dir
         repo = open_or_create_repo(server.config["REPO_DIR"])
@@ -46,9 +48,9 @@ class ServerTestCase(unittest.TestCase):
         if errors:
             raise RuntimeError("\n".join(errors))
 
-        make_yum_dirs(server.config["COMPOSER_CFG"])
-        yb = get_base_object(server.config["COMPOSER_CFG"])
-        server.config["YUMLOCK"] = YumLock(yb=yb, lock=Lock())
+        make_dnf_dirs(server.config["COMPOSER_CFG"])
+        dbo = get_base_object(server.config["COMPOSER_CFG"])
+        server.config["DNFLOCK"] = DNFLock(dbo=dbo, lock=Lock())
 
         server.config['TESTING'] = True
         self.server = server.test_client()
@@ -85,50 +87,54 @@ class ServerTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertEqual(data, list_dict)
 
-    def test_03_blueprints_info(self):
-        """Test the /api/v0/blueprints/info route"""
+    def test_03_blueprints_info_1(self):
+        """Test the /api/v0/blueprints/info route with one blueprint"""
         info_dict_1 = {"changes":[{"changed":False, "name":"http-server"}],
                        "errors":[],
                        "blueprints":[{"description":"An example http server with PHP and MySQL support.",
                                    "modules":[{"name":"httpd", "version":"2.4.*"},
-                                              {"name":"mod_auth_kerb", "version":"5.4"},
+                                              {"name":"mod_auth_openid", "version":"0.8"},
                                               {"name":"mod_ssl", "version":"2.4.*"},
-                                              {"name":"php", "version":"5.4.*"},
-                                              {"name": "php-mysql", "version":"5.4.*"}],
+                                              {"name":"php", "version":"7.2.4"},
+                                              {"name": "php-mysqlnd", "version":"7.2.4"}],
                                    "name":"http-server",
-                                   "packages": [{"name":"openssh-server", "version": "6.6.*"},
-                                                {"name": "rsync", "version": "3.0.*"},
-                                                {"name": "tmux", "version": "2.2"}],
+                                   "packages": [{"name":"openssh-server", "version": "7.*"},
+                                                {"name": "rsync", "version": "3.1.3"},
+                                                {"name": "tmux", "version": "2.7"}],
                                    "version": "0.0.1"}]}
         resp = self.server.get("/api/v0/blueprints/info/http-server")
         data = json.loads(resp.data)
         self.assertEqual(data, info_dict_1)
 
+    def test_03_blueprints_info_2(self):
+        """Test the /api/v0/blueprints/info route with 2 blueprints"""
         info_dict_2 = {"changes":[{"changed":False, "name":"glusterfs"},
                                   {"changed":False, "name":"http-server"}],
                        "errors":[],
                        "blueprints":[{"description": "An example GlusterFS server with samba",
-                                   "modules":[{"name":"glusterfs", "version":"3.7.*"},
-                                              {"name":"glusterfs-cli", "version":"3.7.*"}],
+                                   "modules":[{"name":"glusterfs", "version":"4.0.*"},
+                                              {"name":"glusterfs-cli", "version":"4.0.*"}],
                                    "name":"glusterfs",
-                                   "packages":[{"name":"samba", "version":"4.2.*"}],
+                                   "packages":[{"name":"samba", "version":"4.8.*"}],
                                    "version": "0.0.1"},
                                   {"description":"An example http server with PHP and MySQL support.",
                                    "modules":[{"name":"httpd", "version":"2.4.*"},
-                                              {"name":"mod_auth_kerb", "version":"5.4"},
+                                              {"name":"mod_auth_openid", "version":"0.8"},
                                               {"name":"mod_ssl", "version":"2.4.*"},
-                                              {"name":"php", "version":"5.4.*"},
-                                              {"name": "php-mysql", "version":"5.4.*"}],
+                                              {"name":"php", "version":"7.2.4"},
+                                              {"name": "php-mysqlnd", "version":"7.2.4"}],
                                    "name":"http-server",
-                                   "packages": [{"name":"openssh-server", "version": "6.6.*"},
-                                                {"name": "rsync", "version": "3.0.*"},
-                                                {"name": "tmux", "version": "2.2"}],
+                                   "packages": [{"name":"openssh-server", "version": "7.*"},
+                                                {"name": "rsync", "version": "3.1.3"},
+                                                {"name": "tmux", "version": "2.7"}],
                                    "version": "0.0.1"},
                                  ]}
         resp = self.server.get("/api/v0/blueprints/info/http-server,glusterfs")
         data = json.loads(resp.data)
         self.assertEqual(data, info_dict_2)
 
+    def test_03_blueprints_info_none(self):
+        """Test the /api/v0/blueprints/info route with an unknown blueprint"""
         info_dict_3 = {"changes":[],
                        "errors":["missing-blueprint: No commits for missing-blueprint.toml on the master branch."],
                        "blueprints":[]
@@ -163,9 +169,9 @@ class ServerTestCase(unittest.TestCase):
         test_blueprint = {"description": "An example GlusterFS server with samba",
                        "name":"glusterfs",
                        "version": "0.2.0",
-                       "modules":[{"name":"glusterfs", "version":"3.7.*"},
-                                  {"name":"glusterfs-cli", "version":"3.7.*"}],
-                       "packages":[{"name":"samba", "version":"4.2.*"},
+                       "modules":[{"name":"glusterfs", "version":"4.0.*"},
+                                  {"name":"glusterfs-cli", "version":"4.0.*"}],
+                       "packages":[{"name":"samba", "version":"4.8.*"},
                                    {"name":"tmux", "version":"2.2"}]}
 
         resp = self.server.post("/api/v0/blueprints/new",
@@ -196,7 +202,7 @@ class ServerTestCase(unittest.TestCase):
         blueprints = data.get("blueprints")
         self.assertEqual(len(blueprints), 1)
 
-        # Returned blueprint has had its version bumped to 0.2.1
+        # Returned blueprint has had its version bumped
         test_blueprint = toml.loads(test_blueprint)
         test_blueprint["version"] = "0.2.1"
 
@@ -207,9 +213,9 @@ class ServerTestCase(unittest.TestCase):
         test_blueprint = {"description": "An example GlusterFS server with samba, ws version",
                        "name":"glusterfs",
                        "version": "0.3.0",
-                       "modules":[{"name":"glusterfs", "version":"3.7.*"},
-                                  {"name":"glusterfs-cli", "version":"3.7.*"}],
-                       "packages":[{"name":"samba", "version":"4.2.*"},
+                       "modules":[{"name":"glusterfs", "version":"4.0.*"},
+                                  {"name":"glusterfs-cli", "version":"4.0.*"}],
+                       "packages":[{"name":"samba", "version":"4.8.*"},
                                    {"name":"tmux", "version":"2.2"}]}
 
         resp = self.server.post("/api/v0/blueprints/workspace",
@@ -233,9 +239,9 @@ class ServerTestCase(unittest.TestCase):
         test_blueprint = {"description": "An example GlusterFS server with samba, ws version",
                        "name":"glusterfs",
                        "version": "0.4.0",
-                       "modules":[{"name":"glusterfs", "version":"3.7.*"},
-                                  {"name":"glusterfs-cli", "version":"3.7.*"}],
-                       "packages":[{"name":"samba", "version":"4.2.*"},
+                       "modules":[{"name":"glusterfs", "version":"4.0.*"},
+                                  {"name":"glusterfs-cli", "version":"4.0.*"}],
+                       "packages":[{"name":"samba", "version":"4.8.*"},
                                    {"name":"tmux", "version":"2.2"}]}
 
         resp = self.server.post("/api/v0/blueprints/workspace",
@@ -350,6 +356,10 @@ class ServerTestCase(unittest.TestCase):
         to_commit = changes[0].get("commit")
         self.assertNotEqual(to_commit, None)
 
+        print("from: %s" % from_commit)
+        print("to: %s" % to_commit)
+        print(changes)
+
         # Get the differences between the two commits
         resp = self.server.get("/api/v0/blueprints/diff/glusterfs/%s/%s" % (from_commit, to_commit))
         data = json.loads(resp.data)
@@ -360,9 +370,9 @@ class ServerTestCase(unittest.TestCase):
         test_blueprint = {"description": "An example GlusterFS server with samba, ws version",
                        "name":"glusterfs",
                        "version": "0.3.0",
-                       "modules":[{"name":"glusterfs", "version":"3.7.*"},
-                                  {"name":"glusterfs-cli", "version":"3.7.*"}],
-                       "packages":[{"name":"samba", "version":"4.2.*"},
+                       "modules":[{"name":"glusterfs", "version":"4.0.*"},
+                                  {"name":"glusterfs-cli", "version":"4.0.*"}],
+                       "packages":[{"name":"samba", "version":"4.8.*"},
                                    {"name":"tmux", "version":"2.2"}]}
 
         resp = self.server.post("/api/v0/blueprints/workspace",
@@ -488,9 +498,9 @@ class ServerTestCase(unittest.TestCase):
         test_blueprint = {"description": "An example GlusterFS server with samba",
                        "name":"glusterfs",
                        "version": "0.2.0",
-                       "modules":[{"name":"glusterfs", "version":"3.7.*"},
-                                  {"name":"glusterfs-cli", "version":"3.7.*"}],
-                       "packages":[{"name":"samba", "version":"4.2.*"},
+                       "modules":[{"name":"glusterfs", "version":"4.0.*"},
+                                  {"name":"glusterfs-cli", "version":"4.0.*"}],
+                       "packages":[{"name":"samba", "version":"4.8.*"},
                                    {"name":"tmux", "version":"2.2"}]}
 
         resp = self.server.post("/api/v0/blueprints/new?branch=test",
@@ -514,8 +524,8 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(200, response.status_code)
         self.assertTrue(len(response.data) > 1024)
         # look for some well known strings inside the documentation
-        self.assertRegex(response.data, r"Lorax [\d.]+ documentation")
-        self.assertRegex(response.data, r"Copyright \d+, Red Hat, Inc.")
+        self.assertRegex(response.data.decode("utf-8"), r"Lorax [\d.]+ documentation")
+        self.assertRegex(response.data.decode("utf-8"), r"Copyright \d+, Red Hat, Inc.")
 
     def test_api_docs(self):
         """Test the /api/docs/"""
@@ -793,7 +803,7 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/compose/image/%s" % build_id)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.data) > 0, True)
-        self.assertEqual(resp.data, "TEST IMAGE")
+        self.assertEqual(resp.data, b"TEST IMAGE")
 
         # Delete the finished build
         # Test the /api/v0/compose/delete/<uuid> route
