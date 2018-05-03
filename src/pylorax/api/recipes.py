@@ -714,7 +714,6 @@ def list_commits(repo, branch, filename, limit=0):
     :raises: Can raise errors from Ggit
     """
     revwalk = Git.RevisionWalker.new(repo)
-    revwalk.set_sort_mode(Git.SortMode.TIME)
     branch_ref = "refs/heads/%s" % branch
     revwalk.push_ref(branch_ref)
 
