@@ -55,33 +55,25 @@ from pylorax.sysutils import joinpaths
 
 def repo_to_ks(r, url="url"):
     """ Return a kickstart line with the correct args.
+    :param r: DNF repository information
+    :type r: dnf.Repo
+    :param url: "url" or "baseurl" to use for the baseurl parameter
+    :type url: str
+    :returns: kickstart command arguments for url/repo command
+    :rtype: str
 
     Set url to "baseurl" if it is a repo, leave it as "url" for the installation url.
     """
     cmd = ""
-    if url == "url":
-        if not r.urls:
-            raise RuntimeError("Cannot find a base url for %s" % r.name)
-
-        # url is passed to Anaconda on the cmdline with --repo, so it cannot support a mirror
-        # If a mirror is setup yum will return the list of mirrors in .urls
-        # So just use the first one.
-        cmd += '--%s="%s" ' % (url, r.urls[0])
+    # url uses --url not --baseurl
+    if r.baseurl:
+        cmd += '--%s="%s" ' % (url, r.baseurl[0])
     elif r.metalink:
-        # XXX Total Hack
-        # RHEL7 kickstart doesn't support metalink. If the url has 'metalink' in it, rewrite it as 'mirrorlist'
-        if "metalink" in r.metalink:
-            log.info("RHEL7 does not support metalink, translating to mirrorlist")
-            cmd += '--mirrorlist="%s" ' % r.metalink.replace("metalink", "mirrorlist")
-        else:
-            log.error("Could not convert metalink to mirrorlist. %s", r.metalink)
-            raise RuntimeError("Cannot convert metalink to mirrorlist: %s" % r.metalink)
+        cmd += '--metalink="%s" ' % r.metalink
     elif r.mirrorlist:
         cmd += '--mirrorlist="%s" ' % r.mirrorlist
-    elif r.baseurl:
-        cmd += '--%s="%s" ' % (url, r.baseurl[0])
     else:
-        raise RuntimeError("Repo has no baseurl or mirror")
+        raise RuntimeError("Repo has no baseurl, metalink, or mirrorlist")
 
     if r.proxy:
         cmd += '--proxy="%s" ' % r.proxy
@@ -91,13 +83,13 @@ def repo_to_ks(r, url="url"):
 
     return cmd
 
-def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_mode=0):
+def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_mode=0):
     """ Start the build
 
     :param cfg: Configuration object
     :type cfg: ComposerConfig
-    :param yumlock: Lock and YumBase for depsolving
-    :type yumlock: YumLock
+    :param dnflock: Lock and YumBase for depsolving
+    :type dnflock: YumLock
     :param recipe: The recipe to build
     :type recipe: str
     :param compose_type: The type of output to create from the recipe
@@ -122,8 +114,8 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_m
     projects = sorted(set(module_names+package_names), key=lambda n: n.lower())
     deps = []
     try:
-        with yumlock.lock:
-            (installed_size, deps) = projects_depsolve_with_size(yumlock.yb, projects, with_core=False)
+        with dnflock.lock:
+            (installed_size, deps) = projects_depsolve_with_size(dnflock.dbo, projects, with_core=False)
     except ProjectsError as e:
         log.error("start_build depsolve: %s", str(e))
         raise RuntimeError("Problem depsolving %s: %s" % (recipe["name"], str(e)))
@@ -137,8 +129,8 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_m
     ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
     ks.readKickstartFromString(ks_template+"\n%end\n")
     try:
-        with yumlock.lock:
-            (template_size, _) = projects_depsolve_with_size(yumlock.yb, ks.handler.packages.packageList,
+        with dnflock.lock:
+            (template_size, _) = projects_depsolve_with_size(dnflock.dbo, ks.handler.packages.packageList,
                                                              with_core=not ks.handler.packages.nocore)
     except ProjectsError as e:
         log.error("start_build depsolve: %s", str(e))
@@ -173,7 +165,7 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_m
     # Write out the dependencies to the results dir
     deps_path = joinpaths(results_dir, "deps.toml")
     with open(deps_path, "w") as f:
-        f.write(toml.dumps({"packages":deps}).encode("UTF-8"))
+        f.write(toml.dumps({"packages":deps}))
 
     # Save a copy of the original kickstart
     shutil.copy(ks_template_path, results_dir)
@@ -181,8 +173,8 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_m
     # Create the final kickstart with repos and package list
     ks_path = joinpaths(results_dir, "final-kickstart.ks")
     with open(ks_path, "w") as f:
-        with yumlock.lock:
-            repos = yumlock.yb.repos.listEnabled()
+        with dnflock.lock:
+            repos = list(dnflock.dbo.repos.iter_enabled())
         if not repos:
             raise RuntimeError("No enabled repos, canceling build.")
 
@@ -230,7 +222,7 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_m
         "logfile":          log_dir
     })
     with open(joinpaths(results_dir, "config.toml"), "w") as f:
-        f.write(toml.dumps(cfg_args).encode("UTF-8"))
+        f.write(toml.dumps(cfg_args))
 
     # Set the initial status
     open(joinpaths(results_dir, "STATUS"), "w").write("WAITING")

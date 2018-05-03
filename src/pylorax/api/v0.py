@@ -1186,8 +1186,8 @@ def v0_api(api):
             projects = sorted(set(module_names+package_names), key=lambda n: n.lower())
             deps = []
             try:
-                with api.config["YUMLOCK"].lock:
-                    deps = projects_depsolve(api.config["YUMLOCK"].yb, projects)
+                with api.config["DNFLOCK"].lock:
+                    deps = projects_depsolve(api.config["DNFLOCK"].dbo, projects)
             except ProjectsError as e:
                 errors.append("%s: %s" % (blueprint_name, str(e)))
                 log.error("(v0_blueprints_freeze) %s", str(e))
@@ -1238,8 +1238,8 @@ def v0_api(api):
             projects = sorted(set(module_names+package_names), key=lambda n: n.lower())
             deps = []
             try:
-                with api.config["YUMLOCK"].lock:
-                    deps = projects_depsolve(api.config["YUMLOCK"].yb, projects)
+                with api.config["DNFLOCK"].lock:
+                    deps = projects_depsolve(api.config["DNFLOCK"].dbo, projects)
             except ProjectsError as e:
                 errors.append("%s: %s" % (blueprint_name, str(e)))
                 log.error("(v0_blueprints_depsolve) %s", str(e))
@@ -1266,8 +1266,8 @@ def v0_api(api):
             return jsonify(status=False, errors=[str(e)]), 400
 
         try:
-            with api.config["YUMLOCK"].lock:
-                available = projects_list(api.config["YUMLOCK"].yb)
+            with api.config["DNFLOCK"].lock:
+                available = projects_list(api.config["DNFLOCK"].dbo)
         except ProjectsError as e:
             log.error("(v0_projects_list) %s", str(e))
             return jsonify(status=False, errors=[str(e)]), 400
@@ -1280,8 +1280,8 @@ def v0_api(api):
     def v0_projects_info(project_names):
         """Return detailed information about the listed projects"""
         try:
-            with api.config["YUMLOCK"].lock:
-                projects = projects_info(api.config["YUMLOCK"].yb, project_names.split(","))
+            with api.config["DNFLOCK"].lock:
+                projects = projects_info(api.config["DNFLOCK"].dbo, project_names.split(","))
         except ProjectsError as e:
             log.error("(v0_projects_info) %s", str(e))
             return jsonify(status=False, errors=[str(e)]), 400
@@ -1293,8 +1293,8 @@ def v0_api(api):
     def v0_projects_depsolve(project_names):
         """Return detailed information about the listed projects"""
         try:
-            with api.config["YUMLOCK"].lock:
-                deps = projects_depsolve(api.config["YUMLOCK"].yb, project_names.split(","))
+            with api.config["DNFLOCK"].lock:
+                deps = projects_depsolve(api.config["DNFLOCK"].dbo, project_names.split(","))
         except ProjectsError as e:
             log.error("(v0_projects_depsolve) %s", str(e))
             return jsonify(status=False, errors=[str(e)]), 400
@@ -1316,8 +1316,8 @@ def v0_api(api):
             module_names = module_names.split(",")
 
         try:
-            with api.config["YUMLOCK"].lock:
-                available = modules_list(api.config["YUMLOCK"].yb, module_names)
+            with api.config["DNFLOCK"].lock:
+                available = modules_list(api.config["DNFLOCK"].dbo, module_names)
         except ProjectsError as e:
             log.error("(v0_modules_list) %s", str(e))
             return jsonify(status=False, errors=[str(e)]), 400
@@ -1330,8 +1330,8 @@ def v0_api(api):
     def v0_modules_info(module_names):
         """Return detailed information about the listed modules"""
         try:
-            with api.config["YUMLOCK"].lock:
-                modules = modules_info(api.config["YUMLOCK"].yb, module_names.split(","))
+            with api.config["DNFLOCK"].lock:
+                modules = modules_info(api.config["DNFLOCK"].dbo, module_names.split(","))
         except ProjectsError as e:
             log.error("(v0_modules_info) %s", str(e))
             return jsonify(status=False, errors=[str(e)]), 400
@@ -1380,7 +1380,7 @@ def v0_api(api):
             return jsonify(status=False, errors=errors), 400
 
         try:
-            build_id = start_build(api.config["COMPOSER_CFG"], api.config["YUMLOCK"], api.config["GITLOCK"],
+            build_id = start_build(api.config["COMPOSER_CFG"], api.config["DNFLOCK"], api.config["GITLOCK"],
                                    branch, blueprint_name, compose_type, test_mode)
         except Exception as e:
             return jsonify(status=False, errors=[str(e)]), 400
