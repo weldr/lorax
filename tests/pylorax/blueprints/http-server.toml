@@ -7,8 +7,8 @@ name = "httpd"
 version = "2.4.*"
 
 [[modules]]
-name = "mod_auth_kerb"
-version = "5.4"
+name = "mod_auth_openid"
+version = "0.8"
 
 [[modules]]
 name = "mod_ssl"
@@ -16,20 +16,20 @@ version = "2.4.*"
 
 [[modules]]
 name = "php"
-version = "5.4.*"
+version = "7.2.4"
 
 [[modules]]
-name = "php-mysql"
-version = "5.4.*"
+name = "php-mysqlnd"
+version = "7.2.4"
 
 [[packages]]
 name = "tmux"
-version = "2.2"
+version = "2.7"
 
 [[packages]]
 name = "openssh-server"
-version = "6.6.*"
+version = "7.*"
 
 [[packages]]
 name = "rsync"
-version = "3.0.*"
+version = "3.1.3"
