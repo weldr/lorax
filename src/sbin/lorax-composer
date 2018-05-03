@@ -1,0 +1,267 @@
+#!/usr/bin/python3
+#
+# lorax-composer
+#
+# Copyright (C) 2017-2018 Red Hat, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+import logging
+log = logging.getLogger("lorax-composer")
+program_log = logging.getLogger("program")
+pylorax_log = logging.getLogger("pylorax")
+server_log = logging.getLogger("server")
+dnf_log = logging.getLogger("dnf")
+
+import argparse
+import grp
+import os
+import pwd
+import sys
+import subprocess
+from threading import Lock
+from gevent import socket
+from gevent.wsgi import WSGIServer
+
+from pylorax import vernum
+from pylorax.api.config import configure, make_dnf_dirs, make_queue_dirs
+from pylorax.api.queue import start_queue_monitor
+from pylorax.api.recipes import open_or_create_repo, commit_recipe_directory
+from pylorax.api.server import server, GitLock, DNFLock
+from pylorax.api.dnfbase import get_base_object
+
+VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
+
+def get_parser():
+    """ Return the ArgumentParser for lorax-composer"""
+
+    parser = argparse.ArgumentParser(description="Lorax Composer API Server",
+                                     fromfile_prefix_chars="@")
+
+    parser.add_argument("--socket", default="/run/weldr/api.socket", metavar="SOCKET",
+                        help="Path to the socket file to listen on")
+    parser.add_argument("--user", default="weldr", metavar="USER",
+                        help="User to use for reduced permissions")
+    parser.add_argument("--group", default="weldr", metavar="GROUP",
+                        help="Group to set ownership of the socket to")
+    parser.add_argument("--log", dest="logfile", default="/var/log/lorax-composer/composer.log", metavar="LOG",
+                        help="Path to logfile (/var/log/lorax-composer/composer.log)")
+    parser.add_argument("--mockfiles", default="/var/tmp/bdcs-mockfiles/", metavar="MOCKFILES",
+                        help="Path to JSON files used for /api/mock/ paths (/var/tmp/bdcs-mockfiles/)")
+    parser.add_argument("--sharedir", type=os.path.abspath, metavar="SHAREDIR",
+                        help="Directory containing all the templates. Overrides config file sharedir")
+    parser.add_argument("-V", action="store_true", dest="showver",
+                        help="show program's version number and exit")
+    parser.add_argument("-c", "--config", default="/etc/lorax/composer.conf", metavar="CONFIG",
+                        help="Path to lorax-composer configuration file.")
+    parser.add_argument( "--releasever", default=None, metavar="STRING",
+                         help="Release version to use for $releasever in dnf repository urls" )
+    parser.add_argument("BLUEPRINTS", metavar="BLUEPRINTS",
+                        help="Path to the blueprints")
+
+    return parser
+
+
+def setup_logging(logfile):
+    # Setup logging to console and to logfile
+    log.setLevel(logging.DEBUG)
+    pylorax_log.setLevel(logging.DEBUG)
+
+    sh = logging.StreamHandler()
+    sh.setLevel(logging.INFO)
+    fmt = logging.Formatter("%(asctime)s: %(message)s")
+    sh.setFormatter(fmt)
+    log.addHandler(sh)
+    pylorax_log.addHandler(sh)
+
+    fh = logging.FileHandler(filename=logfile)
+    fh.setLevel(logging.DEBUG)
+    fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
+    fh.setFormatter(fmt)
+    log.addHandler(fh)
+    pylorax_log.addHandler(fh)
+
+    # External program output log
+    program_log.setLevel(logging.DEBUG)
+    logfile = os.path.abspath(os.path.dirname(logfile))+"/program.log"
+    fh = logging.FileHandler(filename=logfile)
+    fh.setLevel(logging.DEBUG)
+    program_log.addHandler(fh)
+
+    # Server request logging
+    server_log.setLevel(logging.DEBUG)
+    logfile = os.path.abspath(os.path.dirname(logfile))+"/server.log"
+    fh = logging.FileHandler(filename=logfile)
+    fh.setLevel(logging.DEBUG)
+    server_log.addHandler(fh)
+
+    # DNF logging
+    dnf_log.setLevel(logging.DEBUG)
+    logfile = os.path.abspath(os.path.dirname(logfile))+"/dnf.log"
+    fh = logging.FileHandler(filename=logfile)
+    fh.setLevel(logging.DEBUG)
+    dnf_log.addHandler(fh)
+
+
+class LogWrapper(object):
+    """Wrapper for the WSGIServer which only calls write()"""
+    def __init__(self, log_obj):
+        self.log = log_obj
+
+    def write(self, msg):
+        """Log everything as INFO"""
+        self.log.info(msg.strip())
+
+def make_pidfile(pid_path="/run/lorax-composer.pid"):
+    """Check for a running instance of lorax-composer
+
+    :param pid_path: Path to the pid file
+    :type pid_path: str
+    :returns: False if there is already a running lorax-composer, True otherwise
+    :rtype: bool
+
+    This will look for an existing pid file, and if found read the PID and check to
+    see if it is really lorax-composer running, or if it is a stale pid.
+    It will create a new pid file if there isn't already one, or if the PID is stale.
+    """
+    if os.path.exists(pid_path):
+        try:
+            pid = int(open(pid_path, "r").read())
+            cmdline = open("/proc/%s/cmdline" % pid, "r").read()
+            if "lorax-composer" in cmdline:
+                return False
+        except (IOError, ValueError):
+            pass
+
+    open(pid_path, "w").write(str(os.getpid()))
+    return True
+
+if __name__ == '__main__':
+    # parse the arguments
+    opts = get_parser().parse_args()
+
+    if opts.showver:
+        print(VERSION)
+        sys.exit(0)
+
+    logpath = os.path.abspath(os.path.dirname(opts.logfile))
+    if not os.path.isdir(logpath):
+        os.makedirs(logpath)
+    setup_logging(opts.logfile)
+    log.debug("opts=%s", opts)
+
+    if not make_pidfile():
+        log.error("PID file exists, lorax-composer already running. Quitting.")
+        sys.exit(1)
+
+    errors = []
+    # Check to make sure the user exists and get its uid
+    try:
+        uid = pwd.getpwnam(opts.user).pw_uid
+    except KeyError:
+        errors.append("Missing user '%s'" % opts.user)
+
+    # Check to make sure the group exists and get its gid
+    try:
+        gid = grp.getgrnam(opts.group).gr_gid
+    except KeyError:
+        errors.append("Missing group '%s'" % opts.group)
+
+    # No point in continuing if there are uid or gid errors
+    if errors:
+        for e in errors:
+            log.error(e)
+        sys.exit(1)
+
+    errors = []
+    # Check the socket path to make sure it exists, and that ownership and permissions are correct.
+    socket_dir = os.path.dirname(opts.socket)
+    if not os.path.exists(socket_dir):
+        # Create the directory and set permissions and ownership
+        os.makedirs(socket_dir, 0o750)
+        os.chown(socket_dir, 0, gid)
+
+    sockdir_stat = os.stat(socket_dir)
+    if sockdir_stat.st_mode & 0o007 != 0:
+        errors.append("Incorrect permissions on %s, no 'other' permissions are allowed." % socket_dir)
+
+    if sockdir_stat.st_gid != gid or sockdir_stat.st_uid != 0:
+        errors.append("%s should be owned by root:%s" % (socket_dir, opts.group))
+
+    # No point in continuing if there are ownership or permission errors
+    if errors:
+        for e in errors:
+            log.error(e)
+        sys.exit(1)
+
+    server.config["COMPOSER_CFG"] = configure(conf_file=opts.config)
+
+    # Make sure the git repo can be accessed by the API uid/gid
+    if os.path.exists(opts.BLUEPRINTS):
+        repodir_stat = os.stat(opts.BLUEPRINTS)
+        if repodir_stat.st_gid != gid or repodir_stat.st_uid != uid:
+            subprocess.call(["chown", "-R", "%s:%s" % (opts.user, opts.group), opts.BLUEPRINTS])
+
+    # If the user passed in a releasever set it in the configuration
+    if opts.releasever:
+        server.config["COMPOSER_CFG"].set("composer", "releasever", opts.releasever)
+
+    # Override the default sharedir
+    if opts.sharedir:
+        server.config["COMPOSER_CFG"].set("composer", "share_dir", opts.sharedir)
+
+    # Make sure the queue paths are setup correctly, exit on errors
+    errors = make_queue_dirs(server.config["COMPOSER_CFG"], gid)
+    if errors:
+        for e in errors:
+            log.error(e)
+        sys.exit(1)
+
+    # Setup the Unix Domain Socket, remove old one, set ownership and permissions
+    if os.path.exists(opts.socket):
+        os.unlink(opts.socket)
+    listener = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    listener.bind(opts.socket)
+    os.chmod(opts.socket, 0o660)
+    os.chown(opts.socket, 0, gid)
+    listener.listen(1)
+
+    start_queue_monitor(server.config["COMPOSER_CFG"], uid, gid)
+
+    # Drop root privileges on the main process
+    os.setgid(gid)
+    os.setuid(uid)
+    log.debug("user is now %s:%s", os.getresuid(), os.getresgid())
+    # Switch to a home directory we can access (libgit2 uses this to look for .gitconfig)
+    os.environ["HOME"] = server.config["COMPOSER_CFG"].get("composer", "lib_dir")
+
+    # Make sure dnf directories are created
+    make_dnf_dirs(server.config["COMPOSER_CFG"])
+
+    # Get a dnf.Base to share with the requests
+    dbo = get_base_object(server.config["COMPOSER_CFG"])
+    server.config["DNFLOCK"] = DNFLock(dbo=dbo, lock=Lock())
+
+    # Setup access to the git repo
+    server.config["REPO_DIR"] = opts.BLUEPRINTS
+    repo = open_or_create_repo(server.config["REPO_DIR"])
+    server.config["GITLOCK"] = GitLock(repo=repo, lock=Lock(), dir=opts.BLUEPRINTS)
+
+    # Import example blueprints
+    commit_recipe_directory(server.config["GITLOCK"].repo, "master", opts.BLUEPRINTS)
+
+    log.info("Starting %s on %s with blueprints from %s", VERSION, opts.socket, opts.BLUEPRINTS)
+    http_server = WSGIServer(listener, server, log=LogWrapper(server_log))
+    # The server writes directly to a file object, so point to our log directory
+    http_server.serve_forever()
