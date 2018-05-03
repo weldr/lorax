@@ -204,7 +204,7 @@ def projects_depsolve(dbo, project_names):
         raise ProjectsError("There was a problem depsolving %s: %s" % (project_names, str(e)))
 
     if len(dbo.transaction) == 0:
-        raise ProjectsError("No packages installed for %s" % project_names)
+        return []
 
     return sorted(map(pkg_to_dep, dbo.transaction.install_set), key=lambda p: p["name"].lower())
 
@@ -257,7 +257,7 @@ def projects_depsolve_with_size(dbo, project_names, with_core=True):
         raise ProjectsError("There was a problem depsolving %s: %s" % (project_names, str(e)))
 
     if len(dbo.transaction) == 0:
-        raise ProjectsError("No packages installed for %s" % project_names)
+        return (0, [])
 
     installed_size = estimate_size(dbo.transaction.install_set)
     deps = sorted(map(pkg_to_dep, dbo.transaction.install_set), key=lambda p: p["name"].lower())
