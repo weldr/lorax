@@ -83,7 +83,7 @@ class Recipe(dict):
 
     def toml(self):
         """Return the Recipe in TOML format"""
-        return toml.dumps(self).encode("UTF-8")
+        return toml.dumps(self)
 
     def bump_version(self, old_version=None):
         """semver recipe version number bump
@@ -298,7 +298,7 @@ def write_commit(repo, branch, filename, message, content):
         parent_commit = head_commit(repo, branch)
 
     parent_commit = head_commit(repo, branch)
-    blob_id = repo.create_blob_from_buffer(content)
+    blob_id = repo.create_blob_from_buffer(content.encode("UTF-8"))
 
     # Use treebuilder to make a new entry for this filename and blob
     parent_tree = parent_commit.get_tree()
