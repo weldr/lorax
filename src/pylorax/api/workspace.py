@@ -56,7 +56,7 @@ def workspace_read(repo, branch, recipe_name):
         return None
     try:
         f = open(filename, 'rb')
-        recipe = recipe_from_toml(f.read())
+        recipe = recipe_from_toml(f.read().decode("UTF-8"))
     except IOError:
         raise RecipeFileError
     return recipe
@@ -78,7 +78,7 @@ def workspace_write(repo, branch, recipe):
     if not os.path.isdir(ws_dir):
         os.makedirs(ws_dir)
     filename = joinpaths(ws_dir, recipe.filename)
-    open(filename, 'wb').write(recipe.toml())
+    open(filename, 'wb').write(recipe.toml().encode("UTF-8"))
 
 
 def workspace_delete(repo, branch, recipe_name):
