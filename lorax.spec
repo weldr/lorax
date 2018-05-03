@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        29.1
+Version:        29.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -155,6 +155,13 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
 
 %changelog
+* Thu May 03 2018 Brian C. Lane <bcl@redhat.com> 29.2-1
+- Enable testing in Travis and collecting of coverage history (atodorov@redhat.com)
+- Check selinux state before creating output directory (bcl@redhat.com)
+- change installed packages on ppc (dan@danny.cz)
+- drop support for 32-bit ppc (dan@danny.cz)
+- remove redundant mkdir (dan@danny.cz)
+
 * Mon Apr 09 2018 Brian C. Lane <bcl@redhat.com> 29.1-1
 - Fix anaconda metapackage name (mkolman@redhat.com)
 - Include the anaconda-install-env-deps metapackage (mkolman@redhat.com)
