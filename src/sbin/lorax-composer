@@ -28,6 +28,7 @@ import argparse
 import grp
 import os
 import pwd
+import selinux
 import sys
 import subprocess
 from threading import Lock
@@ -177,6 +178,9 @@ if __name__ == '__main__':
         gid = grp.getgrnam(opts.group).gr_gid
     except KeyError:
         errors.append("Missing group '%s'" % opts.group)
+
+    if selinux.is_selinux_enabled() and selinux.security_getenforce():
+        errors.append("selinux must be disabled or in Permissive mode.")
 
     # No point in continuing if there are uid or gid errors
     if errors:
