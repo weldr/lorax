@@ -1,25 +1,26 @@
 name = "kubernetes"
 description = "An example kubernetes master"
+version = "0.0.1"
 
 [[modules]]
 name = "kubernetes"
-version = "1.2.*"
+version = "1.9.*"
 
 [[modules]]
 name = "docker"
-version = "1.10.*"
+version = "1.13.*"
 
 [[modules]]
 name = "docker-lvm-plugin"
-version = "1.10.*"
+version = "1.13.*"
 
 [[modules]]
 name = "etcd"
-version = "2.3.*"
+version = "3.2.*"
 
 [[modules]]
 name = "flannel"
-version = "0.5.*"
+version = "0.9.*"
 
 [[packages]]
 name = "oci-systemd-hook"
