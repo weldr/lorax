@@ -28,8 +28,8 @@ check:
 test:
 	@echo "*** Running tests ***"
 	PYTHONPATH=$(PYTHONPATH):./src/ $(PYTHON) -m nose -v --with-coverage --cover-erase --cover-branches \
-					--cover-package=pylorax --cover-package=bin --cover-package=sbin --cover-inclusive \
-					./tests/pylorax/
+					--cover-package=pylorax --cover-inclusive \
+					./tests/pylorax/ ./tests/composer/
 
 	coverage3 report -m
 	[ -f "/usr/bin/coveralls" ] && [ -n "$(COVERALLS_REPO_TOKEN)" ] && coveralls || echo

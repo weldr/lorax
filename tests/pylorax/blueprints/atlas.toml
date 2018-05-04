@@ -1,0 +1,11 @@
+name = "atlas"
+description = "Automatically Tuned Linear Algebra Software"
+version = "0.0.1"
+
+[[modules]]
+name = "atlas"
+version = "3.10.*"
+
+[[modules]]
+name = "numpy"
+version = "1.7.*"
