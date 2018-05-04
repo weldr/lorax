@@ -205,6 +205,8 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python3_sitelib}/pylorax/api/*
 %{_sbindir}/lorax-composer
 %{_unitdir}/lorax-composer.service
+%dir %{_datadir}/lorax/composer
+%{_datadir}/lorax/composer/*
 
 %files -n composer-cli
 %{_bindir}/composer-cli
