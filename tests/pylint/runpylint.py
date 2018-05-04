@@ -14,6 +14,7 @@ class LoraxLintConfig(PocketLintConfig):
                                 FalsePositive(r"Context manager 'lock' doesn't implement __enter__ and __exit__"),
                                 FalsePositive(r"Catching too general exception Exception"),
                                 FalsePositive(r"^E0712.*: Catching an exception which doesn't inherit from (Base|)Exception: GError$"),
+                                FalsePositive(r"Module 'composer' has no 'version' member"),
                               ]
 
     @property
