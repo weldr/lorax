@@ -91,6 +91,33 @@ def repo_to_ks(r, url="url"):
 
     return cmd
 
+
+def add_customizations(f, recipe):
+    """ Add customizations to the kickstart file
+
+    :param f: kickstart file object
+    :type f: open file object
+    :param recipe:
+    :type recipe: Recipe object
+    :returns: None
+    :raises: RuntimeError if there was a problem writing to the kickstart
+    """
+    if "customizations" not in recipe:
+        return
+    customizations = recipe["customizations"]
+
+    if "hostname" in customizations:
+        f.write("network --hostname=%s\n" % customizations["hostname"])
+
+    if "sshkey" in customizations:
+        # This is a list of entries
+        for sshkey in customizations["sshkey"]:
+            if "user" not in sshkey or "key" not in sshkey:
+                log.error("%s is incorrect, skipping", sshkey)
+                continue
+            f.write('sshkey --user %s "%s"' % (sshkey["user"], sshkey["key"]))
+
+
 def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_mode=0):
     """ Start the build
 
@@ -201,8 +228,9 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_m
 
         for d in deps:
             f.write(dep_nevra(d)+"\n")
-
         f.write("%end\n")
+
+        add_customizations(f, recipe)
 
     # Setup the config to pass to novirt_install
     log_dir = joinpaths(results_dir, "logs/")

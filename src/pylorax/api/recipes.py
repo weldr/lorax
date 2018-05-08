@@ -47,7 +47,7 @@ class Recipe(dict):
     and adds a .filename property to return the recipe's filename,
     and a .toml() function to return the recipe as a TOML string.
     """
-    def __init__(self, name, description, version, modules, packages):
+    def __init__(self, name, description, version, modules, packages, customizations=None):
         # Check that version is empty or semver compatible
         if version:
             semver.Version(version)
@@ -61,7 +61,12 @@ class Recipe(dict):
                             description=description,
                             version=version,
                             modules=modules,
-                            packages=packages)
+                            packages=packages,
+                            customizations=customizations)
+
+        # We don't want customizations=None to show up in the TOML so remove it
+        if customizations is None:
+            del self["customizations"]
 
     @property
     def package_names(self):
@@ -137,9 +142,13 @@ class Recipe(dict):
                 new_packages.append(RecipePackage(dep["name"], dep_evra(dep)))
             elif dep["name"] in module_names:
                 new_modules.append(RecipeModule(dep["name"], dep_evra(dep)))
+        if "customizations" in self:
+            customizations = self["customizations"]
+        else:
+            customizations = None
 
         return Recipe(self["name"], self["description"], self["version"],
-                      new_modules, new_packages)
+                      new_modules, new_packages, customizations)
 
 class RecipeModule(dict):
     def __init__(self, name, version):
@@ -194,10 +203,11 @@ def recipe_from_dict(recipe_dict):
         name = recipe_dict["name"]
         description = recipe_dict["description"]
         version = recipe_dict.get("version", None)
+        customizations = recipe_dict.get("customizations", None)
     except KeyError as e:
         raise RecipeError("There was a problem parsing the recipe: %s" % str(e))
 
-    return Recipe(name, description, version, modules, packages)
+    return Recipe(name, description, version, modules, packages, customizations)
 
 def gfile(path):
     """Convert a string path to GFile for use with Git"""

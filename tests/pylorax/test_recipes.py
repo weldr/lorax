@@ -31,7 +31,8 @@ class BasicRecipeTest(unittest.TestCase):
         input_recipes = [("full-recipe.toml", "full-recipe.dict"),
                          ("minimal.toml", "minimal.dict"),
                          ("modules-only.toml", "modules-only.dict"),
-                         ("packages-only.toml", "packages-only.dict")]
+                         ("packages-only.toml", "packages-only.dict"),
+                         ("custom-base.toml", "custom-base.dict")]
         results_path = "./tests/pylorax/results/"
         self.input_toml = []
         for (recipe_toml, recipe_dict) in input_recipes:

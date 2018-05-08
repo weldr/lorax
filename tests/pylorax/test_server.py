@@ -52,6 +52,7 @@ class ServerTestCase(unittest.TestCase):
 
         server.config['TESTING'] = True
         self.server = server.test_client()
+        self.repo_dir = repo_dir
 
         self.examples_path = "./tests/pylorax/blueprints/"
 
@@ -79,8 +80,8 @@ class ServerTestCase(unittest.TestCase):
 
     def test_02_blueprints_list(self):
         """Test the /api/v0/blueprints/list route"""
-        list_dict = {"blueprints":["atlas", "development", "glusterfs", "http-server", "jboss", "kubernetes"],
-                     "limit":20, "offset":0, "total":6}
+        list_dict = {"blueprints":["atlas", "custom-base", "development", "glusterfs", "http-server",
+                     "jboss", "kubernetes"], "limit":20, "offset":0, "total":7}
         resp = self.server.get("/api/v0/blueprints/list")
         data = json.loads(resp.data)
         self.assertEqual(data, list_dict)
@@ -728,7 +729,7 @@ class ServerTestCase(unittest.TestCase):
 
     def test_compose_12_create_finished(self):
         """Test the /api/v0/compose routes with a finished test compose"""
-        test_compose = {"blueprint_name": "glusterfs",
+        test_compose = {"blueprint_name": "custom-base",
                         "compose_type": "tar",
                         "branch": "master"}
 
@@ -794,6 +795,14 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.data) > 0, True)
         self.assertEqual(resp.data, "TEST IMAGE")
+
+        # Examine the final-kickstart.ks for the customizations
+        # A bit kludgy since it examines the filesystem directly, but that's better than unpacking the metadata
+        final_ks = open(joinpaths(self.repo_dir, "var/lib/lorax/composer/results/", build_id, "final-kickstart.ks")).read()
+
+        # Check for the expected customizations in the kickstart
+        self.assertTrue("network --hostname=" in final_ks)
+        self.assertTrue("sshkey --user root" in final_ks)
 
         # Delete the finished build
         # Test the /api/v0/compose/delete/<uuid> route
