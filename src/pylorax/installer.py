@@ -333,7 +333,7 @@ def novirt_install(opts, disk_img, disk_size):
         if os.path.isdir(path):
             shutil.rmtree(path)
 
-    args = ["--kickstart", opts.ks[0], "--cmdline"]
+    args = ["--kickstart", opts.ks[0], "--cmdline", "--loglevel", "debug"]
     if opts.anaconda_args:
         for arg in opts.anaconda_args:
             args += arg.split(" ", 1)

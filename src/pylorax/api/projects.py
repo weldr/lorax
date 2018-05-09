@@ -209,7 +209,7 @@ def projects_depsolve(dbo, project_names):
     return sorted(map(pkg_to_dep, dbo.transaction.install_set), key=lambda p: p["name"].lower())
 
 
-def estimate_size(packages, block_size=4096):
+def estimate_size(packages, block_size=6144):
     """Estimate the installed size of a package list
 
     :param packages: The packages to be installed
