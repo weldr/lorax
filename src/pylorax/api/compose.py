@@ -190,15 +190,20 @@ def add_customizations(f, recipe):
                 continue
             f.write('sshkey --user %s "%s"\n' % (sshkey["user"], sshkey["key"]))
 
+    # Creating a user also creates a group. Make a list of the names for later
+    user_groups = []
     if "user" in customizations:
         # only name is required, everything else is optional
         for user in customizations["user"]:
             write_ks_user(f, user)
+            user_groups.append(user["name"])
 
     if "group" in customizations:
         for group in customizations["group"]:
-            write_ks_group(f, group)
-
+            if group["name"] not in user_groups:
+                write_ks_group(f, group)
+            else:
+                log.warning("Skipping group %s, already created by user", group["name"])
 
 def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_mode=0):
     """ Start the build

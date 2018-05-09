@@ -85,6 +85,10 @@ GROUP_GID = GROUP + """
 gid = 1011
 """
 
+USER_GROUP = USER + """[[customizations.group]]
+name = "tester"
+"""
+
 KS_USER_ALL = '''sshkey --user tester "A SSH KEY FOR TESTER"
 user --name tester --homedir /opt/users/tester/ --iscrypted --password "$6$CHO2$3rN8eviE2t50lmVyBYihTgVRHcaecmeCk31LeOUleVK/R/aeWVHVZDi26zAH.o0ywBKH9Tc0/wm7sW/q39uyd1" --shell /usr/bin/zsh --uid 1013 --gid 4242 --gecos "a test user account"
 '''
@@ -95,6 +99,12 @@ class CustomizationsTestCase(unittest.TestCase):
         f = StringIO()
         add_customizations(f, r)
         self.assertTrue(result in f.getvalue(), f.getvalue())
+
+    def assertNotCustomization(self, test, result):
+        r = recipe_from_toml(test)
+        f = StringIO()
+        add_customizations(f, r)
+        self.assertTrue(result not in f.getvalue(), f.getvalue())
 
     def test_set_hostname(self):
         """Test setting the hostname"""
@@ -143,6 +153,13 @@ class CustomizationsTestCase(unittest.TestCase):
     def test_create_user_groups(self):
         """Test creating user with group membership"""
         self.assertCustomization(USER + USER_GROUPS, "--groups wheel,users")
+
+    def test_user_same_group(self):
+        """Test creating a group with the same name as a user"""
+
+        # Creating a group with the same name should skip the group creation
+        self.assertCustomization(USER_GROUP, "user --name tester")
+        self.assertNotCustomization(USER_GROUP, "group --name tester")
 
     def test_create_user_all(self):
         """Test creating user with all settings"""
