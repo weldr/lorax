@@ -26,7 +26,7 @@ description = "Widget admin account"
 password = "$6$CHO2$3rN8eviE2t50lmVyBYihTgVRHcaecmeCk31LeOUleVK/R/aeWVHVZDi26zAH.o0ywBKH9Tc0/wm7sW/q39uyd1"
 home = "/srv/widget/"
 shell = "/usr/bin/bash"
-groups = ["widget", "users"]
+groups = ["widget", "users", "students"]
 uid = 1200
 
 [[customizations.user]]
@@ -36,6 +36,10 @@ password = "simple plain password"
 [[customizations.user]]
 name = "bart"
 key = "SSH KEY FOR BART"
+groups = ["students"]
 
 [[customizations.group]]
 name = "widget"
+
+[[customizations.group]]
+name = "students"
