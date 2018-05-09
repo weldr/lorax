@@ -44,7 +44,7 @@ from pyanaconda.simpleconfig import SimpleConfigFile
 
 # Use pykickstart to calculate disk image size
 from pykickstart.parser import KickstartParser
-from pykickstart.version import makeVersion, RHEL7
+from pykickstart.version import makeVersion
 
 from pylorax.api.projects import projects_depsolve_with_size, dep_nevra
 from pylorax.api.projects import ProjectsError
@@ -239,7 +239,7 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
     ks_template = open(ks_template_path, "r").read()
 
     # How much space will the packages in the default template take?
-    ks_version = makeVersion(RHEL7)
+    ks_version = makeVersion()
     ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
     ks.readKickstartFromString(ks_template+"\n%end\n")
     try:
@@ -251,8 +251,10 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
         raise RuntimeError("Problem depsolving %s: %s" % (recipe["name"], str(e)))
     log.debug("installed_size = %d, template_size=%d", installed_size, template_size)
 
-    # Minimum LMC disk size is 1GiB, and anaconda bumps the estimated size up by 35% (which doesn't always work).
-    installed_size = max(1024**3, int((installed_size+template_size) * 1.4))
+    # Minimum LMC disk size is 1GiB, and anaconda bumps the estimated size up by 10% (which doesn't always work).
+    # XXX BUT Anaconda has a bug, it won't execute a kickstart on a disk smaller than 3000 MB
+    # XXX There is an upstream patch pending, but until then, use that as the minimum
+    installed_size = max(3e9, int((installed_size+template_size))) * 1.2
     log.debug("/ partition size = %d", installed_size)
 
     # Create the results directory
