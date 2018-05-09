@@ -84,6 +84,78 @@ def repo_to_ks(r, url="url"):
     return cmd
 
 
+def write_ks_user(f, user):
+    """ Write kickstart user and sshkey entry
+
+    :param f: kickstart file object
+    :type f: open file object
+    :param user: A blueprint user dictionary
+    :type user: dict
+
+    If the entry contains a ssh key, use sshkey to write it
+    All of the user fields are optional, except name, write out a kickstart user entry
+    with whatever options are relevant.
+    """
+    if "name" not in user:
+        raise RuntimeError("user entry requires a name")
+
+    # ssh key uses the sshkey kickstart command
+    if "key" in user:
+        f.write('sshkey --user %s "%s"\n' % (user["name"], user["key"]))
+
+    # Write out the user kickstart command, much of it is optional
+    f.write("user --name %s" % user["name"])
+    if "home" in user:
+        f.write(" --homedir %s" % user["home"])
+
+    if "password" in user:
+        if any(user["password"].startswith(prefix) for prefix in ["$2b$", "$6$", "$5$"]):
+            log.debug("Detected pre-crypted password")
+            f.write(" --iscrypted")
+        else:
+            log.debug("Detected plaintext password")
+            f.write(" --plaintext")
+
+        f.write(" --password \"%s\"" % user["password"])
+
+    if "shell" in user:
+        f.write(" --shell %s" % user["shell"])
+
+    if "uid" in user:
+        f.write(" --uid %d" % int(user["uid"]))
+
+    if "gid" in user:
+        f.write(" --gid %d" % int(user["gid"]))
+
+    if "description" in user:
+        f.write(" --gecos \"%s\"" % user["description"])
+
+    if "groups" in user:
+        f.write(" --groups %s" % ",".join(user["groups"]))
+
+    f.write("\n")
+
+
+def write_ks_group(f, group):
+    """ Write kickstart group entry
+
+    :param f: kickstart file object
+    :type f: open file object
+    :param group: A blueprint group dictionary
+    :type user: dict
+
+    gid is optional
+    """
+    if "name" not in group:
+        raise RuntimeError("group entry requires a name")
+
+    f.write("group --name %s" % group["name"])
+    if "gid" in group:
+        f.write(" --gid %d" % int(group["gid"]))
+
+    f.write("\n")
+
+
 def add_customizations(f, recipe):
     """ Add customizations to the kickstart file
 
@@ -101,13 +173,23 @@ def add_customizations(f, recipe):
     if "hostname" in customizations:
         f.write("network --hostname=%s\n" % customizations["hostname"])
 
+    # TODO - remove this, should use user section to define this
     if "sshkey" in customizations:
         # This is a list of entries
         for sshkey in customizations["sshkey"]:
             if "user" not in sshkey or "key" not in sshkey:
                 log.error("%s is incorrect, skipping", sshkey)
                 continue
-            f.write('sshkey --user %s "%s"' % (sshkey["user"], sshkey["key"]))
+            f.write('sshkey --user %s "%s"\n' % (sshkey["user"], sshkey["key"]))
+
+    if "user" in customizations:
+        # only name is required, everything else is optional
+        for user in customizations["user"]:
+            write_ks_user(f, user)
+
+    if "group" in customizations:
+        for group in customizations["group"]:
+            write_ks_group(f, group)
 
 
 def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_mode=0):
@@ -197,14 +279,14 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
     # Save a copy of the original kickstart
     shutil.copy(ks_template_path, results_dir)
 
+    with dnflock.lock:
+        repos = list(dnflock.dbo.repos.iter_enabled())
+    if not repos:
+        raise RuntimeError("No enabled repos, canceling build.")
+
     # Create the final kickstart with repos and package list
     ks_path = joinpaths(results_dir, "final-kickstart.ks")
     with open(ks_path, "w") as f:
-        with dnflock.lock:
-            repos = list(dnflock.dbo.repos.iter_enabled())
-        if not repos:
-            raise RuntimeError("No enabled repos, canceling build.")
-
         ks_url = repo_to_ks(repos[0], "url")
         log.debug("url = %s", ks_url)
         f.write('url %s\n' % ks_url)
