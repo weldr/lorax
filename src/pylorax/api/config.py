@@ -58,6 +58,8 @@ def configure(conf_file="/etc/lorax/composer.conf", root_dir="/", test_config=Fa
     conf.set("repos", "use_system_repos", "1")
     conf.set("repos", "enabled", "*")
 
+    conf.add_section("yum")
+
     if not test_config:
         # read the config file
         if os.path.isfile(conf_file):

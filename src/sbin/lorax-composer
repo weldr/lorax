@@ -70,6 +70,8 @@ def get_parser():
                          help="Release version to use for $releasever in yum repository urls" )
     parser.add_argument("--tmp", default="/var/tmp",
                         help="Top level temporary directory")
+    parser.add_argument("--proxy", default=None, metavar="PROXY",
+                        help="Set proxy for DNF, overrides configuration file setting.")
     parser.add_argument("BLUEPRINTS", metavar="BLUEPRINTS",
                         help="Path to the blueprints")
 
@@ -225,6 +227,10 @@ if __name__ == '__main__':
     # Override the default sharedir
     if opts.sharedir:
         server.config["COMPOSER_CFG"].set("composer", "share_dir", opts.sharedir)
+
+    # Override the config file's DNF proxy setting
+    if opts.proxy:
+        server.config["COMPOSER_CFG"].set("yum", "proxy", opts.proxy)
 
     # Make sure the queue paths are setup correctly, exit on errors
     errors = make_queue_dirs(server.config["COMPOSER_CFG"], gid)
