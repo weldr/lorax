@@ -28,6 +28,7 @@ import subprocess
 from subprocess import Popen, PIPE
 import time
 
+from pylorax import find_templates
 from pylorax.api.compose import move_compose_results
 from pylorax.api.recipes import recipe_from_file
 from pylorax.base import DataHolder
@@ -168,9 +169,12 @@ def make_compose(cfg, results_dir):
     cfg_dict["armplatform"] = ""
     cfg_dict["squashfs_args"] = None
 
-    cfg_dict["lorax_templates"] = cfg.share_dir
+    cfg_dict["lorax_templates"] = find_templates(cfg.share_dir)
     cfg_dict["tmp"] = "/var/tmp/"
     cfg_dict["dracut_args"] = None                  # Use default args for dracut
+
+    # TODO How to support other arches?
+    cfg_dict["arch"] = None
 
     # Compose things in a temporary directory inside the results directory
     cfg_dict["result_dir"] = joinpaths(results_dir, "compose")
