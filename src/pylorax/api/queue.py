@@ -48,7 +48,8 @@ def start_queue_monitor(cfg, uid, gid):
     """
     lib_dir = cfg.get("composer", "lib_dir")
     share_dir = cfg.get("composer", "share_dir")
-    monitor_cfg = DataHolder(composer_dir=lib_dir, share_dir=share_dir, uid=uid, gid=gid)
+    tmp = cfg.get("composer", "tmp")
+    monitor_cfg = DataHolder(composer_dir=lib_dir, share_dir=share_dir, uid=uid, gid=gid, tmp=tmp)
     p = mp.Process(target=monitor, args=(monitor_cfg,))
     p.daemon = True
     p.start()
@@ -170,7 +171,7 @@ def make_compose(cfg, results_dir):
     cfg_dict["squashfs_args"] = None
 
     cfg_dict["lorax_templates"] = find_templates(cfg.share_dir)
-    cfg_dict["tmp"] = "/var/tmp/"
+    cfg_dict["tmp"] = cfg.tmp
     cfg_dict["dracut_args"] = None                  # Use default args for dracut
 
     # TODO How to support other arches?
@@ -210,6 +211,10 @@ def make_compose(cfg, results_dir):
             # Extract the results of the compose into results_dir and cleanup the compose directory
             move_compose_results(install_cfg, results_dir)
     finally:
+        # Make sure any remaining temporary directories are removed (eg. if there was an exception)
+        for d in glob(joinpaths(cfg.tmp, "lmc-*")):
+            shutil.rmtree(d)
+
         # Make sure that everything under the results directory is owned by the user
         user = pwd.getpwuid(cfg.uid).pw_name
         group = grp.getgrgid(cfg.gid).gr_name

@@ -48,6 +48,7 @@ def configure(conf_file="/etc/lorax/composer.conf", root_dir="/", test_config=Fa
     conf.set("composer", "dnf_root", os.path.realpath(joinpaths(root_dir, "/var/tmp/composer/dnf/root/")))
     conf.set("composer", "repo_dir", os.path.realpath(joinpaths(root_dir, "/var/tmp/composer/repos.d/")))
     conf.set("composer", "cache_dir", os.path.realpath(joinpaths(root_dir, "/var/tmp/composer/cache/")))
+    conf.set("composer", "tmp", os.path.realpath(joinpaths(root_dir, "/var/tmp/")))
 
     conf.add_section("users")
     conf.set("users", "root", "1")

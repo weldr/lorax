@@ -712,4 +712,3 @@ def run_creator(opts, callback_func=None):
         result_dir = None
 
     return (result_dir, disk_img)
-
