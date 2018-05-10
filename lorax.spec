@@ -98,6 +98,7 @@ Requires: python-flask
 Requires: python-gevent
 Requires: anaconda-tui
 Requires: qemu-img
+Requires: tar
 
 %{?systemd_requires}
 BuildRequires: systemd
