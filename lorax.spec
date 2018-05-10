@@ -136,6 +136,7 @@ Requires: python3-flask
 Requires: python3-gevent
 Requires: anaconda-tui
 Requires: qemu-img
+Requires: tar
 
 %{?systemd_requires}
 BuildRequires: systemd
