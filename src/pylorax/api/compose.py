@@ -379,6 +379,7 @@ def compose_args(compose_type):
                                  "make_pxe_live":           False,
                                  "make_ostree_live":        False,
                                  "make_oci":                False,
+                                 "make_vagrant":            False,
                                  "ostree":                  False,
                                  "live_rootfs_keep_size":   False,
                                  "live_rootfs_size":        0,
@@ -388,7 +389,7 @@ def compose_args(compose_type):
                                  "image_only":              True,
                                  "app_name":                None,
                                  "app_template":            None,
-                                 "app_file":                None
+                                 "app_file":                None,
                                 },
             "live-iso":         {"make_iso":                True,
                                  "make_disk":               False,
@@ -399,6 +400,7 @@ def compose_args(compose_type):
                                  "make_pxe_live":           False,
                                  "make_ostree_live":        False,
                                  "make_oci":                False,
+                                 "make_vagrant":            False,
                                  "ostree":                  False,
                                  "live_rootfs_keep_size":   False,
                                  "live_rootfs_size":        0,
@@ -409,7 +411,9 @@ def compose_args(compose_type):
                                  "image_only":              False,
                                  "app_name":                None,
                                  "app_template":            None,
-                                 "app_file":                None
+                                 "app_file":                None,
+                                 "iso_only":                True,
+                                 "iso_name":                "live.iso",
                                 },
             "partitioned-disk": {"make_iso":                False,
                                  "make_disk":               True,
@@ -420,6 +424,7 @@ def compose_args(compose_type):
                                  "make_pxe_live":           False,
                                  "make_ostree_live":        False,
                                  "make_oci":                False,
+                                 "make_vagrant":            False,
                                  "ostree":                  False,
                                  "live_rootfs_keep_size":   False,
                                  "live_rootfs_size":        0,
@@ -430,7 +435,7 @@ def compose_args(compose_type):
                                  "image_only":              True,
                                  "app_name":                None,
                                  "app_template":            None,
-                                 "app_file":                None
+                                 "app_file":                None,
                                 },
             "qcow2":            {"make_iso":                False,
                                  "make_disk":               True,
@@ -441,6 +446,7 @@ def compose_args(compose_type):
                                  "make_pxe_live":           False,
                                  "make_ostree_live":        False,
                                  "make_oci":                False,
+                                 "make_vagrant":            False,
                                  "ostree":                  False,
                                  "live_rootfs_keep_size":   False,
                                  "live_rootfs_size":        0,
@@ -451,7 +457,7 @@ def compose_args(compose_type):
                                  "image_only":              True,
                                  "app_name":                None,
                                  "app_template":            None,
-                                 "app_file":                None
+                                 "app_file":                None,
                                 },
             "ext4-filesystem":  {"make_iso":                False,
                                  "make_disk":               False,
@@ -462,6 +468,7 @@ def compose_args(compose_type):
                                  "make_pxe_live":           False,
                                  "make_ostree_live":        False,
                                  "make_oci":                False,
+                                 "make_vagrant":            False,
                                  "ostree":                  False,
                                  "live_rootfs_keep_size":   False,
                                  "live_rootfs_size":        0,
@@ -472,7 +479,7 @@ def compose_args(compose_type):
                                  "image_only":              True,
                                  "app_name":                None,
                                  "app_template":            None,
-                                 "app_file":                None
+                                 "app_file":                None,
                                 },
             }
     return _MAP[compose_type]
@@ -489,7 +496,7 @@ def move_compose_results(cfg, results_dir):
         shutil.move(joinpaths(cfg["result_dir"], cfg["image_name"]), results_dir)
     elif cfg["make_iso"]:
         # Output from live iso is always a boot.iso under images/, move and rename it
-        shutil.move(joinpaths(cfg["result_dir"], "images/boot.iso"), joinpaths(results_dir, cfg["image_name"]))
+        shutil.move(joinpaths(cfg["result_dir"], cfg["iso_name"]), joinpaths(results_dir, cfg["image_name"]))
     elif cfg["make_disk"] or cfg["make_fsimage"]:
         shutil.move(joinpaths(cfg["result_dir"], cfg["image_name"]), joinpaths(results_dir, cfg["image_name"]))
 
