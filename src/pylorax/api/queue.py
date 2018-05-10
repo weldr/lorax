@@ -213,7 +213,10 @@ def make_compose(cfg, results_dir):
     finally:
         # Make sure any remaining temporary directories are removed (eg. if there was an exception)
         for d in glob(joinpaths(cfg.tmp, "lmc-*")):
-            shutil.rmtree(d)
+            if os.path.isdir(d):
+                shutil.rmtree(d)
+            elif os.path.isfile(d):
+                os.unlink(d)
 
         # Make sure that everything under the results directory is owned by the user
         user = pwd.getpwuid(cfg.uid).pw_name
