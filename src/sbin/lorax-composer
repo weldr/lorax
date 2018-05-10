@@ -30,6 +30,7 @@ import os
 import pwd
 import sys
 import subprocess
+import tempfile
 from threading import Lock
 from gevent import socket
 from gevent.wsgi import WSGIServer
@@ -67,6 +68,8 @@ def get_parser():
                         help="Path to lorax-composer configuration file.")
     parser.add_argument( "--releasever", default=None, metavar="STRING",
                          help="Release version to use for $releasever in yum repository urls" )
+    parser.add_argument("--tmp", default="/var/tmp",
+                        help="Top level temporary directory")
     parser.add_argument("BLUEPRINTS", metavar="BLUEPRINTS",
                         help="Path to the blueprints")
 
@@ -155,6 +158,7 @@ if __name__ == '__main__':
         print(VERSION)
         sys.exit(0)
 
+    tempfile.tempdir = opts.tmp
     logpath = os.path.abspath(os.path.dirname(opts.logfile))
     if not os.path.isdir(logpath):
         os.makedirs(logpath)
