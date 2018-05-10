@@ -210,6 +210,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     server.config["COMPOSER_CFG"] = configure(conf_file=opts.config)
+    server.config["COMPOSER_CFG"].set("composer", "tmp", opts.tmp)
 
     # Make sure the git repo can be accessed by the API uid/gid
     if os.path.exists(opts.BLUEPRINTS):
