@@ -1,7 +1,5 @@
 # Lorax Composer filesystem output kickstart template
 
-#
-sshpw --username=root --plaintext randOmStrinGhERE
 # Firewall configuration
 firewall --enabled
 
@@ -25,22 +23,17 @@ shutdown
 timezone  US/Eastern
 # System bootloader configuration
 bootloader --location=none
-# Clear the Master Boot Record
-zerombr
 # Partition clearing information
-clearpart --all
-# Disk partitioning information
-part / --fstype="ext4" --size=4000
-part swap --size=1000
+clearpart --all --initlabel
 
 %post
-# Remove root password
-passwd -d root > /dev/null
-
 # Remove random-seed
 rm /var/lib/systemd/random-seed
 %end
 
-%packages --nobase
+# NOTE Do NOT add any other sections after %packages
+%packages --nocore
+# Packages requires to support this output format go here
+policycoreutils
 
 # NOTE lorax-composer will add the recipe packages below here, including the final %end

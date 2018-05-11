@@ -1,7 +1,5 @@
 # Lorax Composer qcow2 output kickstart template
 
-#
-sshpw --username=root --plaintext randOmStrinGhERE
 # Firewall configuration
 firewall --enabled
 
@@ -25,10 +23,8 @@ shutdown
 timezone  US/Eastern
 # System bootloader configuration
 bootloader --location=mbr
-# Clear the Master Boot Record
-zerombr
 # Partition clearing information
-clearpart --all
+clearpart --all --initlabel
 
 %post
 # Remove root password
