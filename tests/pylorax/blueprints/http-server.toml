@@ -1,0 +1,35 @@
+name = "http-server"
+description = "An example http server with PHP and MySQL support."
+version = "0.0.1"
+
+[[modules]]
+name = "httpd"
+version = "2.4.*"
+
+[[modules]]
+name = "mod_auth_openid"
+version = "0.8"
+
+[[modules]]
+name = "mod_ssl"
+version = "2.4.*"
+
+[[modules]]
+name = "php"
+version = "7.2.4"
+
+[[modules]]
+name = "php-mysqlnd"
+version = "7.2.4"
+
+[[packages]]
+name = "tmux"
+version = "2.7"
+
+[[packages]]
+name = "openssh-server"
+version = "7.*"
+
+[[packages]]
+name = "rsync"
+version = "3.1.3"

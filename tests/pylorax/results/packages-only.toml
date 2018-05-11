@@ -1,0 +1,15 @@
+name = "http-server"
+description = "An example http server with PHP and MySQL support."
+version = "0.0.1"
+
+[[packages]]
+name = "tmux"
+version = "2.2"
+
+[[packages]]
+name = "openssh-server"
+version = "6.6.*"
+
+[[packages]]
+name = "rsync"
+version = "3.0.*"
