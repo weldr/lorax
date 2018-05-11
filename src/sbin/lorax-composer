@@ -24,7 +24,6 @@ pylorax_log = logging.getLogger("pylorax")
 server_log = logging.getLogger("server")
 dnf_log = logging.getLogger("dnf")
 
-import argparse
 import grp
 import os
 import pwd
@@ -37,6 +36,7 @@ from gevent import socket
 from gevent.wsgi import WSGIServer
 
 from pylorax import vernum
+from pylorax.api.cmdline import lorax_composer_parser
 from pylorax.api.config import configure, make_dnf_dirs, make_queue_dirs
 from pylorax.api.queue import start_queue_monitor
 from pylorax.api.recipes import open_or_create_repo, commit_recipe_directory
@@ -44,40 +44,6 @@ from pylorax.api.server import server, GitLock, DNFLock
 from pylorax.api.dnfbase import get_base_object
 
 VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
-
-def get_parser():
-    """ Return the ArgumentParser for lorax-composer"""
-
-    parser = argparse.ArgumentParser(description="Lorax Composer API Server",
-                                     fromfile_prefix_chars="@")
-
-    parser.add_argument("--socket", default="/run/weldr/api.socket", metavar="SOCKET",
-                        help="Path to the socket file to listen on")
-    parser.add_argument("--user", default="weldr", metavar="USER",
-                        help="User to use for reduced permissions")
-    parser.add_argument("--group", default="weldr", metavar="GROUP",
-                        help="Group to set ownership of the socket to")
-    parser.add_argument("--log", dest="logfile", default="/var/log/lorax-composer/composer.log", metavar="LOG",
-                        help="Path to logfile (/var/log/lorax-composer/composer.log)")
-    parser.add_argument("--mockfiles", default="/var/tmp/bdcs-mockfiles/", metavar="MOCKFILES",
-                        help="Path to JSON files used for /api/mock/ paths (/var/tmp/bdcs-mockfiles/)")
-    parser.add_argument("--sharedir", type=os.path.abspath, metavar="SHAREDIR",
-                        help="Directory containing all the templates. Overrides config file sharedir")
-    parser.add_argument("-V", action="store_true", dest="showver",
-                        help="show program's version number and exit")
-    parser.add_argument("-c", "--config", default="/etc/lorax/composer.conf", metavar="CONFIG",
-                        help="Path to lorax-composer configuration file.")
-    parser.add_argument("--releasever", default=None, metavar="STRING",
-                        help="Release version to use for $releasever in dnf repository urls")
-    parser.add_argument("--tmp", default="/var/tmp",
-                        help="Top level temporary directory")
-    parser.add_argument("--proxy", default=None, metavar="PROXY",
-                        help="Set proxy for DNF, overrides configuration file setting.")
-    parser.add_argument("BLUEPRINTS", metavar="BLUEPRINTS",
-                        help="Path to the blueprints")
-
-    return parser
-
 
 def setup_logging(logfile):
     # Setup logging to console and to logfile
@@ -155,7 +121,7 @@ def make_pidfile(pid_path="/run/lorax-composer.pid"):
 
 if __name__ == '__main__':
     # parse the arguments
-    opts = get_parser().parse_args()
+    opts = lorax_composer_parser().parse_args()
 
     if opts.showver:
         print(VERSION)

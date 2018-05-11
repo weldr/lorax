@@ -18,4 +18,3 @@
 from pylorax.api.crossdomain import crossdomain
 
 __all__ = ["crossdomain"]
-

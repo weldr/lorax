@@ -9,10 +9,13 @@ TAG = lorax-$(VERSION)-$(RELEASE)
 
 default: all
 
+src/composer/version.py: lorax.spec
+	echo "num = '$(VERSION)-$(RELEASE)'" > src/composer/version.py
+
 src/pylorax/version.py: lorax.spec
 	echo "num = '$(VERSION)-$(RELEASE)'" > src/pylorax/version.py
 
-all: src/pylorax/version.py
+all: src/pylorax/version.py src/composer/version.py
 	$(PYTHON) setup.py build
 
 install: all
@@ -37,6 +40,7 @@ test:
 
 clean:
 	-rm -rf build src/pylorax/version.py
+	-rm -rf build src/composer/version.py
 
 tag:
 	git tag -f $(TAG)
