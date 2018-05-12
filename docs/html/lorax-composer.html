@@ -1,0 +1,542 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>lorax-composer &mdash; Lorax 29.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="composer-cli" href="composer-cli.html" />
+    <link rel="prev" title="livemedia-creator" href="livemedia-creator.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Lorax
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                29.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction to Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html#before-lorax">Before Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lorax.html">Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="livemedia-creator.html">livemedia-creator</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">lorax-composer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#quickstart">Quickstart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#logs">Logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#security">Security</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lorax-composer-cmdline-arguments">lorax-composer cmdline arguments</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#how-it-works">How it Works</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#composing-images">Composing Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#blueprints">Blueprints</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#packages-and-modules">[[packages]] and [[modules]]</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#customizations">Customizations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#customizations-sshkey">[[customizations.sshkey]]</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#customizations-user">[[customizations.user]]</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#customizations-group">[[customizations.group]]</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#adding-output-types">Adding Output Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example-add-partitioned-disk-support">Example: Add partitioned disk support</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="composer-cli.html">composer-cli</a></li>
+<li class="toctree-l1"><a class="reference internal" href="product-images.html">Product and Updates Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">src</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Lorax</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>lorax-composer</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/lorax-composer.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="lorax-composer">
+<h1>lorax-composer<a class="headerlink" href="#lorax-composer" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Authors:</th><td class="field-body">Brian C. Lane &lt;<a class="reference external" href="mailto:bcl&#37;&#52;&#48;redhat&#46;com">bcl<span>&#64;</span>redhat<span>&#46;</span>com</a>&gt;</td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> is an API server that allows you to build disk images using
+<a class="reference internal" href="#blueprints">Blueprints</a> to describe the package versions to be installed into the image.
+It is compatible with the Weldr project’s bdcs-api REST protocol. More
+information on Weldr can be found <a class="reference external" href="http://www.weldr.io">on the Weldr blog</a>.</p>
+<p>Behind the scenes it uses <a class="reference external" href="livemedia-creator.html">livemedia-creator</a> and
+<a class="reference external" href="https://anaconda-installer.readthedocs.io/en/latest/">Anaconda</a> to handle the
+installation and configuration of the images.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>The best way to install <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> is to use <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">dnf</span> <span class="pre">install</span>
+<span class="pre">lorax-composer</span> <span class="pre">composer-cli</span></code>, this will setup the weldr user and install the
+systemd socket activation service. You will then need to enable it with <code class="docutils literal notranslate"><span class="pre">sudo</span>
+<span class="pre">systemctl</span> <span class="pre">enable</span> <span class="pre">lorax-composer.socket</span></code>. This will leave the server off until
+the first request is made. Systemd will then launch the server and it will
+remain running until the system is rebooted.</p>
+</div>
+<div class="section" id="quickstart">
+<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Create a <code class="docutils literal notranslate"><span class="pre">weldr</span></code> user and group by running <code class="docutils literal notranslate"><span class="pre">useradd</span> <span class="pre">weldr</span></code></li>
+<li>Remove any pre-existing socket directory with <code class="docutils literal notranslate"><span class="pre">rm</span> <span class="pre">-rf</span> <span class="pre">/run/weldr/</span></code>
+A new directory with correct permissions will be created the first time the server runs.</li>
+<li>Enable the socket activation with <code class="docutils literal notranslate"><span class="pre">systemctl</span> <span class="pre">enable</span> <span class="pre">lorax-composer.socket</span></code> or
+run it directly with <code class="docutils literal notranslate"><span class="pre">lorax-composer</span> <span class="pre">/path/to/blueprints/</span></code></li>
+</ol>
+<p>The <code class="docutils literal notranslate"><span class="pre">/path/to/blueprints/</span></code> directory is where the blueprints’ git repo will
+be created, and all the blueprints created with the <code class="docutils literal notranslate"><span class="pre">/api/v0/blueprints/new</span></code>
+route will be stored.  If there are blueprint <code class="docutils literal notranslate"><span class="pre">.toml</span></code> files in the top level
+of the directory they will be imported into the blueprint git storage when
+<code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> starts.</p>
+</div>
+<div class="section" id="logs">
+<h2>Logs<a class="headerlink" href="#logs" title="Permalink to this headline">¶</a></h2>
+<p>Logs are stored under <code class="docutils literal notranslate"><span class="pre">/var/log/lorax-composer/</span></code> and include all console
+messages as well as extra debugging info and API requests.</p>
+</div>
+<div class="section" id="security">
+<h2>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h2>
+<p>Some security related issues that you should be aware of before running <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code>:</p>
+<ul class="simple">
+<li>One of the API server threads needs to retain root privileges in order to run Anaconda.</li>
+<li>SELinux must be set to Permissive or disabled to allow <code class="docutils literal notranslate"><span class="pre">livemedia-creator</span></code> to run Anaconda.</li>
+<li>Only allow authorized users access to the <code class="docutils literal notranslate"><span class="pre">weldr</span></code> group and socket.</li>
+</ul>
+<p>Since Anaconda kickstarts are used there is the possibility that a user could
+inject commands into a blueprint that would result in the kickstart executing
+arbitrary code on the host.  Only authorized users should be allowed to build
+images using <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code>.</p>
+</div>
+<div class="section" id="lorax-composer-cmdline-arguments">
+<h2>lorax-composer cmdline arguments<a class="headerlink" href="#lorax-composer-cmdline-arguments" title="Permalink to this headline">¶</a></h2>
+<p>Lorax Composer API Server</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">lorax</span><span class="o">-</span><span class="n">composer</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">socket</span> <span class="n">SOCKET</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">user</span> <span class="n">USER</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">group</span> <span class="n">GROUP</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">log</span> <span class="n">LOG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">mockfiles</span> <span class="n">MOCKFILES</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">sharedir</span> <span class="n">SHAREDIR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">CONFIG</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">releasever</span> <span class="n">STRING</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tmp</span> <span class="n">TMP</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span> <span class="n">PROXY</span><span class="p">]</span>
+                      <span class="n">BLUEPRINTS</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>BLUEPRINTS</kbd></td>
+<td>Path to the blueprints</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--socket</kbd></td>
+<td><p class="first">Path to the socket file to listen on</p>
+<p class="last">Default: “/run/weldr/api.socket”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--user</kbd></td>
+<td><p class="first">User to use for reduced permissions</p>
+<p class="last">Default: “weldr”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--group</kbd></td>
+<td><p class="first">Group to set ownership of the socket to</p>
+<p class="last">Default: “weldr”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--log</kbd></td>
+<td><p class="first">Path to logfile (/var/log/lorax-composer/composer.log)</p>
+<p class="last">Default: “/var/log/lorax-composer/composer.log”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--mockfiles</kbd></td>
+<td><p class="first">Path to JSON files used for /api/mock/ paths (/var/tmp/bdcs-mockfiles/)</p>
+<p class="last">Default: “/var/tmp/bdcs-mockfiles/”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--sharedir</kbd></td>
+<td>Directory containing all the templates. Overrides config file sharedir</td></tr>
+<tr><td class="option-group">
+<kbd>-V</kbd></td>
+<td><p class="first">show program’s version number and exit</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>-c, --config</kbd></td>
+<td><p class="first">Path to lorax-composer configuration file.</p>
+<p class="last">Default: “/etc/lorax/composer.conf”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--releasever</kbd></td>
+<td>Release version to use for $releasever in dnf repository urls</td></tr>
+<tr><td class="option-group">
+<kbd>--tmp</kbd></td>
+<td><p class="first">Top level temporary directory</p>
+<p class="last">Default: “/var/tmp”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--proxy</kbd></td>
+<td>Set proxy for DNF, overrides configuration file setting.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="how-it-works">
+<h2>How it Works<a class="headerlink" href="#how-it-works" title="Permalink to this headline">¶</a></h2>
+<p>The server runs as root, and as <code class="docutils literal notranslate"><span class="pre">weldr</span></code>. Communication with it is via a unix
+domain socket (<code class="docutils literal notranslate"><span class="pre">/run/weldr/api.socket</span></code> by default). The directory and socket
+are owned by <code class="docutils literal notranslate"><span class="pre">root:weldr</span></code> so that any user in the <code class="docutils literal notranslate"><span class="pre">weldr</span></code> group can use the API
+to control <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code>.</p>
+<p>At startup the server will check for the correct permissions and
+ownership of a pre-existing directory, or it will create a new one if it
+doesn’t exist.  The socket path and group owner’s name can be changed from the
+cmdline by passing it the <code class="docutils literal notranslate"><span class="pre">--socket</span></code> and <code class="docutils literal notranslate"><span class="pre">--group</span></code> arguments.</p>
+<p>It will then drop root privileges for the API thread and run as the <code class="docutils literal notranslate"><span class="pre">weldr</span></code>
+user. The queue and compose thread still runs as root because it needs to be
+able to mount/umount files and run Anaconda.</p>
+</div>
+<div class="section" id="composing-images">
+<h2>Composing Images<a class="headerlink" href="#composing-images" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference external" href="https://github.com/weldr/welder-web/">welder-web</a> GUI project can be used to construct
+blueprints and create composes using a web browser.</p>
+<p>Or use the command line with <a class="reference external" href="composer-cli.html">composer-cli</a>.</p>
+</div>
+<div class="section" id="blueprints">
+<h2>Blueprints<a class="headerlink" href="#blueprints" title="Permalink to this headline">¶</a></h2>
+<p>Blueprints are simple text files in <a class="reference external" href="https://github.com/toml-lang/toml">TOML</a> format that describe
+which packages, and what versions, to install into the image. They can also define a limited set
+of customizations to make to the final image.</p>
+<p>Example blueprints can be found in the <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> <a class="reference external" href="https://github.com/weldr/lorax/tree/master/tests/pylorax/blueprints/">test suite</a>, with a simple one
+looking like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;base&quot;</span>
+<span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;A base system with bash&quot;</span>
+<span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;0.0.1&quot;</span>
+
+<span class="p">[[</span><span class="n">packages</span><span class="p">]]</span>
+<span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;bash&quot;</span>
+<span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;4.4.*&quot;</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">name</span></code> field is the name of the blueprint. It can contain spaces, but they will be converted to <code class="docutils literal notranslate"><span class="pre">-</span></code>
+when it is written to disk. It should be short and descriptive.</p>
+<p><code class="docutils literal notranslate"><span class="pre">description</span></code> can be a longer description of the blueprint, it is only used for display purposes.</p>
+<p><code class="docutils literal notranslate"><span class="pre">version</span></code> is a <a class="reference external" href="https://semver.org/">semver compatible</a> version number. If
+a new blueprint is uploaded with the same <code class="docutils literal notranslate"><span class="pre">version</span></code> the server will
+automatically bump the PATCH level of the <code class="docutils literal notranslate"><span class="pre">version</span></code>. If the <code class="docutils literal notranslate"><span class="pre">version</span></code>
+doesn’t match it will be used as is. eg. Uploading a blueprint with <code class="docutils literal notranslate"><span class="pre">version</span></code> set to <code class="docutils literal notranslate"><span class="pre">0.0.1</span></code> when the existing blueprint <code class="docutils literal notranslate"><span class="pre">version</span></code> is <code class="docutils literal notranslate"><span class="pre">0.0.1</span></code> will result in the new blueprint being stored as <code class="docutils literal notranslate"><span class="pre">version</span> <span class="pre">0.0.1</span></code>.</p>
+<div class="section" id="packages-and-modules">
+<h3>[[packages]] and [[modules]]<a class="headerlink" href="#packages-and-modules" title="Permalink to this headline">¶</a></h3>
+<p>These entries describe the package names and matching version glob to be installed into the image.</p>
+<p>The names must match the names exactly, and the versions can be an exact match
+or a filesystem-like glob of the version using <code class="docutils literal notranslate"><span class="pre">*</span></code> wildcards and <code class="docutils literal notranslate"><span class="pre">?</span></code>
+character matching.</p>
+<p>NOTE: As of lorax-composer-29.2-1 the versions are not used for depsolving,
+that is planned for a future release. And currently there are no differences
+between <code class="docutils literal notranslate"><span class="pre">packages</span></code> and <code class="docutils literal notranslate"><span class="pre">modules</span></code> in <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code>.</p>
+</div>
+<div class="section" id="customizations">
+<h3>Customizations<a class="headerlink" href="#customizations" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">[[customizations]]</span></code> section can be used to configure the hostname of the final image. eg.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="n">customizations</span><span class="p">]]</span>
+<span class="n">hostname</span> <span class="o">=</span> <span class="s2">&quot;baseimage&quot;</span>
+</pre></div>
+</div>
+<div class="section" id="customizations-sshkey">
+<h4>[[customizations.sshkey]]<a class="headerlink" href="#customizations-sshkey" title="Permalink to this headline">¶</a></h4>
+<p>Set an existing user’s ssh key in the final image:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="n">customizations</span><span class="o">.</span><span class="n">sshkey</span><span class="p">]]</span>
+<span class="n">user</span> <span class="o">=</span> <span class="s2">&quot;root&quot;</span>
+<span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;PUBLIC SSH KEY&quot;</span>
+</pre></div>
+</div>
+<p>The key will be added to the user’s authorized_keys file.</p>
+</div>
+<div class="section" id="customizations-user">
+<h4>[[customizations.user]]<a class="headerlink" href="#customizations-user" title="Permalink to this headline">¶</a></h4>
+<p>Add a user to the image, and/or set their ssh key.
+All fields for this section are optional except for the <code class="docutils literal notranslate"><span class="pre">name</span></code>, here is a complete example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="n">customizations</span><span class="o">.</span><span class="n">user</span><span class="p">]]</span>
+<span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;admin&quot;</span>
+<span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Administrator account&quot;</span>
+<span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;$6$CHO2$3rN8eviE2t50lmVyBYihTgVRHcaecmeCk31L...&quot;</span>
+<span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;PUBLIC SSH KEY&quot;</span>
+<span class="n">home</span> <span class="o">=</span> <span class="s2">&quot;/srv/widget/&quot;</span>
+<span class="n">shell</span> <span class="o">=</span> <span class="s2">&quot;/usr/bin/bash&quot;</span>
+<span class="n">groups</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;widget&quot;</span><span class="p">,</span> <span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="s2">&quot;wheel&quot;</span><span class="p">]</span>
+<span class="n">uid</span> <span class="o">=</span> <span class="mi">1200</span>
+<span class="n">gid</span> <span class="o">=</span> <span class="mi">1200</span>
+</pre></div>
+</div>
+<p>If the password starts with <code class="docutils literal notranslate"><span class="pre">$6$</span></code>, <code class="docutils literal notranslate"><span class="pre">$5$</span></code>, or <code class="docutils literal notranslate"><span class="pre">$2b$</span></code> it will be stored as
+an encrypted password. Otherwise it will be treated as a plain text password.</p>
+</div>
+<div class="section" id="customizations-group">
+<h4>[[customizations.group]]<a class="headerlink" href="#customizations-group" title="Permalink to this headline">¶</a></h4>
+<p>Add a group to the image. <code class="docutils literal notranslate"><span class="pre">name</span></code> is required and <code class="docutils literal notranslate"><span class="pre">gid</span></code> is optional:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="n">customizations</span><span class="o">.</span><span class="n">group</span><span class="p">]]</span>
+<span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;widget&quot;</span>
+<span class="n">gid</span> <span class="o">=</span> <span class="mi">1130</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="adding-output-types">
+<h2>Adding Output Types<a class="headerlink" href="#adding-output-types" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">livemedia-creator</span></code> supports a large number of output types, and only some of
+these are currently available via <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code>. To add a new output type to
+lorax-composer a kickstart file needs to be added to <code class="docutils literal notranslate"><span class="pre">./share/composer/</span></code>. The
+name of the kickstart is what will be used by the <code class="docutils literal notranslate"><span class="pre">/compose/types</span></code> route, and the
+<code class="docutils literal notranslate"><span class="pre">compose_type</span></code> field of the POST to start a compose. It also needs to have
+code added to the <a class="reference internal" href="pylorax.api.html#pylorax.api.compose.compose_args" title="pylorax.api.compose.compose_args"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.compose_args()</span></code></a> function. The
+<code class="docutils literal notranslate"><span class="pre">_MAP</span></code> entry in this function defines what lorax-composer will pass to
+<a class="reference internal" href="pylorax.html#pylorax.installer.novirt_install" title="pylorax.installer.novirt_install"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.installer.novirt_install()</span></code></a> when it runs the compose.  When the
+compose is finished the output files need to be copied out of the build
+directory (<code class="docutils literal notranslate"><span class="pre">/var/lib/lorax/composer/results/&lt;UUID&gt;/compose/</span></code>),
+<a class="reference internal" href="pylorax.api.html#pylorax.api.compose.move_compose_results" title="pylorax.api.compose.move_compose_results"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.move_compose_results()</span></code></a> handles this for each type.
+You should move them instead of copying to save space.</p>
+<p>If the new output type does not have support in livemedia-creator it should be
+added there first. This will make the output available to the widest number of
+users.</p>
+<div class="section" id="example-add-partitioned-disk-support">
+<h3>Example: Add partitioned disk support<a class="headerlink" href="#example-add-partitioned-disk-support" title="Permalink to this headline">¶</a></h3>
+<p>Partitioned disk support is something that livemedia-creator already supports
+via the <code class="docutils literal notranslate"><span class="pre">--make-disk</span></code> cmdline argument. To add this to lorax-composer it
+needs 3 things:</p>
+<ul class="simple">
+<li>A <code class="docutils literal notranslate"><span class="pre">partitioned-disk.ks</span></code> file in <code class="docutils literal notranslate"><span class="pre">./share/composer/</span></code></li>
+<li>A new entry in the _MAP in <a class="reference internal" href="pylorax.api.html#pylorax.api.compose.compose_args" title="pylorax.api.compose.compose_args"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.compose_args()</span></code></a></li>
+<li>Add a bit of code to <a class="reference internal" href="pylorax.api.html#pylorax.api.compose.move_compose_results" title="pylorax.api.compose.move_compose_results"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.move_compose_results()</span></code></a> to move the disk image from
+the compose directory to the results directory.</li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">partitioned-disk.ks</span></code> is pretty similar to the example minimal kickstart
+in <code class="docutils literal notranslate"><span class="pre">./docs/fedora-minimal.ks</span></code>. You should remove the <code class="docutils literal notranslate"><span class="pre">url</span></code> and <code class="docutils literal notranslate"><span class="pre">repo</span></code>
+commands, they will be added by the compose process. Make sure the bootloader
+packages are included in the <code class="docutils literal notranslate"><span class="pre">%packages</span></code> section at the end of the kickstart,
+and you will want to leave off the <code class="docutils literal notranslate"><span class="pre">%end</span></code> so that the compose can append the
+list of packages from the blueprint.</p>
+<p>The new <code class="docutils literal notranslate"><span class="pre">_MAP</span></code> entry should be a copy of one of the existing entries, but with <code class="docutils literal notranslate"><span class="pre">make_disk</span></code> set
+to <code class="docutils literal notranslate"><span class="pre">True</span></code>. Make sure that none of the other <code class="docutils literal notranslate"><span class="pre">make_*</span></code> options are <code class="docutils literal notranslate"><span class="pre">True</span></code>. The <code class="docutils literal notranslate"><span class="pre">image_name</span></code> is
+what the name of the final image will be.</p>
+<p><code class="docutils literal notranslate"><span class="pre">move_compose_results()</span></code> can be as simple as moving the output file into
+the results directory, or it could do some post-processing on it. The end of
+the function should always clean up the <code class="docutils literal notranslate"><span class="pre">./compose/</span></code> directory, removing any
+unneeded extra files. This is especially true for the <code class="docutils literal notranslate"><span class="pre">live-iso</span></code> since it produces
+the contents of the iso as well as the boot.iso itself.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="composer-cli.html" class="btn btn-neutral float-right" title="composer-cli" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="livemedia-creator.html" class="btn btn-neutral" title="livemedia-creator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Red Hat, Inc..
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'29.1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
+      });
+  </script> 
+
+</body>
+</html>
