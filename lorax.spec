@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        29.2
+Version:        29.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -220,6 +220,51 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python3_sitelib}/composer/*
 
 %changelog
+* Mon May 14 2018 Brian C. Lane <bcl@redhat.com> 29.3-1
+- Update the README with relevant URLs (bcl@redhat.com)
+- Fix documentation for enabling lorax-composer.socket (bcl@redhat.com)
+- Add support for systemd socket activation (bcl@redhat.com)
+- Remove -boot-info-table from s390 boot.iso creation (#1478448) (bcl@redhat.com)
+- Update the generated html docs (bcl@redhat.com)
+- Add documentation for lorax-composer and composer-cli (bcl@redhat.com)
+- Move lorax-composer and composer-cli argument parsing into modules (bcl@redhat.com)
+- Update composer templates for use with Fedora (bcl@redhat.com)
+- Add new cmdline args to compose_args settings (bcl@redhat.com)
+- lorax-composer also requires tar (bcl@redhat.com)
+- Remove temporary files after run_compose (bcl@redhat.com)
+- Add --proxy to lorax-composer cmdline (bcl@redhat.com)
+- Pass the --tmp value into run_creator and cleanup after a crash (bcl@redhat.com)
+- Add --tmp to lorax-composer and set default tempdir (bcl@redhat.com)
+- Set lorax_templates to the correct directory (bcl@redhat.com)
+- Adjust the disk size estimates to match Anaconda (bcl@redhat.com)
+- Skip creating groups with the same name as a user (bcl@redhat.com)
+- Add user and group creation to blueprint (bcl@redhat.com)
+- Add blueprint customization support for hostname and ssh key (bcl@redhat.com)
+- Update setup.py for lorax-composer and composer-cli (bcl@redhat.com)
+- Add composer-cli and tests (bcl@redhat.com)
+- Fix the compose arguments for the Fedora version of Anaconda (bcl@redhat.com)
+- Add selinux check to lorax-composer (bcl@redhat.com)
+- Update test_server for blueprint and Yum to DNF changes. (bcl@redhat.com)
+- Convert Yum usage to DNF (bcl@redhat.com)
+- workspace read and write needs UTF-8 conversion (bcl@redhat.com)
+- Return an empty list if depsolve results are empty (bcl@redhat.com)
+- The git blob needs to be bytes (bcl@redhat.com)
+- Remove bin and sbin from nose (bcl@redhat.com)
+- Update the test blueprints (bcl@redhat.com)
+- Ignore more pylint errors (bcl@redhat.com)
+- Use default commit sort order instead of TIME (bcl@redhat.com)
+- Add lorax-composer and the composer kickstart templates (bcl@redhat.com)
+- Update pylorax.api.projects for DNF usage (bcl@redhat.com)
+- Update dnfbase (formerly yumbase) for DNF support (bcl@redhat.com)
+- Move core of livemedia-creator into pylorax.creator (bcl@redhat.com)
+- Update dnfbase tests (bcl@redhat.com)
+- Convert lorax-composer yum base object to DNF (bcl@redhat.com)
+- Use 2to3 to convert the python2 lorax-composer code to python3 (bcl@redhat.com)
+- Add the tests from lorax-composer branch (bcl@redhat.com)
+- Update .dockerignore (bcl@redhat.com)
+- Update lorax.spec for lorax-composer (bcl@redhat.com)
+- livemedia-creator: Move core functions into pylorax modules (bcl@redhat.com)
+
 * Thu May 03 2018 Brian C. Lane <bcl@redhat.com> 29.2-1
 - Enable testing in Travis and collecting of coverage history (atodorov@redhat.com)
 - Check selinux state before creating output directory (bcl@redhat.com)
