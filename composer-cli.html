@@ -1,0 +1,413 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>composer-cli &mdash; Lorax 29.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Product and Updates Images" href="product-images.html" />
+    <link rel="prev" title="lorax-composer" href="lorax-composer.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Lorax
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                29.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction to Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html#before-lorax">Before Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lorax.html">Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="livemedia-creator.html">livemedia-creator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lorax-composer.html">lorax-composer</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">composer-cli</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#composer-cli-cmdline-arguments">composer-cli cmdline arguments</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#edit-a-blueprint">Edit a Blueprint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#build-an-image">Build an image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#monitor-the-build-status">Monitor the build status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#download-the-image">Download the image</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="product-images.html">Product and Updates Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">src</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Lorax</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>composer-cli</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/composer-cli.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="composer-cli">
+<h1>composer-cli<a class="headerlink" href="#composer-cli" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Authors:</th><td class="field-body">Brian C. Lane &lt;<a class="reference external" href="mailto:bcl&#37;&#52;&#48;redhat&#46;com">bcl<span>&#64;</span>redhat<span>&#46;</span>com</a>&gt;</td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">composer-cli</span></code> is used to interact with the <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> API server, managing blueprints, exploring available packages, and building new images.</p>
+<p>It requires <a class="reference external" href="lorax-composer.html">lorax-composer</a> to be installed on the
+local system, and the user running it needs to be a member of the <code class="docutils literal notranslate"><span class="pre">weldr</span></code>
+group. They do not need to be root, but all of the <a class="reference external" href="lorax-composer.html#security">security precautions</a> apply.</p>
+<div class="section" id="composer-cli-cmdline-arguments">
+<h2>composer-cli cmdline arguments<a class="headerlink" href="#composer-cli-cmdline-arguments" title="Permalink to this headline">¶</a></h2>
+<p>Lorax Composer commandline tool</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">composer</span><span class="o">-</span><span class="n">cli</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">j</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SOCKET</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span> <span class="n">LOG</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">APIVER</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">test</span> <span class="n">TESTMODE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span>
+                    <span class="o">...</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>args</kbd></td>
+<td></td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>-j, --json</kbd></td>
+<td><p class="first">Output the raw JSON response instead of the normal output.</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>-s, --socket</kbd></td>
+<td><p class="first">Path to the socket file to listen on</p>
+<p class="last">Default: “/run/weldr/api.socket”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--log</kbd></td>
+<td><p class="first">Path to logfile (./composer-cli.log)</p>
+<p class="last">Default: “./composer-cli.log”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>-a, --api</kbd></td>
+<td><p class="first">API Version to use</p>
+<p class="last">Default: “0”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--test</kbd></td>
+<td><p class="first">Pass test mode to compose. 1=Mock compose with fail. 2=Mock compose with finished.</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>-V</kbd></td>
+<td><p class="first">show program’s version number and exit</p>
+<p class="last">Default: False</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+<p><dl class="docutils">
+<dt>compose start &lt;BLUEPRINT&gt; &lt;TYPE&gt;</dt>
+<dd>Start a compose using the selected blueprint and output type.</dd>
+<dt>compose types</dt>
+<dd>List the supported output types.</dd>
+<dt>compose status</dt>
+<dd>List the status of all running and finished composes.</dd>
+<dt>compose log &lt;UUID&gt; [&lt;SIZE&gt;]</dt>
+<dd>Show the last SIZE kB of the compose log.</dd>
+<dt>compose cancel &lt;UUID&gt;</dt>
+<dd>Cancel a running compose and delete any intermediate results.</dd>
+<dt>compose delete &lt;UUID,…&gt;</dt>
+<dd>Delete the listed compose results.</dd>
+<dt>compose info &lt;UUID&gt;</dt>
+<dd>Show detailed information on the compose.</dd>
+<dt>compose metadata &lt;UUID&gt;</dt>
+<dd>Download the metadata use to create the compose to &lt;uuid&gt;-metadata.tar</dd>
+<dt>compose logs &lt;UUID&gt;</dt>
+<dd>Download the compose logs to &lt;uuid&gt;-logs.tar</dd>
+<dt>compose results &lt;UUID&gt;</dt>
+<dd>Download all of the compose results; metadata, logs, and image to &lt;uuid&gt;.tar</dd>
+<dt>compose image &lt;UUID&gt;</dt>
+<dd>Download the output image from the compose. Filename depends on the type.</dd>
+<dt>blueprints list</dt>
+<dd>List the names of the available blueprints.</dd>
+<dt>blueprints show &lt;BLUEPRINT,…&gt;</dt>
+<dd>Display the blueprint in TOML format.</dd>
+<dt>blueprints changes &lt;BLUEPRINT,…&gt;</dt>
+<dd>Display the changes for each blueprint.</dd>
+<dt>blueprints diff &lt;BLUEPRINT&gt; &lt;FROM-COMMIT&gt; &lt;TO-COMMIT&gt;</dt>
+<dd>Display the differences between 2 versions of a blueprint.
+FROM-COMMIT can be a commit hash or NEWEST
+TO-COMMIT  can be a commit hash, NEWEST, or WORKSPACE</dd>
+<dt>blueprints save &lt;BLUEPRINT,…&gt;</dt>
+<dd>Save the blueprint to a file, &lt;BLUEPRINT&gt;.toml</dd>
+<dt>blueprints delete &lt;BLUEPRINT&gt;</dt>
+<dd>Delete a blueprint from the server</dd>
+<dt>blueprints depsolve &lt;BLUEPRINT,…&gt;</dt>
+<dd>Display the packages needed to install the blueprint.</dd>
+<dt>blueprints push &lt;BLUEPRINT&gt;</dt>
+<dd>Push a blueprint TOML file to the server.</dd>
+<dt>blueprints freeze &lt;BLUEPRINT,…&gt;</dt>
+<dd>Display the frozen blueprint’s modules and packages.</dd>
+<dt>blueprints freeze show &lt;BLUEPRINT,…&gt;</dt>
+<dd>Display the frozen blueprint in TOML format.</dd>
+<dt>blueprints freeze save &lt;BLUEPRINT,…&gt;</dt>
+<dd>Save the frozen blueprint to a file, &lt;blueprint-name&gt;.frozen.toml.</dd>
+<dt>blueprints tag &lt;BLUEPRINT&gt;</dt>
+<dd>Tag the most recent blueprint commit as a release.</dd>
+<dt>blueprints undo &lt;BLUEPRINT&gt; &lt;COMMIT&gt;</dt>
+<dd>Undo changes to a blueprint by reverting to the selected commit.</dd>
+<dt>blueprints workspace &lt;BLUEPRINT&gt;</dt>
+<dd>Push the blueprint TOML to the temporary workspace storage.</dd>
+<dt>modules list</dt>
+<dd>List the available modules.</dd>
+<dt>projects list</dt>
+<dd>List the available projects.</dd>
+<dt>projects info &lt;PROJECT,…&gt;</dt>
+<dd>Show details about the listed projects.</dd>
+</dl>
+</p>
+</div>
+<div class="section" id="edit-a-blueprint">
+<h2>Edit a Blueprint<a class="headerlink" href="#edit-a-blueprint" title="Permalink to this headline">¶</a></h2>
+<p>Start out by listing the available blueprints using <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">blueprints</span>
+<span class="pre">list</span></code>, pick one and save it to the local directory by running <code class="docutils literal notranslate"><span class="pre">composer-cli</span>
+<span class="pre">blueprints</span> <span class="pre">save</span> <span class="pre">http-server</span></code>. If there are no blueprints available you can
+copy one of the examples <a class="reference external" href="https://github.com/weldr/lorax/tree/master/tests/pylorax/blueprints/">from the test suite</a>.</p>
+<p>Edit the file (it will be saved with a .toml extension) and chance the
+description, add a package or module to it. Send it back to the server by
+running <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">blueprints</span> <span class="pre">push</span> <span class="pre">http-server.toml</span></code>. You can verify that it was
+saved by viewing the changelog - <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">blueprints</span> <span class="pre">changes</span> <span class="pre">http-server</span></code>.</p>
+</div>
+<div class="section" id="build-an-image">
+<h2>Build an image<a class="headerlink" href="#build-an-image" title="Permalink to this headline">¶</a></h2>
+<p>Build a <code class="docutils literal notranslate"><span class="pre">qcow2</span></code> disk image from this blueprint by running <code class="docutils literal notranslate"><span class="pre">composer-cli</span>
+<span class="pre">compose</span> <span class="pre">start</span> <span class="pre">http-server</span> <span class="pre">qcow2</span></code>. It will print a UUID that you can use to
+keep track of the build. You can also cancel the build if needed.</p>
+<p>The available types of images is displayed by <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">compose</span> <span class="pre">types</span></code>.
+Currently this consists of: ext4-filesystem, live-iso, partitioned-disk, qcow2,
+tar</p>
+</div>
+<div class="section" id="monitor-the-build-status">
+<h2>Monitor the build status<a class="headerlink" href="#monitor-the-build-status" title="Permalink to this headline">¶</a></h2>
+<p>Monitor it using <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">compose</span> <span class="pre">status</span></code>, which will show the status of
+all the builds on the system. You can view the end of the anaconda build logs
+once it is in the <code class="docutils literal notranslate"><span class="pre">RUNNING</span></code> state using <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">compose</span> <span class="pre">log</span> <span class="pre">UUID</span></code>
+where UUID is the UUID returned by the start command.</p>
+<p>Once the build is in the <code class="docutils literal notranslate"><span class="pre">FINISHED</span></code> state you can download the image.</p>
+</div>
+<div class="section" id="download-the-image">
+<h2>Download the image<a class="headerlink" href="#download-the-image" title="Permalink to this headline">¶</a></h2>
+<p>Downloading the final image is done with <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">compose</span> <span class="pre">image</span> <span class="pre">UUID</span></code> and it will
+save the qcow2 image as <code class="docutils literal notranslate"><span class="pre">UUID-disk.qcow2</span></code> which you can then use to boot a VM like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">qemu</span><span class="o">-</span><span class="n">kvm</span> <span class="o">--</span><span class="n">name</span> <span class="n">test</span><span class="o">-</span><span class="n">image</span> <span class="o">-</span><span class="n">m</span> <span class="mi">1024</span> <span class="o">-</span><span class="n">hda</span> <span class="o">./</span><span class="n">UUID</span><span class="o">-</span><span class="n">disk</span><span class="o">.</span><span class="n">qcow2</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="product-images.html" class="btn btn-neutral float-right" title="Product and Updates Images" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="lorax-composer.html" class="btn btn-neutral" title="lorax-composer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Red Hat, Inc..
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'29.1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
+      });
+  </script> 
+
+</body>
+</html>
