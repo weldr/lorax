@@ -205,7 +205,9 @@ installation and configuration of the images.</p>
 <p>The best way to install <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> is to use <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">dnf</span> <span class="pre">install</span>
 <span class="pre">lorax-composer</span> <span class="pre">composer-cli</span></code>, this will setup the weldr user and install the
 systemd socket activation service. You will then need to enable it with <code class="docutils literal notranslate"><span class="pre">sudo</span>
-<span class="pre">systemctl</span> <span class="pre">enable</span> <span class="pre">lorax-composer.socket</span></code>. This will leave the server off until
+<span class="pre">systemctl</span> <span class="pre">enable</span> <span class="pre">lorax-composer.socket</span>
+<span class="pre">&&</span> <span class="pre">sudo</span>
+<span class="pre">systemctl</span> <span class="pre">start</span> <span class="pre">lorax-composer.socket</span></code>. This will leave the server off until
 the first request is made. Systemd will then launch the server and it will
 remain running until the system is rebooted.</p>
 </div>
@@ -215,7 +217,9 @@ remain running until the system is rebooted.</p>
 <li>Create a <code class="docutils literal notranslate"><span class="pre">weldr</span></code> user and group by running <code class="docutils literal notranslate"><span class="pre">useradd</span> <span class="pre">weldr</span></code></li>
 <li>Remove any pre-existing socket directory with <code class="docutils literal notranslate"><span class="pre">rm</span> <span class="pre">-rf</span> <span class="pre">/run/weldr/</span></code>
 A new directory with correct permissions will be created the first time the server runs.</li>
-<li>Enable the socket activation with <code class="docutils literal notranslate"><span class="pre">systemctl</span> <span class="pre">enable</span> <span class="pre">lorax-composer.socket</span></code> or
+<li>Enable the socket activation with <code class="docutils literal notranslate"><span class="pre">systemctl</span> <span class="pre">enable</span> <span class="pre">lorax-composer.socket</span>
+<span class="pre">&&</span> <span class="pre">sudo</span>
+<span class="pre">systemctl</span> <span class="pre">start</span> <span class="pre">lorax-composer.socket</span></code> or
 run it directly with <code class="docutils literal notranslate"><span class="pre">lorax-composer</span> <span class="pre">/path/to/blueprints/</span></code></li>
 </ol>
 <p>The <code class="docutils literal notranslate"><span class="pre">/path/to/blueprints/</span></code> directory is where the blueprints’ git repo will

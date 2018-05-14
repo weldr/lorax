@@ -19,9 +19,10 @@ Installation
 The best way to install ``lorax-composer`` is to use ``sudo dnf install
 lorax-composer composer-cli``, this will setup the weldr user and install the
 systemd socket activation service. You will then need to enable it with ``sudo
-systemctl enable lorax-composer.socket``. This will leave the server off until
-the first request is made. Systemd will then launch the server and it will
-remain running until the system is rebooted.
+systemctl enable lorax-composer.socket && sudo systemctl start
+lorax-composer.socket``. This will leave the server off until the first request
+is made. Systemd will then launch the server and it will remain running until
+the system is rebooted.
 
 Quickstart
 ----------
@@ -29,8 +30,9 @@ Quickstart
 1. Create a ``weldr`` user and group by running ``useradd weldr``
 2. Remove any pre-existing socket directory with ``rm -rf /run/weldr/``
    A new directory with correct permissions will be created the first time the server runs.
-3. Enable the socket activation with ``systemctl enable lorax-composer.socket`` or
-   run it directly with ``lorax-composer /path/to/blueprints/``
+3. Enable the socket activation with ``systemctl enable lorax-composer.socket
+   && sudo systemctl start lorax-composer.socket`` or run it directly with
+   ``lorax-composer /path/to/blueprints/``
 
 The ``/path/to/blueprints/`` directory is where the blueprints' git repo will
 be created, and all the blueprints created with the ``/api/v0/blueprints/new``
