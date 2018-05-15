@@ -184,6 +184,9 @@ if __name__ == '__main__':
     except KeyError:
         errors.append("Missing group '%s'" % opts.group)
 
+    if not os.path.isdir(opts.BLUEPRINTS):
+        errors.append("Missing blueprints directory: %s" % opts.BLUEPRINTS)
+
     # No point in continuing if there are uid or gid errors
     if errors:
         for e in errors:
