@@ -1,4 +1,4 @@
-FROM fedora:rawhide
+FROM fedora:28
 
 RUN dnf -y install make libgit2-glib tito python3-pylint  \
                     python3-nose python3-mako python3-flask \
