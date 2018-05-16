@@ -35,12 +35,12 @@ Quickstart
 2. Remove any pre-existing socket directory with ``rm -rf /run/weldr/``
    A new directory with correct permissions will be created the first time the server runs.
 3. Either start it via systemd with ``systemctl start lorax-composer`` or
-   run it directly with ``lorax-composer /path/to/recipes/``
+   run it directly with ``lorax-composer /path/to/blueprints/``
 
-The ``/path/to/recipes/`` is where the recipe's git repo will be created, and
-all the recipes created with the ``/api/v0/recipes/new`` route will be stored.
-If there are recipe ``.toml`` files in the top level of the directory they will
-be imported into the recipe git storage.
+The ``/path/to/blueprints/`` is where the blueprint's git repo will be created, and
+all the blueprints created with the ``/api/v0/blueprints/new`` route will be stored.
+If there are blueprint ``.toml`` files in the top level of the directory they will
+be imported into the blueprint git storage.
 
 Composing Images
 ----------------
@@ -48,7 +48,7 @@ Composing Images
 As of version 19.7.7 lorax-composer can create ``tar`` output images. You can use curl to start
 a compose like this::
 
-    curl --unix-socket /run/weldr/api.socket -X POST -H "Content-Type: application/json" -d '{"recipe_name": "http-server", "compose_type": "tar", "branch": "master"}' http:///api/v0/compose
+    curl --unix-socket /run/weldr/api.socket -X POST -H "Content-Type: application/json" -d '{"blueprint_name": "http-server", "compose_type": "tar", "branch": "master"}' http:///api/v0/compose
 
 And then monitor it by passing the returned build UUID to ``/compose/status/<uuid>``.
 
@@ -91,7 +91,7 @@ in ``./docs/rhel7-minimal.ks``. You should remove the ``url`` and ``repo``
 commands, they will be added by the compose process. Make sure the bootloader
 packages are included in the ``%packages`` section at the end of the kickstart,
 and you will want to leave off the ``%end`` so that the compose can append the
-list of packages from the recipe.
+list of packages from the blueprint.
 
 The new ``_MAP`` entry should be a copy of one of the existing entries, but with ``make_disk`` set
 to ``True``. Make sure that none of the other ``make_*`` options are ``True``. The ``image_name`` is

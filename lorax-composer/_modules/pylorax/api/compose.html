@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pylorax.api.compose &mdash; Lorax 19.7.14 documentation</title>
+    <title>pylorax.api.compose &mdash; Lorax 19.7.15 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '19.7.14',
+        VERSION:     '19.7.15',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.14 documentation" href="../../../index.html" />
+    <link rel="top" title="Lorax 19.7.15 documentation" href="../../../index.html" />
     <link rel="up" title="pylorax.api" href="../api.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.14 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.15 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../../pylorax.html" >pylorax</a> &raquo;</li>
           <li><a href="../api.html" accesskey="U">pylorax.api</a> &raquo;</li> 
@@ -143,6 +143,120 @@
         <span class="n">cmd</span> <span class="o">+=</span> <span class="s">&#39;--noverifyssl&#39;</span>
 
     <span class="k">return</span> <span class="n">cmd</span>
+
+</div>
+<div class="viewcode-block" id="write_ks_user"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.write_ks_user">[docs]</a><span class="k">def</span> <span class="nf">write_ks_user</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Write kickstart user and sshkey entry</span>
+
+<span class="sd">    :param f: kickstart file object</span>
+<span class="sd">    :type f: open file object</span>
+<span class="sd">    :param user: A blueprint user dictionary</span>
+<span class="sd">    :type user: dict</span>
+
+<span class="sd">    If the entry contains a ssh key, use sshkey to write it</span>
+<span class="sd">    All of the user fields are optional, except name, write out a kickstart user entry</span>
+<span class="sd">    with whatever options are relevant.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s">&quot;name&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">user</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;user entry requires a name&quot;</span><span class="p">)</span>
+
+    <span class="c"># ssh key uses the sshkey kickstart command</span>
+    <span class="k">if</span> <span class="s">&quot;key&quot;</span> <span class="ow">in</span> <span class="n">user</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;sshkey --user </span><span class="si">%s</span><span class="s"> &quot;</span><span class="si">%s</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">user</span><span class="p">[</span><span class="s">&quot;key&quot;</span><span class="p">]))</span>
+
+    <span class="c"># Write out the user kickstart command, much of it is optional</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;user --name </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">user</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="s">&quot;home&quot;</span> <span class="ow">in</span> <span class="n">user</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; --homedir </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">user</span><span class="p">[</span><span class="s">&quot;home&quot;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="s">&quot;password&quot;</span> <span class="ow">in</span> <span class="n">user</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s">&quot;password&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;$2b$&quot;</span><span class="p">,</span> <span class="s">&quot;$6$&quot;</span><span class="p">,</span> <span class="s">&quot;$5$&quot;</span><span class="p">]):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Detected pre-crypted password&quot;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; --iscrypted&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Detected plaintext password&quot;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; --plaintext&quot;</span><span class="p">)</span>
+
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; --password </span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">user</span><span class="p">[</span><span class="s">&quot;password&quot;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="s">&quot;shell&quot;</span> <span class="ow">in</span> <span class="n">user</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; --shell </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">user</span><span class="p">[</span><span class="s">&quot;shell&quot;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="s">&quot;uid&quot;</span> <span class="ow">in</span> <span class="n">user</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; --uid </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s">&quot;uid&quot;</span><span class="p">]))</span>
+
+    <span class="k">if</span> <span class="s">&quot;gid&quot;</span> <span class="ow">in</span> <span class="n">user</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; --gid </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s">&quot;gid&quot;</span><span class="p">]))</span>
+
+    <span class="k">if</span> <span class="s">&quot;description&quot;</span> <span class="ow">in</span> <span class="n">user</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; --gecos </span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">user</span><span class="p">[</span><span class="s">&quot;description&quot;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="s">&quot;groups&quot;</span> <span class="ow">in</span> <span class="n">user</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; --groups </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="s">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s">&quot;groups&quot;</span><span class="p">]))</span>
+
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="write_ks_group"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.write_ks_group">[docs]</a><span class="k">def</span> <span class="nf">write_ks_group</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">group</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Write kickstart group entry</span>
+
+<span class="sd">    :param f: kickstart file object</span>
+<span class="sd">    :type f: open file object</span>
+<span class="sd">    :param group: A blueprint group dictionary</span>
+<span class="sd">    :type user: dict</span>
+
+<span class="sd">    gid is optional</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s">&quot;name&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">group</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;group entry requires a name&quot;</span><span class="p">)</span>
+
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;group --name </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">group</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="s">&quot;gid&quot;</span> <span class="ow">in</span> <span class="n">group</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot; --gid </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="s">&quot;gid&quot;</span><span class="p">]))</span>
+
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="add_customizations"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.add_customizations">[docs]</a><span class="k">def</span> <span class="nf">add_customizations</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">recipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Add customizations to the kickstart file</span>
+
+<span class="sd">    :param f: kickstart file object</span>
+<span class="sd">    :type f: open file object</span>
+<span class="sd">    :param recipe:</span>
+<span class="sd">    :type recipe: Recipe object</span>
+<span class="sd">    :returns: None</span>
+<span class="sd">    :raises: RuntimeError if there was a problem writing to the kickstart</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s">&quot;customizations&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">customizations</span> <span class="o">=</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;customizations&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="s">&quot;hostname&quot;</span> <span class="ow">in</span> <span class="n">customizations</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;network --hostname=</span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">customizations</span><span class="p">[</span><span class="s">&quot;hostname&quot;</span><span class="p">])</span>
+
+    <span class="c"># TODO - remove this, should use user section to define this</span>
+    <span class="k">if</span> <span class="s">&quot;sshkey&quot;</span> <span class="ow">in</span> <span class="n">customizations</span><span class="p">:</span>
+        <span class="c"># This is a list of entries</span>
+        <span class="k">for</span> <span class="n">sshkey</span> <span class="ow">in</span> <span class="n">customizations</span><span class="p">[</span><span class="s">&quot;sshkey&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="s">&quot;user&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sshkey</span> <span class="ow">or</span> <span class="s">&quot;key&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sshkey</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> is incorrect, skipping&quot;</span><span class="p">,</span> <span class="n">sshkey</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;sshkey --user </span><span class="si">%s</span><span class="s"> &quot;</span><span class="si">%s</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sshkey</span><span class="p">[</span><span class="s">&quot;user&quot;</span><span class="p">],</span> <span class="n">sshkey</span><span class="p">[</span><span class="s">&quot;key&quot;</span><span class="p">]))</span>
+
+    <span class="c"># Creating a user also creates a group. Make a list of the names for later</span>
+    <span class="n">user_groups</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="s">&quot;user&quot;</span> <span class="ow">in</span> <span class="n">customizations</span><span class="p">:</span>
+        <span class="c"># only name is required, everything else is optional</span>
+        <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">customizations</span><span class="p">[</span><span class="s">&quot;user&quot;</span><span class="p">]:</span>
+            <span class="n">write_ks_user</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
+            <span class="n">user_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="s">&quot;group&quot;</span> <span class="ow">in</span> <span class="n">customizations</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">customizations</span><span class="p">[</span><span class="s">&quot;group&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">group</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">user_groups</span><span class="p">:</span>
+                <span class="n">write_ks_group</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Skipping group </span><span class="si">%s</span><span class="s">, already created by user&quot;</span><span class="p">,</span> <span class="n">group</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">])</span>
 </div>
 <div class="viewcode-block" id="start_build"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.start_build">[docs]</a><span class="k">def</span> <span class="nf">start_build</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">yumlock</span><span class="p">,</span> <span class="n">gitlock</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">,</span> <span class="n">compose_type</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Start the build</span>
@@ -231,14 +345,14 @@
     <span class="c"># Save a copy of the original kickstart</span>
     <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">ks_template_path</span><span class="p">,</span> <span class="n">results_dir</span><span class="p">)</span>
 
+    <span class="k">with</span> <span class="n">yumlock</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+        <span class="n">repos</span> <span class="o">=</span> <span class="n">yumlock</span><span class="o">.</span><span class="n">yb</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">listEnabled</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">repos</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;No enabled repos, canceling build.&quot;</span><span class="p">)</span>
+
     <span class="c"># Create the final kickstart with repos and package list</span>
     <span class="n">ks_path</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="s">&quot;final-kickstart.ks&quot;</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ks_path</span><span class="p">,</span> <span class="s">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">yumlock</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
-            <span class="n">repos</span> <span class="o">=</span> <span class="n">yumlock</span><span class="o">.</span><span class="n">yb</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">listEnabled</span><span class="p">()</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">repos</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;No enabled repos, canceling build.&quot;</span><span class="p">)</span>
-
         <span class="n">ks_url</span> <span class="o">=</span> <span class="n">repo_to_ks</span><span class="p">(</span><span class="n">repos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&quot;url&quot;</span><span class="p">)</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;url = </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">ks_url</span><span class="p">)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;url </span><span class="si">%s</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">ks_url</span><span class="p">)</span>
@@ -254,8 +368,9 @@
 
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">deps</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">dep_nevra</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="o">+</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
-
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%e</span><span class="s">nd</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+
+        <span class="n">add_customizations</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">recipe</span><span class="p">)</span>
 
     <span class="c"># Setup the config to pass to novirt_install</span>
     <span class="n">log_dir</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="s">&quot;logs/&quot;</span><span class="p">)</span>
@@ -472,7 +587,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.14 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.15 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../../pylorax.html" >pylorax</a> &raquo;</li>
           <li><a href="../api.html" >pylorax.api</a> &raquo;</li> 

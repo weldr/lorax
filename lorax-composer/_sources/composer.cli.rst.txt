@@ -1,0 +1,54 @@
+composer\.cli package
+=====================
+
+Submodules
+----------
+
+composer\.cli\.blueprints module
+--------------------------------
+
+.. automodule:: composer.cli.blueprints
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+composer\.cli\.compose module
+-----------------------------
+
+.. automodule:: composer.cli.compose
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+composer\.cli\.modules module
+-----------------------------
+
+.. automodule:: composer.cli.modules
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+composer\.cli\.projects module
+------------------------------
+
+.. automodule:: composer.cli.projects
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+composer\.cli\.utilities module
+-------------------------------
+
+.. automodule:: composer.cli.utilities
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: composer.cli
+    :members:
+    :undoc-members:
+    :show-inheritance:

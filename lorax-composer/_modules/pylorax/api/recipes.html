@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pylorax.api.recipes &mdash; Lorax 19.7.14 documentation</title>
+    <title>pylorax.api.recipes &mdash; Lorax 19.7.15 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '19.7.14',
+        VERSION:     '19.7.15',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.14 documentation" href="../../../index.html" />
+    <link rel="top" title="Lorax 19.7.15 documentation" href="../../../index.html" />
     <link rel="up" title="pylorax.api" href="../api.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.14 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.15 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../../pylorax.html" >pylorax</a> &raquo;</li>
           <li><a href="../api.html" accesskey="U">pylorax.api</a> &raquo;</li> 
@@ -100,7 +100,7 @@
 <span class="sd">    and adds a .filename property to return the recipe&#39;s filename,</span>
 <span class="sd">    and a .toml() function to return the recipe as a TOML string.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">modules</span><span class="p">,</span> <span class="n">packages</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">modules</span><span class="p">,</span> <span class="n">packages</span><span class="p">,</span> <span class="n">customizations</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="c"># Check that version is empty or semver compatible</span>
         <span class="k">if</span> <span class="n">version</span><span class="p">:</span>
             <span class="n">semver</span><span class="o">.</span><span class="n">Version</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
@@ -114,7 +114,12 @@
                             <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
                             <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span>
                             <span class="n">modules</span><span class="o">=</span><span class="n">modules</span><span class="p">,</span>
-                            <span class="n">packages</span><span class="o">=</span><span class="n">packages</span><span class="p">)</span>
+                            <span class="n">packages</span><span class="o">=</span><span class="n">packages</span><span class="p">,</span>
+                            <span class="n">customizations</span><span class="o">=</span><span class="n">customizations</span><span class="p">)</span>
+
+        <span class="c"># We don&#39;t want customizations=None to show up in the TOML so remove it</span>
+        <span class="k">if</span> <span class="n">customizations</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="s">&quot;customizations&quot;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
 <div class="viewcode-block" id="Recipe.package_names"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.Recipe.package_names">[docs]</a>    <span class="k">def</span> <span class="nf">package_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -190,9 +195,13 @@
                 <span class="n">new_packages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">RecipePackage</span><span class="p">(</span><span class="n">dep</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">dep_evra</span><span class="p">(</span><span class="n">dep</span><span class="p">)))</span>
             <span class="k">elif</span> <span class="n">dep</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">module_names</span><span class="p">:</span>
                 <span class="n">new_modules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">RecipeModule</span><span class="p">(</span><span class="n">dep</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">dep_evra</span><span class="p">(</span><span class="n">dep</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="s">&quot;customizations&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">customizations</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s">&quot;customizations&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">customizations</span> <span class="o">=</span> <span class="bp">None</span>
 
         <span class="k">return</span> <span class="n">Recipe</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="s">&quot;description&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">],</span>
-                      <span class="n">new_modules</span><span class="p">,</span> <span class="n">new_packages</span><span class="p">)</span>
+                      <span class="n">new_modules</span><span class="p">,</span> <span class="n">new_packages</span><span class="p">,</span> <span class="n">customizations</span><span class="p">)</span>
 </div></div>
 <div class="viewcode-block" id="RecipeModule"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.RecipeModule">[docs]</a><span class="k">class</span> <span class="nc">RecipeModule</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
@@ -247,10 +256,11 @@
         <span class="n">name</span> <span class="o">=</span> <span class="n">recipe_dict</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span>
         <span class="n">description</span> <span class="o">=</span> <span class="n">recipe_dict</span><span class="p">[</span><span class="s">&quot;description&quot;</span><span class="p">]</span>
         <span class="n">version</span> <span class="o">=</span> <span class="n">recipe_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;version&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="n">customizations</span> <span class="o">=</span> <span class="n">recipe_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;customizations&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">RecipeError</span><span class="p">(</span><span class="s">&quot;There was a problem parsing the recipe: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
 
-    <span class="k">return</span> <span class="n">Recipe</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">modules</span><span class="p">,</span> <span class="n">packages</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Recipe</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">modules</span><span class="p">,</span> <span class="n">packages</span><span class="p">,</span> <span class="n">customizations</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="gfile"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.gfile">[docs]</a><span class="k">def</span> <span class="nf">gfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Convert a string path to GFile for use with Git&quot;&quot;&quot;</span>
@@ -966,7 +976,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.14 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.15 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../../pylorax.html" >pylorax</a> &raquo;</li>
           <li><a href="../api.html" >pylorax.api</a> &raquo;</li> 
