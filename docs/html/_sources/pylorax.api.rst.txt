@@ -1,0 +1,102 @@
+pylorax.api package
+===================
+
+Submodules
+----------
+
+pylorax.api.cmdline module
+--------------------------
+
+.. automodule:: pylorax.api.cmdline
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pylorax.api.compose module
+--------------------------
+
+.. automodule:: pylorax.api.compose
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pylorax.api.config module
+-------------------------
+
+.. automodule:: pylorax.api.config
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pylorax.api.crossdomain module
+------------------------------
+
+.. automodule:: pylorax.api.crossdomain
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pylorax.api.dnfbase module
+--------------------------
+
+.. automodule:: pylorax.api.dnfbase
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pylorax.api.projects module
+---------------------------
+
+.. automodule:: pylorax.api.projects
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pylorax.api.queue module
+------------------------
+
+.. automodule:: pylorax.api.queue
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pylorax.api.recipes module
+--------------------------
+
+.. automodule:: pylorax.api.recipes
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pylorax.api.server module
+-------------------------
+
+.. automodule:: pylorax.api.server
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pylorax.api.v0 module
+---------------------
+
+.. automodule:: pylorax.api.v0
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pylorax.api.workspace module
+----------------------------
+
+.. automodule:: pylorax.api.workspace
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: pylorax.api
+    :members:
+    :undoc-members:
+    :show-inheritance:

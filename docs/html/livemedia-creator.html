@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>livemedia-creator &mdash; Lorax 28.9 documentation</title>
+  <title>livemedia-creator &mdash; Lorax 28.10 documentation</title>
   
 
   
@@ -25,26 +25,19 @@
   
 
   
-  
     <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Lorax 28.9 documentation" href="index.html"/>
-        <link rel="next" title="Product and Updates Images" href="product-images.html"/>
-        <link rel="prev" title="Lorax" href="lorax.html"/> 
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="lorax-composer" href="lorax-composer.html" />
+    <link rel="prev" title="Lorax" href="lorax.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -66,7 +59,7 @@
             
             
               <div class="version">
-                28.9
+                28.10
               </div>
             
           
@@ -95,7 +88,17 @@
 <li class="toctree-l1"><a class="reference internal" href="intro.html#before-lorax">Before Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lorax.html">Lorax</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">livemedia-creator</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#livemedia-creator-cmdline-arguments">livemedia-creator cmdline arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#livemedia-creator-cmdline-arguments">livemedia-creator cmdline arguments</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#disk/fs image arguments">disk/fs image arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#appliance arguments">appliance arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qemu arguments">qemu arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dracut arguments">dracut arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pxe to live arguments">pxe to live arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#OCI arguments">OCI arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Vagrant arguments">Vagrant arguments</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#quickstart">Quickstart</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#how-iso-creation-works">How ISO creation works</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#kickstarts">Kickstarts</a></li>
@@ -117,6 +120,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#hacking">Hacking</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="lorax-composer.html">lorax-composer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="composer-cli.html">composer-cli</a></li>
 <li class="toctree-l1"><a class="reference internal" href="product-images.html">Product and Updates Images</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">pylorax</a></li>
 </ul>
@@ -130,7 +135,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">Lorax</a>
@@ -138,9 +143,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -203,20 +209,20 @@ install into a disk image and then use the disk image to create the bootable
 media.</p>
 <p>livemedia-creator –help will describe all of the options available. At the
 minimum you need:</p>
-<p><code class="docutils literal"><span class="pre">--make-iso</span></code> to create a final bootable .iso or one of the other <code class="docutils literal"><span class="pre">--make-*</span></code> options.</p>
-<p><code class="docutils literal"><span class="pre">--iso</span></code> to specify the Anaconda install media to use with qemu.</p>
-<p><code class="docutils literal"><span class="pre">--ks</span></code> to select the kickstart file describing what to install.</p>
+<p><code class="docutils literal notranslate"><span class="pre">--make-iso</span></code> to create a final bootable .iso or one of the other <code class="docutils literal notranslate"><span class="pre">--make-*</span></code> options.</p>
+<p><code class="docutils literal notranslate"><span class="pre">--iso</span></code> to specify the Anaconda install media to use with qemu.</p>
+<p><code class="docutils literal notranslate"><span class="pre">--ks</span></code> to select the kickstart file describing what to install.</p>
 <p>To use livemedia-creator with virtualization you will need to have qemu installed.</p>
-<p>If you are going to be using Anaconda directly, with <code class="docutils literal"><span class="pre">--no-virt</span></code> mode, make sure
+<p>If you are going to be using Anaconda directly, with <code class="docutils literal notranslate"><span class="pre">--no-virt</span></code> mode, make sure
 you have the anaconda-tui package installed.</p>
 <p>Conventions used in this document:</p>
-<p><code class="docutils literal"><span class="pre">lmc</span></code> is an abbreviation for livemedia-creator.</p>
-<p><code class="docutils literal"><span class="pre">builder</span></code> is the system where livemedia-creator is being run</p>
-<p><code class="docutils literal"><span class="pre">image</span></code> is the disk image being created by running livemedia-creator</p>
+<p><code class="docutils literal notranslate"><span class="pre">lmc</span></code> is an abbreviation for livemedia-creator.</p>
+<p><code class="docutils literal notranslate"><span class="pre">builder</span></code> is the system where livemedia-creator is being run</p>
+<p><code class="docutils literal notranslate"><span class="pre">image</span></code> is the disk image being created by running livemedia-creator</p>
 <div class="section" id="livemedia-creator-cmdline-arguments">
 <h2>livemedia-creator cmdline arguments<a class="headerlink" href="#livemedia-creator-cmdline-arguments" title="Permalink to this headline">¶</a></h2>
 <p>Create Live Install Media</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
                          <span class="p">(</span><span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">iso</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">disk</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">fsimage</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">appliance</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">ami</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">tar</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">pxe</span><span class="o">-</span><span class="n">live</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">ostree</span><span class="o">-</span><span class="n">live</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">oci</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">vagrant</span><span class="p">)</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">iso</span> <span class="n">ISO</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">iso</span><span class="o">-</span><span class="n">only</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">iso</span><span class="o">-</span><span class="n">name</span> <span class="n">ISO_NAME</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">ks</span> <span class="n">KS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="n">only</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">virt</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span> <span class="n">PROXY</span><span class="p">]</span>
@@ -246,252 +252,357 @@ you have the anaconda-tui package installed.</p>
                          <span class="p">[</span><span class="o">--</span><span class="n">timeout</span> <span class="n">TIMEOUT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span>
 </pre></div>
 </div>
-<dl class="docutils">
-<dt>Options:</dt>
-<dd><table class="first last docutils option-list" frame="void" rules="none">
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--make-iso</kbd></td>
+<td><p class="first">Build a live iso</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--make-disk</kbd></td>
+<td><p class="first">Build a partitioned disk image</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--make-fsimage</kbd></td>
+<td><p class="first">Build a filesystem image</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--make-appliance</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Build an appliance image and XML description</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--make-ami</kbd></td>
+<td><p class="first">Build an ami image</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--make-tar</kbd></td>
+<td><p class="first">Build a tar of the root filesystem</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--make-pxe-live</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Build a live pxe boot squashfs image</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--make-ostree-live</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Build a live pxe boot squashfs image of Atomic Host</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--make-oci</kbd></td>
+<td><p class="first">Build an Open Container Initiative image</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--make-vagrant</kbd></td>
+<td><p class="first">Build a Vagrant Box image</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--iso</kbd></td>
+<td>Anaconda installation .iso path to use for qemu</td></tr>
+<tr><td class="option-group">
+<kbd>--iso-only</kbd></td>
+<td><p class="first">Remove all iso creation artifacts except the boot.iso, combine with –iso-name to rename the boot.iso</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--iso-name</kbd></td>
+<td>Name of output iso file for –iso-only. Default is boot.iso</td></tr>
+<tr><td class="option-group">
+<kbd>--ks</kbd></td>
+<td>Kickstart file defining the install.</td></tr>
+<tr><td class="option-group">
+<kbd>--image-only</kbd></td>
+<td><p class="first">Exit after creating fs/disk image.</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--no-virt</kbd></td>
+<td><p class="first">Run anaconda directly on host instead of using qemu</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--proxy</kbd></td>
+<td>proxy URL to use for the install</td></tr>
+<tr><td class="option-group">
+<kbd>--anaconda-arg</kbd></td>
+<td>Additional argument to pass to anaconda (no-virt mode). Pass once for each argument</td></tr>
+<tr><td class="option-group">
+<kbd>--armplatform</kbd></td>
+<td>the platform to use when creating images for ARM, i.e., highbank, mvebu, omap, tegra, etc.</td></tr>
+<tr><td class="option-group">
+<kbd>--location</kbd></td>
+<td>location of iso directory tree with initrd.img and vmlinuz. Used to run qemu with a newer initrd than the iso.</td></tr>
+<tr><td class="option-group">
+<kbd>--logfile</kbd></td>
+<td><p class="first">Name and path for primary logfile, other logs will be created in the same directory.</p>
+<p class="last">Default: ./livemedia.log</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--lorax-templates</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Path to mako templates for lorax</td></tr>
+<tr><td class="option-group">
+<kbd>--tmp</kbd></td>
+<td><p class="first">Top level temporary directory</p>
+<p class="last">Default: /var/tmp</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--resultdir</kbd></td>
+<td>Directory to copy the resulting images and iso into. Defaults to the temporary working directory</td></tr>
+<tr><td class="option-group">
+<kbd>--macboot</kbd></td>
+<td>Default: True</td></tr>
+<tr><td class="option-group">
+<kbd>--nomacboot</kbd></td>
+<td>Default: True</td></tr>
+<tr><td class="option-group">
+<kbd>--title</kbd></td>
+<td><p class="first">Substituted for &#64;TITLE&#64; in bootloader config files</p>
+<p class="last">Default: “Linux Live Media”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--project</kbd></td>
+<td><p class="first">substituted for &#64;PROJECT&#64; in bootloader config files</p>
+<p class="last">Default: “Linux”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--releasever</kbd></td>
+<td><p class="first">substituted for &#64;VERSION&#64; in bootloader config files</p>
+<p class="last">Default: “28”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--volid</kbd></td>
+<td>volume id</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--squashfs_args</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>additional squashfs args</td></tr>
+<tr><td class="option-group">
+<kbd>--timeout</kbd></td>
+<td>Cancel installer after X minutes</td></tr>
+<tr><td class="option-group">
+<kbd>-V</kbd></td>
+<td>show program’s version number and exit</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="disk/fs image arguments">
+<h3>disk/fs image arguments<a class="headerlink" href="#disk/fs image arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--disk-image</kbd></td>
+<td>Path to existing disk image to use for creating final image.</td></tr>
+<tr><td class="option-group">
+<kbd>--keep-image</kbd></td>
+<td><p class="first">Keep raw disk image after .iso creation</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--fs-image</kbd></td>
+<td>Path to existing filesystem image to use for creating final image.</td></tr>
+<tr><td class="option-group">
+<kbd>--image-name</kbd></td>
+<td>Name of output file to create. Used for tar, fs and disk image. Default is a random name.</td></tr>
+<tr><td class="option-group">
+<kbd>--fs-label</kbd></td>
+<td><p class="first">Label to set on fsimage, default is ‘Anaconda’</p>
+<p class="last">Default: “Anaconda”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--image-type</kbd></td>
+<td>Create an image with qemu-img. See qemu-img –help for supported formats.</td></tr>
+<tr><td class="option-group">
+<kbd>--qemu-arg</kbd></td>
+<td><p class="first">Arguments to pass to qemu-img. Pass once for each argument, they will be used for ALL calls to qemu-img.</p>
+<p class="last">Default: []</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--qcow2</kbd></td>
+<td><p class="first">Create qcow2 image instead of raw sparse image when making disk images.</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--qcow2-arg</kbd></td>
+<td><p class="first">Arguments to pass to qemu-img. Pass once for each argument, they will be used for ALL calls to qemu-img.</p>
+<p class="last">Default: []</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--compression</kbd></td>
+<td><p class="first">Compression binary for make-tar. xz, lzma, gzip, and bzip2 are supported. xz is the default.</p>
+<p class="last">Default: “xz”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--compress-arg</kbd></td>
+<td><p class="first">Arguments to pass to compression. Pass once for each argument</p>
+<p class="last">Default: []</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="appliance arguments">
+<h3>appliance arguments<a class="headerlink" href="#appliance arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--app-name</kbd></td>
+<td>Name of appliance to pass to template</td></tr>
+<tr><td class="option-group">
+<kbd>--app-template</kbd></td>
+<td>Path to template to use for appliance data.</td></tr>
+<tr><td class="option-group">
+<kbd>--app-file</kbd></td>
+<td><p class="first">Appliance template results file.</p>
+<p class="last">Default: “appliance.xml”</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="qemu arguments">
+<h3>qemu arguments<a class="headerlink" href="#qemu arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--ram</kbd></td>
+<td><p class="first">Memory to allocate for installer in megabytes.</p>
+<p class="last">Default: 1024</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--vcpus</kbd></td>
+<td>Passed to qemu -smp command</td></tr>
+<tr><td class="option-group">
+<kbd>--vnc</kbd></td>
+<td>Passed to qemu -display command. eg. vnc=127.0.0.1:5, default is to choose the first unused vnc port.</td></tr>
+<tr><td class="option-group">
+<kbd>--arch</kbd></td>
+<td>System arch to build for. Used to select qemu-system-* command. Defaults to qemu-system-&lt;arch&gt;</td></tr>
+<tr><td class="option-group">
+<kbd>--kernel-args</kbd></td>
+<td>Additional argument to pass to the installation kernel</td></tr>
+<tr><td class="option-group">
+<kbd>--ovmf-path</kbd></td>
+<td><p class="first">Path to OVMF firmware</p>
+<p class="last">Default: “/usr/share/edk2/ovmf/”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--virt-uefi</kbd></td>
+<td><p class="first">Use OVMF firmware to boot the VM in UEFI mode</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--no-kvm</kbd></td>
+<td><p class="first">Skip using kvm with qemu even if it is available.</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--with-rng</kbd></td>
+<td><p class="first">RNG device for QEMU (none for no RNG)</p>
+<p class="last">Default: “/dev/random”</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="dracut arguments">
+<h3>dracut arguments<a class="headerlink" href="#dracut arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--dracut-arg</kbd></td>
+<td>Argument to pass to dracut when rebuilding the initramfs. Pass this once for each argument. NOTE: this overrides the default. (default: )</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="pxe to live arguments">
+<h3>pxe to live arguments<a class="headerlink" href="#pxe to live arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
 <tbody valign="top">
 <tr><td class="option-group" colspan="2">
-<kbd><span class="option">--make-iso=False</span></kbd></td>
+<kbd>--live-rootfs-size</kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Build a live iso</td></tr>
+<tr><td>&#160;</td><td><p class="first">Size of root filesystem of live image in GiB</p>
+<p class="last">Default: 0</p>
+</td></tr>
 <tr><td class="option-group" colspan="2">
-<kbd><span class="option">--make-disk=False</span></kbd></td>
+<kbd>--live-rootfs-keep-size</kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Build a partitioned disk image</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--make-fsimage=False</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Build a filesystem image</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--make-appliance=False</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Build an appliance image and XML description</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--make-ami=False</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Build an ami image</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--make-tar=False</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Build a tar of the root filesystem</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--make-pxe-live=False</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Build a live pxe boot squashfs image</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--make-ostree-live=False</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Build a live pxe boot squashfs image of Atomic Host</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--make-oci=False</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Build an Open Container Initiative image</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--make-vagrant=False</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Build a Vagrant Box image</td></tr>
+<tr><td>&#160;</td><td><p class="first">Keep the original size of root filesystem in live image</p>
+<p class="last">Default: False</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="OCI arguments">
+<h3>OCI arguments<a class="headerlink" href="#OCI arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
 <tr><td class="option-group">
-<kbd><span class="option">--iso</span></kbd></td>
-<td>Anaconda installation .iso path to use for qemu</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--iso-only=False</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Remove all iso creation artifacts except the boot.iso, combine with –iso-name to rename the boot.iso</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--iso-name</span></kbd></td>
-<td>Name of output iso file for –iso-only. Default is boot.iso</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--ks</span></kbd></td>
-<td>Kickstart file defining the install.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--image-only=False</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Exit after creating fs/disk image.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--no-virt=False</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Run anaconda directly on host instead of using qemu</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--proxy</span></kbd></td>
-<td>proxy URL to use for the install</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--anaconda-arg</span></kbd></td>
-<td>Additional argument to pass to anaconda (no-virt mode). Pass once for each argument</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--armplatform</span></kbd></td>
-<td>the platform to use when creating images for ARM, i.e., highbank, mvebu, omap, tegra, etc.</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--location</span></kbd></td>
-<td>location of iso directory tree with initrd.img and vmlinuz. Used to run qemu with a newer initrd than the iso.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--logfile=./livemedia.log</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Name and path for primary logfile, other logs will be created in the same directory.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--lorax-templates</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Path to mako templates for lorax</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--tmp=/var/tmp</span></kbd></td>
-<td>Top level temporary directory</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--resultdir</span></kbd></td>
-<td>Directory to copy the resulting images and iso into. Defaults to the temporary working directory</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--macboot=True</span></kbd></td>
-<td>Undocumented</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--nomacboot=True</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Undocumented</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--disk-image</span></kbd></td>
-<td>Path to existing disk image to use for creating final image.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--keep-image=False</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Keep raw disk image after .iso creation</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--fs-image</span></kbd></td>
-<td>Path to existing filesystem image to use for creating final image.</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--image-name</span></kbd></td>
-<td>Name of output file to create. Used for tar, fs and disk image. Default is a random name.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--fs-label=Anaconda</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Label to set on fsimage, default is ‘Anaconda’</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--image-type</span></kbd></td>
-<td>Create an image with qemu-img. See qemu-img –help for supported formats.</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--qemu-arg=[]</span></kbd></td>
-<td>Arguments to pass to qemu-img. Pass once for each argument, they will be used for ALL calls to qemu-img.</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--qcow2=False</span></kbd></td>
-<td>Create qcow2 image instead of raw sparse image when making disk images.</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--qcow2-arg=[]</span></kbd></td>
-<td>Arguments to pass to qemu-img. Pass once for each argument, they will be used for ALL calls to qemu-img.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--compression=xz</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Compression binary for make-tar. xz, lzma, gzip, and bzip2 are supported. xz is the default.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--compress-arg=[]</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Arguments to pass to compression. Pass once for each argument</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--app-name</span></kbd></td>
-<td>Name of appliance to pass to template</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--app-template</span></kbd></td>
-<td>Path to template to use for appliance data.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--app-file=appliance.xml</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Appliance template results file.</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--ram=1024</span></kbd></td>
-<td>Memory to allocate for installer in megabytes.</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--vcpus</span></kbd></td>
-<td>Passed to qemu -smp command</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--vnc</span></kbd></td>
-<td>Passed to qemu -display command. eg. vnc=127.0.0.1:5, default is to choose the first unused vnc port.</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--arch</span></kbd></td>
-<td>System arch to build for. Used to select qemu-system-* command. Defaults to qemu-system-&lt;arch&gt;</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--kernel-args</span></kbd></td>
-<td>Additional argument to pass to the installation kernel</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--ovmf-path=/usr/share/edk2/ovmf/</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Path to OVMF firmware</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--virt-uefi=False</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Use OVMF firmware to boot the VM in UEFI mode</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--no-kvm=False</span></kbd></td>
-<td>Skip using kvm with qemu even if it is available.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--with-rng=/dev/random</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>RNG device for QEMU (none for no RNG)</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--dracut-arg</span></kbd></td>
-<td>Argument to pass to dracut when rebuilding the initramfs. Pass this once for each argument. NOTE: this overrides the default. (default: )</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--live-rootfs-size=0</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Size of root filesystem of live image in GiB</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--live-rootfs-keep-size=False</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Keep the original size of root filesystem in live image</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--oci-config</span></kbd></td>
+<kbd>--oci-config</kbd></td>
 <td>config.json OCI configuration file</td></tr>
 <tr><td class="option-group">
-<kbd><span class="option">--oci-runtime</span></kbd></td>
+<kbd>--oci-runtime</kbd></td>
 <td>runtime.json OCI configuration file</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Vagrant arguments">
+<h3>Vagrant arguments<a class="headerlink" href="#Vagrant arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
 <tr><td class="option-group" colspan="2">
-<kbd><span class="option">--vagrant-metadata</span></kbd></td>
+<kbd>--vagrant-metadata</kbd></td>
 </tr>
 <tr><td>&#160;</td><td>optional metadata.json file</td></tr>
 <tr><td class="option-group">
-<kbd><span class="option">--vagrantfile</span></kbd></td>
+<kbd>--vagrantfile</kbd></td>
 <td>optional vagrantfile</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--title=Linux Live Media</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Substituted for &#64;TITLE&#64; in bootloader config files</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--project=Linux</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>substituted for &#64;PROJECT&#64; in bootloader config files</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--releasever=28</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>substituted for &#64;VERSION&#64; in bootloader config files</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--volid</span></kbd></td>
-<td>volume id</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--squashfs_args</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>additional squashfs args</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--timeout</span></kbd></td>
-<td>Cancel installer after X minutes</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-V</span></kbd></td>
-<td>show program’s version number and exit</td></tr>
 </tbody>
 </table>
-</dd>
-</dl>
+</div>
 </div>
 <div class="section" id="quickstart">
 <h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
 <p>Run this to create a bootable live iso:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">iso</span> \
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">iso</span> \
 <span class="o">--</span><span class="n">iso</span><span class="o">=/</span><span class="n">extra</span><span class="o">/</span><span class="n">iso</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span><span class="o">=./</span><span class="n">docs</span><span class="o">/</span><span class="n">fedora</span><span class="o">-</span><span class="n">livemedia</span><span class="o">.</span><span class="n">ks</span>
 </pre></div>
 </div>
 <p>You can run it directly from the lorax git repo like this:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>sudo PATH=./src/sbin/:$PATH PYTHONPATH=./src/ ./src/sbin/livemedia-creator \
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sudo PATH=./src/sbin/:$PATH PYTHONPATH=./src/ ./src/sbin/livemedia-creator \
 --make-iso --iso=/extra/iso/boot.iso \
 --ks=./docs/fedora-livemedia.ks --lorax-templates=./share/
 </pre></div>
 </div>
 <p>You can observe the installation using vnc. The logs will show what port was
-chosen, or you can use a specific port by passing it. eg. <code class="docutils literal"><span class="pre">--vnc</span> <span class="pre">vnc:127.0.0.1:5</span></code></p>
+chosen, or you can use a specific port by passing it. eg. <code class="docutils literal notranslate"><span class="pre">--vnc</span> <span class="pre">vnc:127.0.0.1:5</span></code></p>
 <p>This is usually a good idea when testing changes to the kickstart. lmc tries
 to monitor the logs for fatal errors, but may not catch everything.</p>
 </div>
@@ -500,10 +611,10 @@ to monitor the logs for fatal errors, but may not catch everything.</p>
 <p>There are 2 stages, the install stage which produces a disk or filesystem image
 as its output, and the boot media creation which uses the image as its input.
 Normally you would run both stages, but it is possible to stop after the
-install stage, by using <code class="docutils literal"><span class="pre">--image-only</span></code>, or to skip the install stage and use
-a previously created disk image by passing <code class="docutils literal"><span class="pre">--disk-image</span></code> or <code class="docutils literal"><span class="pre">--fs-image</span></code></p>
+install stage, by using <code class="docutils literal notranslate"><span class="pre">--image-only</span></code>, or to skip the install stage and use
+a previously created disk image by passing <code class="docutils literal notranslate"><span class="pre">--disk-image</span></code> or <code class="docutils literal notranslate"><span class="pre">--fs-image</span></code></p>
 <p>When creating an iso qemu boots using the passed Anaconda installer iso
-and installs the system based on the kickstart. The <code class="docutils literal"><span class="pre">%post</span></code> section of the
+and installs the system based on the kickstart. The <code class="docutils literal notranslate"><span class="pre">%post</span></code> section of the
 kickstart is used to customize the installed system in the same way that
 current spin-kickstarts do.</p>
 <p>livemedia-creator monitors the install process for problems by watching the
@@ -519,15 +630,15 @@ be booted using kvm.</p>
 filesystem image which is then used as the input to lorax for creation of the
 final media.</p>
 <p>The final image is created by lorax, using the templates in /usr/share/lorax/live/
-or the live directory below the directory specified by <code class="docutils literal"><span class="pre">--lorax-templates</span></code>. The
+or the live directory below the directory specified by <code class="docutils literal notranslate"><span class="pre">--lorax-templates</span></code>. The
 templates are written using the Mako template system with some extra commands
 added by lorax.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">The output from –make-iso includes the artifacts used to create the boot.iso;
 the kernel, initrd, the squashfs filesystem, etc. If you only want the
-boot.iso you can pass <code class="docutils literal"><span class="pre">--iso-only</span></code> and the other files will be removed. You
-can also name the iso by using <code class="docutils literal"><span class="pre">--iso-name</span> <span class="pre">my-live.iso</span></code>.</p>
+boot.iso you can pass <code class="docutils literal notranslate"><span class="pre">--iso-only</span></code> and the other files will be removed. You
+can also name the iso by using <code class="docutils literal notranslate"><span class="pre">--iso-name</span> <span class="pre">my-live.iso</span></code>.</p>
 </div>
 </div>
 <div class="section" id="kickstarts">
@@ -555,11 +666,11 @@ changes. Here are the steps I used to convert the Fedora XFCE spin.</p>
 This works for F16 builds but for F15 and before you need to pass
 something on the cmdline that activate the network, like sshd:</p>
 <blockquote>
-<div><p><code class="docutils literal"><span class="pre">livemedia-creator</span> <span class="pre">--kernel-args=&quot;sshd&quot;</span></code></p>
+<div><p><code class="docutils literal notranslate"><span class="pre">livemedia-creator</span> <span class="pre">--kernel-args=&quot;sshd&quot;</span></code></p>
 </div></blockquote>
 </li>
 <li><p class="first">Add a root password:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">rootpw</span> <span class="n">rootme</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">rootpw</span> <span class="n">rootme</span>
 <span class="n">network</span> <span class="o">--</span><span class="n">bootproto</span><span class="o">=</span><span class="n">dhcp</span> <span class="o">--</span><span class="n">activate</span>
 <span class="n">zerombr</span>
 <span class="n">clearpart</span> <span class="o">--</span><span class="nb">all</span>
@@ -573,11 +684,11 @@ something on the cmdline that activate the network, like sshd:</p>
 really depends on how the spin wants to work. You could add the live user
 that you create to the %wheel group so that sudo works if you wanted to.</p>
 <blockquote>
-<div><p><code class="docutils literal"><span class="pre">passwd</span> <span class="pre">-d</span> <span class="pre">root</span> <span class="pre">&gt;</span> <span class="pre">/dev/null</span></code></p>
+<div><p><code class="docutils literal notranslate"><span class="pre">passwd</span> <span class="pre">-d</span> <span class="pre">root</span> <span class="pre">&gt;</span> <span class="pre">/dev/null</span></code></p>
 </div></blockquote>
 </li>
 <li><p class="first">Remove /etc/fstab in %post, dracut handles mounting the rootfs</p>
-<p><code class="docutils literal"><span class="pre">cat</span> <span class="pre">/dev/null</span> <span class="pre">&gt;</span> <span class="pre">/dev/fstab</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">cat</span> <span class="pre">/dev/null</span> <span class="pre">&gt;</span> <span class="pre">/dev/fstab</span></code></p>
 <p>Do this only for live iso’s, the filesystem will be mounted read only if
 there is no /etc/fstab</p>
 </li>
@@ -597,17 +708,17 @@ time you run it. To speed things up you either need a local mirror of the
 packages, or you can use a caching proxy. When using a proxy you pass it to
 livemedia-creator like this:</p>
 <blockquote>
-<div><code class="docutils literal"><span class="pre">--proxy=http://proxy.yourdomain.com:3128</span></code></div></blockquote>
+<div><code class="docutils literal notranslate"><span class="pre">--proxy=http://proxy.yourdomain.com:3128</span></code></div></blockquote>
 <p>You also need to use a specific mirror instead of mirrormanager so that the
 packages will get cached, so your kickstart url would look like:</p>
 <blockquote>
-<div><code class="docutils literal"><span class="pre">url</span> <span class="pre">--url=&quot;http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/x86_64/os/&quot;</span></code></div></blockquote>
+<div><code class="docutils literal notranslate"><span class="pre">url</span> <span class="pre">--url=&quot;http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/x86_64/os/&quot;</span></code></div></blockquote>
 <p>You can also add an update repo, but don’t name it updates. Add –proxy to it
 as well.</p>
 </div>
 <div class="section" id="anaconda-image-install-no-virt">
 <h2>Anaconda image install (no-virt)<a class="headerlink" href="#anaconda-image-install-no-virt" title="Permalink to this headline">¶</a></h2>
-<p>You can create images without using qemu by passing <code class="docutils literal"><span class="pre">--no-virt</span></code> on the
+<p>You can create images without using qemu by passing <code class="docutils literal notranslate"><span class="pre">--no-virt</span></code> on the
 cmdline. This will use Anaconda’s directory install feature to handle the
 install.  There are a couple of things to keep in mind when doing this:</p>
 <ol class="arabic simple">
@@ -625,7 +736,7 @@ afford to lose all data from.</li>
 <p>The logs from anaconda will be placed in an ./anaconda/ directory in either
 the current directory or in the directory used for –logfile</p>
 <p>Example cmdline:</p>
-<p><code class="docutils literal"><span class="pre">sudo</span> <span class="pre">livemedia-creator</span> <span class="pre">--make-iso</span> <span class="pre">--no-virt</span> <span class="pre">--ks=./fedora-livemedia.ks</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">livemedia-creator</span> <span class="pre">--make-iso</span> <span class="pre">--no-virt</span> <span class="pre">--ks=./fedora-livemedia.ks</span></code></p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Using no-virt to create a partitioned disk image (eg. –make-disk or
@@ -641,7 +752,7 @@ kickstart file. All of the work to customize the image is handled by the kicksta
 The example currently included was modified from the cloud-kickstarts version so
 that it would work with livemedia-creator.</p>
 <p>Example cmdline:</p>
-<p><code class="docutils literal"><span class="pre">sudo</span> <span class="pre">livemedia-creator</span> <span class="pre">--make-ami</span> <span class="pre">--iso=/path/to/boot.iso</span> <span class="pre">--ks=./docs/fedora-livemedia-ec2.ks</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">livemedia-creator</span> <span class="pre">--make-ami</span> <span class="pre">--iso=/path/to/boot.iso</span> <span class="pre">--ks=./docs/fedora-livemedia-ec2.ks</span></code></p>
 <p>This will produce an ami-root.img file in the working directory.</p>
 <p>At this time I have not tested the image with EC2. Feedback would be welcome.</p>
 </div>
@@ -652,50 +763,50 @@ switch. This will create the partitioned disk image and an XML file that can be
 used with virt-image to setup a virtual system.</p>
 <p>The XML is generated using the Mako template from
 /usr/share/lorax/appliance/libvirt.xml You can use a different template by
-passing <code class="docutils literal"><span class="pre">--app-template</span> <span class="pre">&lt;template</span> <span class="pre">path&gt;</span></code></p>
+passing <code class="docutils literal notranslate"><span class="pre">--app-template</span> <span class="pre">&lt;template</span> <span class="pre">path&gt;</span></code></p>
 <p>Documentation on the Mako template system can be found at the <a class="reference external" href="http://docs.makotemplates.org/en/latest/index.html">Mako site</a></p>
 <p>The name of the final output XML is appliance.xml, this can be changed with
-<code class="docutils literal"><span class="pre">--app-file</span> <span class="pre">&lt;file</span> <span class="pre">path&gt;</span></code></p>
+<code class="docutils literal notranslate"><span class="pre">--app-file</span> <span class="pre">&lt;file</span> <span class="pre">path&gt;</span></code></p>
 <p>The following variables are passed to the template:</p>
 <blockquote>
 <div><dl class="docutils">
-<dt><code class="docutils literal"><span class="pre">disks</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">disks</span></code></dt>
 <dd><p class="first">A list of disk_info about each disk.
 Each entry has the following attributes:</p>
 <blockquote class="last">
-<div><p><code class="docutils literal"><span class="pre">name</span></code>
+<div><p><code class="docutils literal notranslate"><span class="pre">name</span></code>
 base name of the disk image file</p>
-<p><code class="docutils literal"><span class="pre">format</span></code>
+<p><code class="docutils literal notranslate"><span class="pre">format</span></code>
 “raw”</p>
-<p><code class="docutils literal"><span class="pre">checksum_type</span></code>
+<p><code class="docutils literal notranslate"><span class="pre">checksum_type</span></code>
 “sha256”</p>
-<p><code class="docutils literal"><span class="pre">checksum</span></code>
+<p><code class="docutils literal notranslate"><span class="pre">checksum</span></code>
 sha256 checksum of the disk image</p>
 </div></blockquote>
 </dd>
 </dl>
-<p><code class="docutils literal"><span class="pre">name</span></code>
+<p><code class="docutils literal notranslate"><span class="pre">name</span></code>
 Name of appliance, from –app-name argument</p>
-<p><code class="docutils literal"><span class="pre">arch</span></code>
+<p><code class="docutils literal notranslate"><span class="pre">arch</span></code>
 Architecture</p>
-<p><code class="docutils literal"><span class="pre">memory</span></code>
-Memory in KB (from <code class="docutils literal"><span class="pre">--ram</span></code>)</p>
-<p><code class="docutils literal"><span class="pre">vcpus</span></code>
-from <code class="docutils literal"><span class="pre">--vcpus</span></code></p>
-<p><code class="docutils literal"><span class="pre">networks</span></code>
+<p><code class="docutils literal notranslate"><span class="pre">memory</span></code>
+Memory in KB (from <code class="docutils literal notranslate"><span class="pre">--ram</span></code>)</p>
+<p><code class="docutils literal notranslate"><span class="pre">vcpus</span></code>
+from <code class="docutils literal notranslate"><span class="pre">--vcpus</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">networks</span></code>
 list of networks from the kickstart or []</p>
-<p><code class="docutils literal"><span class="pre">title</span></code>
-from <code class="docutils literal"><span class="pre">--title</span></code></p>
-<p><code class="docutils literal"><span class="pre">project</span></code>
-from <code class="docutils literal"><span class="pre">--project</span></code></p>
-<p><code class="docutils literal"><span class="pre">releasever</span></code>
-from <code class="docutils literal"><span class="pre">--releasever</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">title</span></code>
+from <code class="docutils literal notranslate"><span class="pre">--title</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">project</span></code>
+from <code class="docutils literal notranslate"><span class="pre">--project</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">releasever</span></code>
+from <code class="docutils literal notranslate"><span class="pre">--releasever</span></code></p>
 </div></blockquote>
 <p>The created image can be imported into libvirt using:</p>
 <blockquote>
-<div><code class="docutils literal"><span class="pre">virt-image</span> <span class="pre">appliance.xml</span></code></div></blockquote>
-<p>You can also create qcow2 appliance images using <code class="docutils literal"><span class="pre">--image-type=qcow2</span></code>, for example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">appliance</span> <span class="o">--</span><span class="n">iso</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span><span class="o">=./</span><span class="n">docs</span><span class="o">/</span><span class="n">fedora</span><span class="o">-</span><span class="n">minimal</span><span class="o">.</span><span class="n">ks</span> \
+<div><code class="docutils literal notranslate"><span class="pre">virt-image</span> <span class="pre">appliance.xml</span></code></div></blockquote>
+<p>You can also create qcow2 appliance images using <code class="docutils literal notranslate"><span class="pre">--image-type=qcow2</span></code>, for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">appliance</span> <span class="o">--</span><span class="n">iso</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span><span class="o">=./</span><span class="n">docs</span><span class="o">/</span><span class="n">fedora</span><span class="o">-</span><span class="n">minimal</span><span class="o">.</span><span class="n">ks</span> \
 <span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="nb">type</span><span class="o">=</span><span class="n">qcow2</span> <span class="o">--</span><span class="n">app</span><span class="o">-</span><span class="n">file</span><span class="o">=</span><span class="n">minimal</span><span class="o">-</span><span class="n">test</span><span class="o">.</span><span class="n">xml</span> <span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="n">name</span><span class="o">=</span><span class="n">minimal</span><span class="o">-</span><span class="n">test</span><span class="o">.</span><span class="n">img</span>
 </pre></div>
 </div>
@@ -703,40 +814,40 @@ from <code class="docutils literal"><span class="pre">--releasever</span></code>
 <div class="section" id="filesystem-image-creation">
 <h2>Filesystem Image Creation<a class="headerlink" href="#filesystem-image-creation" title="Permalink to this headline">¶</a></h2>
 <p>livemedia-creator can be used to create un-partitined filesystem images using
-the <code class="docutils literal"><span class="pre">--make-fsimage</span></code> option. As of version 21.8 this works with both qemu and
+the <code class="docutils literal notranslate"><span class="pre">--make-fsimage</span></code> option. As of version 21.8 this works with both qemu and
 no-virt modes of operation. Previously it was only available with no-virt.</p>
 <p>Kickstarts should have a single / partition with no extra mountpoints.</p>
 <blockquote>
-<div><code class="docutils literal"><span class="pre">livemedia-creator</span> <span class="pre">--make-fsimage</span> <span class="pre">--iso=/path/to/boot.iso</span> <span class="pre">--ks=./docs/fedora-minimal.ks</span></code></div></blockquote>
-<p>You can name the output image with <code class="docutils literal"><span class="pre">--image-name</span></code> and set a label on the filesystem with <code class="docutils literal"><span class="pre">--fs-label</span></code></p>
+<div><code class="docutils literal notranslate"><span class="pre">livemedia-creator</span> <span class="pre">--make-fsimage</span> <span class="pre">--iso=/path/to/boot.iso</span> <span class="pre">--ks=./docs/fedora-minimal.ks</span></code></div></blockquote>
+<p>You can name the output image with <code class="docutils literal notranslate"><span class="pre">--image-name</span></code> and set a label on the filesystem with <code class="docutils literal notranslate"><span class="pre">--fs-label</span></code></p>
 </div>
 <div class="section" id="tar-file-creation">
 <h2>TAR File Creation<a class="headerlink" href="#tar-file-creation" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal"><span class="pre">--make-tar</span></code> command can be used to create a tar of the root filesystem. By
+<p>The <code class="docutils literal notranslate"><span class="pre">--make-tar</span></code> command can be used to create a tar of the root filesystem. By
 default it is compressed using xz, but this can be changed using the
-<code class="docutils literal"><span class="pre">--compression</span></code> and <code class="docutils literal"><span class="pre">--compress-arg</span></code> options. This option works with both virt and
+<code class="docutils literal notranslate"><span class="pre">--compression</span></code> and <code class="docutils literal notranslate"><span class="pre">--compress-arg</span></code> options. This option works with both virt and
 no-virt install methods.</p>
-<p>As with <code class="docutils literal"><span class="pre">--make-fsimage</span></code> the kickstart should be limited to a single / partition.</p>
+<p>As with <code class="docutils literal notranslate"><span class="pre">--make-fsimage</span></code> the kickstart should be limited to a single / partition.</p>
 <p>For example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">tar</span> <span class="o">--</span><span class="n">iso</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span><span class="o">=./</span><span class="n">docs</span><span class="o">/</span><span class="n">fedora</span><span class="o">-</span><span class="n">minimal</span><span class="o">.</span><span class="n">ks</span> \
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">tar</span> <span class="o">--</span><span class="n">iso</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span><span class="o">=./</span><span class="n">docs</span><span class="o">/</span><span class="n">fedora</span><span class="o">-</span><span class="n">minimal</span><span class="o">.</span><span class="n">ks</span> \
 <span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="n">name</span><span class="o">=</span><span class="n">fedora</span><span class="o">-</span><span class="n">root</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">xz</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="live-image-for-pxe-boot">
 <h2>Live Image for PXE Boot<a class="headerlink" href="#live-image-for-pxe-boot" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal"><span class="pre">--make-pxe-live</span></code> command will produce squashfs image containing live root
+<p>The <code class="docutils literal notranslate"><span class="pre">--make-pxe-live</span></code> command will produce squashfs image containing live root
 filesystem that can be used for pxe boot. Directory with results will contain
 the live image, kernel image, initrd image and template of pxe configuration
 for the images.</p>
 </div>
 <div class="section" id="atomic-live-image-for-pxe-boot">
 <h2>Atomic Live Image for PXE Boot<a class="headerlink" href="#atomic-live-image-for-pxe-boot" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal"><span class="pre">--make-ostree-live</span></code> command will produce the same result as <code class="docutils literal"><span class="pre">--make-pxe-live</span></code>
+<p>The <code class="docutils literal notranslate"><span class="pre">--make-ostree-live</span></code> command will produce the same result as <code class="docutils literal notranslate"><span class="pre">--make-pxe-live</span></code>
 for installations of Atomic Host.  Example kickstart for such an installation
 using Atomic installer iso with local repo included in the image can be found
 in docs/rhel-atomic-pxe-live.ks.</p>
-<p>The PXE images can also be created with <code class="docutils literal"><span class="pre">--no-virt</span></code> by using the example
+<p>The PXE images can also be created with <code class="docutils literal notranslate"><span class="pre">--no-virt</span></code> by using the example
 kickstart in docs/fedora-atomic-pxe-live-novirt.ks. This also works inside the
 mock environment.</p>
 </div>
@@ -746,9 +857,9 @@ mock environment.</p>
 22.15 inside of a mock chroot with –make-iso and –make-fsimage.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">As of mock 1.3.4 you need to use <code class="docutils literal"><span class="pre">--old-chroot</span></code> with mock. Mock now defaults to using systemd-nspawn
-which cannot create the needed loop device nodes. Passing <code class="docutils literal"><span class="pre">--old-chroot</span></code> will use the old system
-where <code class="docutils literal"><span class="pre">/dev/loop*</span></code> is setup for you.</p>
+<p class="last">As of mock 1.3.4 you need to use <code class="docutils literal notranslate"><span class="pre">--old-chroot</span></code> with mock. Mock now defaults to using systemd-nspawn
+which cannot create the needed loop device nodes. Passing <code class="docutils literal notranslate"><span class="pre">--old-chroot</span></code> will use the old system
+where <code class="docutils literal notranslate"><span class="pre">/dev/loop*</span></code> is setup for you.</p>
 </div>
 <p>On the host system:</p>
 <ol class="arabic">
@@ -758,7 +869,7 @@ where <code class="docutils literal"><span class="pre">/dev/loop*</span></code> 
 </li>
 <li><p class="first">Create a new /etc/mock/ config file based on the rawhide one, or modify the
 existing one so that the following options are setup:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">config_opts</span><span class="p">[</span><span class="s1">&#39;chroot_setup_cmd&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;install @buildsys-build anaconda-tui lorax&#39;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">config_opts</span><span class="p">[</span><span class="s1">&#39;chroot_setup_cmd&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;install @buildsys-build anaconda-tui lorax&#39;</span>
 
 <span class="c1"># build results go into /home/builder/results/</span>
 <span class="n">config_opts</span><span class="p">[</span><span class="s1">&#39;plugin_conf&#39;</span><span class="p">][</span><span class="s1">&#39;bind_mount_opts&#39;</span><span class="p">][</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;/home/builder/results&#39;</span><span class="p">,</span><span class="s1">&#39;/results/&#39;</span><span class="p">))</span>
@@ -772,22 +883,22 @@ the updates-testing repository so that you get the latest builds in your mock ch
 group.</p>
 <ol class="arabic" start="4">
 <li><p class="first">Make a directory for results matching the bind mount above
-<code class="docutils literal"><span class="pre">mkdir</span> <span class="pre">~/results/</span></code></p>
+<code class="docutils literal notranslate"><span class="pre">mkdir</span> <span class="pre">~/results/</span></code></p>
 </li>
 <li><p class="first">Copy the example kickstarts
-<code class="docutils literal"><span class="pre">cp</span> <span class="pre">/usr/share/docs/lorax/*ks</span> <span class="pre">.</span></code></p>
+<code class="docutils literal notranslate"><span class="pre">cp</span> <span class="pre">/usr/share/docs/lorax/*ks</span> <span class="pre">.</span></code></p>
 </li>
 <li><p class="first">Make sure tar and dracut-network are in the %packages section and that the
-<code class="docutils literal"><span class="pre">url</span> <span class="pre">points</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">correct</span> <span class="pre">repo</span></code></p>
+<code class="docutils literal notranslate"><span class="pre">url</span> <span class="pre">points</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">correct</span> <span class="pre">repo</span></code></p>
 </li>
 <li><p class="first">Init the mock
-<code class="docutils literal"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">fedora-rawhide-x86_64</span> <span class="pre">--old-chroot</span> <span class="pre">--init</span></code></p>
+<code class="docutils literal notranslate"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">fedora-rawhide-x86_64</span> <span class="pre">--old-chroot</span> <span class="pre">--init</span></code></p>
 </li>
 <li><p class="first">Copy the kickstart inside the mock
-<code class="docutils literal"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">fedora-rawhide-x86_64</span> <span class="pre">--old-chroot</span> <span class="pre">--copyin</span> <span class="pre">./fedora-minimal.ks</span> <span class="pre">/root/</span></code></p>
+<code class="docutils literal notranslate"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">fedora-rawhide-x86_64</span> <span class="pre">--old-chroot</span> <span class="pre">--copyin</span> <span class="pre">./fedora-minimal.ks</span> <span class="pre">/root/</span></code></p>
 </li>
 <li><p class="first">Make a minimal iso:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">mock</span> <span class="o">-</span><span class="n">r</span> <span class="n">fedora</span><span class="o">-</span><span class="n">rawhide</span><span class="o">-</span><span class="n">x86_64</span> <span class="o">--</span><span class="n">old</span><span class="o">-</span><span class="n">chroot</span> <span class="o">--</span><span class="n">chroot</span> <span class="o">--</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">virt</span> \
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mock</span> <span class="o">-</span><span class="n">r</span> <span class="n">fedora</span><span class="o">-</span><span class="n">rawhide</span><span class="o">-</span><span class="n">x86_64</span> <span class="o">--</span><span class="n">old</span><span class="o">-</span><span class="n">chroot</span> <span class="o">--</span><span class="n">chroot</span> <span class="o">--</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">virt</span> \
 <span class="o">--</span><span class="n">resultdir</span><span class="o">=/</span><span class="n">results</span><span class="o">/</span><span class="k">try</span><span class="o">-</span><span class="mi">1</span> <span class="o">--</span><span class="n">logfile</span><span class="o">=/</span><span class="n">results</span><span class="o">/</span><span class="n">logs</span><span class="o">/</span><span class="k">try</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="k">try</span><span class="o">-</span><span class="mf">1.</span><span class="n">log</span> \
 <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">fedora</span><span class="o">-</span><span class="n">minimal</span><span class="o">.</span><span class="n">ks</span>
 </pre></div>
@@ -812,7 +923,7 @@ This allows creation of all image types, and use of the KVM on the host if
 </li>
 <li><p class="first">Create a new /etc/mock/ config file based on the rawhide one, or modify the
 existing one so that the following options are setup:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">config_opts</span><span class="p">[</span><span class="s1">&#39;chroot_setup_cmd&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;install @buildsys-build lorax qemu&#39;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">config_opts</span><span class="p">[</span><span class="s1">&#39;chroot_setup_cmd&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;install @buildsys-build lorax qemu&#39;</span>
 
 <span class="c1"># build results go into /home/builder/results/</span>
 <span class="n">config_opts</span><span class="p">[</span><span class="s1">&#39;plugin_conf&#39;</span><span class="p">][</span><span class="s1">&#39;bind_mount_opts&#39;</span><span class="p">][</span><span class="s1">&#39;dirs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;/home/builder/results&#39;</span><span class="p">,</span><span class="s1">&#39;/results/&#39;</span><span class="p">))</span>
@@ -826,25 +937,25 @@ the updates-testing repository so that you get the latest builds in your mock ch
 group.</p>
 <ol class="arabic" start="4">
 <li><p class="first">Make a directory for results matching the bind mount above
-<code class="docutils literal"><span class="pre">mkdir</span> <span class="pre">~/results/</span></code></p>
+<code class="docutils literal notranslate"><span class="pre">mkdir</span> <span class="pre">~/results/</span></code></p>
 </li>
 <li><p class="first">Copy the example kickstarts
-<code class="docutils literal"><span class="pre">cp</span> <span class="pre">/usr/share/docs/lorax/*ks</span> <span class="pre">.</span></code></p>
+<code class="docutils literal notranslate"><span class="pre">cp</span> <span class="pre">/usr/share/docs/lorax/*ks</span> <span class="pre">.</span></code></p>
 </li>
 <li><p class="first">Make sure tar and dracut-network are in the %packages section and that the
-<code class="docutils literal"><span class="pre">url</span> <span class="pre">points</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">correct</span> <span class="pre">repo</span></code></p>
+<code class="docutils literal notranslate"><span class="pre">url</span> <span class="pre">points</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">correct</span> <span class="pre">repo</span></code></p>
 </li>
 <li><p class="first">Init the mock
-<code class="docutils literal"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">fedora-rawhide-x86_64</span> <span class="pre">--old-chroot</span> <span class="pre">--init</span></code></p>
+<code class="docutils literal notranslate"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">fedora-rawhide-x86_64</span> <span class="pre">--old-chroot</span> <span class="pre">--init</span></code></p>
 </li>
 <li><p class="first">Copy the kickstart inside the mock
-<code class="docutils literal"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">fedora-rawhide-x86_64</span> <span class="pre">--old-chroot</span> <span class="pre">--copyin</span> <span class="pre">./fedora-minimal.ks</span> <span class="pre">/root/</span></code></p>
+<code class="docutils literal notranslate"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">fedora-rawhide-x86_64</span> <span class="pre">--old-chroot</span> <span class="pre">--copyin</span> <span class="pre">./fedora-minimal.ks</span> <span class="pre">/root/</span></code></p>
 </li>
 <li><p class="first">Copy the Anaconda boot.iso inside the mock
-<code class="docutils literal"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">fedora-rawhide-x86_64</span> <span class="pre">--old-chroot</span> <span class="pre">--copyin</span> <span class="pre">./boot.iso</span> <span class="pre">/root/</span></code></p>
+<code class="docutils literal notranslate"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">fedora-rawhide-x86_64</span> <span class="pre">--old-chroot</span> <span class="pre">--copyin</span> <span class="pre">./boot.iso</span> <span class="pre">/root/</span></code></p>
 </li>
 <li><p class="first">Make a minimal iso:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">mock</span> <span class="o">-</span><span class="n">r</span> <span class="n">fedora</span><span class="o">-</span><span class="n">rawhide</span><span class="o">-</span><span class="n">x86_64</span> <span class="o">--</span><span class="n">old</span><span class="o">-</span><span class="n">chroot</span> <span class="o">--</span><span class="n">chroot</span> <span class="o">--</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> \
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mock</span> <span class="o">-</span><span class="n">r</span> <span class="n">fedora</span><span class="o">-</span><span class="n">rawhide</span><span class="o">-</span><span class="n">x86_64</span> <span class="o">--</span><span class="n">old</span><span class="o">-</span><span class="n">chroot</span> <span class="o">--</span><span class="n">chroot</span> <span class="o">--</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> \
 <span class="o">--</span><span class="n">resultdir</span><span class="o">=/</span><span class="n">results</span><span class="o">/</span><span class="k">try</span><span class="o">-</span><span class="mi">1</span> <span class="o">--</span><span class="n">logfile</span><span class="o">=/</span><span class="n">results</span><span class="o">/</span><span class="n">logs</span><span class="o">/</span><span class="k">try</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="k">try</span><span class="o">-</span><span class="mf">1.</span><span class="n">log</span> \
 <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">fedora</span><span class="o">-</span><span class="n">minimal</span><span class="o">.</span><span class="n">ks</span> <span class="o">--</span><span class="n">iso</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span>
 </pre></div>
@@ -856,11 +967,11 @@ including anaconda logs and livemedia-creator logs. The new iso will be
 located at ~/results/try-1/images/boot.iso, and the ~/results/try-1/
 directory tree will also contain the vmlinuz, initrd, etc.</p>
 <p>This will run qemu without kvm support, which is going to be very slow. You can
-add <code class="docutils literal"><span class="pre">mknod</span> <span class="pre">/dev/kvm</span> <span class="pre">c</span> <span class="pre">10</span> <span class="pre">232;</span></code> to create the device node before running lmc.</p>
+add <code class="docutils literal notranslate"><span class="pre">mknod</span> <span class="pre">/dev/kvm</span> <span class="pre">c</span> <span class="pre">10</span> <span class="pre">232;</span></code> to create the device node before running lmc.</p>
 </div>
 <div class="section" id="openstack-image-creation">
 <h2>OpenStack Image Creation<a class="headerlink" href="#openstack-image-creation" title="Permalink to this headline">¶</a></h2>
-<p>OpenStack supports partitioned disk images so <code class="docutils literal"><span class="pre">--make-disk</span></code> can be used to
+<p>OpenStack supports partitioned disk images so <code class="docutils literal notranslate"><span class="pre">--make-disk</span></code> can be used to
 create images for importing into glance, OpenStack’s image storage component.
 You need to have access to an OpenStack provider that allows image uploads, or
 setup your own using the instructions from the <a class="reference external" href="https://www.rdoproject.org/Quickstart">RDO Project</a>.</p>
@@ -870,17 +981,17 @@ packages. OpenStack supports setting up the image using cloud-init, and
 cloud-utils-growpart will grow the image to fit the instance’s disk size.</p>
 <p>Create a qcow2 image using the kickstart like this:</p>
 <blockquote>
-<div><code class="docutils literal"><span class="pre">sudo</span> <span class="pre">livemedia-creator</span> <span class="pre">--make-disk</span> <span class="pre">--iso=/path/to/boot.iso</span> <span class="pre">--ks=/path/to/fedora-openstack.ks</span> <span class="pre">--image-type=qcow2</span></code></div></blockquote>
+<div><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">livemedia-creator</span> <span class="pre">--make-disk</span> <span class="pre">--iso=/path/to/boot.iso</span> <span class="pre">--ks=/path/to/fedora-openstack.ks</span> <span class="pre">--image-type=qcow2</span></code></div></blockquote>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">On the RHEL7 version of lmc <code class="docutils literal"><span class="pre">--image-type</span></code> isn’t supported. You can only create a bare partitioned disk image.</p>
+<p class="last">On the RHEL7 version of lmc <code class="docutils literal notranslate"><span class="pre">--image-type</span></code> isn’t supported. You can only create a bare partitioned disk image.</p>
 </div>
 <p>Import the resulting disk image into the OpenStack system, either via the web UI, or glance on the cmdline:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">glance</span> <span class="n">image</span><span class="o">-</span><span class="n">create</span> <span class="o">--</span><span class="n">name</span> <span class="s2">&quot;fedora-openstack&quot;</span> <span class="o">--</span><span class="ow">is</span><span class="o">-</span><span class="n">public</span> <span class="n">true</span> <span class="o">--</span><span class="n">disk</span><span class="o">-</span><span class="nb">format</span> <span class="n">qcow2</span> \
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">glance</span> <span class="n">image</span><span class="o">-</span><span class="n">create</span> <span class="o">--</span><span class="n">name</span> <span class="s2">&quot;fedora-openstack&quot;</span> <span class="o">--</span><span class="ow">is</span><span class="o">-</span><span class="n">public</span> <span class="n">true</span> <span class="o">--</span><span class="n">disk</span><span class="o">-</span><span class="nb">format</span> <span class="n">qcow2</span> \
 <span class="o">--</span><span class="n">container</span><span class="o">-</span><span class="nb">format</span> <span class="n">bare</span> <span class="o">--</span><span class="n">file</span> <span class="o">./</span><span class="n">fedora</span><span class="o">-</span><span class="n">openstack</span><span class="o">.</span><span class="n">qcow2</span>
 </pre></div>
 </div>
-<p>If qcow2 wasn’t used then <code class="docutils literal"><span class="pre">--disk-format</span></code> should be set to raw.</p>
+<p>If qcow2 wasn’t used then <code class="docutils literal notranslate"><span class="pre">--disk-format</span></code> should be set to raw.</p>
 </div>
 <div class="section" id="docker-image-creation">
 <h2>Docker Image Creation<a class="headerlink" href="#docker-image-creation" title="Permalink to this headline">¶</a></h2>
@@ -888,43 +999,43 @@ cloud-utils-growpart will grow the image to fit the instance’s disk size.</p>
 fedora-docker.ks example kickstart which removes the requirement for core files and the kernel.</p>
 <p>You can then import the tarfile into docker like this (as root):</p>
 <blockquote>
-<div><code class="docutils literal"><span class="pre">cat</span> <span class="pre">/var/tmp/fedora-root.tar.xz</span> <span class="pre">|</span> <span class="pre">docker</span> <span class="pre">import</span> <span class="pre">-</span> <span class="pre">fedora-root</span></code></div></blockquote>
+<div><code class="docutils literal notranslate"><span class="pre">cat</span> <span class="pre">/var/tmp/fedora-root.tar.xz</span> <span class="pre">|</span> <span class="pre">docker</span> <span class="pre">import</span> <span class="pre">-</span> <span class="pre">fedora-root</span></code></div></blockquote>
 <p>And then run bash inside of it:</p>
 <blockquote>
-<div><code class="docutils literal"><span class="pre">sudo</span> <span class="pre">docker</span> <span class="pre">run</span> <span class="pre">-i</span> <span class="pre">-t</span> <span class="pre">fedora-root</span> <span class="pre">/bin/bash</span></code></div></blockquote>
+<div><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">docker</span> <span class="pre">run</span> <span class="pre">-i</span> <span class="pre">-t</span> <span class="pre">fedora-root</span> <span class="pre">/bin/bash</span></code></div></blockquote>
 </div>
 <div class="section" id="open-container-initiative-image-creation">
 <h2>Open Container Initiative Image Creation<a class="headerlink" href="#open-container-initiative-image-creation" title="Permalink to this headline">¶</a></h2>
 <p>The OCI is a new specification that is still being worked on. You can read more about it at
 <a class="reference external" href="https://www.opencontainers.org/">the Open Container Initiative website</a>. You can create
 OCI images using the following command:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">oci</span> <span class="o">--</span><span class="n">oci</span><span class="o">-</span><span class="n">config</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">config</span><span class="o">.</span><span class="n">json</span> <span class="o">--</span><span class="n">oci</span><span class="o">-</span><span class="n">runtime</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">runtime</span><span class="o">.</span><span class="n">json</span> \
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">oci</span> <span class="o">--</span><span class="n">oci</span><span class="o">-</span><span class="n">config</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">config</span><span class="o">.</span><span class="n">json</span> <span class="o">--</span><span class="n">oci</span><span class="o">-</span><span class="n">runtime</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">runtime</span><span class="o">.</span><span class="n">json</span> \
 <span class="o">--</span><span class="n">iso</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">fedora</span><span class="o">-</span><span class="n">minimal</span><span class="o">.</span><span class="n">ks</span>
 </pre></div>
 </div>
 <p>You must provide the config.json and runtime.json files to be included in the bundle,
 their specifications can be found <a class="reference external" href="https://github.com/opencontainers/specs">on the OCI github project</a>
 output will be in the results directory with a default name of bundle.tar.xz</p>
-<p>This will work with <code class="docutils literal"><span class="pre">--no-virt</span></code> and inside a mock since it doesn’t use any
+<p>This will work with <code class="docutils literal notranslate"><span class="pre">--no-virt</span></code> and inside a mock since it doesn’t use any
 partitioned disk images.</p>
 </div>
 <div class="section" id="vagrant-image-creation">
 <h2>Vagrant Image Creation<a class="headerlink" href="#vagrant-image-creation" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://www.vagrantup.com/">Vagrant</a> images can be created using the following command:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">vagrant</span> <span class="o">--</span><span class="n">vagrant</span><span class="o">-</span><span class="n">metadata</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">metadata</span><span class="o">.</span><span class="n">json</span> \
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">vagrant</span> <span class="o">--</span><span class="n">vagrant</span><span class="o">-</span><span class="n">metadata</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">metadata</span><span class="o">.</span><span class="n">json</span> \
 <span class="o">--</span><span class="n">iso</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">fedora</span><span class="o">-</span><span class="n">vagrant</span><span class="o">.</span><span class="n">ks</span>
 </pre></div>
 </div>
 <p>The image created is a <a class="reference external" href="https://github.com/pradels/vagrant-libvirt">vagrant-libvirt</a> provider image and needs to have
 vagrant setup with libvirt before you can use it.</p>
-<p>The <code class="docutils literal"><span class="pre">--vagrant-metadata</span></code> file is optional, it will create a minimal one by
+<p>The <code class="docutils literal notranslate"><span class="pre">--vagrant-metadata</span></code> file is optional, it will create a minimal one by
 default, and if one is passed it will make sure the disk size  is setup
-correctly. If you pass a <code class="docutils literal"><span class="pre">--vagrant-vagrantfile</span></code> it will be included in the
+correctly. If you pass a <code class="docutils literal notranslate"><span class="pre">--vagrant-vagrantfile</span></code> it will be included in the
 image verbatim. By default no vagrantfile is created.</p>
 <p>There is an example Vagrant kickstart file in the docs directory that sets up
 the vagrant user with the default insecure SSH pubkey and a few useful
 utilities.</p>
-<p>This also works with <code class="docutils literal"><span class="pre">--no-virt</span></code>, but will not work inside a mock due to its
+<p>This also works with <code class="docutils literal notranslate"><span class="pre">--no-virt</span></code>, but will not work inside a mock due to its
 use of partitioned disk images and qcow2.</p>
 </div>
 <div class="section" id="creating-uefi-disk-images-with-virt">
@@ -941,13 +1052,13 @@ in /etc/yum.repos.d/</li>
 <li>Copy /usr/share/edk2.git/ovmf-x64/OVMF_CODE-pure-efi.fd to /usr/share/OVMF/OVMF_CODE.fd</li>
 <li>Copy /usr/share/edk2.git/ovmf-x64/OVMF_VARS-pure-efi.fd to /usr/share/OVMF/OVMF_VARS.fd</li>
 </ol>
-<p>Now you can run livemedia-creator with <code class="docutils literal"><span class="pre">--virt-uefi</span></code> to boot and install using UEFI:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">disk</span> <span class="o">--</span><span class="n">virt</span><span class="o">-</span><span class="n">uefi</span> <span class="o">--</span><span class="n">iso</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span> \
+<p>Now you can run livemedia-creator with <code class="docutils literal notranslate"><span class="pre">--virt-uefi</span></code> to boot and install using UEFI:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">disk</span> <span class="o">--</span><span class="n">virt</span><span class="o">-</span><span class="n">uefi</span> <span class="o">--</span><span class="n">iso</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span> \
 <span class="o">--</span><span class="n">ks</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">fedora</span><span class="o">-</span><span class="n">minimal</span><span class="o">.</span><span class="n">ks</span>
 </pre></div>
 </div>
 <p>Make sure that the kickstart you are using creates a /boot/efi partition by including this:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">part</span> <span class="o">/</span><span class="n">boot</span><span class="o">/</span><span class="n">efi</span> <span class="o">--</span><span class="n">fstype</span><span class="o">=</span><span class="s2">&quot;efi&quot;</span> <span class="o">--</span><span class="n">size</span><span class="o">=</span><span class="mi">500</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">part</span> <span class="o">/</span><span class="n">boot</span><span class="o">/</span><span class="n">efi</span> <span class="o">--</span><span class="n">fstype</span><span class="o">=</span><span class="s2">&quot;efi&quot;</span> <span class="o">--</span><span class="n">size</span><span class="o">=</span><span class="mi">500</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -970,21 +1081,21 @@ problem you can switch to tty1 and examine the system directly.</p>
 <p>If it does get stuck the best way to cancel is to use kill -9 on the qemu pid,
 lmc will detect that the process died and cleanup.</p>
 <p>If lmc didn’t handle the cleanup for some reason you can do this:
-1. <code class="docutils literal"><span class="pre">sudo</span> <span class="pre">umount</span> <span class="pre">/tmp/lmc-XXXX</span></code> to unmount the iso from its mountpoint.
-2. <code class="docutils literal"><span class="pre">sudo</span> <span class="pre">rm</span> <span class="pre">-rf</span> <span class="pre">/tmp/lmc-XXXX</span></code>
-3. <code class="docutils literal"><span class="pre">sudo</span> <span class="pre">rm</span> <span class="pre">/var/tmp/lmc-disk-XXXXX</span></code> to remove the disk image.</p>
+1. <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">umount</span> <span class="pre">/tmp/lmc-XXXX</span></code> to unmount the iso from its mountpoint.
+2. <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">rm</span> <span class="pre">-rf</span> <span class="pre">/tmp/lmc-XXXX</span></code>
+3. <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">rm</span> <span class="pre">/var/tmp/lmc-disk-XXXXX</span></code> to remove the disk image.</p>
 <p>Note that lmc uses the lmc- prefix for all of its temporary files and
 directories to make it easier to find and clean up leftovers.</p>
 <p>The logs from the qemu run are stored in virt-install.log, logs from
 livemedia-creator are in livemedia.log and program.log</p>
-<p>You can add <code class="docutils literal"><span class="pre">--image-only</span></code> to skip the .iso creation and examine the resulting
-disk image. Or you can pass <code class="docutils literal"><span class="pre">--keep-image</span></code> to keep it around after the iso has
+<p>You can add <code class="docutils literal notranslate"><span class="pre">--image-only</span></code> to skip the .iso creation and examine the resulting
+disk image. Or you can pass <code class="docutils literal notranslate"><span class="pre">--keep-image</span></code> to keep it around after the iso has
 been created.</p>
-<p>Cleaning up aborted <code class="docutils literal"><span class="pre">--no-virt</span></code> installs can sometimes be accomplished by
-running the <code class="docutils literal"><span class="pre">anaconda-cleanup</span></code> script. As of Fedora 18 anaconda is
+<p>Cleaning up aborted <code class="docutils literal notranslate"><span class="pre">--no-virt</span></code> installs can sometimes be accomplished by
+running the <code class="docutils literal notranslate"><span class="pre">anaconda-cleanup</span></code> script. As of Fedora 18 anaconda is
 multi-threaded and it can sometimes become stuck and refuse to exit. When this
 happens you can usually clean up by first killing the anaconda process then
-running <code class="docutils literal"><span class="pre">anaconda-cleanup</span></code>.</p>
+running <code class="docutils literal notranslate"><span class="pre">anaconda-cleanup</span></code>.</p>
 </div>
 <div class="section" id="hacking">
 <h2>Hacking<a class="headerlink" href="#hacking" title="Permalink to this headline">¶</a></h2>
@@ -997,15 +1108,13 @@ report bugs against the lorax component.</p>
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="product-images.html" class="btn btn-neutral float-right" title="Product and Updates Images" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="lorax-composer.html" class="btn btn-neutral float-right" title="lorax-composer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="lorax.html" class="btn btn-neutral" title="Lorax" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -1021,7 +1130,7 @@ report bugs against the lorax component.</p>
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1039,7 +1148,8 @@ report bugs against the lorax component.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'28.9',
+            VERSION:'28.10',
+            LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -1057,14 +1167,13 @@ report bugs against the lorax component.</p>
     <script type="text/javascript" src="_static/js/theme.js"></script>
   
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>

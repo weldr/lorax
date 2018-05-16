@@ -1,0 +1,823 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pylorax.installer &mdash; Lorax 28.10 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Lorax
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                28.10
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction to Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html#before-lorax">Before Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../lorax.html">Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../livemedia-creator.html">livemedia-creator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../lorax-composer.html">lorax-composer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../composer-cli.html">composer-cli</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../product-images.html">Product and Updates Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">pylorax</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Lorax</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../pylorax.html">pylorax</a> &raquo;</li>
+        
+      <li>pylorax.installer</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pylorax.installer</h1><div class="highlight"><pre>
+<span></span><span class="c1">#</span>
+<span class="c1"># Copyright (C) 2011-2018  Red Hat, Inc.</span>
+<span class="c1">#</span>
+<span class="c1"># This program is free software; you can redistribute it and/or modify</span>
+<span class="c1"># it under the terms of the GNU General Public License as published by</span>
+<span class="c1"># the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c1"># (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># This program is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;pylorax&quot;</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="n">ceil</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+
+<span class="c1"># Use the Lorax treebuilder branch for iso creation</span>
+<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="k">import</span> <span class="n">execWithRedirect</span><span class="p">,</span> <span class="n">execReadlines</span>
+<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="k">import</span> <span class="n">PartitionMount</span><span class="p">,</span> <span class="n">mksparse</span><span class="p">,</span> <span class="n">mkext4img</span><span class="p">,</span> <span class="n">loop_detach</span>
+<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="k">import</span> <span class="n">get_loop_name</span><span class="p">,</span> <span class="n">dm_detach</span><span class="p">,</span> <span class="n">mount</span><span class="p">,</span> <span class="n">umount</span>
+<span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="k">import</span> <span class="n">mkqemu_img</span><span class="p">,</span> <span class="n">mktar</span><span class="p">,</span> <span class="n">mkcpio</span><span class="p">,</span> <span class="n">mkfsimage_from_disk</span>
+<span class="kn">from</span> <span class="nn">pylorax.monitor</span> <span class="k">import</span> <span class="n">LogMonitor</span>
+<span class="kn">from</span> <span class="nn">pylorax.mount</span> <span class="k">import</span> <span class="n">IsoMountpoint</span>
+<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span>
+<span class="kn">from</span> <span class="nn">pylorax.treebuilder</span> <span class="k">import</span> <span class="n">udev_escape</span>
+
+
+<span class="n">ROOT_PATH</span> <span class="o">=</span> <span class="s2">&quot;/mnt/sysimage/&quot;</span>
+
+<div class="viewcode-block" id="InstallError"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.InstallError">[docs]</a><span class="k">class</span> <span class="nc">InstallError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="create_vagrant_metadata"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.create_vagrant_metadata">[docs]</a><span class="k">def</span> <span class="nf">create_vagrant_metadata</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Create a default Vagrant metadata.json file</span>
+
+<span class="sd">    :param str path: Path to metadata.json file</span>
+<span class="sd">    :param int size: Disk size in MiB</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;provider&quot;</span><span class="p">:</span><span class="s2">&quot;libvirt&quot;</span><span class="p">,</span> <span class="s2">&quot;format&quot;</span><span class="p">:</span><span class="s2">&quot;qcow2&quot;</span><span class="p">,</span> <span class="s2">&quot;virtual_size&quot;</span><span class="p">:</span> <span class="n">ceil</span><span class="p">(</span><span class="n">size</span> <span class="o">/</span> <span class="mi">1024</span><span class="p">)</span> <span class="p">}</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;wt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="update_vagrant_metadata"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.update_vagrant_metadata">[docs]</a><span class="k">def</span> <span class="nf">update_vagrant_metadata</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Update the Vagrant metadata.json file</span>
+
+<span class="sd">    :param str path: Path to metadata.json file</span>
+<span class="sd">    :param int size: Disk size in MiB</span>
+
+<span class="sd">    This function makes sure that the provider, format and virtual size of the</span>
+<span class="sd">    metadata file are set correctly. All other values are left untouched.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;rt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">metadata</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Problem reading metadata file </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span>
+
+    <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;provider&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;libvirt&quot;</span>
+    <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;format&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;qcow2&quot;</span>
+    <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;virtual_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">(</span><span class="n">size</span> <span class="o">/</span> <span class="mi">1024</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;wt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="find_free_port"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.find_free_port">[docs]</a><span class="k">def</span> <span class="nf">find_free_port</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">5900</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">5999</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Return first free port in range.</span>
+
+<span class="sd">    :param int start: Starting port number</span>
+<span class="sd">    :param int end: Ending port number</span>
+<span class="sd">    :param str host: Host IP to search</span>
+<span class="sd">    :returns: First free port or -1 if none found</span>
+<span class="sd">    :rtype: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">port</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">port</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
+
+<div class="viewcode-block" id="append_initrd"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.append_initrd">[docs]</a><span class="k">def</span> <span class="nf">append_initrd</span><span class="p">(</span><span class="n">initrd</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Append files to an initrd.</span>
+
+<span class="sd">    :param str initrd: Path to initrd</span>
+<span class="sd">    :param list files: list of file paths to add</span>
+<span class="sd">    :returns: Path to a new initrd</span>
+<span class="sd">    :rtype: str</span>
+
+<span class="sd">    The files are added to the initrd by creating a cpio image</span>
+<span class="sd">    of the files (stored at /) and writing the cpio to the end of a</span>
+<span class="sd">    copy of the initrd.</span>
+
+<span class="sd">    The initrd is not changed, a copy is made before appending the</span>
+<span class="sd">    cpio archive.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">qemu_initrd</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mktemp</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;lmc-initrd-&quot;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.img&quot;</span><span class="p">)</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">initrd</span><span class="p">,</span> <span class="n">qemu_initrd</span><span class="p">)</span>
+    <span class="n">ks_dir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;lmc-ksdir-&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">ks</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">ks</span><span class="p">,</span> <span class="n">ks_dir</span><span class="p">)</span>
+    <span class="n">ks_initrd</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mktemp</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;lmc-ks-&quot;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.img&quot;</span><span class="p">)</span>
+    <span class="n">mkcpio</span><span class="p">(</span><span class="n">ks_dir</span><span class="p">,</span> <span class="n">ks_initrd</span><span class="p">)</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">ks_dir</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">qemu_initrd</span><span class="p">,</span> <span class="s2">&quot;ab&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">initrd_fp</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ks_initrd</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ks_fp</span><span class="p">:</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">ks_fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">initrd_fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">ks_initrd</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">qemu_initrd</span></div>
+
+<div class="viewcode-block" id="QEMUInstall"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.QEMUInstall">[docs]</a><span class="k">class</span> <span class="nc">QEMUInstall</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run qemu using an iso and a kickstart</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Mapping of arch to qemu command</span>
+    <span class="n">QEMU_CMDS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x86_64&quot;</span><span class="p">:</span>  <span class="s2">&quot;qemu-system-x86_64&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;i386&quot;</span><span class="p">:</span>    <span class="s2">&quot;qemu-system-i386&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;arm&quot;</span><span class="p">:</span>     <span class="s2">&quot;qemu-system-arm&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;aarch64&quot;</span><span class="p">:</span> <span class="s2">&quot;qemu-system-aarch64&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;ppc&quot;</span><span class="p">:</span>     <span class="s2">&quot;qemu-system-ppc&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;ppc64&quot;</span><span class="p">:</span>   <span class="s2">&quot;qemu-system-ppc64&quot;</span>
+                <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="n">iso</span><span class="p">,</span> <span class="n">ks_paths</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">img_size</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span>
+                 <span class="n">kernel_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">memory</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">vcpus</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vnc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">log_check</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">virtio_host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">virtio_port</span><span class="o">=</span><span class="mi">6080</span><span class="p">,</span>
+                 <span class="n">image_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">boot_uefi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ovmf_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start the installation</span>
+
+<span class="sd">        :param iso: Information about the iso to use for the installation</span>
+<span class="sd">        :type iso: IsoMountpoint</span>
+<span class="sd">        :param list ks_paths: Paths to kickstart files. All are injected, the</span>
+<span class="sd">           first one is the one executed.</span>
+<span class="sd">        :param str disk_img: Path to a disk image, created it it doesn&#39;t exist</span>
+<span class="sd">        :param int img_size: The image size, in MiB, to create if it doesn&#39;t exist</span>
+<span class="sd">        :param str kernel_args: Extra kernel arguments to pass on the kernel cmdline</span>
+<span class="sd">        :param int memory: Amount of RAM to assign to the virt, in MiB</span>
+<span class="sd">        :param int vcpus: Number of virtual cpus</span>
+<span class="sd">        :param str vnc: Arguments to pass to qemu -display</span>
+<span class="sd">        :param str arch: Optional architecture to use in the virt</span>
+<span class="sd">        :param log_check: Method that returns True if the installation fails</span>
+<span class="sd">        :type log_check: method</span>
+<span class="sd">        :param str virtio_host: Hostname to connect virtio log to</span>
+<span class="sd">        :param int virtio_port: Port to connect virtio log to</span>
+<span class="sd">        :param str image_type: Type of qemu-img disk to create, or None.</span>
+<span class="sd">        :param bool boot_uefi: Use OVMF to boot the VM in UEFI mode</span>
+<span class="sd">        :param str ovmf_path: Path to the OVMF firmware</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Lookup qemu-system- for arch if passed, or try to guess using host arch</span>
+        <span class="n">qemu_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">QEMU_CMDS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">arch</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">uname</span><span class="p">()</span><span class="o">.</span><span class="n">machine</span><span class="p">,</span> <span class="s2">&quot;qemu-system-&quot;</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">uname</span><span class="p">()</span><span class="o">.</span><span class="n">machine</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;/usr/bin/&quot;</span><span class="o">+</span><span class="n">qemu_cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> does not exist, cannot run qemu&quot;</span> <span class="o">%</span> <span class="n">qemu_cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-nodefconfig&quot;</span><span class="p">]</span>
+        <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">memory</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">vcpus</span><span class="p">:</span>
+            <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-smp&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">vcpus</span><span class="p">)]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">no_kvm</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;/dev/kvm&quot;</span><span class="p">):</span>
+            <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;--machine&quot;</span><span class="p">,</span> <span class="s2">&quot;accel=kvm&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Copy the initrd from the iso, create a cpio archive of the kickstart files</span>
+        <span class="c1"># and append it to the temporary initrd.</span>
+        <span class="n">qemu_initrd</span> <span class="o">=</span> <span class="n">append_initrd</span><span class="p">(</span><span class="n">iso</span><span class="o">.</span><span class="n">initrd</span><span class="p">,</span> <span class="n">ks_paths</span><span class="p">)</span>
+        <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-kernel&quot;</span><span class="p">,</span> <span class="n">iso</span><span class="o">.</span><span class="n">kernel</span><span class="p">]</span>
+        <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-initrd&quot;</span><span class="p">,</span> <span class="n">qemu_initrd</span><span class="p">]</span>
+
+        <span class="c1"># Add the disk and cdrom</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">disk_img</span><span class="p">):</span>
+            <span class="n">mksparse</span><span class="p">(</span><span class="n">disk_img</span><span class="p">,</span> <span class="n">img_size</span> <span class="o">*</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">drive_args</span> <span class="o">=</span> <span class="s2">&quot;file=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">disk_img</span>
+        <span class="n">drive_args</span> <span class="o">+=</span> <span class="s2">&quot;,cache=unsafe,discard=unmap&quot;</span>
+        <span class="k">if</span> <span class="n">image_type</span><span class="p">:</span>
+            <span class="n">drive_args</span> <span class="o">+=</span> <span class="s2">&quot;,format=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">image_type</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">drive_args</span> <span class="o">+=</span> <span class="s2">&quot;,format=raw&quot;</span>
+        <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-drive&quot;</span><span class="p">,</span> <span class="n">drive_args</span><span class="p">]</span>
+
+        <span class="n">drive_args</span> <span class="o">=</span> <span class="s2">&quot;file=</span><span class="si">%s</span><span class="s2">,media=cdrom,readonly=on&quot;</span> <span class="o">%</span> <span class="n">iso</span><span class="o">.</span><span class="n">iso_path</span>
+        <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-drive&quot;</span><span class="p">,</span> <span class="n">drive_args</span><span class="p">]</span>
+
+        <span class="c1"># Setup the cmdline args</span>
+        <span class="c1"># ======================</span>
+        <span class="n">cmdline_args</span> <span class="o">=</span> <span class="s2">&quot;ks=file:/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">ks_paths</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">cmdline_args</span> <span class="o">+=</span> <span class="s2">&quot; inst.stage2=hd:LABEL=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">udev_escape</span><span class="p">(</span><span class="n">iso</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">proxy</span><span class="p">:</span>
+            <span class="n">cmdline_args</span> <span class="o">+=</span> <span class="s2">&quot; inst.proxy=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">opts</span><span class="o">.</span><span class="n">proxy</span>
+        <span class="k">if</span> <span class="n">kernel_args</span><span class="p">:</span>
+            <span class="n">cmdline_args</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span><span class="o">+</span><span class="n">kernel_args</span>
+        <span class="n">cmdline_args</span> <span class="o">+=</span> <span class="s2">&quot; inst.text inst.cmdline&quot;</span>
+
+        <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-append&quot;</span><span class="p">,</span> <span class="n">cmdline_args</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">vnc</span><span class="p">:</span>
+            <span class="n">vnc_port</span> <span class="o">=</span> <span class="n">find_free_port</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">vnc_port</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s2">&quot;No free VNC ports&quot;</span><span class="p">)</span>
+            <span class="n">display_args</span> <span class="o">=</span> <span class="s2">&quot;vnc=127.0.0.1:</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">vnc_port</span> <span class="o">-</span> <span class="mi">5900</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">display_args</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">vnc</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;qemu </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">display_args</span><span class="p">)</span>
+        <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-nographic&quot;</span><span class="p">,</span> <span class="s2">&quot;-display&quot;</span><span class="p">,</span> <span class="n">display_args</span> <span class="p">]</span>
+
+        <span class="c1"># Setup the virtio log port</span>
+        <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-device&quot;</span><span class="p">,</span> <span class="s2">&quot;virtio-serial-pci,id=virtio-serial0&quot;</span><span class="p">]</span>
+        <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-device&quot;</span><span class="p">,</span> <span class="s2">&quot;virtserialport,bus=virtio-serial0.0,nr=1,chardev=charchannel0&quot;</span>
+                                <span class="s2">&quot;,id=channel0,name=org.fedoraproject.anaconda.log.0&quot;</span><span class="p">]</span>
+        <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-chardev&quot;</span><span class="p">,</span> <span class="s2">&quot;socket,id=charchannel0,host=</span><span class="si">%s</span><span class="s2">,port=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">virtio_host</span><span class="p">,</span> <span class="n">virtio_port</span><span class="p">)]</span>
+
+        <span class="c1"># PAss through rng from host</span>
+        <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">with_rng</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+            <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-object&quot;</span><span class="p">,</span> <span class="s2">&quot;rng-random,id=virtio-rng0,filename=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">opts</span><span class="o">.</span><span class="n">with_rng</span><span class="p">]</span>
+            <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-device&quot;</span><span class="p">,</span> <span class="s2">&quot;virtio-rng-pci,rng=virtio-rng0,id=rng0,bus=pci.0,addr=0x9&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">boot_uefi</span> <span class="ow">and</span> <span class="n">ovmf_path</span><span class="p">:</span>
+            <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-drive&quot;</span><span class="p">,</span> <span class="s2">&quot;file=</span><span class="si">%s</span><span class="s2">/OVMF_CODE.fd,if=pflash,format=raw,unit=0,readonly=on&quot;</span> <span class="o">%</span> <span class="n">ovmf_path</span><span class="p">]</span>
+
+            <span class="c1"># Make a copy of the OVMF_VARS.fd for this run</span>
+            <span class="n">ovmf_vars</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mktemp</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;lmc-OVMF_VARS-&quot;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.fd&quot;</span><span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">ovmf_path</span><span class="p">,</span> <span class="s2">&quot;/OVMF_VARS.fd&quot;</span><span class="p">),</span> <span class="n">ovmf_vars</span><span class="p">)</span>
+
+            <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-drive&quot;</span><span class="p">,</span> <span class="s2">&quot;file=</span><span class="si">%s</span><span class="s2">,if=pflash,format=raw,unit=1&quot;</span> <span class="o">%</span> <span class="n">ovmf_vars</span><span class="p">]</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Running qemu&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">qemu_cmd</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">execWithRedirect</span><span class="p">(</span><span class="n">qemu_cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">qemu_cmd</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">reset_lang</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">raise_err</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                             <span class="n">callback</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="ow">not</span> <span class="n">log_check</span><span class="p">())</span>
+        <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Running qemu failed:&quot;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;cmd: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">cmd</span><span class="p">))</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;output: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">output</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s2">&quot;QEMUInstall failed&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">KeyboardInterrupt</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Running qemu failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s2">&quot;QEMUInstall failed&quot;</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">qemu_initrd</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">boot_uefi</span> <span class="ow">and</span> <span class="n">ovmf_path</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">ovmf_vars</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">log_check</span><span class="p">():</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Installation error detected. See logfile for details.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s2">&quot;QEMUInstall failed&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Installation finished without errors.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="novirt_log_check"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.novirt_log_check">[docs]</a><span class="k">def</span> <span class="nf">novirt_log_check</span><span class="p">(</span><span class="n">log_check</span><span class="p">,</span> <span class="n">proc</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check to see if there has been an error in the logs</span>
+
+<span class="sd">    :param log_check: method to call to check for an error in the logs</span>
+<span class="sd">    :param proc: Popen object for the anaconda process</span>
+<span class="sd">    :returns: True if the process has been terminated</span>
+
+<span class="sd">    The log_check method should return a True if an error has been detected.</span>
+<span class="sd">    When an error is detected the process is terminated and this returns True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">log_check</span><span class="p">():</span>
+        <span class="n">proc</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="anaconda_cleanup"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.anaconda_cleanup">[docs]</a><span class="k">def</span> <span class="nf">anaconda_cleanup</span><span class="p">(</span><span class="n">dirinstall_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cleanup any leftover mounts from anaconda</span>
+
+<span class="sd">    :param str dirinstall_path: Path where anaconda mounts things</span>
+<span class="sd">    :returns: True if cleanups were successful. False if any of them failed.</span>
+
+<span class="sd">    If anaconda crashes it may leave things mounted under this path. It will</span>
+<span class="sd">    typically be set to /mnt/sysimage/</span>
+
+<span class="sd">    Attempts to cleanup may also fail. Catch these and continue trying the</span>
+<span class="sd">    other mountpoints.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rc</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">dirinstall_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">dirinstall_path</span><span class="p">)</span>
+    <span class="c1"># unmount filesystems</span>
+    <span class="k">for</span> <span class="n">mounted</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;/proc/mounts&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">()):</span>
+        <span class="p">(</span><span class="n">_device</span><span class="p">,</span> <span class="n">mountpoint</span><span class="p">,</span> <span class="n">_rest</span><span class="p">)</span> <span class="o">=</span> <span class="n">mounted</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mountpoint</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">dirinstall_path</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">ismount</span><span class="p">(</span><span class="n">mountpoint</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">umount</span><span class="p">(</span><span class="n">mountpoint</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Cleanup of </span><span class="si">%s</span><span class="s2"> failed. See program.log for details&quot;</span><span class="p">,</span> <span class="n">mountpoint</span><span class="p">)</span>
+                <span class="n">rc</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">rc</span></div>
+
+
+<div class="viewcode-block" id="novirt_install"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.novirt_install">[docs]</a><span class="k">def</span> <span class="nf">novirt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Use Anaconda to install to a disk image</span>
+
+<span class="sd">    :param opts: options passed to livemedia-creator</span>
+<span class="sd">    :type opts: argparse options</span>
+<span class="sd">    :param str disk_img: The full path to the disk image to be created</span>
+<span class="sd">    :param int disk_size: The size of the disk_img in MiB</span>
+
+<span class="sd">    This method runs anaconda to create the image and then based on the opts</span>
+<span class="sd">    passed creates a qemu disk image or tarfile.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dirinstall_path</span> <span class="o">=</span> <span class="n">ROOT_PATH</span>
+
+    <span class="c1"># Clean up /tmp/ from previous runs to prevent stale info from being used</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;/tmp/yum.repos.d/&quot;</span><span class="p">,</span> <span class="s2">&quot;/tmp/yum.cache/&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;--kickstart&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">ks</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;--cmdline&quot;</span><span class="p">,</span> <span class="s2">&quot;--loglevel&quot;</span><span class="p">,</span> <span class="s2">&quot;debug&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">anaconda_args</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">anaconda_args</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">proxy</span><span class="p">:</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;--proxy&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">proxy</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">armplatform</span><span class="p">:</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;--armplatform&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">armplatform</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_iso</span> <span class="ow">or</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_fsimage</span> <span class="ow">or</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_pxe_live</span><span class="p">:</span>
+        <span class="c1"># Make a blank fs image</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;--dirinstall&quot;</span><span class="p">]</span>
+
+        <span class="n">mkext4img</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">fs_label</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">disk_size</span> <span class="o">*</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">dirinstall_path</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">dirinstall_path</span><span class="p">)</span>
+        <span class="n">mount</span><span class="p">(</span><span class="n">disk_img</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="s2">&quot;loop&quot;</span><span class="p">,</span> <span class="n">mnt</span><span class="o">=</span><span class="n">dirinstall_path</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_tar</span> <span class="ow">or</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_oci</span><span class="p">:</span>
+        <span class="c1"># Install under dirinstall_path, make sure it starts clean</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dirinstall_path</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">dirinstall_path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_oci</span><span class="p">:</span>
+            <span class="c1"># OCI installs under /rootfs/</span>
+            <span class="n">dirinstall_path</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">dirinstall_path</span><span class="p">,</span> <span class="s2">&quot;rootfs&quot;</span><span class="p">)</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;--dirinstall&quot;</span><span class="p">,</span> <span class="n">dirinstall_path</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;--dirinstall&quot;</span><span class="p">]</span>
+
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dirinstall_path</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;--image&quot;</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">]</span>
+
+        <span class="c1"># Create the sparse image</span>
+        <span class="n">mksparse</span><span class="p">(</span><span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span> <span class="o">*</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">log_monitor</span> <span class="o">=</span> <span class="n">LogMonitor</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;--remotelog&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">log_monitor</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">port</span><span class="p">)]</span>
+
+    <span class="c1"># Make sure anaconda has the right product and release</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Running anaconda.&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">execReadlines</span><span class="p">(</span><span class="s2">&quot;anaconda&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">reset_lang</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                  <span class="n">env_add</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;ANACONDA_PRODUCTNAME&quot;</span><span class="p">:</span> <span class="n">opts</span><span class="o">.</span><span class="n">project</span><span class="p">,</span>
+                                           <span class="s2">&quot;ANACONDA_PRODUCTVERSION&quot;</span><span class="p">:</span> <span class="n">opts</span><span class="o">.</span><span class="n">releasever</span><span class="p">},</span>
+                                  <span class="n">callback</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="ow">not</span> <span class="n">novirt_log_check</span><span class="p">(</span><span class="n">log_monitor</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">log_check</span><span class="p">,</span> <span class="n">p</span><span class="p">)):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+        <span class="c1"># Make sure the new filesystem is correctly labeled</span>
+        <span class="n">setfiles_args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="s2">&quot;/proc&quot;</span><span class="p">,</span> <span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="s2">&quot;/sys&quot;</span><span class="p">,</span> <span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="s2">&quot;/dev&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;/etc/selinux/targeted/contexts/files/file_contexts&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">]</span>
+
+        <span class="c1"># setfiles may not be available, warn instead of fail</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;--dirinstall&quot;</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+                <span class="n">execWithRedirect</span><span class="p">(</span><span class="s2">&quot;setfiles&quot;</span><span class="p">,</span> <span class="n">setfiles_args</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">dirinstall_path</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">PartitionMount</span><span class="p">(</span><span class="n">disk_img</span><span class="p">)</span> <span class="k">as</span> <span class="n">img_mount</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">img_mount</span> <span class="ow">and</span> <span class="n">img_mount</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">:</span>
+                        <span class="n">execWithRedirect</span><span class="p">(</span><span class="s2">&quot;setfiles&quot;</span><span class="p">,</span> <span class="n">setfiles_args</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">img_mount</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Running setfiles on install tree failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+    <span class="k">except</span> <span class="p">(</span><span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Running anaconda failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s2">&quot;novirt_install failed&quot;</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">log_monitor</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+
+        <span class="c1"># Move the anaconda logs over to a log directory</span>
+        <span class="n">log_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">logfile</span><span class="p">))</span>
+        <span class="n">log_anaconda</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">log_dir</span><span class="p">,</span> <span class="s2">&quot;anaconda&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">log_anaconda</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">log_anaconda</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;/tmp/*log&quot;</span><span class="p">)</span><span class="o">+</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;/tmp/anaconda-tb-*&quot;</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">log_anaconda</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+
+        <span class="c1"># Make sure any leftover anaconda mounts have been cleaned up</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">anaconda_cleanup</span><span class="p">(</span><span class="n">dirinstall_path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s2">&quot;novirt_install cleanup of anaconda mounts failed.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_iso</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_fsimage</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_pxe_live</span><span class="p">:</span>
+            <span class="n">dm_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">disk_img</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">dm_path</span> <span class="o">=</span> <span class="s2">&quot;/dev/mapper/&quot;</span><span class="o">+</span><span class="n">dm_name</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dm_path</span><span class="p">):</span>
+                <span class="n">dm_detach</span><span class="p">(</span><span class="n">dm_path</span><span class="p">)</span>
+                <span class="n">loop_detach</span><span class="p">(</span><span class="n">get_loop_name</span><span class="p">(</span><span class="n">disk_img</span><span class="p">))</span>
+
+    <span class="c1"># qemu disk image is used by bare qcow2 images and by Vagrant</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">image_type</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Converting </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">image_type</span><span class="p">)</span>
+        <span class="n">qemu_args</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">qemu_args</span><span class="p">:</span>
+            <span class="n">qemu_args</span> <span class="o">+=</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># convert the image to the selected format</span>
+        <span class="k">if</span> <span class="s2">&quot;-O&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">qemu_args</span><span class="p">:</span>
+            <span class="n">qemu_args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-O&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">image_type</span><span class="p">])</span>
+        <span class="n">qemu_img</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mktemp</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;lmc-disk-&quot;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.img&quot;</span><span class="p">)</span>
+        <span class="n">execWithRedirect</span><span class="p">(</span><span class="s2">&quot;qemu-img&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;convert&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">qemu_args</span> <span class="o">+</span> <span class="p">[</span><span class="n">disk_img</span><span class="p">,</span> <span class="n">qemu_img</span><span class="p">],</span> <span class="n">raise_err</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_vagrant</span><span class="p">:</span>
+            <span class="n">execWithRedirect</span><span class="p">(</span><span class="s2">&quot;mv&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="n">qemu_img</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">],</span> <span class="n">raise_err</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Take the new qcow2 image and package it up for Vagrant</span>
+            <span class="n">compress_args</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">compress_args</span><span class="p">:</span>
+                <span class="n">compress_args</span> <span class="o">+=</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">vagrant_dir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;lmc-tmpdir-&quot;</span><span class="p">)</span>
+            <span class="n">metadata_path</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">vagrant_dir</span><span class="p">,</span> <span class="s2">&quot;metadata.json&quot;</span><span class="p">)</span>
+            <span class="n">execWithRedirect</span><span class="p">(</span><span class="s2">&quot;mv&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="n">qemu_img</span><span class="p">,</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">vagrant_dir</span><span class="p">,</span> <span class="s2">&quot;box.img&quot;</span><span class="p">)],</span> <span class="n">raise_err</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">vagrant_metadata</span><span class="p">:</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">vagrant_metadata</span><span class="p">,</span> <span class="n">metadata_path</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">create_vagrant_metadata</span><span class="p">(</span><span class="n">metadata_path</span><span class="p">)</span>
+            <span class="n">update_vagrant_metadata</span><span class="p">(</span><span class="n">metadata_path</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">vagrantfile</span><span class="p">:</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">vagrantfile</span><span class="p">,</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">vagrant_dir</span><span class="p">,</span> <span class="s2">&quot;vagrantfile&quot;</span><span class="p">))</span>
+
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating Vagrant image&quot;</span><span class="p">)</span>
+            <span class="n">rc</span> <span class="o">=</span> <span class="n">mktar</span><span class="p">(</span><span class="n">vagrant_dir</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">compression</span><span class="p">,</span> <span class="n">compress_args</span><span class="p">,</span> <span class="n">selinux</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">rc</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s2">&quot;novirt_install mktar failed: rc=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">rc</span><span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">vagrant_dir</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_tar</span><span class="p">:</span>
+        <span class="n">compress_args</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">compress_args</span><span class="p">:</span>
+            <span class="n">compress_args</span> <span class="o">+=</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">rc</span> <span class="o">=</span> <span class="n">mktar</span><span class="p">(</span><span class="n">dirinstall_path</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">compression</span><span class="p">,</span> <span class="n">compress_args</span><span class="p">)</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">dirinstall_path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">rc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s2">&quot;novirt_install mktar failed: rc=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">rc</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_oci</span><span class="p">:</span>
+        <span class="c1"># An OCI image places the filesystem under /rootfs/ and adds the json files at the top</span>
+        <span class="c1"># And then creates a tar of the whole thing.</span>
+        <span class="n">compress_args</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">compress_args</span><span class="p">:</span>
+            <span class="n">compress_args</span> <span class="o">+=</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">oci_config</span><span class="p">,</span> <span class="n">ROOT_PATH</span><span class="p">)</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">oci_runtime</span><span class="p">,</span> <span class="n">ROOT_PATH</span><span class="p">)</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="n">mktar</span><span class="p">(</span><span class="n">ROOT_PATH</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">compression</span><span class="p">,</span> <span class="n">compress_args</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">rc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s2">&quot;novirt_install mktar failed: rc=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">rc</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="virt_install"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.virt_install">[docs]</a><span class="k">def</span> <span class="nf">virt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">install_log</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Use qemu to install to a disk image</span>
+
+<span class="sd">    :param opts: options passed to livemedia-creator</span>
+<span class="sd">    :type opts: argparse options</span>
+<span class="sd">    :param str install_log: The path to write the log from qemu</span>
+<span class="sd">    :param str disk_img: The full path to the disk image to be created</span>
+<span class="sd">    :param int disk_size: The size of the disk_img in MiB</span>
+
+<span class="sd">    This uses qemu with a boot.iso and a kickstart to create a disk</span>
+<span class="sd">    image and then optionally, based on the opts passed, creates tarfile.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">iso_mount</span> <span class="o">=</span> <span class="n">IsoMountpoint</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">iso</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">iso_mount</span><span class="o">.</span><span class="n">stage2</span><span class="p">:</span>
+        <span class="n">iso_mount</span><span class="o">.</span><span class="n">umount</span><span class="p">()</span>
+        <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s2">&quot;ISO is missing stage2, cannot continue&quot;</span><span class="p">)</span>
+
+    <span class="n">log_monitor</span> <span class="o">=</span> <span class="n">LogMonitor</span><span class="p">(</span><span class="n">install_log</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+
+    <span class="n">kernel_args</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">kernel_args</span><span class="p">:</span>
+        <span class="n">kernel_args</span> <span class="o">+=</span> <span class="n">opts</span><span class="o">.</span><span class="n">kernel_args</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">proxy</span><span class="p">:</span>
+        <span class="n">kernel_args</span> <span class="o">+=</span> <span class="s2">&quot; proxy=&quot;</span><span class="o">+</span><span class="n">opts</span><span class="o">.</span><span class="n">proxy</span>
+
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">image_type</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_fsimage</span><span class="p">:</span>
+        <span class="n">qemu_args</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">qemu_args</span><span class="p">:</span>
+            <span class="n">qemu_args</span> <span class="o">+=</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;-f&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">qemu_args</span><span class="p">:</span>
+            <span class="n">qemu_args</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">image_type</span><span class="p">]</span>
+
+        <span class="n">mkqemu_img</span><span class="p">(</span><span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="o">*</span><span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">qemu_args</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_fsimage</span> <span class="ow">or</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_tar</span> <span class="ow">or</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_oci</span><span class="p">:</span>
+        <span class="n">diskimg_path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mktemp</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;lmc-disk-&quot;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.img&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">diskimg_path</span> <span class="o">=</span> <span class="n">disk_img</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">QEMUInstall</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">iso_mount</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">ks</span><span class="p">,</span> <span class="n">diskimg_path</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span>
+                    <span class="n">kernel_args</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">ram</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">vcpus</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">vnc</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">arch</span><span class="p">,</span>
+                    <span class="n">log_check</span> <span class="o">=</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">log_check</span><span class="p">,</span>
+                    <span class="n">virtio_host</span> <span class="o">=</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
+                    <span class="n">virtio_port</span> <span class="o">=</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
+                    <span class="n">image_type</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">image_type</span><span class="p">,</span> <span class="n">boot_uefi</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">virt_uefi</span><span class="p">,</span>
+                    <span class="n">ovmf_path</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">ovmf_path</span><span class="p">)</span>
+        <span class="n">log_monitor</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+    <span class="k">except</span> <span class="n">InstallError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;VirtualInstall failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">raise</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;unmounting the iso&quot;</span><span class="p">)</span>
+        <span class="n">iso_mount</span><span class="o">.</span><span class="n">umount</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">log_check</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">error_line</span> <span class="ow">and</span> <span class="n">opts</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;virt_install failed due to timeout&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;virt_install failed on line: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">error_line</span>
+        <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_fsimage</span><span class="p">:</span>
+        <span class="n">mkfsimage_from_disk</span><span class="p">(</span><span class="n">diskimg_path</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">fs_label</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">diskimg_path</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_tar</span><span class="p">:</span>
+        <span class="n">compress_args</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">compress_args</span><span class="p">:</span>
+            <span class="n">compress_args</span> <span class="o">+=</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">PartitionMount</span><span class="p">(</span><span class="n">diskimg_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">img_mount</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">img_mount</span> <span class="ow">and</span> <span class="n">img_mount</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">:</span>
+                <span class="n">rc</span> <span class="o">=</span> <span class="n">mktar</span><span class="p">(</span><span class="n">img_mount</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">compression</span><span class="p">,</span> <span class="n">compress_args</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rc</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">diskimg_path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">rc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s2">&quot;virt_install failed&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_oci</span><span class="p">:</span>
+        <span class="c1"># An OCI image places the filesystem under /rootfs/ and adds the json files at the top</span>
+        <span class="c1"># And then creates a tar of the whole thing.</span>
+        <span class="n">compress_args</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">compress_args</span><span class="p">:</span>
+            <span class="n">compress_args</span> <span class="o">+=</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">PartitionMount</span><span class="p">(</span><span class="n">diskimg_path</span><span class="p">,</span> <span class="n">submount</span><span class="o">=</span><span class="s2">&quot;rootfs&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">img_mount</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">img_mount</span> <span class="ow">and</span> <span class="n">img_mount</span><span class="o">.</span><span class="n">temp_dir</span><span class="p">:</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">oci_config</span><span class="p">,</span> <span class="n">img_mount</span><span class="o">.</span><span class="n">temp_dir</span><span class="p">)</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">oci_runtime</span><span class="p">,</span> <span class="n">img_mount</span><span class="o">.</span><span class="n">temp_dir</span><span class="p">)</span>
+                <span class="n">rc</span> <span class="o">=</span> <span class="n">mktar</span><span class="p">(</span><span class="n">img_mount</span><span class="o">.</span><span class="n">temp_dir</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">compression</span><span class="p">,</span> <span class="n">compress_args</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rc</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">diskimg_path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">rc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s2">&quot;virt_install failed&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_vagrant</span><span class="p">:</span>
+        <span class="n">compress_args</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">compress_args</span><span class="p">:</span>
+            <span class="n">compress_args</span> <span class="o">+=</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">vagrant_dir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;lmc-tmpdir-&quot;</span><span class="p">)</span>
+        <span class="n">metadata_path</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">vagrant_dir</span><span class="p">,</span> <span class="s2">&quot;metadata.json&quot;</span><span class="p">)</span>
+        <span class="n">execWithRedirect</span><span class="p">(</span><span class="s2">&quot;mv&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">vagrant_dir</span><span class="p">,</span> <span class="s2">&quot;box.img&quot;</span><span class="p">)],</span> <span class="n">raise_err</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">vagrant_metadata</span><span class="p">:</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">vagrant_metadata</span><span class="p">,</span> <span class="n">metadata_path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">create_vagrant_metadata</span><span class="p">(</span><span class="n">metadata_path</span><span class="p">)</span>
+        <span class="n">update_vagrant_metadata</span><span class="p">(</span><span class="n">metadata_path</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">vagrantfile</span><span class="p">:</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">vagrantfile</span><span class="p">,</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">vagrant_dir</span><span class="p">,</span> <span class="s2">&quot;vagrantfile&quot;</span><span class="p">))</span>
+
+        <span class="n">rc</span> <span class="o">=</span> <span class="n">mktar</span><span class="p">(</span><span class="n">vagrant_dir</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">compression</span><span class="p">,</span> <span class="n">compress_args</span><span class="p">,</span> <span class="n">selinux</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s2">&quot;virt_install failed&quot;</span><span class="p">)</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">vagrant_dir</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Red Hat, Inc..
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'28.10',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
+      });
+  </script> 
+
+</body>
+</html>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.imgutils &mdash; Lorax 28.9 documentation</title>
+  <title>pylorax.imgutils &mdash; Lorax 28.10 documentation</title>
   
 
   
@@ -25,25 +25,17 @@
   
 
   
-  
     <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../../genindex.html"/>
-        <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Lorax 28.9 documentation" href="../../index.html"/>
-        <link rel="up" title="pylorax" href="../pylorax.html"/> 
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -65,7 +57,7 @@
             
             
               <div class="version">
-                28.9
+                28.10
               </div>
             
           
@@ -94,6 +86,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../intro.html#before-lorax">Before Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../lorax.html">Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../livemedia-creator.html">livemedia-creator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../lorax-composer.html">lorax-composer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../composer-cli.html">composer-cli</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../product-images.html">Product and Updates Images</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">pylorax</a></li>
 </ul>
@@ -107,7 +101,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">Lorax</a>
@@ -115,9 +109,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -148,8 +143,6 @@
     
     
       <li class="wy-breadcrumbs-aside">
-        
-            
         
       </li>
     
@@ -647,12 +640,44 @@
     <span class="n">graft</span> <span class="o">=</span> <span class="n">graft</span> <span class="ow">or</span> <span class="p">{}</span>
     <span class="n">mkfsimage</span><span class="p">(</span><span class="s2">&quot;hfsplus&quot;</span><span class="p">,</span> <span class="n">rootdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">mountargs</span><span class="o">=</span><span class="n">mountargs</span><span class="p">,</span>
               <span class="n">mkfsargs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="n">label</span><span class="p">],</span> <span class="n">graft</span><span class="o">=</span><span class="n">graft</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="mkfsimage_from_disk"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.mkfsimage_from_disk">[docs]</a><span class="k">def</span> <span class="nf">mkfsimage_from_disk</span><span class="p">(</span><span class="n">diskimage</span><span class="p">,</span> <span class="n">fsimage</span><span class="p">,</span> <span class="n">img_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Anaconda&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Copy the / partition of a partitioned disk image to an un-partitioned</span>
+<span class="sd">    disk image.</span>
+
+<span class="sd">    :param str diskimage: The full path to partitioned disk image with a /</span>
+<span class="sd">    :param str fsimage: The full path of the output fs image file</span>
+<span class="sd">    :param int img_size: Optional size of the fsimage in MiB or None to make</span>
+<span class="sd">       it as small as possible</span>
+<span class="sd">    :param str label: The label to apply to the image. Defaults to &quot;Anaconda&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">PartitionMount</span><span class="p">(</span><span class="n">diskimage</span><span class="p">)</span> <span class="k">as</span> <span class="n">img_mount</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">img_mount</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">img_mount</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating fsimage </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">fsimage</span><span class="p">,</span> <span class="n">img_size</span> <span class="ow">or</span> <span class="s2">&quot;minimized&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">img_size</span><span class="p">:</span>
+            <span class="c1"># convert to Bytes</span>
+            <span class="n">img_size</span> <span class="o">*=</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">2</span>
+
+        <span class="n">mkext4img</span><span class="p">(</span><span class="n">img_mount</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">,</span> <span class="n">fsimage</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">img_size</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="default_image_name"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.default_image_name">[docs]</a><span class="k">def</span> <span class="nf">default_image_name</span><span class="p">(</span><span class="n">compression</span><span class="p">,</span> <span class="n">basename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Return a default image name with the correct suffix for the compression type.</span>
+
+<span class="sd">    :param str compression: Compression type</span>
+<span class="sd">    :param str basename: Base filename</span>
+<span class="sd">    :returns: basename with compression suffix</span>
+
+<span class="sd">    If the compression is unknown it defaults to xz</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">SUFFIXES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;xz&quot;</span><span class="p">:</span> <span class="s2">&quot;.xz&quot;</span><span class="p">,</span> <span class="s2">&quot;gzip&quot;</span><span class="p">:</span> <span class="s2">&quot;.gz&quot;</span><span class="p">,</span> <span class="s2">&quot;bzip2&quot;</span><span class="p">:</span> <span class="s2">&quot;.bz2&quot;</span><span class="p">,</span> <span class="s2">&quot;lzma&quot;</span><span class="p">:</span> <span class="s2">&quot;.lzma&quot;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">basename</span> <span class="o">+</span> <span class="n">SUFFIXES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">compression</span><span class="p">,</span> <span class="s2">&quot;.xz&quot;</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -665,7 +690,7 @@
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -683,7 +708,8 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'28.9',
+            VERSION:'28.10',
+            LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -701,14 +727,13 @@
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
   
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>

@@ -14,9 +14,16 @@ Contents:
    intro
    lorax
    livemedia-creator
+   lorax-composer
+   composer-cli
    product-images
    modules
 
+Documentation for other Lorax Branches
+======================================
+
+* `Fedora 28 <f28-branch/>`_
+* `RHEL7 lorax-composer <lorax-composer/>`_
 
 Indices and tables
 ==================
