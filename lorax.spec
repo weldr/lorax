@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.7.14
+Version:        19.7.15
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -174,6 +174,18 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python_sitelib}/composer/*
 
 %changelog
+* Wed May 16 2018 Brian C. Lane <bcl@redhat.com> 19.7.15-1
+- Check to make sure blueprints directory exists (bcl)
+- lorax-composer also requires tar (bcl)
+- Remove temporary files after run_compose (bcl)
+- Add --proxy to lorax-composer cmdline (bcl)
+- Pass the --tmp value into run_creator and cleanup after a crash (bcl)
+- Add --tmp to lorax-composer and set default tempdir (bcl)
+- Skip creating groups with the same name as a user (bcl)
+- Add user and group creation to blueprint (bcl)
+- Add blueprint customization support for hostname and ssh key (bcl)
+- Add support for systemd socket activation (bcl)
+
 * Wed Apr 25 2018 Brian C. Lane <bcl@redhat.com> 19.7.14-1
 - Sort the list of supported output types (bcl)
 - Add some tests for error conditions. (bcl)
