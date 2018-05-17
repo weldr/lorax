@@ -61,7 +61,6 @@ Requires:       syslinux >= 6.02-4
 %endif
 
 %ifarch ppc ppc64 ppc64le
-Requires:       kernel-bootwrapper
 Requires:       grub2
 Requires:       grub2-tools
 %endif
