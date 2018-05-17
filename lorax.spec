@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        29.3
+Version:        29.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -219,6 +219,10 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python3_sitelib}/composer/*
 
 %changelog
+* Thu May 17 2018 Brian C. Lane <bcl@redhat.com> 29.4-1
+- Update documentation (#1430906) (bcl@redhat.com)
+- really kill kernel-bootwrapper on ppc (dan@danny.cz)
+
 * Mon May 14 2018 Brian C. Lane <bcl@redhat.com> 29.3-1
 - Update the README with relevant URLs (bcl@redhat.com)
 - Fix documentation for enabling lorax-composer.socket (bcl@redhat.com)
