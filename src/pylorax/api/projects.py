@@ -179,29 +179,50 @@ def projects_info(dbo, project_names):
         pkgs = dbo.sack.query().available()
     return sorted(map(pkg_to_project_info, pkgs), key=lambda p: p["name"].lower())
 
+def _depsolve(dbo, projects):
+    """Add projects to a new transaction
 
-def projects_depsolve(dbo, project_names):
+    :param dbo: dnf base object
+    :type dbo: dnf.Base
+    :param projects: The projects and version globs to find the dependencies for
+    :type projects: List of tuples
+    :returns: None
+    :rtype: None
+    :raises: ProjectsError if there was a problem installing something
+    """
+    # This resets the transaction
+    dbo.reset(goal=True)
+    for name, version in projects:
+        try:
+            if not version:
+                version = "*"
+            pkgs = [pkg for pkg in dnf.subject.Subject(name).get_best_query(dbo.sack).filter(version__glob=version, latest=True)]
+            if not pkgs:
+                raise ProjectsError("No match for %s-%s" % (name, version))
+
+            for p in pkgs:
+                dbo.package_install(p)
+        except dnf.exceptions.MarkingError:
+            raise ProjectsError("No match for %s-%s" % (name, version))
+
+
+def projects_depsolve(dbo, projects):
     """Return the dependencies for a list of projects
 
     :param dbo: dnf base object
     :type dbo: dnf.Base
-    :param project_names: The projects to find the dependencies for
-    :type project_names: List of Strings
+    :param projects: The projects to find the dependencies for
+    :type projects: List of Strings
     :returns: NEVRA's of the project and its dependencies
     :rtype: list of dicts
+    :raises: ProjectsError if there was a problem installing something
     """
-    # This resets the transaction
-    dbo.reset(goal=True)
-    for p in project_names:
-        try:
-            dbo.install(p)
-        except dnf.exceptions.MarkingError:
-            raise ProjectsError("No match for %s" % p)
+    _depsolve(dbo, projects)
 
     try:
         dbo.resolve()
     except dnf.exceptions.DepsolveError as e:
-        raise ProjectsError("There was a problem depsolving %s: %s" % (project_names, str(e)))
+        raise ProjectsError("There was a problem depsolving %s: %s" % (projects, str(e)))
 
     if len(dbo.transaction) == 0:
         return []
@@ -230,7 +251,7 @@ def estimate_size(packages, block_size=6144):
     return installed_size
 
 
-def projects_depsolve_with_size(dbo, project_names, with_core=True):
+def projects_depsolve_with_size(dbo, projects, with_core=True):
     """Return the dependencies and installed size for a list of projects
 
     :param dbo: dnf base object
@@ -239,14 +260,9 @@ def projects_depsolve_with_size(dbo, project_names, with_core=True):
     :type project_names: List of Strings
     :returns: installed size and a list of NEVRA's of the project and its dependencies
     :rtype: tuple of (int, list of dicts)
+    :raises: ProjectsError if there was a problem installing something
     """
-    # This resets the transaction
-    dbo.reset(goal=True)
-    for p in project_names:
-        try:
-            dbo.install(p)
-        except dnf.exceptions.MarkingError:
-            raise ProjectsError("No match for %s" % p)
+    _depsolve(dbo, projects)
 
     if with_core:
         dbo.group_install("core", ['mandatory', 'default', 'optional'])
@@ -254,7 +270,7 @@ def projects_depsolve_with_size(dbo, project_names, with_core=True):
     try:
         dbo.resolve()
     except dnf.exceptions.DepsolveError as e:
-        raise ProjectsError("There was a problem depsolving %s: %s" % (project_names, str(e)))
+        raise ProjectsError("There was a problem depsolving %s: %s" % (projects, str(e)))
 
     if len(dbo.transaction) == 0:
         return (0, [])
@@ -299,6 +315,6 @@ def modules_info(dbo, module_names):
 
     # Add the dependency info to each one
     for module in modules:
-        module["dependencies"] = projects_depsolve(dbo, [module["name"]])
+        module["dependencies"] = projects_depsolve(dbo, [(module["name"], "*.*")])
 
     return modules

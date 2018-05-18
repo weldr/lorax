@@ -223,9 +223,9 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
 
     # Combine modules and packages and depsolve the list
     # TODO include the version/glob in the depsolving
-    module_names = [m["name"] for m in recipe["modules"] or []]
-    package_names = [p["name"] for p in recipe["packages"] or []]
-    projects = sorted(set(module_names+package_names), key=lambda n: n.lower())
+    module_nver = recipe.module_nver
+    package_nver = recipe.package_nver
+    projects = sorted(set(module_nver+package_nver), key=lambda p: p[0].lower())
     deps = []
     try:
         with dnflock.lock:
@@ -242,9 +242,10 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
     ks_version = makeVersion()
     ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
     ks.readKickstartFromString(ks_template+"\n%end\n")
+    ks_projects = [(name, "*") for name in ks.handler.packages.packageList]
     try:
         with dnflock.lock:
-            (template_size, _) = projects_depsolve_with_size(dnflock.dbo, ks.handler.packages.packageList,
+            (template_size, _) = projects_depsolve_with_size(dnflock.dbo, ks_projects,
                                                              with_core=not ks.handler.packages.nocore)
     except ProjectsError as e:
         log.error("start_build depsolve: %s", str(e))

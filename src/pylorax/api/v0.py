@@ -1181,9 +1181,9 @@ def v0_api(api):
 
             # Combine modules and packages and depsolve the list
             # TODO include the version/glob in the depsolving
-            module_names = blueprint.module_names
-            package_names = blueprint.package_names
-            projects = sorted(set(module_names+package_names), key=lambda n: n.lower())
+            module_nver = blueprint.module_nver
+            package_nver = blueprint.package_nver
+            projects = sorted(set(module_nver+package_nver), key=lambda p: p[0].lower())
             deps = []
             try:
                 with api.config["DNFLOCK"].lock:
@@ -1233,9 +1233,9 @@ def v0_api(api):
 
             # Combine modules and packages and depsolve the list
             # TODO include the version/glob in the depsolving
-            module_names = [m["name"] for m in blueprint["modules"] or []]
-            package_names = [p["name"] for p in blueprint["packages"] or []]
-            projects = sorted(set(module_names+package_names), key=lambda n: n.lower())
+            module_nver = blueprint.module_nver
+            package_nver = blueprint.package_nver
+            projects = sorted(set(module_nver+package_nver), key=lambda p: p[0].lower())
             deps = []
             try:
                 with api.config["DNFLOCK"].lock:
@@ -1294,7 +1294,7 @@ def v0_api(api):
         """Return detailed information about the listed projects"""
         try:
             with api.config["DNFLOCK"].lock:
-                deps = projects_depsolve(api.config["DNFLOCK"].dbo, project_names.split(","))
+                deps = projects_depsolve(api.config["DNFLOCK"].dbo, [(n, "*") for n in project_names.split(",")])
         except ProjectsError as e:
             log.error("(v0_projects_depsolve) %s", str(e))
             return jsonify(status=False, errors=[str(e)]), 400

@@ -151,13 +151,27 @@ class ProjectsTest(unittest.TestCase):
         self.assertEqual(projects[0]["builds"][0]["source"]["license"], "GPLv3+")
 
     def test_projects_depsolve(self):
-        deps = projects_depsolve(self.dbo, ["bash"])
+        deps = projects_depsolve(self.dbo, [("bash", "*.*")])
 
         self.assertEqual(deps[0]["name"], "basesystem")
 
+    def test_projects_depsolve_version(self):
+        """Test that depsolving with a partial wildcard version works"""
+        deps = projects_depsolve(self.dbo, [("bash", "4.*")])
+        self.assertEqual(deps[1]["name"], "bash")
+
+        deps = projects_depsolve(self.dbo, [("bash", "4.4.*")])
+        self.assertEqual(deps[1]["name"], "bash")
+
+    def test_projects_depsolve_oldversion(self):
+        """Test that depsolving a specific non-existant version fails"""
+        with self.assertRaises(ProjectsError):
+            deps = projects_depsolve(self.dbo, [("bash", "1.0.0")])
+            self.assertEqual(deps[1]["name"], "bash")
+
     def test_projects_depsolve_fail(self):
         with self.assertRaises(ProjectsError):
-            projects_depsolve(self.dbo, ["nada-package"])
+            projects_depsolve(self.dbo, [("nada-package", "*.*")])
 
     def test_modules_list_all(self):
         modules = modules_list(self.dbo, None)

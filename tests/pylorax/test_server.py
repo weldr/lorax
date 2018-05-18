@@ -173,7 +173,7 @@ class ServerTestCase(unittest.TestCase):
                        "modules":[{"name":"glusterfs", "version":"4.0.*"},
                                   {"name":"glusterfs-cli", "version":"4.0.*"}],
                        "packages":[{"name":"samba", "version":"4.8.*"},
-                                   {"name":"tmux", "version":"2.2"}]}
+                                   {"name":"tmux", "version":"2.7"}]}
 
         resp = self.server.post("/api/v0/blueprints/new",
                                 data=json.dumps(test_blueprint),
@@ -217,7 +217,7 @@ class ServerTestCase(unittest.TestCase):
                        "modules":[{"name":"glusterfs", "version":"4.0.*"},
                                   {"name":"glusterfs-cli", "version":"4.0.*"}],
                        "packages":[{"name":"samba", "version":"4.8.*"},
-                                   {"name":"tmux", "version":"2.2"}]}
+                                   {"name":"tmux", "version":"2.7"}]}
 
         resp = self.server.post("/api/v0/blueprints/workspace",
                                 data=json.dumps(test_blueprint),
@@ -243,7 +243,7 @@ class ServerTestCase(unittest.TestCase):
                        "modules":[{"name":"glusterfs", "version":"4.0.*"},
                                   {"name":"glusterfs-cli", "version":"4.0.*"}],
                        "packages":[{"name":"samba", "version":"4.8.*"},
-                                   {"name":"tmux", "version":"2.2"}]}
+                                   {"name":"tmux", "version":"2.7"}]}
 
         resp = self.server.post("/api/v0/blueprints/workspace",
                                 data=json.dumps(test_blueprint),
@@ -374,7 +374,7 @@ class ServerTestCase(unittest.TestCase):
                        "modules":[{"name":"glusterfs", "version":"4.0.*"},
                                   {"name":"glusterfs-cli", "version":"4.0.*"}],
                        "packages":[{"name":"samba", "version":"4.8.*"},
-                                   {"name":"tmux", "version":"2.2"}]}
+                                   {"name":"tmux", "version":"2.7"}]}
 
         resp = self.server.post("/api/v0/blueprints/workspace",
                                 data=json.dumps(test_blueprint),
@@ -390,7 +390,7 @@ class ServerTestCase(unittest.TestCase):
                              "old": {"Description": "An example GlusterFS server with samba"}},
                             {"new": {"Version": "0.3.0"},
                              "old": {"Version": "0.0.1"}},
-                            {"new": {"Package": {"version": "2.2", "name": "tmux"}},
+                            {"new": {"Package": {"version": "2.7", "name": "tmux"}},
                              "old": None}]}
         self.assertEqual(data, result)
 
@@ -437,6 +437,7 @@ class ServerTestCase(unittest.TestCase):
         blueprints = data.get("blueprints")
         self.assertNotEqual(blueprints, None)
         self.assertEqual(len(blueprints), 1)
+        self.assertTrue(len(blueprints[0]["blueprint"]["modules"]) > 0)
         self.assertEqual(blueprints[0]["blueprint"]["name"], "glusterfs")
         evra = blueprints[0]["blueprint"]["modules"][0]["version"]
         self.assertEqual(len(evra) > 10, True)
@@ -502,7 +503,7 @@ class ServerTestCase(unittest.TestCase):
                        "modules":[{"name":"glusterfs", "version":"4.0.*"},
                                   {"name":"glusterfs-cli", "version":"4.0.*"}],
                        "packages":[{"name":"samba", "version":"4.8.*"},
-                                   {"name":"tmux", "version":"2.2"}]}
+                                   {"name":"tmux", "version":"2.7"}]}
 
         resp = self.server.post("/api/v0/blueprints/new?branch=test",
                                 data=json.dumps(test_blueprint),
