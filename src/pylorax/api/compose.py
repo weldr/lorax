@@ -230,10 +230,9 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_m
         (commit_id, recipe) = read_recipe_and_id(gitlock.repo, branch, recipe_name)
 
     # Combine modules and packages and depsolve the list
-    # TODO include the version/glob in the depsolving
-    module_names = map(lambda m: m["name"], recipe["modules"] or [])
-    package_names = map(lambda p: p["name"], recipe["packages"] or [])
-    projects = sorted(set(module_names+package_names), key=lambda n: n.lower())
+    module_nver = recipe.module_nver
+    package_nver = recipe.package_nver
+    projects = sorted(set(module_nver+package_nver), key=lambda p: p[0].lower())
     deps = []
     try:
         with yumlock.lock:
@@ -250,9 +249,10 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_m
     ks_version = makeVersion(RHEL7)
     ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
     ks.readKickstartFromString(ks_template+"\n%end\n")
+    pkgs = [(name, "*") for name in ks.handler.packages.packageList]
     try:
         with yumlock.lock:
-            (template_size, _) = projects_depsolve_with_size(yumlock.yb, ks.handler.packages.packageList,
+            (template_size, _) = projects_depsolve_with_size(yumlock.yb, pkgs,
                                                              with_core=not ks.handler.packages.nocore)
     except ProjectsError as e:
         log.error("start_build depsolve: %s", str(e))

@@ -74,9 +74,19 @@ class Recipe(dict):
         return map(lambda p: p["name"], self["packages"] or [])
 
     @property
+    def package_nver(self):
+        """Return the names and versions  of the packages"""
+        return [(p["name"], p["version"]) for p in self["packages"] or []]
+
+    @property
     def module_names(self):
         """Return the names of the modules"""
         return map(lambda m: m["name"], self["modules"] or [])
+
+    @property
+    def module_nver(self):
+        """Return the names and versions of the modules"""
+        return [(m["name"], m["version"]) for m in self["modules"] or []]
 
     @property
     def filename(self):
