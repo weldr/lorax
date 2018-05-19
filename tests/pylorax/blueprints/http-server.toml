@@ -24,12 +24,12 @@ version = "5.4.*"
 
 [[packages]]
 name = "tmux"
-version = "2.2"
+version = "1.8"
 
 [[packages]]
 name = "openssh-server"
-version = "6.6.*"
+version = "7.*"
 
 [[packages]]
 name = "rsync"
-version = "3.0.*"
+version = "3.1.*"

@@ -186,28 +186,31 @@ def projects_info(yb, project_names):
     return sorted(map(yaps_to_project_info, ybl.available), key=lambda p: p["name"].lower())
 
 
-def projects_depsolve(yb, project_names):
+def projects_depsolve(yb, projects):
     """Return the dependencies for a list of projects
 
     :param yb: yum base object
     :type yb: YumBase
-    :param project_names: The projects to find the dependencies for
-    :type project_names: List of Strings
+    :param projects: The projects and version globs to find the dependencies for
+    :type projects: List of tuples
     :returns: NEVRA's of the project and its dependencies
     :rtype: list of dicts
+    :raises: ProjectsError if there was a problem installing something
     """
     try:
         # This resets the transaction
         yb.closeRpmDB()
-        for p in project_names:
-            yb.install(pattern=p)
+        for name, version in projects:
+            if not version:
+                version = "*"
+            yb.install(pattern="%s-%s" % (name, version))
         (rc, msg) = yb.buildTransaction()
         if rc not in [0, 1, 2]:
-            raise ProjectsError("There was a problem depsolving %s: %s" % (project_names, msg))
+            raise ProjectsError("There was a problem depsolving %s: %s" % (projects, msg))
         yb.tsInfo.makelists()
         deps = sorted(map(tm_to_dep, yb.tsInfo.installed + yb.tsInfo.depinstalled), key=lambda p: p["name"].lower())
     except YumBaseError as e:
-        raise ProjectsError("There was a problem depsolving %s: %s" % (project_names, str(e)))
+        raise ProjectsError("There was a problem depsolving %s: %s" % (projects, str(e)))
     finally:
         yb.closeRpmDB()
     return deps
@@ -232,31 +235,34 @@ def estimate_size(packages, block_size=4096):
         installed_size += p.po.installedsize
     return installed_size
 
-def projects_depsolve_with_size(yb, project_names, with_core=True):
+def projects_depsolve_with_size(yb, projects, with_core=True):
     """Return the dependencies and installed size for a list of projects
 
     :param yb: yum base object
     :type yb: YumBase
-    :param project_names: The projects to find the dependencies for
-    :type project_names: List of Strings
+    :param projects: The projects and version globs to find the dependencies for
+    :type projects: List of tuples
     :returns: installed size and a list of NEVRA's of the project and its dependencies
     :rtype: tuple of (int, list of dicts)
+    :raises: ProjectsError if there was a problem installing something
     """
     try:
         # This resets the transaction
         yb.closeRpmDB()
-        for p in project_names:
-            yb.install(pattern=p)
+        for name, version in projects:
+            if not version:
+                version = "*"
+            yb.install(pattern="%s-%s" % (name, version))
         if with_core:
             yb.selectGroup("core", group_package_types=['mandatory', 'default', 'optional'])
         (rc, msg) = yb.buildTransaction()
         if rc not in [0, 1, 2]:
-            raise ProjectsError("There was a problem depsolving %s: %s" % (project_names, msg))
+            raise ProjectsError("There was a problem depsolving %s: %s" % (projects, msg))
         yb.tsInfo.makelists()
         installed_size = estimate_size(yb.tsInfo.installed + yb.tsInfo.depinstalled)
         deps = sorted(map(tm_to_dep, yb.tsInfo.installed + yb.tsInfo.depinstalled), key=lambda p: p["name"].lower())
     except YumBaseError as e:
-        raise ProjectsError("There was a problem depsolving %s: %s" % (project_names, str(e)))
+        raise ProjectsError("There was a problem depsolving %s: %s" % (projects, str(e)))
     finally:
         yb.closeRpmDB()
     return (installed_size, deps)
@@ -306,6 +312,6 @@ def modules_info(yb, module_names):
     modules = sorted(map(yaps_to_project, ybl.available), key=lambda p: p["name"].lower())
     # Add the dependency info to each one
     for module in modules:
-        module["dependencies"] = projects_depsolve(yb, [module["name"]])
+        module["dependencies"] = projects_depsolve(yb, [(module["name"], "*")])
 
     return modules
