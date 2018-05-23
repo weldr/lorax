@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        29.4
+Version:        29.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -219,6 +219,11 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python3_sitelib}/composer/*
 
 %changelog
+* Wed May 23 2018 Brian C. Lane <bcl@redhat.com> 29.5-1
+- templates: Stop using gconfset (walters@verbum.org)
+- Add support for version globs to blueprints (bcl@redhat.com)
+- Update atlas blueprint (bcl@redhat.com)
+
 * Thu May 17 2018 Brian C. Lane <bcl@redhat.com> 29.4-1
 - Update documentation (#1430906) (bcl@redhat.com)
 - really kill kernel-bootwrapper on ppc (dan@danny.cz)
