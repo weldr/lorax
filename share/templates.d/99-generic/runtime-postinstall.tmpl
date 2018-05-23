@@ -89,9 +89,6 @@ append etc/shadow "install::14438:0:99999:7:::"
 ## remove root password
 replace "root:\*:" "root::" etc/shadow
 
-## gconf settings
-gconfset /desktop/gnome/interface/accessibility bool true
-
 ## gsettings settings
 install ${configdir}/org.gtk.Settings.Debug.gschema.override usr/share/glib-2.0/schemas
 runcmd chroot ${root} glib-compile-schemas /usr/share/glib-2.0/schemas

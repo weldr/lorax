@@ -129,7 +129,7 @@ class LoraxTemplateRunner(object):
     * Parsing and execution are *separate* passes - so you can't use the result
       of a command in an %if statement (or any other control statements)!
 
-    * Commands that run external programs (systemctl, gconfset) currently use
+    * Commands that run external programs (e.g. systemctl) currently use
       the *host*'s copy of that program, which may cause problems if there's a
       big enough difference between the host and the image you're modifying.
 
@@ -458,22 +458,6 @@ class LoraxTemplateRunner(object):
         '''
         for f in rglob(self._out(fileglob), fatal=True):
             os.chmod(f, int(mode,8))
-
-    # TODO: do we need a new command for gsettings?
-    def gconfset(self, path, keytype, value, outfile=None):
-        '''
-        gconfset PATH KEYTYPE VALUE [OUTFILE]
-          Set the given gconf PATH, with type KEYTYPE, to the given value.
-          OUTFILE defaults to /etc/gconf/gconf.xml.defaults if not given.
-          Example:
-            gconfset /apps/metacity/general/num_workspaces int 1
-        '''
-        if outfile is None:
-            outfile = self._out("etc/gconf/gconf.xml.defaults")
-        cmd = ["gconftool-2", "--direct",
-                    "--config-source=xml:readwrite:%s" % outfile,
-                    "--set", "--type", keytype, path, value]
-        runcmd(cmd)
 
     def log(self, msg):
         '''
