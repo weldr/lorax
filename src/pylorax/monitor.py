@@ -34,6 +34,26 @@ class LogRequestHandler(socketserver.BaseRequestHandler):
     for patterns that would indicate that the installation failed.
     self.server.log_error is set True when this happens.
     """
+
+    simple_tests = [
+        "Traceback (",
+        "traceback script(s) have been run",
+        "Out of memory:",
+        "Call Trace:",
+        "insufficient disk space:",
+        "Not enough disk space to download the packages",
+        "error populating transaction after",
+        "crashed on signal",
+        "packaging: Missed: NoSuchPackage",
+        "packaging: Installation failed",
+        "The following error occurred while installing.  This is a fatal error"
+    ]
+
+    re_tests = [
+        r"packaging: base repo .* not valid",
+        r"packaging: .* requires .*"
+    ]
+
     def setup(self):
         """Start writing to self.server.log_path"""
 
@@ -99,25 +119,13 @@ class LogRequestHandler(socketserver.BaseRequestHandler):
         """
         if "IGNORED" in line:
             return
-        simple_tests = ["Traceback (",
-                        "Out of memory:",
-                        "Call Trace:",
-                        "insufficient disk space:",
-                        "Not enough disk space to download the packages",
-                        "error populating transaction after",
-                        "traceback script(s) have been run",
-                        "crashed on signal",
-                        "packaging: Missed: NoSuchPackage",
-                        "packaging: Installation failed",
-                        "The following error occurred while installing.  This is a fatal error"]
-        re_tests =     [r"packaging: base repo .* not valid",
-                        r"packaging: .* requires .*"]
-        for t in simple_tests:
+
+        for t in self.simple_tests:
             if t in line:
                 self.server.log_error = True
                 self.server.error_line = line
                 return
-        for t in re_tests:
+        for t in self.re_tests:
             if re.search(t, line):
                 self.server.log_error = True
                 self.server.error_line = line
@@ -168,7 +176,7 @@ class LogMonitor(object):
     This needs to be running before the virt-install runs, it expects
     there to be a listener on the port used for the virtio log port.
     """
-    def __init__(self, log_path=None, host="localhost", port=0, timeout=None):
+    def __init__(self, log_path=None, host="localhost", port=0, timeout=None, log_request_handler_class=LogRequestHandler):
         """
         Start a thread to monitor the logs.
 
@@ -182,7 +190,7 @@ class LogMonitor(object):
         If log_path isn't set then it only monitors the logs, instead of
         also writing them to disk.
         """
-        self.server = LogServer(log_path, (host, port), LogRequestHandler, timeout=timeout)
+        self.server = LogServer(log_path, (host, port), log_request_handler_class, timeout=timeout)
         self.host, self.port = self.server.server_address
         self.log_path = log_path
         self.server_thread = threading.Thread(target=self.server.handle_request)
