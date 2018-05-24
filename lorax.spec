@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.11
+Version:        28.12
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -219,6 +219,11 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python3_sitelib}/composer/*
 
 %changelog
+* Thu May 24 2018 Brian C. Lane <bcl@redhat.com> 28.12-1
+- templates: Stop using gconfset (walters@verbum.org)
+- Add support for version globs to blueprints (bcl@redhat.com)
+- Update atlas blueprint (bcl@redhat.com)
+
 * Thu May 17 2018 Brian C. Lane <bcl@redhat.com> 28.11-1
 - Update the generated html docs (bcl@redhat.com)
 - Update the README with relevant URLs (bcl@redhat.com)
