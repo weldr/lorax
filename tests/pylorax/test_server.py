@@ -49,6 +49,18 @@ class ServerTestCase(unittest.TestCase):
             raise RuntimeError("\n".join(errors))
 
         make_dnf_dirs(server.config["COMPOSER_CFG"])
+
+        # copy over the test dnf repositories
+        dnf_repo_dir = server.config["COMPOSER_CFG"].get("composer", "repo_dir")
+        os.makedirs(dnf_repo_dir)
+        for f in glob("./tests/pylorax/repos/*.repo"):
+            shutil.copy2(f, dnf_repo_dir)
+
+        # dnf repo baseurl has to point to an absolute directory, so we use /tmp/lorax-empty-repo/ in the files
+        # and create an empty repository
+        os.makedirs("/tmp/lorax-empty-repo/")
+        os.system("createrepo_c /tmp/lorax-empty-repo/")
+
         dbo = get_base_object(server.config["COMPOSER_CFG"])
         server.config["DNFLOCK"] = DNFLock(dbo=dbo, lock=Lock())
 
@@ -71,6 +83,7 @@ class ServerTestCase(unittest.TestCase):
     @classmethod
     def tearDownClass(self):
         shutil.rmtree(server.config["REPO_DIR"])
+        shutil.rmtree("/tmp/lorax-empty-repo/")
 
     def test_01_status(self):
         """Test the /api/status route"""
@@ -469,6 +482,107 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(len(deps) > 10, True)
         self.assertEqual(deps[0]["name"], "basesystem")
 
+    def test_projects_source_00_list(self):
+        """Test /api/v0/projects/source/list"""
+        resp = self.server.get("/api/v0/projects/source/list")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["sources"], ["fedora", "lorax-1", "lorax-2", "lorax-3", "lorax-4", "other-repo", "single-repo", "updates"])
+
+    def test_projects_source_00_info(self):
+        """Test /api/v0/projects/source/info"""
+        resp = self.server.get("/api/v0/projects/source/info/single-repo")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        sources = data["sources"]
+        self.assertTrue("single-repo" in sources)
+
+    def test_projects_source_00_new_json(self):
+        """Test /api/v0/projects/source/new with a new json source"""
+        json_source = open("./tests/pylorax/source/test-repo.json").read()
+        self.assertTrue(len(json_source) > 0)
+        resp = self.server.post("/api/v0/projects/source/new",
+                                data=json_source,
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+    def test_projects_source_00_new_toml(self):
+        """Test /api/v0/projects/source/new with a new toml source"""
+        toml_source = open("./tests/pylorax/source/test-repo.toml").read()
+        self.assertTrue(len(toml_source) > 0)
+        resp = self.server.post("/api/v0/projects/source/new",
+                                data=toml_source,
+                                content_type="text/x-toml")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+    def test_projects_source_00_replace(self):
+        """Test /api/v0/projects/source/new with a replacement source"""
+        toml_source = open("./tests/pylorax/source/replace-repo.toml").read()
+        self.assertTrue(len(toml_source) > 0)
+        resp = self.server.post("/api/v0/projects/source/new",
+                                data=toml_source,
+                                content_type="text/x-toml")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+        # Check to see if it was really changed
+        resp = self.server.get("/api/v0/projects/source/info/single-repo")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        sources = data["sources"]
+        self.assertTrue("single-repo" in sources)
+        repo = sources["single-repo"]
+        self.assertEqual(repo["check_ssl"], False)
+        self.assertTrue("gpgkey_urls" not in repo)
+
+    def test_projects_source_01_delete_system(self):
+        """Test /api/v0/projects/source/delete a system source"""
+        resp = self.server.delete("/api/v0/projects/source/delete/fedora")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["status"], False)
+
+        # Make sure fedora is still listed
+        resp = self.server.get("/api/v0/projects/source/list")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertTrue("fedora" in data["sources"])
+
+    def test_projects_source_02_delete_single(self):
+        """Test /api/v0/projects/source/delete a single source"""
+        resp = self.server.delete("/api/v0/projects/source/delete/single-repo")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data, {"status":True})
+
+        # Make sure single-repo isn't listed
+        resp = self.server.get("/api/v0/projects/source/list")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertTrue("single-repo" not in data["sources"])
+
+    def test_projects_source_03_delete_unknown(self):
+        """Test /api/v0/projects/source/delete an unknown source"""
+        resp = self.server.delete("/api/v0/projects/source/delete/unknown-repo")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["status"], False)
+
+    def test_projects_source_04_delete_multi(self):
+        """Test /api/v0/projects/source/delete a source from a file with multiple sources"""
+        resp = self.server.delete("/api/v0/projects/source/delete/lorax-3")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data, {"status":True})
+
+        # Make sure single-repo isn't listed
+        resp = self.server.get("/api/v0/projects/source/list")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertTrue("lorax-3" not in data["sources"])
+
     def test_modules_list(self):
         """Test /api/v0/modules/list"""
         resp = self.server.get("/api/v0/modules/list")
@@ -561,7 +675,7 @@ class ServerTestCase(unittest.TestCase):
                 return True
             if time.time() > start + 60:
                 return False
-            time.sleep(5)
+            time.sleep(1)
 
     def test_compose_01_types(self):
         """Test the /api/v0/compose/types route"""
