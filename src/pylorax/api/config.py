@@ -75,8 +75,11 @@ def make_yum_dirs(conf):
     :returns: None
     """
     for p in ["yum_conf", "repo_dir", "cache_dir", "yum_root"]:
-        p_dir = os.path.dirname(conf.get("composer", p))
-        if not os.path.exists(p_dir):
+        p_dir = os.path.abspath(conf.get("composer", p))
+        if p == "yum_conf":
+            p_dir = os.path.dirname(p_dir)
+
+        if not os.path.isdir(p_dir):
             os.makedirs(p_dir)
 
 def make_queue_dirs(conf, gid):
