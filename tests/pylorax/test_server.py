@@ -487,7 +487,7 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/projects/source/list")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
-        self.assertEqual(data["sources"], ["fedora", "lorax-1", "lorax-2", "lorax-3", "lorax-4", "other-repo", "single-repo", "updates"])
+        self.assertEqual(data["sources"], ["lorax-1", "lorax-2", "lorax-3", "lorax-4", "other-repo", "rawhide", "single-repo"])
 
     def test_projects_source_00_info(self):
         """Test /api/v0/projects/source/info"""
@@ -539,16 +539,16 @@ class ServerTestCase(unittest.TestCase):
 
     def test_projects_source_01_delete_system(self):
         """Test /api/v0/projects/source/delete a system source"""
-        resp = self.server.delete("/api/v0/projects/source/delete/fedora")
+        resp = self.server.delete("/api/v0/projects/source/delete/rawhide")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         self.assertEqual(data["status"], False)
 
-        # Make sure fedora is still listed
+        # Make sure rawhide is still listed
         resp = self.server.get("/api/v0/projects/source/list")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
-        self.assertTrue("fedora" in data["sources"])
+        self.assertTrue("rawhide" in data["sources"])
 
     def test_projects_source_02_delete_single(self):
         """Test /api/v0/projects/source/delete a single source"""
