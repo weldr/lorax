@@ -501,6 +501,94 @@ POST `/api/v0/blueprints/tag/<blueprint_name>`
         ]
       }
 
+`/api/v0/projects/source/list`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Return the list of repositories used for depsolving and installing packages.
+
+  Example::
+
+      {
+        "sources": [
+          "fedora",
+          "fedora-cisco-openh264",
+          "fedora-updates-testing",
+          "fedora-updates"
+        ]
+      }
+
+`/api/v0/projects/source/info/<source-names>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Return information about the comma-separated list of source names. Or all of the
+  sources if '*' is passed. Note that general globbing is not supported, only '*'.
+
+  immutable system sources will have the "system" field set to true. User added sources
+  will have it set to false. System sources cannot be changed or deleted.
+
+  Example::
+
+      {
+        "errors": [],
+        "sources": {
+          "fedora": {
+            "check_gpg": true,
+            "check_ssl": true,
+            "gpgkey_urls": [
+              "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-x86_64"
+            ],
+            "name": "fedora",
+            "proxy": "http://proxy.brianlane.com:8123",
+            "system": true,
+            "type": "yum-metalink",
+            "url": "https://mirrors.fedoraproject.org/metalink?repo=fedora-28&arch=x86_64"
+          }
+        }
+      }
+
+POST `/api/v0/projects/source/new`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Add (or change) a source for use when depsolving blueprints and composing images.
+
+  The ``proxy`` and ``gpgkey_urls`` entries are optional. All of the others are required. The supported
+  types for the urls are:
+
+  * ``yum-baseurl`` is a URL to a yum repository.
+  * ``yum-mirrorlist`` is a URL for a mirrorlist.
+  * ``yum-metalink`` is a URL for a metalink.
+
+  If ``check_ssl`` is true the https certificates must be valid. If they are self-signed you can either set
+  this to false, or add your Certificate Authority to the host system.
+
+  If ``check_gpg`` is true the GPG key must either be installed on the host system, or ``gpgkey_urls``
+  should point to it.
+
+  You can edit an existing source (other than system sources), by doing a POST
+  of the new version of the source. It will overwrite the previous one.
+
+  Example::
+
+      {
+          "name": "custom-source-1",
+          "url": "https://url/path/to/repository/",
+          "type": "yum-baseurl",
+          "check_ssl": true,
+          "check_gpg": true,
+          "gpgkey_urls": [
+              "https://url/path/to/gpg-key"
+          ]
+      }
+
+DELETE `/api/v0/projects/source/delete/<source-name>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  Delete a user added source. This will fail if a system source is passed to
+  it.
+
+  The response will be a status response with `status` set to true, or an
+  error response with it set to false and an error message included.
+
 `/api/v0/modules/list[?offset=0&limit=20]`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -878,11 +966,14 @@ log = logging.getLogger("lorax-composer")
 
 import os
 from flask import jsonify, request, Response, send_file
+import pytoml as toml
 
+from pylorax.sysutils import joinpaths
 from pylorax.api.compose import start_build, compose_types
 from pylorax.api.crossdomain import crossdomain
 from pylorax.api.projects import projects_list, projects_info, projects_depsolve
-from pylorax.api.projects import modules_list, modules_info, ProjectsError
+from pylorax.api.projects import modules_list, modules_info, ProjectsError, repo_to_source
+from pylorax.api.projects import get_repo_sources, delete_repo_source, source_to_repo
 from pylorax.api.queue import queue_status, build_status, uuid_delete, uuid_status, uuid_info
 from pylorax.api.queue import uuid_tar, uuid_image, uuid_cancel, uuid_log
 from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
@@ -1300,6 +1391,121 @@ def v0_api(api):
             return jsonify(status=False, errors=[str(e)]), 400
 
         return jsonify(projects=deps)
+
+    @api.route("/api/v0/projects/source/list")
+    @crossdomain(origin="*")
+    def v0_projects_source_list():
+        """Return the list of source names"""
+        with api.config["DNFLOCK"].lock:
+            repos = list(api.config["DNFLOCK"].dbo.repos.iter_enabled())
+        sources = sorted([r.id for r in repos])
+        return jsonify(sources=sources)
+
+    @api.route("/api/v0/projects/source/info/<source_names>")
+    @crossdomain(origin="*")
+    def v0_projects_source_info(source_names):
+        """Return detailed info about the list of sources"""
+        out_fmt = request.args.get("format", "json")
+
+        # Return info on all of the sources
+        if source_names == "*":
+            with api.config["DNFLOCK"].lock:
+                source_names = ",".join(r.id for r in api.config["DNFLOCK"].dbo.repos.iter_enabled())
+
+        sources = {}
+        errors = []
+        system_sources = get_repo_sources("/etc/yum.repos.d/*.repo")
+        for source in source_names.split(","):
+            with api.config["DNFLOCK"].lock:
+                repo = api.config["DNFLOCK"].dbo.repos.get(source, None)
+            if not repo:
+                errors.append("%s is not a valid source" % source)
+                continue
+            sources[repo.id] = repo_to_source(repo, repo.id in system_sources)
+
+        if out_fmt == "toml":
+            # With TOML output we just want to dump the raw sources, skipping the errors
+            return toml.dumps(sources)
+        else:
+            return jsonify(sources=sources, errors=errors)
+
+    @api.route("/api/v0/projects/source/new", methods=["POST"])
+    @crossdomain(origin="*")
+    def v0_projects_source_new():
+        """Add a new package source. Or change an existing one"""
+        if request.headers['Content-Type'] == "text/x-toml":
+            source = toml.loads(request.data)
+        else:
+            source = request.get_json(cache=False)
+
+        system_sources = get_repo_sources("/etc/yum.repos.d/*.repo")
+        if source["name"] in system_sources:
+            return jsonify(status=False, errors=["%s is a system source, it cannot be deleted." % source["name"]]), 400
+
+        try:
+            # Remove it from the RepoDict (NOTE that this isn't explicitly supported by the DNF API)
+            with api.config["DNFLOCK"].lock:
+                dbo = api.config["DNFLOCK"].dbo
+                # If this repo already exists, delete it and replace it with the new one
+                repos = list(r.id for r in dbo.repos.iter_enabled())
+                if source["name"] in repos:
+                    del dbo.repos[source["name"]]
+
+                # XXX - BCL DIAGNOSTIC
+                repos = list(r.id for r in dbo.repos.iter_enabled())
+                if source["name"] in repos:
+                    return jsonify(status=False, errors=["Failed to delete DNF repo %s" % source["name"]]), 400
+
+                repo = source_to_repo(source, dbo.conf)
+                dbo.repos.add(repo)
+
+                log.info("Updating repository metadata after adding %s", source["name"])
+                dbo.fill_sack(load_system_repo=False)
+                dbo.read_comps()
+
+            # Write the new repo to disk, replacing any existing ones
+            repo_dir = api.config["COMPOSER_CFG"].get("composer", "repo_dir")
+
+            # Remove any previous sources with this name, ignore it if it isn't found
+            try:
+                delete_repo_source(joinpaths(repo_dir, "*.repo"), source["name"])
+            except ProjectsError:
+                pass
+
+            # Make sure the source name can't contain a path traversal by taking the basename
+            source_path = joinpaths(repo_dir, os.path.basename("%s.repo" % source["name"]))
+            with open(source_path, "w") as f:
+                f.write(str(repo))
+        except Exception as e:
+            return jsonify(status=False, errors=[str(e)]), 400
+
+        return jsonify(status=True)
+
+    @api.route("/api/v0/projects/source/delete/<source_name>", methods=["DELETE"])
+    @crossdomain(origin="*")
+    def v0_projects_source_delete(source_name):
+        """Delete the named source and return a status response"""
+        system_sources = get_repo_sources("/etc/yum.repos.d/*.repo")
+        if source_name in system_sources:
+            return jsonify(status=False, errors=["%s is a system source, it cannot be deleted." % source_name]), 400
+        share_dir = api.config["COMPOSER_CFG"].get("composer", "repo_dir")
+        try:
+            # Remove the file entry for the source
+            delete_repo_source(joinpaths(share_dir, "*.repo"), source_name)
+
+            # Remove it from the RepoDict (NOTE that this isn't explicitly supported by the DNF API)
+            with api.config["DNFLOCK"].lock:
+                if source_name in api.config["DNFLOCK"].dbo.repos:
+                    del api.config["DNFLOCK"].dbo.repos[source_name]
+                    log.info("Updating repository metadata after removing %s", source_name)
+                    api.config["DNFLOCK"].dbo.fill_sack(load_system_repo=False)
+                    api.config["DNFLOCK"].dbo.read_comps()
+
+        except ProjectsError as e:
+            log.error("(v0_projects_source_delete) %s", str(e))
+            return jsonify(status=False, errors=[str(e)]), 400
+
+        return jsonify(status=True)
 
     @api.route("/api/v0/modules/list")
     @api.route("/api/v0/modules/list/<module_names>")

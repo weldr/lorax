@@ -235,3 +235,55 @@ the results directory, or it could do some post-processing on it. The end of
 the function should always clean up the ``./compose/`` directory, removing any
 unneeded extra files. This is especially true for the ``live-iso`` since it produces
 the contents of the iso as well as the boot.iso itself.
+
+Package Sources
+---------------
+
+By default lorax-composer uses the host's configured repositories. It copies
+the ``*.repo`` files from ``/etc/yum.repos.d/`` into
+``/var/lib/lorax/composer/repos.d/`` at startup, these are immutable system
+repositories and cannot be deleted or changed. If you want to add additional
+repos you can put them into ``/var/lib/lorax/composer/repos.d/`` or use the
+``/api/v0/projects/source/*`` API routes to create them.
+
+The new source can be added by doing a POST to the ``/api/v0/projects/source/new``
+route using JSON (with `Content-Type` header set to `application/json`) or TOML
+(with it set to `text/x-toml`).  The format of the source looks like this (in
+TOML)::
+
+    name = "custom-source-1"
+    url = "https://url/path/to/repository/"
+    type = "yum-baseurl"
+    proxy = "https://proxy-url/"
+    check_ssl = true
+    check_gpg = true
+    gpgkey_urls = ["https://url/path/to/gpg-key"]
+
+The ``proxy`` and ``gpgkey_urls`` entries are optional. All of the others are required. The supported
+types for the urls are:
+
+* ``yum-baseurl`` is a URL to a yum repository.
+* ``yum-mirrorlist`` is a URL for a mirrorlist.
+* ``yum-metalink`` is a URL for a metalink.
+
+If ``check_ssl`` is true the https certificates must be valid. If they are self-signed you can either set
+this to false, or add your Certificate Authority to the host system.
+
+If ``check_gpg`` is true the GPG key must either be installed on the host system, or ``gpgkey_urls``
+should point to it.
+
+You can edit an existing source (other than system sources), by doing a POST to the ``new`` route
+with the new version of the source. It will overwrite the previous one.
+
+A list of existing sources is available from ``/api/v0/projects/source/list``, and detailed info
+on a source can be retrieved with the ``/api/v0/projects/source/info/<source-name>`` route. By default
+it returns JSON but it can also return TOML if ``?format=toml`` is added to the request.
+
+Non-system sources can be deleted by doing a ``DELETE`` request to the
+``/api/v0/projects/source/delete/<source-name>`` route.
+
+The documentation for the source API routes can be `found here <pylorax.api.html#api-v0-projects-source-list>`_
+
+The configured sources are used for all blueprint depsolve operations, and for composing images.
+When adding additional sources you must make sure that the packages in the source do not
+conflict with any other package sources, otherwise depsolving will fail.

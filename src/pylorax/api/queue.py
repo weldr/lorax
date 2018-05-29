@@ -90,7 +90,7 @@ def monitor(cfg):
         # Pick the oldest and move it into ./run/
         if not uuids:
             # No composes left to process, sleep for a bit
-            time.sleep(30)
+            time.sleep(5)
         else:
             src = joinpaths(cfg.composer_dir, "queue/new", uuids[0])
             dst = joinpaths(cfg.composer_dir, "queue/run", uuids[0])
@@ -196,7 +196,7 @@ def make_compose(cfg, results_dir):
         test_path = joinpaths(results_dir, "TEST")
         if os.path.exists(test_path):
             # Pretend to run the compose
-            time.sleep(10)
+            time.sleep(5)
             try:
                 test_mode = int(open(test_path, "r").read())
             except Exception:
