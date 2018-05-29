@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from glob import glob
 import os
 import mock
 import time
@@ -23,11 +24,13 @@ import unittest
 
 from yum.Errors import YumBaseError
 
+from pylorax.sysutils import joinpaths
 from pylorax.api.config import configure, make_yum_dirs
 from pylorax.api.projects import api_time, api_changelog, yaps_to_project, yaps_to_project_info
 from pylorax.api.projects import tm_to_dep, yaps_to_module, projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError, dep_evra, dep_nevra
 from pylorax.api.yumbase import get_base_object
+from pylorax.api.projects import repo_to_source, get_repo_sources, delete_repo_source, source_to_repo
 
 
 class Yaps(object):
@@ -247,3 +250,215 @@ class ConfigureTest(unittest.TestCase):
     def test_configure_reads_non_existing_file(self):
         config = configure(conf_file=self.conf_file + '.non-existing')
         self.assertEqual(config.get('composer', 'cache_dir'), '/var/tmp/composer/cache')
+
+class FakeRepoBaseUrl(object):
+    id = "fake-repo-baseurl"
+    baseurl = ["https://fake-repo.base.url"]
+    metalink = ""
+    mirrorlist = ""
+    proxy = ""
+    sslverify = True
+    gpgcheck = True
+    gpgkey = []
+
+def fakerepo_baseurl():
+    return {
+        "check_gpg": True,
+        "check_ssl": True,
+        "name": "fake-repo-baseurl",
+        "system": False,
+        "type": "yum-baseurl",
+        "url": "https://fake-repo.base.url"
+    }
+
+class FakeSystemRepo(object):
+    id = "fake-system-repo"
+    baseurl = ["https://fake-repo.base.url"]
+    metalink = ""
+    mirrorlist = ""
+    proxy = ""
+    sslverify = True
+    gpgcheck = True
+    gpgkey = []
+
+def fakesystem_repo():
+    return {
+        "check_gpg": True,
+        "check_ssl": True,
+        "name": "fake-system-repo",
+        "system": True,
+        "type": "yum-baseurl",
+        "url": "https://fake-repo.base.url"
+    }
+
+class FakeRepoMetalink(object):
+    id = "fake-repo-metalink"
+    baseurl = []
+    metalink = "https://fake-repo.metalink"
+    proxy = ""
+    sslverify = True
+    gpgcheck = True
+    gpgkey = []
+
+def fakerepo_metalink():
+    return {
+        "check_gpg": True,
+        "check_ssl": True,
+        "name": "fake-repo-metalink",
+        "system": False,
+        "type": "yum-metalink",
+        "url": "https://fake-repo.metalink"
+    }
+
+class FakeRepoMirrorlist(object):
+    id = "fake-repo-mirrorlist"
+    baseurl = []
+    metalink = ""
+    mirrorlist = "https://fake-repo.mirrorlist"
+    proxy = ""
+    sslverify = True
+    gpgcheck = True
+    gpgkey = []
+
+def fakerepo_mirrorlist():
+    return {
+        "check_gpg": True,
+        "check_ssl": True,
+        "name": "fake-repo-mirrorlist",
+        "system": False,
+        "type": "yum-mirrorlist",
+        "url": "https://fake-repo.mirrorlist"
+    }
+
+class FakeRepoProxy(object):
+    id = "fake-repo-proxy"
+    baseurl = ["https://fake-repo.base.url"]
+    metalink = ""
+    mirrorlist = ""
+    proxy = "https://fake-repo.proxy"
+    sslverify = True
+    gpgcheck = True
+    gpgkey = []
+
+def fakerepo_proxy():
+    return {
+        "check_gpg": True,
+        "check_ssl": True,
+        "name": "fake-repo-proxy",
+        "proxy": "https://fake-repo.proxy",
+        "system": False,
+        "type": "yum-baseurl",
+        "url": "https://fake-repo.base.url"
+    }
+
+class FakeRepoGPGKey(object):
+    id = "fake-repo-gpgkey"
+    baseurl = ["https://fake-repo.base.url"]
+    metalink = ""
+    mirrorlist = ""
+    proxy = ""
+    sslverify = True
+    gpgcheck = True
+    gpgkey = ["https://fake-repo.gpgkey"]
+
+def fakerepo_gpgkey():
+    return {
+        "check_gpg": True,
+        "check_ssl": True,
+        "gpgkey_urls": [
+            "https://fake-repo.gpgkey"
+        ],
+        "name": "fake-repo-gpgkey",
+        "system": False,
+        "type": "yum-baseurl",
+        "url": "https://fake-repo.base.url"
+    }
+
+class SourceTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        self.tmp_dir = tempfile.mkdtemp(prefix="lorax.test.repo.")
+        for f in glob("./tests/pylorax/repos/*.repo"):
+            shutil.copy2(f, self.tmp_dir)
+
+    @classmethod
+    def tearDownClass(self):
+        shutil.rmtree(self.tmp_dir)
+
+    def test_repo_to_source_baseurl(self):
+        """Test a repo with a baseurl"""
+        self.assertEqual(repo_to_source(FakeRepoBaseUrl(), False), fakerepo_baseurl())
+
+    def test_system_repo(self):
+        """Test a system repo with a baseurl"""
+        self.assertEqual(repo_to_source(FakeSystemRepo(), True), fakesystem_repo())
+
+    def test_repo_to_source_metalink(self):
+        """Test a repo with a metalink"""
+        self.assertEqual(repo_to_source(FakeRepoMetalink, False), fakerepo_metalink())
+
+    def test_repo_to_source_mirrorlist(self):
+        """Test a repo with a mirrorlist"""
+        self.assertEqual(repo_to_source(FakeRepoMirrorlist, False), fakerepo_mirrorlist())
+
+    def test_repo_to_source_proxy(self):
+        """Test a repo with a proxy"""
+        self.assertEqual(repo_to_source(FakeRepoProxy, False), fakerepo_proxy())
+
+    def test_repo_to_source_gpgkey(self):
+        """Test a repo with a GPG key"""
+        self.assertEqual(repo_to_source(FakeRepoGPGKey, False), fakerepo_gpgkey())
+
+    def test_get_repo_sources(self):
+        """Test getting a list of sources from a repo directory"""
+        sources = get_repo_sources(joinpaths(self.tmp_dir, "*.repo"))
+        self.assertTrue("lorax-1" in sources)
+        self.assertTrue("lorax-2" in sources)
+
+    def test_delete_source_multiple(self):
+        """Test deleting a source from a repo file with multiple entries"""
+        delete_repo_source(joinpaths(self.tmp_dir, "*.repo"), "lorax-3")
+        sources = get_repo_sources(joinpaths(self.tmp_dir, "*.repo"))
+        self.assertTrue("lorax-3" not in sources)
+
+    def test_delete_source_single(self):
+        """Test deleting a source from a repo with only 1 entry"""
+        delete_repo_source(joinpaths(self.tmp_dir, "*.repo"), "single-repo")
+        sources = get_repo_sources(joinpaths(self.tmp_dir, "*.repo"))
+        self.assertTrue("single-repo" not in sources)
+        self.assertTrue(not os.path.exists(joinpaths(self.tmp_dir, "single.repo")))
+
+    def test_delete_source_other(self):
+        """Test deleting a source from a repo that doesn't match the source name"""
+        with self.assertRaises(ProjectsError):
+            delete_repo_source(joinpaths(self.tmp_dir, "*.repo"), "unknown-source")
+        sources = get_repo_sources(joinpaths(self.tmp_dir, "*.repo"))
+        self.assertTrue("lorax-1" in sources)
+        self.assertTrue("lorax-2" in sources)
+        self.assertTrue("lorax-4" in sources)
+        self.assertTrue("other-repo" in sources)
+
+    def test_source_to_repo_baseurl(self):
+        """Test creating a yum.yumRepo.YumRepository with a baseurl"""
+        repo = source_to_repo(fakerepo_baseurl())
+        self.assertEqual(repo.baseurl[0], fakerepo_baseurl()["url"])
+
+    def test_source_to_repo_metalink(self):
+        """Test creating a yum.yumRepo.YumRepository with a metalink"""
+        repo = source_to_repo(fakerepo_metalink())
+        self.assertEqual(repo.metalink, fakerepo_metalink()["url"])
+
+    def test_source_to_repo_mirrorlist(self):
+        """Test creating a yum.yumRepo.YumRepository with a mirrorlist"""
+        repo = source_to_repo(fakerepo_mirrorlist())
+        self.assertEqual(repo.mirrorlist, fakerepo_mirrorlist()["url"])
+
+    def test_source_to_repo_proxy(self):
+        """Test creating a yum.yumRepo.YumRepository with a proxy"""
+        repo = source_to_repo(fakerepo_proxy())
+        self.assertEqual(repo.proxy, fakerepo_proxy()["proxy"])
+
+    def test_source_to_repo_gpgkey(self):
+        """Test creating a yum.yumRepo.YumRepository with a proxy"""
+        repo = source_to_repo(fakerepo_gpgkey())
+        self.assertEqual(repo.gpgkey, fakerepo_gpgkey()["gpgkey_urls"])

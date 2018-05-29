@@ -17,6 +17,10 @@
 import logging
 log = logging.getLogger("lorax-composer")
 
+import os
+from ConfigParser import ConfigParser
+import yum
+from glob import glob
 import time
 
 from yum.Errors import YumBaseError
@@ -315,3 +319,175 @@ def modules_info(yb, module_names):
         module["dependencies"] = projects_depsolve(yb, [(module["name"], "*")])
 
     return modules
+
+def repo_to_source(repo, system_source):
+    """Return a Weldr Source dict created from the YumRepository
+
+    :param repo: Yum Repository
+    :type repo: yum.yumRepo.YumRepository
+    :param system_source: True if this source is an immutable system source
+    :type system_source: bool
+    :returns: A dict with Weldr Source fields filled in
+    :rtype: dict
+
+    Example::
+
+        {
+          "check_gpg": true,
+          "check_ssl": true,
+          "gpgkey_url": [
+            "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-x86_64"
+          ],
+          "name": "fedora",
+          "proxy": "http://proxy.brianlane.com:8123",
+          "system": true
+          "type": "yum-metalink",
+          "url": "https://mirrors.fedoraproject.org/metalink?repo=fedora-28&arch=x86_64"
+        }
+
+    """
+    source = {"name": repo.id, "system": system_source}
+    if repo.baseurl:
+        source["url"] = repo.baseurl[0]
+        source["type"] = "yum-baseurl"
+    elif repo.metalink:
+        source["url"] = repo.metalink
+        source["type"] = "yum-metalink"
+    elif repo.mirrorlist:
+        source["url"] = repo.mirrorlist
+        source["type"] = "yum-mirrorlist"
+    else:
+        raise RuntimeError("Repo has no baseurl, metalink, or mirrorlist")
+
+    # proxy is optional
+    if repo.proxy:
+        source["proxy"] = repo.proxy
+
+    if not repo.sslverify:
+        source["check_ssl"] = False
+    else:
+        source["check_ssl"] = True
+
+    if not repo.gpgcheck:
+        source["check_gpg"] = False
+    else:
+        source["check_gpg"] = True
+
+    if repo.gpgkey:
+        source["gpgkey_urls"] = repo.gpgkey
+
+    return source
+
+def source_to_repo(source):
+    """Return a yum YumRepository object created from a source dict
+
+    :param source: A Weldr source dict
+    :type source: dict
+    :returns: A yum YumRepository object
+    :rtype: yum.yumRepo.YumRepository
+
+    Example::
+
+        {
+          "check_gpg": True,
+          "check_ssl": True,
+          "gpgkey_urls": [
+            "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-x86_64"
+          ],
+          "name": "fedora",
+          "proxy": "http://proxy.brianlane.com:8123",
+          "system": True
+          "type": "yum-metalink",
+          "url": "https://mirrors.fedoraproject.org/metalink?repo=fedora-28&arch=x86_64"
+        }
+
+    """
+    repo = yum.yumRepo.YumRepository(source["name"])
+    if source["type"] == "yum-baseurl":
+        repo.baseurl = [source["url"]]
+    elif source["type"] == "yum-metalink":
+        repo.metalink = source["url"]
+    elif source["type"] == "yum-mirrorlist":
+        repo.mirrorlist = source["url"]
+
+    if "proxy" in source:
+        repo.proxy = source["proxy"]
+
+    if source["check_ssl"]:
+        repo.sslverify = True
+    else:
+        repo.sslverify = False
+
+    if source["check_gpg"]:
+        repo.gpgcheck = True
+    else:
+        repo.gpgcheck = False
+
+    if "gpgkey_urls" in source:
+        repo.gpgkey = source["gpgkey_urls"]
+
+    repo.enable()
+
+    return repo
+
+def get_source_ids(source_path):
+    """Return a list of the source ids in a file
+
+    :param source_path: Full path and filename of the source (yum repo) file
+    :type source_path: str
+    :returns: A list of source id strings
+    :rtype: list of str
+    """
+    if not os.path.exists(source_path):
+        return []
+
+    cfg = ConfigParser()
+    cfg.read(source_path)
+    return cfg.sections()
+
+def get_repo_sources(source_glob):
+    """Return a list of sources from a directory of yum repositories
+
+    :param source_glob: A glob to use to match the source files, including full path
+    :type source_glob: str
+    :returns: A list of the source ids in all of the matching files
+    :rtype: list of str
+    """
+    sources = []
+    for f in glob(source_glob):
+        sources.extend(get_source_ids(f))
+    return sources
+
+def delete_repo_source(source_glob, source_name):
+    """Delete a source from a repo file
+
+    :param source_glob: A glob of the repo sources to search
+    :type source_glob: str
+    :returns: None
+    :raises: ProjectsError if there was a problem
+
+    A repo file may have multiple sources in it, delete only the selected source.
+    If it is the last one in the file, delete the file.
+
+    WARNING: This will delete ANY source, the caller needs to ensure that a system
+    source_name isn't passed to it.
+    """
+    found = False
+    for f in glob(source_glob):
+        try:
+            cfg = ConfigParser()
+            cfg.read(f)
+            if source_name in cfg.sections():
+                found = True
+                cfg.remove_section(source_name)
+                # If there are other sections, rewrite the file without the deleted one
+                if len(cfg.sections()) > 0:
+                    with open(f, "w") as cfg_file:
+                        cfg.write(cfg_file)
+                else:
+                    # No sections left, just delete the file
+                    os.unlink(f)
+        except Exception as e:
+            raise ProjectsError("Problem deleting repo source %s: %s" % (source_name, str(e)))
+    if not found:
+        raise ProjectsError("source %s not found" % source_name)
