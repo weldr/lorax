@@ -44,9 +44,9 @@ def configure(conf_file="/etc/lorax/composer.conf", root_dir="/", test_config=Fa
     conf.add_section("composer")
     conf.set("composer", "share_dir", os.path.realpath(joinpaths(root_dir, "/usr/share/lorax/")))
     conf.set("composer", "lib_dir", os.path.realpath(joinpaths(root_dir, "/var/lib/lorax/composer/")))
+    conf.set("composer", "repo_dir", os.path.realpath(joinpaths(root_dir, "/var/lib/lorax/composer/repos.d/")))
     conf.set("composer", "yum_conf", os.path.realpath(joinpaths(root_dir, "/var/tmp/composer/yum.conf")))
     conf.set("composer", "yum_root", os.path.realpath(joinpaths(root_dir, "/var/tmp/composer/yum/root/")))
-    conf.set("composer", "repo_dir", os.path.realpath(joinpaths(root_dir, "/var/tmp/composer/repos.d/")))
     conf.set("composer", "cache_dir", os.path.realpath(joinpaths(root_dir, "/var/tmp/composer/cache/")))
     conf.set("composer", "tmp", os.path.realpath(joinpaths(root_dir, "/var/tmp/")))
 

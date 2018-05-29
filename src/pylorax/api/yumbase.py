@@ -103,11 +103,21 @@ def get_base_object(conf):
 
     # Update the metadata from the enabled repos to speed up later operations
     log.info("Updating yum repository metadata")
+    update_metadata(yb)
+
+    return yb
+
+def update_metadata(yb):
+    """Update the metadata for all the enabled repos
+
+    :param yb: The Yum base object
+    :type yb: yum.YumBase
+    :returns: None
+    :rtype: None
+    """
     for r in yb.repos.sort():
         r.metadata_expire = 0
         r.mdpolicy = "group:all"
     yb.doRepoSetup()
     yb.repos.doSetup()
     yb.repos.populateSack(mdtype='all', cacheonly=1)
-
-    return yb
