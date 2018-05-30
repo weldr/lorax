@@ -108,6 +108,5 @@ class CreateDnfDirsTest(unittest.TestCase):
 
         # will create the above directory if missing
         make_dnf_dirs(config)
-        _ = get_base_object(config)
 
         self.assertTrue(os.path.exists(self.tmp_dir + '/var/tmp/composer/dnf/root'))
