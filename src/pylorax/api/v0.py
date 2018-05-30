@@ -1451,11 +1451,6 @@ def v0_api(api):
                 if source["name"] in repos:
                     yb.repos.delete(source["name"])
 
-                # XXX - BCL DIAGNOSTIC
-                repos = list(r.id for r in yb.repos.listEnabled())
-                if source["name"] in repos:
-                    return jsonify(status=False, errors=["Failed to delete Yum repo %s" % source["name"]]), 400
-
                 repo = source_to_repo(source)
                 yb.repos.add(repo)
 
@@ -1476,6 +1471,18 @@ def v0_api(api):
             with open(source_path, "w") as f:
                 f.write(str(repo))
         except Exception as e:
+            log.error("(v0_projects_source_add) adding %s failed: %s", source["name"], str(e))
+
+            # Cleanup the mess, if loading it failed we don't want to leave it in memory
+            with api.config["YUMLOCK"].lock:
+                repos = list(r.id for r in yb.repos.listEnabled())
+                if source["name"] in repos:
+                    yb = api.config["YUMLOCK"].yb
+                    yb.repos.delete(source["name"])
+
+                    log.info("Updating repository metadata after adding %s failed", source["name"])
+                    update_metadata(yb)
+
             return jsonify(status=False, errors=[str(e)]), 400
 
         return jsonify(status=True)
