@@ -35,6 +35,7 @@ class ServerTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
+        self.rawhide = False
         self.maxDiff = None
 
         repo_dir = tempfile.mkdtemp(prefix="lorax.test.repo.")
@@ -54,6 +55,10 @@ class ServerTestCase(unittest.TestCase):
         dnf_repo_dir = server.config["COMPOSER_CFG"].get("composer", "repo_dir")
         for f in glob("./tests/pylorax/repos/*.repo"):
             shutil.copy2(f, dnf_repo_dir)
+
+        # Modify fedora vs. rawhide tests when running on rawhide
+        if os.path.exists("/etc/yum.repos.d/fedora-rawhide.repo"):
+            self.rawhide = True
 
         # dnf repo baseurl has to point to an absolute directory, so we use /tmp/lorax-empty-repo/ in the files
         # and create an empty repository
@@ -486,7 +491,10 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/projects/source/list")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
-        self.assertEqual(data["sources"], ["lorax-1", "lorax-2", "lorax-3", "lorax-4", "other-repo", "rawhide", "single-repo"])
+        if self.rawhide:
+            self.assertEqual(data["sources"], ["lorax-1", "lorax-2", "lorax-3", "lorax-4", "other-repo", "rawhide", "single-repo"])
+        else:
+            self.assertEqual(data["sources"], ["fedora", "lorax-1", "lorax-2", "lorax-3", "lorax-4", "other-repo", "single-repo", "updates"])
 
     def test_projects_source_00_info(self):
         """Test /api/v0/projects/source/info"""
@@ -550,18 +558,34 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(repo["check_ssl"], False)
         self.assertTrue("gpgkey_urls" not in repo)
 
+    def test_projects_source_00_bad_url(self):
+        """Test /api/v0/projects/source/new with a new source that has an invalid url"""
+        toml_source = open("./tests/pylorax/source/bad-repo.toml").read()
+        self.assertTrue(len(toml_source) > 0)
+        resp = self.server.post("/api/v0/projects/source/new",
+                                data=toml_source,
+                                content_type="text/x-toml")
+        data = json.loads(resp.data)
+        self.assertEqual(data["status"], False)
+
     def test_projects_source_01_delete_system(self):
         """Test /api/v0/projects/source/delete a system source"""
-        resp = self.server.delete("/api/v0/projects/source/delete/rawhide")
+        if self.rawhide:
+            resp = self.server.delete("/api/v0/projects/source/delete/rawhide")
+        else:
+            resp = self.server.delete("/api/v0/projects/source/delete/fedora")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         self.assertEqual(data["status"], False)
 
-        # Make sure rawhide is still listed
+        # Make sure fedora/rawhide is still listed
         resp = self.server.get("/api/v0/projects/source/list")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
-        self.assertTrue("rawhide" in data["sources"])
+        if self.rawhide:
+            self.assertTrue("rawhide" in data["sources"])
+        else:
+            self.assertTrue("fedora" in data["sources"])
 
     def test_projects_source_02_delete_single(self):
         """Test /api/v0/projects/source/delete a single source"""
