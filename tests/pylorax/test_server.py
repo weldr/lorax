@@ -542,6 +542,16 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(repo["check_ssl"], False)
         self.assertTrue("gpgkey_urls" not in repo)
 
+    def test_projects_source_00_bad_url(self):
+        """Test /api/v0/projects/source/new with a new source that has an invalid url"""
+        toml_source = open("./tests/pylorax/source/bad-repo.toml").read()
+        self.assertTrue(len(toml_source) > 0)
+        resp = self.server.post("/api/v0/projects/source/new",
+                                data=toml_source,
+                                content_type="text/x-toml")
+        data = json.loads(resp.data)
+        self.assertEqual(data["status"], False)
+
     def test_projects_source_01_delete_system(self):
         """Test /api/v0/projects/source/delete a system source"""
         resp = self.server.delete("/api/v0/projects/source/delete/base")
