@@ -405,6 +405,10 @@ def source_to_repo(source, dnf_conf):
 
     """
     repo = dnf.repo.Repo(source["name"], dnf_conf)
+    # This will allow errors to be raised so we can catch them
+    # without this they are logged, but the repo is silently disabled
+    repo.skip_if_unavailable = False
+
     if source["type"] == "yum-baseurl":
         repo.baseurl = [source["url"]]
     elif source["type"] == "yum-metalink":

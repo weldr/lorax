@@ -1451,11 +1451,6 @@ def v0_api(api):
                 if source["name"] in repos:
                     del dbo.repos[source["name"]]
 
-                # XXX - BCL DIAGNOSTIC
-                repos = list(r.id for r in dbo.repos.iter_enabled())
-                if source["name"] in repos:
-                    return jsonify(status=False, errors=["Failed to delete DNF repo %s" % source["name"]]), 400
-
                 repo = source_to_repo(source, dbo.conf)
                 dbo.repos.add(repo)
 
@@ -1477,6 +1472,19 @@ def v0_api(api):
             with open(source_path, "w") as f:
                 f.write(str(repo))
         except Exception as e:
+            log.error("(v0_projects_source_add) adding %s failed: %s", source["name"], str(e))
+
+            # Cleanup the mess, if loading it failed we don't want to leave it in memory
+            repos = list(r.id for r in dbo.repos.iter_enabled())
+            if source["name"] in repos:
+                with api.config["DNFLOCK"].lock:
+                    dbo = api.config["DNFLOCK"].dbo
+                    del dbo.repos[source["name"]]
+
+                    log.info("Updating repository metadata after adding %s failed", source["name"])
+                    dbo.fill_sack(load_system_repo=False)
+                    dbo.read_comps()
+
             return jsonify(status=False, errors=[str(e)]), 400
 
         return jsonify(status=True)
