@@ -498,6 +498,13 @@ class ServerTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
 
+        # Is it listed?
+        resp = self.server.get("/api/v0/projects/source/list")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        sources = data["sources"]
+        self.assertTrue("new-repo-1" in sources)
+
     def test_projects_source_00_new_toml(self):
         """Test /api/v0/projects/source/new with a new toml source"""
         toml_source = open("./tests/pylorax/source/test-repo.toml").read()
@@ -507,6 +514,13 @@ class ServerTestCase(unittest.TestCase):
                                 content_type="text/x-toml")
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
+
+        # Is it listed?
+        resp = self.server.get("/api/v0/projects/source/list")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        sources = data["sources"]
+        self.assertTrue("new-repo-2" in sources)
 
     def test_projects_source_00_replace(self):
         """Test /api/v0/projects/source/new with a replacement source"""
