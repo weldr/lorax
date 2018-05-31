@@ -565,6 +565,7 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.post("/api/v0/projects/source/new",
                                 data=toml_source,
                                 content_type="text/x-toml")
+        self.assertEqual(resp.status_code, 400)
         data = json.loads(resp.data)
         self.assertEqual(data["status"], False)
 
@@ -574,6 +575,7 @@ class ServerTestCase(unittest.TestCase):
             resp = self.server.delete("/api/v0/projects/source/delete/rawhide")
         else:
             resp = self.server.delete("/api/v0/projects/source/delete/fedora")
+        self.assertEqual(resp.status_code, 400)
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         self.assertEqual(data["status"], False)
@@ -603,6 +605,7 @@ class ServerTestCase(unittest.TestCase):
     def test_projects_source_03_delete_unknown(self):
         """Test /api/v0/projects/source/delete an unknown source"""
         resp = self.server.delete("/api/v0/projects/source/delete/unknown-repo")
+        self.assertEqual(resp.status_code, 400)
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         self.assertEqual(data["status"], False)
