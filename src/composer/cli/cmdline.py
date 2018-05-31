@@ -110,6 +110,20 @@ projects list
 projects info <PROJECT,...>
     Show details about the listed projects.
 
+sources list
+    List the available sources
+
+sources info <SOURCE-NAME,...>
+    Details about the source.
+
+sources add <SOURCE.TOML>
+    Add a package source to the server.
+
+sources change <SOURCE.TOML>
+    Change an existing source
+
+sources delete <SOURCE-NAME>
+    Delete a package source.
 """
 
 def composer_cli_parser():
