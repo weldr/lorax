@@ -322,6 +322,39 @@ def modules_info(dbo, module_names):
 
     return modules
 
+def dnf_repo_to_file_repo(repo):
+    """Return a string representation of a DNF Repo object suitable for writing to a .repo file
+
+    :param repo: DNF Repository
+    :type repo: dnf.RepoDict
+    :returns: A string
+    :rtype: str
+
+    The DNF Repo.dump() function does not produce a string that can be used as a dnf .repo file,
+    it ouputs baseurl and gpgkey as python lists which DNF cannot read. So do this manually with
+    only the attributes we care about.
+    """
+    repo_str = "[%s]\n" % repo.id
+    if repo.metalink:
+        repo_str += "metalink = %s\n" % repo.metalink
+    elif repo.mirrorlist:
+        repo_str += "mirrorlist = %s\n" % repo.mirrorlist
+    elif repo.baseurl:
+        repo_str += "baseurl = %s\n" % repo.baseurl[0]
+    else:
+        raise RuntimeError("Repo has no baseurl, metalink, or mirrorlist")
+
+    # proxy is optional
+    if repo.proxy:
+        repo_str += "proxy = %s\n" % repo.proxy
+
+    repo_str += "sslverify = %s\n" % repo.sslverify
+    repo_str += "gpgcheck = %s\n" % repo.gpgcheck
+    if repo.gpgkey:
+        repo_str += "gpgkey = %s\n" % ",".join(repo.gpgkey)
+
+    return repo_str
+
 def repo_to_source(repo, system_source):
     """Return a Weldr Source dict created from the DNF Repository
 
@@ -410,7 +443,7 @@ def source_to_repo(source, dnf_conf):
     repo.skip_if_unavailable = False
 
     if source["type"] == "yum-baseurl":
-        repo.baseurl = [source["url"]]
+        repo.baseurl = source["url"]
     elif source["type"] == "yum-metalink":
         repo.metalink = source["url"]
     elif source["type"] == "yum-mirrorlist":
@@ -430,7 +463,7 @@ def source_to_repo(source, dnf_conf):
         repo.gpgcheck = False
 
     if "gpgkey_urls" in source:
-        repo.gpgkey = source["gpgkey_urls"]
+        repo.gpgkey = ",".join(source["gpgkey_urls"])
 
     repo.enable()
 

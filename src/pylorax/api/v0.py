@@ -973,7 +973,7 @@ from pylorax.api.compose import start_build, compose_types
 from pylorax.api.crossdomain import crossdomain
 from pylorax.api.projects import projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError, repo_to_source
-from pylorax.api.projects import get_repo_sources, delete_repo_source, source_to_repo
+from pylorax.api.projects import get_repo_sources, delete_repo_source, source_to_repo, dnf_repo_to_file_repo
 from pylorax.api.queue import queue_status, build_status, uuid_delete, uuid_status, uuid_info
 from pylorax.api.queue import uuid_tar, uuid_image, uuid_cancel, uuid_log
 from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
@@ -1423,9 +1423,12 @@ def v0_api(api):
                 continue
             sources[repo.id] = repo_to_source(repo, repo.id in system_sources)
 
-        if out_fmt == "toml":
+        if out_fmt == "toml" and not errors:
             # With TOML output we just want to dump the raw sources, skipping the errors
             return toml.dumps(sources)
+        elif out_fmt == "toml" and errors:
+            # TOML requested, but there was an error
+            return jsonify(status=False, errors=errors), 400
         else:
             return jsonify(sources=sources, errors=errors)
 
@@ -1470,7 +1473,7 @@ def v0_api(api):
             # Make sure the source name can't contain a path traversal by taking the basename
             source_path = joinpaths(repo_dir, os.path.basename("%s.repo" % source["name"]))
             with open(source_path, "w") as f:
-                f.write(str(repo))
+                f.write(dnf_repo_to_file_repo(repo))
         except Exception as e:
             log.error("(v0_projects_source_add) adding %s failed: %s", source["name"], str(e))
 
