@@ -320,6 +320,38 @@ def modules_info(yb, module_names):
 
     return modules
 
+def yum_repo_to_file_repo(repo):
+    """Return a string representation of a YumRepository object suitable for writing to a .repo file
+
+    :param repo: Yum Repository
+    :type repo: yum.yumRepo.YumRepository
+    :returns: A string
+    :rtype: str
+
+    The YumRepo.dump() function does not produce a string that can be used as a
+    yum .repo file. So do this manually with only the attributes we care about.
+    """
+    repo_str = "[%s]\n" % repo.id
+    if repo.metalink:
+        repo_str += "metalink = %s\n" % repo.metalink
+    elif repo.mirrorlist:
+        repo_str += "mirrorlist = %s\n" % repo.mirrorlist
+    elif repo.baseurl:
+        repo_str += "baseurl = %s\n" % repo.baseurl[0]
+    else:
+        raise RuntimeError("Repo has no baseurl, metalink, or mirrorlist")
+
+    # proxy is optional
+    if repo.proxy:
+        repo_str += "proxy = %s\n" % repo.proxy
+
+    repo_str += "sslverify = %s\n" % repo.sslverify
+    repo_str += "gpgcheck = %s\n" % repo.gpgcheck
+    if repo.gpgkey:
+        repo_str += "gpgkey = %s\n" % ",".join(repo.gpgkey)
+
+    return repo_str
+
 def repo_to_source(repo, system_source):
     """Return a Weldr Source dict created from the YumRepository
 
@@ -408,7 +440,7 @@ def source_to_repo(source):
     repo.skip_if_unavailable = False
 
     if source["type"] == "yum-baseurl":
-        repo.baseurl = [source["url"]]
+        repo.baseurl = source["url"]
     elif source["type"] == "yum-metalink":
         repo.metalink = source["url"]
     elif source["type"] == "yum-mirrorlist":
@@ -428,7 +460,7 @@ def source_to_repo(source):
         repo.gpgcheck = False
 
     if "gpgkey_urls" in source:
-        repo.gpgkey = source["gpgkey_urls"]
+        repo.gpgkey = ",".join(source["gpgkey_urls"])
 
     repo.enable()
 
