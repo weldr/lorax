@@ -1,4 +1,3 @@
-#!/usr/bin/python
 #
 # composer-cli
 #
@@ -24,12 +23,14 @@ from composer.cli.blueprints import blueprints_cmd
 from composer.cli.modules import modules_cmd
 from composer.cli.projects import projects_cmd
 from composer.cli.compose import compose_cmd
+from composer.cli.sources import sources_cmd
 
 command_map = {
     "blueprints": blueprints_cmd,
     "modules": modules_cmd,
     "projects": projects_cmd,
-    "compose": compose_cmd
+    "compose": compose_cmd,
+    "sources": sources_cmd
     }
 
 
