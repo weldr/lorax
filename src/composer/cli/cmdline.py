@@ -24,36 +24,106 @@ VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
 
 # Documentation for the commands
 epilog = """
-compose start <blueprint> <type>    Start a compose using the selected blueprint and output type.
-        types                       List the supported output types.
-        status                      List the status of all running and finished composes.
-        log <uuid> [<size>kB]       Show the last 1kB of the compose log.
-        cancel <uuid>               Cancel a running compose and delete any intermediate results.
-        delete <uuid,...>           Delete the listed compose results.
-        info <uuid>                 Show detailed information on the compose.
-        metadata <uuid>             Download the metadata use to create the compose to <uuid>-metadata.tar
-        logs <uuid>                 Download the compose logs to <uuid>-logs.tar
-        results <uuid>              Download all of the compose results; metadata, logs, and image to <uuid>.tar
-        image <uuid>                Download the output image from the compose. Filename depends on the type.
-blueprints list                     List the names of the available blueprints.
-        show <blueprint,...>        Display the blueprint in TOML format.
-        changes <blueprint,...>     Display the changes for each blueprint.
-        diff <blueprint-name>       Display the differences between 2 versions of a blueprint.
-             <from-commit>          Commit hash or NEWEST
-             <to-commit>            Commit hash, NEWEST, or WORKSPACE
-        save <blueprint,...>        Save the blueprint to a file, <blueprint-name>.toml
-        delete <blueprint>          Delete a blueprint from the server
-        depsolve <blueprint,...>    Display the packages needed to install the blueprint.
-        push <blueprint>            Push a blueprint TOML file to the server.
-        freeze <blueprint,...>      Display the frozen blueprint's modules and packages.
-        freeze show <blueprint,...> Display the frozen blueprint in TOML format.
-        freeze save <blueprint,...> Save the frozen blueprint to a file, <blueprint-name>.frozen.toml.
-        tag <blueprint>             Tag the most recent blueprint commit as a release.
-        undo <blueprint> <commit>   Undo changes to a blueprint by reverting to the selected commit.
-        workspace <blueprint>       Push the blueprint TOML to the temporary workspace storage.
-modules list                        List the available modules.
-projects list                       List the available projects.
-projects info <project,...>         Show details about the listed projects.
+compose start <BLUEPRINT> <TYPE>
+    Start a compose using the selected blueprint and output type.
+
+compose types
+    List the supported output types.
+
+compose status
+    List the status of all running and finished composes.
+
+compose log <UUID> [<SIZE>]
+    Show the last SIZE kB of the compose log.
+
+compose cancel <UUID>
+    Cancel a running compose and delete any intermediate results.
+
+compose delete <UUID,...>
+    Delete the listed compose results.
+
+compose info <UUID>
+    Show detailed information on the compose.
+
+compose metadata <UUID>
+    Download the metadata use to create the compose to <uuid>-metadata.tar
+
+compose logs <UUID>
+    Download the compose logs to <uuid>-logs.tar
+
+compose results <UUID>
+    Download all of the compose results; metadata, logs, and image to <uuid>.tar
+
+compose image <UUID>
+    Download the output image from the compose. Filename depends on the type.
+
+blueprints list
+    List the names of the available blueprints.
+
+blueprints show <BLUEPRINT,...>
+    Display the blueprint in TOML format.
+
+blueprints changes <BLUEPRINT,...>
+    Display the changes for each blueprint.
+
+blueprints diff <BLUEPRINT> <FROM-COMMIT> <TO-COMMIT>
+    Display the differences between 2 versions of a blueprint.
+    FROM-COMMIT can be a commit hash or NEWEST
+    TO-COMMIT  can be a commit hash, NEWEST, or WORKSPACE
+
+blueprints save <BLUEPRINT,...>
+    Save the blueprint to a file, <BLUEPRINT>.toml
+
+blueprints delete <BLUEPRINT>
+    Delete a blueprint from the server
+
+blueprints depsolve <BLUEPRINT,...>
+    Display the packages needed to install the blueprint.
+
+blueprints push <BLUEPRINT>
+    Push a blueprint TOML file to the server.
+
+blueprints freeze <BLUEPRINT,...>
+    Display the frozen blueprint's modules and packages.
+
+blueprints freeze show <BLUEPRINT,...>
+    Display the frozen blueprint in TOML format.
+
+blueprints freeze save <BLUEPRINT,...>
+    Save the frozen blueprint to a file, <blueprint-name>.frozen.toml.
+
+blueprints tag <BLUEPRINT>
+    Tag the most recent blueprint commit as a release.
+
+blueprints undo <BLUEPRINT> <COMMIT>
+    Undo changes to a blueprint by reverting to the selected commit.
+
+blueprints workspace <BLUEPRINT>
+    Push the blueprint TOML to the temporary workspace storage.
+
+modules list
+    List the available modules.
+
+projects list
+    List the available projects.
+
+projects info <PROJECT,...>
+    Show details about the listed projects.
+
+sources list
+    List the available sources
+
+sources info <SOURCE-NAME,...>
+    Details about the source.
+
+sources add <SOURCE.TOML>
+    Add a package source to the server.
+
+sources change <SOURCE.TOML>
+    Change an existing source
+
+sources delete <SOURCE-NAME>
+    Delete a package source.
 """
 
 def composer_cli_parser():
