@@ -1478,10 +1478,13 @@ def v0_api(api):
 
             # Cleanup the mess, if loading it failed we don't want to leave it in memory
             with api.config["YUMLOCK"].lock:
+                yb = api.config["YUMLOCK"].yb
                 repos = list(r.id for r in yb.repos.listEnabled())
+                log.info("BCL: repos = %s", repos)
                 if source["name"] in repos:
-                    yb = api.config["YUMLOCK"].yb
                     yb.repos.delete(source["name"])
+                    # delete doesn't remove it from the cache used by listEnabled so we have to force it
+                    yb.repos._cache_enabled_repos = None
 
                     log.info("Updating repository metadata after adding %s failed", source["name"])
                     update_metadata(yb)
@@ -1508,6 +1511,9 @@ def v0_api(api):
                 repos = list(r.id for r in yb.repos.listEnabled())
                 if source_name in repos:
                     yb.repos.delete(source_name)
+                    # delete doesn't remove it from the cache used by listEnabled so we have to force it
+                    yb.repos._cache_enabled_repos = None
+
                     log.info("Updating repository metadata after removing %s", source_name)
                     update_metadata(yb)
 
