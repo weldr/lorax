@@ -1,123 +1,146 @@
 pylorax package
 ===============
 
+Subpackages
+-----------
+
+.. toctree::
+
+    pylorax.api
+
 Submodules
 ----------
 
-pylorax\.base module
---------------------
+pylorax.base module
+-------------------
 
 .. automodule:: pylorax.base
     :members:
     :undoc-members:
     :show-inheritance:
 
-pylorax\.buildstamp module
---------------------------
+pylorax.buildstamp module
+-------------------------
 
 .. automodule:: pylorax.buildstamp
     :members:
     :undoc-members:
     :show-inheritance:
 
-pylorax\.cmdline module
------------------------
+pylorax.cmdline module
+----------------------
 
 .. automodule:: pylorax.cmdline
     :members:
     :undoc-members:
     :show-inheritance:
 
-pylorax\.decorators module
---------------------------
+pylorax.creator module
+----------------------
+
+.. automodule:: pylorax.creator
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pylorax.decorators module
+-------------------------
 
 .. automodule:: pylorax.decorators
     :members:
     :undoc-members:
     :show-inheritance:
 
-pylorax\.discinfo module
-------------------------
+pylorax.discinfo module
+-----------------------
 
 .. automodule:: pylorax.discinfo
     :members:
     :undoc-members:
     :show-inheritance:
 
-pylorax\.dnfhelper module
--------------------------
+pylorax.dnfhelper module
+------------------------
 
 .. automodule:: pylorax.dnfhelper
     :members:
     :undoc-members:
     :show-inheritance:
 
-pylorax\.executils module
--------------------------
+pylorax.executils module
+------------------------
 
 .. automodule:: pylorax.executils
     :members:
     :undoc-members:
     :show-inheritance:
 
-pylorax\.imgutils module
-------------------------
+pylorax.imgutils module
+-----------------------
 
 .. automodule:: pylorax.imgutils
     :members:
     :undoc-members:
     :show-inheritance:
 
-pylorax\.ltmpl module
----------------------
+pylorax.installer module
+------------------------
+
+.. automodule:: pylorax.installer
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pylorax.ltmpl module
+--------------------
 
 .. automodule:: pylorax.ltmpl
     :members:
     :undoc-members:
     :show-inheritance:
 
-pylorax\.monitor module
------------------------
+pylorax.monitor module
+----------------------
 
 .. automodule:: pylorax.monitor
     :members:
     :undoc-members:
     :show-inheritance:
 
-pylorax\.mount module
----------------------
+pylorax.mount module
+--------------------
 
 .. automodule:: pylorax.mount
     :members:
     :undoc-members:
     :show-inheritance:
 
-pylorax\.output module
-----------------------
+pylorax.output module
+---------------------
 
 .. automodule:: pylorax.output
     :members:
     :undoc-members:
     :show-inheritance:
 
-pylorax\.sysutils module
-------------------------
+pylorax.sysutils module
+-----------------------
 
 .. automodule:: pylorax.sysutils
     :members:
     :undoc-members:
     :show-inheritance:
 
-pylorax\.treebuilder module
----------------------------
+pylorax.treebuilder module
+--------------------------
 
 .. automodule:: pylorax.treebuilder
     :members:
     :undoc-members:
     :show-inheritance:
 
-pylorax\.treeinfo module
-------------------------
+pylorax.treeinfo module
+-----------------------
 
 .. automodule:: pylorax.treeinfo
     :members:

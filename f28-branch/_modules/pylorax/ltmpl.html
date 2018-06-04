@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.ltmpl &mdash; Lorax 28.9 documentation</title>
+  <title>pylorax.ltmpl &mdash; Lorax 28.13 documentation</title>
   
 
   
@@ -25,25 +25,17 @@
   
 
   
-  
     <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../../genindex.html"/>
-        <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Lorax 28.9 documentation" href="../../index.html"/>
-        <link rel="up" title="pylorax" href="../pylorax.html"/> 
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -65,7 +57,7 @@
             
             
               <div class="version">
-                28.9
+                28.13
               </div>
             
           
@@ -94,6 +86,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../intro.html#before-lorax">Before Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../lorax.html">Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../livemedia-creator.html">livemedia-creator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../lorax-composer.html">lorax-composer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../composer-cli.html">composer-cli</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../product-images.html">Product and Updates Images</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">pylorax</a></li>
 </ul>
@@ -107,7 +101,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">Lorax</a>
@@ -115,9 +109,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -148,8 +143,6 @@
     
     
       <li class="wy-breadcrumbs-aside">
-        
-            
         
       </li>
     
@@ -293,7 +286,7 @@
 <span class="sd">    * Parsing and execution are *separate* passes - so you can&#39;t use the result</span>
 <span class="sd">      of a command in an %if statement (or any other control statements)!</span>
 
-<span class="sd">    * Commands that run external programs (systemctl, gconfset) currently use</span>
+<span class="sd">    * Commands that run external programs (e.g. systemctl) currently use</span>
 <span class="sd">      the *host*&#39;s copy of that program, which may cause problems if there&#39;s a</span>
 <span class="sd">      big enough difference between the host and the image you&#39;re modifying.</span>
 
@@ -623,22 +616,6 @@
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">rglob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="n">fileglob</span><span class="p">),</span> <span class="n">fatal</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span></div>
 
-    <span class="c1"># TODO: do we need a new command for gsettings?</span>
-<div class="viewcode-block" id="LoraxTemplateRunner.gconfset"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.gconfset">[docs]</a>    <span class="k">def</span> <span class="nf">gconfset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">keytype</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        gconfset PATH KEYTYPE VALUE [OUTFILE]</span>
-<span class="sd">          Set the given gconf PATH, with type KEYTYPE, to the given value.</span>
-<span class="sd">          OUTFILE defaults to /etc/gconf/gconf.xml.defaults if not given.</span>
-<span class="sd">          Example:</span>
-<span class="sd">            gconfset /apps/metacity/general/num_workspaces int 1</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">outfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="s2">&quot;etc/gconf/gconf.xml.defaults&quot;</span><span class="p">)</span>
-        <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;gconftool-2&quot;</span><span class="p">,</span> <span class="s2">&quot;--direct&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;--config-source=xml:readwrite:</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">outfile</span><span class="p">,</span>
-                    <span class="s2">&quot;--set&quot;</span><span class="p">,</span> <span class="s2">&quot;--type&quot;</span><span class="p">,</span> <span class="n">keytype</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">value</span><span class="p">]</span>
-        <span class="n">runcmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span></div>
-
 <div class="viewcode-block" id="LoraxTemplateRunner.log"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.log">[docs]</a>    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        log MESSAGE</span>
@@ -952,9 +929,7 @@
 </pre></div>
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -967,7 +942,7 @@
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -985,7 +960,8 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'28.9',
+            VERSION:'28.13',
+            LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -1003,14 +979,11 @@
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
   
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>

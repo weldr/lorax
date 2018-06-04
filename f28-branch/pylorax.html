@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax package &mdash; Lorax 28.9 documentation</title>
+  <title>pylorax package &mdash; Lorax 28.13 documentation</title>
   
 
   
@@ -25,26 +25,19 @@
   
 
   
-  
     <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Lorax 28.9 documentation" href="index.html"/>
-        <link rel="up" title="pylorax" href="modules.html"/>
-        <link rel="prev" title="pylorax" href="modules.html"/> 
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="pylorax.api package" href="pylorax.api.html" />
+    <link rel="prev" title="pylorax" href="modules.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -66,7 +59,7 @@
             
             
               <div class="version">
-                28.9
+                28.13
               </div>
             
           
@@ -95,18 +88,26 @@
 <li class="toctree-l1"><a class="reference internal" href="intro.html#before-lorax">Before Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lorax.html">Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="livemedia-creator.html">livemedia-creator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lorax-composer.html">lorax-composer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="composer-cli.html">composer-cli</a></li>
 <li class="toctree-l1"><a class="reference internal" href="product-images.html">Product and Updates Images</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">pylorax</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">pylorax package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html">pylorax.api package</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.base">pylorax.base module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.buildstamp">pylorax.buildstamp module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.cmdline">pylorax.cmdline module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pylorax.creator">pylorax.creator module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.decorators">pylorax.decorators module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.discinfo">pylorax.discinfo module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.dnfhelper">pylorax.dnfhelper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.executils">pylorax.executils module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.imgutils">pylorax.imgutils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pylorax.installer">pylorax.installer module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.ltmpl">pylorax.ltmpl module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.monitor">pylorax.monitor module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.mount">pylorax.mount module</a></li>
@@ -130,7 +131,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">Lorax</a>
@@ -138,9 +139,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -186,6 +188,74 @@
             
   <div class="section" id="pylorax-package">
 <h1>pylorax package<a class="headerlink" href="#pylorax-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pylorax.api.html">pylorax.api package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.cmdline">pylorax.api.cmdline module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.compose">pylorax.api.compose module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pylorax.api.html#adding-new-output-types">Adding New Output Types</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.config">pylorax.api.config module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.crossdomain">pylorax.api.crossdomain module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#pylorax-api-dnfbase-module">pylorax.api.dnfbase module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.projects">pylorax.api.projects module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.queue">pylorax.api.queue module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.recipes">pylorax.api.recipes module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.server">pylorax.api.server module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.v0">pylorax.api.v0 module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pylorax.api.html#status-responses">Status Responses</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylorax.api.html#api-routes">API Routes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-blueprints-list"><cite>/api/v0/blueprints/list</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-blueprints-info-blueprint-names"><cite>/api/v0/blueprints/info/&lt;blueprint_names&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-blueprints-changes-blueprint-names-offset-0-limit-20"><cite>/api/v0/blueprints/changes/&lt;blueprint_names&gt;[?offset=0&amp;limit=20]</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#post-api-v0-blueprints-new">POST <cite>/api/v0/blueprints/new</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#delete-api-v0-blueprints-delete-blueprint-name">DELETE <cite>/api/v0/blueprints/delete/&lt;blueprint_name&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#post-api-v0-blueprints-workspace">POST <cite>/api/v0/blueprints/workspace</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#delete-api-v0-blueprints-workspace-blueprint-name">DELETE <cite>/api/v0/blueprints/workspace/&lt;blueprint_name&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#post-api-v0-blueprints-undo-blueprint-name-commit">POST <cite>/api/v0/blueprints/undo/&lt;blueprint_name&gt;/&lt;commit&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#post-api-v0-blueprints-tag-blueprint-name">POST <cite>/api/v0/blueprints/tag/&lt;blueprint_name&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-blueprints-diff-blueprint-name-from-commit-to-commit"><cite>/api/v0/blueprints/diff/&lt;blueprint_name&gt;/&lt;from_commit&gt;/&lt;to_commit&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-blueprints-freeze-blueprint-names"><cite>/api/v0/blueprints/freeze/&lt;blueprint_names&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-blueprints-depsolve-blueprint-names"><cite>/api/v0/blueprints/depsolve/&lt;blueprint_names&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-projects-list-offset-0-limit-20"><cite>/api/v0/projects/list[?offset=0&amp;limit=20]</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-projects-info-project-names"><cite>/api/v0/projects/info/&lt;project_names&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-projects-depsolve-project-names"><cite>/api/v0/projects/depsolve/&lt;project_names&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-projects-source-list"><cite>/api/v0/projects/source/list</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-projects-source-info-source-names"><cite>/api/v0/projects/source/info/&lt;source-names&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#post-api-v0-projects-source-new">POST <cite>/api/v0/projects/source/new</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#delete-api-v0-projects-source-delete-source-name">DELETE <cite>/api/v0/projects/source/delete/&lt;source-name&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-modules-list-offset-0-limit-20"><cite>/api/v0/modules/list[?offset=0&amp;limit=20]</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-modules-list-module-names-offset-0-limit-20"><cite>/api/v0/modules/list/&lt;module_names&gt;[?offset=0&amp;limit=20]</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-modules-info-module-names"><cite>/api/v0/modules/info/&lt;module_names&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#post-api-v0-compose">POST <cite>/api/v0/compose</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-compose-types"><cite>/api/v0/compose/types</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-compose-queue"><cite>/api/v0/compose/queue</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-compose-finished"><cite>/api/v0/compose/finished</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-compose-failed"><cite>/api/v0/compose/failed</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-compose-status-uuids"><cite>/api/v0/compose/status/&lt;uuids&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#delete-api-v0-blueprints-cancel-uuid">DELETE <cite>/api/v0/blueprints/cancel/&lt;uuid&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#delete-api-v0-compose-delete-uuids">DELETE <cite>/api/v0/compose/delete/&lt;uuids&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-compose-info-uuid"><cite>/api/v0/compose/info/&lt;uuid&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-compose-metadata-uuid"><cite>/api/v0/compose/metadata/&lt;uuid&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-compose-results-uuid"><cite>/api/v0/compose/results/&lt;uuid&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-compose-logs-uuid"><cite>/api/v0/compose/logs/&lt;uuid&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-compose-image-uuid"><cite>/api/v0/compose/image/&lt;uuid&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-compose-log-uuid-size-kbytes"><cite>/api/v0/compose/log/&lt;uuid&gt;[?size=kbytes]</cite></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.workspace">pylorax.api.workspace module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
@@ -194,7 +264,7 @@
 <dl class="class">
 <dt id="pylorax.base.BaseLoraxClass">
 <em class="property">class </em><code class="descclassname">pylorax.base.</code><code class="descname">BaseLoraxClass</code><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="method">
 <dt id="pylorax.base.BaseLoraxClass.pcritical">
 <code class="descname">pcritical</code><span class="sig-paren">(</span><em>msg</em>, <em>fobj=&lt;_io.TextIOWrapper name='&lt;stdout&gt;' mode='w' encoding='UTF-8'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.pcritical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.pcritical" title="Permalink to this definition">¶</a></dt>
@@ -225,10 +295,10 @@
 <dl class="class">
 <dt id="pylorax.base.DataHolder">
 <em class="property">class </em><code class="descclassname">pylorax.base.</code><code class="descname">DataHolder</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/base.html#DataHolder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.DataHolder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
 <dl class="method">
 <dt id="pylorax.base.DataHolder.copy">
-<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/base.html#DataHolder.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.DataHolder.copy" title="Permalink to this definition">¶</a></dt>
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; a shallow copy of D<a class="reference internal" href="_modules/pylorax/base.html#DataHolder.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.DataHolder.copy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -239,7 +309,7 @@
 <dl class="class">
 <dt id="pylorax.buildstamp.BuildStamp">
 <em class="property">class </em><code class="descclassname">pylorax.buildstamp.</code><code class="descname">BuildStamp</code><span class="sig-paren">(</span><em>product</em>, <em>version</em>, <em>bugurl</em>, <em>isfinal</em>, <em>buildarch</em>, <em>variant=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/buildstamp.html#BuildStamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.buildstamp.BuildStamp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="method">
 <dt id="pylorax.buildstamp.BuildStamp.write">
 <code class="descname">write</code><span class="sig-paren">(</span><em>outfile</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/buildstamp.html#BuildStamp.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.buildstamp.BuildStamp.write" title="Permalink to this definition">¶</a></dt>
@@ -263,6 +333,345 @@
 </dd></dl>
 
 </div>
+<div class="section" id="module-pylorax.creator">
+<span id="pylorax-creator-module"></span><h2>pylorax.creator module<a class="headerlink" href="#module-pylorax.creator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pylorax.creator.FakeDNF">
+<em class="property">class </em><code class="descclassname">pylorax.creator.</code><code class="descname">FakeDNF</code><span class="sig-paren">(</span><em>conf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#FakeDNF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.FakeDNF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A minimal DNF object suitable for passing to RuntimeBuilder</p>
+<p>lmc uses RuntimeBuilder to run the arch specific iso creation
+templates, so the the installroot config value is the important part of
+this. Everything else should be a nop.</p>
+<dl class="method">
+<dt id="pylorax.creator.FakeDNF.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#FakeDNF.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.FakeDNF.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.creator.calculate_disk_size">
+<code class="descclassname">pylorax.creator.</code><code class="descname">calculate_disk_size</code><span class="sig-paren">(</span><em>opts</em>, <em>ks</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#calculate_disk_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.calculate_disk_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the disk size from the kickstart</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>opts</strong> (<em>argparse options</em>) – options passed to livemedia-creator</li>
+<li><strong>ks</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to the kickstart to use for the installation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Disk size in MiB</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)">int</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.creator.create_pxe_config">
+<code class="descclassname">pylorax.creator.</code><code class="descname">create_pxe_config</code><span class="sig-paren">(</span><em>template</em>, <em>images_dir</em>, <em>live_image_name</em>, <em>add_args=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#create_pxe_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.create_pxe_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create template for pxe to live configuration</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>images_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path of directory with images to be used</li>
+<li><strong>live_image_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Name of live rootfs image file</li>
+<li><strong>add_args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – Arguments to be added to initrd= pxe config</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.creator.find_ostree_root">
+<code class="descclassname">pylorax.creator.</code><code class="descname">find_ostree_root</code><span class="sig-paren">(</span><em>phys_root</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#find_ostree_root"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.find_ostree_root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find root of ostree deployment</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>phys_root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to physical root</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Relative path of ostree deployment root</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.6)"><strong>Exception</strong></a> – More than one deployment roots were found</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.creator.get_arch">
+<code class="descclassname">pylorax.creator.</code><code class="descname">get_arch</code><span class="sig-paren">(</span><em>mount_dir</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#get_arch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.get_arch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the kernel arch</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Arch of first kernel found at mount_dir/boot/ or i386</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.creator.is_image_mounted">
+<code class="descclassname">pylorax.creator.</code><code class="descname">is_image_mounted</code><span class="sig-paren">(</span><em>disk_img</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#is_image_mounted"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.is_image_mounted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check to see if the disk_img is mounted</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if disk_img is in /proc/mounts</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)">bool</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.creator.make_appliance">
+<code class="descclassname">pylorax.creator.</code><code class="descname">make_appliance</code><span class="sig-paren">(</span><em>disk_img</em>, <em>name</em>, <em>template</em>, <em>outfile</em>, <em>networks=None</em>, <em>ram=1024</em>, <em>vcpus=1</em>, <em>arch=None</em>, <em>title='Linux'</em>, <em>project='Linux'</em>, <em>releasever='29'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#make_appliance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.make_appliance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate an appliance description file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>disk_img</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Full path of the disk image</li>
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Name of the appliance, passed to the template</li>
+<li><strong>template</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Full path of Mako template</li>
+<li><strong>outfile</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Full path of file to write, using template</li>
+<li><strong>networks</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – List of networks(str) from the kickstart</li>
+<li><strong>ram</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Ram, in MiB, passed to template. Default is 1024</li>
+<li><strong>vcpus</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – CPUs, passed to template. Default is 1</li>
+<li><strong>arch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – CPU architecture. Default is ‘x86_64’</li>
+<li><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Title, passed to template. Default is ‘Linux’</li>
+<li><strong>project</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Project, passed to template. Default is ‘Linux’</li>
+<li><strong>releasever</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Release version, passed to template. Default is 29</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.creator.make_image">
+<code class="descclassname">pylorax.creator.</code><code class="descname">make_image</code><span class="sig-paren">(</span><em>opts</em>, <em>ks</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#make_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.make_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install to a disk image</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>opts</strong> (<em>argparse options</em>) – options passed to livemedia-creator</li>
+<li><strong>ks</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to the kickstart to use for the installation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Path of the image created</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Use qemu+boot.iso or anaconda to install to a disk image.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.creator.make_live_images">
+<code class="descclassname">pylorax.creator.</code><code class="descname">make_live_images</code><span class="sig-paren">(</span><em>opts</em>, <em>work_dir</em>, <em>disk_img</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#make_live_images"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.make_live_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create live images from direcory or rootfs image</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>opts</strong> (<em>argparse options</em>) – options passed to livemedia-creator</li>
+<li><strong>work_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Directory for storing results</li>
+<li><strong>disk_img</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to disk image (fsimage or partitioned)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Path of directory with created images or None</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>fsck.ext4 is run on the rootfs_image to make sure there are no errors and to zero
+out any deleted blocks to make it compress better. If this fails for any reason
+it will return None and log the error.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.creator.make_livecd">
+<code class="descclassname">pylorax.creator.</code><code class="descname">make_livecd</code><span class="sig-paren">(</span><em>opts</em>, <em>mount_dir</em>, <em>work_dir</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#make_livecd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.make_livecd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take the content from the disk image and make a livecd out of it</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>opts</strong> (<em>argparse options</em>) – options passed to livemedia-creator</li>
+<li><strong>mount_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Directory tree to compress</li>
+<li><strong>work_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Output compressed image to work_dir+images/install.img</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>This uses wwood’s squashfs live initramfs method:</dt>
+<dd><ul class="first last simple">
+<li>put the real / into LiveOS/rootfs.img</li>
+<li>make a squashfs of the LiveOS/rootfs.img tree</li>
+<li>This is loaded by dracut when the cmdline is passed to the kernel:
+root=live:CDLABEL=&lt;volid&gt; rd.live.image</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.creator.make_runtime">
+<code class="descclassname">pylorax.creator.</code><code class="descname">make_runtime</code><span class="sig-paren">(</span><em>opts</em>, <em>mount_dir</em>, <em>work_dir</em>, <em>size=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#make_runtime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.make_runtime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make the squashfs image from a directory</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>opts</strong> (<em>argparse options</em>) – options passed to livemedia-creator</li>
+<li><strong>mount_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Directory tree to compress</li>
+<li><strong>work_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Output compressed image to work_dir+images/install.img</li>
+<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Size of disk image, in GiB</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.creator.make_squashfs">
+<code class="descclassname">pylorax.creator.</code><code class="descname">make_squashfs</code><span class="sig-paren">(</span><em>opts</em>, <em>disk_img</em>, <em>work_dir</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#make_squashfs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.make_squashfs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a squashfs image of an unpartitioned filesystem disk image</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>disk_img</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to the unpartitioned filesystem disk image</li>
+<li><strong>work_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Output compressed image to work_dir+images/install.img</li>
+<li><strong>compression</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Compression type to use</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if squashfs creation was successful. False if there was an error.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)">bool</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Take disk_img and put it into LiveOS/rootfs.img and squashfs this
+tree into work_dir+images/install.img</p>
+<p>fsck.ext4 is run on the disk image to make sure there are no errors and to zero
+out any deleted blocks to make it compress better. If this fails for any reason
+it will return False and log the error.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.creator.mount_boot_part_over_root">
+<code class="descclassname">pylorax.creator.</code><code class="descname">mount_boot_part_over_root</code><span class="sig-paren">(</span><em>img_mount</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#mount_boot_part_over_root"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.mount_boot_part_over_root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mount boot partition to /boot of root fs mounted in img_mount</p>
+<p>Used for OSTree so it finds deployment configurations on live rootfs</p>
+<p>param img_mount: object with mounted disk image root partition
+type img_mount: imgutils.PartitionMount</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.creator.rebuild_initrds_for_live">
+<code class="descclassname">pylorax.creator.</code><code class="descname">rebuild_initrds_for_live</code><span class="sig-paren">(</span><em>opts</em>, <em>sys_root_dir</em>, <em>results_dir</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#rebuild_initrds_for_live"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.rebuild_initrds_for_live" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rebuild intrds for pxe live image (root=live:<a class="reference external" href="http://">http://</a>)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>opts</strong> (<em>argparse options</em>) – options passed to livemedia-creator</li>
+<li><strong>sys_root_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to root of the system</li>
+<li><strong>results_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path of directory for storing results</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.creator.run_creator">
+<code class="descclassname">pylorax.creator.</code><code class="descname">run_creator</code><span class="sig-paren">(</span><em>opts</em>, <em>callback_func=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#run_creator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.run_creator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the image creator process</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>opts</strong> (<em>Either a DataHolder</em><em> or </em><em>ArgumentParser</em>) – Commandline options to control the process</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The result directory and the disk image path.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Tuple of str</td>
+</tr>
+</tbody>
+</table>
+<p>This function takes the opts arguments and creates the selected output image.
+See the cmdline –help for livemedia-creator for the possible options</p>
+<p>(Yes, this is not ideal, but we can fix that later)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.creator.squashfs_args">
+<code class="descclassname">pylorax.creator.</code><code class="descname">squashfs_args</code><span class="sig-paren">(</span><em>opts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#squashfs_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.squashfs_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the compression type and args to use when making squashfs</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>opts</strong> – ArgumentParser object with compression and compressopts</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">tuple of compression type and args</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.6)">tuple</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
 <div class="section" id="module-pylorax.decorators">
 <span id="pylorax-decorators-module"></span><h2>pylorax.decorators module<a class="headerlink" href="#module-pylorax.decorators" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
@@ -276,7 +685,7 @@
 <dl class="class">
 <dt id="pylorax.discinfo.DiscInfo">
 <em class="property">class </em><code class="descclassname">pylorax.discinfo.</code><code class="descname">DiscInfo</code><span class="sig-paren">(</span><em>release</em>, <em>basearch</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/discinfo.html#DiscInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.discinfo.DiscInfo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="method">
 <dt id="pylorax.discinfo.DiscInfo.write">
 <code class="descname">write</code><span class="sig-paren">(</span><em>outfile</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/discinfo.html#DiscInfo.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.discinfo.DiscInfo.write" title="Permalink to this definition">¶</a></dt>
@@ -290,7 +699,7 @@
 <dl class="class">
 <dt id="pylorax.dnfhelper.LoraxDownloadCallback">
 <em class="property">class </em><code class="descclassname">pylorax.dnfhelper.</code><code class="descname">LoraxDownloadCallback</code><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxDownloadCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxDownloadCallback" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">DownloadProgress</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DownloadProgress</span></code></p>
 <dl class="method">
 <dt id="pylorax.dnfhelper.LoraxDownloadCallback.end">
 <code class="descname">end</code><span class="sig-paren">(</span><em>payload</em>, <em>status</em>, <em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxDownloadCallback.end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxDownloadCallback.end" title="Permalink to this definition">¶</a></dt>
@@ -311,7 +720,7 @@
 <dl class="class">
 <dt id="pylorax.dnfhelper.LoraxRpmCallback">
 <em class="property">class </em><code class="descclassname">pylorax.dnfhelper.</code><code class="descname">LoraxRpmCallback</code><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxRpmCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxRpmCallback" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">TransactionProgress</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TransactionProgress</span></code></p>
 <dl class="method">
 <dt id="pylorax.dnfhelper.LoraxRpmCallback.error">
 <code class="descname">error</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfhelper.html#LoraxRpmCallback.error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.dnfhelper.LoraxRpmCallback.error" title="Permalink to this definition">¶</a></dt>
@@ -330,7 +739,7 @@
 <dl class="class">
 <dt id="pylorax.executils.ExecProduct">
 <em class="property">class </em><code class="descclassname">pylorax.executils.</code><code class="descname">ExecProduct</code><span class="sig-paren">(</span><em>rc</em>, <em>stdout</em>, <em>stderr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/executils.html#ExecProduct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.executils.ExecProduct" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 </dd></dl>
 
 <dl class="function">
@@ -512,25 +921,25 @@ last.</p>
 <dl class="class">
 <dt id="pylorax.imgutils.DMDev">
 <em class="property">class </em><code class="descclassname">pylorax.imgutils.</code><code class="descname">DMDev</code><span class="sig-paren">(</span><em>dev</em>, <em>size</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/imgutils.html#DMDev"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.DMDev" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="pylorax.imgutils.LoopDev">
 <em class="property">class </em><code class="descclassname">pylorax.imgutils.</code><code class="descname">LoopDev</code><span class="sig-paren">(</span><em>filename</em>, <em>size=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/imgutils.html#LoopDev"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.LoopDev" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="pylorax.imgutils.Mount">
 <em class="property">class </em><code class="descclassname">pylorax.imgutils.</code><code class="descname">Mount</code><span class="sig-paren">(</span><em>dev</em>, <em>opts=''</em>, <em>mnt=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/imgutils.html#Mount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.Mount" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="pylorax.imgutils.PartitionMount">
 <em class="property">class </em><code class="descclassname">pylorax.imgutils.</code><code class="descname">PartitionMount</code><span class="sig-paren">(</span><em>disk_img</em>, <em>mount_ok=None</em>, <em>submount=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/imgutils.html#PartitionMount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.PartitionMount" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Mount a partitioned image file using kpartx</p>
 </dd></dl>
 
@@ -550,6 +959,28 @@ compressargs will be used on the compression commandline.</p>
 links, acls, sparse files, xattrs, selinux contexts, etc.
 If preserve is False, uses cp -R (useful for modeless filesystems)
 raises CalledProcessError if copy fails.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.default_image_name">
+<code class="descclassname">pylorax.imgutils.</code><code class="descname">default_image_name</code><span class="sig-paren">(</span><em>compression</em>, <em>basename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/imgutils.html#default_image_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.default_image_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a default image name with the correct suffix for the compression type.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>compression</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Compression type</li>
+<li><strong>basename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Base filename</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">basename with compression suffix</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>If the compression is unknown it defaults to xz</p>
 </dd></dl>
 
 <dl class="function">
@@ -641,6 +1072,28 @@ graft should be a dict: {“some/path/in/image”: “local/file/or/dir”};</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="pylorax.imgutils.mkfsimage_from_disk">
+<code class="descclassname">pylorax.imgutils.</code><code class="descname">mkfsimage_from_disk</code><span class="sig-paren">(</span><em>diskimage</em>, <em>fsimage</em>, <em>img_size=None</em>, <em>label='Anaconda'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/imgutils.html#mkfsimage_from_disk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.mkfsimage_from_disk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy the / partition of a partitioned disk image to an un-partitioned
+disk image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>diskimage</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The full path to partitioned disk image with a /</li>
+<li><strong>fsimage</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The full path of the output fs image file</li>
+<li><strong>img_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Optional size of the fsimage in MiB or None to make
+it as small as possible</li>
+<li><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The label to apply to the image. Defaults to “Anaconda”</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="pylorax.imgutils.mkhfsimg">
 <code class="descclassname">pylorax.imgutils.</code><code class="descname">mkhfsimg</code><span class="sig-paren">(</span><em>rootdir</em>, <em>outfile</em>, <em>size=None</em>, <em>label=''</em>, <em>mountargs=''</em>, <em>graft=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/imgutils.html#mkhfsimg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.mkhfsimg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -726,12 +1179,211 @@ raises CalledProcessError if umount fails.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-pylorax.installer">
+<span id="pylorax-installer-module"></span><h2>pylorax.installer module<a class="headerlink" href="#module-pylorax.installer" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="pylorax.installer.InstallError">
+<em class="property">exception </em><code class="descclassname">pylorax.installer.</code><code class="descname">InstallError</code><a class="reference internal" href="_modules/pylorax/installer.html#InstallError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.InstallError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pylorax.installer.QEMUInstall">
+<em class="property">class </em><code class="descclassname">pylorax.installer.</code><code class="descname">QEMUInstall</code><span class="sig-paren">(</span><em>opts</em>, <em>iso</em>, <em>ks_paths</em>, <em>disk_img</em>, <em>img_size=2048</em>, <em>kernel_args=None</em>, <em>memory=1024</em>, <em>vcpus=None</em>, <em>vnc=None</em>, <em>arch=None</em>, <em>log_check=None</em>, <em>virtio_host='127.0.0.1'</em>, <em>virtio_port=6080</em>, <em>image_type=None</em>, <em>boot_uefi=False</em>, <em>ovmf_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/installer.html#QEMUInstall"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.QEMUInstall" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Run qemu using an iso and a kickstart</p>
+<dl class="attribute">
+<dt id="pylorax.installer.QEMUInstall.QEMU_CMDS">
+<code class="descname">QEMU_CMDS</code><em class="property"> = {'aarch64': 'qemu-system-aarch64', 'arm': 'qemu-system-arm', 'i386': 'qemu-system-i386', 'ppc': 'qemu-system-ppc', 'ppc64': 'qemu-system-ppc64', 'x86_64': 'qemu-system-x86_64'}</em><a class="headerlink" href="#pylorax.installer.QEMUInstall.QEMU_CMDS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.installer.anaconda_cleanup">
+<code class="descclassname">pylorax.installer.</code><code class="descname">anaconda_cleanup</code><span class="sig-paren">(</span><em>dirinstall_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/installer.html#anaconda_cleanup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.anaconda_cleanup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cleanup any leftover mounts from anaconda</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dirinstall_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path where anaconda mounts things</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if cleanups were successful. False if any of them failed.</td>
+</tr>
+</tbody>
+</table>
+<p>If anaconda crashes it may leave things mounted under this path. It will
+typically be set to /mnt/sysimage/</p>
+<p>Attempts to cleanup may also fail. Catch these and continue trying the
+other mountpoints.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.installer.append_initrd">
+<code class="descclassname">pylorax.installer.</code><code class="descname">append_initrd</code><span class="sig-paren">(</span><em>initrd</em>, <em>files</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/installer.html#append_initrd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.append_initrd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append files to an initrd.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>initrd</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to initrd</li>
+<li><strong>files</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – list of file paths to add</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Path to a new initrd</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The files are added to the initrd by creating a cpio image
+of the files (stored at /) and writing the cpio to the end of a
+copy of the initrd.</p>
+<p>The initrd is not changed, a copy is made before appending the
+cpio archive.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.installer.create_vagrant_metadata">
+<code class="descclassname">pylorax.installer.</code><code class="descname">create_vagrant_metadata</code><span class="sig-paren">(</span><em>path</em>, <em>size=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/installer.html#create_vagrant_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.create_vagrant_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a default Vagrant metadata.json file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to metadata.json file</li>
+<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Disk size in MiB</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.installer.find_free_port">
+<code class="descclassname">pylorax.installer.</code><code class="descname">find_free_port</code><span class="sig-paren">(</span><em>start=5900</em>, <em>end=5999</em>, <em>host='127.0.0.1'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/installer.html#find_free_port"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.find_free_port" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return first free port in range.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Starting port number</li>
+<li><strong>end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Ending port number</li>
+<li><strong>host</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Host IP to search</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">First free port or -1 if none found</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)">int</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.installer.novirt_install">
+<code class="descclassname">pylorax.installer.</code><code class="descname">novirt_install</code><span class="sig-paren">(</span><em>opts</em>, <em>disk_img</em>, <em>disk_size</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/installer.html#novirt_install"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.novirt_install" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use Anaconda to install to a disk image</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>opts</strong> (<em>argparse options</em>) – options passed to livemedia-creator</li>
+<li><strong>disk_img</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The full path to the disk image to be created</li>
+<li><strong>disk_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – The size of the disk_img in MiB</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>This method runs anaconda to create the image and then based on the opts
+passed creates a qemu disk image or tarfile.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.installer.novirt_log_check">
+<code class="descclassname">pylorax.installer.</code><code class="descname">novirt_log_check</code><span class="sig-paren">(</span><em>log_check</em>, <em>proc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/installer.html#novirt_log_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.novirt_log_check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check to see if there has been an error in the logs</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>log_check</strong> – method to call to check for an error in the logs</li>
+<li><strong>proc</strong> – Popen object for the anaconda process</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True if the process has been terminated</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The log_check method should return a True if an error has been detected.
+When an error is detected the process is terminated and this returns True</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.installer.update_vagrant_metadata">
+<code class="descclassname">pylorax.installer.</code><code class="descname">update_vagrant_metadata</code><span class="sig-paren">(</span><em>path</em>, <em>size</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/installer.html#update_vagrant_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.update_vagrant_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the Vagrant metadata.json file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to metadata.json file</li>
+<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Disk size in MiB</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>This function makes sure that the provider, format and virtual size of the
+metadata file are set correctly. All other values are left untouched.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.installer.virt_install">
+<code class="descclassname">pylorax.installer.</code><code class="descname">virt_install</code><span class="sig-paren">(</span><em>opts</em>, <em>install_log</em>, <em>disk_img</em>, <em>disk_size</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/installer.html#virt_install"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.virt_install" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use qemu to install to a disk image</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>opts</strong> (<em>argparse options</em>) – options passed to livemedia-creator</li>
+<li><strong>install_log</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The path to write the log from qemu</li>
+<li><strong>disk_img</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The full path to the disk image to be created</li>
+<li><strong>disk_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – The size of the disk_img in MiB</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>This uses qemu with a boot.iso and a kickstart to create a disk
+image and then optionally, based on the opts passed, creates tarfile.</p>
+</dd></dl>
+
+</div>
 <div class="section" id="module-pylorax.ltmpl">
 <span id="pylorax-ltmpl-module"></span><h2>pylorax.ltmpl module<a class="headerlink" href="#module-pylorax.ltmpl" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pylorax.ltmpl.LoraxTemplate">
 <em class="property">class </em><code class="descclassname">pylorax.ltmpl.</code><code class="descname">LoraxTemplate</code><span class="sig-paren">(</span><em>directories=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="method">
 <dt id="pylorax.ltmpl.LoraxTemplate.parse">
 <code class="descname">parse</code><span class="sig-paren">(</span><em>template_file</em>, <em>variables</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplate.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplate.parse" title="Permalink to this definition">¶</a></dt>
@@ -742,7 +1394,7 @@ raises CalledProcessError if umount fails.</p>
 <dl class="class">
 <dt id="pylorax.ltmpl.LoraxTemplateRunner">
 <em class="property">class </em><code class="descclassname">pylorax.ltmpl.</code><code class="descname">LoraxTemplateRunner</code><span class="sig-paren">(</span><em>inroot</em>, <em>outroot</em>, <em>dbo=None</em>, <em>fatalerrors=True</em>, <em>templatedir=None</em>, <em>defaults=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>This class parses and executes Lorax templates. Sample usage:</p>
 <blockquote>
 <div><p># install a bunch of packages
@@ -769,7 +1421,7 @@ with the rest of the line as arguments</li>
 <li><p class="first">Parsing and execution are <em>separate</em> passes - so you can’t use the result
 of a command in an %if statement (or any other control statements)!</p>
 </li>
-<li><p class="first">Commands that run external programs (systemctl, gconfset) currently use
+<li><p class="first">Commands that run external programs (e.g. systemctl) currently use
 the <em>host</em>’s copy of that program, which may cause problems if there’s a
 big enough difference between the host and the image you’re modifying.</p>
 </li>
@@ -831,20 +1483,6 @@ that name, if the path leading to it exists.</dd>
 Examples:</p>
 <blockquote class="last">
 <div>createaddrsize ${INITRD_ADDRESS} ${outroot}/${BOOTDIR}/initrd.img ${outroot}/${BOOTDIR}/initrd.addrsize</div></blockquote>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="pylorax.ltmpl.LoraxTemplateRunner.gconfset">
-<code class="descname">gconfset</code><span class="sig-paren">(</span><em>path</em>, <em>keytype</em>, <em>value</em>, <em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.gconfset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.gconfset" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>gconfset PATH KEYTYPE VALUE [OUTFILE]</dt>
-<dd><p class="first">Set the given gconf PATH, with type KEYTYPE, to the given value.
-OUTFILE defaults to /etc/gconf/gconf.xml.defaults if not given.
-Example:</p>
-<blockquote class="last">
-<div>gconfset /apps/metacity/general/num_workspaces int 1</div></blockquote>
 </dd>
 </dl>
 </dd></dl>
@@ -1162,7 +1800,7 @@ Example:</p>
 <dl class="class">
 <dt id="pylorax.monitor.LogMonitor">
 <em class="property">class </em><code class="descclassname">pylorax.monitor.</code><code class="descname">LogMonitor</code><span class="sig-paren">(</span><em>log_path=None</em>, <em>host='localhost'</em>, <em>port=0</em>, <em>timeout=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/monitor.html#LogMonitor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.monitor.LogMonitor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Setup a server to monitor the logs output by the installation</p>
 <p>This needs to be running before the virt-install runs, it expects
 there to be a listener on the port used for the virtio log port.</p>
@@ -1177,7 +1815,7 @@ there to be a listener on the port used for the virtio log port.</p>
 <dl class="class">
 <dt id="pylorax.monitor.LogRequestHandler">
 <em class="property">class </em><code class="descclassname">pylorax.monitor.</code><code class="descname">LogRequestHandler</code><span class="sig-paren">(</span><em>request</em>, <em>client_address</em>, <em>server</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/monitor.html#LogRequestHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.monitor.LogRequestHandler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/socketserver.html#socketserver.BaseRequestHandler" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">socketserver.BaseRequestHandler</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/socketserver.html#socketserver.BaseRequestHandler" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">socketserver.BaseRequestHandler</span></code></a></p>
 <p>Handle monitoring and saving the logfiles from the virtual install</p>
 <p>Incoming data is written to self.server.log_path and each line is checked
 for patterns that would indicate that the installation failed.
@@ -1222,7 +1860,7 @@ errors that indicate that the install failed.</p>
 <dl class="class">
 <dt id="pylorax.monitor.LogServer">
 <em class="property">class </em><code class="descclassname">pylorax.monitor.</code><code class="descname">LogServer</code><span class="sig-paren">(</span><em>log_path</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/monitor.html#LogServer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.monitor.LogServer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/socketserver.html#socketserver.TCPServer" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">socketserver.TCPServer</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/socketserver.html#socketserver.TCPServer" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">socketserver.TCPServer</span></code></a></p>
 <p>A TCP Server that listens for log data</p>
 <dl class="method">
 <dt id="pylorax.monitor.LogServer.log_check">
@@ -1253,7 +1891,7 @@ errors that indicate that the install failed.</p>
 <dl class="class">
 <dt id="pylorax.mount.IsoMountpoint">
 <em class="property">class </em><code class="descclassname">pylorax.mount.</code><code class="descname">IsoMountpoint</code><span class="sig-paren">(</span><em>iso_path</em>, <em>initrd_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/mount.html#IsoMountpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.mount.IsoMountpoint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Mount the iso and check to make sure the vmlinuz and initrd.img files exist</p>
 <p>Also check the iso for a a stage2 image and set a flag and extract the
 iso’s label.</p>
@@ -1320,7 +1958,7 @@ iso’s label.</p>
 <dl class="class">
 <dt id="pylorax.treebuilder.RuntimeBuilder">
 <em class="property">class </em><code class="descclassname">pylorax.treebuilder.</code><code class="descname">RuntimeBuilder</code><span class="sig-paren">(</span><em>product</em>, <em>arch</em>, <em>dbo</em>, <em>templatedir=None</em>, <em>installpkgs=None</em>, <em>excludepkgs=None</em>, <em>add_templates=None</em>, <em>add_template_vars=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/treebuilder.html#RuntimeBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.RuntimeBuilder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Builds the anaconda runtime image.</p>
 <dl class="method">
 <dt id="pylorax.treebuilder.RuntimeBuilder.cleanup">
@@ -1380,7 +2018,7 @@ iso’s label.</p>
 <dl class="class">
 <dt id="pylorax.treebuilder.TreeBuilder">
 <em class="property">class </em><code class="descclassname">pylorax.treebuilder.</code><code class="descname">TreeBuilder</code><span class="sig-paren">(</span><em>product</em>, <em>arch</em>, <em>inroot</em>, <em>outroot</em>, <em>runtime</em>, <em>isolabel</em>, <em>domacboot=True</em>, <em>doupgrade=True</em>, <em>templatedir=None</em>, <em>add_templates=None</em>, <em>add_template_vars=None</em>, <em>workdir=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/treebuilder.html#TreeBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.TreeBuilder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Builds the arch-specific boot images.
 inroot should be the installtree root (the newly-built runtime dir)</p>
 <dl class="method">
@@ -1467,7 +2105,7 @@ name of the kernel.</p>
 <dl class="class">
 <dt id="pylorax.treeinfo.TreeInfo">
 <em class="property">class </em><code class="descclassname">pylorax.treeinfo.</code><code class="descname">TreeInfo</code><span class="sig-paren">(</span><em>product</em>, <em>version</em>, <em>variant</em>, <em>basearch</em>, <em>packagedir=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/treeinfo.html#TreeInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treeinfo.TreeInfo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="method">
 <dt id="pylorax.treeinfo.TreeInfo.add_section">
 <code class="descname">add_section</code><span class="sig-paren">(</span><em>section</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/treeinfo.html#TreeInfo.add_section"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treeinfo.TreeInfo.add_section" title="Permalink to this definition">¶</a></dt>
@@ -1486,7 +2124,7 @@ name of the kernel.</p>
 <dl class="class">
 <dt id="pylorax.ArchData">
 <em class="property">class </em><code class="descclassname">pylorax.</code><code class="descname">ArchData</code><span class="sig-paren">(</span><em>buildarch</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax.html#ArchData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ArchData" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pylorax.base.DataHolder" title="pylorax.base.DataHolder"><code class="xref py py-class docutils literal"><span class="pre">pylorax.base.DataHolder</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#pylorax.base.DataHolder" title="pylorax.base.DataHolder"><code class="xref py py-class docutils literal notranslate"><span class="pre">pylorax.base.DataHolder</span></code></a></p>
 <dl class="attribute">
 <dt id="pylorax.ArchData.bcj_arch">
 <code class="descname">bcj_arch</code><em class="property"> = {'arm': 'arm', 'armhfp': 'arm', 'i386': 'x86', 'ppc': 'powerpc', 'ppc64': 'powerpc', 'ppc64le': 'powerpc', 'x86_64': 'x86'}</em><a class="headerlink" href="#pylorax.ArchData.bcj_arch" title="Permalink to this definition">¶</a></dt>
@@ -1502,7 +2140,7 @@ name of the kernel.</p>
 <dl class="class">
 <dt id="pylorax.Lorax">
 <em class="property">class </em><code class="descclassname">pylorax.</code><code class="descname">Lorax</code><a class="reference internal" href="_modules/pylorax.html#Lorax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.Lorax" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pylorax.base.BaseLoraxClass" title="pylorax.base.BaseLoraxClass"><code class="xref py py-class docutils literal"><span class="pre">pylorax.base.BaseLoraxClass</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#pylorax.base.BaseLoraxClass" title="pylorax.base.BaseLoraxClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">pylorax.base.BaseLoraxClass</span></code></a></p>
 <dl class="method">
 <dt id="pylorax.Lorax.configure">
 <code class="descname">configure</code><span class="sig-paren">(</span><em>conf_file='/etc/lorax/lorax.conf'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax.html#Lorax.configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.Lorax.configure" title="Permalink to this definition">¶</a></dt>
@@ -1568,7 +2206,7 @@ lowest numbered directory entry is returned.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>logfile</strong> (<a class="reference external" href="https://docs.python.org/3/library/string.html#module-string" title="(in Python v3.6)"><em>string</em></a>) – filename to write the log to</li>
+<li><strong>logfile</strong> (<em>string</em>) – filename to write the log to</li>
 <li><strong>theLogger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.6)"><em>logging.Logger</em></a>) – top-level logger</li>
 </ul>
 </td>
@@ -1582,13 +2220,13 @@ lowest numbered directory entry is returned.</p>
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pylorax.api.html" class="btn btn-neutral float-right" title="pylorax.api package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="modules.html" class="btn btn-neutral" title="pylorax" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -1604,7 +2242,7 @@ lowest numbered directory entry is returned.</p>
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1622,7 +2260,8 @@ lowest numbered directory entry is returned.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'28.9',
+            VERSION:'28.13',
+            LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -1640,14 +2279,11 @@ lowest numbered directory entry is returned.</p>
     <script type="text/javascript" src="_static/js/theme.js"></script>
   
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>
