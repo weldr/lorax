@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>lorax-composer &mdash; Lorax 28.10 documentation</title>
+  <title>lorax-composer &mdash; Lorax 28.13 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                28.10
+                28.13
               </div>
             
           
@@ -114,6 +114,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#example-add-partitioned-disk-support">Example: Add partitioned disk support</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#package-sources">Package Sources</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="composer-cli.html">composer-cli</a></li>
@@ -469,6 +470,50 @@ unneeded extra files. This is especially true for the <code class="docutils lite
 the contents of the iso as well as the boot.iso itself.</p>
 </div>
 </div>
+<div class="section" id="package-sources">
+<h2>Package Sources<a class="headerlink" href="#package-sources" title="Permalink to this headline">¶</a></h2>
+<p>By default lorax-composer uses the host’s configured repositories. It copies
+the <code class="docutils literal notranslate"><span class="pre">*.repo</span></code> files from <code class="docutils literal notranslate"><span class="pre">/etc/yum.repos.d/</span></code> into
+<code class="docutils literal notranslate"><span class="pre">/var/lib/lorax/composer/repos.d/</span></code> at startup, these are immutable system
+repositories and cannot be deleted or changed. If you want to add additional
+repos you can put them into <code class="docutils literal notranslate"><span class="pre">/var/lib/lorax/composer/repos.d/</span></code> or use the
+<code class="docutils literal notranslate"><span class="pre">/api/v0/projects/source/*</span></code> API routes to create them.</p>
+<p>The new source can be added by doing a POST to the <code class="docutils literal notranslate"><span class="pre">/api/v0/projects/source/new</span></code>
+route using JSON (with <cite>Content-Type</cite> header set to <cite>application/json</cite>) or TOML
+(with it set to <cite>text/x-toml</cite>).  The format of the source looks like this (in
+TOML):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;custom-source-1&quot;</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://url/path/to/repository/&quot;</span>
+<span class="nb">type</span> <span class="o">=</span> <span class="s2">&quot;yum-baseurl&quot;</span>
+<span class="n">proxy</span> <span class="o">=</span> <span class="s2">&quot;https://proxy-url/&quot;</span>
+<span class="n">check_ssl</span> <span class="o">=</span> <span class="n">true</span>
+<span class="n">check_gpg</span> <span class="o">=</span> <span class="n">true</span>
+<span class="n">gpgkey_urls</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;https://url/path/to/gpg-key&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">proxy</span></code> and <code class="docutils literal notranslate"><span class="pre">gpgkey_urls</span></code> entries are optional. All of the others are required. The supported
+types for the urls are:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">yum-baseurl</span></code> is a URL to a yum repository.</li>
+<li><code class="docutils literal notranslate"><span class="pre">yum-mirrorlist</span></code> is a URL for a mirrorlist.</li>
+<li><code class="docutils literal notranslate"><span class="pre">yum-metalink</span></code> is a URL for a metalink.</li>
+</ul>
+<p>If <code class="docutils literal notranslate"><span class="pre">check_ssl</span></code> is true the https certificates must be valid. If they are self-signed you can either set
+this to false, or add your Certificate Authority to the host system.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">check_gpg</span></code> is true the GPG key must either be installed on the host system, or <code class="docutils literal notranslate"><span class="pre">gpgkey_urls</span></code>
+should point to it.</p>
+<p>You can edit an existing source (other than system sources), by doing a POST to the <code class="docutils literal notranslate"><span class="pre">new</span></code> route
+with the new version of the source. It will overwrite the previous one.</p>
+<p>A list of existing sources is available from <code class="docutils literal notranslate"><span class="pre">/api/v0/projects/source/list</span></code>, and detailed info
+on a source can be retrieved with the <code class="docutils literal notranslate"><span class="pre">/api/v0/projects/source/info/&lt;source-name&gt;</span></code> route. By default
+it returns JSON but it can also return TOML if <code class="docutils literal notranslate"><span class="pre">?format=toml</span></code> is added to the request.</p>
+<p>Non-system sources can be deleted by doing a <code class="docutils literal notranslate"><span class="pre">DELETE</span></code> request to the
+<code class="docutils literal notranslate"><span class="pre">/api/v0/projects/source/delete/&lt;source-name&gt;</span></code> route.</p>
+<p>The documentation for the source API routes can be <a class="reference external" href="pylorax.api.html#api-v0-projects-source-list">found here</a></p>
+<p>The configured sources are used for all blueprint depsolve operations, and for composing images.
+When adding additional sources you must make sure that the packages in the source do not
+conflict with any other package sources, otherwise depsolving will fail.</p>
+</div>
 </div>
 
 
@@ -513,7 +558,7 @@ the contents of the iso as well as the boot.iso itself.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'28.10',
+            VERSION:'28.13',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -534,9 +579,7 @@ the contents of the iso as well as the boot.iso itself.</p>
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 

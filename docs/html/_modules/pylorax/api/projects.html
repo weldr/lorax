@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.projects &mdash; Lorax 28.10 documentation</title>
+  <title>pylorax.api.projects &mdash; Lorax 28.13 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                28.10
+                28.13
               </div>
             
           
@@ -174,7 +174,10 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;lorax-composer&quot;</span><span class="p">)</span>
 
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">configparser</span> <span class="k">import</span> <span class="n">ConfigParser</span>
 <span class="kn">import</span> <span class="nn">dnf</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="k">import</span> <span class="n">glob</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
 <span class="n">TIME_FORMAT</span> <span class="o">=</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S&quot;</span>
@@ -336,29 +339,50 @@
         <span class="n">pkgs</span> <span class="o">=</span> <span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="o">.</span><span class="n">query</span><span class="p">()</span><span class="o">.</span><span class="n">available</span><span class="p">()</span>
     <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">pkg_to_project_info</span><span class="p">,</span> <span class="n">pkgs</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span></div>
 
+<span class="k">def</span> <span class="nf">_depsolve</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">projects</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add projects to a new transaction</span>
 
-<div class="viewcode-block" id="projects_depsolve"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.projects_depsolve">[docs]</a><span class="k">def</span> <span class="nf">projects_depsolve</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">project_names</span><span class="p">):</span>
+<span class="sd">    :param dbo: dnf base object</span>
+<span class="sd">    :type dbo: dnf.Base</span>
+<span class="sd">    :param projects: The projects and version globs to find the dependencies for</span>
+<span class="sd">    :type projects: List of tuples</span>
+<span class="sd">    :returns: None</span>
+<span class="sd">    :rtype: None</span>
+<span class="sd">    :raises: ProjectsError if there was a problem installing something</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># This resets the transaction</span>
+    <span class="n">dbo</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">goal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">version</span> <span class="ow">in</span> <span class="n">projects</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">version</span><span class="p">:</span>
+                <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
+            <span class="n">pkgs</span> <span class="o">=</span> <span class="p">[</span><span class="n">pkg</span> <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">dnf</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">Subject</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">get_best_query</span><span class="p">(</span><span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">version__glob</span><span class="o">=</span><span class="n">version</span><span class="p">,</span> <span class="n">latest</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">pkgs</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s2">&quot;No match for </span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">))</span>
+
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pkgs</span><span class="p">:</span>
+                <span class="n">dbo</span><span class="o">.</span><span class="n">package_install</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">dnf</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">MarkingError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s2">&quot;No match for </span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="projects_depsolve"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.projects_depsolve">[docs]</a><span class="k">def</span> <span class="nf">projects_depsolve</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">projects</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return the dependencies for a list of projects</span>
 
 <span class="sd">    :param dbo: dnf base object</span>
 <span class="sd">    :type dbo: dnf.Base</span>
-<span class="sd">    :param project_names: The projects to find the dependencies for</span>
-<span class="sd">    :type project_names: List of Strings</span>
+<span class="sd">    :param projects: The projects to find the dependencies for</span>
+<span class="sd">    :type projects: List of Strings</span>
 <span class="sd">    :returns: NEVRA&#39;s of the project and its dependencies</span>
 <span class="sd">    :rtype: list of dicts</span>
+<span class="sd">    :raises: ProjectsError if there was a problem installing something</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># This resets the transaction</span>
-    <span class="n">dbo</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">goal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">project_names</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">dbo</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">dnf</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">MarkingError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s2">&quot;No match for </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">p</span><span class="p">)</span>
+    <span class="n">_depsolve</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">projects</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">dbo</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
     <span class="k">except</span> <span class="n">dnf</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">DepsolveError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s2">&quot;There was a problem depsolving </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">project_names</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+        <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s2">&quot;There was a problem depsolving </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">projects</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dbo</span><span class="o">.</span><span class="n">transaction</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[]</span>
@@ -387,7 +411,7 @@
     <span class="k">return</span> <span class="n">installed_size</span></div>
 
 
-<div class="viewcode-block" id="projects_depsolve_with_size"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.projects_depsolve_with_size">[docs]</a><span class="k">def</span> <span class="nf">projects_depsolve_with_size</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">project_names</span><span class="p">,</span> <span class="n">with_core</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="projects_depsolve_with_size"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.projects_depsolve_with_size">[docs]</a><span class="k">def</span> <span class="nf">projects_depsolve_with_size</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">projects</span><span class="p">,</span> <span class="n">with_core</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return the dependencies and installed size for a list of projects</span>
 
 <span class="sd">    :param dbo: dnf base object</span>
@@ -396,14 +420,9 @@
 <span class="sd">    :type project_names: List of Strings</span>
 <span class="sd">    :returns: installed size and a list of NEVRA&#39;s of the project and its dependencies</span>
 <span class="sd">    :rtype: tuple of (int, list of dicts)</span>
+<span class="sd">    :raises: ProjectsError if there was a problem installing something</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># This resets the transaction</span>
-    <span class="n">dbo</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">goal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">project_names</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">dbo</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">dnf</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">MarkingError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s2">&quot;No match for </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">p</span><span class="p">)</span>
+    <span class="n">_depsolve</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">projects</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">with_core</span><span class="p">:</span>
         <span class="n">dbo</span><span class="o">.</span><span class="n">group_install</span><span class="p">(</span><span class="s2">&quot;core&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;mandatory&#39;</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="s1">&#39;optional&#39;</span><span class="p">])</span>
@@ -411,7 +430,7 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">dbo</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
     <span class="k">except</span> <span class="n">dnf</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">DepsolveError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s2">&quot;There was a problem depsolving </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">project_names</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+        <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s2">&quot;There was a problem depsolving </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">projects</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dbo</span><span class="o">.</span><span class="n">transaction</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[])</span>
@@ -456,9 +475,218 @@
 
     <span class="c1"># Add the dependency info to each one</span>
     <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">modules</span><span class="p">:</span>
-        <span class="n">module</span><span class="p">[</span><span class="s2">&quot;dependencies&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">projects_depsolve</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="p">[</span><span class="n">module</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]])</span>
+        <span class="n">module</span><span class="p">[</span><span class="s2">&quot;dependencies&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">projects_depsolve</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="p">[(</span><span class="n">module</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="s2">&quot;*.*&quot;</span><span class="p">)])</span>
 
     <span class="k">return</span> <span class="n">modules</span></div>
+
+<div class="viewcode-block" id="dnf_repo_to_file_repo"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.dnf_repo_to_file_repo">[docs]</a><span class="k">def</span> <span class="nf">dnf_repo_to_file_repo</span><span class="p">(</span><span class="n">repo</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a string representation of a DNF Repo object suitable for writing to a .repo file</span>
+
+<span class="sd">    :param repo: DNF Repository</span>
+<span class="sd">    :type repo: dnf.RepoDict</span>
+<span class="sd">    :returns: A string</span>
+<span class="sd">    :rtype: str</span>
+
+<span class="sd">    The DNF Repo.dump() function does not produce a string that can be used as a dnf .repo file,</span>
+<span class="sd">    it ouputs baseurl and gpgkey as python lists which DNF cannot read. So do this manually with</span>
+<span class="sd">    only the attributes we care about.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">repo_str</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">%s</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">repo</span><span class="o">.</span><span class="n">id</span>
+    <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">metalink</span><span class="p">:</span>
+        <span class="n">repo_str</span> <span class="o">+=</span> <span class="s2">&quot;metalink = </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">repo</span><span class="o">.</span><span class="n">metalink</span>
+    <span class="k">elif</span> <span class="n">repo</span><span class="o">.</span><span class="n">mirrorlist</span><span class="p">:</span>
+        <span class="n">repo_str</span> <span class="o">+=</span> <span class="s2">&quot;mirrorlist = </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">repo</span><span class="o">.</span><span class="n">mirrorlist</span>
+    <span class="k">elif</span> <span class="n">repo</span><span class="o">.</span><span class="n">baseurl</span><span class="p">:</span>
+        <span class="n">repo_str</span> <span class="o">+=</span> <span class="s2">&quot;baseurl = </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">repo</span><span class="o">.</span><span class="n">baseurl</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Repo has no baseurl, metalink, or mirrorlist&quot;</span><span class="p">)</span>
+
+    <span class="c1"># proxy is optional</span>
+    <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">proxy</span><span class="p">:</span>
+        <span class="n">repo_str</span> <span class="o">+=</span> <span class="s2">&quot;proxy = </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">repo</span><span class="o">.</span><span class="n">proxy</span>
+
+    <span class="n">repo_str</span> <span class="o">+=</span> <span class="s2">&quot;sslverify = </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">repo</span><span class="o">.</span><span class="n">sslverify</span>
+    <span class="n">repo_str</span> <span class="o">+=</span> <span class="s2">&quot;gpgcheck = </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">repo</span><span class="o">.</span><span class="n">gpgcheck</span>
+    <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">gpgkey</span><span class="p">:</span>
+        <span class="n">repo_str</span> <span class="o">+=</span> <span class="s2">&quot;gpgkey = </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">repo</span><span class="o">.</span><span class="n">gpgkey</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">repo_str</span></div>
+
+<div class="viewcode-block" id="repo_to_source"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.repo_to_source">[docs]</a><span class="k">def</span> <span class="nf">repo_to_source</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">system_source</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a Weldr Source dict created from the DNF Repository</span>
+
+<span class="sd">    :param repo: DNF Repository</span>
+<span class="sd">    :type repo: dnf.RepoDict</span>
+<span class="sd">    :param system_source: True if this source is an immutable system source</span>
+<span class="sd">    :type system_source: bool</span>
+<span class="sd">    :returns: A dict with Weldr Source fields filled in</span>
+<span class="sd">    :rtype: dict</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        {</span>
+<span class="sd">          &quot;check_gpg&quot;: true,</span>
+<span class="sd">          &quot;check_ssl&quot;: true,</span>
+<span class="sd">          &quot;gpgkey_url&quot;: [</span>
+<span class="sd">            &quot;file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-x86_64&quot;</span>
+<span class="sd">          ],</span>
+<span class="sd">          &quot;name&quot;: &quot;fedora&quot;,</span>
+<span class="sd">          &quot;proxy&quot;: &quot;http://proxy.brianlane.com:8123&quot;,</span>
+<span class="sd">          &quot;system&quot;: true</span>
+<span class="sd">          &quot;type&quot;: &quot;yum-metalink&quot;,</span>
+<span class="sd">          &quot;url&quot;: &quot;https://mirrors.fedoraproject.org/metalink?repo=fedora-28&amp;arch=x86_64&quot;</span>
+<span class="sd">        }</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">repo</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;system&quot;</span><span class="p">:</span> <span class="n">system_source</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">baseurl</span><span class="p">:</span>
+        <span class="n">source</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">baseurl</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">source</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;yum-baseurl&quot;</span>
+    <span class="k">elif</span> <span class="n">repo</span><span class="o">.</span><span class="n">metalink</span><span class="p">:</span>
+        <span class="n">source</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">metalink</span>
+        <span class="n">source</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;yum-metalink&quot;</span>
+    <span class="k">elif</span> <span class="n">repo</span><span class="o">.</span><span class="n">mirrorlist</span><span class="p">:</span>
+        <span class="n">source</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">mirrorlist</span>
+        <span class="n">source</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;yum-mirrorlist&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Repo has no baseurl, metalink, or mirrorlist&quot;</span><span class="p">)</span>
+
+    <span class="c1"># proxy is optional</span>
+    <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">proxy</span><span class="p">:</span>
+        <span class="n">source</span><span class="p">[</span><span class="s2">&quot;proxy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">proxy</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">repo</span><span class="o">.</span><span class="n">sslverify</span><span class="p">:</span>
+        <span class="n">source</span><span class="p">[</span><span class="s2">&quot;check_ssl&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">source</span><span class="p">[</span><span class="s2">&quot;check_ssl&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">repo</span><span class="o">.</span><span class="n">gpgcheck</span><span class="p">:</span>
+        <span class="n">source</span><span class="p">[</span><span class="s2">&quot;check_gpg&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">source</span><span class="p">[</span><span class="s2">&quot;check_gpg&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">gpgkey</span><span class="p">:</span>
+        <span class="n">source</span><span class="p">[</span><span class="s2">&quot;gpgkey_urls&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">gpgkey</span>
+
+    <span class="k">return</span> <span class="n">source</span></div>
+
+<div class="viewcode-block" id="source_to_repo"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.source_to_repo">[docs]</a><span class="k">def</span> <span class="nf">source_to_repo</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">dnf_conf</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a dnf Repo object created from a source dict</span>
+
+<span class="sd">    :param source: A Weldr source dict</span>
+<span class="sd">    :type source: dict</span>
+<span class="sd">    :returns: A dnf Repo object</span>
+<span class="sd">    :rtype: dnf.Repo</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        {</span>
+<span class="sd">          &quot;check_gpg&quot;: True,</span>
+<span class="sd">          &quot;check_ssl&quot;: True,</span>
+<span class="sd">          &quot;gpgkey_urls&quot;: [</span>
+<span class="sd">            &quot;file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-x86_64&quot;</span>
+<span class="sd">          ],</span>
+<span class="sd">          &quot;name&quot;: &quot;fedora&quot;,</span>
+<span class="sd">          &quot;proxy&quot;: &quot;http://proxy.brianlane.com:8123&quot;,</span>
+<span class="sd">          &quot;system&quot;: True</span>
+<span class="sd">          &quot;type&quot;: &quot;yum-metalink&quot;,</span>
+<span class="sd">          &quot;url&quot;: &quot;https://mirrors.fedoraproject.org/metalink?repo=fedora-28&amp;arch=x86_64&quot;</span>
+<span class="sd">        }</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">repo</span> <span class="o">=</span> <span class="n">dnf</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">Repo</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">dnf_conf</span><span class="p">)</span>
+    <span class="c1"># This will allow errors to be raised so we can catch them</span>
+    <span class="c1"># without this they are logged, but the repo is silently disabled</span>
+    <span class="n">repo</span><span class="o">.</span><span class="n">skip_if_unavailable</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;yum-baseurl&quot;</span><span class="p">:</span>
+        <span class="n">repo</span><span class="o">.</span><span class="n">baseurl</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;yum-metalink&quot;</span><span class="p">:</span>
+        <span class="n">repo</span><span class="o">.</span><span class="n">metalink</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;yum-mirrorlist&quot;</span><span class="p">:</span>
+        <span class="n">repo</span><span class="o">.</span><span class="n">mirrorlist</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="s2">&quot;proxy&quot;</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+        <span class="n">repo</span><span class="o">.</span><span class="n">proxy</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;proxy&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;check_ssl&quot;</span><span class="p">]:</span>
+        <span class="n">repo</span><span class="o">.</span><span class="n">sslverify</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">repo</span><span class="o">.</span><span class="n">sslverify</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;check_gpg&quot;</span><span class="p">]:</span>
+        <span class="n">repo</span><span class="o">.</span><span class="n">gpgcheck</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">repo</span><span class="o">.</span><span class="n">gpgcheck</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="s2">&quot;gpgkey_urls&quot;</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+        <span class="n">repo</span><span class="o">.</span><span class="n">gpgkey</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s2">&quot;gpgkey_urls&quot;</span><span class="p">])</span>
+
+    <span class="n">repo</span><span class="o">.</span><span class="n">enable</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">repo</span></div>
+
+<div class="viewcode-block" id="get_source_ids"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.get_source_ids">[docs]</a><span class="k">def</span> <span class="nf">get_source_ids</span><span class="p">(</span><span class="n">source_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a list of the source ids in a file</span>
+
+<span class="sd">    :param source_path: Full path and filename of the source (yum repo) file</span>
+<span class="sd">    :type source_path: str</span>
+<span class="sd">    :returns: A list of source id strings</span>
+<span class="sd">    :rtype: list of str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">source_path</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="p">()</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">source_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cfg</span><span class="o">.</span><span class="n">sections</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="get_repo_sources"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.get_repo_sources">[docs]</a><span class="k">def</span> <span class="nf">get_repo_sources</span><span class="p">(</span><span class="n">source_glob</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a list of sources from a directory of yum repositories</span>
+
+<span class="sd">    :param source_glob: A glob to use to match the source files, including full path</span>
+<span class="sd">    :type source_glob: str</span>
+<span class="sd">    :returns: A list of the source ids in all of the matching files</span>
+<span class="sd">    :rtype: list of str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sources</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">source_glob</span><span class="p">):</span>
+        <span class="n">sources</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">get_source_ids</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">sources</span></div>
+
+<div class="viewcode-block" id="delete_repo_source"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.delete_repo_source">[docs]</a><span class="k">def</span> <span class="nf">delete_repo_source</span><span class="p">(</span><span class="n">source_glob</span><span class="p">,</span> <span class="n">source_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Delete a source from a repo file</span>
+
+<span class="sd">    :param source_glob: A glob of the repo sources to search</span>
+<span class="sd">    :type source_glob: str</span>
+<span class="sd">    :returns: None</span>
+<span class="sd">    :raises: ProjectsError if there was a problem</span>
+
+<span class="sd">    A repo file may have multiple sources in it, delete only the selected source.</span>
+<span class="sd">    If it is the last one in the file, delete the file.</span>
+
+<span class="sd">    WARNING: This will delete ANY source, the caller needs to ensure that a system</span>
+<span class="sd">    source_name isn&#39;t passed to it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">source_glob</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cfg</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="p">()</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">source_name</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">cfg</span><span class="o">.</span><span class="n">remove_section</span><span class="p">(</span><span class="n">source_name</span><span class="p">)</span>
+                <span class="c1"># If there are other sections, rewrite the file without the deleted one</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">sections</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">cfg_file</span><span class="p">:</span>
+                        <span class="n">cfg</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">cfg_file</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># No sections left, just delete the file</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s2">&quot;Problem deleting repo source </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">source_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s2">&quot;source </span><span class="si">%s</span><span class="s2"> not found&quot;</span> <span class="o">%</span> <span class="n">source_name</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
@@ -493,7 +721,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'28.10',
+            VERSION:'28.13',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -514,9 +742,7 @@
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.ltmpl &mdash; Lorax 28.10 documentation</title>
+  <title>pylorax.ltmpl &mdash; Lorax 28.13 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                28.10
+                28.13
               </div>
             
           
@@ -286,7 +286,7 @@
 <span class="sd">    * Parsing and execution are *separate* passes - so you can&#39;t use the result</span>
 <span class="sd">      of a command in an %if statement (or any other control statements)!</span>
 
-<span class="sd">    * Commands that run external programs (systemctl, gconfset) currently use</span>
+<span class="sd">    * Commands that run external programs (e.g. systemctl) currently use</span>
 <span class="sd">      the *host*&#39;s copy of that program, which may cause problems if there&#39;s a</span>
 <span class="sd">      big enough difference between the host and the image you&#39;re modifying.</span>
 
@@ -615,22 +615,6 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">rglob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="n">fileglob</span><span class="p">),</span> <span class="n">fatal</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span></div>
-
-    <span class="c1"># TODO: do we need a new command for gsettings?</span>
-<div class="viewcode-block" id="LoraxTemplateRunner.gconfset"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.gconfset">[docs]</a>    <span class="k">def</span> <span class="nf">gconfset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">keytype</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        gconfset PATH KEYTYPE VALUE [OUTFILE]</span>
-<span class="sd">          Set the given gconf PATH, with type KEYTYPE, to the given value.</span>
-<span class="sd">          OUTFILE defaults to /etc/gconf/gconf.xml.defaults if not given.</span>
-<span class="sd">          Example:</span>
-<span class="sd">            gconfset /apps/metacity/general/num_workspaces int 1</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">outfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_out</span><span class="p">(</span><span class="s2">&quot;etc/gconf/gconf.xml.defaults&quot;</span><span class="p">)</span>
-        <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;gconftool-2&quot;</span><span class="p">,</span> <span class="s2">&quot;--direct&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;--config-source=xml:readwrite:</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">outfile</span><span class="p">,</span>
-                    <span class="s2">&quot;--set&quot;</span><span class="p">,</span> <span class="s2">&quot;--type&quot;</span><span class="p">,</span> <span class="n">keytype</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">value</span><span class="p">]</span>
-        <span class="n">runcmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="LoraxTemplateRunner.log"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.log">[docs]</a>    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -976,7 +960,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'28.10',
+            VERSION:'28.13',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -997,9 +981,7 @@
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 

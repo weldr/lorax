@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api package &mdash; Lorax 28.10 documentation</title>
+  <title>pylorax.api package &mdash; Lorax 28.13 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                28.10
+                28.13
               </div>
             
           
@@ -491,6 +491,28 @@ with whatever options are relevant.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="pylorax.api.projects.delete_repo_source">
+<code class="descclassname">pylorax.api.projects.</code><code class="descname">delete_repo_source</code><span class="sig-paren">(</span><em>source_glob</em>, <em>source_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/projects.html#delete_repo_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.delete_repo_source" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a source from a repo file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>source_glob</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – A glob of the repo sources to search</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body">ProjectsError if there was a problem</td>
+</tr>
+</tbody>
+</table>
+<p>A repo file may have multiple sources in it, delete only the selected source.
+If it is the last one in the file, delete the file.</p>
+<p>WARNING: This will delete ANY source, the caller needs to ensure that a system
+source_name isn’t passed to it.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="pylorax.api.projects.dep_evra">
 <code class="descclassname">pylorax.api.projects.</code><code class="descname">dep_evra</code><span class="sig-paren">(</span><em>dep</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/projects.html#dep_evra"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.dep_evra" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the epoch:version-release.arch for the dep</p>
@@ -512,6 +534,27 @@ with whatever options are relevant.</p>
 <dt id="pylorax.api.projects.dep_nevra">
 <code class="descclassname">pylorax.api.projects.</code><code class="descname">dep_nevra</code><span class="sig-paren">(</span><em>dep</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/projects.html#dep_nevra"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.dep_nevra" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the name-epoch:version-release.arch</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.projects.dnf_repo_to_file_repo">
+<code class="descclassname">pylorax.api.projects.</code><code class="descname">dnf_repo_to_file_repo</code><span class="sig-paren">(</span><em>repo</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/projects.html#dnf_repo_to_file_repo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.dnf_repo_to_file_repo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a string representation of a DNF Repo object suitable for writing to a .repo file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>repo</strong> (<em>dnf.RepoDict</em>) – DNF Repository</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A string</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></td>
+</tr>
+</tbody>
+</table>
+<p>The DNF Repo.dump() function does not produce a string that can be used as a dnf .repo file,
+it ouputs baseurl and gpgkey as python lists which DNF cannot read. So do this manually with
+only the attributes we care about.</p>
 </dd></dl>
 
 <dl class="function">
@@ -539,6 +582,42 @@ with whatever options are relevant.</p>
 <p>Estimating actual requirements is difficult without the actual file sizes, which
 dnf doesn’t provide access to. So use the file count and block size to estimate
 a minimum size for each package.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.projects.get_repo_sources">
+<code class="descclassname">pylorax.api.projects.</code><code class="descname">get_repo_sources</code><span class="sig-paren">(</span><em>source_glob</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/projects.html#get_repo_sources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.get_repo_sources" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of sources from a directory of yum repositories</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>source_glob</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – A glob to use to match the source files, including full path</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of the source ids in all of the matching files</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list of str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.projects.get_source_ids">
+<code class="descclassname">pylorax.api.projects.</code><code class="descname">get_source_ids</code><span class="sig-paren">(</span><em>source_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/projects.html#get_source_ids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.get_source_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the source ids in a file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>source_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Full path and filename of the source (yum repo) file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of source id strings</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list of str</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -669,7 +748,7 @@ and sets the type to “rpm”</p>
 
 <dl class="function">
 <dt id="pylorax.api.projects.projects_depsolve">
-<code class="descclassname">pylorax.api.projects.</code><code class="descname">projects_depsolve</code><span class="sig-paren">(</span><em>dbo</em>, <em>project_names</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/projects.html#projects_depsolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.projects_depsolve" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pylorax.api.projects.</code><code class="descname">projects_depsolve</code><span class="sig-paren">(</span><em>dbo</em>, <em>projects</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/projects.html#projects_depsolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.projects_depsolve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the dependencies for a list of projects</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -677,14 +756,17 @@ and sets the type to “rpm”</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>dbo</strong> (<em>dnf.Base</em>) – dnf base object</li>
-<li><strong>project_names</strong> (<em>List of Strings</em>) – The projects to find the dependencies for</li>
+<li><strong>projects</strong> (<em>List of Strings</em>) – The projects to find the dependencies for</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">NEVRA’s of the project and its dependencies</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of dicts</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">list of dicts</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">ProjectsError if there was a problem installing something</p>
 </td>
 </tr>
 </tbody>
@@ -693,7 +775,7 @@ and sets the type to “rpm”</p>
 
 <dl class="function">
 <dt id="pylorax.api.projects.projects_depsolve_with_size">
-<code class="descclassname">pylorax.api.projects.</code><code class="descname">projects_depsolve_with_size</code><span class="sig-paren">(</span><em>dbo</em>, <em>project_names</em>, <em>with_core=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/projects.html#projects_depsolve_with_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.projects_depsolve_with_size" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pylorax.api.projects.</code><code class="descname">projects_depsolve_with_size</code><span class="sig-paren">(</span><em>dbo</em>, <em>projects</em>, <em>with_core=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/projects.html#projects_depsolve_with_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.projects_depsolve_with_size" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the dependencies and installed size for a list of projects</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -708,7 +790,10 @@ and sets the type to “rpm”</p>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">installed size and a list of NEVRA’s of the project and its dependencies</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple of (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)">int</a>, list of dicts)</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">tuple of (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)">int</a>, list of dicts)</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">ProjectsError if there was a problem installing something</p>
 </td>
 </tr>
 </tbody>
@@ -756,6 +841,78 @@ and sets the type to “rpm”</p>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.projects.repo_to_source">
+<code class="descclassname">pylorax.api.projects.</code><code class="descname">repo_to_source</code><span class="sig-paren">(</span><em>repo</em>, <em>system_source</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/projects.html#repo_to_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.repo_to_source" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a Weldr Source dict created from the DNF Repository</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>repo</strong> (<em>dnf.RepoDict</em>) – DNF Repository</li>
+<li><strong>system_source</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – True if this source is an immutable system source</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A dict with Weldr Source fields filled in</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)">dict</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;check_gpg&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+  <span class="s2">&quot;check_ssl&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+  <span class="s2">&quot;gpgkey_url&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-x86_64&quot;</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;fedora&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;proxy&quot;</span><span class="p">:</span> <span class="s2">&quot;http://proxy.brianlane.com:8123&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;system&quot;</span><span class="p">:</span> <span class="n">true</span>
+  <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;yum-metalink&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://mirrors.fedoraproject.org/metalink?repo=fedora-28&amp;arch=x86_64&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.projects.source_to_repo">
+<code class="descclassname">pylorax.api.projects.</code><code class="descname">source_to_repo</code><span class="sig-paren">(</span><em>source</em>, <em>dnf_conf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/projects.html#source_to_repo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.source_to_repo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a dnf Repo object created from a source dict</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>source</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) – A Weldr source dict</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dnf Repo object</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dnf.Repo</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;check_gpg&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+  <span class="s2">&quot;check_ssl&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+  <span class="s2">&quot;gpgkey_urls&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-x86_64&quot;</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;fedora&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;proxy&quot;</span><span class="p">:</span> <span class="s2">&quot;http://proxy.brianlane.com:8123&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;system&quot;</span><span class="p">:</span> <span class="kc">True</span>
+  <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;yum-metalink&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://mirrors.fedoraproject.org/metalink?repo=fedora-28&amp;arch=x86_64&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>
@@ -1238,9 +1395,21 @@ If they are different, check and return the new version</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="pylorax.api.recipes.Recipe.module_nver">
+<code class="descname">module_nver</code><a class="headerlink" href="#pylorax.api.recipes.Recipe.module_nver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the names and version globs of the modules</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="pylorax.api.recipes.Recipe.package_names">
 <code class="descname">package_names</code><a class="headerlink" href="#pylorax.api.recipes.Recipe.package_names" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the names of the packages</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pylorax.api.recipes.Recipe.package_nver">
+<code class="descname">package_nver</code><a class="headerlink" href="#pylorax.api.recipes.Recipe.package_nver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the names and version globs of the packages</p>
 </dd></dl>
 
 <dl class="method">
@@ -2634,6 +2803,93 @@ to satisfy the request.</p>
 </div>
 </div></blockquote>
 </div>
+<div class="section" id="api-v0-projects-source-list">
+<h4><cite>/api/v0/projects/source/list</cite><a class="headerlink" href="#api-v0-projects-source-list" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Return the list of repositories used for depsolving and installing packages.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;sources&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;fedora&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fedora-cisco-openh264&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fedora-updates-testing&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fedora-updates&quot;</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="api-v0-projects-source-info-source-names">
+<h4><cite>/api/v0/projects/source/info/&lt;source-names&gt;</cite><a class="headerlink" href="#api-v0-projects-source-info-source-names" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Return information about the comma-separated list of source names. Or all of the
+sources if ‘*’ is passed. Note that general globbing is not supported, only ‘*’.</p>
+<p>immutable system sources will have the “system” field set to true. User added sources
+will have it set to false. System sources cannot be changed or deleted.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="s2">&quot;sources&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;fedora&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;check_gpg&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+      <span class="s2">&quot;check_ssl&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+      <span class="s2">&quot;gpgkey_urls&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-x86_64&quot;</span>
+      <span class="p">],</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;fedora&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;proxy&quot;</span><span class="p">:</span> <span class="s2">&quot;http://proxy.brianlane.com:8123&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;system&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+      <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;yum-metalink&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://mirrors.fedoraproject.org/metalink?repo=fedora-28&amp;arch=x86_64&quot;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="post-api-v0-projects-source-new">
+<h4>POST <cite>/api/v0/projects/source/new</cite><a class="headerlink" href="#post-api-v0-projects-source-new" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Add (or change) a source for use when depsolving blueprints and composing images.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">proxy</span></code> and <code class="docutils literal notranslate"><span class="pre">gpgkey_urls</span></code> entries are optional. All of the others are required. The supported
+types for the urls are:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">yum-baseurl</span></code> is a URL to a yum repository.</li>
+<li><code class="docutils literal notranslate"><span class="pre">yum-mirrorlist</span></code> is a URL for a mirrorlist.</li>
+<li><code class="docutils literal notranslate"><span class="pre">yum-metalink</span></code> is a URL for a metalink.</li>
+</ul>
+<p>If <code class="docutils literal notranslate"><span class="pre">check_ssl</span></code> is true the https certificates must be valid. If they are self-signed you can either set
+this to false, or add your Certificate Authority to the host system.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">check_gpg</span></code> is true the GPG key must either be installed on the host system, or <code class="docutils literal notranslate"><span class="pre">gpgkey_urls</span></code>
+should point to it.</p>
+<p>You can edit an existing source (other than system sources), by doing a POST
+of the new version of the source. It will overwrite the previous one.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;custom-source-1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://url/path/to/repository/&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;yum-baseurl&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;check_ssl&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+    <span class="s2">&quot;check_gpg&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+    <span class="s2">&quot;gpgkey_urls&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;https://url/path/to/gpg-key&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="delete-api-v0-projects-source-delete-source-name">
+<h4>DELETE <cite>/api/v0/projects/source/delete/&lt;source-name&gt;</cite><a class="headerlink" href="#delete-api-v0-projects-source-delete-source-name" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Delete a user added source. This will fail if a system source is passed to
+it.</p>
+<p>The response will be a status response with <cite>status</cite> set to true, or an
+error response with it set to false and an error message included.</p>
+</div></blockquote>
+</div>
 <div class="section" id="api-v0-modules-list-offset-0-limit-20">
 <h4><cite>/api/v0/modules/list[?offset=0&amp;limit=20]</cite><a class="headerlink" href="#api-v0-modules-list-offset-0-limit-20" title="Permalink to this headline">¶</a></h4>
 <blockquote>
@@ -3213,7 +3469,7 @@ a line boundry.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'28.10',
+            VERSION:'28.13',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -3234,9 +3490,7 @@ a line boundry.</p>
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 
