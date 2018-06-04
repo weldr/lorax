@@ -160,9 +160,19 @@ changes. Here are the steps I used to convert the Fedora XFCE spin.
     dracut-config-generic
     dracut-live
     -dracut-config-rescue
-    grub-efi
+    grub2-efi
     memtest86+
     syslinux
+
+User created repositories
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you are using your own repositories and installing groups (eg. @core) make
+sure you create the repodata with groups like this ``createrepo -g
+/path/to/groups.xml /path/to/rpms``
+
+Using a Proxy with repos
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 One drawback to using qemu is that it pulls the packages from the repo each
 time you run it. To speed things up you either need a local mirror of the
@@ -177,7 +187,13 @@ packages will get cached, so your kickstart url would look like:
     ``url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/x86_64/os/"``
 
 You can also add an update repo, but don't name it updates. Add --proxy to it
-as well.
+as well. You can use all of the `kickstart commands <https://pykickstart.readthedocs.io/en/latest/kickstart-docs.html#chapter-2-kickstart-commands-in-fedora>`_ in your kickstart. Make sure there
+is only one ``url`` command, other repos have to use the ``repo`` command and cannot be
+named ``updates`` which is reserved for Anaconda's use. eg.::
+
+    url --url=PRIMARY-REPO-URL --proxy=PROXY-URL
+    repo --name="repo1" --baseurl=FIRST-REPO-URL --proxy=PROXY-URL
+    repo --name="repo2" --baseurl=SECOND-REPO_URL --proxy=PROXY-URL
 
 
 Anaconda image install (no-virt)
@@ -601,6 +617,16 @@ cancel the installation when they happen. But not everything can be caught.
 When creating a new kickstart it is helpful to use vnc so that you can monitor
 the installation as it happens, and if it gets stuck without lmc detecting the
 problem you can switch to tty1 and examine the system directly.
+
+If you suspect problems with %pre or %post sections you can redirect the output
+to the terminal and examine it by logging into the VM. eg.::
+
+    %pre
+    chvt
+    exec < /dev/tty3 > /dev/tty3 2>/dev/tty3
+    #do stuff
+    echo hello world
+    %end
 
 If it does get stuck the best way to cancel is to use kill -9 on the qemu pid,
 lmc will detect that the process died and cleanup.

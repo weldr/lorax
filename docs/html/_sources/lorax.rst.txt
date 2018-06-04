@@ -92,7 +92,6 @@ installation. A number of template commands are used here:
 
 * :func:`append <pylorax.ltmpl.LoraxTemplateRunner.append>` to add text to a file.
 * :func:`chmod <pylorax.ltmpl.LoraxTemplateRunner.chmod>` changes the file's mode.
-* :func:`gconfset <pylorax.ltmpl.LoraxTemplateRunner.gconfset>` runs gconfset.
 * :func:`install <pylorax.ltmpl.LoraxTemplateRunner.install>` to install a file into the installroot.
 * :func:`mkdir <pylorax.ltmpl.LoraxTemplateRunner.mkdir>` makes a new directory.
 * :func:`move <pylorax.ltmpl.LoraxTemplateRunner.move>` to move a file into the installroot

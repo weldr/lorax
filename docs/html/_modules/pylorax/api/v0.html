@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.v0 &mdash; Lorax 29.1 documentation</title>
+  <title>pylorax.api.v0 &mdash; Lorax 29.6 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                29.1
+                29.6
               </div>
             
           
@@ -658,6 +658,94 @@
 <span class="sd">        ]</span>
 <span class="sd">      }</span>
 
+<span class="sd">`/api/v0/projects/source/list`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Return the list of repositories used for depsolving and installing packages.</span>
+
+<span class="sd">  Example::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;sources&quot;: [</span>
+<span class="sd">          &quot;fedora&quot;,</span>
+<span class="sd">          &quot;fedora-cisco-openh264&quot;,</span>
+<span class="sd">          &quot;fedora-updates-testing&quot;,</span>
+<span class="sd">          &quot;fedora-updates&quot;</span>
+<span class="sd">        ]</span>
+<span class="sd">      }</span>
+
+<span class="sd">`/api/v0/projects/source/info/&lt;source-names&gt;`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Return information about the comma-separated list of source names. Or all of the</span>
+<span class="sd">  sources if &#39;*&#39; is passed. Note that general globbing is not supported, only &#39;*&#39;.</span>
+
+<span class="sd">  immutable system sources will have the &quot;system&quot; field set to true. User added sources</span>
+<span class="sd">  will have it set to false. System sources cannot be changed or deleted.</span>
+
+<span class="sd">  Example::</span>
+
+<span class="sd">      {</span>
+<span class="sd">        &quot;errors&quot;: [],</span>
+<span class="sd">        &quot;sources&quot;: {</span>
+<span class="sd">          &quot;fedora&quot;: {</span>
+<span class="sd">            &quot;check_gpg&quot;: true,</span>
+<span class="sd">            &quot;check_ssl&quot;: true,</span>
+<span class="sd">            &quot;gpgkey_urls&quot;: [</span>
+<span class="sd">              &quot;file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-x86_64&quot;</span>
+<span class="sd">            ],</span>
+<span class="sd">            &quot;name&quot;: &quot;fedora&quot;,</span>
+<span class="sd">            &quot;proxy&quot;: &quot;http://proxy.brianlane.com:8123&quot;,</span>
+<span class="sd">            &quot;system&quot;: true,</span>
+<span class="sd">            &quot;type&quot;: &quot;yum-metalink&quot;,</span>
+<span class="sd">            &quot;url&quot;: &quot;https://mirrors.fedoraproject.org/metalink?repo=fedora-28&amp;arch=x86_64&quot;</span>
+<span class="sd">          }</span>
+<span class="sd">        }</span>
+<span class="sd">      }</span>
+
+<span class="sd">POST `/api/v0/projects/source/new`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Add (or change) a source for use when depsolving blueprints and composing images.</span>
+
+<span class="sd">  The ``proxy`` and ``gpgkey_urls`` entries are optional. All of the others are required. The supported</span>
+<span class="sd">  types for the urls are:</span>
+
+<span class="sd">  * ``yum-baseurl`` is a URL to a yum repository.</span>
+<span class="sd">  * ``yum-mirrorlist`` is a URL for a mirrorlist.</span>
+<span class="sd">  * ``yum-metalink`` is a URL for a metalink.</span>
+
+<span class="sd">  If ``check_ssl`` is true the https certificates must be valid. If they are self-signed you can either set</span>
+<span class="sd">  this to false, or add your Certificate Authority to the host system.</span>
+
+<span class="sd">  If ``check_gpg`` is true the GPG key must either be installed on the host system, or ``gpgkey_urls``</span>
+<span class="sd">  should point to it.</span>
+
+<span class="sd">  You can edit an existing source (other than system sources), by doing a POST</span>
+<span class="sd">  of the new version of the source. It will overwrite the previous one.</span>
+
+<span class="sd">  Example::</span>
+
+<span class="sd">      {</span>
+<span class="sd">          &quot;name&quot;: &quot;custom-source-1&quot;,</span>
+<span class="sd">          &quot;url&quot;: &quot;https://url/path/to/repository/&quot;,</span>
+<span class="sd">          &quot;type&quot;: &quot;yum-baseurl&quot;,</span>
+<span class="sd">          &quot;check_ssl&quot;: true,</span>
+<span class="sd">          &quot;check_gpg&quot;: true,</span>
+<span class="sd">          &quot;gpgkey_urls&quot;: [</span>
+<span class="sd">              &quot;https://url/path/to/gpg-key&quot;</span>
+<span class="sd">          ]</span>
+<span class="sd">      }</span>
+
+<span class="sd">DELETE `/api/v0/projects/source/delete/&lt;source-name&gt;`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">  Delete a user added source. This will fail if a system source is passed to</span>
+<span class="sd">  it.</span>
+
+<span class="sd">  The response will be a status response with `status` set to true, or an</span>
+<span class="sd">  error response with it set to false and an error message included.</span>
+
 <span class="sd">`/api/v0/modules/list[?offset=0&amp;limit=20]`</span>
 <span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
 
@@ -1035,11 +1123,14 @@
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">send_file</span>
+<span class="kn">import</span> <span class="nn">pytoml</span> <span class="k">as</span> <span class="nn">toml</span>
 
+<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.compose</span> <span class="k">import</span> <span class="n">start_build</span><span class="p">,</span> <span class="n">compose_types</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.crossdomain</span> <span class="k">import</span> <span class="n">crossdomain</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="k">import</span> <span class="n">projects_list</span><span class="p">,</span> <span class="n">projects_info</span><span class="p">,</span> <span class="n">projects_depsolve</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="k">import</span> <span class="n">modules_list</span><span class="p">,</span> <span class="n">modules_info</span><span class="p">,</span> <span class="n">ProjectsError</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="k">import</span> <span class="n">modules_list</span><span class="p">,</span> <span class="n">modules_info</span><span class="p">,</span> <span class="n">ProjectsError</span><span class="p">,</span> <span class="n">repo_to_source</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="k">import</span> <span class="n">get_repo_sources</span><span class="p">,</span> <span class="n">delete_repo_source</span><span class="p">,</span> <span class="n">source_to_repo</span><span class="p">,</span> <span class="n">dnf_repo_to_file_repo</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.queue</span> <span class="k">import</span> <span class="n">queue_status</span><span class="p">,</span> <span class="n">build_status</span><span class="p">,</span> <span class="n">uuid_delete</span><span class="p">,</span> <span class="n">uuid_status</span><span class="p">,</span> <span class="n">uuid_info</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.queue</span> <span class="k">import</span> <span class="n">uuid_tar</span><span class="p">,</span> <span class="n">uuid_image</span><span class="p">,</span> <span class="n">uuid_cancel</span><span class="p">,</span> <span class="n">uuid_log</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="k">import</span> <span class="n">list_branch_files</span><span class="p">,</span> <span class="n">read_recipe_commit</span><span class="p">,</span> <span class="n">recipe_filename</span><span class="p">,</span> <span class="n">list_commits</span>
@@ -1338,9 +1429,9 @@
 
             <span class="c1"># Combine modules and packages and depsolve the list</span>
             <span class="c1"># TODO include the version/glob in the depsolving</span>
-            <span class="n">module_names</span> <span class="o">=</span> <span class="n">blueprint</span><span class="o">.</span><span class="n">module_names</span>
-            <span class="n">package_names</span> <span class="o">=</span> <span class="n">blueprint</span><span class="o">.</span><span class="n">package_names</span>
-            <span class="n">projects</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">module_names</span><span class="o">+</span><span class="n">package_names</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+            <span class="n">module_nver</span> <span class="o">=</span> <span class="n">blueprint</span><span class="o">.</span><span class="n">module_nver</span>
+            <span class="n">package_nver</span> <span class="o">=</span> <span class="n">blueprint</span><span class="o">.</span><span class="n">package_nver</span>
+            <span class="n">projects</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">module_nver</span><span class="o">+</span><span class="n">package_nver</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
             <span class="n">deps</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
@@ -1390,9 +1481,9 @@
 
             <span class="c1"># Combine modules and packages and depsolve the list</span>
             <span class="c1"># TODO include the version/glob in the depsolving</span>
-            <span class="n">module_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">blueprint</span><span class="p">[</span><span class="s2">&quot;modules&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="p">[]]</span>
-            <span class="n">package_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">blueprint</span><span class="p">[</span><span class="s2">&quot;packages&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="p">[]]</span>
-            <span class="n">projects</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">module_names</span><span class="o">+</span><span class="n">package_names</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+            <span class="n">module_nver</span> <span class="o">=</span> <span class="n">blueprint</span><span class="o">.</span><span class="n">module_nver</span>
+            <span class="n">package_nver</span> <span class="o">=</span> <span class="n">blueprint</span><span class="o">.</span><span class="n">package_nver</span>
+            <span class="n">projects</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">module_nver</span><span class="o">+</span><span class="n">package_nver</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
             <span class="n">deps</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
@@ -1451,12 +1542,138 @@
         <span class="sd">&quot;&quot;&quot;Return detailed information about the listed projects&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
-                <span class="n">deps</span> <span class="o">=</span> <span class="n">projects_depsolve</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dbo</span><span class="p">,</span> <span class="n">project_names</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span>
+                <span class="n">deps</span> <span class="o">=</span> <span class="n">projects_depsolve</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dbo</span><span class="p">,</span> <span class="p">[(</span><span class="n">n</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">project_names</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)])</span>
         <span class="k">except</span> <span class="n">ProjectsError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;(v0_projects_depsolve) </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
             <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)]),</span> <span class="mi">400</span>
 
         <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">projects</span><span class="o">=</span><span class="n">deps</span><span class="p">)</span>
+
+    <span class="nd">@api</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/api/v0/projects/source/list&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_projects_source_list</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Return the list of source names&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="n">repos</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">iter_enabled</span><span class="p">())</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">r</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">repos</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="n">sources</span><span class="p">)</span>
+
+    <span class="nd">@api</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/api/v0/projects/source/info/&lt;source_names&gt;&quot;</span><span class="p">)</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_projects_source_info</span><span class="p">(</span><span class="n">source_names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return detailed info about the list of sources&quot;&quot;&quot;</span>
+        <span class="n">out_fmt</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Return info on all of the sources</span>
+        <span class="k">if</span> <span class="n">source_names</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="n">source_names</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">iter_enabled</span><span class="p">())</span>
+
+        <span class="n">sources</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">system_sources</span> <span class="o">=</span> <span class="n">get_repo_sources</span><span class="p">(</span><span class="s2">&quot;/etc/yum.repos.d/*.repo&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">source_names</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="n">repo</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">repo</span><span class="p">:</span>
+                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is not a valid source&quot;</span> <span class="o">%</span> <span class="n">source</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="n">sources</span><span class="p">[</span><span class="n">repo</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">repo_to_source</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">repo</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">system_sources</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">out_fmt</span> <span class="o">==</span> <span class="s2">&quot;toml&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">errors</span><span class="p">:</span>
+            <span class="c1"># With TOML output we just want to dump the raw sources, skipping the errors</span>
+            <span class="k">return</span> <span class="n">toml</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">out_fmt</span> <span class="o">==</span> <span class="s2">&quot;toml&quot;</span> <span class="ow">and</span> <span class="n">errors</span><span class="p">:</span>
+            <span class="c1"># TOML requested, but there was an error</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="n">errors</span><span class="p">),</span> <span class="mi">400</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="n">sources</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="n">errors</span><span class="p">)</span>
+
+    <span class="nd">@api</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/api/v0/projects/source/new&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;POST&quot;</span><span class="p">])</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_projects_source_new</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Add a new package source. Or change an existing one&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;text/x-toml&quot;</span><span class="p">:</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">system_sources</span> <span class="o">=</span> <span class="n">get_repo_sources</span><span class="p">(</span><span class="s2">&quot;/etc/yum.repos.d/*.repo&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">system_sources</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is a system source, it cannot be deleted.&quot;</span> <span class="o">%</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]),</span> <span class="mi">400</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Remove it from the RepoDict (NOTE that this isn&#39;t explicitly supported by the DNF API)</span>
+            <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="n">dbo</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dbo</span>
+                <span class="c1"># If this repo already exists, delete it and replace it with the new one</span>
+                <span class="n">repos</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">dbo</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">iter_enabled</span><span class="p">())</span>
+                <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">repos</span><span class="p">:</span>
+                    <span class="k">del</span> <span class="n">dbo</span><span class="o">.</span><span class="n">repos</span><span class="p">[</span><span class="n">source</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span>
+
+                <span class="n">repo</span> <span class="o">=</span> <span class="n">source_to_repo</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">dbo</span><span class="o">.</span><span class="n">conf</span><span class="p">)</span>
+                <span class="n">dbo</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">repo</span><span class="p">)</span>
+
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Updating repository metadata after adding </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+                <span class="n">dbo</span><span class="o">.</span><span class="n">fill_sack</span><span class="p">(</span><span class="n">load_system_repo</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">dbo</span><span class="o">.</span><span class="n">read_comps</span><span class="p">()</span>
+
+            <span class="c1"># Write the new repo to disk, replacing any existing ones</span>
+            <span class="n">repo_dir</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;COMPOSER_CFG&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;repo_dir&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Remove any previous sources with this name, ignore it if it isn&#39;t found</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">delete_repo_source</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">repo_dir</span><span class="p">,</span> <span class="s2">&quot;*.repo&quot;</span><span class="p">),</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+            <span class="k">except</span> <span class="n">ProjectsError</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+            <span class="c1"># Make sure the source name can&#39;t contain a path traversal by taking the basename</span>
+            <span class="n">source_path</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">repo_dir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.repo&quot;</span> <span class="o">%</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]))</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">source_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">dnf_repo_to_file_repo</span><span class="p">(</span><span class="n">repo</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;(v0_projects_source_add) adding </span><span class="si">%s</span><span class="s2"> failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+            <span class="c1"># Cleanup the mess, if loading it failed we don&#39;t want to leave it in memory</span>
+            <span class="n">repos</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">dbo</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">iter_enabled</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">repos</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                    <span class="n">dbo</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dbo</span>
+                    <span class="k">del</span> <span class="n">dbo</span><span class="o">.</span><span class="n">repos</span><span class="p">[</span><span class="n">source</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span>
+
+                    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Updating repository metadata after adding </span><span class="si">%s</span><span class="s2"> failed&quot;</span><span class="p">,</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+                    <span class="n">dbo</span><span class="o">.</span><span class="n">fill_sack</span><span class="p">(</span><span class="n">load_system_repo</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="n">dbo</span><span class="o">.</span><span class="n">read_comps</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)]),</span> <span class="mi">400</span>
+
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nd">@api</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/api/v0/projects/source/delete/&lt;source_name&gt;&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;DELETE&quot;</span><span class="p">])</span>
+    <span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">v0_projects_source_delete</span><span class="p">(</span><span class="n">source_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Delete the named source and return a status response&quot;&quot;&quot;</span>
+        <span class="n">system_sources</span> <span class="o">=</span> <span class="n">get_repo_sources</span><span class="p">(</span><span class="s2">&quot;/etc/yum.repos.d/*.repo&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">source_name</span> <span class="ow">in</span> <span class="n">system_sources</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is a system source, it cannot be deleted.&quot;</span> <span class="o">%</span> <span class="n">source_name</span><span class="p">]),</span> <span class="mi">400</span>
+        <span class="n">share_dir</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;COMPOSER_CFG&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;repo_dir&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Remove the file entry for the source</span>
+            <span class="n">delete_repo_source</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">share_dir</span><span class="p">,</span> <span class="s2">&quot;*.repo&quot;</span><span class="p">),</span> <span class="n">source_name</span><span class="p">)</span>
+
+            <span class="c1"># Remove it from the RepoDict (NOTE that this isn&#39;t explicitly supported by the DNF API)</span>
+            <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">source_name</span> <span class="ow">in</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">repos</span><span class="p">:</span>
+                    <span class="k">del</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">repos</span><span class="p">[</span><span class="n">source_name</span><span class="p">]</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Updating repository metadata after removing </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">source_name</span><span class="p">)</span>
+                    <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">fill_sack</span><span class="p">(</span><span class="n">load_system_repo</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dbo</span><span class="o">.</span><span class="n">read_comps</span><span class="p">()</span>
+
+        <span class="k">except</span> <span class="n">ProjectsError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;(v0_projects_source_delete) </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)]),</span> <span class="mi">400</span>
+
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="nd">@api</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/api/v0/modules/list&quot;</span><span class="p">)</span>
     <span class="nd">@api</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/api/v0/modules/list/&lt;module_names&gt;&quot;</span><span class="p">)</span>
@@ -1752,7 +1969,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'29.1',
+            VERSION:'29.6',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -1773,9 +1990,7 @@
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>lorax-composer &mdash; Lorax 29.1 documentation</title>
+  <title>lorax-composer &mdash; Lorax 29.6 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                29.1
+                29.6
               </div>
             
           
@@ -114,6 +114,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#example-add-partitioned-disk-support">Example: Add partitioned disk support</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#package-sources">Package Sources</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="composer-cli.html">composer-cli</a></li>
@@ -205,11 +206,10 @@ installation and configuration of the images.</p>
 <p>The best way to install <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> is to use <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">dnf</span> <span class="pre">install</span>
 <span class="pre">lorax-composer</span> <span class="pre">composer-cli</span></code>, this will setup the weldr user and install the
 systemd socket activation service. You will then need to enable it with <code class="docutils literal notranslate"><span class="pre">sudo</span>
-<span class="pre">systemctl</span> <span class="pre">enable</span> <span class="pre">lorax-composer.socket</span>
-<span class="pre">&&</span> <span class="pre">sudo</span>
-<span class="pre">systemctl</span> <span class="pre">start</span> <span class="pre">lorax-composer.socket</span></code>. This will leave the server off until
-the first request is made. Systemd will then launch the server and it will
-remain running until the system is rebooted.</p>
+<span class="pre">systemctl</span> <span class="pre">enable</span> <span class="pre">lorax-composer.socket</span> <span class="pre">&amp;&amp;</span> <span class="pre">sudo</span> <span class="pre">systemctl</span> <span class="pre">start</span>
+<span class="pre">lorax-composer.socket</span></code>. This will leave the server off until the first request
+is made. Systemd will then launch the server and it will remain running until
+the system is rebooted.</p>
 </div>
 <div class="section" id="quickstart">
 <h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
@@ -218,9 +218,8 @@ remain running until the system is rebooted.</p>
 <li>Remove any pre-existing socket directory with <code class="docutils literal notranslate"><span class="pre">rm</span> <span class="pre">-rf</span> <span class="pre">/run/weldr/</span></code>
 A new directory with correct permissions will be created the first time the server runs.</li>
 <li>Enable the socket activation with <code class="docutils literal notranslate"><span class="pre">systemctl</span> <span class="pre">enable</span> <span class="pre">lorax-composer.socket</span>
-<span class="pre">&&</span> <span class="pre">sudo</span>
-<span class="pre">systemctl</span> <span class="pre">start</span> <span class="pre">lorax-composer.socket</span></code> or
-run it directly with <code class="docutils literal notranslate"><span class="pre">lorax-composer</span> <span class="pre">/path/to/blueprints/</span></code></li>
+<span class="pre">&amp;&amp;</span> <span class="pre">sudo</span> <span class="pre">systemctl</span> <span class="pre">start</span> <span class="pre">lorax-composer.socket</span></code> or run it directly with
+<code class="docutils literal notranslate"><span class="pre">lorax-composer</span> <span class="pre">/path/to/blueprints/</span></code></li>
 </ol>
 <p>The <code class="docutils literal notranslate"><span class="pre">/path/to/blueprints/</span></code> directory is where the blueprints’ git repo will
 be created, and all the blueprints created with the <code class="docutils literal notranslate"><span class="pre">/api/v0/blueprints/new</span></code>
@@ -471,6 +470,50 @@ unneeded extra files. This is especially true for the <code class="docutils lite
 the contents of the iso as well as the boot.iso itself.</p>
 </div>
 </div>
+<div class="section" id="package-sources">
+<h2>Package Sources<a class="headerlink" href="#package-sources" title="Permalink to this headline">¶</a></h2>
+<p>By default lorax-composer uses the host’s configured repositories. It copies
+the <code class="docutils literal notranslate"><span class="pre">*.repo</span></code> files from <code class="docutils literal notranslate"><span class="pre">/etc/yum.repos.d/</span></code> into
+<code class="docutils literal notranslate"><span class="pre">/var/lib/lorax/composer/repos.d/</span></code> at startup, these are immutable system
+repositories and cannot be deleted or changed. If you want to add additional
+repos you can put them into <code class="docutils literal notranslate"><span class="pre">/var/lib/lorax/composer/repos.d/</span></code> or use the
+<code class="docutils literal notranslate"><span class="pre">/api/v0/projects/source/*</span></code> API routes to create them.</p>
+<p>The new source can be added by doing a POST to the <code class="docutils literal notranslate"><span class="pre">/api/v0/projects/source/new</span></code>
+route using JSON (with <cite>Content-Type</cite> header set to <cite>application/json</cite>) or TOML
+(with it set to <cite>text/x-toml</cite>).  The format of the source looks like this (in
+TOML):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;custom-source-1&quot;</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://url/path/to/repository/&quot;</span>
+<span class="nb">type</span> <span class="o">=</span> <span class="s2">&quot;yum-baseurl&quot;</span>
+<span class="n">proxy</span> <span class="o">=</span> <span class="s2">&quot;https://proxy-url/&quot;</span>
+<span class="n">check_ssl</span> <span class="o">=</span> <span class="n">true</span>
+<span class="n">check_gpg</span> <span class="o">=</span> <span class="n">true</span>
+<span class="n">gpgkey_urls</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;https://url/path/to/gpg-key&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">proxy</span></code> and <code class="docutils literal notranslate"><span class="pre">gpgkey_urls</span></code> entries are optional. All of the others are required. The supported
+types for the urls are:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">yum-baseurl</span></code> is a URL to a yum repository.</li>
+<li><code class="docutils literal notranslate"><span class="pre">yum-mirrorlist</span></code> is a URL for a mirrorlist.</li>
+<li><code class="docutils literal notranslate"><span class="pre">yum-metalink</span></code> is a URL for a metalink.</li>
+</ul>
+<p>If <code class="docutils literal notranslate"><span class="pre">check_ssl</span></code> is true the https certificates must be valid. If they are self-signed you can either set
+this to false, or add your Certificate Authority to the host system.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">check_gpg</span></code> is true the GPG key must either be installed on the host system, or <code class="docutils literal notranslate"><span class="pre">gpgkey_urls</span></code>
+should point to it.</p>
+<p>You can edit an existing source (other than system sources), by doing a POST to the <code class="docutils literal notranslate"><span class="pre">new</span></code> route
+with the new version of the source. It will overwrite the previous one.</p>
+<p>A list of existing sources is available from <code class="docutils literal notranslate"><span class="pre">/api/v0/projects/source/list</span></code>, and detailed info
+on a source can be retrieved with the <code class="docutils literal notranslate"><span class="pre">/api/v0/projects/source/info/&lt;source-name&gt;</span></code> route. By default
+it returns JSON but it can also return TOML if <code class="docutils literal notranslate"><span class="pre">?format=toml</span></code> is added to the request.</p>
+<p>Non-system sources can be deleted by doing a <code class="docutils literal notranslate"><span class="pre">DELETE</span></code> request to the
+<code class="docutils literal notranslate"><span class="pre">/api/v0/projects/source/delete/&lt;source-name&gt;</span></code> route.</p>
+<p>The documentation for the source API routes can be <a class="reference external" href="pylorax.api.html#api-v0-projects-source-list">found here</a></p>
+<p>The configured sources are used for all blueprint depsolve operations, and for composing images.
+When adding additional sources you must make sure that the packages in the source do not
+conflict with any other package sources, otherwise depsolving will fail.</p>
+</div>
 </div>
 
 
@@ -515,7 +558,7 @@ the contents of the iso as well as the boot.iso itself.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'29.1',
+            VERSION:'29.6',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -536,9 +579,7 @@ the contents of the iso as well as the boot.iso itself.</p>
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 

@@ -44,6 +44,14 @@ composer.cli.projects module
     :undoc-members:
     :show-inheritance:
 
+composer.cli.sources module
+---------------------------
+
+.. automodule:: composer.cli.sources
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 composer.cli.utilities module
 -----------------------------
 

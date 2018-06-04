@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>composer.cli package &mdash; Lorax 29.1 documentation</title>
+  <title>composer.cli package &mdash; Lorax 29.6 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                29.1
+                29.6
               </div>
             
           
@@ -907,6 +907,111 @@ include this extra information.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-composer.cli.sources">
+<span id="composer-cli-sources-module"></span><h2>composer.cli.sources module<a class="headerlink" href="#module-composer.cli.sources" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="composer.cli.sources.sources_add">
+<code class="descclassname">composer.cli.sources.</code><code class="descname">sources_add</code><span class="sig-paren">(</span><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/sources.html#sources_add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.sources.sources_add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add or change a source</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to the Unix socket to use for API communication</li>
+<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Version of the API to talk to. eg. “0”</li>
+<li><strong>args</strong> (<em>list of str</em>) – List of remaining arguments from the cmdline</li>
+<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – Set to True to show the JSON output instead of the human readable output</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>sources add &lt;source.toml&gt;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.sources.sources_cmd">
+<code class="descclassname">composer.cli.sources.</code><code class="descname">sources_cmd</code><span class="sig-paren">(</span><em>opts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/sources.html#sources_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.sources.sources_cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process sources commands</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>opts</strong> (<a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.6)"><em>argparse.Namespace</em></a>) – Cmdline arguments</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Value to return from sys.exit()</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)">int</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.sources.sources_delete">
+<code class="descclassname">composer.cli.sources.</code><code class="descname">sources_delete</code><span class="sig-paren">(</span><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/sources.html#sources_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.sources.sources_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a source</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to the Unix socket to use for API communication</li>
+<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Version of the API to talk to. eg. “0”</li>
+<li><strong>args</strong> (<em>list of str</em>) – List of remaining arguments from the cmdline</li>
+<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – Set to True to show the JSON output instead of the human readable output</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>sources delete &lt;source-name&gt;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.sources.sources_info">
+<code class="descclassname">composer.cli.sources.</code><code class="descname">sources_info</code><span class="sig-paren">(</span><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/sources.html#sources_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.sources.sources_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output info on a list of projects</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to the Unix socket to use for API communication</li>
+<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Version of the API to talk to. eg. “0”</li>
+<li><strong>args</strong> (<em>list of str</em>) – List of remaining arguments from the cmdline</li>
+<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – Set to True to show the JSON output instead of the human readable output</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>sources info &lt;source-name&gt;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.sources.sources_list">
+<code class="descclassname">composer.cli.sources.</code><code class="descname">sources_list</code><span class="sig-paren">(</span><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/sources.html#sources_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.sources.sources_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output the list of available sources</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to the Unix socket to use for API communication</li>
+<li><strong>api_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Version of the API to talk to. eg. “0”</li>
+<li><strong>args</strong> (<em>list of str</em>) – List of remaining arguments from the cmdline</li>
+<li><strong>show_json</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – Set to True to show the JSON output instead of the human readable output</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>sources list</p>
+</dd></dl>
+
+</div>
 <div class="section" id="module-composer.cli.utilities">
 <span id="composer-cli-utilities-module"></span><h2>composer.cli.utilities module<a class="headerlink" href="#module-composer.cli.utilities" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
@@ -1059,7 +1164,7 @@ include this extra information.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'29.1',
+            VERSION:'29.6',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -1080,9 +1185,7 @@ include this extra information.</p>
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 

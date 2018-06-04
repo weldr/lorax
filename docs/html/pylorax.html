@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax package &mdash; Lorax 29.1 documentation</title>
+  <title>pylorax package &mdash; Lorax 29.6 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                29.1
+                29.6
               </div>
             
           
@@ -225,6 +225,10 @@
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-projects-list-offset-0-limit-20"><cite>/api/v0/projects/list[?offset=0&amp;limit=20]</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-projects-info-project-names"><cite>/api/v0/projects/info/&lt;project_names&gt;</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-projects-depsolve-project-names"><cite>/api/v0/projects/depsolve/&lt;project_names&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-projects-source-list"><cite>/api/v0/projects/source/list</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-projects-source-info-source-names"><cite>/api/v0/projects/source/info/&lt;source-names&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#post-api-v0-projects-source-new">POST <cite>/api/v0/projects/source/new</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#delete-api-v0-projects-source-delete-source-name">DELETE <cite>/api/v0/projects/source/delete/&lt;source-name&gt;</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-modules-list-offset-0-limit-20"><cite>/api/v0/modules/list[?offset=0&amp;limit=20]</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-modules-list-module-names-offset-0-limit-20"><cite>/api/v0/modules/list/&lt;module_names&gt;[?offset=0&amp;limit=20]</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-modules-info-module-names"><cite>/api/v0/modules/info/&lt;module_names&gt;</cite></a></li>
@@ -1418,7 +1422,7 @@ with the rest of the line as arguments</li>
 <li><p class="first">Parsing and execution are <em>separate</em> passes - so you can’t use the result
 of a command in an %if statement (or any other control statements)!</p>
 </li>
-<li><p class="first">Commands that run external programs (systemctl, gconfset) currently use
+<li><p class="first">Commands that run external programs (e.g. systemctl) currently use
 the <em>host</em>’s copy of that program, which may cause problems if there’s a
 big enough difference between the host and the image you’re modifying.</p>
 </li>
@@ -1480,20 +1484,6 @@ that name, if the path leading to it exists.</dd>
 Examples:</p>
 <blockquote class="last">
 <div>createaddrsize ${INITRD_ADDRESS} ${outroot}/${BOOTDIR}/initrd.img ${outroot}/${BOOTDIR}/initrd.addrsize</div></blockquote>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="pylorax.ltmpl.LoraxTemplateRunner.gconfset">
-<code class="descname">gconfset</code><span class="sig-paren">(</span><em>path</em>, <em>keytype</em>, <em>value</em>, <em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner.gconfset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner.gconfset" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>gconfset PATH KEYTYPE VALUE [OUTFILE]</dt>
-<dd><p class="first">Set the given gconf PATH, with type KEYTYPE, to the given value.
-OUTFILE defaults to /etc/gconf/gconf.xml.defaults if not given.
-Example:</p>
-<blockquote class="last">
-<div>gconfset /apps/metacity/general/num_workspaces int 1</div></blockquote>
 </dd>
 </dl>
 </dd></dl>
@@ -2271,7 +2261,7 @@ lowest numbered directory entry is returned.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'29.1',
+            VERSION:'29.6',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -2292,9 +2282,7 @@ lowest numbered directory entry is returned.</p>
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 
