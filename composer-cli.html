@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>composer-cli &mdash; Lorax 29.1 documentation</title>
+  <title>composer-cli &mdash; Lorax 29.6 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                29.1
+                29.6
               </div>
             
           
@@ -299,6 +299,16 @@ TO-COMMIT  can be a commit hash, NEWEST, or WORKSPACE</dd>
 <dd>List the available projects.</dd>
 <dt>projects info &lt;PROJECT,…&gt;</dt>
 <dd>Show details about the listed projects.</dd>
+<dt>sources list</dt>
+<dd>List the available sources</dd>
+<dt>sources info &lt;SOURCE-NAME,…&gt;</dt>
+<dd>Details about the source.</dd>
+<dt>sources add &lt;SOURCE.TOML&gt;</dt>
+<dd>Add a package source to the server.</dd>
+<dt>sources change &lt;SOURCE.TOML&gt;</dt>
+<dd>Change an existing source</dd>
+<dt>sources delete &lt;SOURCE-NAME&gt;</dt>
+<dd>Delete a package source.</dd>
 </dl>
 </p>
 </div>
@@ -382,7 +392,7 @@ save the qcow2 image as <code class="docutils literal notranslate"><span class="
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'29.1',
+            VERSION:'29.6',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -403,9 +413,7 @@ save the qcow2 image as <code class="docutils literal notranslate"><span class="
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 

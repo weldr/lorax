@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.config &mdash; Lorax 29.1 documentation</title>
+  <title>pylorax.api.config &mdash; Lorax 29.6 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                29.1
+                29.6
               </div>
             
           
@@ -201,9 +201,9 @@
     <span class="n">conf</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">)</span>
     <span class="n">conf</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;share_dir&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s2">&quot;/usr/share/lorax/&quot;</span><span class="p">)))</span>
     <span class="n">conf</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;lib_dir&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s2">&quot;/var/lib/lorax/composer/&quot;</span><span class="p">)))</span>
+    <span class="n">conf</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;repo_dir&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s2">&quot;/var/lib/lorax/composer/repos.d/&quot;</span><span class="p">)))</span>
     <span class="n">conf</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;dnf_conf&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s2">&quot;/var/tmp/composer/dnf.conf&quot;</span><span class="p">)))</span>
     <span class="n">conf</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;dnf_root&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s2">&quot;/var/tmp/composer/dnf/root/&quot;</span><span class="p">)))</span>
-    <span class="n">conf</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;repo_dir&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s2">&quot;/var/tmp/composer/repos.d/&quot;</span><span class="p">)))</span>
     <span class="n">conf</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;cache_dir&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s2">&quot;/var/tmp/composer/cache/&quot;</span><span class="p">)))</span>
     <span class="n">conf</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;tmp&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s2">&quot;/var/tmp/&quot;</span><span class="p">)))</span>
 
@@ -232,8 +232,11 @@
 <span class="sd">    :returns: None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;dnf_conf&quot;</span><span class="p">,</span> <span class="s2">&quot;repo_dir&quot;</span><span class="p">,</span> <span class="s2">&quot;cache_dir&quot;</span><span class="p">,</span> <span class="s2">&quot;dnf_root&quot;</span><span class="p">]:</span>
-        <span class="n">p_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">p_dir</span><span class="p">):</span>
+        <span class="n">p_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">p</span> <span class="o">==</span> <span class="s2">&quot;dnf_conf&quot;</span><span class="p">:</span>
+            <span class="n">p_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">p_dir</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">p_dir</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">p_dir</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="make_queue_dirs"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.config.make_queue_dirs">[docs]</a><span class="k">def</span> <span class="nf">make_queue_dirs</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">gid</span><span class="p">):</span>
@@ -299,7 +302,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'29.1',
+            VERSION:'29.6',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -320,9 +323,7 @@
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 

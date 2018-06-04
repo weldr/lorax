@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>composer.cli.cmdline &mdash; Lorax 29.1 documentation</title>
+  <title>composer.cli.cmdline &mdash; Lorax 29.6 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                29.1
+                29.6
               </div>
             
           
@@ -267,6 +267,20 @@
 <span class="s2">projects info &lt;PROJECT,...&gt;</span>
 <span class="s2">    Show details about the listed projects.</span>
 
+<span class="s2">sources list</span>
+<span class="s2">    List the available sources</span>
+
+<span class="s2">sources info &lt;SOURCE-NAME,...&gt;</span>
+<span class="s2">    Details about the source.</span>
+
+<span class="s2">sources add &lt;SOURCE.TOML&gt;</span>
+<span class="s2">    Add a package source to the server.</span>
+
+<span class="s2">sources change &lt;SOURCE.TOML&gt;</span>
+<span class="s2">    Change an existing source</span>
+
+<span class="s2">sources delete &lt;SOURCE-NAME&gt;</span>
+<span class="s2">    Delete a package source.</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="composer_cli_parser"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.cmdline.composer_cli_parser">[docs]</a><span class="k">def</span> <span class="nf">composer_cli_parser</span><span class="p">():</span>
@@ -328,7 +342,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'29.1',
+            VERSION:'29.6',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -349,9 +363,7 @@
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 

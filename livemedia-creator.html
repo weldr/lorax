@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>livemedia-creator &mdash; Lorax 29.1 documentation</title>
+  <title>livemedia-creator &mdash; Lorax 29.6 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                29.1
+                29.6
               </div>
             
           
@@ -101,7 +101,11 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#quickstart">Quickstart</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#how-iso-creation-works">How ISO creation works</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#kickstarts">Kickstarts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kickstarts">Kickstarts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#user-created-repositories">User created repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-a-proxy-with-repos">Using a Proxy with repos</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#anaconda-image-install-no-virt">Anaconda image install (no-virt)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#ami-images">AMI Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#appliance-creation">Appliance Creation</a></li>
@@ -698,11 +702,19 @@ there is no /etc/fstab</p>
 dracut-config-generic
 dracut-live
 -dracut-config-rescue
-grub-efi
+grub2-efi
 memtest86+
 syslinux</p>
 </li>
 </ol>
+<div class="section" id="user-created-repositories">
+<h3>User created repositories<a class="headerlink" href="#user-created-repositories" title="Permalink to this headline">¶</a></h3>
+<p>If you are using your own repositories and installing groups (eg. &#64;core) make
+sure you create the repodata with groups like this <code class="docutils literal notranslate"><span class="pre">createrepo</span> <span class="pre">-g</span>
+<span class="pre">/path/to/groups.xml</span> <span class="pre">/path/to/rpms</span></code></p>
+</div>
+<div class="section" id="using-a-proxy-with-repos">
+<h3>Using a Proxy with repos<a class="headerlink" href="#using-a-proxy-with-repos" title="Permalink to this headline">¶</a></h3>
 <p>One drawback to using qemu is that it pulls the packages from the repo each
 time you run it. To speed things up you either need a local mirror of the
 packages, or you can use a caching proxy. When using a proxy you pass it to
@@ -714,7 +726,15 @@ packages will get cached, so your kickstart url would look like:</p>
 <blockquote>
 <div><code class="docutils literal notranslate"><span class="pre">url</span> <span class="pre">--url=&quot;http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/x86_64/os/&quot;</span></code></div></blockquote>
 <p>You can also add an update repo, but don’t name it updates. Add –proxy to it
-as well.</p>
+as well. You can use all of the <a class="reference external" href="https://pykickstart.readthedocs.io/en/latest/kickstart-docs.html#chapter-2-kickstart-commands-in-fedora">kickstart commands</a> in your kickstart. Make sure there
+is only one <code class="docutils literal notranslate"><span class="pre">url</span></code> command, other repos have to use the <code class="docutils literal notranslate"><span class="pre">repo</span></code> command and cannot be
+named <code class="docutils literal notranslate"><span class="pre">updates</span></code> which is reserved for Anaconda’s use. eg.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span> <span class="o">--</span><span class="n">url</span><span class="o">=</span><span class="n">PRIMARY</span><span class="o">-</span><span class="n">REPO</span><span class="o">-</span><span class="n">URL</span> <span class="o">--</span><span class="n">proxy</span><span class="o">=</span><span class="n">PROXY</span><span class="o">-</span><span class="n">URL</span>
+<span class="n">repo</span> <span class="o">--</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;repo1&quot;</span> <span class="o">--</span><span class="n">baseurl</span><span class="o">=</span><span class="n">FIRST</span><span class="o">-</span><span class="n">REPO</span><span class="o">-</span><span class="n">URL</span> <span class="o">--</span><span class="n">proxy</span><span class="o">=</span><span class="n">PROXY</span><span class="o">-</span><span class="n">URL</span>
+<span class="n">repo</span> <span class="o">--</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;repo2&quot;</span> <span class="o">--</span><span class="n">baseurl</span><span class="o">=</span><span class="n">SECOND</span><span class="o">-</span><span class="n">REPO_URL</span> <span class="o">--</span><span class="n">proxy</span><span class="o">=</span><span class="n">PROXY</span><span class="o">-</span><span class="n">URL</span>
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="anaconda-image-install-no-virt">
 <h2>Anaconda image install (no-virt)<a class="headerlink" href="#anaconda-image-install-no-virt" title="Permalink to this headline">¶</a></h2>
@@ -1078,6 +1098,16 @@ cancel the installation when they happen. But not everything can be caught.
 When creating a new kickstart it is helpful to use vnc so that you can monitor
 the installation as it happens, and if it gets stuck without lmc detecting the
 problem you can switch to tty1 and examine the system directly.</p>
+<p>If you suspect problems with %pre or %post sections you can redirect the output
+to the terminal and examine it by logging into the VM. eg.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">pre</span>
+<span class="n">chvt</span>
+<span class="n">exec</span> <span class="o">&lt;</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">tty3</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">tty3</span> <span class="mi">2</span><span class="o">&gt;/</span><span class="n">dev</span><span class="o">/</span><span class="n">tty3</span>
+<span class="c1">#do stuff</span>
+<span class="n">echo</span> <span class="n">hello</span> <span class="n">world</span>
+<span class="o">%</span><span class="n">end</span>
+</pre></div>
+</div>
 <p>If it does get stuck the best way to cancel is to use kill -9 on the qemu pid,
 lmc will detect that the process died and cleanup.</p>
 <p>If lmc didn’t handle the cleanup for some reason you can do this:
@@ -1148,7 +1178,7 @@ report bugs against the lorax component.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'29.1',
+            VERSION:'29.6',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -1169,9 +1199,7 @@ report bugs against the lorax component.</p>
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 
