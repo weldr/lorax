@@ -1454,8 +1454,11 @@ def v0_api(api):
                 if source["name"] in repos:
                     yb.repos.delete(source["name"])
 
-                repo = source_to_repo(source)
-                yb.repos.add(repo)
+                repo_dict = source_to_repo(source)
+                repoid = repo_dict.pop("id")
+                baseurl = repo_dict.pop("baseurl")
+                mirrorlist = repo_dict.pop("mirrorlist")
+                yb.add_enable_repo(repoid, baseurl, mirrorlist, **repo_dict)
 
                 log.info("Updating repository metadata after adding %s", source["name"])
                 update_metadata(yb)
@@ -1472,7 +1475,7 @@ def v0_api(api):
             # Make sure the source name can't contain a path traversal by taking the basename
             source_path = joinpaths(repo_dir, os.path.basename("%s.repo" % source["name"]))
             with open(source_path, "w") as f:
-                f.write(yum_repo_to_file_repo(repo))
+                f.write(yum_repo_to_file_repo(source_to_repo(source)))
         except Exception as e:
             log.error("(v0_projects_source_add) adding %s failed: %s", source["name"], str(e))
 
@@ -1480,7 +1483,6 @@ def v0_api(api):
             with api.config["YUMLOCK"].lock:
                 yb = api.config["YUMLOCK"].yb
                 repos = list(r.id for r in yb.repos.listEnabled())
-                log.info("BCL: repos = %s", repos)
                 if source["name"] in repos:
                     yb.repos.delete(source["name"])
                     # delete doesn't remove it from the cache used by listEnabled so we have to force it

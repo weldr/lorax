@@ -412,6 +412,10 @@ gpgcheck = True
 gpgkey = https://fake-repo.gpgkey
 """
 
+def yum_to_file(d):
+    """Test function to convert a source to a dict and then to a yum repo string"""
+    return yum_repo_to_file_repo(source_to_repo(d))
+
 class SourceTest(unittest.TestCase):
     @classmethod
     def setUpClass(self):
@@ -479,44 +483,44 @@ class SourceTest(unittest.TestCase):
     def test_source_to_repo_baseurl(self):
         """Test creating a yum.yumRepo.YumRepository with a baseurl"""
         repo = source_to_repo(fakerepo_baseurl())
-        self.assertEqual(repo.baseurl[0], fakerepo_baseurl()["url"])
+        self.assertEqual(repo["baseurl"][0], fakerepo_baseurl()["url"])
 
     def test_source_to_repo_metalink(self):
         """Test creating a yum.yumRepo.YumRepository with a metalink"""
         repo = source_to_repo(fakerepo_metalink())
-        self.assertEqual(repo.metalink, fakerepo_metalink()["url"])
+        self.assertEqual(repo["metalink"], fakerepo_metalink()["url"])
 
     def test_source_to_repo_mirrorlist(self):
         """Test creating a yum.yumRepo.YumRepository with a mirrorlist"""
         repo = source_to_repo(fakerepo_mirrorlist())
-        self.assertEqual(repo.mirrorlist, fakerepo_mirrorlist()["url"])
+        self.assertEqual(repo["mirrorlist"], fakerepo_mirrorlist()["url"])
 
     def test_source_to_repo_proxy(self):
         """Test creating a yum.yumRepo.YumRepository with a proxy"""
         repo = source_to_repo(fakerepo_proxy())
-        self.assertEqual(repo.proxy, fakerepo_proxy()["proxy"])
+        self.assertEqual(repo["proxy"], fakerepo_proxy()["proxy"])
 
     def test_source_to_repo_gpgkey(self):
         """Test creating a yum.yumRepo.YumRepository with a proxy"""
         repo = source_to_repo(fakerepo_gpgkey())
-        self.assertEqual(repo.gpgkey, fakerepo_gpgkey()["gpgkey_urls"])
+        self.assertEqual(repo["gpgkey"], fakerepo_gpgkey()["gpgkey_urls"])
 
     def test_drtfr_baseurl(self):
         """Test creating a yum .repo file from a baseurl Repo object"""
-        self.assertEqual(yum_repo_to_file_repo(FakeRepoBaseUrl()), fakerepo_baseurl_str())
+        self.assertEqual(yum_to_file(fakerepo_baseurl()), fakerepo_baseurl_str())
 
     def test_drtfr_metalink(self):
         """Test creating a yum .repo file from a metalink Repo object"""
-        self.assertEqual(yum_repo_to_file_repo(FakeRepoMetalink()), fakerepo_metalink_str())
+        self.assertEqual(yum_to_file(fakerepo_metalink()), fakerepo_metalink_str())
 
     def test_drtfr_mirrorlist(self):
         """Test creating a yum .repo file from a mirrorlist Repo object"""
-        self.assertEqual(yum_repo_to_file_repo(FakeRepoMirrorlist()), fakerepo_mirrorlist_str())
+        self.assertEqual(yum_to_file(fakerepo_mirrorlist()), fakerepo_mirrorlist_str())
 
     def test_drtfr_proxy(self):
         """Test creating a yum .repo file from a baseurl Repo object with proxy"""
-        self.assertEqual(yum_repo_to_file_repo(FakeRepoProxy()), fakerepo_proxy_str())
+        self.assertEqual(yum_to_file(fakerepo_proxy()), fakerepo_proxy_str())
 
     def test_drtfr_gpgkey(self):
         """Test creating a yum .repo file from a baseurl Repo object with gpgkey"""
-        self.assertEqual(yum_repo_to_file_repo(FakeRepoGPGKey()), fakerepo_gpgkey_str())
+        self.assertEqual(yum_to_file(fakerepo_gpgkey()), fakerepo_gpgkey_str())

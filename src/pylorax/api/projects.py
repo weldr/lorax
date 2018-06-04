@@ -19,7 +19,6 @@ log = logging.getLogger("lorax-composer")
 
 import os
 from ConfigParser import ConfigParser
-import yum
 from glob import glob
 import time
 
@@ -321,34 +320,34 @@ def modules_info(yb, module_names):
     return modules
 
 def yum_repo_to_file_repo(repo):
-    """Return a string representation of a YumRepository object suitable for writing to a .repo file
+    """Return a string representation of a repo dict suitable for writing to a .repo file
 
-    :param repo: Yum Repository
-    :type repo: yum.yumRepo.YumRepository
+    :param repo: Yum Repository represented as a dict
+    :type repo: dict
     :returns: A string
     :rtype: str
 
     The YumRepo.dump() function does not produce a string that can be used as a
     yum .repo file. So do this manually with only the attributes we care about.
     """
-    repo_str = "[%s]\n" % repo.id
-    if repo.metalink:
-        repo_str += "metalink = %s\n" % repo.metalink
-    elif repo.mirrorlist:
-        repo_str += "mirrorlist = %s\n" % repo.mirrorlist
-    elif repo.baseurl:
-        repo_str += "baseurl = %s\n" % repo.baseurl[0]
+    repo_str = "[%s]\n" % repo["id"]
+    if repo["metalink"]:
+        repo_str += "metalink = %s\n" % repo["metalink"]
+    elif repo["mirrorlist"]:
+        repo_str += "mirrorlist = %s\n" % repo["mirrorlist"]
+    elif repo["baseurl"]:
+        repo_str += "baseurl = %s\n" % repo["baseurl"][0]
     else:
         raise RuntimeError("Repo has no baseurl, metalink, or mirrorlist")
 
     # proxy is optional
-    if repo.proxy:
-        repo_str += "proxy = %s\n" % repo.proxy
+    if "proxy" in repo:
+        repo_str += "proxy = %s\n" % repo["proxy"]
 
-    repo_str += "sslverify = %s\n" % repo.sslverify
-    repo_str += "gpgcheck = %s\n" % repo.gpgcheck
-    if repo.gpgkey:
-        repo_str += "gpgkey = %s\n" % ",".join(repo.gpgkey)
+    repo_str += "sslverify = %s\n" % repo["sslverify"]
+    repo_str += "gpgcheck = %s\n" % repo["gpgcheck"]
+    if "gpgkey" in repo:
+        repo_str += "gpgkey = %s\n" % ",".join(repo["gpgkey"])
 
     return repo_str
 
@@ -411,58 +410,64 @@ def repo_to_source(repo, system_source):
     return source
 
 def source_to_repo(source):
-    """Return a yum YumRepository object created from a source dict
+    """Return an add_enable_repo kwargs dict created from a source dict
 
     :param source: A Weldr source dict
     :type source: dict
     :returns: A yum YumRepository object
     :rtype: yum.yumRepo.YumRepository
 
+    The dict it suitable for passing to yum's add_enable_repo function
+    after popping off baseurl and mirrorlist.
+
     Example::
 
         {
-          "check_gpg": True,
-          "check_ssl": True,
-          "gpgkey_urls": [
-            "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-x86_64"
-          ],
-          "name": "fedora",
+          "gpgcheck": True,
+          "sslverify": True,
+          "gpgkey": ["file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-x86_64"],
+          "id": "fedora",
           "proxy": "http://proxy.brianlane.com:8123",
-          "system": True
-          "type": "yum-metalink",
-          "url": "https://mirrors.fedoraproject.org/metalink?repo=fedora-28&arch=x86_64"
+          "baseurl": "https://mirrors.fedoraproject.org/metalink?repo=fedora-28&arch=x86_64",
+          "metalink": None,
+          "mirrorlist": None
         }
 
     """
-    repo = yum.yumRepo.YumRepository(source["name"])
+    repo = {"id": source["name"]}
+
     # This will allow errors to be raised so we can catch them
     # without this they are logged, but the repo is silently disabled
-    repo.skip_if_unavailable = False
+    repo["skip_if_unavailable"] = False
 
     if source["type"] == "yum-baseurl":
-        repo.baseurl = source["url"]
+        repo["baseurl"] = [source["url"]]
+        repo["metalink"] = None
+        repo["mirrorlist"] = None
     elif source["type"] == "yum-metalink":
-        repo.metalink = source["url"]
+        repo["metalink"] = source["url"]
+        repo["baseurl"] = []
+        repo["mirrorlist"] = None
     elif source["type"] == "yum-mirrorlist":
-        repo.mirrorlist = source["url"]
+        repo["mirrorlist"] = source["url"]
+        repo["baseurl"] = []
+        repo["metalink"] = None
 
     if "proxy" in source:
-        repo.proxy = source["proxy"]
+        repo["proxy"] = source["proxy"]
 
     if source["check_ssl"]:
-        repo.sslverify = True
+        repo["sslverify"] = True
     else:
-        repo.sslverify = False
+        repo["sslverify"] = False
 
     if source["check_gpg"]:
-        repo.gpgcheck = True
+        repo["gpgcheck"] = True
     else:
-        repo.gpgcheck = False
+        repo["gpgcheck"] = False
 
     if "gpgkey_urls" in source:
-        repo.gpgkey = ",".join(source["gpgkey_urls"])
-
-    repo.enable()
+        repo["gpgkey"] = source["gpgkey_urls"]
 
     return repo
 
