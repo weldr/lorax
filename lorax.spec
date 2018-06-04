@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.12
+Version:        28.13
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -219,6 +219,18 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python3_sitelib}/composer/*
 
 %changelog
+* Mon Jun 04 2018 Brian C. Lane <bcl@redhat.com> 28.13-1
+- New lorax documentation - 28.13 (bcl@redhat.com)
+- Override Sphinx documentation version with LORAX_VERSION (bcl@redhat.com)
+- Add support for sources to composer-cli (bcl@redhat.com)
+- Fix DNF related issues with source selection (bcl@redhat.com)
+- Fix handling bad source repos and add a test (bcl@redhat.com)
+- Speed up test_dnfbase.py (bcl@redhat.com)
+- Make sure new sources show up in the source/list output (bcl@redhat.com)
+- Fix make_dnf_dirs (bcl@redhat.com)
+- Update test_server for rawhide (bcl@redhat.com)
+- Add support for user defined package sources API (bcl@redhat.com)
+
 * Thu May 24 2018 Brian C. Lane <bcl@redhat.com> 28.12-1
 - templates: Stop using gconfset (walters@verbum.org)
 - Add support for version globs to blueprints (bcl@redhat.com)
