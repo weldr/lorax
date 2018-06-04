@@ -57,7 +57,11 @@ copyright = u'2018, Red Hat, Inc.'      # pylint: disable=redefined-builtin
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 def read_version():
-    """ Read version from ../lorax.spec"""
+    """Read version from $LORAX_VERSION or ../lorax.spec"""
+    # This allows the .spec version to be overridded. eg. when documenting an upcoming release
+    if "LORAX_VERSION" in os.environ:
+        return os.environ["LORAX_VERSION"]
+
     import re
     version_re = re.compile(r"Version:\s+(.*)")
     with open("../lorax.spec", "rt") as f:
