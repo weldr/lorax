@@ -33,7 +33,7 @@ import subprocess
 import tempfile
 from threading import Lock
 from gevent import socket
-from gevent.wsgi import WSGIServer
+from gevent.pywsgi import WSGIServer
 
 from pylorax import vernum
 from pylorax.api.cmdline import lorax_composer_parser
