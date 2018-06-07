@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.monitor &mdash; Lorax 29.6 documentation</title>
+  <title>pylorax.monitor &mdash; Lorax 29.7 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                29.6
+                29.7
               </div>
             
           
@@ -191,6 +191,26 @@
 <span class="sd">    for patterns that would indicate that the installation failed.</span>
 <span class="sd">    self.server.log_error is set True when this happens.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">simple_tests</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;Traceback (&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;traceback script(s) have been run&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Out of memory:&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Call Trace:&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;insufficient disk space:&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Not enough disk space to download the packages&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;error populating transaction after&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;crashed on signal&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;packaging: Missed: NoSuchPackage&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;packaging: Installation failed&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;The following error occurred while installing.  This is a fatal error&quot;</span>
+    <span class="p">]</span>
+
+    <span class="n">re_tests</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="sa">r</span><span class="s2">&quot;packaging: base repo .* not valid&quot;</span><span class="p">,</span>
+        <span class="sa">r</span><span class="s2">&quot;packaging: .* requires .*&quot;</span>
+    <span class="p">]</span>
+
 <div class="viewcode-block" id="LogRequestHandler.setup"><a class="viewcode-back" href="../../pylorax.html#pylorax.monitor.LogRequestHandler.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Start writing to self.server.log_path&quot;&quot;&quot;</span>
 
@@ -256,25 +276,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;IGNORED&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="n">simple_tests</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Traceback (&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;Out of memory:&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;Call Trace:&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;insufficient disk space:&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;Not enough disk space to download the packages&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;error populating transaction after&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;traceback script(s) have been run&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;crashed on signal&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;packaging: Missed: NoSuchPackage&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;packaging: Installation failed&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;The following error occurred while installing.  This is a fatal error&quot;</span><span class="p">]</span>
-        <span class="n">re_tests</span> <span class="o">=</span>     <span class="p">[</span><span class="sa">r</span><span class="s2">&quot;packaging: base repo .* not valid&quot;</span><span class="p">,</span>
-                        <span class="sa">r</span><span class="s2">&quot;packaging: .* requires .*&quot;</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">simple_tests</span><span class="p">:</span>
+
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">simple_tests</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">log_error</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">error_line</span> <span class="o">=</span> <span class="n">line</span>
                 <span class="k">return</span>
-        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">re_tests</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">re_tests</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">log_error</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">error_line</span> <span class="o">=</span> <span class="n">line</span>
@@ -325,7 +333,7 @@
 <span class="sd">    This needs to be running before the virt-install runs, it expects</span>
 <span class="sd">    there to be a listener on the port used for the virtio log port.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">log_request_handler_class</span><span class="o">=</span><span class="n">LogRequestHandler</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start a thread to monitor the logs.</span>
 
@@ -339,7 +347,7 @@
 <span class="sd">        If log_path isn&#39;t set then it only monitors the logs, instead of</span>
 <span class="sd">        also writing them to disk.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">LogServer</span><span class="p">(</span><span class="n">log_path</span><span class="p">,</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">),</span> <span class="n">LogRequestHandler</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">LogServer</span><span class="p">(</span><span class="n">log_path</span><span class="p">,</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">),</span> <span class="n">log_request_handler_class</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">server_address</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span> <span class="o">=</span> <span class="n">log_path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">server_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">handle_request</span><span class="p">)</span>
@@ -384,7 +392,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'29.6',
+            VERSION:'29.7',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
