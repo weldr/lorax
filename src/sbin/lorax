@@ -33,6 +33,7 @@ import dnf
 import dnf.logging
 import librepo
 import pylorax
+from pylorax import DRACUT_DEFAULT
 from pylorax.cmdline import lorax_parser
 import selinux
 
@@ -52,7 +53,7 @@ def setup_logging(opts):
 
 
 def main():
-    parser = lorax_parser()
+    parser = lorax_parser(DRACUT_DEFAULT)
     opts = parser.parse_args()
 
     log.info("Lorax v%s", pylorax.vernum)
@@ -138,7 +139,8 @@ def main():
               add_template_vars=parsed_add_template_vars,
               add_arch_templates=opts.add_arch_templates,
               add_arch_template_vars=parsed_add_arch_template_vars,
-              remove_temp=True, verify=opts.verify)
+              remove_temp=True, verify=opts.verify,
+              user_dracut_args=opts.dracut_args)
 
 
 def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,

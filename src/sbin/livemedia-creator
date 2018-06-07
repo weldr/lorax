@@ -29,13 +29,13 @@ import tempfile
 # Use the Lorax treebuilder branch for iso creation
 from pylorax import setup_logging, find_templates, vernum
 from pylorax.cmdline import lmc_parser
-from pylorax.creator import run_creator
+from pylorax.creator import run_creator, DRACUT_DEFAULT
 from pylorax.imgutils import default_image_name
 from pylorax.sysutils import joinpaths
 
 
 def main():
-    parser = lmc_parser()
+    parser = lmc_parser(DRACUT_DEFAULT)
     opts = parser.parse_args()
 
     setup_logging(opts.logfile, log)
