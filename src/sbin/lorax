@@ -41,6 +41,7 @@ import yum
 # handler setup.  We already set one up so we don't need it to run.
 yum.logginglevels._added_handlers = True
 import pylorax
+from pylorax import DRACUT_DEFAULT
 
 VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), pylorax.vernum)
 
@@ -149,6 +150,14 @@ def main(args):
     optional.add_option("--noverifyssl", action="store_true", default=False,
                         help="Do not verify SSL certificates")
 
+    # dracut arguments
+    dracut_group = OptionGroup(parser, "dracut arguments")
+    dracut_group.add_option("--dracut-arg", action="append", dest="dracut_args",
+                            help="Argument to pass to dracut when "
+                                 "rebuilding the initramfs. Pass this "
+                                 "once for each argument. NOTE: this "
+                                 "overrides the default. (default: %s)" % (DRACUT_DEFAULT,) )
+
     # add the option groups to the parser
     parser.add_option_group(required)
     parser.add_option_group(optional)
@@ -232,7 +241,8 @@ def main(args):
               add_template_vars=parsed_add_template_vars,
               add_arch_templates=opts.add_arch_templates,
               add_arch_template_vars=parsed_add_arch_template_vars,
-              remove_temp=True)
+              remove_temp=True,
+              user_dracut_args=opts.dracut_args)
 
 
 def get_yum_base_object(installroot, repositories, mirrorlists=[], repo_files=[],

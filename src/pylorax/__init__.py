@@ -57,6 +57,8 @@ except ImportError:
 else:
     vernum = pylorax.version.num
 
+DRACUT_DEFAULT = ["--xz", "--install", "/.buildstamp", "--no-early-microcode", "--add", "fips"]
+
 # List of drivers to remove on ppc64 arch to keep initrd < 32MiB
 REMOVE_PPC64_DRIVERS = "floppy scsi_debug nouveau radeon cirrus mgag200"
 REMOVE_PPC64_MODULES = "drm plymouth"
@@ -157,7 +159,8 @@ class Lorax(BaseLoraxClass):
             add_template_vars=None,
             add_arch_templates=None,
             add_arch_template_vars=None,
-            template_tempdir=None):
+            template_tempdir=None,
+            user_dracut_args=None):
 
         assert self._configured
 
@@ -311,7 +314,13 @@ class Lorax(BaseLoraxClass):
                                   workdir=self.workdir)
 
         logger.info("rebuilding initramfs images")
-        dracut_args = ["--xz", "--install", "/.buildstamp", "--no-early-microcode", "--add", "fips"]
+        if not user_dracut_args:
+            dracut_args = DRACUT_DEFAULT
+        else:
+            dracut_args = []
+            for arg in user_dracut_args:
+                dracut_args += arg.split(" ", 1)
+
         anaconda_args = dracut_args + ["--add", "anaconda pollcdrom"]
 
         # ppc64 cannot boot an initrd > 32MiB so remove some drivers
@@ -322,6 +331,8 @@ class Lorax(BaseLoraxClass):
             # upgrade.img
             anaconda_args.extend(["--omit", REMOVE_PPC64_MODULES])
 
+        logger.info("dracut args = %s", dracut_args)
+        logger.info("anaconda args = %s", anaconda_args)
         treebuilder.rebuild_initrds(add_args=anaconda_args)
 
         if doupgrade:

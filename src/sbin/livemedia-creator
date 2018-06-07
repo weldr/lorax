@@ -67,7 +67,7 @@ except ImportError:
 
 VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
 
-# Default parameters for rebuilding initramfs, override with --dracut-args
+# Default parameters for rebuilding initramfs, override with --dracut-arg
 DRACUT_DEFAULT = ["--xz", "--add", "livenet dmsquash-live convertfs pollcdrom",
                   "--omit", "plymouth", "--no-hostonly", "--no-early-microcode"]
 
