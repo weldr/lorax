@@ -26,7 +26,7 @@ from pylorax import vernum
 
 version = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
 
-def lorax_parser():
+def lorax_parser(dracut_default=""):
     """ Return the ArgumentParser for lorax"""
 
     parser = argparse.ArgumentParser(description="Create the Anaconda boot.iso")
@@ -107,6 +107,14 @@ def lorax_parser():
                           help="Size of root filesystem in GiB. Defaults to 2.")
     optional.add_argument("--noverifyssl", action="store_true", default=False,
                           help="Do not verify SSL certificates")
+
+    # dracut arguments
+    dracut_group = parser.add_argument_group("dracut arguments")
+    dracut_group.add_argument("--dracut-arg", action="append", dest="dracut_args",
+                              help="Argument to pass to dracut when "
+                                   "rebuilding the initramfs. Pass this "
+                                   "once for each argument. NOTE: this "
+                                   "overrides the default. (default: %s)" % dracut_default)
 
     # add the show version option
     parser.add_argument("-V", help="show program's version number and exit",
