@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.cmdline &mdash; Lorax 29.6 documentation</title>
+  <title>pylorax.cmdline &mdash; Lorax 29.7 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                29.6
+                29.7
               </div>
             
           
@@ -183,7 +183,7 @@
 
 <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">-</span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">vernum</span><span class="p">)</span>
 
-<div class="viewcode-block" id="lorax_parser"><a class="viewcode-back" href="../../pylorax.html#pylorax.cmdline.lorax_parser">[docs]</a><span class="k">def</span> <span class="nf">lorax_parser</span><span class="p">():</span>
+<div class="viewcode-block" id="lorax_parser"><a class="viewcode-back" href="../../pylorax.html#pylorax.cmdline.lorax_parser">[docs]</a><span class="k">def</span> <span class="nf">lorax_parser</span><span class="p">(</span><span class="n">dracut_default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Return the ArgumentParser for lorax&quot;&quot;&quot;</span>
 
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Create the Anaconda boot.iso&quot;</span><span class="p">)</span>
@@ -264,6 +264,14 @@
                           <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Size of root filesystem in GiB. Defaults to 2.&quot;</span><span class="p">)</span>
     <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--noverifyssl&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                           <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Do not verify SSL certificates&quot;</span><span class="p">)</span>
+
+    <span class="c1"># dracut arguments</span>
+    <span class="n">dracut_group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;dracut arguments&quot;</span><span class="p">)</span>
+    <span class="n">dracut_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--dracut-arg&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;dracut_args&quot;</span><span class="p">,</span>
+                              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Argument to pass to dracut when &quot;</span>
+                                   <span class="s2">&quot;rebuilding the initramfs. Pass this &quot;</span>
+                                   <span class="s2">&quot;once for each argument. NOTE: this &quot;</span>
+                                   <span class="s2">&quot;overrides the default. (default: </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">dracut_default</span><span class="p">)</span>
 
     <span class="c1"># add the show version option</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;show program&#39;s version number and exit&quot;</span><span class="p">,</span>
@@ -483,7 +491,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'29.6',
+            VERSION:'29.7',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
