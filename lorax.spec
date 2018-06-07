@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.7.15
+Version:        19.7.16
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -174,6 +174,19 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python_sitelib}/composer/*
 
 %changelog
+* Thu Jun 07 2018 Brian C. Lane <bcl@redhat.com> 19.7.16-1
+- Remove SortMode from list_commits (bcl)
+- Use yum.add_enable_repo() for new repos (bcl)
+- Add support for sources to composer-cli (bcl)
+- yum repos has a delete() function. But it doesn't clear the cache. (bcl)
+- Fix DNF related issues with source selection (bcl)
+- Fix handling bad source repos and add a test (bcl)
+- Make sure new sources show up in the source/list output (bcl)
+- Fix make_dnf_dirs (bcl)
+- Add support for user defined package sources API (bcl)
+- gevent has deprecated .wsgi, should use .pywsgi instead (bcl)
+- Add support for version globs to blueprints (bcl)
+
 * Wed May 16 2018 Brian C. Lane <bcl@redhat.com> 19.7.15-1
 - Check to make sure blueprints directory exists (bcl)
 - lorax-composer also requires tar (bcl)
