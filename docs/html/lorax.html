@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Lorax &mdash; Lorax 28.13 documentation</title>
+  <title>Lorax &mdash; Lorax 28.14 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                28.13
+                28.14
               </div>
             
           
@@ -92,6 +92,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#required arguments">required arguments</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Named Arguments_repeat1">Named Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dracut arguments">dracut arguments</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#quickstart">Quickstart</a></li>
@@ -210,7 +211,7 @@ repositories.</p>
              <span class="p">[</span><span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">arch</span><span class="o">-</span><span class="n">template</span><span class="o">-</span><span class="n">var</span> <span class="n">ADD_ARCH_TEMPLATE_VARS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">noverify</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">sharedir</span> <span class="n">SHAREDIR</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">enablerepo</span> <span class="p">[</span><span class="n">repo</span><span class="p">]]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">disablerepo</span> <span class="p">[</span><span class="n">repo</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">rootfs</span><span class="o">-</span><span class="n">size</span> <span class="n">ROOTFS_SIZE</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">noverifyssl</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">noverifyssl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dracut</span><span class="o">-</span><span class="n">arg</span> <span class="n">DRACUT_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span>
              <span class="n">OUTPUTDIR</span>
 </pre></div>
 </div>
@@ -401,6 +402,18 @@ repositories.</p>
 </tbody>
 </table>
 </div>
+<div class="section" id="dracut arguments">
+<h3>dracut arguments<a class="headerlink" href="#dracut arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--dracut-arg</kbd></td>
+<td>Argument to pass to dracut when rebuilding the initramfs. Pass this once for each argument. NOTE: this overrides the default. (default: )</td></tr>
+</tbody>
+</table>
+</div>
 </div>
 <div class="section" id="quickstart">
 <h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
@@ -555,7 +568,7 @@ should) select the specific template directory by passing <code class="docutils 
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'28.13',
+            VERSION:'28.14',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
