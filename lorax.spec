@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        29.6
+Version:        29.7
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -219,6 +219,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python3_sitelib}/composer/*
 
 %changelog
+* Thu Jun 07 2018 Brian C. Lane <bcl@redhat.com> 29.7-1
+- New lorax documentation - 29.7 (bcl@redhat.com)
+- Add --dracut-arg support to lorax (bcl@redhat.com)
+- Make LogRequestHandler configurable (mkolman@redhat.com)
+- gevent has deprecated .wsgi, should use .pywsgi instead (bcl@redhat.com)
+
 * Mon Jun 04 2018 Brian C. Lane <bcl@redhat.com> 29.6-1
 - New lorax documentation - 29.6 (bcl@redhat.com)
 - Override Sphinx documentation version with LORAX_VERSION (bcl@redhat.com)
