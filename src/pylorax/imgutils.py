@@ -150,13 +150,34 @@ def loop_waitfor(loop_dev, outfile):
     raise RuntimeError("Unable to setup %s on %s" % (loop_dev, outfile))
 
 def loop_attach(outfile):
-    '''Attach a loop device to the given file. Return the loop device name.
-    Raises CalledProcessError if losetup fails.'''
-    dev = runcmd_output(["losetup", "--find", "--show", outfile])
+    """Attach a loop device to the given file. Return the loop device name.
 
-    # Sometimes the loop device isn't ready yet, make extra sure before returning
-    loop_waitfor(dev.strip(), outfile)
-    return dev.strip()
+    On rare occasions it appears that the device never shows up, some experiments
+    seem to indicate that it may be a race with another process using /dev/loop* devices.
+
+    So we now try 3 times before actually failing.
+
+    Raises CalledProcessError if losetup fails.
+    """
+    retries = 0
+    while True:
+        try:
+            retries += 1
+            dev = runcmd_output(["losetup", "--find", "--show", outfile]).strip()
+
+            # Sometimes the loop device isn't ready yet, make extra sure before returning
+            loop_waitfor(dev, outfile)
+        except CalledProcessError:
+            # Problems running losetup are always errors, raise immediately
+            raise
+        except RuntimeError as e:
+            # Try to setup the loop device 3 times
+            if retries == 3:
+                logger.error("loop_attach failed, retries exhausted.")
+                raise
+            logger.debug("Try %d failed, %s did not appear.", retries, dev)
+        break
+    return dev
 
 def loop_detach(loopdev):
     '''Detach the given loop device. Return False on failure.'''
