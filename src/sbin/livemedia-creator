@@ -1129,7 +1129,7 @@ if __name__ == '__main__':
         virt_group = parser.add_argument_group("virt-install arguments (DISABLED -- no libvirt)")
     else:
         virt_group = parser.add_argument_group("virt-install arguments")
-    virt_group.add_argument("--ram", metavar="MEMORY", type=int, default=1024,
+    virt_group.add_argument("--ram", metavar="MEMORY", type=int, default=2048,
                             help="Memory to allocate for installer in megabytes." )
     virt_group.add_argument("--vcpus", default=1,
                             help="Passed to --vcpus command" )
