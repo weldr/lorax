@@ -30,6 +30,7 @@ bootloader --location=none
 clearpart --all --initlabel
 rootpw rootme
 # Disk partitioning information
+reqpart
 part / --size=6656
 
 %post
