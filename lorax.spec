@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.6.104
+Version:        19.6.105
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -100,6 +100,21 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 %{_mandir}/man1/*.1*
 
 %changelog
+* Mon Jun 11 2018 Brian C. Lane <bcl@redhat.com> 19.6.105-1
+- Retry losetup if loop_attach fails (bcl)
+  Resolves: rhbz#1589084
+- Add reqpart to example kickstart files (bcl)
+  Resolves: rhbz#1545289
+- Increase default ram used with lmc and virt to 2048 (bcl)
+  Resolves: rhbz#1538747
+- Add --virt-uefi to boot the VM using OVMF (bcl)
+  Resolves: rhbz#1546715
+  Resolves: rhbz#1544805
+- Add --dracut-arg support to lorax (bcl)
+  Resolves: rhbz#1452220
+- livemedia-creator: Search for kernel/initrd under /images/pxeboot (bcl)
+  Resolves: rhbz#1522629
+
 * Wed Jan 24 2018 Brian C. Lane <bcl@redhat.com> 19.6.104-1
 - Replace fedora-gnome-theme with gnome-themes-standard (bcl)
   Resolves: rhbz#1537573
