@@ -22,4 +22,9 @@ class BuildStampTestCase(unittest.TestCase):
                 self.bstamp.write('/tmp/stamp.ini')
                 self.assertIn("[Main]\nProduct=Lorax Tests\nVersion=0.1\nBugURL=https://github.com/rhinstaller/lorax/issues\nIsFinal=True\n", out_file.getvalue())
                 # Skip UUID which is between IsFinal and Variant
-                self.assertIn("Variant=Server\n[Compose]\nLorax=devel", out_file.getvalue())
+                try:
+                    import pylorax.version
+                except ImportError:
+                    self.assertIn("Variant=Server\n[Compose]\nLorax=devel", out_file.getvalue())
+                else:
+                    self.assertIn("Variant=Server\n[Compose]\nLorax=" + pylorax.version.num, out_file.getvalue())
