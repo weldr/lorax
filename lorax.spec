@@ -175,6 +175,10 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 
 %changelog
 * Fri Jun 15 2018 Brian C. Lane <bcl@redhat.com> 19.7.16-2
+- Fixup the lorax.spec after rebasing on 19.6.105-1 (bcl)
+  Resolves: rhbz#1547759
+
+* Fri Jun 15 2018 Brian C. Lane <bcl@redhat.com> 19.7.16-2
 - Rebase of lorax-composer branch onto 19.6.105-1
 - See https://github.com/weldr/lorax/tree/lorax-composer for individual commits
   for 19.7.1-1 thru 19.7.16-1
