@@ -2,7 +2,7 @@
 
 Name:           lorax
 Version:        19.7.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
@@ -68,7 +68,7 @@ Requires:       openssh
 %endif
 
 # Moved image-minimizer tool to lorax
-Provides:       appliance-tools-minimizer
+Provides:       appliance-tools-minimizer = %{version}-%{release}
 Obsoletes:      appliance-tools-minimizer < 007.7-3
 
 %description
@@ -174,252 +174,11 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python_sitelib}/composer/*
 
 %changelog
-* Thu Jun 07 2018 Brian C. Lane <bcl@redhat.com> 19.7.16-1
-- Remove SortMode from list_commits (bcl)
-- Use yum.add_enable_repo() for new repos (bcl)
-- Add support for sources to composer-cli (bcl)
-- yum repos has a delete() function. But it doesn't clear the cache. (bcl)
-- Fix DNF related issues with source selection (bcl)
-- Fix handling bad source repos and add a test (bcl)
-- Make sure new sources show up in the source/list output (bcl)
-- Fix make_dnf_dirs (bcl)
-- Add support for user defined package sources API (bcl)
-- gevent has deprecated .wsgi, should use .pywsgi instead (bcl)
-- Add support for version globs to blueprints (bcl)
-
-* Wed May 16 2018 Brian C. Lane <bcl@redhat.com> 19.7.15-1
-- Check to make sure blueprints directory exists (bcl)
-- lorax-composer also requires tar (bcl)
-- Remove temporary files after run_compose (bcl)
-- Add --proxy to lorax-composer cmdline (bcl)
-- Pass the --tmp value into run_creator and cleanup after a crash (bcl)
-- Add --tmp to lorax-composer and set default tempdir (bcl)
-- Skip creating groups with the same name as a user (bcl)
-- Add user and group creation to blueprint (bcl)
-- Add blueprint customization support for hostname and ssh key (bcl)
-- Add support for systemd socket activation (bcl)
-
-* Wed Apr 25 2018 Brian C. Lane <bcl@redhat.com> 19.7.14-1
-- Sort the list of supported output types (bcl)
-- Add some tests for error conditions. (bcl)
-- Update the error responses to just return lists of strings. (bcl)
-
-* Wed Apr 04 2018 Brian C. Lane <bcl@redhat.com> 19.7.13-1
-- Move status to /api/status (bcl)
-- Update the path for the test blueprints (bcl)
-- Drop part command from tar kickstart template. (bcl)
-- Update the queue to use blueprint.toml (bcl)
-- Update composer-cli to use blueprint instead of recipe (bcl)
-- Update lorax-composer docs for recipe -> blueprint change. (bcl)
-- Change the API code to use blueprint (bcl)
-- Update the tests for the recipe -> blueprint change (bcl)
-- Change the tests for /recipes/ routes to /blueprints/ (bcl)
-- Change the /recipes/ routes to /blueprints/ (bcl)
-- Change recipe in API documentation to blueprint (bcl)
-
-* Mon Mar 26 2018 Brian C. Lane <bcl@redhat.com> 19.7.12-1
-- Add support for building ext4 filesystem images. (bcl)
-- Add the image size to the composer-cli status output (bcl)
-- Add image_size to the compose/info JSON (bcl)
-- Add image size to the compose details (bcl)
-- Removed the fixed partition size from composer ks templates (bcl)
-- Fix some pylint warnings (bcl)
-- Add the compose type to the output from compose status (bcl)
-- Fix composer-cli handling of log and detail errors. (bcl)
-- Fix a couple of error responses (bcl)
-- Add missing checks on return value from uuid_status (bcl)
-- Fix handling of missing STATUS file (bcl)
-- Fix compose types command (bcl)
-- Add qcow2 image type (bcl)
-- Update the URL in lorax.spec to point to new Lorax location (bcl)
-
-* Fri Mar 16 2018 Brian C. Lane <bcl@redhat.com> 19.7.11-1
-- Fix prettyDiffEntry output (bcl)
-- Fix the prettyDiffEntry test so that it fails correctly (bcl)
-- Default composer-cli log should be in ./composer-cli.log (bcl)
-- Update Sphinx documentation for composer.cli (bcl)
-- Update docs/ with lorax, livemedia-creator, and product-images (bcl)
-- Install the composer-cli library and include it in the rpm (bcl)
-- Add --test option to composer-cli (bcl)
-- Make sure lorax-composer tests only use temporary directories (bcl)
-- Add some tests for composer-cli (bcl)
-- Refactor get_filename so it can be tested (bcl)
-- Fix bug in prettyDiffEntry output (bcl)
-- composer-cli: Handle download errors (bcl)
-- Add a pid file for lorax-composer (bcl)
-- Cleanup more /tmp/ files when running with --no-virt (bcl)
-- lorax-composer: Update the yum metadata at startup (bcl)
-- Fix the error responses from lorax-composer (bcl)
-- Check to make sure image file exists for /compose/image/ (bcl)
-- Install anaconda-tui in the test Docker image (bcl)
-- Add UUID prefix to /compose/image/ download filename. (bcl)
-- Add support for composer-cli compose commands. (bcl)
-- Add support for modules list, projects list, and projects info (bcl)
-- Add composer-cli utility and implement the recipes commands (bcl)
-- Add ?format=toml support to /recipes/freeze (bcl)
-- Fix epoch to ouput an int instead of a str (bcl)
-- Add ?format=toml support to /recipes/info/ (bcl)
-
-* Thu Feb 22 2018 Brian C. Lane <bcl@redhat.com> 19.7.10-1
-- Add the partitioned-disk.ks file for the new output type (bcl)
-- lorax-composer: Add partitioned-disk output support (bcl)
-- Add live-iso output support to lorax-composer (bcl)
-- Move core of livemedia-creator to run_creator() (bcl)
-- Only chown recipe directory if it already exists (bcl)
-
-* Fri Feb 16 2018 Brian C. Lane <bcl@redhat.com> 19.7.9-1
-- Fix a problem with diff/NEWEST/WORKSPACE (bcl)
-- Don't be overly strict when validating /api/docs/ response in tests (atodorov)
-- Check for a source tree doc install first, not second. (bcl)
-- Measure coverage for parallel processes (atodorov)
-- Remove calls to print() (atodorov)
-- Use sudo to run the tests (atodorov)
-- Add tests for api.crossdomain.py (atodorov)
-- Add required_methods for decorator (atodorov)
-- Convert max_age to int b/c timedelta.total_seconds() is a float (atodorov)
-- Fix syntax error caused by conflict resolution (atodorov)
-
-* Tue Feb 13 2018 Brian C. Lane <bcl@redhat.com> 19.7.8-1
-- Fix a problem with using a mirror as the primary url (bcl)
-- Set the HOME variable to a directory the uid can access (bcl)
-- Open the git repo after dropping root privileges (bcl)
-- Create the weldr user in lorax.spec (bcl)
-- Exit on uid/gid errors before checking directory permissions (bcl)
-- lorax-composer now requires anaconda-tui (bcl)
-- Add tests for /compose API (bcl)
-- Add documentation for /compose and /compose/types (bcl)
-- Move queue monitor startup into a function (bcl)
-- Move queue directory creation into a function (bcl)
-- Add a test mode to /compose (bcl)
-- Cleanup docstrings for queue.py (bcl)
-- Drop cancel_q from the monitor() function (bcl)
-- Fix the jsonify calls to use kwargs (bcl)
-- Add /compose/log/ API to retrieve the end of the build log (bcl)
-- Return a status of false if the uuid isn't valid (bcl)
-- Add /compose/cancel API to cancel a running build (bcl)
-- Pass the callback_func through novirt_install to execWithRedirect (bcl)
-- Add a callback to execWithRedirect (bcl)
-- Update how we pass the source to docker so it includes docs/ dir (atodorov)
-- Add tests for functions in api/projects (atodorov)
-- Add tests for api/server.py (atodorov)
-- Add tests for yumbase and update how we inspect boolean options (atodorov)
-- Add new tests for workspace_read() and workspace_delete() (atodorov)
-- Add new tests for configure() (atodorov)
-- Add more tests for api.recipes (atodorov)
-- Add API routes for downloading build results (bcl)
-- Add /compose/info route to retrieve details about a compose (bcl)
-- Return the commit id for the recipe being read (bcl)
-- Fix yum config directory creation for projects and server tests (bcl)
-- Add DELETE /compose/delete/<uuids> API route (bcl)
-- Turn on o+x permission for the queue and results directories (bcl)
-- Add /compose/status/<uuids> to retrieve details of a specific build (bcl)
-- Add compose status routes /compose/finished and /compose/failed (bcl)
-
-* Thu Feb 01 2018 Brian C. Lane <bcl@redhat.com> 19.7.7-1
-- Add /compose/queue to get the status of the build queue (bcl)
-- Add reading a recipe directly from a file (bcl)
-- Include the recipe in the results of a build (bcl)
-- Move creating a frozen recipe into recipes.py (bcl)
-- Add building an image, and the /compose route to start it (bcl)
-- Remove test configuration and read it from the build directory (bcl)
-- Add function to return full NEVRA of a dependency (bcl)
-- Change config and paths (bcl)
-- Add basic composer queue handling (bcl)
-- Change compress to use communicate instead of wait (bcl)
-
-* Mon Jan 15 2018 Brian C. Lane <bcl@redhat.com> 19.7.6-1
-- Add documentation for the API routes. (bcl)
-- Switch the API to use a Unix Domain Socket (bcl)
-- Add support for other branches to the routes (bcl)
-- Silence pocketlint bad-preconf-access warnings (atodorov)
-- Properly report coverage (atodorov)
-- Enable testing in Travis CI using Docker container (atodorov)
-- Fix depsolving empty recipes (martin)
-- Fix wrong function name in api/v0/recipes/freeze error messages (martin)
-- Fix project tests for non-Central time zones (martin)
-
-* Tue Nov 28 2017 Brian C. Lane <bcl@redhat.com> 19.7.5-1
-- Redirect yum's logging to yum.log (bcl)
-- Close the rpmdb after every API operation. (bcl)
-- Fix error string when there is a problem listing projects (bcl)
-- Add --releasever option to lorax-composer (bcl)
-
-* Wed Nov 22 2017 Brian C. Lane <bcl@redhat.com> 19.7.4-1
-- Fix wrong name for /etc/composer.conf (bcl) (bcl)
-
-* Wed Nov 22 2017 Brian C. Lane <bcl@redhat.com> 19.7.3-1
-- Add filtering and glob support to /modules/list route (bcl) (bcl)
-- Add /recipes/freeze route and tests. (bcl) (bcl)
-- Add /recipes/depsolve route and test (bcl) (bcl)
-- Add /projects and /modules API tests (bcl) (bcl)
-- Modify pylorax.api.config.configure so it can also be used for tests. (bcl)
-  (bcl)
-- Add tests for projects module functions (bcl) (bcl)
-- Move ComposerConfig into pylorax.api.config module (bcl) (bcl)
-- Catch ProjectsError and return an error 400 with a message. (bcl) (bcl)
-- Catch Yum errors in the projects functions (bcl) (bcl)
-- Add /modules/list and /modules/info routes (bcl) (bcl)
-- Add modules functions and update function documentation (bcl) (bcl)
-- Add /projects/depsolve route (bcl) (bcl)
-- Add /projects/info route (bcl) (bcl)
-- Add /projects/list route (bcl) (bcl)
-- Add /api/v0/test route (bcl) (bcl)
-- Add support for yum to lorax-composer (bcl) (bcl)
-- Add lorax requires to lorax-composer package. (bcl) (bcl)
-- Add /api/docs to serve up the documentation (bcl) (bcl)
-- Add basic documentation generation with Sphinx (bcl) (bcl)
-
-* Thu Nov 16 2017 Brian C. Lane <bcl@redhat.com> 19.7.2-1
-- Add limit/offset to recipes/list (bcl)
-- Add error message for offset/limit type errors (bcl)
-- Add error logging to api/v0.py (bcl)
-- Fix server request logging. (bcl)
-- Update lorax.spec for lorax-composer (bcl)
-- setup.py: Add pylorax.api module to install, and systemd service (bcl)
-- lorax-composer: Drop unneeded parameters and create missing directories (bcl)
-- Add /recipes/diff route and tests (bcl)
-- Add recipe_diff function and helpers. (bcl)
-- Add POST /recipes/tag/ route and tests (bcl)
-- Add tag_recipe_commit helper function (bcl)
-- Add POST /recipes/undo route and tests (bcl)
-- Change read_recipe_commit to use the recipe name (bcl)
-- Add revert_recipe function (bcl)
-- Add DELETE /recipes/delete/<recipe_name> route and tests (bcl)
-- Add delete_recipe helper function and test (bcl)
-- Add DELETE /recipes/workspace/<recipe_name> route and tests (bcl)
-- Add tests for POST /recipes/workspace for JSON and TOML (bcl)
-- Add POST /recipes/workspace route (bcl)
-- Add /recipes/new route and tests (bcl)
-- Split recipe_from_toml into recipe_from_dict helper. (bcl)
-- Fix the recipe version bumping (bcl)
-- Add /recipes/changes route with tests. (bcl)
-- Add /recipes/info route and tests (bcl)
-- Add workspace module and tests (bcl)
-- Add /recipes/list route and tests (bcl)
-- Move the git repo into a subdirectory (bcl)
-- Add basic API Server testing framework (bcl)
-- Fix list_commits sort order. (bcl)
-- Add tests for the pylorax.api.recipes module (bcl)
-- Add pylorax.api.recipes code for handling the Recipe's Git repository 
-- Fix mocking the built-in open function for Python2 (atodorov)
-- Don't do wildcard imports (atodorov)
-- Misc pylint fixes that are reported usually once (atodorov)
-- Fix dangerous-default value warnings (atodorov)
-- Don't redefine variables from outer scope (atodorov)
-- Define all class attributes inside __init__ (atodorov)
-- Fix logging formatting (atodorov)
-- Don't redefine builtins (atodorov)
-- Silence relative import warnings (atodorov)
-- pylint fix: unused variable warning (atodorov)
-- pylint fix: remove unused imports (atodorov)
-- Add make test target and update .gitignore (atodorov)
-- Add first unit test so we can start collecting coverage (atodorov)
-- lorax-composer initial commit (bcl)
-- Add pylint support to Makefile (bcl)
-- livemedia-creator: Move core functions into pylorax modules (bcl)
-
-* Fri Sep 29 2017 Brian C. Lane <bcl@redhat.com> 19.7.1-1
-- Build 19.7.1 for COPR
+* Fri Jun 15 2018 Brian C. Lane <bcl@redhat.com> 19.7.16-2
+- Rebase of lorax-composer branch onto 19.6.105-1
+- See https://github.com/weldr/lorax/tree/lorax-composer for individual commits
+  for 19.7.1-1 thru 19.7.16-1
+  Resolves: rhbz#1547759
 
 * Mon Jun 11 2018 Brian C. Lane <bcl@redhat.com> 19.6.105-1
 - Retry losetup if loop_attach fails (bcl)
@@ -491,7 +250,7 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
   Resolves: rhbz#1341280
 - Fix loop_wait (bcl)
   Resolves: rhbz#1462150
-- Document kickstart restrictions on %include (bcl)
+- Document kickstart restrictions on %%include (bcl)
   Resolves: rhbz#1418500
 - Add support for --repo to read yum .repo files directly (bcl)
   Resolves: rhbz#1430479
@@ -1342,7 +1101,7 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 - Allow specifying buildarch on the command line (#771382) (mgracik)
 - lorax: Don't touch /etc/mtab in cleanup (bcl)
 - Update TODO and POLICY to reflect the current state of things (wwoods)
-- consider %ghost files part of the filelists in templates (wwoods)
+- consider %%ghost files part of the filelists in templates (wwoods)
 - lorax: Add option to exclude packages (bcl)
 - dracut needs kbd directories (#769932) (bcl)
 - better debug, handle relative output paths (bcl)
@@ -1361,7 +1120,7 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 - Changes needed for livecd creation (bcl)
 - dracut has moved to /usr/bin (bcl)
 
-* Mon Oct 21 2011 Will Woods <wwoods@redhat.com> 17.0-1
+* Fri Oct 21 2011 Will Woods <wwoods@redhat.com> 17.0-1
 - Merges the 'treebuilder' branch of lorax
 - images are split into two parts again (initrd.img, LiveOS/squashfs.img)
 - base memory use reduced to ~200M (was ~550M in F15, ~320MB in F16)
