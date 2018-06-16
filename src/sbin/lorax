@@ -182,6 +182,7 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
             os.mkdir(logdir)
 
     dnfbase = dnf.Base()
+    dnfbase.init_plugins()
     conf = dnfbase.conf
     conf.logdir = logdir
     conf.cachedir = cachedir
