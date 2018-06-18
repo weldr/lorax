@@ -37,7 +37,7 @@ compose start <blueprint> <type>    Start a compose using the selected blueprint
         log <uuid> [<size>kB]       Show the last 1kB of the compose log.
         cancel <uuid>               Cancel a running compose and delete any intermediate results.
         delete <uuid,...>           Delete the listed compose results.
-        info <uuid>                 Show detailed information on the compose.
+        details <uuid>              Show detailed information on the compose.
         metadata <uuid>             Download the metadata use to create the compose to <uuid>-metadata.tar
         logs <uuid>                 Download the compose logs to <uuid>-logs.tar
         results <uuid>              Download all of the compose results; metadata, logs, and image to <uuid>.tar
@@ -61,11 +61,11 @@ blueprints list                     List the names of the available blueprints.
 modules list                        List the available modules.
 projects list                       List the available projects.
          info <project,...>         Show details about the listed projects.
-         sources list               List the available sources
-         sources info <source,...>  Details about the source.
-         sources add <source.toml>  Add a package source to the server.
-         sources change <source.toml>  Change an existing source
-         sources delete <source>    Delete a package source.
+sources list                        List the available sources
+sources info <source,...>           Details about the source.
+sources add <source.toml>           Add a package source to the server.
+sources change <source.toml>        Change an existing source
+sources delete <source>             Delete a package source.
 """
 
 def get_parser():
