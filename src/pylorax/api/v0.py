@@ -820,7 +820,7 @@ POST `/api/v0/compose`
         ]
       }
 
-DELETE `/api/v0/blueprints/cancel/<uuid>`
+DELETE `/api/v0/compose/cancel/<uuid>`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Cancel the build, if it is not finished, and delete the results. It will return a
