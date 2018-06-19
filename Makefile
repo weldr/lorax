@@ -11,10 +11,10 @@ USER_SITE_PACKAGES ?= $(shell sudo $(PYTHON) -m site --user-site)
 
 default: all
 
-src/composer/version.py: lorax.spec
+src/composer/version.py:
 	echo "num = '$(VERSION)-$(RELEASE)'" > src/composer/version.py
 
-src/pylorax/version.py: lorax.spec
+src/pylorax/version.py:
 	echo "num = '$(VERSION)-$(RELEASE)'" > src/pylorax/version.py
 
 all: src/pylorax/version.py src/composer/version.py
