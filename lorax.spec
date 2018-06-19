@@ -2,7 +2,7 @@
 
 Name:           lorax
 Version:        19.7.16
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
@@ -78,44 +78,6 @@ It also includes livemedia-creator which is used to create bootable livemedia,
 including live isos and disk images. It can use libvirtd for the install, or
 Anaconda's image install feature.
 
-%package composer
-Summary: Lorax Image Composer API Server
-# For Sphinx documentation build
-BuildRequires: python-flask python-gobject libgit2-glib python2-pytoml python-semantic_version
-
-Requires: lorax = %{version}-%{release}
-Requires(pre): /usr/bin/getent
-Requires(pre): /usr/sbin/groupadd
-Requires(pre): /usr/sbin/useradd
-
-# From EPEL
-Requires: python2-pytoml
-Requires: python-semantic_version
-Requires: libgit2
-Requires: libgit2-glib
-# From Distribution
-Requires: python-flask
-Requires: python-gevent
-Requires: anaconda-tui
-Requires: qemu-img
-Requires: tar
-
-%{?systemd_requires}
-BuildRequires: systemd
-
-%description composer
-lorax-composer provides a REST API for building images using lorax.
-
-%package -n composer-cli
-Summary: A command line tool for use with the lorax-composer API server
-
-# From Distribution
-Requires: python-urllib3
-
-%description -n composer-cli
-A command line tool for use with the lorax-composer API server. Examine recipes,
-build images, etc. from the command line.
-
 %prep
 %setup -q
 
@@ -126,21 +88,15 @@ make docs
 rm -rf $RPM_BUILD_ROOT
 make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
-%pre composer
-getent group weldr >/dev/null 2>&1 || groupadd -r weldr >/dev/null 2>&1 || :
-getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin -c "User for lorax-composer" weldr >/dev/null 2>&1 || :
-
-%post composer
-%systemd_post lorax-composer.service
-%systemd_post lorax-composer.socket
-
-%preun composer
-%systemd_preun lorax-composer.service
-%systemd_preun lorax-composer.socket
-
-%postun composer
-%systemd_postun_with_restart lorax-composer.service
-%systemd_postun_with_restart lorax-composer.socket
+# Do Not Package lorax-composer or composer-cli files
+rm -rf $RPM_BUILD_ROOT/%{python_sitelib}/pylorax/api
+rm -rf $RPM_BUILD_ROOT/%{python_sitelib}/composer
+rm -rf $RPM_BUILD_ROOT/%{_datadir}/lorax/composer
+rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/lorax/composer.conf
+rm -f $RPM_BUILD_ROOT/%{_sbindir}/lorax-composer
+rm -f $RPM_BUILD_ROOT/%{_bindir}/composer-cli
+rm -f $RPM_BUILD_ROOT/%{_unitdir}/lorax-composer.*
+rm -f $RPM_BUILD_ROOT/%{_tmpfilesdir}/lorax-composer.conf
 
 %files
 %defattr(-,root,root,-)
@@ -148,7 +104,7 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %doc docs/*ks
 %doc docs/html
 %{python_sitelib}/pylorax
-%exclude %{python_sitelib}/pylorax/api/*
+%exclude %{python_sitelib}/pylorax/api
 %{python_sitelib}/*.egg-info
 %{_sbindir}/lorax
 %{_sbindir}/mkefiboot
@@ -159,19 +115,8 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %config(noreplace) %{_sysconfdir}/lorax/lorax.conf
 %dir %{_datadir}/lorax
 %{_datadir}/lorax/*
+%exclude %{_datadir}/lorax/composer
 %{_mandir}/man1/*.1*
-
-%files composer
-%config(noreplace) %{_sysconfdir}/lorax/composer.conf
-%{python_sitelib}/pylorax/api/*
-%{_sbindir}/lorax-composer
-%{_unitdir}/lorax-composer.service
-%{_unitdir}/lorax-composer.socket
-%{_tmpfilesdir}/lorax-composer.conf
-
-%files -n composer-cli
-%{_bindir}/composer-cli
-%{python_sitelib}/composer/*
 
 %changelog
 * Fri Jun 15 2018 Brian C. Lane <bcl@redhat.com> 19.7.16-2
