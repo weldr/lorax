@@ -56,14 +56,20 @@ copyright = u'2018, Red Hat, Inc.'      # pylint: disable=redefined-builtin
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 def read_version():
-    """ Read version from ../lorax.spec"""
+    """ Read version from ../lorax.spec or lorax-composer.spec"""
     import re
     version_re = re.compile(r"Version:\s+(.*)")
-    with open("../lorax.spec", "rt") as f:
-        for line in f:
-            m = version_re.match(line)
-            if m:
-                return m.group(1)
+    if os.path.exists("../lorax.spec"):
+        f = open("../lorax.spec", "rt")
+    elif os.path.exists("../lorax-composer.spec"):
+        f = open("../lorax-composer.spec", "rt")
+    else:
+        raise RuntimeError("Sphinx read_version() Cannot find lorax.spec or lorax-composer.spec")
+
+    for line in f:
+        m = version_re.match(line)
+        if m:
+            return m.group(1)
 
 #
 # The short X.Y version.
