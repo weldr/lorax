@@ -1,8 +1,8 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.7.16
-Release:        3%{?dist}
+Version:        19.7.17
+Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
@@ -119,6 +119,10 @@ rm -f $RPM_BUILD_ROOT/%{_tmpfilesdir}/lorax-composer.conf
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Jun 19 2018 Brian C. Lane <bcl@redhat.com> 19.7.17-1
+- Exclude lorax-composer and composer-cli code from the lorax build (bcl)
+  Resolves: rhbz#1547759
+
 * Fri Jun 15 2018 Brian C. Lane <bcl@redhat.com> 19.7.16-2
 - Fixup the lorax.spec after rebasing on 19.6.105-1 (bcl)
   Resolves: rhbz#1547759
