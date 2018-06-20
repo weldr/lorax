@@ -1,8 +1,8 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.16
-Release:        2%{?dist}
+Version:        19.7.17
+Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
 Group:          Applications/System
@@ -111,5 +111,8 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python_sitelib}/composer/*
 
 %changelog
+* Wed Jun 20 2018 Brian C. Lane <bcl@redhat.com> 19.7.17-1
+- new lorax-composer package built with tito
+
 * Tue Jun 19 2018 Brian C. Lane <bcl@redhat.com> - 19.7.16-2
 - New lorax-composer only package
