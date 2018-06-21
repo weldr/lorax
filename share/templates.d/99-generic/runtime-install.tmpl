@@ -95,7 +95,8 @@ installpkg device-mapper-persistent-data
 installpkg xfsdump
 
 ## extra storage packages
-installpkg udisks2 udisks2-iscsi
+# hostname is needed for iscsi to work, see RHBZ#1593917
+installpkg udisks2 udisks2-iscsi hostname
 
 ## extra libblockdev plugins
 installpkg libblockdev-lvm-dbus
