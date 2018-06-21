@@ -3,11 +3,11 @@ description = "An example GlusterFS server with samba"
 
 [[modules]]
 name = "glusterfs"
-version = "4.0.*"
+version = "4.1.*"
 
 [[modules]]
 name = "glusterfs-cli"
-version = "4.0.*"
+version = "4.1.*"
 
 [[packages]]
 name = "samba"

@@ -130,8 +130,8 @@ class ServerTestCase(unittest.TestCase):
                                   {"changed":False, "name":"http-server"}],
                        "errors":[],
                        "blueprints":[{"description": "An example GlusterFS server with samba",
-                                   "modules":[{"name":"glusterfs", "version":"4.0.*"},
-                                              {"name":"glusterfs-cli", "version":"4.0.*"}],
+                                   "modules":[{"name":"glusterfs", "version":"4.1.*"},
+                                              {"name":"glusterfs-cli", "version":"4.1.*"}],
                                    "name":"glusterfs",
                                    "packages":[{"name":"samba", "version":"4.8.*"}],
                                    "version": "0.0.1"},
@@ -187,8 +187,8 @@ class ServerTestCase(unittest.TestCase):
         test_blueprint = {"description": "An example GlusterFS server with samba",
                        "name":"glusterfs",
                        "version": "0.2.0",
-                       "modules":[{"name":"glusterfs", "version":"4.0.*"},
-                                  {"name":"glusterfs-cli", "version":"4.0.*"}],
+                       "modules":[{"name":"glusterfs", "version":"4.1.*"},
+                                  {"name":"glusterfs-cli", "version":"4.1.*"}],
                        "packages":[{"name":"samba", "version":"4.8.*"},
                                    {"name":"tmux", "version":"2.7"}]}
 
@@ -231,8 +231,8 @@ class ServerTestCase(unittest.TestCase):
         test_blueprint = {"description": "An example GlusterFS server with samba, ws version",
                        "name":"glusterfs",
                        "version": "0.3.0",
-                       "modules":[{"name":"glusterfs", "version":"4.0.*"},
-                                  {"name":"glusterfs-cli", "version":"4.0.*"}],
+                       "modules":[{"name":"glusterfs", "version":"4.1.*"},
+                                  {"name":"glusterfs-cli", "version":"4.1.*"}],
                        "packages":[{"name":"samba", "version":"4.8.*"},
                                    {"name":"tmux", "version":"2.7"}]}
 
@@ -257,8 +257,8 @@ class ServerTestCase(unittest.TestCase):
         test_blueprint = {"description": "An example GlusterFS server with samba, ws version",
                        "name":"glusterfs",
                        "version": "0.4.0",
-                       "modules":[{"name":"glusterfs", "version":"4.0.*"},
-                                  {"name":"glusterfs-cli", "version":"4.0.*"}],
+                       "modules":[{"name":"glusterfs", "version":"4.1.*"},
+                                  {"name":"glusterfs-cli", "version":"4.1.*"}],
                        "packages":[{"name":"samba", "version":"4.8.*"},
                                    {"name":"tmux", "version":"2.7"}]}
 
@@ -388,8 +388,8 @@ class ServerTestCase(unittest.TestCase):
         test_blueprint = {"description": "An example GlusterFS server with samba, ws version",
                        "name":"glusterfs",
                        "version": "0.3.0",
-                       "modules":[{"name":"glusterfs", "version":"4.0.*"},
-                                  {"name":"glusterfs-cli", "version":"4.0.*"}],
+                       "modules":[{"name":"glusterfs", "version":"4.1.*"},
+                                  {"name":"glusterfs-cli", "version":"4.1.*"}],
                        "packages":[{"name":"samba", "version":"4.8.*"},
                                    {"name":"tmux", "version":"2.7"}]}
 
@@ -654,8 +654,8 @@ class ServerTestCase(unittest.TestCase):
         test_blueprint = {"description": "An example GlusterFS server with samba",
                        "name":"glusterfs",
                        "version": "0.2.0",
-                       "modules":[{"name":"glusterfs", "version":"4.0.*"},
-                                  {"name":"glusterfs-cli", "version":"4.0.*"}],
+                       "modules":[{"name":"glusterfs", "version":"4.1.*"},
+                                  {"name":"glusterfs-cli", "version":"4.1.*"}],
                        "packages":[{"name":"samba", "version":"4.8.*"},
                                    {"name":"tmux", "version":"2.7"}]}
 
