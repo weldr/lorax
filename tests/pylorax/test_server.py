@@ -473,7 +473,7 @@ class ServerTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         projects = data.get("projects")
-        self.assertEqual(len(projects), 1)
+        self.assertEqual(len(projects) > 0, True)
         self.assertEqual(projects[0]["name"], "bash")
         self.assertEqual(projects[0]["builds"][0]["source"]["license"], "GPLv3+")
 
@@ -645,7 +645,7 @@ class ServerTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         modules = data.get("modules")
-        self.assertEqual(len(modules), 1)
+        self.assertEqual(len(modules) > 0, True)
         self.assertEqual(modules[0]["name"], "bash")
         self.assertEqual(modules[0]["dependencies"][0]["name"], "basesystem")
 
