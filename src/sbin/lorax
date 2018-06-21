@@ -98,7 +98,8 @@ def main():
     dnfbase = get_dnf_base_object(installtree, opts.source, opts.mirrorlist, opts.repos,
                                   opts.enablerepos, opts.disablerepos,
                                   dnftempdir, opts.proxy, opts.version, opts.cachedir,
-                                  os.path.dirname(opts.logfile), not opts.noverifyssl)
+                                  os.path.dirname(opts.logfile), not opts.noverifyssl,
+                                  opts.dnfplugins)
 
     if dnfbase is None:
         print("error: unable to create the dnf base object", file=sys.stderr)
@@ -146,7 +147,7 @@ def main():
 def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
                         enablerepos=None, disablerepos=None,
                         tempdir="/var/tmp", proxy=None, releasever="29",
-                        cachedir=None, logdir=None, sslverify=True):
+                        cachedir=None, logdir=None, sslverify=True, dnfplugins=None):
     """ Create a dnf Base object and setup the repositories and installroot
 
         :param string installroot: Full path to the installroot
@@ -193,6 +194,15 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
             os.mkdir(logdir)
 
     dnfbase = dnf.Base()
+    # Enable DNF pluings
+    # NOTE: These come from the HOST system's environment
+    if dnfplugins:
+        if dnfplugins[0] == "*":
+            # Enable them all
+            dnfbase.init_plugins()
+        else:
+            # Only enable the listed plugins
+            dnfbase.init_plugins(disabled_glob=["*"], enable_plugins=dnfplugins)
     conf = dnfbase.conf
     conf.logdir = logdir
     conf.cachedir = cachedir

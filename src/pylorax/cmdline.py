@@ -107,6 +107,8 @@ def lorax_parser(dracut_default=""):
                           help="Size of root filesystem in GiB. Defaults to 2.")
     optional.add_argument("--noverifyssl", action="store_true", default=False,
                           help="Do not verify SSL certificates")
+    optional.add_argument("--dnfplugin", action="append", default=[], dest="dnfplugins",
+                          help="Enable a DNF plugin by name/glob, or * to enable all of them.")
 
     # dracut arguments
     dracut_group = parser.add_argument_group("dracut arguments")
