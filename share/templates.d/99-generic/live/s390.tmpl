@@ -34,6 +34,7 @@ createaddrsize ${INITRD_ADDRESS} ${outroot}/${BOOTDIR}/initrd.img ${outroot}/${B
 treeinfo images-${basearch} initrd.addrsize ${BOOTDIR}/initrd.addrsize
 treeinfo images-${basearch} generic.prm ${BOOTDIR}/generic.prm
 treeinfo images-${basearch} generic.ins generic.ins
+treeinfo images-${basearch} redhat.exec ${BOOTDIR}/redhat.exec
 
 # Create optional product.img and updates.img
 <% filegraft=""; images=["product", "updates"] %>
