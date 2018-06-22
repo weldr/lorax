@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        29.7
+Version:        29.8
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -219,6 +219,18 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python3_sitelib}/composer/*
 
 %changelog
+* Fri Jun 22 2018 Brian C. Lane <bcl@redhat.com> 29.8-1
+- Fixing bug where test did not try to import pylorax.version (sophiafondell)
+- Add the ability to enable DNF plugins for lorax (bcl@redhat.com)
+- Allow more than 1 bash build in tests (bcl@redhat.com)
+- Update tests for glusterfs 4.1.* on rawhide (bcl@redhat.com)
+- Install 'hostname' in runtime-install (for iSCSI) (awilliam@redhat.com)
+- Add redhat.exec to s390 .treeinfo (bcl@redhat.com)
+- It's /compose/cancel, not /blueprints/cancel. (clumens@redhat.com)
+- Retry losetup if loop_attach fails (bcl@redhat.com)
+- Add reqpart to example kickstart files (bcl@redhat.com)
+- Increase default ram used with lmc and virt to 2048 (bcl@redhat.com)
+
 * Thu Jun 07 2018 Brian C. Lane <bcl@redhat.com> 29.7-1
 - New lorax documentation - 29.7 (bcl@redhat.com)
 - Add --dracut-arg support to lorax (bcl@redhat.com)
