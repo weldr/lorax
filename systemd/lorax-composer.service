@@ -6,7 +6,9 @@ Wants=network-online.target
 [Service]
 User=root
 Type=simple
-ExecStart=/usr/sbin/lorax-composer /var/lib/lorax/composer/recipes/
+ExecStartPre=/usr/bin/mkdir --mode=750 --parents /var/lib/lorax/composer/recipes /var/lib/lorax/composer/repos.d
+ExecStartPre=/usr/bin/chown root:weldr /var/lib/lorax/composer/recipes /var/lib/lorax/composer/repos.d
+ExecStart=/usr/sbin/lorax-composer --user=weldr /var/lib/lorax/composer/recipes/
 
 [Install]
 WantedBy=multi-user.target
