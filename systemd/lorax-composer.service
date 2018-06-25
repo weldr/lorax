@@ -6,6 +6,7 @@ Wants=network-online.target
 [Service]
 User=root
 Type=simple
+ExecStartPre=/usr/bin/systemd-tmpfiles --create /usr/lib/tmpfiles.d/lorax-composer.conf
 ExecStart=/usr/sbin/lorax-composer /var/lib/lorax/composer/recipes/
 
 [Install]
