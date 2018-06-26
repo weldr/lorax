@@ -23,6 +23,7 @@
 import logging
 logger = logging.getLogger("pylorax.dnfhelper")
 import dnf
+import dnf.transaction
 import collections
 import time
 import pylorax.output as output
@@ -93,7 +94,7 @@ class LoraxRpmCallback(dnf.callback.TransactionProgress):
         self._last_ts = None
 
     def progress(self, package, action, ti_done, ti_total, ts_done, ts_total):
-        if action == self.PKG_INSTALL:
+        if action == dnf.transaction.PKG_INSTALL:
             # do not report same package twice
             if self._last_ts == ts_done:
                 return
@@ -101,7 +102,7 @@ class LoraxRpmCallback(dnf.callback.TransactionProgress):
 
             msg = '(%d/%d) %s' % (ts_done, ts_total, package)
             logger.info(msg)
-        elif action == self.TRANS_POST:
+        elif action == dnf.transaction.TRANS_POST:
             msg = "Performing post-installation setup tasks"
             logger.info(msg)
 
