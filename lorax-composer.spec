@@ -62,7 +62,9 @@ make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 # Install example blueprints from the test suite.
 # This path MUST match the lorax-composer.service blueprint path.
 mkdir -p $RPM_BUILD_ROOT/var/lib/lorax/composer/blueprints/
-cp ./tests/pylorax/blueprints/*toml $RPM_BUILD_ROOT/var/lib/lorax/composer/blueprints/
+for bp in http-server.toml glusterfs.toml development.toml atlas.toml; do
+    cp ./tests/pylorax/blueprints/$bp $RPM_BUILD_ROOT/var/lib/lorax/composer/blueprints/
+done
 
 # Do Not Package the lorax files
 rm -f $RPM_BUILD_ROOT/%{python_sitelib}/lorax-*.egg-info
