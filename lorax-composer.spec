@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.17
+Version:        19.7.18
 Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
@@ -121,6 +121,11 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python_sitelib}/composer/*
 
 %changelog
+* Wed Jun 27 2018 Brian C. Lane <bcl@redhat.com> 19.7.18-1
+- Only include some of the test blueprints (bcl)
+- Include example blueprints in the rpm (bcl)
+- Make sure /run/weldr has correct ownership and permissions (bcl)
+
 * Wed Jun 20 2018 Brian C. Lane <bcl@redhat.com> 19.7.17-1
 - new lorax-composer package built with tito
 
