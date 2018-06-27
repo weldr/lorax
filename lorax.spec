@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        29.8
+Version:        29.9
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -227,6 +227,11 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python3_sitelib}/composer/*
 
 %changelog
+* Wed Jun 27 2018 Brian C. Lane <bcl@redhat.com> 29.9-1
+- DNF 3: progress callback constants moved to dnf.transaction (awilliam@redhat.com)
+- Include example blueprints in the rpm (bcl@redhat.com)
+- Make sure /run/weldr has correct ownership and permissions (bcl@redhat.com)
+
 * Fri Jun 22 2018 Brian C. Lane <bcl@redhat.com> 29.8-1
 - Fixing bug where test did not try to import pylorax.version (sophiafondell)
 - Add the ability to enable DNF plugins for lorax (bcl@redhat.com)
