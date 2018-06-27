@@ -163,6 +163,11 @@ build images, etc. from the command line.
 rm -rf $RPM_BUILD_ROOT
 make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
 
+# Install example blueprints from the test suite.
+# This path MUST match the lorax-composer.service blueprint path.
+mkdir -p $RPM_BUILD_ROOT/var/lib/lorax/composer/blueprints/
+cp ./tests/pylorax/blueprints/*toml $RPM_BUILD_ROOT/var/lib/lorax/composer/blueprints/
+
 %pre composer
 getent group weldr >/dev/null 2>&1 || groupadd -r weldr >/dev/null 2>&1 || :
 getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin -c "User for lorax-composer" weldr >/dev/null 2>&1 || :
@@ -213,6 +218,9 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %dir %{_datadir}/lorax/composer
 %{_datadir}/lorax/composer/*
 %{_tmpfilesdir}/lorax-composer.conf
+%dir %attr(0771, root, weldr) %{_sharedstatedir}/lorax/composer/
+%dir %attr(0771, root, weldr) %{_sharedstatedir}/lorax/composer/blueprints/
+%attr(0771, weldr, weldr) %{_sharedstatedir}/lorax/composer/blueprints/*
 
 %files -n composer-cli
 %{_bindir}/composer-cli
