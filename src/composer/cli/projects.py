@@ -21,6 +21,7 @@ import json
 import textwrap
 
 from composer import http_client as client
+from composer.cli.help import projects_help
 
 def projects_cmd(opts):
     """Process projects commands
@@ -34,7 +35,10 @@ def projects_cmd(opts):
         "list":      projects_list,
         "info":      projects_info,
         }
-    if opts.args[1] not in cmd_map:
+    if opts.args[1] == "help" or opts.args[1] == "--help":
+        print(projects_help)
+        return 0
+    elif opts.args[1] not in cmd_map:
         log.error("Unknown projects command: %s", opts.args[1])
         return 1
 

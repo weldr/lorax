@@ -21,6 +21,7 @@ import sys
 import json
 
 from composer import http_client as client
+from composer.cli.help import compose_help
 from composer.cli.utilities import argify, handle_api_result, packageNEVRA
 
 def compose_cmd(opts):
@@ -46,7 +47,10 @@ def compose_cmd(opts):
         "logs":     compose_logs,
         "image":    compose_image,
         }
-    if opts.args[1] not in cmd_map:
+    if opts.args == "help" or opts.args == "--help":
+        print(compose_help)
+        return 0
+    elif opts.args[1] not in cmd_map:
         log.error("Unknown compose command: %s", opts.args[1])
         return 1
 
