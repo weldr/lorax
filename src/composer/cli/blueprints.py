@@ -21,6 +21,7 @@ import os
 import json
 
 from composer import http_client as client
+from composer.cli.help import blueprints_help
 from composer.cli.utilities import argify, frozen_toml_filename, toml_filename, handle_api_result
 from composer.cli.utilities import packageNEVRA
 
@@ -48,7 +49,10 @@ def blueprints_cmd(opts):
         "undo":      blueprints_undo,
         "workspace": blueprints_workspace
         }
-    if opts.args[1] not in cmd_map:
+    if opts.args[1] == "help" or opts.args[1] == "--help":
+        print(blueprints_help)
+        return 0
+    elif opts.args[1] not in cmd_map:
         log.error("Unknown blueprints command: %s", opts.args[1])
         return 1
 
