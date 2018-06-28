@@ -25,48 +25,11 @@ import sys
 import argparse
 
 from composer import vernum
+from composer.cli.help import epilog
 from composer.cli import main
 
 VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
 
-# Documentation for the commands
-epilog = """
-compose start <blueprint> <type>    Start a compose using the selected blueprint and output type.
-        types                       List the supported output types.
-        status                      List the status of all running and finished composes.
-        log <uuid> [<size>kB]       Show the last 1kB of the compose log.
-        cancel <uuid>               Cancel a running compose and delete any intermediate results.
-        delete <uuid,...>           Delete the listed compose results.
-        details <uuid>              Show detailed information on the compose.
-        metadata <uuid>             Download the metadata use to create the compose to <uuid>-metadata.tar
-        logs <uuid>                 Download the compose logs to <uuid>-logs.tar
-        results <uuid>              Download all of the compose results; metadata, logs, and image to <uuid>.tar
-        image <uuid>                Download the output image from the compose. Filename depends on the type.
-blueprints list                     List the names of the available blueprints.
-        show <blueprint,...>        Display the blueprint in TOML format.
-        changes <blueprint,...>     Display the changes for each blueprint.
-        diff <blueprint-name>       Display the differences between 2 versions of a blueprint.
-             <from-commit>          Commit hash or NEWEST
-             <to-commit>            Commit hash, NEWEST, or WORKSPACE
-        save <blueprint,...>        Save the blueprint to a file, <blueprint-name>.toml
-        delete <blueprint>          Delete a blueprint from the server
-        depsolve <blueprint,...>    Display the packages needed to install the blueprint.
-        push <blueprint>            Push a blueprint TOML file to the server.
-        freeze <blueprint,...>      Display the frozen blueprint's modules and packages.
-        freeze show <blueprint,...> Display the frozen blueprint in TOML format.
-        freeze save <blueprint,...> Save the frozen blueprint to a file, <blueprint-name>.frozen.toml.
-        tag <blueprint>             Tag the most recent blueprint commit as a release.
-        undo <blueprint> <commit>   Undo changes to a blueprint by reverting to the selected commit.
-        workspace <blueprint>       Push the blueprint TOML to the temporary workspace storage.
-modules list                        List the available modules.
-projects list                       List the available projects.
-         info <project,...>         Show details about the listed projects.
-sources list                        List the available sources
-sources info <source,...>           Details about the source.
-sources add <source.toml>           Add a package source to the server.
-sources change <source.toml>        Change an existing source
-sources delete <source>             Delete a package source.
-"""
 
 def get_parser():
     """ Return the ArgumentParser for composer-cli"""
@@ -113,7 +76,8 @@ def setup_logging(logfile):
 
 if __name__ == '__main__':
     # parse the arguments
-    opts = get_parser().parse_args()
+    arg_parser = get_parser()
+    opts = arg_parser.parse_args()
 
     if opts.showver:
         print(VERSION)
@@ -124,6 +88,16 @@ if __name__ == '__main__':
         os.makedirs(logpath)
     setup_logging(opts.logfile)
     log.debug("opts=%s", opts)
+
+    if len(opts.args) == 0:
+        log.error("Missing command")
+        sys.exit(1)
+    elif opts.args[0] == "help":
+        arg_parser.print_help()
+        sys.exit(0)
+    elif len(opts.args) == 1:
+        log.error("Missing %s sub-command", opts.args[0])
+        sys.exit(1)
 
     errors = []
 
