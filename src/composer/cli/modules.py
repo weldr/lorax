@@ -20,6 +20,7 @@ log = logging.getLogger("composer-cli")
 import json
 
 from composer import http_client as client
+from composer.cli.help import modules_help
 
 def modules_cmd(opts):
     """Process modules commands
@@ -29,7 +30,10 @@ def modules_cmd(opts):
     :returns: Value to return from sys.exit()
     :rtype: int
     """
-    if opts.args[1] != "list":
+    if opts.args[1] == "help" or opts.args[1] == "--help":
+        print(modules_help)
+        return 0
+    elif opts.args[1] != "list":
         log.error("Unknown modules command: %s", opts.args[1])
         return 1
 

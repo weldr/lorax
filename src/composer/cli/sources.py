@@ -21,6 +21,7 @@ import os
 import json
 
 from composer import http_client as client
+from composer.cli.help import sources_help
 from composer.cli.utilities import argify, handle_api_result
 
 def sources_cmd(opts):
@@ -38,7 +39,10 @@ def sources_cmd(opts):
         "change":   sources_add,
         "delete":   sources_delete,
         }
-    if opts.args[1] not in cmd_map:
+    if opts.args[1] == "help" or opts.args[1] == "--help":
+        print(sources_help)
+        return 0
+    elif opts.args[1] not in cmd_map:
         log.error("Unknown sources command: %s", opts.args[1])
         return 1
 
