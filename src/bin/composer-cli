@@ -47,7 +47,8 @@ def setup_logging(logfile):
 
 if __name__ == '__main__':
     # parse the arguments
-    opts = composer_cli_parser().parse_args()
+    arg_parser = composer_cli_parser()
+    opts = arg_parser.parse_args()
 
     if opts.showver:
         print(VERSION)
@@ -58,6 +59,16 @@ if __name__ == '__main__':
         os.makedirs(logpath)
     setup_logging(opts.logfile)
     log.debug("opts=%s", opts)
+
+    if len(opts.args) == 0:
+        log.error("Missing command")
+        sys.exit(1)
+    elif opts.args[0] == "help":
+        arg_parser.print_help()
+        sys.exit(0)
+    elif len(opts.args) == 1:
+        log.error("Missing %s sub-command", opts.args[0])
+        sys.exit(1)
 
     errors = []
 
