@@ -40,14 +40,11 @@ def main(opts):
     :param opts: Cmdline arguments
     :type opts: argparse.Namespace
     """
-    if len(opts.args) == 0:
-        log.error("Missing command")
-        return 1
-    elif opts.args[0] not in command_map:
+
+    # Making sure opts.args is not empty (thus, has a command and subcommand)
+    # is already handled in src/bin/composer-cli.
+    if opts.args[0] not in command_map:
         log.error("Unknown command %s", opts.args[0])
-        return 1
-    if len(opts.args) == 1:
-        log.error("Missing %s sub-command", opts.args[0])
         return 1
     else:
         try:
