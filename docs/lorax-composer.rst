@@ -120,7 +120,9 @@ when it is written to disk. It should be short and descriptive.
 ``version`` is a `semver compatible <https://semver.org/>`_ version number. If
 a new blueprint is uploaded with the same ``version`` the server will
 automatically bump the PATCH level of the ``version``. If the ``version``
-doesn't match it will be used as is. eg. Uploading a blueprint with ``version`` set to ``0.0.1`` when the existing blueprint ``version`` is ``0.0.1`` will result in the new blueprint being stored as ``version 0.0.1``.
+doesn't match it will be used as is. eg. Uploading a blueprint with ``version``
+set to ``0.1.0`` when the existing blueprint ``version`` is ``0.0.1`` will
+result in the new blueprint being stored as ``version 0.1.0``.
 
 [[packages]] and [[modules]]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
