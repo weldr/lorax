@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pylorax &mdash; Lorax 19.7.15 documentation</title>
+    <title>pylorax &mdash; Lorax 19.7.18 documentation</title>
     
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '19.7.15',
+        VERSION:     '19.7.18',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.15 documentation" href="../index.html" />
+    <link rel="top" title="Lorax 19.7.18 documentation" href="../index.html" />
     <link rel="up" title="Module code" href="index.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">Lorax 19.7.15 documentation</a> &raquo;</li>
+        <li><a href="../index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
           <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -107,6 +107,8 @@
     <span class="n">vernum</span> <span class="o">=</span> <span class="s">&quot;devel&quot;</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="n">vernum</span> <span class="o">=</span> <span class="n">pylorax</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">num</span>
+
+<span class="n">DRACUT_DEFAULT</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;--xz&quot;</span><span class="p">,</span> <span class="s">&quot;--install&quot;</span><span class="p">,</span> <span class="s">&quot;/.buildstamp&quot;</span><span class="p">,</span> <span class="s">&quot;--no-early-microcode&quot;</span><span class="p">,</span> <span class="s">&quot;--add&quot;</span><span class="p">,</span> <span class="s">&quot;fips&quot;</span><span class="p">]</span>
 
 <span class="c"># List of drivers to remove on ppc64 arch to keep initrd &lt; 32MiB</span>
 <span class="n">REMOVE_PPC64_DRIVERS</span> <span class="o">=</span> <span class="s">&quot;floppy scsi_debug nouveau radeon cirrus mgag200&quot;</span>
@@ -215,7 +217,8 @@
             <span class="n">add_template_vars</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
             <span class="n">add_arch_templates</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
             <span class="n">add_arch_template_vars</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-            <span class="n">template_tempdir</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+            <span class="n">template_tempdir</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+            <span class="n">user_dracut_args</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
 
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_configured</span>
 
@@ -369,7 +372,13 @@
                                   <span class="n">workdir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">workdir</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;rebuilding initramfs images&quot;</span><span class="p">)</span>
-        <span class="n">dracut_args</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;--xz&quot;</span><span class="p">,</span> <span class="s">&quot;--install&quot;</span><span class="p">,</span> <span class="s">&quot;/.buildstamp&quot;</span><span class="p">,</span> <span class="s">&quot;--no-early-microcode&quot;</span><span class="p">,</span> <span class="s">&quot;--add&quot;</span><span class="p">,</span> <span class="s">&quot;fips&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">user_dracut_args</span><span class="p">:</span>
+            <span class="n">dracut_args</span> <span class="o">=</span> <span class="n">DRACUT_DEFAULT</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dracut_args</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">user_dracut_args</span><span class="p">:</span>
+                <span class="n">dracut_args</span> <span class="o">+=</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
         <span class="n">anaconda_args</span> <span class="o">=</span> <span class="n">dracut_args</span> <span class="o">+</span> <span class="p">[</span><span class="s">&quot;--add&quot;</span><span class="p">,</span> <span class="s">&quot;anaconda pollcdrom&quot;</span><span class="p">]</span>
 
         <span class="c"># ppc64 cannot boot an initrd &gt; 32MiB so remove some drivers</span>
@@ -380,6 +389,8 @@
             <span class="c"># upgrade.img</span>
             <span class="n">anaconda_args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s">&quot;--omit&quot;</span><span class="p">,</span> <span class="n">REMOVE_PPC64_MODULES</span><span class="p">])</span>
 
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;dracut args = </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">dracut_args</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;anaconda args = </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">anaconda_args</span><span class="p">)</span>
         <span class="n">treebuilder</span><span class="o">.</span><span class="n">rebuild_initrds</span><span class="p">(</span><span class="n">add_args</span><span class="o">=</span><span class="n">anaconda_args</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">doupgrade</span><span class="p">:</span>
@@ -457,7 +468,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">Lorax 19.7.15 documentation</a> &raquo;</li>
+        <li><a href="../index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
           <li><a href="index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

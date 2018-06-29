@@ -15,6 +15,7 @@ Contents:
    lorax
    livemedia-creator
    lorax-composer
+   composer-cli
    product-images
    modules
 

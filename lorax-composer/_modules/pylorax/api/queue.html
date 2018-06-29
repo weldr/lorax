@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pylorax.api.queue &mdash; Lorax 19.7.15 documentation</title>
+    <title>pylorax.api.queue &mdash; Lorax 19.7.18 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '19.7.15',
+        VERSION:     '19.7.18',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.15 documentation" href="../../../index.html" />
+    <link rel="top" title="Lorax 19.7.18 documentation" href="../../../index.html" />
     <link rel="up" title="pylorax.api" href="../api.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.15 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../../pylorax.html" >pylorax</a> &raquo;</li>
           <li><a href="../api.html" accesskey="U">pylorax.api</a> &raquo;</li> 
@@ -142,7 +142,7 @@
         <span class="c"># Pick the oldest and move it into ./run/</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">uuids</span><span class="p">:</span>
             <span class="c"># No composes left to process, sleep for a bit</span>
-            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">src</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">composer_dir</span><span class="p">,</span> <span class="s">&quot;queue/new&quot;</span><span class="p">,</span> <span class="n">uuids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
             <span class="n">dst</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">composer_dir</span><span class="p">,</span> <span class="s">&quot;queue/run&quot;</span><span class="p">,</span> <span class="n">uuids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -245,7 +245,7 @@
         <span class="n">test_path</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="s">&quot;TEST&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">test_path</span><span class="p">):</span>
             <span class="c"># Pretend to run the compose</span>
-            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">test_mode</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">test_path</span><span class="p">,</span> <span class="s">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
@@ -696,7 +696,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.15 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../../pylorax.html" >pylorax</a> &raquo;</li>
           <li><a href="../api.html" >pylorax.api</a> &raquo;</li> 

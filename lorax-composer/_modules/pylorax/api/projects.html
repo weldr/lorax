@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pylorax.api.projects &mdash; Lorax 19.7.15 documentation</title>
+    <title>pylorax.api.projects &mdash; Lorax 19.7.18 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '19.7.15',
+        VERSION:     '19.7.18',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.15 documentation" href="../../../index.html" />
+    <link rel="top" title="Lorax 19.7.18 documentation" href="../../../index.html" />
     <link rel="up" title="pylorax.api" href="../api.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.15 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../../pylorax.html" >pylorax</a> &raquo;</li>
           <li><a href="../api.html" accesskey="U">pylorax.api</a> &raquo;</li> 
@@ -70,6 +70,9 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&quot;lorax-composer&quot;</span><span class="p">)</span>
 
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">ConfigParser</span> <span class="kn">import</span> <span class="n">ConfigParser</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">from</span> <span class="nn">yum.Errors</span> <span class="kn">import</span> <span class="n">YumBaseError</span>
@@ -239,28 +242,31 @@
     <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">yaps_to_project_info</span><span class="p">,</span> <span class="n">ybl</span><span class="o">.</span><span class="n">available</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
 
 </div>
-<div class="viewcode-block" id="projects_depsolve"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.projects_depsolve">[docs]</a><span class="k">def</span> <span class="nf">projects_depsolve</span><span class="p">(</span><span class="n">yb</span><span class="p">,</span> <span class="n">project_names</span><span class="p">):</span>
+<div class="viewcode-block" id="projects_depsolve"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.projects_depsolve">[docs]</a><span class="k">def</span> <span class="nf">projects_depsolve</span><span class="p">(</span><span class="n">yb</span><span class="p">,</span> <span class="n">projects</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return the dependencies for a list of projects</span>
 
 <span class="sd">    :param yb: yum base object</span>
 <span class="sd">    :type yb: YumBase</span>
-<span class="sd">    :param project_names: The projects to find the dependencies for</span>
-<span class="sd">    :type project_names: List of Strings</span>
+<span class="sd">    :param projects: The projects and version globs to find the dependencies for</span>
+<span class="sd">    :type projects: List of tuples</span>
 <span class="sd">    :returns: NEVRA&#39;s of the project and its dependencies</span>
 <span class="sd">    :rtype: list of dicts</span>
+<span class="sd">    :raises: ProjectsError if there was a problem installing something</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="c"># This resets the transaction</span>
         <span class="n">yb</span><span class="o">.</span><span class="n">closeRpmDB</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">project_names</span><span class="p">:</span>
-            <span class="n">yb</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="n">p</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">version</span> <span class="ow">in</span> <span class="n">projects</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">version</span><span class="p">:</span>
+                <span class="n">version</span> <span class="o">=</span> <span class="s">&quot;*&quot;</span>
+            <span class="n">yb</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">-</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">))</span>
         <span class="p">(</span><span class="n">rc</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span> <span class="o">=</span> <span class="n">yb</span><span class="o">.</span><span class="n">buildTransaction</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">rc</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s">&quot;There was a problem depsolving </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">project_names</span><span class="p">,</span> <span class="n">msg</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s">&quot;There was a problem depsolving </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">projects</span><span class="p">,</span> <span class="n">msg</span><span class="p">))</span>
         <span class="n">yb</span><span class="o">.</span><span class="n">tsInfo</span><span class="o">.</span><span class="n">makelists</span><span class="p">()</span>
         <span class="n">deps</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">tm_to_dep</span><span class="p">,</span> <span class="n">yb</span><span class="o">.</span><span class="n">tsInfo</span><span class="o">.</span><span class="n">installed</span> <span class="o">+</span> <span class="n">yb</span><span class="o">.</span><span class="n">tsInfo</span><span class="o">.</span><span class="n">depinstalled</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
     <span class="k">except</span> <span class="n">YumBaseError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s">&quot;There was a problem depsolving </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">project_names</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+        <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s">&quot;There was a problem depsolving </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">projects</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
     <span class="k">finally</span><span class="p">:</span>
         <span class="n">yb</span><span class="o">.</span><span class="n">closeRpmDB</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">deps</span>
@@ -285,31 +291,34 @@
         <span class="n">installed_size</span> <span class="o">+=</span> <span class="n">p</span><span class="o">.</span><span class="n">po</span><span class="o">.</span><span class="n">installedsize</span>
     <span class="k">return</span> <span class="n">installed_size</span>
 </div>
-<div class="viewcode-block" id="projects_depsolve_with_size"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.projects_depsolve_with_size">[docs]</a><span class="k">def</span> <span class="nf">projects_depsolve_with_size</span><span class="p">(</span><span class="n">yb</span><span class="p">,</span> <span class="n">project_names</span><span class="p">,</span> <span class="n">with_core</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="projects_depsolve_with_size"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.projects_depsolve_with_size">[docs]</a><span class="k">def</span> <span class="nf">projects_depsolve_with_size</span><span class="p">(</span><span class="n">yb</span><span class="p">,</span> <span class="n">projects</span><span class="p">,</span> <span class="n">with_core</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return the dependencies and installed size for a list of projects</span>
 
 <span class="sd">    :param yb: yum base object</span>
 <span class="sd">    :type yb: YumBase</span>
-<span class="sd">    :param project_names: The projects to find the dependencies for</span>
-<span class="sd">    :type project_names: List of Strings</span>
+<span class="sd">    :param projects: The projects and version globs to find the dependencies for</span>
+<span class="sd">    :type projects: List of tuples</span>
 <span class="sd">    :returns: installed size and a list of NEVRA&#39;s of the project and its dependencies</span>
 <span class="sd">    :rtype: tuple of (int, list of dicts)</span>
+<span class="sd">    :raises: ProjectsError if there was a problem installing something</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="c"># This resets the transaction</span>
         <span class="n">yb</span><span class="o">.</span><span class="n">closeRpmDB</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">project_names</span><span class="p">:</span>
-            <span class="n">yb</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="n">p</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">version</span> <span class="ow">in</span> <span class="n">projects</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">version</span><span class="p">:</span>
+                <span class="n">version</span> <span class="o">=</span> <span class="s">&quot;*&quot;</span>
+            <span class="n">yb</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">-</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">with_core</span><span class="p">:</span>
             <span class="n">yb</span><span class="o">.</span><span class="n">selectGroup</span><span class="p">(</span><span class="s">&quot;core&quot;</span><span class="p">,</span> <span class="n">group_package_types</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;mandatory&#39;</span><span class="p">,</span> <span class="s">&#39;default&#39;</span><span class="p">,</span> <span class="s">&#39;optional&#39;</span><span class="p">])</span>
         <span class="p">(</span><span class="n">rc</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span> <span class="o">=</span> <span class="n">yb</span><span class="o">.</span><span class="n">buildTransaction</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">rc</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s">&quot;There was a problem depsolving </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">project_names</span><span class="p">,</span> <span class="n">msg</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s">&quot;There was a problem depsolving </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">projects</span><span class="p">,</span> <span class="n">msg</span><span class="p">))</span>
         <span class="n">yb</span><span class="o">.</span><span class="n">tsInfo</span><span class="o">.</span><span class="n">makelists</span><span class="p">()</span>
         <span class="n">installed_size</span> <span class="o">=</span> <span class="n">estimate_size</span><span class="p">(</span><span class="n">yb</span><span class="o">.</span><span class="n">tsInfo</span><span class="o">.</span><span class="n">installed</span> <span class="o">+</span> <span class="n">yb</span><span class="o">.</span><span class="n">tsInfo</span><span class="o">.</span><span class="n">depinstalled</span><span class="p">)</span>
         <span class="n">deps</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">tm_to_dep</span><span class="p">,</span> <span class="n">yb</span><span class="o">.</span><span class="n">tsInfo</span><span class="o">.</span><span class="n">installed</span> <span class="o">+</span> <span class="n">yb</span><span class="o">.</span><span class="n">tsInfo</span><span class="o">.</span><span class="n">depinstalled</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
     <span class="k">except</span> <span class="n">YumBaseError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s">&quot;There was a problem depsolving </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">project_names</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+        <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s">&quot;There was a problem depsolving </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">projects</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
     <span class="k">finally</span><span class="p">:</span>
         <span class="n">yb</span><span class="o">.</span><span class="n">closeRpmDB</span><span class="p">()</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">installed_size</span><span class="p">,</span> <span class="n">deps</span><span class="p">)</span>
@@ -359,9 +368,223 @@
     <span class="n">modules</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">yaps_to_project</span><span class="p">,</span> <span class="n">ybl</span><span class="o">.</span><span class="n">available</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
     <span class="c"># Add the dependency info to each one</span>
     <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">modules</span><span class="p">:</span>
-        <span class="n">module</span><span class="p">[</span><span class="s">&quot;dependencies&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">projects_depsolve</span><span class="p">(</span><span class="n">yb</span><span class="p">,</span> <span class="p">[</span><span class="n">module</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]])</span>
+        <span class="n">module</span><span class="p">[</span><span class="s">&quot;dependencies&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">projects_depsolve</span><span class="p">(</span><span class="n">yb</span><span class="p">,</span> <span class="p">[(</span><span class="n">module</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="s">&quot;*&quot;</span><span class="p">)])</span>
 
-    <span class="k">return</span> <span class="n">modules</span></div>
+    <span class="k">return</span> <span class="n">modules</span>
+</div>
+<div class="viewcode-block" id="yum_repo_to_file_repo"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.yum_repo_to_file_repo">[docs]</a><span class="k">def</span> <span class="nf">yum_repo_to_file_repo</span><span class="p">(</span><span class="n">repo</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a string representation of a repo dict suitable for writing to a .repo file</span>
+
+<span class="sd">    :param repo: Yum Repository represented as a dict</span>
+<span class="sd">    :type repo: dict</span>
+<span class="sd">    :returns: A string</span>
+<span class="sd">    :rtype: str</span>
+
+<span class="sd">    The YumRepo.dump() function does not produce a string that can be used as a</span>
+<span class="sd">    yum .repo file. So do this manually with only the attributes we care about.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">repo_str</span> <span class="o">=</span> <span class="s">&quot;[</span><span class="si">%s</span><span class="s">]</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">repo</span><span class="p">[</span><span class="s">&quot;id&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">repo</span><span class="p">[</span><span class="s">&quot;metalink&quot;</span><span class="p">]:</span>
+        <span class="n">repo_str</span> <span class="o">+=</span> <span class="s">&quot;metalink = </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">repo</span><span class="p">[</span><span class="s">&quot;metalink&quot;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">repo</span><span class="p">[</span><span class="s">&quot;mirrorlist&quot;</span><span class="p">]:</span>
+        <span class="n">repo_str</span> <span class="o">+=</span> <span class="s">&quot;mirrorlist = </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">repo</span><span class="p">[</span><span class="s">&quot;mirrorlist&quot;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">repo</span><span class="p">[</span><span class="s">&quot;baseurl&quot;</span><span class="p">]:</span>
+        <span class="n">repo_str</span> <span class="o">+=</span> <span class="s">&quot;baseurl = </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">repo</span><span class="p">[</span><span class="s">&quot;baseurl&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Repo has no baseurl, metalink, or mirrorlist&quot;</span><span class="p">)</span>
+
+    <span class="c"># proxy is optional</span>
+    <span class="k">if</span> <span class="s">&quot;proxy&quot;</span> <span class="ow">in</span> <span class="n">repo</span><span class="p">:</span>
+        <span class="n">repo_str</span> <span class="o">+=</span> <span class="s">&quot;proxy = </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">repo</span><span class="p">[</span><span class="s">&quot;proxy&quot;</span><span class="p">]</span>
+
+    <span class="n">repo_str</span> <span class="o">+=</span> <span class="s">&quot;sslverify = </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">repo</span><span class="p">[</span><span class="s">&quot;sslverify&quot;</span><span class="p">]</span>
+    <span class="n">repo_str</span> <span class="o">+=</span> <span class="s">&quot;gpgcheck = </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">repo</span><span class="p">[</span><span class="s">&quot;gpgcheck&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s">&quot;gpgkey&quot;</span> <span class="ow">in</span> <span class="n">repo</span><span class="p">:</span>
+        <span class="n">repo_str</span> <span class="o">+=</span> <span class="s">&quot;gpgkey = </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="s">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">repo</span><span class="p">[</span><span class="s">&quot;gpgkey&quot;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">repo_str</span>
+</div>
+<div class="viewcode-block" id="repo_to_source"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.repo_to_source">[docs]</a><span class="k">def</span> <span class="nf">repo_to_source</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">system_source</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a Weldr Source dict created from the YumRepository</span>
+
+<span class="sd">    :param repo: Yum Repository</span>
+<span class="sd">    :type repo: yum.yumRepo.YumRepository</span>
+<span class="sd">    :param system_source: True if this source is an immutable system source</span>
+<span class="sd">    :type system_source: bool</span>
+<span class="sd">    :returns: A dict with Weldr Source fields filled in</span>
+<span class="sd">    :rtype: dict</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        {</span>
+<span class="sd">          &quot;check_gpg&quot;: true,</span>
+<span class="sd">          &quot;check_ssl&quot;: true,</span>
+<span class="sd">          &quot;gpgkey_url&quot;: [</span>
+<span class="sd">            &quot;file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-x86_64&quot;</span>
+<span class="sd">          ],</span>
+<span class="sd">          &quot;name&quot;: &quot;fedora&quot;,</span>
+<span class="sd">          &quot;proxy&quot;: &quot;http://proxy.brianlane.com:8123&quot;,</span>
+<span class="sd">          &quot;system&quot;: true</span>
+<span class="sd">          &quot;type&quot;: &quot;yum-metalink&quot;,</span>
+<span class="sd">          &quot;url&quot;: &quot;https://mirrors.fedoraproject.org/metalink?repo=fedora-28&amp;arch=x86_64&quot;</span>
+<span class="sd">        }</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="n">repo</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s">&quot;system&quot;</span><span class="p">:</span> <span class="n">system_source</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">baseurl</span><span class="p">:</span>
+        <span class="n">source</span><span class="p">[</span><span class="s">&quot;url&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">baseurl</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">source</span><span class="p">[</span><span class="s">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;yum-baseurl&quot;</span>
+    <span class="k">elif</span> <span class="n">repo</span><span class="o">.</span><span class="n">metalink</span><span class="p">:</span>
+        <span class="n">source</span><span class="p">[</span><span class="s">&quot;url&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">metalink</span>
+        <span class="n">source</span><span class="p">[</span><span class="s">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;yum-metalink&quot;</span>
+    <span class="k">elif</span> <span class="n">repo</span><span class="o">.</span><span class="n">mirrorlist</span><span class="p">:</span>
+        <span class="n">source</span><span class="p">[</span><span class="s">&quot;url&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">mirrorlist</span>
+        <span class="n">source</span><span class="p">[</span><span class="s">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;yum-mirrorlist&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Repo has no baseurl, metalink, or mirrorlist&quot;</span><span class="p">)</span>
+
+    <span class="c"># proxy is optional</span>
+    <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">proxy</span><span class="p">:</span>
+        <span class="n">source</span><span class="p">[</span><span class="s">&quot;proxy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">proxy</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">repo</span><span class="o">.</span><span class="n">sslverify</span><span class="p">:</span>
+        <span class="n">source</span><span class="p">[</span><span class="s">&quot;check_ssl&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">source</span><span class="p">[</span><span class="s">&quot;check_ssl&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">repo</span><span class="o">.</span><span class="n">gpgcheck</span><span class="p">:</span>
+        <span class="n">source</span><span class="p">[</span><span class="s">&quot;check_gpg&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">source</span><span class="p">[</span><span class="s">&quot;check_gpg&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">gpgkey</span><span class="p">:</span>
+        <span class="n">source</span><span class="p">[</span><span class="s">&quot;gpgkey_urls&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">gpgkey</span>
+
+    <span class="k">return</span> <span class="n">source</span>
+</div>
+<div class="viewcode-block" id="source_to_repo"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.source_to_repo">[docs]</a><span class="k">def</span> <span class="nf">source_to_repo</span><span class="p">(</span><span class="n">source</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return an add_enable_repo kwargs dict created from a source dict</span>
+
+<span class="sd">    :param source: A Weldr source dict</span>
+<span class="sd">    :type source: dict</span>
+<span class="sd">    :returns: A yum YumRepository object</span>
+<span class="sd">    :rtype: yum.yumRepo.YumRepository</span>
+
+<span class="sd">    The dict it suitable for passing to yum&#39;s add_enable_repo function</span>
+<span class="sd">    after popping off baseurl and mirrorlist.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        {</span>
+<span class="sd">          &quot;gpgcheck&quot;: True,</span>
+<span class="sd">          &quot;sslverify&quot;: True,</span>
+<span class="sd">          &quot;gpgkey&quot;: [&quot;file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-x86_64&quot;],</span>
+<span class="sd">          &quot;id&quot;: &quot;fedora&quot;,</span>
+<span class="sd">          &quot;proxy&quot;: &quot;http://proxy.brianlane.com:8123&quot;,</span>
+<span class="sd">          &quot;baseurl&quot;: &quot;https://mirrors.fedoraproject.org/metalink?repo=fedora-28&amp;arch=x86_64&quot;,</span>
+<span class="sd">          &quot;metalink&quot;: None,</span>
+<span class="sd">          &quot;mirrorlist&quot;: None</span>
+<span class="sd">        }</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">repo</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="n">source</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]}</span>
+
+    <span class="c"># This will allow errors to be raised so we can catch them</span>
+    <span class="c"># without this they are logged, but the repo is silently disabled</span>
+    <span class="n">repo</span><span class="p">[</span><span class="s">&quot;skip_if_unavailable&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;yum-baseurl&quot;</span><span class="p">:</span>
+        <span class="n">repo</span><span class="p">[</span><span class="s">&quot;baseurl&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">source</span><span class="p">[</span><span class="s">&quot;url&quot;</span><span class="p">]]</span>
+        <span class="n">repo</span><span class="p">[</span><span class="s">&quot;metalink&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">repo</span><span class="p">[</span><span class="s">&quot;mirrorlist&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">elif</span> <span class="n">source</span><span class="p">[</span><span class="s">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;yum-metalink&quot;</span><span class="p">:</span>
+        <span class="n">repo</span><span class="p">[</span><span class="s">&quot;metalink&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s">&quot;url&quot;</span><span class="p">]</span>
+        <span class="n">repo</span><span class="p">[</span><span class="s">&quot;baseurl&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">repo</span><span class="p">[</span><span class="s">&quot;mirrorlist&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">elif</span> <span class="n">source</span><span class="p">[</span><span class="s">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;yum-mirrorlist&quot;</span><span class="p">:</span>
+        <span class="n">repo</span><span class="p">[</span><span class="s">&quot;mirrorlist&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s">&quot;url&quot;</span><span class="p">]</span>
+        <span class="n">repo</span><span class="p">[</span><span class="s">&quot;baseurl&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">repo</span><span class="p">[</span><span class="s">&quot;metalink&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">if</span> <span class="s">&quot;proxy&quot;</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+        <span class="n">repo</span><span class="p">[</span><span class="s">&quot;proxy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s">&quot;proxy&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s">&quot;check_ssl&quot;</span><span class="p">]:</span>
+        <span class="n">repo</span><span class="p">[</span><span class="s">&quot;sslverify&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">repo</span><span class="p">[</span><span class="s">&quot;sslverify&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s">&quot;check_gpg&quot;</span><span class="p">]:</span>
+        <span class="n">repo</span><span class="p">[</span><span class="s">&quot;gpgcheck&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">repo</span><span class="p">[</span><span class="s">&quot;gpgcheck&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="k">if</span> <span class="s">&quot;gpgkey_urls&quot;</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+        <span class="n">repo</span><span class="p">[</span><span class="s">&quot;gpgkey&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s">&quot;gpgkey_urls&quot;</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">repo</span>
+</div>
+<div class="viewcode-block" id="get_source_ids"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.get_source_ids">[docs]</a><span class="k">def</span> <span class="nf">get_source_ids</span><span class="p">(</span><span class="n">source_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a list of the source ids in a file</span>
+
+<span class="sd">    :param source_path: Full path and filename of the source (yum repo) file</span>
+<span class="sd">    :type source_path: str</span>
+<span class="sd">    :returns: A list of source id strings</span>
+<span class="sd">    :rtype: list of str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">source_path</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="p">()</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">source_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cfg</span><span class="o">.</span><span class="n">sections</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="get_repo_sources"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.get_repo_sources">[docs]</a><span class="k">def</span> <span class="nf">get_repo_sources</span><span class="p">(</span><span class="n">source_glob</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a list of sources from a directory of yum repositories</span>
+
+<span class="sd">    :param source_glob: A glob to use to match the source files, including full path</span>
+<span class="sd">    :type source_glob: str</span>
+<span class="sd">    :returns: A list of the source ids in all of the matching files</span>
+<span class="sd">    :rtype: list of str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sources</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">source_glob</span><span class="p">):</span>
+        <span class="n">sources</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">get_source_ids</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">sources</span>
+</div>
+<div class="viewcode-block" id="delete_repo_source"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.delete_repo_source">[docs]</a><span class="k">def</span> <span class="nf">delete_repo_source</span><span class="p">(</span><span class="n">source_glob</span><span class="p">,</span> <span class="n">source_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Delete a source from a repo file</span>
+
+<span class="sd">    :param source_glob: A glob of the repo sources to search</span>
+<span class="sd">    :type source_glob: str</span>
+<span class="sd">    :returns: None</span>
+<span class="sd">    :raises: ProjectsError if there was a problem</span>
+
+<span class="sd">    A repo file may have multiple sources in it, delete only the selected source.</span>
+<span class="sd">    If it is the last one in the file, delete the file.</span>
+
+<span class="sd">    WARNING: This will delete ANY source, the caller needs to ensure that a system</span>
+<span class="sd">    source_name isn&#39;t passed to it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">found</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">source_glob</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cfg</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="p">()</span>
+            <span class="n">cfg</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">source_name</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="n">cfg</span><span class="o">.</span><span class="n">remove_section</span><span class="p">(</span><span class="n">source_name</span><span class="p">)</span>
+                <span class="c"># If there are other sections, rewrite the file without the deleted one</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">sections</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">cfg_file</span><span class="p">:</span>
+                        <span class="n">cfg</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">cfg_file</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c"># No sections left, just delete the file</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s">&quot;Problem deleting repo source </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">source_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s">&quot;source </span><span class="si">%s</span><span class="s"> not found&quot;</span> <span class="o">%</span> <span class="n">source_name</span><span class="p">)</span></div>
 </pre></div>
 
           </div>
@@ -395,7 +618,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.15 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../../pylorax.html" >pylorax</a> &raquo;</li>
           <li><a href="../api.html" >pylorax.api</a> &raquo;</li> 

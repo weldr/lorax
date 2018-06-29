@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>composer.cli.compose &mdash; Lorax 19.7.15 documentation</title>
+    <title>composer.cli.compose &mdash; Lorax 19.7.18 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '19.7.15',
+        VERSION:     '19.7.18',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.15 documentation" href="../../../index.html" />
+    <link rel="top" title="Lorax 19.7.18 documentation" href="../../../index.html" />
     <link rel="up" title="composer.cli" href="../cli.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.15 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../cli.html" accesskey="U">composer.cli</a> &raquo;</li> 
       </ul>
@@ -73,6 +73,7 @@
 <span class="kn">import</span> <span class="nn">json</span>
 
 <span class="kn">from</span> <span class="nn">composer</span> <span class="kn">import</span> <span class="n">http_client</span> <span class="k">as</span> <span class="n">client</span>
+<span class="kn">from</span> <span class="nn">composer.cli.help</span> <span class="kn">import</span> <span class="n">compose_help</span>
 <span class="kn">from</span> <span class="nn">composer.cli.utilities</span> <span class="kn">import</span> <span class="n">argify</span><span class="p">,</span> <span class="n">handle_api_result</span><span class="p">,</span> <span class="n">packageNEVRA</span>
 
 <div class="viewcode-block" id="compose_cmd"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_cmd">[docs]</a><span class="k">def</span> <span class="nf">compose_cmd</span><span class="p">(</span><span class="n">opts</span><span class="p">):</span>
@@ -98,7 +99,10 @@
         <span class="s">&quot;logs&quot;</span><span class="p">:</span>     <span class="n">compose_logs</span><span class="p">,</span>
         <span class="s">&quot;image&quot;</span><span class="p">:</span>    <span class="n">compose_image</span><span class="p">,</span>
         <span class="p">}</span>
-    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cmd_map</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span> <span class="o">==</span> <span class="s">&quot;help&quot;</span> <span class="ow">or</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span> <span class="o">==</span> <span class="s">&quot;--help&quot;</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">compose_help</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">elif</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cmd_map</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Unknown compose command: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="k">return</span> <span class="mi">1</span>
 
@@ -540,7 +544,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.15 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../cli.html" >composer.cli</a> &raquo;</li> 
       </ul>

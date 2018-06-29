@@ -25,6 +25,14 @@ cli Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`help` Module
+------------------
+
+.. automodule:: composer.cli.help
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`modules` Module
 ---------------------
 
@@ -37,6 +45,14 @@ cli Package
 ----------------------
 
 .. automodule:: composer.cli.projects
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`sources` Module
+---------------------
+
+.. automodule:: composer.cli.sources
     :members:
     :undoc-members:
     :show-inheritance:

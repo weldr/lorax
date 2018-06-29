@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pylorax.installer &mdash; Lorax 19.7.15 documentation</title>
+    <title>pylorax.installer &mdash; Lorax 19.7.18 documentation</title>
     
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '19.7.15',
+        VERSION:     '19.7.18',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.15 documentation" href="../../index.html" />
+    <link rel="top" title="Lorax 19.7.18 documentation" href="../../index.html" />
     <link rel="up" title="pylorax" href="../pylorax.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Lorax 19.7.15 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li>
           <li><a href="../pylorax.html" accesskey="U">pylorax</a> &raquo;</li> 
       </ul>
@@ -122,7 +122,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initrd_path</span>
 
         <span class="n">kernel_list</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&quot;/isolinux/vmlinuz&quot;</span><span class="p">,</span> <span class="s">&quot;/isolinux/initrd.img&quot;</span><span class="p">),</span>
-                       <span class="p">(</span><span class="s">&quot;/ppc/ppc64/vmlinuz&quot;</span><span class="p">,</span> <span class="s">&quot;/ppc/ppc64/initrd.img&quot;</span><span class="p">)]</span>
+                       <span class="p">(</span><span class="s">&quot;/ppc/ppc64/vmlinuz&quot;</span><span class="p">,</span> <span class="s">&quot;/ppc/ppc64/initrd.img&quot;</span><span class="p">),</span>
+                       <span class="p">(</span><span class="s">&quot;/images/pxeboot/vmlinuz&quot;</span><span class="p">,</span> <span class="s">&quot;/images/pxeboot/initrd.img&quot;</span><span class="p">)]</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span><span class="o">+</span><span class="s">&quot;/repodata&quot;</span> <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">repo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_dir</span>
         <span class="k">else</span><span class="p">:</span>
@@ -168,20 +169,27 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">iso</span><span class="p">,</span> <span class="n">ks_paths</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">img_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> 
                   <span class="n">kernel_args</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">memory</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">vnc</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                   <span class="n">log_check</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">virtio_host</span><span class="o">=</span><span class="s">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">virtio_port</span><span class="o">=</span><span class="mi">6080</span><span class="p">,</span>
-                  <span class="n">qcow2</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+                  <span class="n">qcow2</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">boot_uefi</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">ovmf_path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start the installation</span>
 
-<span class="sd">        iso is an instance of IsoMountpoint</span>
-<span class="sd">        ks_paths is a list of paths to a kickstart files. All are injected, the</span>
-<span class="sd">                 first one is the one executed.</span>
-<span class="sd">        disk_img is the path to a disk image (doesn&#39;t need to exist)</span>
-<span class="sd">        img_size is the size, in GiB, of the image if it doesn&#39;t exist</span>
-<span class="sd">        kernel_args are extra arguments to pass on the kernel cmdline</span>
-<span class="sd">        memory is the amount of ram to assign to the virt</span>
-<span class="sd">        vnc is passed to the --graphics command verbatim</span>
-<span class="sd">        arch is the optional architecture to use in the virt</span>
-<span class="sd">        log_check is a method that returns True of the log indicates an error</span>
-<span class="sd">        virtio_host and virtio_port are used to communicate with the log monitor</span>
+<span class="sd">        :param iso: Information about the iso to use for the installation</span>
+<span class="sd">        :type iso: IsoMountpoint</span>
+<span class="sd">        :param list ks_paths: Paths to kickstart files. All are injected, the</span>
+<span class="sd">           first one is the one executed.</span>
+<span class="sd">        :param str disk_img: Path to a disk image, created it it doesn&#39;t exist</span>
+<span class="sd">        :param int img_size: The image size, in MiB, to create if it doesn&#39;t exist</span>
+<span class="sd">        :param str kernel_args: Extra kernel arguments to pass on the kernel cmdline</span>
+<span class="sd">        :param int memory: Amount of RAM to assign to the virt, in MiB</span>
+<span class="sd">        :param str vnc: Arguments to pass to virt-install --graphics</span>
+<span class="sd">        :param str arch: Optional architecture to use in the virt</span>
+<span class="sd">        :param log_check: Method that returns True if the installation fails</span>
+<span class="sd">        :type log_check: method</span>
+<span class="sd">        :param str virtio_host: Hostname to connect virtio log to</span>
+<span class="sd">        :param int virtio_port: Port to connect virtio log to</span>
+<span class="sd">        :param bool qcow2: Set to True if disk_img is a qcow2</span>
+<span class="sd">        :param bool boot_uefi: Use OVMF to boot the VM in UEFI mode</span>
+<span class="sd">        :param str ovmf_path: Path to the OVMF firmware</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">virt_name</span> <span class="o">=</span> <span class="s">&quot;LiveOS-&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
         <span class="c"># add --graphics none later</span>
@@ -239,9 +247,15 @@
             <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;--arch&quot;</span><span class="p">)</span>
             <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arch</span><span class="p">)</span>
 
-        <span class="n">rc</span> <span class="o">=</span> <span class="n">execWithRedirect</span><span class="p">(</span><span class="s">&quot;virt-install&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">rc</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Problem starting virtual install&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">boot_uefi</span> <span class="ow">and</span> <span class="n">ovmf_path</span><span class="p">:</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;--boot&quot;</span><span class="p">)</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;loader=</span><span class="si">%s</span><span class="s">/OVMF_CODE.fd,loader_ro=yes,loader_type=pflash,nvram_template=</span><span class="si">%s</span><span class="s">/OVMF_VARS.fd,loader_secure=no&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ovmf_path</span><span class="p">,</span> <span class="n">ovmf_path</span><span class="p">))</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Running virt-install.&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">execWithRedirect</span><span class="p">(</span><span class="s">&quot;virt-install&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">raise_err</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s">&quot;Problem starting virtual install: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
 
         <span class="n">conn</span> <span class="o">=</span> <span class="n">libvirt</span><span class="o">.</span><span class="n">openReadOnly</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
         <span class="n">dom</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">lookupByName</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">virt_name</span><span class="p">)</span>
@@ -268,8 +282,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span> <span class="s">&quot;Shutting down </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">virt_name</span><span class="p">)</span>
         <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="s">&quot;virsh&quot;</span><span class="p">,</span> <span class="s">&quot;destroy&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">virt_name</span><span class="p">])</span>
-        <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="s">&quot;virsh&quot;</span><span class="p">,</span> <span class="s">&quot;undefine&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">virt_name</span><span class="p">])</span>
 
+        <span class="c"># Undefine the virt, UEFI installs need to have --nvram passed</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="s">&quot;virsh&quot;</span><span class="p">,</span> <span class="s">&quot;undefine&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">virt_name</span><span class="p">,</span> <span class="s">&quot;--nvram&quot;</span><span class="p">])</span>
 </div></div>
 <div class="viewcode-block" id="novirt_install"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.novirt_install">[docs]</a><span class="k">def</span> <span class="nf">novirt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span> <span class="n">repo_url</span><span class="p">,</span> <span class="n">callback_func</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -409,16 +424,23 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">diskimg_path</span> <span class="o">=</span> <span class="n">disk_img</span>
 
-    <span class="n">virt</span> <span class="o">=</span> <span class="n">VirtualInstall</span><span class="p">(</span><span class="n">iso_mount</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">ks</span><span class="p">,</span> <span class="n">diskimg_path</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span>
-                           <span class="n">kernel_args</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">ram</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">vnc</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">arch</span><span class="p">,</span>
-                           <span class="n">log_check</span> <span class="o">=</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">log_check</span><span class="p">,</span>
-                           <span class="n">virtio_host</span> <span class="o">=</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
-                           <span class="n">virtio_port</span> <span class="o">=</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
-                           <span class="n">qcow2</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">qcow2</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">virt</span> <span class="o">=</span> <span class="n">VirtualInstall</span><span class="p">(</span><span class="n">iso_mount</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">ks</span><span class="p">,</span> <span class="n">diskimg_path</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span>
+                               <span class="n">kernel_args</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">ram</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">vnc</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">arch</span><span class="p">,</span>
+                               <span class="n">log_check</span> <span class="o">=</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">log_check</span><span class="p">,</span>
+                               <span class="n">virtio_host</span> <span class="o">=</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
+                               <span class="n">virtio_port</span> <span class="o">=</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
+                               <span class="n">qcow2</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">qcow2</span><span class="p">,</span> <span class="n">boot_uefi</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">virt_uefi</span><span class="p">,</span>
+                               <span class="n">ovmf_path</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">ovmf_path</span><span class="p">)</span>
 
-    <span class="n">virt</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
-    <span class="n">log_monitor</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
-    <span class="n">iso_mount</span><span class="o">.</span><span class="n">umount</span><span class="p">()</span>
+        <span class="n">virt</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+        <span class="n">log_monitor</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+    <span class="k">except</span> <span class="n">InstallError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;VirtualInstall failed: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">raise</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;unmounting the iso&quot;</span><span class="p">)</span>
+        <span class="n">iso_mount</span><span class="o">.</span><span class="n">umount</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">log_check</span><span class="p">():</span>
         <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s">&quot;virt_install failed&quot;</span><span class="p">)</span>
@@ -471,7 +493,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Lorax 19.7.15 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li>
           <li><a href="../pylorax.html" >pylorax</a> &raquo;</li> 
       </ul>

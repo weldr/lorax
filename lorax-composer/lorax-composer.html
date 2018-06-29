@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lorax-composer &mdash; Lorax 19.7.15 documentation</title>
+    <title>lorax-composer &mdash; Lorax 19.7.18 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '19.7.15',
+        VERSION:     '19.7.18',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,8 +25,8 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.15 documentation" href="index.html" />
-    <link rel="next" title="Product and Updates Images" href="product-images.html" />
+    <link rel="top" title="Lorax 19.7.18 documentation" href="index.html" />
+    <link rel="next" title="composer-cli" href="composer-cli.html" />
     <link rel="prev" title="livemedia-creator" href="livemedia-creator.html" /> 
   </head>
   <body>
@@ -40,12 +40,12 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="product-images.html" title="Product and Updates Images"
+          <a href="composer-cli.html" title="composer-cli"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="livemedia-creator.html" title="livemedia-creator"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.15 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Lorax 19.7.18 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -64,24 +64,34 @@
 </tr>
 </tbody>
 </table>
-<p>lorax-composer is an API server that is compatible with the Weldr project&#8217;s
-bdcs-api REST protocol. More information on Weldr can be found <a class="reference external" href="http://www.weldr.io">on the Weldr
-blog</a>.</p>
-<p>The server runs as root, and communication with it is via a unix domain socket
-(<tt class="docutils literal"><span class="pre">/run/weldr/api.socket</span></tt> by default). The directory and socket are owned by
-root:weldr so that any user in the weldr group can use the API to control
-lorax-composer.</p>
-<p>When starting the server it will check for the correct permissions and
-ownership of a pre-existing directory, or it will create a new one if it
-doesn&#8217;t exist.  The socket path and group owner&#8217;s name can be changed from the
-cmdline by passing it the <tt class="docutils literal"><span class="pre">--socket</span></tt> and <tt class="docutils literal"><span class="pre">--group</span></tt> arguments.</p>
-<p>As of version 19.7.7 it will drop root privileges for the API thread. The queue
-and compose thread still runs as root because it needs to be able to
-mount/umount files and run Anaconda.</p>
-<div class="section" id="logs">
-<h2>Logs<a class="headerlink" href="#logs" title="Permalink to this headline">¶</a></h2>
-<p>Logs are stored under <tt class="docutils literal"><span class="pre">/var/log/lorax-composer/</span></tt> and include all console
-messages as well as extra debugging info and API requests.</p>
+<p><tt class="docutils literal"><span class="pre">lorax-composer</span></tt> is an API server that allows you to build disk images using
+<a class="reference internal" href="#blueprints">Blueprints</a> to describe the package versions to be installed into the image.
+It is compatible with the Weldr project&#8217;s bdcs-api REST protocol. More
+information on Weldr can be found <a class="reference external" href="http://www.weldr.io">on the Weldr blog</a>.</p>
+<p>Behind the scenes it uses <a class="reference external" href="livemedia-creator.html">livemedia-creator</a> and
+<a class="reference external" href="https://anaconda-installer.readthedocs.io/en/latest/">Anaconda</a> to handle the
+installation and configuration of the images.</p>
+<div class="section" id="important-things-to-note">
+<h2>Important Things To Note<a class="headerlink" href="#important-things-to-note" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>SELinux must be in Permissive mode. Anaconda requires SELinux be in permissive mode
+for image creation to work correctly. You can either edit the setting in the
+<tt class="docutils literal"><span class="pre">/etc/sysconfig/selinux</span></tt> file, or run <tt class="docutils literal"><span class="pre">setenforce</span> <span class="pre">0</span></tt> before starting lorax-composer.</li>
+<li>Some output types require packages from the RHEL 7 Optional repository. See the
+<a class="reference external" href="https://access.redhat.com/solutions/392003">Red Hat Enterprise Linux 7 documentation</a>
+for information on how to enable it. Otherwise you will see image creation fail to
+depsolve even if the blueprint itself is correct.</li>
+</ul>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>The best way to install <tt class="docutils literal"><span class="pre">lorax-composer</span></tt> is to use <tt class="docutils literal"><span class="pre">sudo</span> <span class="pre">dnf</span> <span class="pre">install</span>
+<span class="pre">lorax-composer</span> <span class="pre">composer-cli</span></tt>, this will setup the weldr user and install the
+systemd socket activation service. You will then need to enable it with <tt class="docutils literal"><span class="pre">sudo</span>
+<span class="pre">systemctl</span> <span class="pre">enable</span> <span class="pre">lorax-composer.socket</span> <span class="pre">&amp;&amp;</span> <span class="pre">sudo</span> <span class="pre">systemctl</span> <span class="pre">start</span>
+<span class="pre">lorax-composer.socket</span></tt>. This will leave the server off until the first request
+is made. Systemd will then launch the server and it will remain running until
+the system is rebooted.</p>
 </div>
 <div class="section" id="quickstart">
 <h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
@@ -89,27 +99,140 @@ messages as well as extra debugging info and API requests.</p>
 <li>Create a <tt class="docutils literal"><span class="pre">weldr</span></tt> user and group by running <tt class="docutils literal"><span class="pre">useradd</span> <span class="pre">weldr</span></tt></li>
 <li>Remove any pre-existing socket directory with <tt class="docutils literal"><span class="pre">rm</span> <span class="pre">-rf</span> <span class="pre">/run/weldr/</span></tt>
 A new directory with correct permissions will be created the first time the server runs.</li>
-<li>Either start it via systemd with <tt class="docutils literal"><span class="pre">systemctl</span> <span class="pre">start</span> <span class="pre">lorax-composer</span></tt> or
-run it directly with <tt class="docutils literal"><span class="pre">lorax-composer</span> <span class="pre">/path/to/blueprints/</span></tt></li>
+<li>Enable the socket activation with <tt class="docutils literal"><span class="pre">systemctl</span> <span class="pre">enable</span> <span class="pre">lorax-composer.socket</span>
+<span class="pre">&amp;&amp;</span> <span class="pre">sudo</span> <span class="pre">systemctl</span> <span class="pre">start</span> <span class="pre">lorax-composer.socket</span></tt> or run it directly with
+<tt class="docutils literal"><span class="pre">lorax-composer</span> <span class="pre">/path/to/blueprints/</span></tt></li>
 </ol>
-<p>The <tt class="docutils literal"><span class="pre">/path/to/blueprints/</span></tt> is where the blueprint&#8217;s git repo will be created, and
-all the blueprints created with the <tt class="docutils literal"><span class="pre">/api/v0/blueprints/new</span></tt> route will be stored.
-If there are blueprint <tt class="docutils literal"><span class="pre">.toml</span></tt> files in the top level of the directory they will
-be imported into the blueprint git storage.</p>
+<p>The <tt class="docutils literal"><span class="pre">/path/to/blueprints/</span></tt> directory is where the blueprints&#8217; git repo will
+be created, and all the blueprints created with the <tt class="docutils literal"><span class="pre">/api/v0/blueprints/new</span></tt>
+route will be stored.  If there are blueprint <tt class="docutils literal"><span class="pre">.toml</span></tt> files in the top level
+of the directory they will be imported into the blueprint git storage when
+<tt class="docutils literal"><span class="pre">lorax-composer</span></tt> starts.</p>
+</div>
+<div class="section" id="logs">
+<h2>Logs<a class="headerlink" href="#logs" title="Permalink to this headline">¶</a></h2>
+<p>Logs are stored under <tt class="docutils literal"><span class="pre">/var/log/lorax-composer/</span></tt> and include all console
+messages as well as extra debugging info and API requests.</p>
+</div>
+<div class="section" id="security">
+<h2>Security<a class="headerlink" href="#security" title="Permalink to this headline">¶</a></h2>
+<p>Some security related issues that you should be aware of before running <tt class="docutils literal"><span class="pre">lorax-composer</span></tt>:</p>
+<ul class="simple">
+<li>One of the API server threads needs to retain root privileges in order to run Anaconda.</li>
+<li>SELinux must be set to Permissive or disabled to allow <tt class="docutils literal"><span class="pre">livemedia-creator</span></tt> to run Anaconda.</li>
+<li>Only allow authorized users access to the <tt class="docutils literal"><span class="pre">weldr</span></tt> group and socket.</li>
+</ul>
+<p>Since Anaconda kickstarts are used there is the possibility that a user could
+inject commands into a blueprint that would result in the kickstart executing
+arbitrary code on the host.  Only authorized users should be allowed to build
+images using <tt class="docutils literal"><span class="pre">lorax-composer</span></tt>.</p>
+</div>
+<div class="section" id="how-it-works">
+<h2>How it Works<a class="headerlink" href="#how-it-works" title="Permalink to this headline">¶</a></h2>
+<p>The server runs as root, and as <tt class="docutils literal"><span class="pre">weldr</span></tt>. Communication with it is via a unix
+domain socket (<tt class="docutils literal"><span class="pre">/run/weldr/api.socket</span></tt> by default). The directory and socket
+are owned by <tt class="docutils literal"><span class="pre">root:weldr</span></tt> so that any user in the <tt class="docutils literal"><span class="pre">weldr</span></tt> group can use the API
+to control <tt class="docutils literal"><span class="pre">lorax-composer</span></tt>.</p>
+<p>At startup the server will check for the correct permissions and
+ownership of a pre-existing directory, or it will create a new one if it
+doesn&#8217;t exist.  The socket path and group owner&#8217;s name can be changed from the
+cmdline by passing it the <tt class="docutils literal"><span class="pre">--socket</span></tt> and <tt class="docutils literal"><span class="pre">--group</span></tt> arguments.</p>
+<p>It will then drop root privileges for the API thread and run as the <tt class="docutils literal"><span class="pre">weldr</span></tt>
+user. The queue and compose thread still runs as root because it needs to be
+able to mount/umount files and run Anaconda.</p>
 </div>
 <div class="section" id="composing-images">
 <h2>Composing Images<a class="headerlink" href="#composing-images" title="Permalink to this headline">¶</a></h2>
-<p>As of version 19.7.7 lorax-composer can create <tt class="docutils literal"><span class="pre">tar</span></tt> output images. You can use curl to start
-a compose like this:</p>
-<div class="highlight-python"><pre>curl --unix-socket /run/weldr/api.socket -X POST -H "Content-Type: application/json" -d '{"blueprint_name": "http-server", "compose_type": "tar", "branch": "master"}' http:///api/v0/compose</pre>
+<p>The <a class="reference external" href="https://github.com/weldr/welder-web/">welder-web</a> GUI project can be used to construct
+blueprints and create composes using a web browser.</p>
+<p>Or use the command line with <a class="reference external" href="composer-cli.html">composer-cli</a>.</p>
 </div>
-<p>And then monitor it by passing the returned build UUID to <tt class="docutils literal"><span class="pre">/compose/status/&lt;uuid&gt;</span></tt>.</p>
-<p>Version 19.7.10 adds support for <tt class="docutils literal"><span class="pre">live-iso</span></tt> and <tt class="docutils literal"><span class="pre">partitioned-disk</span></tt></p>
+<div class="section" id="blueprints">
+<h2>Blueprints<a class="headerlink" href="#blueprints" title="Permalink to this headline">¶</a></h2>
+<p>Blueprints are simple text files in <a class="reference external" href="https://github.com/toml-lang/toml">TOML</a> format that describe
+which packages, and what versions, to install into the image. They can also define a limited set
+of customizations to make to the final image.</p>
+<p>Example blueprints can be found in the <tt class="docutils literal"><span class="pre">lorax-composer</span></tt> <a class="reference external" href="https://github.com/weldr/lorax/tree/master/tests/pylorax/blueprints/">test suite</a>, with a simple one
+looking like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;base&quot;</span>
+<span class="n">description</span> <span class="o">=</span> <span class="s">&quot;A base system with bash&quot;</span>
+<span class="n">version</span> <span class="o">=</span> <span class="s">&quot;0.0.1&quot;</span>
+
+<span class="p">[[</span><span class="n">packages</span><span class="p">]]</span>
+<span class="n">name</span> <span class="o">=</span> <span class="s">&quot;bash&quot;</span>
+<span class="n">version</span> <span class="o">=</span> <span class="s">&quot;4.4.*&quot;</span>
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">name</span></tt> field is the name of the blueprint. It can contain spaces, but they will be converted to <tt class="docutils literal"><span class="pre">-</span></tt>
+when it is written to disk. It should be short and descriptive.</p>
+<p><tt class="docutils literal"><span class="pre">description</span></tt> can be a longer description of the blueprint, it is only used for display purposes.</p>
+<p><tt class="docutils literal"><span class="pre">version</span></tt> is a <a class="reference external" href="https://semver.org/">semver compatible</a> version number. If
+a new blueprint is uploaded with the same <tt class="docutils literal"><span class="pre">version</span></tt> the server will
+automatically bump the PATCH level of the <tt class="docutils literal"><span class="pre">version</span></tt>. If the <tt class="docutils literal"><span class="pre">version</span></tt>
+doesn&#8217;t match it will be used as is. eg. Uploading a blueprint with <tt class="docutils literal"><span class="pre">version</span></tt>
+set to <tt class="docutils literal"><span class="pre">0.1.0</span></tt> when the existing blueprint <tt class="docutils literal"><span class="pre">version</span></tt> is <tt class="docutils literal"><span class="pre">0.0.1</span></tt> will
+result in the new blueprint being stored as <tt class="docutils literal"><span class="pre">version</span> <span class="pre">0.1.0</span></tt>.</p>
+<div class="section" id="packages-and-modules">
+<h3>[[packages]] and [[modules]]<a class="headerlink" href="#packages-and-modules" title="Permalink to this headline">¶</a></h3>
+<p>These entries describe the package names and matching version glob to be installed into the image.</p>
+<p>The names must match the names exactly, and the versions can be an exact match
+or a filesystem-like glob of the version using <tt class="docutils literal"><span class="pre">*</span></tt> wildcards and <tt class="docutils literal"><span class="pre">?</span></tt>
+character matching.</p>
+<p>NOTE: As of lorax-composer-29.2-1 the versions are not used for depsolving,
+that is planned for a future release. And currently there are no differences
+between <tt class="docutils literal"><span class="pre">packages</span></tt> and <tt class="docutils literal"><span class="pre">modules</span></tt> in <tt class="docutils literal"><span class="pre">lorax-composer</span></tt>.</p>
+</div>
+<div class="section" id="customizations">
+<h3>Customizations<a class="headerlink" href="#customizations" title="Permalink to this headline">¶</a></h3>
+<p>The <tt class="docutils literal"><span class="pre">[[customizations]]</span></tt> section can be used to configure the hostname of the final image. eg.:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[[</span><span class="n">customizations</span><span class="p">]]</span>
+<span class="n">hostname</span> <span class="o">=</span> <span class="s">&quot;baseimage&quot;</span>
+</pre></div>
+</div>
+<div class="section" id="customizations-sshkey">
+<h4>[[customizations.sshkey]]<a class="headerlink" href="#customizations-sshkey" title="Permalink to this headline">¶</a></h4>
+<p>Set an existing user&#8217;s ssh key in the final image:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[[</span><span class="n">customizations</span><span class="o">.</span><span class="n">sshkey</span><span class="p">]]</span>
+<span class="n">user</span> <span class="o">=</span> <span class="s">&quot;root&quot;</span>
+<span class="n">key</span> <span class="o">=</span> <span class="s">&quot;PUBLIC SSH KEY&quot;</span>
+</pre></div>
+</div>
+<p>The key will be added to the user&#8217;s authorized_keys file.</p>
+</div>
+<div class="section" id="customizations-user">
+<h4>[[customizations.user]]<a class="headerlink" href="#customizations-user" title="Permalink to this headline">¶</a></h4>
+<p>Add a user to the image, and/or set their ssh key.
+All fields for this section are optional except for the <tt class="docutils literal"><span class="pre">name</span></tt>, here is a complete example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[[</span><span class="n">customizations</span><span class="o">.</span><span class="n">user</span><span class="p">]]</span>
+<span class="n">name</span> <span class="o">=</span> <span class="s">&quot;admin&quot;</span>
+<span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Administrator account&quot;</span>
+<span class="n">password</span> <span class="o">=</span> <span class="s">&quot;$6$CHO2$3rN8eviE2t50lmVyBYihTgVRHcaecmeCk31L...&quot;</span>
+<span class="n">key</span> <span class="o">=</span> <span class="s">&quot;PUBLIC SSH KEY&quot;</span>
+<span class="n">home</span> <span class="o">=</span> <span class="s">&quot;/srv/widget/&quot;</span>
+<span class="n">shell</span> <span class="o">=</span> <span class="s">&quot;/usr/bin/bash&quot;</span>
+<span class="n">groups</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;widget&quot;</span><span class="p">,</span> <span class="s">&quot;users&quot;</span><span class="p">,</span> <span class="s">&quot;wheel&quot;</span><span class="p">]</span>
+<span class="n">uid</span> <span class="o">=</span> <span class="mi">1200</span>
+<span class="n">gid</span> <span class="o">=</span> <span class="mi">1200</span>
+</pre></div>
+</div>
+<p>If the password starts with <tt class="docutils literal"><span class="pre">$6$</span></tt>, <tt class="docutils literal"><span class="pre">$5$</span></tt>, or <tt class="docutils literal"><span class="pre">$2b$</span></tt> it will be stored as
+an encrypted password. Otherwise it will be treated as a plain text password.</p>
+</div>
+<div class="section" id="customizations-group">
+<h4>[[customizations.group]]<a class="headerlink" href="#customizations-group" title="Permalink to this headline">¶</a></h4>
+<p>Add a group to the image. <tt class="docutils literal"><span class="pre">name</span></tt> is required and <tt class="docutils literal"><span class="pre">gid</span></tt> is optional:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[[</span><span class="n">customizations</span><span class="o">.</span><span class="n">group</span><span class="p">]]</span>
+<span class="n">name</span> <span class="o">=</span> <span class="s">&quot;widget&quot;</span>
+<span class="n">gid</span> <span class="o">=</span> <span class="mi">1130</span>
+</pre></div>
+</div>
+</div>
+</div>
 </div>
 <div class="section" id="adding-output-types">
 <h2>Adding Output Types<a class="headerlink" href="#adding-output-types" title="Permalink to this headline">¶</a></h2>
-<p>livemedia-creator supports a large number of output types, and only some of
-these are currently available via lorax-composer. To add a new output type to
+<p><tt class="docutils literal"><span class="pre">livemedia-creator</span></tt> supports a large number of output types, and only some of
+these are currently available via <tt class="docutils literal"><span class="pre">lorax-composer</span></tt>. To add a new output type to
 lorax-composer a kickstart file needs to be added to <tt class="docutils literal"><span class="pre">./share/composer/</span></tt>. The
 name of the kickstart is what will be used by the <tt class="docutils literal"><span class="pre">/compose/types</span></tt> route, and the
 <tt class="docutils literal"><span class="pre">compose_type</span></tt> field of the POST to start a compose. It also needs to have
@@ -150,6 +273,50 @@ unneeded extra files. This is especially true for the <tt class="docutils litera
 the contents of the iso as well as the boot.iso itself.</p>
 </div>
 </div>
+<div class="section" id="package-sources">
+<h2>Package Sources<a class="headerlink" href="#package-sources" title="Permalink to this headline">¶</a></h2>
+<p>By default lorax-composer uses the host&#8217;s configured repositories. It copies
+the <tt class="docutils literal"><span class="pre">*.repo</span></tt> files from <tt class="docutils literal"><span class="pre">/etc/yum.repos.d/</span></tt> into
+<tt class="docutils literal"><span class="pre">/var/lib/lorax/composer/repos.d/</span></tt> at startup, these are immutable system
+repositories and cannot be deleted or changed. If you want to add additional
+repos you can put them into <tt class="docutils literal"><span class="pre">/var/lib/lorax/composer/repos.d/</span></tt> or use the
+<tt class="docutils literal"><span class="pre">/api/v0/projects/source/*</span></tt> API routes to create them.</p>
+<p>The new source can be added by doing a POST to the <tt class="docutils literal"><span class="pre">/api/v0/projects/source/new</span></tt>
+route using JSON (with <cite>Content-Type</cite> header set to <cite>application/json</cite>) or TOML
+(with it set to <cite>text/x-toml</cite>).  The format of the source looks like this (in
+TOML):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;custom-source-1&quot;</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s">&quot;https://url/path/to/repository/&quot;</span>
+<span class="nb">type</span> <span class="o">=</span> <span class="s">&quot;yum-baseurl&quot;</span>
+<span class="n">proxy</span> <span class="o">=</span> <span class="s">&quot;https://proxy-url/&quot;</span>
+<span class="n">check_ssl</span> <span class="o">=</span> <span class="n">true</span>
+<span class="n">check_gpg</span> <span class="o">=</span> <span class="n">true</span>
+<span class="n">gpgkey_urls</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;https://url/path/to/gpg-key&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">proxy</span></tt> and <tt class="docutils literal"><span class="pre">gpgkey_urls</span></tt> entries are optional. All of the others are required. The supported
+types for the urls are:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">yum-baseurl</span></tt> is a URL to a yum repository.</li>
+<li><tt class="docutils literal"><span class="pre">yum-mirrorlist</span></tt> is a URL for a mirrorlist.</li>
+<li><tt class="docutils literal"><span class="pre">yum-metalink</span></tt> is a URL for a metalink.</li>
+</ul>
+<p>If <tt class="docutils literal"><span class="pre">check_ssl</span></tt> is true the https certificates must be valid. If they are self-signed you can either set
+this to false, or add your Certificate Authority to the host system.</p>
+<p>If <tt class="docutils literal"><span class="pre">check_gpg</span></tt> is true the GPG key must either be installed on the host system, or <tt class="docutils literal"><span class="pre">gpgkey_urls</span></tt>
+should point to it.</p>
+<p>You can edit an existing source (other than system sources), by doing a POST to the <tt class="docutils literal"><span class="pre">new</span></tt> route
+with the new version of the source. It will overwrite the previous one.</p>
+<p>A list of existing sources is available from <tt class="docutils literal"><span class="pre">/api/v0/projects/source/list</span></tt>, and detailed info
+on a source can be retrieved with the <tt class="docutils literal"><span class="pre">/api/v0/projects/source/info/&lt;source-name&gt;</span></tt> route. By default
+it returns JSON but it can also return TOML if <tt class="docutils literal"><span class="pre">?format=toml</span></tt> is added to the request.</p>
+<p>Non-system sources can be deleted by doing a <tt class="docutils literal"><span class="pre">DELETE</span></tt> request to the
+<tt class="docutils literal"><span class="pre">/api/v0/projects/source/delete/&lt;source-name&gt;</span></tt> route.</p>
+<p>The documentation for the source API routes can be <a class="reference external" href="pylorax.api.html#api-v0-projects-source-list">found here</a></p>
+<p>The configured sources are used for all blueprint depsolve operations, and for composing images.
+When adding additional sources you must make sure that the packages in the source do not
+conflict with any other package sources, otherwise depsolving will fail.</p>
+</div>
 </div>
 
 
@@ -161,13 +328,28 @@ the contents of the iso as well as the boot.iso itself.</p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">lorax-composer</a><ul>
-<li><a class="reference internal" href="#logs">Logs</a></li>
+<li><a class="reference internal" href="#important-things-to-note">Important Things To Note</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#quickstart">Quickstart</a></li>
+<li><a class="reference internal" href="#logs">Logs</a></li>
+<li><a class="reference internal" href="#security">Security</a></li>
+<li><a class="reference internal" href="#how-it-works">How it Works</a></li>
 <li><a class="reference internal" href="#composing-images">Composing Images</a></li>
+<li><a class="reference internal" href="#blueprints">Blueprints</a><ul>
+<li><a class="reference internal" href="#packages-and-modules">[[packages]] and [[modules]]</a></li>
+<li><a class="reference internal" href="#customizations">Customizations</a><ul>
+<li><a class="reference internal" href="#customizations-sshkey">[[customizations.sshkey]]</a></li>
+<li><a class="reference internal" href="#customizations-user">[[customizations.user]]</a></li>
+<li><a class="reference internal" href="#customizations-group">[[customizations.group]]</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a class="reference internal" href="#adding-output-types">Adding Output Types</a><ul>
 <li><a class="reference internal" href="#example-add-partitioned-disk-support">Example: Add partitioned disk support</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#package-sources">Package Sources</a></li>
 </ul>
 </li>
 </ul>
@@ -176,8 +358,8 @@ the contents of the iso as well as the boot.iso itself.</p>
   <p class="topless"><a href="livemedia-creator.html"
                         title="previous chapter">livemedia-creator</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="product-images.html"
-                        title="next chapter">Product and Updates Images</a></p>
+  <p class="topless"><a href="composer-cli.html"
+                        title="next chapter">composer-cli</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/lorax-composer.txt"
@@ -210,12 +392,12 @@ the contents of the iso as well as the boot.iso itself.</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="product-images.html" title="Product and Updates Images"
+          <a href="composer-cli.html" title="composer-cli"
              >next</a> |</li>
         <li class="right" >
           <a href="livemedia-creator.html" title="livemedia-creator"
              >previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.15 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Lorax 19.7.18 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

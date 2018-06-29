@@ -1,0 +1,180 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>composer-cli &mdash; Lorax 19.7.18 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '19.7.18',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Lorax 19.7.18 documentation" href="index.html" />
+    <link rel="next" title="Product and Updates Images" href="product-images.html" />
+    <link rel="prev" title="lorax-composer" href="lorax-composer.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="product-images.html" title="Product and Updates Images"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="lorax-composer.html" title="lorax-composer"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Lorax 19.7.18 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="composer-cli">
+<h1>composer-cli<a class="headerlink" href="#composer-cli" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Authors:</th><td class="field-body">Brian C. Lane &lt;<a class="reference external" href="mailto:bcl&#37;&#52;&#48;redhat&#46;com">bcl<span>&#64;</span>redhat<span>&#46;</span>com</a>&gt;</td>
+</tr>
+</tbody>
+</table>
+<p><tt class="docutils literal"><span class="pre">composer-cli</span></tt> is used to interact with the <tt class="docutils literal"><span class="pre">lorax-composer</span></tt> API server, managing blueprints, exploring available packages, and building new images.</p>
+<p>It requires <a class="reference external" href="lorax-composer.html">lorax-composer</a> to be installed on the
+local system, and the user running it needs to be a member of the <tt class="docutils literal"><span class="pre">weldr</span></tt>
+group. They do not need to be root, but all of the <a class="reference external" href="lorax-composer.html#security">security precautions</a> apply.</p>
+<div class="section" id="composer-cli-cmdline-arguments">
+<h2>composer-cli cmdline arguments<a class="headerlink" href="#composer-cli-cmdline-arguments" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="edit-a-blueprint">
+<h2>Edit a Blueprint<a class="headerlink" href="#edit-a-blueprint" title="Permalink to this headline">¶</a></h2>
+<p>Start out by listing the available blueprints using <tt class="docutils literal"><span class="pre">composer-cli</span> <span class="pre">blueprints</span>
+<span class="pre">list</span></tt>, pick one and save it to the local directory by running <tt class="docutils literal"><span class="pre">composer-cli</span>
+<span class="pre">blueprints</span> <span class="pre">save</span> <span class="pre">http-server</span></tt>. If there are no blueprints available you can
+copy one of the examples <a class="reference external" href="https://github.com/weldr/lorax/tree/master/tests/pylorax/blueprints/">from the test suite</a>.</p>
+<p>Edit the file (it will be saved with a .toml extension) and change the
+description, add a package or module to it. Send it back to the server by
+running <tt class="docutils literal"><span class="pre">composer-cli</span> <span class="pre">blueprints</span> <span class="pre">push</span> <span class="pre">http-server.toml</span></tt>. You can verify that it was
+saved by viewing the changelog - <tt class="docutils literal"><span class="pre">composer-cli</span> <span class="pre">blueprints</span> <span class="pre">changes</span> <span class="pre">http-server</span></tt>.</p>
+</div>
+<div class="section" id="build-an-image">
+<h2>Build an image<a class="headerlink" href="#build-an-image" title="Permalink to this headline">¶</a></h2>
+<p>Build a <tt class="docutils literal"><span class="pre">qcow2</span></tt> disk image from this blueprint by running <tt class="docutils literal"><span class="pre">composer-cli</span>
+<span class="pre">compose</span> <span class="pre">start</span> <span class="pre">http-server</span> <span class="pre">qcow2</span></tt>. It will print a UUID that you can use to
+keep track of the build. You can also cancel the build if needed.</p>
+<p>The available types of images is displayed by <tt class="docutils literal"><span class="pre">composer-cli</span> <span class="pre">compose</span> <span class="pre">types</span></tt>.
+Currently this consists of: ext4-filesystem, live-iso, partitioned-disk, qcow2,
+tar</p>
+</div>
+<div class="section" id="monitor-the-build-status">
+<h2>Monitor the build status<a class="headerlink" href="#monitor-the-build-status" title="Permalink to this headline">¶</a></h2>
+<p>Monitor it using <tt class="docutils literal"><span class="pre">composer-cli</span> <span class="pre">compose</span> <span class="pre">status</span></tt>, which will show the status of
+all the builds on the system. You can view the end of the anaconda build logs
+once it is in the <tt class="docutils literal"><span class="pre">RUNNING</span></tt> state using <tt class="docutils literal"><span class="pre">composer-cli</span> <span class="pre">compose</span> <span class="pre">log</span> <span class="pre">UUID</span></tt>
+where UUID is the UUID returned by the start command.</p>
+<p>Once the build is in the <tt class="docutils literal"><span class="pre">FINISHED</span></tt> state you can download the image.</p>
+</div>
+<div class="section" id="download-the-image">
+<h2>Download the image<a class="headerlink" href="#download-the-image" title="Permalink to this headline">¶</a></h2>
+<p>Downloading the final image is done with <tt class="docutils literal"><span class="pre">composer-cli</span> <span class="pre">compose</span> <span class="pre">image</span> <span class="pre">UUID</span></tt> and it will
+save the qcow2 image as <tt class="docutils literal"><span class="pre">UUID-disk.qcow2</span></tt> which you can then use to boot a VM like this:</p>
+<div class="highlight-python"><pre>qemu-kvm --name test-image -m 1024 -hda ./UUID-disk.qcow2</pre>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">composer-cli</a><ul>
+<li><a class="reference internal" href="#composer-cli-cmdline-arguments">composer-cli cmdline arguments</a></li>
+<li><a class="reference internal" href="#edit-a-blueprint">Edit a Blueprint</a></li>
+<li><a class="reference internal" href="#build-an-image">Build an image</a></li>
+<li><a class="reference internal" href="#monitor-the-build-status">Monitor the build status</a></li>
+<li><a class="reference internal" href="#download-the-image">Download the image</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="lorax-composer.html"
+                        title="previous chapter">lorax-composer</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="product-images.html"
+                        title="next chapter">Product and Updates Images</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/composer-cli.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="product-images.html" title="Product and Updates Images"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="lorax-composer.html" title="lorax-composer"
+             >previous</a> |</li>
+        <li><a href="index.html">Lorax 19.7.18 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2018, Red Hat, Inc..
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

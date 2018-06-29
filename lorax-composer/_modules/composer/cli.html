@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>composer.cli &mdash; Lorax 19.7.15 documentation</title>
+    <title>composer.cli &mdash; Lorax 19.7.18 documentation</title>
     
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '19.7.15',
+        VERSION:     '19.7.18',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.15 documentation" href="../../index.html" />
+    <link rel="top" title="Lorax 19.7.18 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Lorax 19.7.15 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -49,7 +49,6 @@
           <div class="body">
             
   <h1>Source code for composer.cli</h1><div class="highlight"><pre>
-<span class="c">#!/usr/bin/python</span>
 <span class="c">#</span>
 <span class="c"># composer-cli</span>
 <span class="c">#</span>
@@ -75,12 +74,14 @@
 <span class="kn">from</span> <span class="nn">composer.cli.modules</span> <span class="kn">import</span> <span class="n">modules_cmd</span>
 <span class="kn">from</span> <span class="nn">composer.cli.projects</span> <span class="kn">import</span> <span class="n">projects_cmd</span>
 <span class="kn">from</span> <span class="nn">composer.cli.compose</span> <span class="kn">import</span> <span class="n">compose_cmd</span>
+<span class="kn">from</span> <span class="nn">composer.cli.sources</span> <span class="kn">import</span> <span class="n">sources_cmd</span>
 
 <span class="n">command_map</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s">&quot;blueprints&quot;</span><span class="p">:</span> <span class="n">blueprints_cmd</span><span class="p">,</span>
     <span class="s">&quot;modules&quot;</span><span class="p">:</span> <span class="n">modules_cmd</span><span class="p">,</span>
     <span class="s">&quot;projects&quot;</span><span class="p">:</span> <span class="n">projects_cmd</span><span class="p">,</span>
-    <span class="s">&quot;compose&quot;</span><span class="p">:</span> <span class="n">compose_cmd</span>
+    <span class="s">&quot;compose&quot;</span><span class="p">:</span> <span class="n">compose_cmd</span><span class="p">,</span>
+    <span class="s">&quot;sources&quot;</span><span class="p">:</span> <span class="n">sources_cmd</span>
     <span class="p">}</span>
 
 
@@ -90,14 +91,11 @@
 <span class="sd">    :param opts: Cmdline arguments</span>
 <span class="sd">    :type opts: argparse.Namespace</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Missing command&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="mi">1</span>
-    <span class="k">elif</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">command_map</span><span class="p">:</span>
+
+    <span class="c"># Making sure opts.args is not empty (thus, has a command and subcommand)</span>
+    <span class="c"># is already handled in src/bin/composer-cli.</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">command_map</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Unknown command </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="k">return</span> <span class="mi">1</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Missing </span><span class="si">%s</span><span class="s"> sub-command&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">return</span> <span class="mi">1</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
@@ -138,7 +136,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Lorax 19.7.15 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

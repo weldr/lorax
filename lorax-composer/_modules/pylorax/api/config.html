@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pylorax.api.config &mdash; Lorax 19.7.15 documentation</title>
+    <title>pylorax.api.config &mdash; Lorax 19.7.18 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '19.7.15',
+        VERSION:     '19.7.18',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.15 documentation" href="../../../index.html" />
+    <link rel="top" title="Lorax 19.7.18 documentation" href="../../../index.html" />
     <link rel="up" title="pylorax.api" href="../api.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.15 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../../pylorax.html" >pylorax</a> &raquo;</li>
           <li><a href="../api.html" accesskey="U">pylorax.api</a> &raquo;</li> 
@@ -97,9 +97,9 @@
     <span class="n">conf</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="s">&quot;composer&quot;</span><span class="p">)</span>
     <span class="n">conf</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;composer&quot;</span><span class="p">,</span> <span class="s">&quot;share_dir&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s">&quot;/usr/share/lorax/&quot;</span><span class="p">)))</span>
     <span class="n">conf</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;composer&quot;</span><span class="p">,</span> <span class="s">&quot;lib_dir&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s">&quot;/var/lib/lorax/composer/&quot;</span><span class="p">)))</span>
+    <span class="n">conf</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;composer&quot;</span><span class="p">,</span> <span class="s">&quot;repo_dir&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s">&quot;/var/lib/lorax/composer/repos.d/&quot;</span><span class="p">)))</span>
     <span class="n">conf</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;composer&quot;</span><span class="p">,</span> <span class="s">&quot;yum_conf&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s">&quot;/var/tmp/composer/yum.conf&quot;</span><span class="p">)))</span>
     <span class="n">conf</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;composer&quot;</span><span class="p">,</span> <span class="s">&quot;yum_root&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s">&quot;/var/tmp/composer/yum/root/&quot;</span><span class="p">)))</span>
-    <span class="n">conf</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;composer&quot;</span><span class="p">,</span> <span class="s">&quot;repo_dir&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s">&quot;/var/tmp/composer/repos.d/&quot;</span><span class="p">)))</span>
     <span class="n">conf</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;composer&quot;</span><span class="p">,</span> <span class="s">&quot;cache_dir&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s">&quot;/var/tmp/composer/cache/&quot;</span><span class="p">)))</span>
     <span class="n">conf</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;composer&quot;</span><span class="p">,</span> <span class="s">&quot;tmp&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s">&quot;/var/tmp/&quot;</span><span class="p">)))</span>
 
@@ -128,8 +128,11 @@
 <span class="sd">    :returns: None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;yum_conf&quot;</span><span class="p">,</span> <span class="s">&quot;repo_dir&quot;</span><span class="p">,</span> <span class="s">&quot;cache_dir&quot;</span><span class="p">,</span> <span class="s">&quot;yum_root&quot;</span><span class="p">]:</span>
-        <span class="n">p_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;composer&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">p_dir</span><span class="p">):</span>
+        <span class="n">p_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;composer&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">p</span> <span class="o">==</span> <span class="s">&quot;yum_conf&quot;</span><span class="p">:</span>
+            <span class="n">p_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">p_dir</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">p_dir</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">p_dir</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="make_queue_dirs"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.config.make_queue_dirs">[docs]</a><span class="k">def</span> <span class="nf">make_queue_dirs</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">gid</span><span class="p">):</span>
@@ -194,7 +197,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.15 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../../pylorax.html" >pylorax</a> &raquo;</li>
           <li><a href="../api.html" >pylorax.api</a> &raquo;</li> 

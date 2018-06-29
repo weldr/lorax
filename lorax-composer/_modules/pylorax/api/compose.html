@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pylorax.api.compose &mdash; Lorax 19.7.15 documentation</title>
+    <title>pylorax.api.compose &mdash; Lorax 19.7.18 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '19.7.15',
+        VERSION:     '19.7.18',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.15 documentation" href="../../../index.html" />
+    <link rel="top" title="Lorax 19.7.18 documentation" href="../../../index.html" />
     <link rel="up" title="pylorax.api" href="../api.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.15 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../../pylorax.html" >pylorax</a> &raquo;</li>
           <li><a href="../api.html" accesskey="U">pylorax.api</a> &raquo;</li> 
@@ -283,10 +283,9 @@
         <span class="p">(</span><span class="n">commit_id</span><span class="p">,</span> <span class="n">recipe</span><span class="p">)</span> <span class="o">=</span> <span class="n">read_recipe_and_id</span><span class="p">(</span><span class="n">gitlock</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">)</span>
 
     <span class="c"># Combine modules and packages and depsolve the list</span>
-    <span class="c"># TODO include the version/glob in the depsolving</span>
-    <span class="n">module_names</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">m</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;modules&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="p">[])</span>
-    <span class="n">package_names</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">recipe</span><span class="p">[</span><span class="s">&quot;packages&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="p">[])</span>
-    <span class="n">projects</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">module_names</span><span class="o">+</span><span class="n">package_names</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+    <span class="n">module_nver</span> <span class="o">=</span> <span class="n">recipe</span><span class="o">.</span><span class="n">module_nver</span>
+    <span class="n">package_nver</span> <span class="o">=</span> <span class="n">recipe</span><span class="o">.</span><span class="n">package_nver</span>
+    <span class="n">projects</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">module_nver</span><span class="o">+</span><span class="n">package_nver</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
     <span class="n">deps</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">yumlock</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
@@ -303,9 +302,10 @@
     <span class="n">ks_version</span> <span class="o">=</span> <span class="n">makeVersion</span><span class="p">(</span><span class="n">RHEL7</span><span class="p">)</span>
     <span class="n">ks</span> <span class="o">=</span> <span class="n">KickstartParser</span><span class="p">(</span><span class="n">ks_version</span><span class="p">,</span> <span class="n">errorsAreFatal</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">missingIncludeIsFatal</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
     <span class="n">ks</span><span class="o">.</span><span class="n">readKickstartFromString</span><span class="p">(</span><span class="n">ks_template</span><span class="o">+</span><span class="s">&quot;</span><span class="se">\n</span><span class="si">%e</span><span class="s">nd</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="n">pkgs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="s">&quot;*&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">packageList</span><span class="p">]</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">yumlock</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
-            <span class="p">(</span><span class="n">template_size</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">projects_depsolve_with_size</span><span class="p">(</span><span class="n">yumlock</span><span class="o">.</span><span class="n">yb</span><span class="p">,</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">packageList</span><span class="p">,</span>
+            <span class="p">(</span><span class="n">template_size</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">projects_depsolve_with_size</span><span class="p">(</span><span class="n">yumlock</span><span class="o">.</span><span class="n">yb</span><span class="p">,</span> <span class="n">pkgs</span><span class="p">,</span>
                                                              <span class="n">with_core</span><span class="o">=</span><span class="ow">not</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">nocore</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">ProjectsError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;start_build depsolve: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
@@ -587,7 +587,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.15 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../../pylorax.html" >pylorax</a> &raquo;</li>
           <li><a href="../api.html" >pylorax.api</a> &raquo;</li> 
