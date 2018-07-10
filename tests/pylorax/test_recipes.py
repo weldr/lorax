@@ -95,27 +95,27 @@ class BasicRecipeTest(unittest.TestCase):
         """Test the Recipe's version bump function"""
 
         # Neither have a version
-        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", None, None, None)
+        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", None, None, None, None)
         new_version = recipe.bump_version(None)
         self.assertEqual(new_version, "0.0.1")
 
         # Original has a version, new does not
-        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", None, None, None)
+        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", None, None, None, None)
         new_version = recipe.bump_version("0.0.1")
         self.assertEqual(new_version, "0.0.2")
 
         # Original has no version, new does
-        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.1.0", None, None)
+        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.1.0", None, None, None)
         new_version = recipe.bump_version(None)
         self.assertEqual(new_version, "0.1.0")
 
         # New and Original are the same
-        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.0.1", None, None)
+        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.0.1", None, None, None)
         new_version = recipe.bump_version("0.0.1")
         self.assertEqual(new_version, "0.0.2")
 
         # New is different from Original
-        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.1.1", None, None)
+        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.1.1", None, None, None)
         new_version = recipe.bump_version("0.0.1")
         self.assertEqual(new_version, "0.1.1")
 
@@ -136,8 +136,8 @@ class BasicRecipeTest(unittest.TestCase):
 
     def recipe_diff_test(self):
         """Test the recipe_diff function"""
-        old_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.1.1", self.old_modules, self.old_packages)
-        new_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.3.1", self.new_modules, self.new_packages)
+        old_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.1.1", self.old_modules, self.old_packages, [])
+        new_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.3.1", self.new_modules, self.new_packages, [])
         result = [{'new': {'Version': '0.3.1'}, 'old': {'Version': '0.1.1'}},
                   {'new': {'Module': {'name': 'openssh', 'version': '2.8.1'}}, 'old': None},
                   {'new': None, 'old': {'Module': {'name': 'bash', 'version': '4.*'}}},
@@ -182,7 +182,7 @@ version = "2.7.*"
 
     def test_02_commit_recipe(self):
         """Test committing a Recipe object"""
-        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", None, None, None)
+        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", None, None, None, None)
         oid = recipes.commit_recipe(self.repo, "master", recipe)
         self.assertNotEqual(oid, None)
 
