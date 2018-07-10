@@ -47,21 +47,24 @@ class Recipe(dict):
     and adds a .filename property to return the recipe's filename,
     and a .toml() function to return the recipe as a TOML string.
     """
-    def __init__(self, name, description, version, modules, packages, customizations=None):
+    def __init__(self, name, description, version, modules, packages, groups, customizations=None):
         # Check that version is empty or semver compatible
         if version:
             semver.Version(version)
 
-        # Make sure modules and packages are listed by their case-insensitive names
+        # Make sure modules, packages, and groups are listed by their case-insensitive names
         if modules is not None:
             modules = sorted(modules, key=lambda m: m["name"].lower())
         if packages is not None:
             packages = sorted(packages, key=lambda p: p["name"].lower())
+        if groups is not None:
+            groups = sorted(groups, key=lambda g: g["name"].lower())
         dict.__init__(self, name=name,
                             description=description,
                             version=version,
                             modules=modules,
                             packages=packages,
+                            groups=groups,
                             customizations=customizations)
 
         # We don't want customizations=None to show up in the TOML so remove it
@@ -87,6 +90,11 @@ class Recipe(dict):
     def module_nver(self):
         """Return the names and version globs of the modules"""
         return [(m["name"], m["version"]) for m in self["modules"] or []]
+
+    @property
+    def group_names(self):
+        """Return the names of the groups.  Groups do not have versions."""
+        return map(lambda g: g["name"], self["groups"] or [])
 
     @property
     def filename(self):
@@ -144,21 +152,25 @@ class Recipe(dict):
         """
         module_names = self.module_names
         package_names = self.package_names
+        group_names = self.group_names
 
         new_modules = []
         new_packages = []
+        new_groups = []
         for dep in deps:
             if dep["name"] in package_names:
                 new_packages.append(RecipePackage(dep["name"], dep_evra(dep)))
             elif dep["name"] in module_names:
                 new_modules.append(RecipeModule(dep["name"], dep_evra(dep)))
+            elif dep["name"] in group_names:
+                new_groups.append(RecipeGroup(dep["name"]))
         if "customizations" in self:
             customizations = self["customizations"]
         else:
             customizations = None
 
         return Recipe(self["name"], self["description"], self["version"],
-                      new_modules, new_packages, customizations)
+                      new_modules, new_packages, new_groups, customizations)
 
 class RecipeModule(dict):
     def __init__(self, name, version):
@@ -166,6 +178,10 @@ class RecipeModule(dict):
 
 class RecipePackage(RecipeModule):
     pass
+
+class RecipeGroup(dict):
+    def __init__(self, name):
+        dict.__init__(self, name=name)
 
 def recipe_from_file(recipe_path):
     """Return a recipe file as a Recipe object
@@ -210,6 +226,10 @@ def recipe_from_dict(recipe_dict):
             packages = [RecipePackage(p.get("name"), p.get("version")) for p in recipe_dict["packages"]]
         else:
             packages = []
+        if recipe_dict.get("groups"):
+            groups = [RecipeGroup(g.get("name")) for g in recipe_dict["groups"]]
+        else:
+            groups = []
         name = recipe_dict["name"]
         description = recipe_dict["description"]
         version = recipe_dict.get("version", None)
@@ -217,7 +237,7 @@ def recipe_from_dict(recipe_dict):
     except KeyError as e:
         raise RecipeError("There was a problem parsing the recipe: %s" % str(e))
 
-    return Recipe(name, description, version, modules, packages, customizations)
+    return Recipe(name, description, version, modules, packages, groups, customizations)
 
 def gfile(path):
     """Convert a string path to GFile for use with Git"""
@@ -897,5 +917,6 @@ def recipe_diff(old_recipe, new_recipe):
 
     diffs.extend(diff_items("Module", old_recipe["modules"], new_recipe["modules"]))
     diffs.extend(diff_items("Package", old_recipe["packages"], new_recipe["packages"]))
+    diffs.extend(diff_items("Group", old_recipe["groups"], new_recipe["groups"]))
 
     return diffs
