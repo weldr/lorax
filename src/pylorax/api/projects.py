@@ -182,13 +182,15 @@ def projects_info(dbo, project_names):
         pkgs = dbo.sack.query().available()
     return sorted(map(pkg_to_project_info, pkgs), key=lambda p: p["name"].lower())
 
-def _depsolve(dbo, projects):
+def _depsolve(dbo, projects, groups):
     """Add projects to a new transaction
 
     :param dbo: dnf base object
     :type dbo: dnf.Base
     :param projects: The projects and version globs to find the dependencies for
     :type projects: List of tuples
+    :param groups: The groups to include in dependency solving
+    :type groups: List of str
     :returns: None
     :rtype: None
     :raises: ProjectsError if there was a problem installing something
@@ -196,6 +198,12 @@ def _depsolve(dbo, projects):
     # This resets the transaction
     dbo.reset(goal=True)
     install_errors = []
+    for name in groups:
+        try:
+            dbo.group_install(name, ["mandatory", "default"])
+        except dnf.exceptions.MarkingError as e:
+            install_errors.append(("Group %s" % (name), str(e)))
+
     for name, version in projects:
         try:
             if not version:
@@ -214,18 +222,20 @@ def _depsolve(dbo, projects):
         raise ProjectsError("The following package(s) had problems: %s" % ",".join(["%s (%s)" % (pattern, err) for pattern, err in install_errors]))
 
 
-def projects_depsolve(dbo, projects):
+def projects_depsolve(dbo, projects, groups):
     """Return the dependencies for a list of projects
 
     :param dbo: dnf base object
     :type dbo: dnf.Base
     :param projects: The projects to find the dependencies for
     :type projects: List of Strings
+    :param groups: The groups to include in dependency solving
+    :type groups: List of str
     :returns: NEVRA's of the project and its dependencies
     :rtype: list of dicts
     :raises: ProjectsError if there was a problem installing something
     """
-    _depsolve(dbo, projects)
+    _depsolve(dbo, projects, groups)
 
     try:
         dbo.resolve()
@@ -259,18 +269,20 @@ def estimate_size(packages, block_size=6144):
     return installed_size
 
 
-def projects_depsolve_with_size(dbo, projects, with_core=True):
+def projects_depsolve_with_size(dbo, projects, groups, with_core=True):
     """Return the dependencies and installed size for a list of projects
 
     :param dbo: dnf base object
     :type dbo: dnf.Base
     :param project_names: The projects to find the dependencies for
     :type project_names: List of Strings
+    :param groups: The groups to include in dependency solving
+    :type groups: List of str
     :returns: installed size and a list of NEVRA's of the project and its dependencies
     :rtype: tuple of (int, list of dicts)
     :raises: ProjectsError if there was a problem installing something
     """
-    _depsolve(dbo, projects)
+    _depsolve(dbo, projects, groups)
 
     if with_core:
         dbo.group_install("core", ['mandatory', 'default', 'optional'])
@@ -323,7 +335,7 @@ def modules_info(dbo, module_names):
 
     # Add the dependency info to each one
     for module in modules:
-        module["dependencies"] = projects_depsolve(dbo, [(module["name"], "*.*")])
+        module["dependencies"] = projects_depsolve(dbo, [(module["name"], "*.*")], [])
 
     return modules
 
