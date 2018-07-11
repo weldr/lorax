@@ -75,7 +75,7 @@ def test_templates(dbo, share_dir):
         ks.readKickstartFromString(ks_template+"\n%end\n")
         pkgs = [(name, "*") for name in ks.handler.packages.packageList]
         try:
-            _ = projects_depsolve(dbo, pkgs)
+            _ = projects_depsolve(dbo, pkgs, [])
         except ProjectsError as e:
             template_errors.append("Error depsolving %s: %s" % (compose_type, str(e)))
 
@@ -258,7 +258,7 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
     deps = []
     try:
         with dnflock.lock:
-            (installed_size, deps) = projects_depsolve_with_size(dnflock.dbo, projects, with_core=False)
+            (installed_size, deps) = projects_depsolve_with_size(dnflock.dbo, projects, recipe.group_names, with_core=False)
     except ProjectsError as e:
         log.error("start_build depsolve: %s", str(e))
         raise RuntimeError("Problem depsolving %s: %s" % (recipe["name"], str(e)))
@@ -274,7 +274,7 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
     ks_projects = [(name, "*") for name in ks.handler.packages.packageList]
     try:
         with dnflock.lock:
-            (template_size, _) = projects_depsolve_with_size(dnflock.dbo, ks_projects,
+            (template_size, _) = projects_depsolve_with_size(dnflock.dbo, ks_projects, [],
                                                              with_core=not ks.handler.packages.nocore)
     except ProjectsError as e:
         log.error("start_build depsolve: %s", str(e))

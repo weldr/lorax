@@ -1278,7 +1278,7 @@ def v0_api(api):
             deps = []
             try:
                 with api.config["DNFLOCK"].lock:
-                    deps = projects_depsolve(api.config["DNFLOCK"].dbo, projects)
+                    deps = projects_depsolve(api.config["DNFLOCK"].dbo, projects, blueprint.group_names)
             except ProjectsError as e:
                 errors.append("%s: %s" % (blueprint_name, str(e)))
                 log.error("(v0_blueprints_freeze) %s", str(e))
@@ -1330,7 +1330,7 @@ def v0_api(api):
             deps = []
             try:
                 with api.config["DNFLOCK"].lock:
-                    deps = projects_depsolve(api.config["DNFLOCK"].dbo, projects)
+                    deps = projects_depsolve(api.config["DNFLOCK"].dbo, projects, blueprint.group_names)
             except ProjectsError as e:
                 errors.append("%s: %s" % (blueprint_name, str(e)))
                 log.error("(v0_blueprints_depsolve) %s", str(e))
@@ -1385,7 +1385,7 @@ def v0_api(api):
         """Return detailed information about the listed projects"""
         try:
             with api.config["DNFLOCK"].lock:
-                deps = projects_depsolve(api.config["DNFLOCK"].dbo, [(n, "*") for n in project_names.split(",")])
+                deps = projects_depsolve(api.config["DNFLOCK"].dbo, [(n, "*") for n in project_names.split(",")], [])
         except ProjectsError as e:
             log.error("(v0_projects_depsolve) %s", str(e))
             return jsonify(status=False, errors=[str(e)]), 400
