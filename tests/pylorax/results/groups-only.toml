@@ -1,0 +1,6 @@
+name = "mail-server"
+description = "An example e-mail server."
+version = "0.0.1"
+
+[[groups]]
+name = "mail-server"
