@@ -32,6 +32,7 @@ class BasicRecipeTest(unittest.TestCase):
                          ("minimal.toml", "minimal.dict"),
                          ("modules-only.toml", "modules-only.dict"),
                          ("packages-only.toml", "packages-only.dict"),
+                         ("groups-only.toml", "groups-only.dict"),
                          ("custom-base.toml", "custom-base.dict")]
         results_path = "./tests/pylorax/results/"
         self.input_toml = []
@@ -47,12 +48,16 @@ class BasicRecipeTest(unittest.TestCase):
                             recipes.RecipeModule("httpd", "3.7.*")]
         self.old_packages = [recipes.RecipePackage("python", "2.7.*"),
                              recipes.RecipePackage("parted", "3.2")]
+        self.old_groups = [recipes.RecipeGroup("backup-client"),
+                           recipes.RecipeGroup("base")]
         self.new_modules = [recipes.RecipeModule("toml", "2.1"),
                             recipes.RecipeModule("httpd", "3.8.*"),
                             recipes.RecipeModule("openssh", "2.8.1")]
         self.new_packages = [recipes.RecipePackage("python", "2.7.*"),
                              recipes.RecipePackage("parted", "3.2"),
                              recipes.RecipePackage("git", "2.13.*")]
+        self.new_groups = [recipes.RecipeGroup("console-internet"),
+                           recipes.RecipeGroup("base")]
         self.modules_result = [{"new": {"Modules": {"version": "2.8.1", "name": "openssh"}},
                                 "old": None},
                                {"new": None,
@@ -60,6 +65,9 @@ class BasicRecipeTest(unittest.TestCase):
                                {"new": {"Modules": {"version": "3.8.*", "name": "httpd"}},
                                 "old": {"Modules": {"version": "3.7.*", "name": "httpd"}}}]
         self.packages_result = [{"new": {"Packages": {"name": "git", "version": "2.13.*"}}, "old": None}]
+        self.groups_result = [{'new': {'Groups': {'name': 'console-internet'}}, 'old': None},
+                              {'new': None, 'old': {'Groups': {'name': 'backup-client'}}}]
+
 
     @classmethod
     def tearDownClass(self):
@@ -133,6 +141,7 @@ class BasicRecipeTest(unittest.TestCase):
         """Test the diff_items function"""
         self.assertEqual(recipes.diff_items("Modules", self.old_modules, self.new_modules), self.modules_result)
         self.assertEqual(recipes.diff_items("Packages", self.old_packages, self.new_packages), self.packages_result)
+        self.assertEqual(recipes.diff_items("Groups", self.old_groups, self.new_groups), self.groups_result)
 
     def recipe_diff_test(self):
         """Test the recipe_diff function"""
