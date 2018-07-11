@@ -203,10 +203,20 @@ def projects_depsolve(yb, projects):
     try:
         # This resets the transaction
         yb.closeRpmDB()
+        install_errors = []
         for name, version in projects:
             if not version:
                 version = "*"
-            yb.install(pattern="%s-%s" % (name, version))
+            pattern = "%s-%s" % (name, version)
+            try:
+                yb.install(pattern=pattern)
+            except YumBaseError as e:
+                install_errors.append((pattern, str(e)))
+
+        # Were there problems installing these packages?
+        if install_errors:
+            raise ProjectsError("The following package(s) had problems: %s" % ",".join(["%s (%s)" % (pattern, err) for pattern, err in install_errors]))
+
         (rc, msg) = yb.buildTransaction()
         if rc not in [0, 1, 2]:
             raise ProjectsError("There was a problem depsolving %s: %s" % (projects, msg))
@@ -252,10 +262,20 @@ def projects_depsolve_with_size(yb, projects, with_core=True):
     try:
         # This resets the transaction
         yb.closeRpmDB()
+        install_errors = []
         for name, version in projects:
             if not version:
                 version = "*"
-            yb.install(pattern="%s-%s" % (name, version))
+            pattern = "%s-%s" % (name, version)
+            try:
+                yb.install(pattern=pattern)
+            except YumBaseError as e:
+                install_errors.append((pattern, str(e)))
+
+        # Were there problems installing these packages?
+        if install_errors:
+            raise ProjectsError("The following package(s) had problems: %s" % ",".join(["%s (%s)" % (pattern, err) for pattern, err in install_errors]))
+
         if with_core:
             yb.selectGroup("core", group_package_types=['mandatory', 'default', 'optional'])
         (rc, msg) = yb.buildTransaction()
