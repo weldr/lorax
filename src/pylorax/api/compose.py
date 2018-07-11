@@ -236,7 +236,7 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_m
     deps = []
     try:
         with yumlock.lock:
-            (installed_size, deps) = projects_depsolve_with_size(yumlock.yb, projects, with_core=False)
+            (installed_size, deps) = projects_depsolve_with_size(yumlock.yb, projects, recipe.group_names, with_core=False)
     except ProjectsError as e:
         log.error("start_build depsolve: %s", str(e))
         raise RuntimeError("Problem depsolving %s: %s" % (recipe["name"], str(e)))
@@ -252,7 +252,7 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_m
     pkgs = [(name, "*") for name in ks.handler.packages.packageList]
     try:
         with yumlock.lock:
-            (template_size, _) = projects_depsolve_with_size(yumlock.yb, pkgs,
+            (template_size, _) = projects_depsolve_with_size(yumlock.yb, pkgs, [],
                                                              with_core=not ks.handler.packages.nocore)
     except ProjectsError as e:
         log.error("start_build depsolve: %s", str(e))
