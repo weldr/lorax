@@ -158,7 +158,7 @@ class ProjectsTest(unittest.TestCase):
     def test_projects_depsolve(self):
         deps = projects_depsolve(self.dbo, [("bash", "*.*")], [])
         self.assertTrue(len(deps) > 3)
-        self.assertEqual(deps[0]["name"], "basesystem")
+        self.assertTrue("basesystem" in [dep["name"] for dep in deps])
 
     def test_projects_depsolve_version(self):
         """Test that depsolving with a partial wildcard version works"""
@@ -194,6 +194,13 @@ class ProjectsTest(unittest.TestCase):
         print(modules)
         self.assertEqual(modules[0]["name"], "bash")
         self.assertEqual(modules[0]["dependencies"][0]["name"], "basesystem")
+
+    def test_groups_depsolve(self):
+        deps = projects_depsolve(self.dbo, [], ["c-development"])
+        names = [grp["name"] for grp in deps]
+        self.assertTrue("autoconf" in names)            # mandatory package
+        self.assertTrue("ctags" in names)               # default package
+        self.assertFalse("cmake" in names)              # optional package
 
 
 class ConfigureTest(unittest.TestCase):
