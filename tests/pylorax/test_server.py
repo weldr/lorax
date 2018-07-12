@@ -61,6 +61,9 @@ class ServerTestCase(unittest.TestCase):
         yb = get_base_object(server.config["COMPOSER_CFG"])
         server.config["YUMLOCK"] = YumLock(yb=yb, lock=Lock())
 
+        # Include a message in /api/status output
+        server.config["TEMPLATE_ERRORS"] = ["Test message"]
+
         server.config['TESTING'] = True
         self.server = server.test_client()
         self.repo_dir = repo_dir
@@ -84,11 +87,15 @@ class ServerTestCase(unittest.TestCase):
 
     def test_01_status(self):
         """Test the /api/status route"""
-        status_fields = ["build", "api", "db_version", "schema_version", "db_supported", "backend"]
+        status_fields = ["build", "api", "db_version", "schema_version", "db_supported", "backend", "msgs"]
         resp = self.server.get("/api/status")
         data = json.loads(resp.data)
-        # Just make sure the fields are present
+        # Make sure the fields are present
         self.assertEqual(sorted(data.keys()), sorted(status_fields))
+
+        # Check for test message
+        self.assertEqual(data["msgs"], ["Test message"])
+
 
     def test_02_blueprints_list(self):
         """Test the /api/v0/blueprints/list route"""

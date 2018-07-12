@@ -46,12 +46,40 @@ from pyanaconda.simpleconfig import SimpleConfigFile
 from pykickstart.parser import KickstartParser
 from pykickstart.version import makeVersion, RHEL7
 
-from pylorax.api.projects import projects_depsolve_with_size, dep_nevra
+from pylorax.api.projects import projects_depsolve, projects_depsolve_with_size, dep_nevra
 from pylorax.api.projects import ProjectsError
 from pylorax.api.recipes import read_recipe_and_id
 from pylorax.imgutils import default_image_name
 from pylorax.sysutils import joinpaths
 
+
+def test_templates(yb, share_dir):
+    """ Try depsolving each of the the templates and report any errors
+
+    :param yb: yum base object
+    :type yb: YumBase
+    :returns: List of template types and errors
+    :rtype: List of errors
+
+    Return a list of templates and errors encountered or an empty list
+    """
+    template_errors = []
+    for compose_type in compose_types(share_dir):
+        # Read the kickstart template for this type
+        ks_template_path = joinpaths(share_dir, "composer", compose_type) + ".ks"
+        ks_template = open(ks_template_path, "r").read()
+
+        # How much space will the packages in the default template take?
+        ks_version = makeVersion(RHEL7)
+        ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+        ks.readKickstartFromString(ks_template+"\n%end\n")
+        pkgs = [(name, "*") for name in ks.handler.packages.packageList]
+        try:
+            _ = projects_depsolve(yb, pkgs)
+        except ProjectsError as e:
+            template_errors.append("Error depsolving %s: %s" % (compose_type, str(e)))
+
+    return template_errors
 
 def repo_to_ks(r, url="url"):
     """ Return a kickstart line with the correct args.

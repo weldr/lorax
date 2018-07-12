@@ -65,13 +65,19 @@ def v0_status():
             "db_supported": true,
             "db_version": "0",
             "schema_version": "0",
-            "backend": "lorax-composer"}
+            "backend": "lorax-composer",
+            "msgs": []}
+
+    The 'msgs' field can be a list of strings describing startup problems or status that
+    should be displayed to the user. eg. if the compose templates are not depsolving properly
+    the errors will be in 'msgs'.
     """
     return jsonify(backend="lorax-composer",
                    build=vernum,
                    api="0",
                    db_version="0",
                    schema_version="0",
-                   db_supported=True)
+                   db_supported=True,
+                   msgs=server.config["TEMPLATE_ERRORS"])
 
 v0_api(server)
