@@ -141,6 +141,18 @@ NOTE: As of lorax-composer-29.2-1 the versions are not used for depsolving,
 that is planned for a future release. And currently there are no differences
 between ``packages`` and ``modules`` in ``lorax-composer``.
 
+[[groups]]
+~~~~~~~~~~
+
+These entries describe a group of packages to be installed into the image.  Package groups are
+defined in the repository metadata.  Each group has a descriptive name used primarily for display
+in user interfaces and an ID more commonly used in kickstart files.  Here, the ID is the expected
+way of listing a group.
+
+Groups have three different ways of categorizing their packages:  mandatory, default, and optional.
+For purposes of blueprints, mandatory and default packages will be installed.  There is no mechanism
+for selecting optional packages.
+
 Customizations
 ~~~~~~~~~~~~~~
 

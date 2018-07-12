@@ -189,13 +189,15 @@ def projects_info(yb, project_names):
     return sorted(map(yaps_to_project_info, ybl.available), key=lambda p: p["name"].lower())
 
 
-def projects_depsolve(yb, projects):
+def projects_depsolve(yb, projects, groups):
     """Return the dependencies for a list of projects
 
     :param yb: yum base object
     :type yb: YumBase
     :param projects: The projects and version globs to find the dependencies for
     :type projects: List of tuples
+    :param groups: The groups to include in dependency solving
+    :type groups: List of str
     :returns: NEVRA's of the project and its dependencies
     :rtype: list of dicts
     :raises: ProjectsError if there was a problem installing something
@@ -203,6 +205,9 @@ def projects_depsolve(yb, projects):
     try:
         # This resets the transaction
         yb.closeRpmDB()
+        for name in groups:
+            yb.selectGroup(name, ["mandatory", "default"])
+
         for name, version in projects:
             if not version:
                 version = "*"
@@ -238,13 +243,15 @@ def estimate_size(packages, block_size=4096):
         installed_size += p.po.installedsize
     return installed_size
 
-def projects_depsolve_with_size(yb, projects, with_core=True):
+def projects_depsolve_with_size(yb, projects, groups, with_core=True):
     """Return the dependencies and installed size for a list of projects
 
     :param yb: yum base object
     :type yb: YumBase
     :param projects: The projects and version globs to find the dependencies for
     :type projects: List of tuples
+    :param groups: The groups to include in dependency solving
+    :type groups: List of str
     :returns: installed size and a list of NEVRA's of the project and its dependencies
     :rtype: tuple of (int, list of dicts)
     :raises: ProjectsError if there was a problem installing something
@@ -252,6 +259,9 @@ def projects_depsolve_with_size(yb, projects, with_core=True):
     try:
         # This resets the transaction
         yb.closeRpmDB()
+        for name in groups:
+            yb.selectGroup(name, ["mandatory", "default"])
+
         for name, version in projects:
             if not version:
                 version = "*"
@@ -315,7 +325,7 @@ def modules_info(yb, module_names):
     modules = sorted(map(yaps_to_project, ybl.available), key=lambda p: p["name"].lower())
     # Add the dependency info to each one
     for module in modules:
-        module["dependencies"] = projects_depsolve(yb, [(module["name"], "*")])
+        module["dependencies"] = projects_depsolve(yb, [(module["name"], "*")], [])
 
     return modules
 

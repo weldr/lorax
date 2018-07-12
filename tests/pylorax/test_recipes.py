@@ -32,6 +32,7 @@ class BasicRecipeTest(unittest.TestCase):
                          ("minimal.toml", "minimal.dict"),
                          ("modules-only.toml", "modules-only.dict"),
                          ("packages-only.toml", "packages-only.dict"),
+                         ("groups-only.toml", "groups-only.dict"),
                          ("custom-base.toml", "custom-base.dict")]
         results_path = "./tests/pylorax/results/"
         self.input_toml = []
@@ -47,12 +48,16 @@ class BasicRecipeTest(unittest.TestCase):
                             recipes.RecipeModule("httpd", "3.7.*")]
         self.old_packages = [recipes.RecipePackage("python", "2.7.*"),
                              recipes.RecipePackage("parted", "3.2")]
+        self.old_groups = [recipes.RecipeGroup("backup-client"),
+                           recipes.RecipeGroup("base")]
         self.new_modules = [recipes.RecipeModule("toml", "2.1"),
                             recipes.RecipeModule("httpd", "3.8.*"),
                             recipes.RecipeModule("openssh", "2.8.1")]
         self.new_packages = [recipes.RecipePackage("python", "2.7.*"),
                              recipes.RecipePackage("parted", "3.2"),
                              recipes.RecipePackage("git", "2.13.*")]
+        self.new_groups = [recipes.RecipeGroup("console-internet"),
+                           recipes.RecipeGroup("base")]
         self.modules_result = [{"new": {"Modules": {"version": "2.8.1", "name": "openssh"}},
                                 "old": None},
                                {"new": None,
@@ -60,6 +65,9 @@ class BasicRecipeTest(unittest.TestCase):
                                {"new": {"Modules": {"version": "3.8.*", "name": "httpd"}},
                                 "old": {"Modules": {"version": "3.7.*", "name": "httpd"}}}]
         self.packages_result = [{"new": {"Packages": {"name": "git", "version": "2.13.*"}}, "old": None}]
+        self.groups_result = [{'new': {'Groups': {'name': 'console-internet'}}, 'old': None},
+                              {'new': None, 'old': {'Groups': {'name': 'backup-client'}}}]
+
 
     @classmethod
     def tearDownClass(self):
@@ -95,27 +103,27 @@ class BasicRecipeTest(unittest.TestCase):
         """Test the Recipe's version bump function"""
 
         # Neither have a version
-        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", None, None, None)
+        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", None, None, None, None)
         new_version = recipe.bump_version(None)
         self.assertEqual(new_version, "0.0.1")
 
         # Original has a version, new does not
-        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", None, None, None)
+        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", None, None, None, None)
         new_version = recipe.bump_version("0.0.1")
         self.assertEqual(new_version, "0.0.2")
 
         # Original has no version, new does
-        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.1.0", None, None)
+        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.1.0", None, None, None)
         new_version = recipe.bump_version(None)
         self.assertEqual(new_version, "0.1.0")
 
         # New and Original are the same
-        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.0.1", None, None)
+        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.0.1", None, None, None)
         new_version = recipe.bump_version("0.0.1")
         self.assertEqual(new_version, "0.0.2")
 
         # New is different from Original
-        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.1.1", None, None)
+        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.1.1", None, None, None)
         new_version = recipe.bump_version("0.0.1")
         self.assertEqual(new_version, "0.1.1")
 
@@ -133,11 +141,12 @@ class BasicRecipeTest(unittest.TestCase):
         """Test the diff_items function"""
         self.assertEqual(recipes.diff_items("Modules", self.old_modules, self.new_modules), self.modules_result)
         self.assertEqual(recipes.diff_items("Packages", self.old_packages, self.new_packages), self.packages_result)
+        self.assertEqual(recipes.diff_items("Groups", self.old_groups, self.new_groups), self.groups_result)
 
     def recipe_diff_test(self):
         """Test the recipe_diff function"""
-        old_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.1.1", self.old_modules, self.old_packages)
-        new_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.3.1", self.new_modules, self.new_packages)
+        old_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.1.1", self.old_modules, self.old_packages, [])
+        new_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.3.1", self.new_modules, self.new_packages, [])
         result = [{'new': {'Version': '0.3.1'}, 'old': {'Version': '0.1.1'}},
                   {'new': {'Module': {'name': 'openssh', 'version': '2.8.1'}}, 'old': None},
                   {'new': None, 'old': {'Module': {'name': 'bash', 'version': '4.*'}}},
@@ -182,7 +191,7 @@ version = "2.7.*"
 
     def test_02_commit_recipe(self):
         """Test committing a Recipe object"""
-        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", None, None, None)
+        recipe = recipes.Recipe("test-recipe", "A recipe used for testing", None, None, None, None)
         oid = recipes.commit_recipe(self.repo, "master", recipe)
         self.assertNotEqual(oid, None)
 

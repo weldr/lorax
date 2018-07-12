@@ -182,27 +182,27 @@ class ProjectsTest(unittest.TestCase):
                 projects_info(self.yb, ["bash"])
 
     def test_projects_depsolve(self):
-        deps = projects_depsolve(self.yb, [("bash", "*.*")])
+        deps = projects_depsolve(self.yb, [("bash", "*.*")], [])
         self.assertTrue(len(deps) > 3)
-        self.assertEqual(deps[2]["name"], "basesystem")
+        self.assertTrue("basesystem" in [dep["name"] for dep in deps])
 
     def test_projects_depsolve_version(self):
         """Test that depsolving with a partial wildcard version works"""
-        deps = projects_depsolve(self.yb, [("bash", "4.*")])
+        deps = projects_depsolve(self.yb, [("bash", "4.*")], [])
         self.assertEqual(deps[1]["name"], "bash")
 
-        deps = projects_depsolve(self.yb, [("bash", "4.2.*")])
+        deps = projects_depsolve(self.yb, [("bash", "4.2.*")], [])
         self.assertEqual(deps[1]["name"], "bash")
 
     def test_projects_depsolve_oldversion(self):
         """Test that depsolving a specific non-existant version fails"""
         with self.assertRaises(ProjectsError):
-            deps = projects_depsolve(self.yb, [("bash", "1.0.0")])
+            deps = projects_depsolve(self.yb, [("bash", "1.0.0")], [])
             self.assertEqual(deps[1]["name"], "bash")
 
     def test_projects_depsolve_fail(self):
         with self.assertRaises(ProjectsError):
-            projects_depsolve(self.yb, [("nada-package", "*.*")])
+            projects_depsolve(self.yb, [("nada-package", "*.*")], [])
 
     def test_modules_list(self):
         modules = modules_list(self.yb, None)
@@ -225,12 +225,19 @@ class ProjectsTest(unittest.TestCase):
         self.assertTrue(len(modules) > 0)
         self.assertTrue(len(modules[0]["dependencies"]) > 3)
         self.assertEqual(modules[0]["name"], "bash")
-        self.assertEqual(modules[0]["dependencies"][2]["name"], "basesystem")
+        self.assertTrue("basesystem" in [dep["name"] for dep in modules[0]["dependencies"]])
 
     def test_modules_info_yum_raises_exception(self):
         with self.assertRaises(ProjectsError):
             with mock.patch.object(self.yb, 'doPackageLists', side_effect=YumBaseError('TESTING')):
                 modules_info(self.yb, ["bash"])
+
+    def test_groups_depsolve(self):
+        deps = projects_depsolve(self.yb, [], ["base"])
+        names = [grp["name"] for grp in deps]
+        self.assertTrue("acl" in names)                 # mandatory package
+        self.assertTrue("bash-completion" in names)     # default package
+        self.assertFalse("gpm" in names)                # optional package
 
 
 class ConfigureTest(unittest.TestCase):
