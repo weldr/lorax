@@ -74,8 +74,9 @@ def test_templates(yb, share_dir):
         ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
         ks.readKickstartFromString(ks_template+"\n%end\n")
         pkgs = [(name, "*") for name in ks.handler.packages.packageList]
+        grps = [grp.name for grp in ks.handler.packages.groupList]
         try:
-            _ = projects_depsolve(yb, pkgs)
+            _ = projects_depsolve(yb, pkgs, grps)
         except ProjectsError as e:
             template_errors.append("Error depsolving %s: %s" % (compose_type, str(e)))
 
@@ -278,9 +279,10 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_m
     ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
     ks.readKickstartFromString(ks_template+"\n%end\n")
     pkgs = [(name, "*") for name in ks.handler.packages.packageList]
+    grps = [grp.name for grp in ks.handler.packages.groupList]
     try:
         with yumlock.lock:
-            (template_size, _) = projects_depsolve_with_size(yumlock.yb, pkgs, [],
+            (template_size, _) = projects_depsolve_with_size(yumlock.yb, pkgs, grps,
                                                              with_core=not ks.handler.packages.nocore)
     except ProjectsError as e:
         log.error("start_build depsolve: %s", str(e))
