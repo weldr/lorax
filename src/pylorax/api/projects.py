@@ -195,18 +195,23 @@ def _depsolve(dbo, projects):
     """
     # This resets the transaction
     dbo.reset(goal=True)
+    install_errors = []
     for name, version in projects:
         try:
             if not version:
                 version = "*"
             pkgs = [pkg for pkg in dnf.subject.Subject(name).get_best_query(dbo.sack).filter(version__glob=version, latest=True)]
             if not pkgs:
-                raise ProjectsError("No match for %s-%s" % (name, version))
+                install_errors.append(("%s-%s" % (name, version), "No match"))
+                continue
 
             for p in pkgs:
                 dbo.package_install(p)
-        except dnf.exceptions.MarkingError:
-            raise ProjectsError("No match for %s-%s" % (name, version))
+        except dnf.exceptions.MarkingError as e:
+            install_errors.append(("%s-%s" % (name, version), str(e)))
+
+    if install_errors:
+        raise ProjectsError("The following package(s) had problems: %s" % ",".join(["%s (%s)" % (pattern, err) for pattern, err in install_errors]))
 
 
 def projects_depsolve(dbo, projects):
