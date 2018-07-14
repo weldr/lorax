@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.18
+Version:        19.7.19
 Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
@@ -121,6 +121,18 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python_sitelib}/composer/*
 
 %changelog
+* Fri Jul 13 2018 Brian C. Lane <bcl@redhat.com> 19.7.19-1
+- Support loading groups from the kickstart template files. (clumens)
+- Add group-based tests. (clumens)
+- Include groups in depsolving. (clumens)
+- Add support for groups to blueprints. (clumens)
+- Check the compose templates at startup (bcl)
+- List individual package install failures (bcl)
+- lorax-composer: Update documentation (bcl)
+- Add help output to each subcommand. (clumens)
+- Split the help output into its own module. (clumens)
+- If the help subcommand is given, print the help output. (clumens)
+
 * Wed Jun 27 2018 Brian C. Lane <bcl@redhat.com> 19.7.18-1
 - Only include some of the test blueprints (bcl)
 - Include example blueprints in the rpm (bcl)
