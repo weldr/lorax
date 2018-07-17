@@ -120,4 +120,4 @@ def update_metadata(yb):
         r.mdpolicy = "group:all"
     yb.doRepoSetup()
     yb.repos.doSetup()
-    yb.repos.populateSack(mdtype='all', cacheonly=1)
+    yb.repos.populateSack(mdtype='all', cacheonly=0)
