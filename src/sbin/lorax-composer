@@ -278,7 +278,11 @@ if __name__ == '__main__':
     make_yum_dirs(server.config["COMPOSER_CFG"])
 
     # Get a YumBase to share with the requests
-    yb = get_base_object(server.config["COMPOSER_CFG"])
+    try:
+        yb = get_base_object(server.config["COMPOSER_CFG"])
+    except RuntimeError:
+        # Error has already been logged. Just exit cleanly.
+        sys.exit(1)
     server.config["YUMLOCK"] = YumLock(yb=yb, lock=Lock())
 
     # Depsolve the templates and make a note of the failures for /api/status to report

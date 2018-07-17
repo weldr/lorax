@@ -24,6 +24,8 @@ from fnmatch import fnmatchcase
 from glob import glob
 import os
 import yum
+from yum.Errors import YumBaseError
+
 # This is a hack to short circuit yum's internal logging
 yum.logginglevels._added_handlers = True
 
@@ -118,6 +120,10 @@ def update_metadata(yb):
     for r in yb.repos.sort():
         r.metadata_expire = 0
         r.mdpolicy = "group:all"
-    yb.doRepoSetup()
-    yb.repos.doSetup()
-    yb.repos.populateSack(mdtype='all', cacheonly=0)
+    try:
+        yb.doRepoSetup()
+        yb.repos.doSetup()
+        yb.repos.populateSack(mdtype='all', cacheonly=0)
+    except YumBaseError as e:
+        log.error("Failed to update metadata: %s", str(e))
+        raise RuntimeError("Fetching metadata failed: %s" % str(e))
