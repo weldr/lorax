@@ -1443,7 +1443,7 @@ def v0_api(api):
 
         system_sources = get_repo_sources("/etc/yum.repos.d/*.repo")
         if source["name"] in system_sources:
-            return jsonify(status=False, errors=["%s is a system source, it cannot be deleted." % source["name"]]), 400
+            return jsonify(status=False, errors=["%s is a system source, it cannot be changed." % source["name"]]), 400
 
         try:
             # Remove it from the RepoDict (NOTE that this isn't explicitly supported by the DNF API)
