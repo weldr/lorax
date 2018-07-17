@@ -65,7 +65,7 @@ def projects_list(socket_path, api_version, args, show_json=False):
         return 0
 
     for proj in result["projects"]:
-        for k in ["name", "summary", "homepage", "description"]:
+        for k in [field for field in ("name", "summary", "homepage", "description") if proj[field]]:
             print("%s: %s" % (k.title(), textwrap.fill(proj[k], subsequent_indent=" " * (len(k)+2))))
         print("\n\n")
 
@@ -96,7 +96,7 @@ def projects_info(socket_path, api_version, args, show_json=False):
         return 0
 
     for proj in result["projects"]:
-        for k in ["name", "summary", "homepage", "description"]:
+        for k in [field for field in ("name", "summary", "homepage", "description") if proj[field]]:
             print("%s: %s" % (k.title(), textwrap.fill(proj[k], subsequent_indent=" " * (len(k)+2))))
         print("Builds: ")
         for build in proj["builds"]:
