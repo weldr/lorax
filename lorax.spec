@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.0
+Version:        28.14.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -230,6 +230,18 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python3_sitelib}/composer/*
 
 %changelog
+* Wed Jul 18 2018 Brian C. Lane <bcl@redhat.com> 28.14.1-1
+- Add requires on lorax-templates-rhel (bcl@redhat.com)
+- Check the compose templates at startup (bcl@redhat.com)
+- Install 'hostname' in runtime-install (for iSCSI) (awilliam@redhat.com)
+- Fix a couple typos in lorax-composer docs. (bcl@redhat.com)
+- Require python3-dnf v3.0.0 or later (bcl@redhat.com)
+- DNF 3: progress callback constants moved to dnf.transaction (awilliam@redhat.com)
+- Include example blueprints in the rpm (bcl@redhat.com)
+- Make sure /run/weldr has correct ownership and permissions (bcl@redhat.com)
+- Allow more than 1 bash build in tests (bcl@redhat.com)
+- Add redhat.exec to s390 .treeinfo (bcl@redhat.com)
+
 * Thu Jun 07 2018 Brian C. Lane <bcl@redhat.com> 28.14.0-1
 - Tag as version 28.14.0-1
 
