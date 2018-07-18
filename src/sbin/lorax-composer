@@ -245,7 +245,11 @@ if __name__ == '__main__':
     make_dnf_dirs(server.config["COMPOSER_CFG"])
 
     # Get a dnf.Base to share with the requests
-    dbo = get_base_object(server.config["COMPOSER_CFG"])
+    try:
+        dbo = get_base_object(server.config["COMPOSER_CFG"])
+    except RuntimeError:
+        # Error has already been logged. Just exit cleanly.
+        sys.exit(1)
     server.config["DNFLOCK"] = DNFLock(dbo=dbo, lock=Lock())
 
     # Depsolve the templates and make a note of the failures for /api/status to report
