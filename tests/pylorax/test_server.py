@@ -141,7 +141,7 @@ class ServerTestCase(unittest.TestCase):
                                    "modules":[{"name":"glusterfs", "version":"4.1.*"},
                                               {"name":"glusterfs-cli", "version":"4.1.*"}],
                                    "name":"glusterfs",
-                                   "packages":[{"name":"samba", "version":"4.8.*"}],
+                                   "packages":[{"name":"samba", "version":"4.9.*"}],
                                    "groups": [],
                                    "version": "0.0.1"},
                                   {"description":"An example http server with PHP and MySQL support.",
@@ -199,7 +199,7 @@ class ServerTestCase(unittest.TestCase):
                        "version": "0.2.0",
                        "modules":[{"name":"glusterfs", "version":"4.1.*"},
                                   {"name":"glusterfs-cli", "version":"4.1.*"}],
-                       "packages":[{"name":"samba", "version":"4.8.*"},
+                       "packages":[{"name":"samba", "version":"4.9.*"},
                                    {"name":"tmux", "version":"2.7"}],
                        "groups": []}
 
@@ -250,7 +250,7 @@ class ServerTestCase(unittest.TestCase):
                        "version": "0.3.0",
                        "modules":[{"name":"glusterfs", "version":"4.1.*"},
                                   {"name":"glusterfs-cli", "version":"4.1.*"}],
-                       "packages":[{"name":"samba", "version":"4.8.*"},
+                       "packages":[{"name":"samba", "version":"4.9.*"},
                                    {"name":"tmux", "version":"2.7"}],
                        "groups": []}
 
@@ -277,7 +277,7 @@ class ServerTestCase(unittest.TestCase):
                        "version": "0.4.0",
                        "modules":[{"name":"glusterfs", "version":"4.1.*"},
                                   {"name":"glusterfs-cli", "version":"4.1.*"}],
-                       "packages":[{"name":"samba", "version":"4.8.*"},
+                       "packages":[{"name":"samba", "version":"4.9.*"},
                                    {"name":"tmux", "version":"2.7"}],
                        "groups": []}
 
@@ -409,7 +409,7 @@ class ServerTestCase(unittest.TestCase):
                        "version": "0.3.0",
                        "modules":[{"name":"glusterfs", "version":"4.1.*"},
                                   {"name":"glusterfs-cli", "version":"4.1.*"}],
-                       "packages":[{"name":"samba", "version":"4.8.*"},
+                       "packages":[{"name":"samba", "version":"4.9.*"},
                                    {"name":"tmux", "version":"2.7"}]}
 
         resp = self.server.post("/api/v0/blueprints/workspace",
@@ -675,7 +675,7 @@ class ServerTestCase(unittest.TestCase):
                        "version": "0.2.0",
                        "modules":[{"name":"glusterfs", "version":"4.1.*"},
                                   {"name":"glusterfs-cli", "version":"4.1.*"}],
-                       "packages":[{"name":"samba", "version":"4.8.*"},
+                       "packages":[{"name":"samba", "version":"4.9.*"},
                                    {"name":"tmux", "version":"2.7"}],
                        "groups": []}
 
