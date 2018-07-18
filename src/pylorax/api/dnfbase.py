@@ -82,7 +82,11 @@ def get_base_object(conf):
 
     # Update the metadata from the enabled repos to speed up later operations
     log.info("Updating repository metadata")
-    dbo.fill_sack(load_system_repo=False)
-    dbo.read_comps()
+    try:
+        dbo.fill_sack(load_system_repo=False)
+        dbo.read_comps()
+    except dnf.exceptions.Error as e:
+        log.error("Failed to update metadata: %s", str(e))
+        raise RuntimeError("Fetching metadata failed: %s" % str(e))
 
     return dbo
