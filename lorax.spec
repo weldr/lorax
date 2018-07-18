@@ -19,6 +19,9 @@ Source0:        %{name}-%{version}.tar.gz
 BuildRequires:  python3-devel
 
 Requires:       lorax-templates
+%if 0%{?rhel} >= 8
+Requires:       lorax-templates-rhel
+%endif
 
 Requires:       GConf2
 Requires:       cpio
@@ -155,18 +158,18 @@ A command line tool for use with the lorax-composer API server. Examine recipes,
 build images, etc. from the command line.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 
 %install
-rm -rf $RPM_BUILD_ROOT
-make DESTDIR=$RPM_BUILD_ROOT mandir=%{_mandir} install
+rm -rf %{buildroot}
+make DESTDIR=%{buildroot} mandir=%{_mandir} install
 
 # Install example blueprints from the test suite.
 # This path MUST match the lorax-composer.service blueprint path.
-mkdir -p $RPM_BUILD_ROOT/var/lib/lorax/composer/blueprints/
-cp ./tests/pylorax/blueprints/*toml $RPM_BUILD_ROOT/var/lib/lorax/composer/blueprints/
+mkdir -p %{buildroot}/var/lib/lorax/composer/blueprints/
+cp ./tests/pylorax/blueprints/*toml %{buildroot}/var/lib/lorax/composer/blueprints/
 
 %pre composer
 getent group weldr >/dev/null 2>&1 || groupadd -r weldr >/dev/null 2>&1 || :
