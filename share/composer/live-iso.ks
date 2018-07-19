@@ -360,7 +360,7 @@ syslinux
 -dracut-config-rescue
 dracut-config-generic
 dracut-live
-generic-logos
+system-logos
 
 # This package is needed to boot the iso on UEFI
 shim
