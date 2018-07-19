@@ -100,7 +100,7 @@ def projects_info(socket_path, api_version, args, show_json=False):
             print("%s: %s" % (k.title(), textwrap.fill(proj[k], subsequent_indent=" " * (len(k)+2))))
         print("Builds: ")
         for build in proj["builds"]:
-            print("    %s%s-%s.%s at %s for %s" % ("" if not build["epoch"] else build["epoch"] + ":",
+            print("    %s%s-%s.%s at %s for %s" % ("" if not build["epoch"] else str(build["epoch"]) + ":",
                                                        build["source"]["version"],
                                                        build["release"],
                                                        build["arch"],
