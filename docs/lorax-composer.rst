@@ -31,8 +31,13 @@ Quickstart
 2. Remove any pre-existing socket directory with ``rm -rf /run/weldr/``
    A new directory with correct permissions will be created the first time the server runs.
 3. Enable the socket activation with ``systemctl enable lorax-composer.socket
-   && sudo systemctl start lorax-composer.socket`` or run it directly with
-   ``lorax-composer /path/to/blueprints/``
+   && sudo systemctl start lorax-composer.socket``.
+
+NOTE: You can also run it directly with ``lorax-composer /path/to/blueprints``.  However,
+``lorax-composer`` does not react well to being started both on the command line and via
+socket activation at the same time.  It is therefore recommended that you run it directly
+on the command line only for testing or development purposes.  For real use or development
+of other projects that simply use the API, you should stick to socket activation only.
 
 The ``/path/to/blueprints/`` directory is where the blueprints' git repo will
 be created, and all the blueprints created with the ``/api/v0/blueprints/new``
