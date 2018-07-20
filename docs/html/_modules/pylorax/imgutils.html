@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.imgutils &mdash; Lorax 28.14 documentation</title>
+  <title>pylorax.imgutils &mdash; Lorax 28.16 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                28.14
+                28.16
               </div>
             
           
@@ -336,13 +336,34 @@
     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Unable to setup </span><span class="si">%s</span><span class="s2"> on </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">loop_dev</span><span class="p">,</span> <span class="n">outfile</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="loop_attach"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.loop_attach">[docs]</a><span class="k">def</span> <span class="nf">loop_attach</span><span class="p">(</span><span class="n">outfile</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Attach a loop device to the given file. Return the loop device name.</span>
-<span class="sd">    Raises CalledProcessError if losetup fails.&#39;&#39;&#39;</span>
-    <span class="n">dev</span> <span class="o">=</span> <span class="n">runcmd_output</span><span class="p">([</span><span class="s2">&quot;losetup&quot;</span><span class="p">,</span> <span class="s2">&quot;--find&quot;</span><span class="p">,</span> <span class="s2">&quot;--show&quot;</span><span class="p">,</span> <span class="n">outfile</span><span class="p">])</span>
+    <span class="sd">&quot;&quot;&quot;Attach a loop device to the given file. Return the loop device name.</span>
 
-    <span class="c1"># Sometimes the loop device isn&#39;t ready yet, make extra sure before returning</span>
-    <span class="n">loop_waitfor</span><span class="p">(</span><span class="n">dev</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">outfile</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dev</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
+<span class="sd">    On rare occasions it appears that the device never shows up, some experiments</span>
+<span class="sd">    seem to indicate that it may be a race with another process using /dev/loop* devices.</span>
+
+<span class="sd">    So we now try 3 times before actually failing.</span>
+
+<span class="sd">    Raises CalledProcessError if losetup fails.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">retries</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">retries</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">dev</span> <span class="o">=</span> <span class="n">runcmd_output</span><span class="p">([</span><span class="s2">&quot;losetup&quot;</span><span class="p">,</span> <span class="s2">&quot;--find&quot;</span><span class="p">,</span> <span class="s2">&quot;--show&quot;</span><span class="p">,</span> <span class="n">outfile</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+            <span class="c1"># Sometimes the loop device isn&#39;t ready yet, make extra sure before returning</span>
+            <span class="n">loop_waitfor</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">CalledProcessError</span><span class="p">:</span>
+            <span class="c1"># Problems running losetup are always errors, raise immediately</span>
+            <span class="k">raise</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># Try to setup the loop device 3 times</span>
+            <span class="k">if</span> <span class="n">retries</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;loop_attach failed, retries exhausted.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Try </span><span class="si">%d</span><span class="s2"> failed, </span><span class="si">%s</span><span class="s2"> did not appear.&quot;</span><span class="p">,</span> <span class="n">retries</span><span class="p">,</span> <span class="n">dev</span><span class="p">)</span>
+        <span class="k">break</span>
+    <span class="k">return</span> <span class="n">dev</span></div>
 
 <div class="viewcode-block" id="loop_detach"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.loop_detach">[docs]</a><span class="k">def</span> <span class="nf">loop_detach</span><span class="p">(</span><span class="n">loopdev</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Detach the given loop device. Return False on failure.&#39;&#39;&#39;</span>
@@ -708,7 +729,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'28.14',
+            VERSION:'28.16',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.server &mdash; Lorax 28.14 documentation</title>
+  <title>pylorax.api.server &mdash; Lorax 28.16 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                28.14
+                28.16
               </div>
             
           
@@ -222,14 +222,20 @@
 <span class="sd">            &quot;db_supported&quot;: true,</span>
 <span class="sd">            &quot;db_version&quot;: &quot;0&quot;,</span>
 <span class="sd">            &quot;schema_version&quot;: &quot;0&quot;,</span>
-<span class="sd">            &quot;backend&quot;: &quot;lorax-composer&quot;}</span>
+<span class="sd">            &quot;backend&quot;: &quot;lorax-composer&quot;,</span>
+<span class="sd">            &quot;msgs&quot;: []}</span>
+
+<span class="sd">    The &#39;msgs&#39; field can be a list of strings describing startup problems or status that</span>
+<span class="sd">    should be displayed to the user. eg. if the compose templates are not depsolving properly</span>
+<span class="sd">    the errors will be in &#39;msgs&#39;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;lorax-composer&quot;</span><span class="p">,</span>
                    <span class="n">build</span><span class="o">=</span><span class="n">vernum</span><span class="p">,</span>
                    <span class="n">api</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
                    <span class="n">db_version</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
                    <span class="n">schema_version</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
-                   <span class="n">db_supported</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                   <span class="n">db_supported</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                   <span class="n">msgs</span><span class="o">=</span><span class="n">server</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;TEMPLATE_ERRORS&quot;</span><span class="p">])</span>
 
 <span class="n">v0_api</span><span class="p">(</span><span class="n">server</span><span class="p">)</span>
 </pre></div>
@@ -266,7 +272,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'28.14',
+            VERSION:'28.16',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>lorax-composer &mdash; Lorax 28.14 documentation</title>
+  <title>lorax-composer &mdash; Lorax 28.16 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                28.14
+                28.16
               </div>
             
           
@@ -102,6 +102,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#composing-images">Composing Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#blueprints">Blueprints</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#packages-and-modules">[[packages]] and [[modules]]</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groups">[[groups]]</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#customizations">Customizations</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#customizations-sshkey">[[customizations.sshkey]]</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#customizations-user">[[customizations.user]]</a></li>
@@ -368,7 +369,9 @@ when it is written to disk. It should be short and descriptive.</p>
 <p><code class="docutils literal notranslate"><span class="pre">version</span></code> is a <a class="reference external" href="https://semver.org/">semver compatible</a> version number. If
 a new blueprint is uploaded with the same <code class="docutils literal notranslate"><span class="pre">version</span></code> the server will
 automatically bump the PATCH level of the <code class="docutils literal notranslate"><span class="pre">version</span></code>. If the <code class="docutils literal notranslate"><span class="pre">version</span></code>
-doesn’t match it will be used as is. eg. Uploading a blueprint with <code class="docutils literal notranslate"><span class="pre">version</span></code> set to <code class="docutils literal notranslate"><span class="pre">0.0.1</span></code> when the existing blueprint <code class="docutils literal notranslate"><span class="pre">version</span></code> is <code class="docutils literal notranslate"><span class="pre">0.0.1</span></code> will result in the new blueprint being stored as <code class="docutils literal notranslate"><span class="pre">version</span> <span class="pre">0.0.1</span></code>.</p>
+doesn’t match it will be used as is. eg. Uploading a blueprint with <code class="docutils literal notranslate"><span class="pre">version</span></code>
+set to <code class="docutils literal notranslate"><span class="pre">0.1.0</span></code> when the existing blueprint <code class="docutils literal notranslate"><span class="pre">version</span></code> is <code class="docutils literal notranslate"><span class="pre">0.0.1</span></code> will
+result in the new blueprint being stored as <code class="docutils literal notranslate"><span class="pre">version</span> <span class="pre">0.1.0</span></code>.</p>
 <div class="section" id="packages-and-modules">
 <h3>[[packages]] and [[modules]]<a class="headerlink" href="#packages-and-modules" title="Permalink to this headline">¶</a></h3>
 <p>These entries describe the package names and matching version glob to be installed into the image.</p>
@@ -378,6 +381,16 @@ character matching.</p>
 <p>NOTE: As of lorax-composer-29.2-1 the versions are not used for depsolving,
 that is planned for a future release. And currently there are no differences
 between <code class="docutils literal notranslate"><span class="pre">packages</span></code> and <code class="docutils literal notranslate"><span class="pre">modules</span></code> in <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code>.</p>
+</div>
+<div class="section" id="groups">
+<h3>[[groups]]<a class="headerlink" href="#groups" title="Permalink to this headline">¶</a></h3>
+<p>These entries describe a group of packages to be installed into the image.  Package groups are
+defined in the repository metadata.  Each group has a descriptive name used primarily for display
+in user interfaces and an ID more commonly used in kickstart files.  Here, the ID is the expected
+way of listing a group.</p>
+<p>Groups have three different ways of categorizing their packages:  mandatory, default, and optional.
+For purposes of blueprints, mandatory and default packages will be installed.  There is no mechanism
+for selecting optional packages.</p>
 </div>
 <div class="section" id="customizations">
 <h3>Customizations<a class="headerlink" href="#customizations" title="Permalink to this headline">¶</a></h3>
@@ -558,7 +571,7 @@ conflict with any other package sources, otherwise depsolving will fail.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'28.14',
+            VERSION:'28.16',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
