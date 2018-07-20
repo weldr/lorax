@@ -28,6 +28,14 @@ composer.cli.compose module
     :undoc-members:
     :show-inheritance:
 
+composer.cli.help module
+------------------------
+
+.. automodule:: composer.cli.help
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 composer.cli.modules module
 ---------------------------
 

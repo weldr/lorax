@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>composer.cli.projects &mdash; Lorax 29.7 documentation</title>
+  <title>composer.cli.projects &mdash; Lorax 29.10 documentation</title>
   
 
   
@@ -24,8 +24,7 @@
 
   
 
-  
-    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -57,7 +56,7 @@
             
             
               <div class="version">
-                29.7
+                29.10
               </div>
             
           
@@ -178,6 +177,7 @@
 <span class="kn">import</span> <span class="nn">textwrap</span>
 
 <span class="kn">from</span> <span class="nn">composer</span> <span class="k">import</span> <span class="n">http_client</span> <span class="k">as</span> <span class="n">client</span>
+<span class="kn">from</span> <span class="nn">composer.cli.help</span> <span class="k">import</span> <span class="n">projects_help</span>
 
 <div class="viewcode-block" id="projects_cmd"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.projects.projects_cmd">[docs]</a><span class="k">def</span> <span class="nf">projects_cmd</span><span class="p">(</span><span class="n">opts</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Process projects commands</span>
@@ -191,7 +191,10 @@
         <span class="s2">&quot;list&quot;</span><span class="p">:</span>      <span class="n">projects_list</span><span class="p">,</span>
         <span class="s2">&quot;info&quot;</span><span class="p">:</span>      <span class="n">projects_info</span><span class="p">,</span>
         <span class="p">}</span>
-    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cmd_map</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;help&quot;</span> <span class="ow">or</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;--help&quot;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">projects_help</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">elif</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cmd_map</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unknown projects command: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="k">return</span> <span class="mi">1</span>
 
@@ -218,7 +221,7 @@
         <span class="k">return</span> <span class="mi">0</span>
 
     <span class="k">for</span> <span class="n">proj</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;projects&quot;</span><span class="p">]:</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;summary&quot;</span><span class="p">,</span> <span class="s2">&quot;homepage&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="n">field</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;summary&quot;</span><span class="p">,</span> <span class="s2">&quot;homepage&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">proj</span><span class="p">[</span><span class="n">field</span><span class="p">]]:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">title</span><span class="p">(),</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">proj</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">subsequent_indent</span><span class="o">=</span><span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">+</span><span class="mi">2</span><span class="p">))))</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -249,7 +252,7 @@
         <span class="k">return</span> <span class="mi">0</span>
 
     <span class="k">for</span> <span class="n">proj</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;projects&quot;</span><span class="p">]:</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;summary&quot;</span><span class="p">,</span> <span class="s2">&quot;homepage&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="n">field</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;summary&quot;</span><span class="p">,</span> <span class="s2">&quot;homepage&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">proj</span><span class="p">[</span><span class="n">field</span><span class="p">]]:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">title</span><span class="p">(),</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">proj</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">subsequent_indent</span><span class="o">=</span><span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">+</span><span class="mi">2</span><span class="p">))))</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Builds: &quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">build</span> <span class="ow">in</span> <span class="n">proj</span><span class="p">[</span><span class="s2">&quot;builds&quot;</span><span class="p">]:</span>
@@ -295,7 +298,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'29.7',
+            VERSION:'29.10',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -309,10 +312,7 @@
 
   
 
-  
-  
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {
