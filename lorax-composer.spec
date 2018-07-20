@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.19
+Version:        19.7.20
 Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
@@ -121,6 +121,14 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python_sitelib}/composer/*
 
 %changelog
+* Fri Jul 20 2018 Brian C. Lane <bcl@redhat.com> 19.7.20-1
+- Document that you shouldn't run lorax-composer twice. (clumens)
+- Add PIDFile to the .service file. (clumens)
+- Log and exit on metadata update errors at startup (bcl)
+- Check /projects responses for null values. (bcl)
+- Clarify error message from /source/new (bcl)
+- Download metadata when updating or adding new repos (bcl)
+
 * Fri Jul 13 2018 Brian C. Lane <bcl@redhat.com> 19.7.19-1
 - Support loading groups from the kickstart template files. (clumens)
 - Add group-based tests. (clumens)
