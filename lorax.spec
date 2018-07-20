@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.15
+Version:        28.16
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -227,6 +227,29 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python3_sitelib}/composer/*
 
 %changelog
+* Fri Jul 20 2018 Brian C. Lane <bcl@redhat.com> 28.16-1
+- New lorax documentation - 28.16 (bcl@redhat.com)
+- Update rsync version in http-server.toml (bcl@redhat.com)
+- Log and exit on metadata update errors at startup (bcl@redhat.com)
+- Check /projects responses for null values. (bcl@redhat.com)
+- Clarify error message from /source/new (bcl@redhat.com)
+- Support loading groups from the kickstart template files.  (clumens@redhat.com)
+- Add group-based tests. (clumens@redhat.com)
+- Include groups in depsolving. (clumens@redhat.com)
+- Add support for groups to blueprints. (clumens@redhat.com)
+- Add help output to each subcommand. (clumens@redhat.com)
+- Split the help output into its own module. (clumens@redhat.com)
+- If the help subcommand is given, print the help output. (clumens@redhat.com)
+- Check the compose templates at startup (bcl@redhat.com)
+- Fix a couple typos in lorax-composer docs. (bcl@redhat.com)
+- Include example blueprints in the rpm (bcl@redhat.com)
+- Make sure /run/weldr has correct ownership and permissions (bcl@redhat.com)
+- Allow more than 1 bash build in tests (bcl@redhat.com)
+- Add redhat.exec to s390 .treeinfo (bcl@redhat.com)
+- Retry losetup if loop_attach fails (bcl@redhat.com)
+- Add reqpart to example kickstart files (bcl@redhat.com)
+- Increase default ram used with lmc and virt to 2048 (bcl@redhat.com)
+
 * Mon Jun 11 2018 Brian C. Lane <bcl@redhat.com> 28.15-1
 - Make LogRequestHandler configurable (mkolman@redhat.com)
 
