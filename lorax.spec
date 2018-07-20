@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.1
+Version:        28.14.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -230,6 +230,23 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python3_sitelib}/composer/*
 
 %changelog
+* Fri Jul 20 2018 Brian C. Lane <bcl@redhat.com> 28.14.2-1
+- New lorax documentation - 28.14.2 (bcl@redhat.com)
+- Add dnf.transaction to list of modules for sphinx to ignore (bcl@redhat.com)
+- Document that you shouldn't run lorax-composer twice. (clumens@redhat.com)
+- Add PIDFile to the .service file. (clumens@redhat.com)
+- Don't activate default auto connections after switchroot (rvykydal@redhat.com)
+- Use system-logos in live-iso.ks (bcl@redhat.com)
+- Update rsync version in http-server.toml (bcl@redhat.com)
+- Log and exit on metadata update errors at startup (bcl@redhat.com)
+- Check /projects responses for null values. (bcl@redhat.com)
+- Clarify error message from /source/new (bcl@redhat.com)
+- Support loading groups from the kickstart template files.  (clumens@redhat.com)
+- Include groups in depsolving. (clumens@redhat.com)
+- Add help output to each subcommand. (clumens@redhat.com)
+- Split the help output into its own module. (clumens@redhat.com)
+- If the help subcommand is given, print the help output. (clumens@redhat.com)
+
 * Wed Jul 18 2018 Brian C. Lane <bcl@redhat.com> 28.14.1-1
 - Add requires on lorax-templates-rhel (bcl@redhat.com)
 - Check the compose templates at startup (bcl@redhat.com)
