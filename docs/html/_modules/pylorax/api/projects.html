@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.projects &mdash; Lorax 28.14 documentation</title>
+  <title>pylorax.api.projects &mdash; Lorax 28.14.2 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                28.14
+                28.14.2
               </div>
             
           
@@ -339,45 +339,60 @@
         <span class="n">pkgs</span> <span class="o">=</span> <span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="o">.</span><span class="n">query</span><span class="p">()</span><span class="o">.</span><span class="n">available</span><span class="p">()</span>
     <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">pkg_to_project_info</span><span class="p">,</span> <span class="n">pkgs</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span></div>
 
-<span class="k">def</span> <span class="nf">_depsolve</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">projects</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_depsolve</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">projects</span><span class="p">,</span> <span class="n">groups</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Add projects to a new transaction</span>
 
 <span class="sd">    :param dbo: dnf base object</span>
 <span class="sd">    :type dbo: dnf.Base</span>
 <span class="sd">    :param projects: The projects and version globs to find the dependencies for</span>
 <span class="sd">    :type projects: List of tuples</span>
+<span class="sd">    :param groups: The groups to include in dependency solving</span>
+<span class="sd">    :type groups: List of str</span>
 <span class="sd">    :returns: None</span>
 <span class="sd">    :rtype: None</span>
 <span class="sd">    :raises: ProjectsError if there was a problem installing something</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># This resets the transaction</span>
     <span class="n">dbo</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">goal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">install_errors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">dbo</span><span class="o">.</span><span class="n">group_install</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;mandatory&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="n">dnf</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">MarkingError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">install_errors</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;Group </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">version</span> <span class="ow">in</span> <span class="n">projects</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">version</span><span class="p">:</span>
                 <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
             <span class="n">pkgs</span> <span class="o">=</span> <span class="p">[</span><span class="n">pkg</span> <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">dnf</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">Subject</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">get_best_query</span><span class="p">(</span><span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">version__glob</span><span class="o">=</span><span class="n">version</span><span class="p">,</span> <span class="n">latest</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">pkgs</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s2">&quot;No match for </span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">))</span>
+                <span class="n">install_errors</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">),</span> <span class="s2">&quot;No match&quot;</span><span class="p">))</span>
+                <span class="k">continue</span>
 
             <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pkgs</span><span class="p">:</span>
                 <span class="n">dbo</span><span class="o">.</span><span class="n">package_install</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">dnf</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">MarkingError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s2">&quot;No match for </span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">dnf</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">MarkingError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">install_errors</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="n">install_errors</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s2">&quot;The following package(s) had problems: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span> <span class="k">for</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">install_errors</span><span class="p">]))</span>
 
 
-<div class="viewcode-block" id="projects_depsolve"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.projects_depsolve">[docs]</a><span class="k">def</span> <span class="nf">projects_depsolve</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">projects</span><span class="p">):</span>
+<div class="viewcode-block" id="projects_depsolve"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.projects_depsolve">[docs]</a><span class="k">def</span> <span class="nf">projects_depsolve</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">projects</span><span class="p">,</span> <span class="n">groups</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return the dependencies for a list of projects</span>
 
 <span class="sd">    :param dbo: dnf base object</span>
 <span class="sd">    :type dbo: dnf.Base</span>
 <span class="sd">    :param projects: The projects to find the dependencies for</span>
 <span class="sd">    :type projects: List of Strings</span>
+<span class="sd">    :param groups: The groups to include in dependency solving</span>
+<span class="sd">    :type groups: List of str</span>
 <span class="sd">    :returns: NEVRA&#39;s of the project and its dependencies</span>
 <span class="sd">    :rtype: list of dicts</span>
 <span class="sd">    :raises: ProjectsError if there was a problem installing something</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_depsolve</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">projects</span><span class="p">)</span>
+    <span class="n">_depsolve</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">projects</span><span class="p">,</span> <span class="n">groups</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">dbo</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
@@ -411,18 +426,20 @@
     <span class="k">return</span> <span class="n">installed_size</span></div>
 
 
-<div class="viewcode-block" id="projects_depsolve_with_size"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.projects_depsolve_with_size">[docs]</a><span class="k">def</span> <span class="nf">projects_depsolve_with_size</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">projects</span><span class="p">,</span> <span class="n">with_core</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="projects_depsolve_with_size"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.projects_depsolve_with_size">[docs]</a><span class="k">def</span> <span class="nf">projects_depsolve_with_size</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">projects</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">with_core</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return the dependencies and installed size for a list of projects</span>
 
 <span class="sd">    :param dbo: dnf base object</span>
 <span class="sd">    :type dbo: dnf.Base</span>
 <span class="sd">    :param project_names: The projects to find the dependencies for</span>
 <span class="sd">    :type project_names: List of Strings</span>
+<span class="sd">    :param groups: The groups to include in dependency solving</span>
+<span class="sd">    :type groups: List of str</span>
 <span class="sd">    :returns: installed size and a list of NEVRA&#39;s of the project and its dependencies</span>
 <span class="sd">    :rtype: tuple of (int, list of dicts)</span>
 <span class="sd">    :raises: ProjectsError if there was a problem installing something</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_depsolve</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">projects</span><span class="p">)</span>
+    <span class="n">_depsolve</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">projects</span><span class="p">,</span> <span class="n">groups</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">with_core</span><span class="p">:</span>
         <span class="n">dbo</span><span class="o">.</span><span class="n">group_install</span><span class="p">(</span><span class="s2">&quot;core&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;mandatory&#39;</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="s1">&#39;optional&#39;</span><span class="p">])</span>
@@ -475,7 +492,7 @@
 
     <span class="c1"># Add the dependency info to each one</span>
     <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">modules</span><span class="p">:</span>
-        <span class="n">module</span><span class="p">[</span><span class="s2">&quot;dependencies&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">projects_depsolve</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="p">[(</span><span class="n">module</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="s2">&quot;*.*&quot;</span><span class="p">)])</span>
+        <span class="n">module</span><span class="p">[</span><span class="s2">&quot;dependencies&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">projects_depsolve</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="p">[(</span><span class="n">module</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="s2">&quot;*.*&quot;</span><span class="p">)],</span> <span class="p">[])</span>
 
     <span class="k">return</span> <span class="n">modules</span></div>
 
@@ -721,7 +738,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'28.14',
+            VERSION:'28.14.2',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

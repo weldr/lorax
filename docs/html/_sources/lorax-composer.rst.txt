@@ -31,8 +31,13 @@ Quickstart
 2. Remove any pre-existing socket directory with ``rm -rf /run/weldr/``
    A new directory with correct permissions will be created the first time the server runs.
 3. Enable the socket activation with ``systemctl enable lorax-composer.socket
-   && sudo systemctl start lorax-composer.socket`` or run it directly with
-   ``lorax-composer /path/to/blueprints/``
+   && sudo systemctl start lorax-composer.socket``.
+
+NOTE: You can also run it directly with ``lorax-composer /path/to/blueprints``.  However,
+``lorax-composer`` does not react well to being started both on the command line and via
+socket activation at the same time.  It is therefore recommended that you run it directly
+on the command line only for testing or development purposes.  For real use or development
+of other projects that simply use the API, you should stick to socket activation only.
 
 The ``/path/to/blueprints/`` directory is where the blueprints' git repo will
 be created, and all the blueprints created with the ``/api/v0/blueprints/new``
@@ -120,7 +125,9 @@ when it is written to disk. It should be short and descriptive.
 ``version`` is a `semver compatible <https://semver.org/>`_ version number. If
 a new blueprint is uploaded with the same ``version`` the server will
 automatically bump the PATCH level of the ``version``. If the ``version``
-doesn't match it will be used as is. eg. Uploading a blueprint with ``version`` set to ``0.0.1`` when the existing blueprint ``version`` is ``0.0.1`` will result in the new blueprint being stored as ``version 0.0.1``.
+doesn't match it will be used as is. eg. Uploading a blueprint with ``version``
+set to ``0.1.0`` when the existing blueprint ``version`` is ``0.0.1`` will
+result in the new blueprint being stored as ``version 0.1.0``.
 
 [[packages]] and [[modules]]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -134,6 +141,18 @@ character matching.
 NOTE: As of lorax-composer-29.2-1 the versions are not used for depsolving,
 that is planned for a future release. And currently there are no differences
 between ``packages`` and ``modules`` in ``lorax-composer``.
+
+[[groups]]
+~~~~~~~~~~
+
+These entries describe a group of packages to be installed into the image.  Package groups are
+defined in the repository metadata.  Each group has a descriptive name used primarily for display
+in user interfaces and an ID more commonly used in kickstart files.  Here, the ID is the expected
+way of listing a group.
+
+Groups have three different ways of categorizing their packages:  mandatory, default, and optional.
+For purposes of blueprints, mandatory and default packages will be installed.  There is no mechanism
+for selecting optional packages.
 
 Customizations
 ~~~~~~~~~~~~~~

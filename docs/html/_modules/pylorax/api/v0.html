@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.v0 &mdash; Lorax 28.14 documentation</title>
+  <title>pylorax.api.v0 &mdash; Lorax 28.14.2 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                28.14
+                28.14.2
               </div>
             
           
@@ -1435,7 +1435,7 @@
             <span class="n">deps</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
-                    <span class="n">deps</span> <span class="o">=</span> <span class="n">projects_depsolve</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dbo</span><span class="p">,</span> <span class="n">projects</span><span class="p">)</span>
+                    <span class="n">deps</span> <span class="o">=</span> <span class="n">projects_depsolve</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dbo</span><span class="p">,</span> <span class="n">projects</span><span class="p">,</span> <span class="n">blueprint</span><span class="o">.</span><span class="n">group_names</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">ProjectsError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">blueprint_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;(v0_blueprints_freeze) </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
@@ -1487,7 +1487,7 @@
             <span class="n">deps</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
-                    <span class="n">deps</span> <span class="o">=</span> <span class="n">projects_depsolve</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dbo</span><span class="p">,</span> <span class="n">projects</span><span class="p">)</span>
+                    <span class="n">deps</span> <span class="o">=</span> <span class="n">projects_depsolve</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dbo</span><span class="p">,</span> <span class="n">projects</span><span class="p">,</span> <span class="n">blueprint</span><span class="o">.</span><span class="n">group_names</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">ProjectsError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">blueprint_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;(v0_blueprints_depsolve) </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
@@ -1542,7 +1542,7 @@
         <span class="sd">&quot;&quot;&quot;Return detailed information about the listed projects&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
-                <span class="n">deps</span> <span class="o">=</span> <span class="n">projects_depsolve</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dbo</span><span class="p">,</span> <span class="p">[(</span><span class="n">n</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">project_names</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)])</span>
+                <span class="n">deps</span> <span class="o">=</span> <span class="n">projects_depsolve</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;DNFLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dbo</span><span class="p">,</span> <span class="p">[(</span><span class="n">n</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">project_names</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)],</span> <span class="p">[])</span>
         <span class="k">except</span> <span class="n">ProjectsError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;(v0_projects_depsolve) </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
             <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)]),</span> <span class="mi">400</span>
@@ -1600,7 +1600,7 @@
 
         <span class="n">system_sources</span> <span class="o">=</span> <span class="n">get_repo_sources</span><span class="p">(</span><span class="s2">&quot;/etc/yum.repos.d/*.repo&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">system_sources</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is a system source, it cannot be deleted.&quot;</span> <span class="o">%</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]),</span> <span class="mi">400</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is a system source, it cannot be changed.&quot;</span> <span class="o">%</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]),</span> <span class="mi">400</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># Remove it from the RepoDict (NOTE that this isn&#39;t explicitly supported by the DNF API)</span>
@@ -1969,7 +1969,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'28.14',
+            VERSION:'28.14.2',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
