@@ -64,4 +64,8 @@ sources change <source.toml>        Change an existing source
 sources delete <source>             Delete a package source.
 """
 
-epilog = compose_help + blueprints_help + modules_help + projects_help + sources_help
+status_help = """
+status show                         Show API server status.
+"""
+
+epilog = compose_help + blueprints_help + modules_help + projects_help + sources_help + status_help
