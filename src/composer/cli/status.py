@@ -42,4 +42,16 @@ def status_cmd(opts):
         print(json.dumps(result, indent=4))
         return 0
 
+    print("API server status:")
+    print("    Database version:   "   + result["db_version"])
+    print("    Database supported: %s" % result["db_supported"])
+    print("    Schema version:     "   + result["schema_version"])
+    print("    API version:        "   + result["api"])
+    print("    Backend:            "   + result["backend"])
+    print("    Build:              "   + result["build"])
+
+    if result["msgs"]:
+        print("Error messages:")
+        print("\n".join(["    " + r for r in result["msgs"]]))
+
     return 0
