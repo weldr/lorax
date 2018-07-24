@@ -3,7 +3,7 @@ description = "An example jboss server"
 version = "0.0.1"
 
 [[modules]]
-name = "jboss-servlet-3.1-api"
+name = "jboss-servlet-2.5-api"
 version = "1.0.*"
 
 [[modules]]

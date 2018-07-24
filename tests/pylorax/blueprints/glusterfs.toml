@@ -6,9 +6,9 @@ name = "glusterfs"
 version = "4.0.*"
 
 [[modules]]
-name = "glusterfs-cli"
+name = "glusterfs-fuse"
 version = "4.0.*"
 
 [[packages]]
 name = "samba"
-version = "4.8.*"
+version = "4.*.*"

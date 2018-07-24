@@ -7,8 +7,8 @@ name = "httpd"
 version = "2.4.*"
 
 [[modules]]
-name = "mod_auth_openid"
-version = "0.8"
+name = "mod_auth_openidc"
+version = "1.8.10.*"
 
 [[modules]]
 name = "mod_ssl"
@@ -16,11 +16,11 @@ version = "2.4.*"
 
 [[modules]]
 name = "php"
-version = "7.2.4"
+version = "7.2.*"
 
 [[modules]]
 name = "php-mysqlnd"
-version = "7.2.4"
+version = "7.2.*"
 
 [[packages]]
 name = "tmux"
