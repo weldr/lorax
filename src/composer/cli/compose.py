@@ -17,6 +17,7 @@
 import logging
 log = logging.getLogger("composer-cli")
 
+from datetime import datetime
 import sys
 import json
 
@@ -79,7 +80,8 @@ def compose_status(socket_path, api_version, args, show_json=False, testmode=0):
                 "version": compose["version"],
                 "compose_type": compose["compose_type"],
                 "image_size": compose["image_size"],
-                "status": compose["queue_status"]}
+                "status": compose["queue_status"],
+                "timestamp": compose["timestamp"]}
 
     # Sort the status in a specific order
     def sort_status(a):
@@ -117,8 +119,10 @@ def compose_status(socket_path, api_version, args, show_json=False, testmode=0):
         else:
             image_size = ""
 
-        print("%s %-8s %-15s %s %-16s %s" % (c["id"], c["status"], c["blueprint"], c["version"], c["compose_type"],
-                                             image_size))
+        dt = datetime.fromtimestamp(c["timestamp"])
+
+        print("%s %-8s %s %-15s %s %-16s %s" % (c["id"], c["status"], dt.strftime("%c"), c["blueprint"],
+                                                c["version"], c["compose_type"], image_size))
 
 
 def compose_types(socket_path, api_version, args, show_json=False, testmode=0):
