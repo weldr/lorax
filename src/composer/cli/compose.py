@@ -48,7 +48,7 @@ def compose_cmd(opts):
         "logs":     compose_logs,
         "image":    compose_image,
         }
-    if opts.args == "help" or opts.args == "--help":
+    if opts.args[1] == "help" or opts.args[1] == "--help":
         print(compose_help)
         return 0
     elif opts.args[1] not in cmd_map:
