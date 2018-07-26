@@ -184,19 +184,12 @@ def compose_start(socket_path, api_version, args, show_json=False, testmode=0):
         test_url = ""
     api_route = client.api_url(api_version, "/compose" + test_url)
     result = client.post_url_json(socket_path, api_route, json.dumps(config))
-
-    if show_json:
-        print(json.dumps(result, indent=4))
-        return 0
-
-    for err in result.get("errors", []):
-        log.error(err)
-
-    if result["status"] == False or result.get("errors", False):
-        return 1
+    (rc, exit_now) = handle_api_result(result, show_json)
+    if exit_now:
+        return rc
 
     print("Compose %s added to the queue" % result["build_id"])
-    return 0
+    return rc
 
 def compose_log(socket_path, api_version, args, show_json=False, testmode=0):
     """Show the last part of the compose log
@@ -263,7 +256,7 @@ def compose_cancel(socket_path, api_version, args, show_json=False, testmode=0):
 
     api_route = client.api_url(api_version, "/compose/cancel/%s" % args[0])
     result = client.delete_url_json(socket_path, api_route)
-    return handle_api_result(result, show_json)
+    return handle_api_result(result, show_json)[0]
 
 def compose_delete(socket_path, api_version, args, show_json=False, testmode=0):
     """Delete a finished compose's results
@@ -290,19 +283,7 @@ def compose_delete(socket_path, api_version, args, show_json=False, testmode=0):
 
     api_route = client.api_url(api_version, "/compose/delete/%s" % (",".join(argify(args))))
     result = client.delete_url_json(socket_path, api_route)
-
-    if show_json:
-        print(json.dumps(result, indent=4))
-        return 0
-
-    # Print any errors
-    for err in result.get("errors", []):
-        log.error(err)
-
-    if result.get("errors", []):
-        return 1
-    else:
-        return 0
+    return handle_api_result(result, show_json)[0]
 
 def compose_details(socket_path, api_version, args, show_json=False, testmode=0):
     """Return detailed information about the compose
@@ -328,15 +309,9 @@ def compose_details(socket_path, api_version, args, show_json=False, testmode=0)
 
     api_route = client.api_url(api_version, "/compose/info/%s" % args[0])
     result = client.get_url_json(socket_path, api_route)
-    if show_json:
-        print(json.dumps(result, indent=4))
-        return 0
-
-    for err in result.get("errors", []):
-        log.error(err)
-
-    if result.get("errors", []):
-        return 1
+    (rc, exit_now) = handle_api_result(result, show_json)
+    if exit_now:
+        return rc
 
     if result["image_size"] > 0:
         image_size = str(result["image_size"])
@@ -362,6 +337,8 @@ def compose_details(socket_path, api_version, args, show_json=False, testmode=0)
     for d in result["deps"]["packages"]:
         print("    " + packageNEVRA(d))
 
+    return rc
+
 def compose_metadata(socket_path, api_version, args, show_json=False, testmode=0):
     """Download a tar file of the compose's metadata
 
@@ -385,7 +362,13 @@ def compose_metadata(socket_path, api_version, args, show_json=False, testmode=0
         return 1
 
     api_route = client.api_url(api_version, "/compose/metadata/%s" % args[0])
-    return client.download_file(socket_path, api_route)
+    try:
+        rc = client.download_file(socket_path, api_route)
+    except RuntimeError as e:
+        print(str(e))
+        rc = 1
+
+    return rc
 
 def compose_results(socket_path, api_version, args, show_json=False, testmode=0):
     """Download a tar file of the compose's results
@@ -411,7 +394,13 @@ def compose_results(socket_path, api_version, args, show_json=False, testmode=0)
         return 1
 
     api_route = client.api_url(api_version, "/compose/results/%s" % args[0])
-    return client.download_file(socket_path, api_route, sys.stdout.isatty())
+    try:
+        rc = client.download_file(socket_path, api_route, sys.stdout.isatty())
+    except RuntimeError as e:
+        print(str(e))
+        rc = 1
+
+    return rc
 
 def compose_logs(socket_path, api_version, args, show_json=False, testmode=0):
     """Download a tar of the compose's logs
@@ -436,7 +425,13 @@ def compose_logs(socket_path, api_version, args, show_json=False, testmode=0):
         return 1
 
     api_route = client.api_url(api_version, "/compose/logs/%s" % args[0])
-    return client.download_file(socket_path, api_route, sys.stdout.isatty())
+    try:
+        rc = client.download_file(socket_path, api_route, sys.stdout.isatty())
+    except RuntimeError as e:
+        print(str(e))
+        rc = 1
+
+    return rc
 
 def compose_image(socket_path, api_version, args, show_json=False, testmode=0):
     """Download the compose's output image
@@ -462,4 +457,10 @@ def compose_image(socket_path, api_version, args, show_json=False, testmode=0):
         return 1
 
     api_route = client.api_url(api_version, "/compose/image/%s" % args[0])
-    return client.download_file(socket_path, api_route, sys.stdout.isatty())
+    try:
+        rc = client.download_file(socket_path, api_route, sys.stdout.isatty())
+    except RuntimeError as e:
+        print(str(e))
+        rc = 1
+
+    return rc
