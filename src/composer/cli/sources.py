@@ -18,7 +18,6 @@ import logging
 log = logging.getLogger("composer-cli")
 
 import os
-import json
 
 from composer import http_client as client
 from composer.cli.help import sources_help
@@ -64,12 +63,12 @@ def sources_list(socket_path, api_version, args, show_json=False):
     """
     api_route = client.api_url(api_version, "/projects/source/list")
     result = client.get_url_json(socket_path, api_route)
-    if show_json:
-        print(json.dumps(result, indent=4))
-        return 0
+    (rc, exit_now) = handle_api_result(result, show_json)
+    if exit_now:
+        return rc
 
     print("Sources: %s" % ", ".join(result["sources"]))
-    return 0
+    return rc
 
 def sources_info(socket_path, api_version, args, show_json=False):
     """Output info on a list of projects
@@ -92,13 +91,18 @@ def sources_info(socket_path, api_version, args, show_json=False):
     if show_json:
         api_route = client.api_url(api_version, "/projects/source/info/%s" % ",".join(args))
         result = client.get_url_json(socket_path, api_route)
-        print(json.dumps(result, indent=4))
-        return 0
+        rc = handle_api_result(result, show_json)[0]
     else:
         api_route = client.api_url(api_version, "/projects/source/info/%s?format=toml" % ",".join(args))
-        result = client.get_url_raw(socket_path, api_route)
-        print(result)
-    return 0
+        try:
+            result = client.get_url_raw(socket_path, api_route)
+            print(result)
+            rc = 0
+        except RuntimeError as e:
+            print(str(e))
+            rc = 1
+
+    return rc
 
 def sources_add(socket_path, api_version, args, show_json=False):
     """Add or change a source
@@ -123,7 +127,7 @@ def sources_add(socket_path, api_version, args, show_json=False):
         source_toml = open(source, "r").read()
 
         result = client.post_url_toml(socket_path, api_route, source_toml)
-        if handle_api_result(result, show_json):
+        if handle_api_result(result, show_json)[0]:
             rval = 1
     return rval
 
@@ -144,4 +148,4 @@ def sources_delete(socket_path, api_version, args, show_json=False):
     api_route = client.api_url(api_version, "/projects/source/delete/%s" % args[0])
     result = client.delete_url_json(socket_path, api_route)
 
-    return handle_api_result(result, show_json)
+    return handle_api_result(result, show_json)[0]
