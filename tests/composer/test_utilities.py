@@ -17,6 +17,7 @@
 import unittest
 
 from composer.cli.utilities import argify, toml_filename, frozen_toml_filename, packageNEVRA
+from composer.cli.utilities import handle_api_result
 
 class CliUtilitiesTest(unittest.TestCase):
     def test_argify(self):
@@ -45,3 +46,48 @@ class CliUtilitiesTest(unittest.TestCase):
                    "version": "10.0"}
         self.assertEqual(packageNEVRA(epoch_0), "basesystem-10.0-7.el7.noarch")
         self.assertEqual(packageNEVRA(epoch_3), "basesystem-3:10.0-7.el7.noarch")
+
+    def test_api_result_1(self):
+        """Test a result with no status and no error fields"""
+        result = {"foo": "bar"}
+        self.assertEqual(handle_api_result(result, show_json=False), (0, False))
+
+    def test_api_result_2(self):
+        """Test a result with errors=["some error"], and no status field"""
+        result = {"foo": "bar", "errors": ["some error"]}
+        self.assertEqual(handle_api_result(result, show_json=False), (1, False))
+
+    def test_api_result_3(self):
+        """Test a result with status=True, and errors=[]"""
+        result = {"status": True, "errors": []}
+        self.assertEqual(handle_api_result(result, show_json=False), (0, False))
+
+    def test_api_result_4(self):
+        """Test a result with status=False, and errors=[]"""
+        result = {"status": False, "errors": []}
+        self.assertEqual(handle_api_result(result, show_json=False), (1, True))
+
+    def test_api_result_5(self):
+        """Test a result with status=False, and errors=["some error"]"""
+        result = {"status": False, "errors": ["some error"]}
+        self.assertEqual(handle_api_result(result, show_json=False), (1, True))
+
+    def test_api_result_6(self):
+        """Test a result with show_json=True, and no status or errors fields"""
+        result = {"foo": "bar"}
+        self.assertEqual(handle_api_result(result, show_json=True), (0, True))
+
+    def test_api_result_7(self):
+        """Test a result with show_json=True, status=False, and errors=["some error"]"""
+        result = {"status": False, "errors": ["some error"]}
+        self.assertEqual(handle_api_result(result, show_json=True), (1, True))
+
+    def test_api_result_8(self):
+        """Test a result with show_json=True, errors=["some error"], and no status field"""
+        result = {"foo": "bar", "errors": ["some error"]}
+        self.assertEqual(handle_api_result(result, show_json=True), (1, True))
+
+    def test_api_result_9(self):
+        """Test a result with show_json=True, errors=[], and no status field"""
+        result = {"foo": "bar", "errors": []}
+        self.assertEqual(handle_api_result(result, show_json=True), (0, True))

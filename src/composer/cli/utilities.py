@@ -58,17 +58,28 @@ def handle_api_result(result, show_json=False):
 
     :param result: JSON result from the http query
     :type result: dict
+    :rtype: tuple
+    :returns: (rc, errors)
+
+    Return the correct rc for the program (0 or 1), and whether or
+    not to continue processing the results.
     """
     if show_json:
         print(json.dumps(result, indent=4))
-
-    for err in result.get("errors", []):
-        log.error(err)
-
-    if result["status"] == True:
-        return 0
     else:
-        return 1
+        for err in result.get("errors", []):
+            log.error(err)
+
+    # What's the rc? If status is present, use that
+    # If not, use length of errors
+    if "status" in result:
+        rc = bool(not result["status"])
+    else:
+        rc = bool(len(result.get("errors", [])) > 0)
+
+    # Caller should return if showing json, or status was present and False
+    exit_now = show_json or ("status" in result and rc)
+    return (rc, exit_now)
 
 def packageNEVRA(pkg):
     """Return the package info as a NEVRA
