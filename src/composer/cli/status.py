@@ -17,10 +17,9 @@
 import logging
 log = logging.getLogger("composer-cli")
 
-import json
-
 from composer import http_client as client
 from composer.cli.help import status_help
+from composer.cli.utilities import handle_api_result
 
 def status_cmd(opts):
     """Process status commands
@@ -38,9 +37,9 @@ def status_cmd(opts):
         return 1
 
     result = client.get_url_json(opts.socket, "/api/status")
-    if opts.json:
-        print(json.dumps(result, indent=4))
-        return 0
+    (rc, exit_now) = handle_api_result(result, opts.json)
+    if exit_now:
+        return rc
 
     print("API server status:")
     print("    Database version:   "   + result["db_version"])
@@ -54,4 +53,4 @@ def status_cmd(opts):
         print("Error messages:")
         print("\n".join(["    " + r for r in result["msgs"]]))
 
-    return 0
+    return rc
