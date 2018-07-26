@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import os
+from ConfigParser import SafeConfigParser
 from glob import glob
 import shutil
 import tempfile
@@ -56,7 +57,10 @@ class ServerTestCase(unittest.TestCase):
         # yum repo baseurl has to point to an absolute directory, so we use /tmp/lorax-empty-repo/ in the files
         # and create an empty repository
         os.makedirs("/tmp/lorax-empty-repo/")
-        os.system("createrepo_c /tmp/lorax-empty-repo/")
+        rc = os.system("createrepo_c /tmp/lorax-empty-repo/")
+        if rc != 0:
+            shutil.rmtree("/tmp/lorax-empty-repo/")
+            raise RuntimeError("Problem running createrepo_c, is it installed")
 
         yb = get_base_object(server.config["COMPOSER_CFG"])
         server.config["YUMLOCK"] = YumLock(yb=yb, lock=Lock())
@@ -77,6 +81,12 @@ class ServerTestCase(unittest.TestCase):
 
         # Import the example blueprints
         commit_recipe_directory(server.config["GITLOCK"].repo, "master", self.examples_path)
+
+        # The sources delete test needs the name of a system repo, get it from /etc/yum.repos.d/
+        sys_repo = glob("/etc/yum.repos.d/*repo")[0]
+        cfg = SafeConfigParser()
+        cfg.read(sys_repo)
+        self.system_repo = cfg.sections()[0]
 
         start_queue_monitor(server.config["COMPOSER_CFG"], 0, 0)
 
@@ -129,10 +139,10 @@ class ServerTestCase(unittest.TestCase):
                                   {"changed":False, "name":"http-server"}],
                        "errors":[],
                        "blueprints":[{"description": "An example GlusterFS server with samba",
-                                   "modules":[{"name":"glusterfs", "version":"3.8.*"},
-                                              {"name":"glusterfs-cli", "version":"3.8.*"}],
+                                   "modules":[{"name":"glusterfs", "version":"3.*.*"},
+                                              {"name":"glusterfs-cli", "version":"3.*.*"}],
                                    "name":"glusterfs",
-                                   "packages":[{"name":"samba", "version":"4.7.*"}],
+                                   "packages":[{"name":"samba", "version":"4.*.*"}],
                                    "groups": [],
                                    "version": "0.0.1"},
                                   {"description":"An example http server with PHP and MySQL support.",
@@ -186,9 +196,9 @@ class ServerTestCase(unittest.TestCase):
         test_blueprint = {"description": "An example GlusterFS server with samba",
                        "name":"glusterfs",
                        "version": "0.2.0",
-                       "modules":[{"name":"glusterfs", "version":"3.8.*"},
-                                  {"name":"glusterfs-cli", "version":"3.8.*"}],
-                       "packages":[{"name":"samba", "version":"4.7.*"},
+                       "modules":[{"name":"glusterfs", "version":"3.*.*"},
+                                  {"name":"glusterfs-cli", "version":"3.*.*"}],
+                       "packages":[{"name":"samba", "version":"4.*.*"},
                                    {"name":"tmux", "version":"1.8"}],
                        "groups": []}
 
@@ -237,9 +247,9 @@ class ServerTestCase(unittest.TestCase):
         test_blueprint = {"description": "An example GlusterFS server with samba, ws version",
                        "name":"glusterfs",
                        "version": "0.3.0",
-                       "modules":[{"name":"glusterfs", "version":"3.8.*"},
-                                  {"name":"glusterfs-cli", "version":"3.8.*"}],
-                       "packages":[{"name":"samba", "version":"4.7.*"},
+                       "modules":[{"name":"glusterfs", "version":"3.*.*"},
+                                  {"name":"glusterfs-cli", "version":"3.*.*"}],
+                       "packages":[{"name":"samba", "version":"4.*.*"},
                                    {"name":"tmux", "version":"1.8"}],
                        "groups": []}
 
@@ -264,9 +274,9 @@ class ServerTestCase(unittest.TestCase):
         test_blueprint = {"description": "An example GlusterFS server with samba, ws version",
                        "name":"glusterfs",
                        "version": "0.4.0",
-                       "modules":[{"name":"glusterfs", "version":"3.8.*"},
-                                  {"name":"glusterfs-cli", "version":"3.8.*"}],
-                       "packages":[{"name":"samba", "version":"4.7.*"},
+                       "modules":[{"name":"glusterfs", "version":"3.*.*"},
+                                  {"name":"glusterfs-cli", "version":"3.*.*"}],
+                       "packages":[{"name":"samba", "version":"4.*.*"},
                                    {"name":"tmux", "version":"1.8"}],
                        "groups": []}
 
@@ -392,9 +402,9 @@ class ServerTestCase(unittest.TestCase):
         test_blueprint = {"description": "An example GlusterFS server with samba, ws version",
                        "name":"glusterfs",
                        "version": "0.3.0",
-                       "modules":[{"name":"glusterfs", "version":"3.8.*"},
-                                  {"name":"glusterfs-cli", "version":"3.8.*"}],
-                       "packages":[{"name":"samba", "version":"4.7.*"},
+                       "modules":[{"name":"glusterfs", "version":"3.*.*"},
+                                  {"name":"glusterfs-cli", "version":"3.*.*"}],
+                       "packages":[{"name":"samba", "version":"4.*.*"},
                                    {"name":"tmux", "version":"1.8"}]}
 
         resp = self.server.post("/api/v0/blueprints/workspace",
@@ -497,7 +507,10 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/projects/source/list")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
-        self.assertEqual(data["sources"], ["base", "epel", "extras", "lorax-1", "lorax-2", "lorax-3", "lorax-4", "other-repo", "single-repo", "updates"])
+
+        # Make sure it lists some common sources
+        for r in ["lorax-1", "lorax-2", "lorax-3", "lorax-4", "other-repo", "single-repo"]:
+            self.assertTrue(r in data["sources"] )
 
     def test_projects_source_00_info(self):
         """Test /api/v0/projects/source/info"""
@@ -574,7 +587,7 @@ class ServerTestCase(unittest.TestCase):
 
     def test_projects_source_01_delete_system(self):
         """Test /api/v0/projects/source/delete a system source"""
-        resp = self.server.delete("/api/v0/projects/source/delete/base")
+        resp = self.server.delete("/api/v0/projects/source/delete/" + self.system_repo)
         self.assertEqual(resp.status_code, 400)
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
@@ -584,7 +597,7 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/projects/source/list")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
-        self.assertTrue("base" in data["sources"])
+        self.assertTrue(self.system_repo in data["sources"])
 
     def test_projects_source_02_delete_single(self):
         """Test /api/v0/projects/source/delete a single source"""
@@ -652,9 +665,9 @@ class ServerTestCase(unittest.TestCase):
         test_blueprint = {"description": "An example GlusterFS server with samba",
                        "name":"glusterfs",
                        "version": "0.2.0",
-                       "modules":[{"name":"glusterfs", "version":"3.8.*"},
-                                  {"name":"glusterfs-cli", "version":"3.8.*"}],
-                       "packages":[{"name":"samba", "version":"4.7.*"},
+                       "modules":[{"name":"glusterfs", "version":"3.*.*"},
+                                  {"name":"glusterfs-cli", "version":"3.*.*"}],
+                       "packages":[{"name":"samba", "version":"4.*.*"},
                                    {"name":"tmux", "version":"1.8"}],
                        "groups": []}
 
