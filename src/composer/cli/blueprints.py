@@ -223,11 +223,15 @@ def prettyDiffEntry(diff):
         elif change(diff) == "Added":
             if name(diff) in ["Module", "Package"]:
                 return "%s %s" % (diff["new"][name(diff)]["name"], diff["new"][name(diff)]["version"])
+            elif name(diff) in ["Group"]:
+                return diff["new"][name(diff)]["name"]
             else:
                 return " ".join([diff["new"][k] for k in diff["new"]])
         elif change(diff) == "Removed":
             if name(diff) in ["Module", "Package"]:
                 return "%s %s" % (diff["old"][name(diff)]["name"], diff["old"][name(diff)]["version"])
+            elif name(diff) in ["Group"]:
+                return diff["old"][name(diff)]["name"]
             else:
                 return " ".join([diff["old"][k] for k in diff["old"]])
 
