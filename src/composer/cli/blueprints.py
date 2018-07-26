@@ -18,7 +18,6 @@ import logging
 log = logging.getLogger("composer-cli")
 
 import os
-import json
 
 from composer import http_client as client
 from composer.cli.help import blueprints_help
@@ -74,13 +73,13 @@ def blueprints_list(socket_path, api_version, args, show_json=False):
     """
     api_route = client.api_url(api_version, "/blueprints/list")
     result = client.get_url_json(socket_path, api_route)
-    if show_json:
-        print(json.dumps(result, indent=4))
-        return 0
+    (rc, exit_now) = handle_api_result(result, show_json)
+    if exit_now:
+        return rc
 
     print("blueprints: " + ", ".join([r for r in result["blueprints"]]))
 
-    return 0
+    return rc
 
 def blueprints_show(socket_path, api_version, args, show_json=False):
     """Show the blueprints, in TOML format
@@ -120,16 +119,16 @@ def blueprints_changes(socket_path, api_version, args, show_json=False):
     """
     api_route = client.api_url(api_version, "/blueprints/changes/%s" % (",".join(argify(args))))
     result = client.get_url_json(socket_path, api_route)
-    if show_json:
-        print(json.dumps(result, indent=4))
-        return 0
+    (rc, exit_now) = handle_api_result(result, show_json)
+    if exit_now:
+        return rc
 
     for blueprint in result["blueprints"]:
         print(blueprint["name"])
         for change in blueprint["changes"]:
             prettyCommitDetails(change)
 
-    return 0
+    return rc
 
 def prettyCommitDetails(change, indent=4):
     """Print the blueprint's change in a nice way
@@ -145,8 +144,8 @@ def prettyCommitDetails(change, indent=4):
         else:
             return ""
 
-    print " " * indent + change["timestamp"] + "  " + change["commit"] + revision()
-    print " " * indent + change["message"] + "\n"
+    print(" " * indent + change["timestamp"] + "  " + change["commit"] + revision())
+    print(" " * indent + change["message"] + "\n")
 
 def blueprints_diff(socket_path, api_version, args, show_json=False):
     """Display the differences between 2 versions of a blueprint
@@ -176,21 +175,14 @@ def blueprints_diff(socket_path, api_version, args, show_json=False):
 
     api_route = client.api_url(api_version, "/blueprints/diff/%s/%s/%s" % (args[0], args[1], args[2]))
     result = client.get_url_json(socket_path, api_route)
-
-    if show_json:
-        print(json.dumps(result, indent=4))
-        return 0
-
-    for err in result.get("errors", []):
-        log.error(err)
-
-    if result.get("errors", False):
-        return 1
+    (rc, exit_now) = handle_api_result(result, show_json)
+    if exit_now:
+        return rc
 
     for diff in result["diff"]:
         print(prettyDiffEntry(diff))
 
-    return 0
+    return rc
 
 def prettyDiffEntry(diff):
     """Generate nice diff entry string.
@@ -279,7 +271,7 @@ def blueprints_delete(socket_path, api_version, args, show_json=False):
     api_route = client.api_url(api_version, "/blueprints/delete/%s" % args[0])
     result = client.delete_url_json(socket_path, api_route)
 
-    return handle_api_result(result, show_json)
+    return handle_api_result(result, show_json)[0]
 
 def blueprints_depsolve(socket_path, api_version, args, show_json=False):
     """Display the packages needed to install the blueprint
@@ -297,10 +289,9 @@ def blueprints_depsolve(socket_path, api_version, args, show_json=False):
     """
     api_route = client.api_url(api_version, "/blueprints/depsolve/%s" % (",".join(argify(args))))
     result = client.get_url_json(socket_path, api_route)
-
-    if show_json:
-        print(json.dumps(result, indent=4))
-        return 0
+    (rc, exit_now) = handle_api_result(result, show_json)
+    if exit_now:
+        return rc
 
     for blueprint in result["blueprints"]:
         if blueprint["blueprint"].get("version", ""):
@@ -310,7 +301,7 @@ def blueprints_depsolve(socket_path, api_version, args, show_json=False):
         for dep in blueprint["dependencies"]:
             print("    " + packageNEVRA(dep))
 
-    return 0
+    return rc
 
 def blueprints_push(socket_path, api_version, args, show_json=False):
     """Push a blueprint TOML file to the server, updating the blueprint
@@ -335,7 +326,7 @@ def blueprints_push(socket_path, api_version, args, show_json=False):
         blueprint_toml = open(blueprint, "r").read()
 
         result = client.post_url_toml(socket_path, api_route, blueprint_toml)
-        if handle_api_result(result, show_json):
+        if handle_api_result(result, show_json)[0]:
             rval = 1
 
     return rval
@@ -367,32 +358,24 @@ def blueprints_freeze(socket_path, api_version, args, show_json=False):
 
     api_route = client.api_url(api_version, "/blueprints/freeze/%s" % (",".join(argify(args))))
     result = client.get_url_json(socket_path, api_route)
+    (rc, exit_now) = handle_api_result(result, show_json)
+    if exit_now:
+        return rc
 
-    if show_json:
-        print(json.dumps(result, indent=4))
-    else:
-        for entry in result["blueprints"]:
-            blueprint = entry["blueprint"]
-            if blueprint.get("version", ""):
-                print("blueprint: %s v%s" % (blueprint["name"], blueprint["version"]))
-            else:
-                print("blueprint: %s" % (blueprint["name"]))
+    for entry in result["blueprints"]:
+        blueprint = entry["blueprint"]
+        if blueprint.get("version", ""):
+            print("blueprint: %s v%s" % (blueprint["name"], blueprint["version"]))
+        else:
+            print("blueprint: %s" % (blueprint["name"]))
 
-            for m in blueprint["modules"]:
-                print("    %s-%s" % (m["name"], m["version"]))
+        for m in blueprint["modules"]:
+            print("    %s-%s" % (m["name"], m["version"]))
 
-            for p in blueprint["packages"]:
-                print("    %s-%s" % (p["name"], p["version"]))
+        for p in blueprint["packages"]:
+            print("    %s-%s" % (p["name"], p["version"]))
 
-        # Print any errors
-        for err in result.get("errors", []):
-            log.error(err)
-
-    # Return a 1 if there are any errors
-    if result.get("errors", []):
-        return 1
-    else:
-        return 0
+    return rc
 
 def blueprints_freeze_show(socket_path, api_version, args, show_json=False):
     """Show the frozen blueprint in TOML format
@@ -460,7 +443,7 @@ def blueprints_tag(socket_path, api_version, args, show_json=False):
     api_route = client.api_url(api_version, "/blueprints/tag/%s" % args[0])
     result = client.post_url(socket_path, api_route, "")
 
-    return handle_api_result(result, show_json)
+    return handle_api_result(result, show_json)[0]
 
 def blueprints_undo(socket_path, api_version, args, show_json=False):
     """Undo changes to a blueprint
@@ -486,7 +469,7 @@ def blueprints_undo(socket_path, api_version, args, show_json=False):
     api_route = client.api_url(api_version, "/blueprints/undo/%s/%s" % (args[0], args[1]))
     result = client.post_url(socket_path, api_route, "")
 
-    return handle_api_result(result, show_json)
+    return handle_api_result(result, show_json)[0]
 
 def blueprints_workspace(socket_path, api_version, args, show_json=False):
     """Push the blueprint TOML to the temporary workspace storage
@@ -511,14 +494,7 @@ def blueprints_workspace(socket_path, api_version, args, show_json=False):
         blueprint_toml = open(blueprint, "r").read()
 
         result = client.post_url_toml(socket_path, api_route, blueprint_toml)
-        if show_json:
-            print(json.dumps(result, indent=4))
-
-        for err in result.get("errors", []):
-            log.error(err)
-
-        # Any errors results in returning a 1, but we continue with the rest first
-        if not result.get("status", False):
+        if handle_api_result(result, show_json)[0]:
             rval = 1
 
     return rval
