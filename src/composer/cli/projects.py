@@ -17,11 +17,11 @@
 import logging
 log = logging.getLogger("composer-cli")
 
-import json
 import textwrap
 
 from composer import http_client as client
 from composer.cli.help import projects_help
+from composer.cli.utilities import handle_api_result
 
 def projects_cmd(opts):
     """Process projects commands
@@ -60,16 +60,16 @@ def projects_list(socket_path, api_version, args, show_json=False):
     """
     api_route = client.api_url(api_version, "/projects/list")
     result = client.get_url_json(socket_path, api_route)
-    if show_json:
-        print(json.dumps(result, indent=4))
-        return 0
+    (rc, exit_now) = handle_api_result(result, show_json)
+    if exit_now:
+        return rc
 
     for proj in result["projects"]:
         for k in [field for field in ("name", "summary", "homepage", "description") if proj[field]]:
             print("%s: %s" % (k.title(), textwrap.fill(proj[k], subsequent_indent=" " * (len(k)+2))))
         print("\n\n")
 
-    return 0
+    return rc
 
 def projects_info(socket_path, api_version, args, show_json=False):
     """Output info on a list of projects
@@ -91,9 +91,9 @@ def projects_info(socket_path, api_version, args, show_json=False):
 
     api_route = client.api_url(api_version, "/projects/info/%s" % ",".join(args))
     result = client.get_url_json(socket_path, api_route)
-    if show_json:
-        print(json.dumps(result, indent=4))
-        return 0
+    (rc, exit_now) = handle_api_result(result, show_json)
+    if exit_now:
+        return rc
 
     for proj in result["projects"]:
         for k in [field for field in ("name", "summary", "homepage", "description") if proj[field]]:
@@ -107,4 +107,4 @@ def projects_info(socket_path, api_version, args, show_json=False):
                                                        build["build_time"],
                                                        build["changelog"]))
         print("")
-    return 0
+    return rc
