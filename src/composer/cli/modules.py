@@ -17,10 +17,9 @@
 import logging
 log = logging.getLogger("composer-cli")
 
-import json
-
 from composer import http_client as client
 from composer.cli.help import modules_help
+from composer.cli.utilities import handle_api_result
 
 def modules_cmd(opts):
     """Process modules commands
@@ -39,10 +38,10 @@ def modules_cmd(opts):
 
     api_route = client.api_url(opts.api_version, "/modules/list")
     result = client.get_url_json(opts.socket, api_route)
-    if opts.json:
-        print(json.dumps(result, indent=4))
-        return 0
+    (rc, exit_now) = handle_api_result(result, opts.show_json)
+    if exit_now:
+        return rc
 
     print("Modules:\n" + "\n".join(["    "+r["name"] for r in result["modules"]]))
 
-    return 0
+    return rc
