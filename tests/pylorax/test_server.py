@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import os
+from ConfigParser import SafeConfigParser, NoOptionError
 from glob import glob
 import shutil
 import tempfile
@@ -30,6 +31,26 @@ from pylorax.api.recipes import open_or_create_repo, commit_recipe_directory
 from pylorax.api.server import server, GitLock, DNFLock
 from pylorax.api.dnfbase import get_base_object
 from pylorax.sysutils import joinpaths
+
+def get_system_repo():
+    """Get an enabled system repo from /etc/yum.repos.d/*repo
+
+    This will be used for test_projects_source_01_delete_system()
+    """
+    # The sources delete test needs the name of a system repo, get it from /etc/yum.repos.d/
+    for sys_repo in sorted(glob("/etc/yum.repos.d/*repo")):
+        cfg = SafeConfigParser()
+        cfg.read(sys_repo)
+        for section in cfg.sections():
+            try:
+                if cfg.get(section, "enabled") == "1":
+                    # The API only supports repo filenames, return that.
+                    return os.path.basename(sys_repo)[:-5]
+            except NoOptionError:
+                pass
+
+    # Failed to find one, fall back to using base
+    return "base"
 
 class ServerTestCase(unittest.TestCase):
 
@@ -84,6 +105,9 @@ class ServerTestCase(unittest.TestCase):
 
         # Import the example blueprints
         commit_recipe_directory(server.config["GITLOCK"].repo, "master", self.examples_path)
+
+        # The sources delete test needs the name of a system repo, get it from /etc/yum.repos.d/
+        self.system_repo = get_system_repo()
 
         start_queue_monitor(server.config["COMPOSER_CFG"], 0, 0)
 
