@@ -90,16 +90,15 @@ Anaconda's image install feature.
 %package lmc-virt
 Summary:  livemedia-creator libvirt dependencies
 Requires: lorax = %{version}-%{release}
-Requires: qemu
+Requires: qemu-kvm
 
 # Fedora edk2 builds currently only support these arches
 %ifarch %{ix86} x86_64 %{arm} aarch64
 Requires: edk2-ovmf
 %endif
-Recommends: qemu-kvm
 
 %description lmc-virt
-Additional dependencies required by livemedia-creator when using it with qemu.
+Additional dependencies required by livemedia-creator when using it with qemu-kvm.
 
 %package lmc-novirt
 Summary:  livemedia-creator no-virt dependencies

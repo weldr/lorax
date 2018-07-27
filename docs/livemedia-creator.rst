@@ -25,7 +25,7 @@ minimum you need:
 
 ``--ks`` to select the kickstart file describing what to install.
 
-To use livemedia-creator with virtualization you will need to have qemu installed.
+To use livemedia-creator with virtualization you will need to have qemu-kvm installed.
 
 If you are going to be using Anaconda directly, with ``--no-virt`` mode, make sure
 you have the anaconda-tui package installed.

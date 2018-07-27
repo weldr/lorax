@@ -84,8 +84,8 @@ def main():
         errors.append("the volume id cannot be longer than 32 characters")
 
     if is_install and not opts.no_virt \
-       and not any(glob.glob("/usr/bin/qemu-system-*")):
-        errors.append("qemu needs to be installed.")
+       and not any(glob.glob("/usr/libexec/qemu-kvm")):
+        errors.append("qemu-kvm needs to be installed.")
 
     if is_install and opts.no_virt \
        and not os.path.exists("/usr/sbin/anaconda"):

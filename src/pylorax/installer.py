@@ -135,15 +135,6 @@ class QEMUInstall(object):
     """
     Run qemu using an iso and a kickstart
     """
-    # Mapping of arch to qemu command
-    QEMU_CMDS = {"x86_64":  "qemu-system-x86_64",
-                 "i386":    "qemu-system-i386",
-                 "arm":     "qemu-system-arm",
-                 "aarch64": "qemu-system-aarch64",
-                 "ppc":     "qemu-system-ppc",
-                 "ppc64":   "qemu-system-ppc64"
-                }
-
     def __init__(self, opts, iso, ks_paths, disk_img, img_size=2048,
                  kernel_args=None, memory=1024, vcpus=None, vnc=None, arch=None,
                  log_check=None, virtio_host="127.0.0.1", virtio_port=6080,
@@ -170,9 +161,9 @@ class QEMUInstall(object):
         :param bool boot_uefi: Use OVMF to boot the VM in UEFI mode
         :param str ovmf_path: Path to the OVMF firmware
         """
-        # Lookup qemu-system- for arch if passed, or try to guess using host arch
-        qemu_cmd = [self.QEMU_CMDS.get(arch or os.uname().machine, "qemu-system-"+os.uname().machine)]
-        if not os.path.exists("/usr/bin/"+qemu_cmd[0]):
+        # RHEL8 only has /usr/libexec/qemu-kvm so we have to use that.
+        qemu_cmd = ["/usr/libexec/qemu-kvm"]
+        if not os.path.exists(qemu_cmd[0]):
             raise InstallError("%s does not exist, cannot run qemu" % qemu_cmd[0])
 
         qemu_cmd += ["-nodefconfig"]
@@ -225,13 +216,16 @@ class QEMUInstall(object):
         log.info("qemu %s", display_args)
         qemu_cmd += ["-nographic", "-display", display_args ]
 
+        # Setup virtio networking
+        qemu_cmd += ["-netdev", "user,id=n1", "-device", "virtio-net-pci,netdev=n1"]
+
         # Setup the virtio log port
         qemu_cmd += ["-device", "virtio-serial-pci,id=virtio-serial0"]
         qemu_cmd += ["-device", "virtserialport,bus=virtio-serial0.0,nr=1,chardev=charchannel0"
                                 ",id=channel0,name=org.fedoraproject.anaconda.log.0"]
         qemu_cmd += ["-chardev", "socket,id=charchannel0,host=%s,port=%s" % (virtio_host, virtio_port)]
 
-        # PAss through rng from host
+        # Pass through rng from host
         if opts.with_rng != "none":
             qemu_cmd += ["-object", "rng-random,id=virtio-rng0,filename=%s" % opts.with_rng]
             qemu_cmd += ["-device", "virtio-rng-pci,rng=virtio-rng0,id=rng0,bus=pci.0,addr=0x9"]
