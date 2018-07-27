@@ -603,10 +603,7 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/projects/source/list")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
-        if self.rawhide:
-            self.assertTrue("rawhide" in data["sources"])
-        else:
-            self.assertTrue("fedora" in data["sources"])
+        self.assertTrue(self.system_repo in data["sources"], "%s not in %s" % (self.system_repo, data["sources"]))
 
     def test_projects_source_02_delete_single(self):
         """Test /api/v0/projects/source/delete a single source"""
