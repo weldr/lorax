@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.2
+Version:        28.14.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -229,6 +229,15 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{python3_sitelib}/composer/*
 
 %changelog
+* Mon Jul 30 2018 Brian C. Lane <bcl@redhat.com> 28.14.3-1
+- Update to use only qemu-kvm (bcl@redhat.com)
+- Fix help output on the compose subcommand. (clumens@redhat.com)
+- Add timestamps to "compose-cli compose status" output. (clumens@redhat.com)
+- And then add real output to the status command. (clumens@redhat.com)
+- Add the beginnings of a new status subcommand. (clumens@redhat.com)
+- composer-cli: Fix non-zero epoch in projets info (bcl@redhat.com)
+- Adjust test_server and test blueprints so they depsolve (bcl@redhat.com)
+
 * Fri Jul 20 2018 Brian C. Lane <bcl@redhat.com> 28.14.2-1
 - New lorax documentation - 28.14.2 (bcl@redhat.com)
 - Add dnf.transaction to list of modules for sphinx to ignore (bcl@redhat.com)
