@@ -25,6 +25,9 @@ compose types
 compose status
     List the status of all running and finished composes.
 
+compose list [waiting|running|finished|failed]
+    List basic information about composes.
+
 compose log <UUID> [<SIZE>]
     Show the last SIZE kB of the compose log.
 
