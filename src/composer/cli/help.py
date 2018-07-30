@@ -18,6 +18,7 @@ compose_help = """
 compose start <blueprint> <type>    Start a compose using the selected blueprint and output type.
         types                       List the supported output types.
         status                      List the status of all running and finished composes.
+        list [WHICH]                List (waiting, running, finished, failed) composes.
         log <uuid> [<size>kB]       Show the last 1kB of the compose log.
         cancel <uuid>               Cancel a running compose and delete any intermediate results.
         delete <uuid,...>           Delete the listed compose results.
