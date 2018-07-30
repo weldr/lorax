@@ -77,7 +77,8 @@ def blueprints_list(socket_path, api_version, args, show_json=False):
     if exit_now:
         return rc
 
-    print("blueprints: " + ", ".join([r for r in result["blueprints"]]))
+    # "list" should output a plain list of identifiers, one per line.
+    print("\n".join(result["blueprints"]))
 
     return rc
 

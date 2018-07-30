@@ -42,6 +42,7 @@ def modules_cmd(opts):
     if exit_now:
         return rc
 
-    print("Modules:\n" + "\n".join(["    "+r["name"] for r in result["modules"]]))
+    # "list" should output a plain list of identifiers, one per line.
+    print("\n".join(r["name"] for r in result["modules"]))
 
     return rc

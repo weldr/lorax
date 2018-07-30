@@ -36,6 +36,7 @@ def compose_cmd(opts):
     This dispatches the compose commands to a function
     """
     cmd_map = {
+        "list":     compose_list,
         "status":   compose_status,
         "types":    compose_types,
         "start":    compose_start,
@@ -56,6 +57,50 @@ def compose_cmd(opts):
         return 1
 
     return cmd_map[opts.args[1]](opts.socket, opts.api_version, opts.args[2:], opts.json, opts.testmode)
+
+def compose_list(socket_path, api_version, args, show_json=False, testmode=0):
+    """Return a simple list of compose identifiers"""
+
+    states = ("running", "waiting", "finished", "failed")
+
+    which = set()
+
+    if any(a not in states for a in args):
+        # TODO: error about unknown state
+        return 1
+    elif not args:
+        which.update(states)
+    else:
+        which.update(args)
+
+    results = []
+
+    if "running" in which or "waiting" in which:
+        api_route = client.api_url(api_version, "/compose/queue")
+        r = client.get_url_json(socket_path, api_route)
+        if "running" in which:
+            results += r["run"]
+        if "waiting" in which:
+            results += r["new"]
+
+    if "finished" in which:
+        api_route = client.api_url(api_version, "/compose/finished")
+        r = client.get_url_json(socket_path, api_route)
+        results += r["finished"]
+
+    if "failed" in which:
+        api_route = client.api_url(api_version, "/compose/failed")
+        r = client.get_url_json(socket_path, api_route)
+        results += r["failed"]
+
+    if results:
+        if show_json:
+            print(json.dumps(results, indent=4))
+        else:
+            list_fmt = "{id} {queue_status} {blueprint} {version} {compose_type}"
+            print("\n".join(list_fmt.format(**c) for c in results))
+
+    return 0
 
 def compose_status(socket_path, api_version, args, show_json=False, testmode=0):
     """Return the status of all known composes
@@ -148,7 +193,8 @@ def compose_types(socket_path, api_version, args, show_json=False, testmode=0):
         print(json.dumps(result, indent=4))
         return 0
 
-    print("Compose Types: " + ", ".join([t["name"] for t in result["types"]]))
+    # output a plain list of identifiers, one per line
+    print("\n".join(t["name"] for t in result["types"]))
 
 def compose_start(socket_path, api_version, args, show_json=False, testmode=0):
     """Start a new compose using the selected blueprint and type

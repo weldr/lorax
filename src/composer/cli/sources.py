@@ -67,7 +67,8 @@ def sources_list(socket_path, api_version, args, show_json=False):
     if exit_now:
         return rc
 
-    print("Sources: %s" % ", ".join(result["sources"]))
+    # "list" should output a plain list of identifiers, one per line.
+    print("\n".join(result["sources"]))
     return rc
 
 def sources_info(socket_path, api_version, args, show_json=False):
