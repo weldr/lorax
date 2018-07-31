@@ -227,6 +227,7 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %files -n composer-cli
 %{_bindir}/composer-cli
 %{python3_sitelib}/composer/*
+%{_sysconfdir}/bash-completion/composer-cli
 
 %changelog
 * Mon Jul 30 2018 Brian C. Lane <bcl@redhat.com> 28.14.3-1
