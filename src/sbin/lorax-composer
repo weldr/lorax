@@ -234,7 +234,8 @@ if __name__ == '__main__':
 
     start_queue_monitor(server.config["COMPOSER_CFG"], uid, gid)
 
-    # Drop root privileges on the main process
+    # Change user and group on the main process.  Note that this still happens even if
+    # --user and --group were passed in, but changing to the same user should be fine.
     os.setgid(gid)
     os.setuid(uid)
     log.debug("user is now %s:%s", os.getresuid(), os.getresgid())
