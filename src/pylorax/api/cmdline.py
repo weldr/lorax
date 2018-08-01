@@ -22,6 +22,9 @@ import argparse
 
 from pylorax import vernum
 
+DEFAULT_USER  = "root"
+DEFAULT_GROUP = "weldr"
+
 version = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
 
 def lorax_composer_parser():
@@ -32,9 +35,9 @@ def lorax_composer_parser():
 
     parser.add_argument("--socket", default="/run/weldr/api.socket", metavar="SOCKET",
                         help="Path to the socket file to listen on")
-    parser.add_argument("--user", default="weldr", metavar="USER",
+    parser.add_argument("--user", default=DEFAULT_USER, metavar="USER",
                         help="User to use for reduced permissions")
-    parser.add_argument("--group", default="weldr", metavar="GROUP",
+    parser.add_argument("--group", default=DEFAULT_GROUP, metavar="GROUP",
                         help="Group to set ownership of the socket to")
     parser.add_argument("--log", dest="logfile", default="/var/log/lorax-composer/composer.log", metavar="LOG",
                         help="Path to logfile (/var/log/lorax-composer/composer.log)")
