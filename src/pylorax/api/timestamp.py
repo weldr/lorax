@@ -20,6 +20,10 @@ import time
 
 from pylorax.sysutils import joinpaths
 
+TS_CREATED  = "created"
+TS_STARTED  = "started"
+TS_FINISHED = "finished"
+
 def write_timestamp(destdir, ty):
     path = joinpaths(destdir, "times.toml")
 
@@ -28,12 +32,12 @@ def write_timestamp(destdir, ty):
     except IOError:
         contents = toml.loads("")
 
-    if ty == "created":
-        contents["created"] = time.time()
-    elif ty == "started":
-        contents["started"] = time.time()
-    elif ty == "finished":
-        contents["finished"] = time.time()
+    if ty == TS_CREATED:
+        contents[TS_CREATED] = time.time()
+    elif ty == TS_STARTED:
+        contents[TS_STARTED] = time.time()
+    elif ty == TS_FINISHED:
+        contents[TS_FINISHED] = time.time()
 
     with open(path, "w") as f:
         f.write(toml.dumps(contents).encode("UTF-8"))
