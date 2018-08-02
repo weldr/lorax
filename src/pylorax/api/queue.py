@@ -30,6 +30,7 @@ import time
 
 from pylorax.api.compose import move_compose_results
 from pylorax.api.recipes import recipe_from_file
+from pylorax.api.timestamp import timestamp_dict
 from pylorax.base import DataHolder
 from pylorax.creator import run_creator
 from pylorax.sysutils import joinpaths
@@ -249,15 +250,21 @@ def compose_detail(results_dir):
 
     * id - The uuid of the comoposition
     * queue_status - The final status of the composition (FINISHED or FAILED)
-    * timestamp - The time of the last status change
     * compose_type - The type of output generated (tar, iso, etc.)
     * blueprint - Blueprint name
     * version - Blueprint version
     * image_size - Size of the image, if finished. 0 otherwise.
+
+    Various timestamps are also included in the dict.  These are all Unix UTC timestamps.
+    It is possible for these timestamps to not always exist, in which case they will be
+    None in Python (or null in JSON).  The following timestamps are included:
+
+    * job_created - When the user submitted the compose
+    * job_started - Anaconda started running
+    * job_finished - Job entered FINISHED or FAILED state
     """
     build_id = os.path.basename(os.path.abspath(results_dir))
     status = open(joinpaths(results_dir, "STATUS")).read().strip()
-    mtime = os.stat(joinpaths(results_dir, "STATUS")).st_mtime
     blueprint = recipe_from_file(joinpaths(results_dir, "blueprint.toml"))
 
     compose_type = get_compose_type(results_dir)
@@ -268,9 +275,13 @@ def compose_detail(results_dir):
     else:
         image_size = 0
 
+    times = timestamp_dict(results_dir)
+
     return {"id":           build_id,
             "queue_status": status,
-            "timestamp":    mtime,
+            "job_created":  times.get("created"),
+            "job_started":  times.get("started"),
+            "job_finished": times.get("finished"),
             "compose_type": compose_type,
             "blueprint":    blueprint["name"],
             "version":      blueprint["version"],
