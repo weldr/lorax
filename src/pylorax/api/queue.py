@@ -30,7 +30,7 @@ import time
 
 from pylorax.api.compose import move_compose_results
 from pylorax.api.recipes import recipe_from_file
-from pylorax.api.timestamp import timestamp_dict
+from pylorax.api.timestamp import write_timestamp, timestamp_dict
 from pylorax.base import DataHolder
 from pylorax.creator import run_creator
 from pylorax.sysutils import joinpaths
@@ -107,6 +107,7 @@ def monitor(cfg):
                 make_compose(cfg, os.path.realpath(dst))
                 log.info("Finished building %s, results are in %s", dst, os.path.realpath(dst))
                 open(joinpaths(dst, "STATUS"), "w").write("FINISHED\n")
+                write_timestamp(dst, "finished")
             except Exception:
                 import traceback
                 log.error("traceback: %s", traceback.format_exc())
@@ -114,6 +115,7 @@ def monitor(cfg):
 # TODO - Write the error message to an ERROR-LOG file to include with the status
 #                log.error("Error running compose: %s", e)
                 open(joinpaths(dst, "STATUS"), "w").write("FAILED\n")
+                write_timestamp(dst, "finished")
 
             os.unlink(dst)
 
@@ -191,6 +193,7 @@ def make_compose(cfg, results_dir):
     log.debug("cfg  = %s", install_cfg)
     try:
         test_path = joinpaths(results_dir, "TEST")
+        write_timestamp(results_dir, "started")
         if os.path.exists(test_path):
             # Pretend to run the compose
             time.sleep(5)
