@@ -49,6 +49,7 @@ from pykickstart.version import makeVersion, RHEL7
 from pylorax.api.projects import projects_depsolve, projects_depsolve_with_size, dep_nevra
 from pylorax.api.projects import ProjectsError
 from pylorax.api.recipes import read_recipe_and_id
+from pylorax.api.timestamp import write_timestamp
 from pylorax.imgutils import default_image_name
 from pylorax.sysutils import joinpaths
 
@@ -384,6 +385,7 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_m
     if test_mode > 0:
         open(joinpaths(results_dir, "TEST"), "w").write("%s" % test_mode)
 
+    write_timestamp(results_dir, "created")
     log.info("Adding %s (%s %s) to compose queue", build_id, recipe["name"], compose_type)
     os.symlink(results_dir, joinpaths(lib_dir, "queue/new/", build_id))
 
