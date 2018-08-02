@@ -30,7 +30,7 @@ import time
 
 from pylorax.api.compose import move_compose_results
 from pylorax.api.recipes import recipe_from_file
-from pylorax.api.timestamp import write_timestamp, timestamp_dict
+from pylorax.api.timestamp import TS_CREATED, TS_STARTED, TS_FINISHED, write_timestamp, timestamp_dict
 from pylorax.base import DataHolder
 from pylorax.creator import run_creator
 from pylorax.sysutils import joinpaths
@@ -107,7 +107,7 @@ def monitor(cfg):
                 make_compose(cfg, os.path.realpath(dst))
                 log.info("Finished building %s, results are in %s", dst, os.path.realpath(dst))
                 open(joinpaths(dst, "STATUS"), "w").write("FINISHED\n")
-                write_timestamp(dst, "finished")
+                write_timestamp(dst, TS_FINISHED)
             except Exception:
                 import traceback
                 log.error("traceback: %s", traceback.format_exc())
@@ -115,7 +115,7 @@ def monitor(cfg):
 # TODO - Write the error message to an ERROR-LOG file to include with the status
 #                log.error("Error running compose: %s", e)
                 open(joinpaths(dst, "STATUS"), "w").write("FAILED\n")
-                write_timestamp(dst, "finished")
+                write_timestamp(dst, TS_FINISHED)
 
             os.unlink(dst)
 
@@ -193,7 +193,7 @@ def make_compose(cfg, results_dir):
     log.debug("cfg  = %s", install_cfg)
     try:
         test_path = joinpaths(results_dir, "TEST")
-        write_timestamp(results_dir, "started")
+        write_timestamp(results_dir, TS_STARTED)
         if os.path.exists(test_path):
             # Pretend to run the compose
             time.sleep(5)
@@ -282,9 +282,9 @@ def compose_detail(results_dir):
 
     return {"id":           build_id,
             "queue_status": status,
-            "job_created":  times.get("created"),
-            "job_started":  times.get("started"),
-            "job_finished": times.get("finished"),
+            "job_created":  times.get(TS_CREATED),
+            "job_started":  times.get(TS_STARTED),
+            "job_finished": times.get(TS_FINISHED),
             "compose_type": compose_type,
             "blueprint":    blueprint["name"],
             "version":      blueprint["version"],
