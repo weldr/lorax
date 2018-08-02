@@ -727,14 +727,14 @@ POST `/api/v0/compose`
             "id": "45502a6d-06e8-48a5-a215-2b4174b3614b",
             "blueprint": "glusterfs",
             "queue_status": "WAITING",
-            "timestamp": 1517362647.4570868,
+            "job_created": 1517362647.4570868,
             "version": "0.0.6"
           },
           {
             "id": "6d292bd0-bec7-4825-8d7d-41ef9c3e4b73",
             "blueprint": "kubernetes",
             "queue_status": "WAITING",
-            "timestamp": 1517362659.0034983,
+            "job_created": 1517362659.0034983,
             "version": "0.0.1"
           }
         ],
@@ -743,7 +743,8 @@ POST `/api/v0/compose`
             "id": "745712b2-96db-44c0-8014-fe925c35e795",
             "blueprint": "glusterfs",
             "queue_status": "RUNNING",
-            "timestamp": 1517362633.7965999,
+            "job_created": 1517362633.7965999,
+            "job_started": 1517362633.8001345,
             "version": "0.0.6"
           }
         ]
@@ -762,14 +763,18 @@ POST `/api/v0/compose`
             "id": "70b84195-9817-4b8a-af92-45e380f39894",
             "blueprint": "glusterfs",
             "queue_status": "FINISHED",
-            "timestamp": 1517351003.8210032,
+            "job_created": 1517351003.8210032,
+            "job_started": 1517351003.8230415,
+            "job_finished": 1517359234.1003145,
             "version": "0.0.6"
           },
           {
             "id": "e695affd-397f-4af9-9022-add2636e7459",
             "blueprint": "glusterfs",
             "queue_status": "FINISHED",
-            "timestamp": 1517362289.7193348,
+            "job_created": 1517362289.7193348,
+            "job_started": 1517362289.9751132,
+            "job_finished": 1517363500.1234567,
             "version": "0.0.6"
           }
         ]
@@ -788,7 +793,9 @@ POST `/api/v0/compose`
             "id": "8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a",
             "blueprint": "http-server",
             "queue_status": "FAILED",
-            "timestamp": 1517523249.9301329,
+            "job_created": 1517523249.9301329,
+            "job_started": 1517523249.9314211,
+            "job_finished": 1517523255.5623411,
             "version": "0.0.2"
           }
         ]
@@ -807,14 +814,18 @@ POST `/api/v0/compose`
             "id": "8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a",
             "blueprint": "http-server",
             "queue_status": "FINISHED",
-            "timestamp": 1517523644.2384307,
+            "job_created": 1517523644.2384307,
+            "job_started": 1517523644.2551234,
+            "job_finished": 1517523689.9864314,
             "version": "0.0.2"
           },
           {
             "id": "45502a6d-06e8-48a5-a215-2b4174b3614b",
             "blueprint": "glusterfs",
             "queue_status": "FINISHED",
-            "timestamp": 1517363442.188399,
+            "job_created": 1517363442.188399,
+            "job_started": 1517363442.325324,
+            "job_finished": 1517363451.653621,
             "version": "0.0.6"
           }
         ]
