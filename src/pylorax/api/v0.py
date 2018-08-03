@@ -969,6 +969,7 @@ from flask import jsonify, request, Response, send_file
 import pytoml as toml
 
 from pylorax.sysutils import joinpaths
+from pylorax.api.checkparams import checkparams
 from pylorax.api.compose import start_build, compose_types
 from pylorax.api.crossdomain import crossdomain
 from pylorax.api.projects import projects_list, projects_info, projects_depsolve
@@ -1015,8 +1016,10 @@ def v0_api(api):
             blueprints = take_limits(map(lambda f: f[:-5], list_branch_files(api.config["GITLOCK"].repo, branch)), offset, limit)
         return jsonify(blueprints=blueprints, limit=limit, offset=offset, total=len(blueprints))
 
+    @api.route("/api/v0/blueprints/info", defaults={'blueprint_names': ""})
     @api.route("/api/v0/blueprints/info/<blueprint_names>")
     @crossdomain(origin="*")
+    @checkparams([("blueprint_names", "", "no blueprint names given")])
     def v0_blueprints_info(blueprint_names):
         """Return the contents of the blueprint, or a list of blueprints"""
         branch = request.args.get("branch", "master")
@@ -1071,8 +1074,10 @@ def v0_api(api):
         else:
             return jsonify(changes=changes, blueprints=blueprints, errors=errors)
 
+    @api.route("/api/v0/blueprints/changes", defaults={'blueprint_names': ""})
     @api.route("/api/v0/blueprints/changes/<blueprint_names>")
     @crossdomain(origin="*")
+    @checkparams([("blueprint_names", "", "no blueprint names given")])
     def v0_blueprints_changes(blueprint_names):
         """Return the changes to a blueprint or list of blueprints"""
         branch = request.args.get("branch", "master")
@@ -1123,8 +1128,10 @@ def v0_api(api):
         else:
             return jsonify(status=True)
 
+    @api.route("/api/v0/blueprints/delete", defaults={'blueprint_name': ""}, methods=["DELETE"])
     @api.route("/api/v0/blueprints/delete/<blueprint_name>", methods=["DELETE"])
     @crossdomain(origin="*")
+    @checkparams([("blueprint_name", "", "no blueprint name given")])
     def v0_blueprints_delete(blueprint_name):
         """Delete a blueprint from git"""
         branch = request.args.get("branch", "master")
@@ -1156,8 +1163,10 @@ def v0_api(api):
         else:
             return jsonify(status=True)
 
+    @api.route("/api/v0/blueprints/workspace", defaults={'blueprint_name': ""}, methods=["DELETE"])
     @api.route("/api/v0/blueprints/workspace/<blueprint_name>", methods=["DELETE"])
     @crossdomain(origin="*")
+    @checkparams([("blueprint_name", "", "no blueprint name given")])
     def v0_blueprints_delete_workspace(blueprint_name):
         """Delete a blueprint from the workspace"""
         branch = request.args.get("branch", "master")
@@ -1170,8 +1179,12 @@ def v0_api(api):
         else:
             return jsonify(status=True)
 
+    @api.route("/api/v0/blueprints/undo", defaults={'blueprint_name': "", 'commit': ""}, methods=["POST"])
+    @api.route("/api/v0/blueprints/undo/<blueprint_name>", defaults={'commit': ""}, methods=["POST"])
     @api.route("/api/v0/blueprints/undo/<blueprint_name>/<commit>", methods=["POST"])
     @crossdomain(origin="*")
+    @checkparams([("blueprint_name", "", "no blueprint name given"),
+                  ("commit", "", "no commit ID given")])
     def v0_blueprints_undo(blueprint_name, commit):
         """Undo changes to a blueprint by reverting to a previous commit."""
         branch = request.args.get("branch", "master")
@@ -1188,8 +1201,10 @@ def v0_api(api):
         else:
             return jsonify(status=True)
 
+    @api.route("/api/v0/blueprints/tag", defaults={'blueprint_name': ""}, methods=["POST"])
     @api.route("/api/v0/blueprints/tag/<blueprint_name>", methods=["POST"])
     @crossdomain(origin="*")
+    @checkparams([("blueprint_name", "", "no blueprint name given")])
     def v0_blueprints_tag(blueprint_name):
         """Tag a blueprint's latest blueprint commit as a 'revision'"""
         branch = request.args.get("branch", "master")
@@ -1202,8 +1217,14 @@ def v0_api(api):
         else:
             return jsonify(status=True)
 
+    @api.route("/api/v0/blueprints/diff", defaults={'blueprint_name': "", 'from_commit': "", 'to_commit': ""})
+    @api.route("/api/v0/blueprints/diff/<blueprint_name>", defaults={'from_commit': "", 'to_commit': ""})
+    @api.route("/api/v0/blueprints/diff/<blueprint_name>/<from_commit>", defaults={'to_commit': ""})
     @api.route("/api/v0/blueprints/diff/<blueprint_name>/<from_commit>/<to_commit>")
     @crossdomain(origin="*")
+    @checkparams([("blueprint_name", "", "no blueprint name given"),
+                  ("from_commit", "", "no from commit ID given"),
+                  ("to_commit", "", "no to commit ID given")])
     def v0_blueprints_diff(blueprint_name, from_commit, to_commit):
         """Return the differences between two commits of a blueprint"""
         branch = request.args.get("branch", "master")
@@ -1239,8 +1260,10 @@ def v0_api(api):
         diff = recipe_diff(old_blueprint, new_blueprint)
         return jsonify(diff=diff)
 
+    @api.route("/api/v0/blueprints/freeze", defaults={'blueprint_names': ""})
     @api.route("/api/v0/blueprints/freeze/<blueprint_names>")
     @crossdomain(origin="*")
+    @checkparams([("blueprint_names", "", "no blueprint names given")])
     def v0_blueprints_freeze(blueprint_names):
         """Return the blueprint with the exact modules and packages selected by depsolve"""
         branch = request.args.get("branch", "master")
@@ -1292,8 +1315,10 @@ def v0_api(api):
         else:
             return jsonify(blueprints=blueprints, errors=errors)
 
+    @api.route("/api/v0/blueprints/depsolve", defaults={'blueprint_names': ""})
     @api.route("/api/v0/blueprints/depsolve/<blueprint_names>")
     @crossdomain(origin="*")
+    @checkparams([("blueprint_names", "", "no blueprint names given")])
     def v0_blueprints_depsolve(blueprint_names):
         """Return the dependencies for a blueprint"""
         branch = request.args.get("branch", "master")
@@ -1366,8 +1391,10 @@ def v0_api(api):
         projects = take_limits(available, offset, limit)
         return jsonify(projects=projects, offset=offset, limit=limit, total=len(available))
 
+    @api.route("/api/v0/projects/info", defaults={'project_names': ""})
     @api.route("/api/v0/projects/info/<project_names>")
     @crossdomain(origin="*")
+    @checkparams([("project_names", "", "no project names given")])
     def v0_projects_info(project_names):
         """Return detailed information about the listed projects"""
         try:
@@ -1379,8 +1406,10 @@ def v0_api(api):
 
         return jsonify(projects=projects)
 
+    @api.route("/api/v0/projects/depsolve", defaults={'project_names': ""})
     @api.route("/api/v0/projects/depsolve/<project_names>")
     @crossdomain(origin="*")
+    @checkparams([("project_names", "", "no project names given")])
     def v0_projects_depsolve(project_names):
         """Return detailed information about the listed projects"""
         try:
@@ -1401,8 +1430,10 @@ def v0_api(api):
         sources = sorted([r.id for r in repos])
         return jsonify(sources=sources)
 
+    @api.route("/api/v0/projects/source/info", defaults={'source_names': ""})
     @api.route("/api/v0/projects/source/info/<source_names>")
     @crossdomain(origin="*")
+    @checkparams([("source_names", "", "no source names given")])
     def v0_projects_source_info(source_names):
         """Return detailed info about the list of sources"""
         out_fmt = request.args.get("format", "json")
@@ -1495,8 +1526,10 @@ def v0_api(api):
 
         return jsonify(status=True)
 
+    @api.route("/api/v0/projects/source/delete", defaults={'source_name': ""}, methods=["DELETE"])
     @api.route("/api/v0/projects/source/delete/<source_name>", methods=["DELETE"])
     @crossdomain(origin="*")
+    @checkparams([("source_name", "", "no source name given")])
     def v0_projects_source_delete(source_name):
         """Delete the named source and return a status response"""
         system_sources = get_repo_sources("/etc/yum.repos.d/*.repo")
@@ -1549,8 +1582,10 @@ def v0_api(api):
         modules = take_limits(available, offset, limit)
         return jsonify(modules=modules, offset=offset, limit=limit, total=len(available))
 
+    @api.route("/api/v0/modules/info", defaults={'module_names': ""})
     @api.route("/api/v0/modules/info/<module_names>")
     @crossdomain(origin="*")
+    @checkparams([("module_names", "", "no module names given")])
     def v0_modules_info(module_names):
         """Return detailed information about the listed modules"""
         try:
@@ -1639,8 +1674,10 @@ def v0_api(api):
         """Return the list of failed composes"""
         return jsonify(failed=build_status(api.config["COMPOSER_CFG"], "FAILED"))
 
+    @api.route("/api/v0/compose/status", defaults={'uuids': ""})
     @api.route("/api/v0/compose/status/<uuids>")
     @crossdomain(origin="*")
+    @checkparams([("uuids", "", "no UUIDs given")])
     def v0_compose_status(uuids):
         """Return the status of the listed uuids"""
         results = []
@@ -1651,8 +1688,10 @@ def v0_api(api):
 
         return jsonify(uuids=results)
 
+    @api.route("/api/v0/compose/cancel", defaults={'uuid': ""}, methods=["DELETE"])
     @api.route("/api/v0/compose/cancel/<uuid>", methods=["DELETE"])
     @crossdomain(origin="*")
+    @checkparams([("uuid", "", "no UUID given")])
     def v0_compose_cancel(uuid):
         """Cancel a running compose and delete its results directory"""
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
@@ -1669,8 +1708,10 @@ def v0_api(api):
         else:
             return jsonify(status=True, uuid=uuid)
 
+    @api.route("/api/v0/compose/delete", defaults={'uuids': ""}, methods=["DELETE"])
     @api.route("/api/v0/compose/delete/<uuids>", methods=["DELETE"])
     @crossdomain(origin="*")
+    @checkparams([("uuids", "", "no UUIDs given")])
     def v0_compose_delete(uuids):
         """Delete the compose results for the listed uuids"""
         results = []
@@ -1690,8 +1731,10 @@ def v0_api(api):
                     results.append({"uuid":uuid, "status":True})
         return jsonify(uuids=results, errors=errors)
 
+    @api.route("/api/v0/compose/info", defaults={'uuid': ""})
     @api.route("/api/v0/compose/info/<uuid>")
     @crossdomain(origin="*")
+    @checkparams([("uuid", "", "no UUID given")])
     def v0_compose_info(uuid):
         """Return detailed info about a compose"""
         try:
@@ -1701,8 +1744,10 @@ def v0_api(api):
 
         return jsonify(**info)
 
+    @api.route("/api/v0/compose/metadata", defaults={'uuid': ""})
     @api.route("/api/v0/compose/metadata/<uuid>")
     @crossdomain(origin="*")
+    @checkparams([("uuid","", "no UUID given")])
     def v0_compose_metadata(uuid):
         """Return a tar of the metadata for the build"""
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
@@ -1716,8 +1761,10 @@ def v0_api(api):
                             headers=[("Content-Disposition", "attachment; filename=%s-metadata.tar;" % uuid)],
                             direct_passthrough=True)
 
+    @api.route("/api/v0/compose/results", defaults={'uuid': ""})
     @api.route("/api/v0/compose/results/<uuid>")
     @crossdomain(origin="*")
+    @checkparams([("uuid","", "no UUID given")])
     def v0_compose_results(uuid):
         """Return a tar of the metadata and the results for the build"""
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
@@ -1731,8 +1778,10 @@ def v0_api(api):
                             headers=[("Content-Disposition", "attachment; filename=%s.tar;" % uuid)],
                             direct_passthrough=True)
 
+    @api.route("/api/v0/compose/logs", defaults={'uuid': ""})
     @api.route("/api/v0/compose/logs/<uuid>")
     @crossdomain(origin="*")
+    @checkparams([("uuid","", "no UUID given")])
     def v0_compose_logs(uuid):
         """Return a tar of the metadata for the build"""
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
@@ -1746,8 +1795,10 @@ def v0_api(api):
                             headers=[("Content-Disposition", "attachment; filename=%s-logs.tar;" % uuid)],
                             direct_passthrough=True)
 
+    @api.route("/api/v0/compose/image", defaults={'uuid': ""})
     @api.route("/api/v0/compose/image/<uuid>")
     @crossdomain(origin="*")
+    @checkparams([("uuid","", "no UUID given")])
     def v0_compose_image(uuid):
         """Return the output image for the build"""
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
@@ -1767,8 +1818,10 @@ def v0_api(api):
             # XXX - Will mime type guessing work for all our output?
             return send_file(image_path, as_attachment=True, attachment_filename=image_name, add_etags=False)
 
+    @api.route("/api/v0/compose/log", defaults={'uuid': ""})
     @api.route("/api/v0/compose/log/<uuid>")
     @crossdomain(origin="*")
+    @checkparams([("uuid","", "no UUID given")])
     def v0_compose_log_tail(uuid):
         """Return the end of the main anaconda.log, defaults to 1Mbytes"""
         try:
