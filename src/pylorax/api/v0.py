@@ -1564,6 +1564,11 @@ def v0_api(api):
             log.error("(v0_modules_info) %s", str(e))
             return jsonify(status=False, errors=[str(e)]), 400
 
+        if not modules:
+            msg = "one of the requested modules does not exist: %s" % module_names
+            log.error("(v0_modules_info) %s" % msg)
+            return jsonify(status=False, errors=[msg]), 400
+
         return jsonify(modules=modules)
 
     @api.route("/api/v0/compose", methods=["POST"])
