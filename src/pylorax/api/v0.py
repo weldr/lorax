@@ -1018,6 +1018,9 @@ def v0_api(api):
     def v0_blueprints_list():
         """List the available blueprints on a branch."""
         branch = request.args.get("branch", "master")
+        if VALID_API_STRING.match(branch) is None:
+            return jsonify(status=False, errors=["Invalid characters in branch argument"]), 400
+
         try:
             limit = int(request.args.get("limit", "20"))
             offset = int(request.args.get("offset", "0"))
@@ -1038,7 +1041,13 @@ def v0_api(api):
             return jsonify(status=False, errors=["Invalid characters in API path"]), 400
 
         branch = request.args.get("branch", "master")
+        if VALID_API_STRING.match(branch) is None:
+            return jsonify(status=False, errors=["Invalid characters in branch argument"]), 400
+
         out_fmt = request.args.get("format", "json")
+        if VALID_API_STRING.match(out_fmt) is None:
+            return jsonify(status=False, errors=["Invalid characters in format argument"]), 400
+
         blueprints = []
         changes = []
         errors = []
@@ -1099,6 +1108,9 @@ def v0_api(api):
             return jsonify(status=False, errors=["Invalid characters in API path"]), 400
 
         branch = request.args.get("branch", "master")
+        if VALID_API_STRING.match(branch) is None:
+            return jsonify(status=False, errors=["Invalid characters in branch argument"]), 400
+
         try:
             limit = int(request.args.get("limit", "20"))
             offset = int(request.args.get("offset", "0"))
@@ -1128,6 +1140,9 @@ def v0_api(api):
     def v0_blueprints_new():
         """Commit a new blueprint"""
         branch = request.args.get("branch", "master")
+        if VALID_API_STRING.match(branch) is None:
+            return jsonify(status=False, errors=["Invalid characters in branch argument"]), 400
+
         try:
             if request.headers['Content-Type'] == "text/x-toml":
                 blueprint = recipe_from_toml(request.data)
@@ -1159,6 +1174,9 @@ def v0_api(api):
             return jsonify(status=False, errors=["Invalid characters in API path"]), 400
 
         branch = request.args.get("branch", "master")
+        if VALID_API_STRING.match(branch) is None:
+            return jsonify(status=False, errors=["Invalid characters in branch argument"]), 400
+
         try:
             with api.config["GITLOCK"].lock:
                 delete_recipe(api.config["GITLOCK"].repo, branch, blueprint_name)
@@ -1173,6 +1191,9 @@ def v0_api(api):
     def v0_blueprints_workspace():
         """Write a blueprint to the workspace"""
         branch = request.args.get("branch", "master")
+        if VALID_API_STRING.match(branch) is None:
+            return jsonify(status=False, errors=["Invalid characters in branch argument"]), 400
+
         try:
             if request.headers['Content-Type'] == "text/x-toml":
                 blueprint = recipe_from_toml(request.data)
@@ -1200,6 +1221,9 @@ def v0_api(api):
             return jsonify(status=False, errors=["Invalid characters in API path"]), 400
 
         branch = request.args.get("branch", "master")
+        if VALID_API_STRING.match(branch) is None:
+            return jsonify(status=False, errors=["Invalid characters in branch argument"]), 400
+
         try:
             with api.config["GITLOCK"].lock:
                 workspace_delete(api.config["GITLOCK"].repo, branch, blueprint_name)
@@ -1221,6 +1245,9 @@ def v0_api(api):
             return jsonify(status=False, errors=["Invalid characters in API path"]), 400
 
         branch = request.args.get("branch", "master")
+        if VALID_API_STRING.match(branch) is None:
+            return jsonify(status=False, errors=["Invalid characters in branch argument"]), 400
+
         try:
             with api.config["GITLOCK"].lock:
                 revert_recipe(api.config["GITLOCK"].repo, branch, blueprint_name, commit)
@@ -1244,6 +1271,9 @@ def v0_api(api):
             return jsonify(status=False, errors=["Invalid characters in API path"]), 400
 
         branch = request.args.get("branch", "master")
+        if VALID_API_STRING.match(branch) is None:
+            return jsonify(status=False, errors=["Invalid characters in branch argument"]), 400
+
         try:
             with api.config["GITLOCK"].lock:
                 tag_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
@@ -1268,6 +1298,9 @@ def v0_api(api):
                 return jsonify(status=False, errors=["Invalid characters in API path"]), 400
 
         branch = request.args.get("branch", "master")
+        if VALID_API_STRING.match(branch) is None:
+            return jsonify(status=False, errors=["Invalid characters in branch argument"]), 400
+
         try:
             if from_commit == "NEWEST":
                 with api.config["GITLOCK"].lock:
@@ -1310,7 +1343,13 @@ def v0_api(api):
             return jsonify(status=False, errors=["Invalid characters in API path"]), 400
 
         branch = request.args.get("branch", "master")
+        if VALID_API_STRING.match(branch) is None:
+            return jsonify(status=False, errors=["Invalid characters in branch argument"]), 400
+
         out_fmt = request.args.get("format", "json")
+        if VALID_API_STRING.match(out_fmt) is None:
+            return jsonify(status=False, errors=["Invalid characters in format argument"]), 400
+
         blueprints = []
         errors = []
         for blueprint_name in [n.strip() for n in sorted(blueprint_names.split(","), key=lambda n: n.lower())]:
@@ -1368,6 +1407,9 @@ def v0_api(api):
             return jsonify(status=False, errors=["Invalid characters in API path"]), 400
 
         branch = request.args.get("branch", "master")
+        if VALID_API_STRING.match(branch) is None:
+            return jsonify(status=False, errors=["Invalid characters in branch argument"]), 400
+
         blueprints = []
         errors = []
         for blueprint_name in [n.strip() for n in sorted(blueprint_names.split(","), key=lambda n: n.lower())]:
@@ -1492,6 +1534,8 @@ def v0_api(api):
             return jsonify(status=False, errors=["Invalid characters in API path"]), 400
 
         out_fmt = request.args.get("format", "json")
+        if VALID_API_STRING.match(out_fmt) is None:
+            return jsonify(status=False, errors=["Invalid characters in format argument"]), 400
 
         # Return info on all of the sources
         if source_names == "*":
@@ -1660,7 +1704,7 @@ def v0_api(api):
 
         if not modules:
             msg = "one of the requested modules does not exist: %s" % module_names
-            log.error("(v0_modules_info) %s" % msg)
+            log.error("(v0_modules_info) %s", msg)
             return jsonify(status=False, errors=[msg]), 400
 
         return jsonify(modules=modules)
