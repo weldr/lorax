@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 #
 # Copyright (C) 2017  Red Hat, Inc.
 #
@@ -31,6 +32,9 @@ from pylorax.api.recipes import open_or_create_repo, commit_recipe_directory
 from pylorax.api.server import server, GitLock, YumLock
 from pylorax.api.yumbase import get_base_object
 from pylorax.sysutils import joinpaths
+
+# Used for testing UTF-8 input support
+UTF8_TEST_STRING = "I ｗ𝒊ll 𝟉ο𝘁 𝛠ａ𝔰ꜱ 𝘁𝒉𝝸𝚜".decode("utf-8")
 
 def get_system_repo():
     """Get an enabled system repo from /etc/yum.repos.d/*repo
@@ -1011,3 +1015,167 @@ class ServerTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         self.assertEqual(data["finished"], [], "Failed to delete the failed build: %s" % data)
+
+    def assertInputError(self, resp):
+        """Check all the conditions for a successful input check error result"""
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(data["status"], False)
+        self.assertEqual(data["errors"], ["Invalid characters in API path"])
+
+    def test_blueprints_info_input(self):
+        """Test the blueprints/info input character checking"""
+        # /api/v0/blueprints/info/<blueprint_names>
+        resp = self.server.get("/api/v0/blueprints/info/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+    def test_blueprints_changes_input(self):
+        """Test the blueprints/changes input character checking"""
+        # /api/v0/blueprints/changes/<blueprint_names>
+        resp = self.server.get("/api/v0/blueprints/changes/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+    def test_blueprints_new_input(self):
+        """Test the blueprints/new input character checking"""
+        # /api/v0/blueprints/new
+        test_blueprint = {"description": "An example GlusterFS server with samba",
+                       "name":UTF8_TEST_STRING,
+                       "version": "0.2.0",
+                       "modules":[{"name":"glusterfs", "version":"3.*.*"},
+                                  {"name":"glusterfs-cli", "version":"3.*.*"}],
+                       "packages":[{"name":"samba", "version":"4.*.*"},
+                                   {"name":"tmux", "version":"1.8"}],
+                       "groups": []}
+
+        resp = self.server.post("/api/v0/blueprints/new",
+                                data=json.dumps(test_blueprint),
+                                content_type="application/json")
+        self.assertInputError(resp)
+
+    def test_blueprints_delete_input(self):
+        """Test the blueprints/delete input character checking"""
+        resp = self.server.delete("/api/v0/blueprints/delete/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+    def test_blueprints_workspace_input(self):
+        """Test the blueprints/workspace input character checking"""
+        test_blueprint = {"description": "An example GlusterFS server with samba, ws version",
+                       "name":UTF8_TEST_STRING,
+                       "version": "0.3.0",
+                       "modules":[{"name":"glusterfs", "version":"3.*.*"},
+                                  {"name":"glusterfs-cli", "version":"3.*.*"}],
+                       "packages":[{"name":"samba", "version":"4.*.*"},
+                                   {"name":"tmux", "version":"1.8"}],
+                       "groups": []}
+
+        resp = self.server.post("/api/v0/blueprints/workspace",
+                                data=json.dumps(test_blueprint),
+                                content_type="application/json")
+        self.assertInputError(resp)
+
+    def test_blueprints_workspace_delete_input(self):
+        """Test the DELETE blueprints/workspace input character checking"""
+        resp = self.server.delete("/api/v0/blueprints/workspace/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+    def test_blueprints_undo_input(self):
+        """Test the blueprints/undo/... input character checking"""
+        resp = self.server.post("/api/v0/blueprints/undo/" + UTF8_TEST_STRING + "/deadbeef")
+        self.assertInputError(resp)
+
+    def test_blueprints_tag_input(self):
+        """Test the blueprints/tag input character checking"""
+        resp = self.server.post("/api/v0/blueprints/tag/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+    def test_blueprints_diff_input(self):
+        """Test the blueprints/diff input character checking"""
+        # /api/v0/blueprints/diff/<blueprint_name>/<from_commit>/<to_commit>
+        resp = self.server.get("/api/v0/blueprints/diff/" + UTF8_TEST_STRING + "/NEWEST/WORKSPACE")
+        self.assertInputError(resp)
+
+    def test_blueprints_freeze_input(self):
+        """Test the blueprints/freeze input character checking"""
+        resp = self.server.get("/api/v0/blueprints/freeze/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+    def test_blueprints_depsolve_input(self):
+        """Test the blueprints/depsolve input character checking"""
+        resp = self.server.get("/api/v0/blueprints/depsolve/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+    def test_projects_info_input(self):
+        """Test the projects/info input character checking"""
+        resp = self.server.get("/api/v0/projects/info/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+    def test_projects_depsolve_input(self):
+        """Test the projects/depsolve input character checking"""
+        resp = self.server.get("/api/v0/projects/depsolve/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+    def test_projects_source_info_input(self):
+        """Test the projects/source/info input character checking"""
+        resp = self.server.get("/api/v0/projects/source/info/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+    def test_projects_source_delete_input(self):
+        """Test the projects/source/delete input character checking"""
+        resp = self.server.delete("/api/v0/projects/source/delete/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+    def test_modules_list_input(self):
+        """Test the modules/list input character checking"""
+        resp = self.server.get("/api/v0/modules/list/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+    def test_modules_info_input(self):
+        """Test the modules/info input character checking"""
+        resp = self.server.get("/api/v0/modules/info/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+    def test_compose_status_input(self):
+        """Test the compose/status input character checking"""
+        resp = self.server.get("/api/v0/compose/status/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+    def test_compose_cancel_input(self):
+        """Test the compose/cancel input character checking"""
+        resp = self.server.delete("/api/v0/compose/cancel/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+    def test_compose_delete_input(self):
+        """Test the compose/delete input character checking"""
+        resp = self.server.delete("/api/v0/compose/delete/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+    def test_compose_info_input(self):
+        """Test the compose/info input character checking"""
+        resp = self.server.get("/api/v0/compose/info/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+    def test_compose_metadata_input(self):
+        """Test the compose/metadata input character checking"""
+        resp = self.server.get("/api/v0/compose/metadata/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+    def test_compose_results_input(self):
+        """Test the compose/results input character checking"""
+        resp = self.server.get("/api/v0/compose/results/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+    def test_compose_logs_input(self):
+        """Test the compose/logs input character checking"""
+        resp = self.server.get("/api/v0/compose/logs/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+    def test_compose_image_input(self):
+        """Test the compose/image input character checking"""
+        resp = self.server.get("/api/v0/compose/image/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+    def test_compose_log_input(self):
+        """Test the compose/log input character checking"""
+        resp = self.server.get("/api/v0/compose/log/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
