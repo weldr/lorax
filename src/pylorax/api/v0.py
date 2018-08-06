@@ -801,8 +801,8 @@ POST `/api/v0/compose`
         ]
       }
 
-`/api/v0/compose/status/<uuids>`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+`/api/v0/compose/status/<uuids>[?blueprint=<blueprint_name>&status=<compose_status>&type=<compose_type>]`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Return the details for each of the comma-separated list of uuids.
 
@@ -1822,14 +1822,29 @@ def v0_api(api):
         if VALID_API_STRING.match(uuids) is None:
             return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
+        blueprint = request.args.get("blueprint", None)
+        status = request.args.get("status", None)
+        compose_type = request.args.get("type", None)
+
         results = []
         errors = []
         for uuid in [n.strip().lower() for n in uuids.split(",")]:
             details = uuid_status(api.config["COMPOSER_CFG"], uuid)
-            if details is not None:
-                results.append(details)
-            else:
+
+            if details is None:
                 errors.append({"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid})
+                continue
+
+            if blueprint is not None and details['blueprint'] != blueprint:
+                continue
+
+            if status is not None and details['queue_status'] != status:
+                continue
+
+            if compose_type is not None and details['compose_type'] != compose_type:
+                continue
+
+            results.append(details)
 
         return jsonify(uuids=results, errors=errors)
 
