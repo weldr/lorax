@@ -1032,7 +1032,12 @@ class ServerTestCase(unittest.TestCase):
         self.assertNotEqual(data, None)
         self.assertEqual(resp.status_code, 400)
         self.assertEqual(data["status"], False)
-        self.assertEqual(data["errors"], ["Invalid characters in API path"])
+        self.assertTrue(len(data["errors"]) > 0)
+        self.assertTrue("Invalid characters in" in data["errors"][0])
+
+    def test_blueprints_list_branch(self):
+        resp = self.server.get("/api/v0/blueprints/list?branch=" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
 
     def test_blueprints_info_input(self):
         """Test the blueprints/info input character checking"""
@@ -1040,10 +1045,19 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/blueprints/info/" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
+        resp = self.server.get("/api/v0/blueprints/info/http-server?branch=" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+        resp = self.server.get("/api/v0/blueprints/info/http-server?format=" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
     def test_blueprints_changes_input(self):
         """Test the blueprints/changes input character checking"""
         # /api/v0/blueprints/changes/<blueprint_names>
         resp = self.server.get("/api/v0/blueprints/changes/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+        resp = self.server.get("/api/v0/blueprints/changes/http-server?branch=" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
     def test_blueprints_new_input(self):
@@ -1063,9 +1077,18 @@ class ServerTestCase(unittest.TestCase):
                                 content_type="application/json")
         self.assertInputError(resp)
 
+        test_blueprint["name"] = "glusterfs"
+        resp = self.server.post("/api/v0/blueprints/new?branch=" + UTF8_TEST_STRING,
+                                data=json.dumps(test_blueprint),
+                                content_type="application/json")
+        self.assertInputError(resp)
+
     def test_blueprints_delete_input(self):
         """Test the blueprints/delete input character checking"""
         resp = self.server.delete("/api/v0/blueprints/delete/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+        resp = self.server.delete("/api/v0/blueprints/delete/http-server?branch=" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
     def test_blueprints_workspace_input(self):
@@ -1084,9 +1107,18 @@ class ServerTestCase(unittest.TestCase):
                                 content_type="application/json")
         self.assertInputError(resp)
 
+        test_blueprint["name"] = "glusterfs"
+        resp = self.server.post("/api/v0/blueprints/workspace?branch=" + UTF8_TEST_STRING,
+                                data=json.dumps(test_blueprint),
+                                content_type="application/json")
+        self.assertInputError(resp)
+
     def test_blueprints_workspace_delete_input(self):
         """Test the DELETE blueprints/workspace input character checking"""
         resp = self.server.delete("/api/v0/blueprints/workspace/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+        resp = self.server.delete("/api/v0/blueprints/workspace/http-server?branch=" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
     def test_blueprints_undo_input(self):
@@ -1094,9 +1126,15 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.post("/api/v0/blueprints/undo/" + UTF8_TEST_STRING + "/deadbeef")
         self.assertInputError(resp)
 
+        resp = self.server.post("/api/v0/blueprints/undo/http-server/deadbeef?branch=" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
     def test_blueprints_tag_input(self):
         """Test the blueprints/tag input character checking"""
         resp = self.server.post("/api/v0/blueprints/tag/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+        resp = self.server.post("/api/v0/blueprints/tag/http-server?branch=" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
     def test_blueprints_diff_input(self):
@@ -1105,14 +1143,26 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/blueprints/diff/" + UTF8_TEST_STRING + "/NEWEST/WORKSPACE")
         self.assertInputError(resp)
 
+        resp = self.server.get("/api/v0/blueprints/diff/http-server/NEWEST/WORKSPACE?branch=" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
     def test_blueprints_freeze_input(self):
         """Test the blueprints/freeze input character checking"""
         resp = self.server.get("/api/v0/blueprints/freeze/" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
+        resp = self.server.get("/api/v0/blueprints/freeze/http-server?branch=" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+        resp = self.server.get("/api/v0/blueprints/freeze/http-server?format=" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
     def test_blueprints_depsolve_input(self):
         """Test the blueprints/depsolve input character checking"""
         resp = self.server.get("/api/v0/blueprints/depsolve/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+        resp = self.server.get("/api/v0/blueprints/depsolve/http-server?branch=" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
     def test_projects_info_input(self):
