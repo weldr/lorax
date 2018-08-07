@@ -1089,7 +1089,6 @@ def v0_api(api):
         # Sort all the results by case-insensitive blueprint name
         changes = sorted(changes, key=lambda c: c["name"].lower())
         blueprints = sorted(blueprints, key=lambda r: r["name"].lower())
-        errors = sorted(errors, key=lambda e: e.lower())
 
         if out_fmt == "toml":
             # With TOML output we just want to dump the raw blueprint, skipping the rest.
@@ -1130,7 +1129,6 @@ def v0_api(api):
                 blueprints.append({"name":blueprint_name, "changes":commits, "total":len(commits)})
 
         blueprints = sorted(blueprints, key=lambda r: r["name"].lower())
-        errors = sorted(errors, key=lambda e: e.lower())
 
         return jsonify(blueprints=blueprints, errors=errors, offset=offset, limit=limit)
 
