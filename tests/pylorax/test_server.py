@@ -44,8 +44,7 @@ def get_system_repo():
         for section in cfg.sections():
             try:
                 if cfg.get(section, "enabled") == "1":
-                    # The API only supports repo filenames, return that.
-                    return os.path.basename(sys_repo)[:-5]
+                    return section
             except NoOptionError:
                 pass
 
@@ -534,10 +533,9 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/projects/source/list")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
-        if self.rawhide:
-            self.assertEqual(data["sources"], ["lorax-1", "lorax-2", "lorax-3", "lorax-4", "other-repo", "rawhide", "single-repo"])
-        else:
-            self.assertEqual(data["sources"], ["fedora", "lorax-1", "lorax-2", "lorax-3", "lorax-4", "other-repo", "single-repo", "updates"])
+        # Make sure it lists some common sources
+        for r in ["lorax-1", "lorax-2", "lorax-3", "lorax-4", "other-repo", "single-repo"]:
+            self.assertTrue(r in data["sources"] )
 
     def test_projects_source_00_info(self):
         """Test /api/v0/projects/source/info"""
