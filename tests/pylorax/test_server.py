@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import os
-from ConfigParser import SafeConfigParser, NoOptionError
+from configparser import ConfigParser, NoOptionError
 from glob import glob
 import shutil
 import tempfile
@@ -39,7 +39,7 @@ def get_system_repo():
     """
     # The sources delete test needs the name of a system repo, get it from /etc/yum.repos.d/
     for sys_repo in sorted(glob("/etc/yum.repos.d/*repo")):
-        cfg = SafeConfigParser()
+        cfg = ConfigParser()
         cfg.read(sys_repo)
         for section in cfg.sections():
             try:
