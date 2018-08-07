@@ -40,7 +40,7 @@ def write_timestamp(destdir, ty):
         contents[TS_FINISHED] = time.time()
 
     with open(path, "w") as f:
-        f.write(toml.dumps(contents).encode("UTF-8"))
+        f.write(toml.dumps(contents))
 
 def timestamp_dict(destdir):
     path = joinpaths(destdir, "times.toml")
