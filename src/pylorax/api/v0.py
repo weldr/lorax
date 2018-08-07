@@ -1601,7 +1601,7 @@ def v0_api(api):
 
         if not modules:
             msg = "one of the requested modules does not exist: %s" % module_names
-            log.error("(v0_modules_info) %s" % msg)
+            log.error("(v0_modules_info) %s", msg)
             return jsonify(status=False, errors=[msg]), 400
 
         return jsonify(modules=modules)
