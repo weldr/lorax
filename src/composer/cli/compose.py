@@ -126,7 +126,9 @@ def compose_status(socket_path, api_version, args, show_json=False, testmode=0):
                 "compose_type": compose["compose_type"],
                 "image_size": compose["image_size"],
                 "status": compose["queue_status"],
-                "timestamp": compose["timestamp"]}
+                "created": compose.get("job_created"),
+                "started": compose.get("job_started"),
+                "finished": compose.get("job_finished")}
 
     # Sort the status in a specific order
     def sort_status(a):
@@ -164,7 +166,7 @@ def compose_status(socket_path, api_version, args, show_json=False, testmode=0):
         else:
             image_size = ""
 
-        dt = datetime.fromtimestamp(c["timestamp"])
+        dt = datetime.fromtimestamp(c.get("finished") or c.get("started") or c.get("created"))
 
         print("%s %-8s %s %-15s %s %-16s %s" % (c["id"], c["status"], dt.strftime("%c"), c["blueprint"],
                                                 c["version"], c["compose_type"], image_size))
