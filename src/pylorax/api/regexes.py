@@ -18,4 +18,4 @@ import re
 
 # These are the characters that we allow to be passed in via the
 # API calls.
-VALID_API_STRING = re.compile(r'^[a-zA-Z0-9_,.:*-]+$')
+VALID_API_STRING = re.compile(r'^[a-zA-Z0-9_,.:+*-]+$')
