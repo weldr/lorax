@@ -3,7 +3,7 @@
 __composer_cli_flags="-h --help -j --json -s --socket --log -a --api --test -V"
 
 declare -A __composer_cli_cmds=(
-  [compose]="list start types status log cancel delete details metadata logs results image"
+  [compose]="list start types status log cancel delete info metadata logs results image"
   [blueprints]="list show changes diff save delete depsolve push freeze tag undo workspace"
   [modules]="list"
   [projects]="list info"
