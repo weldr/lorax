@@ -19,3 +19,8 @@
 # Returned from the API when ?limit= or ?offset= is given something that does
 # not convert into an integer.
 BAD_LIMIT_OR_OFFSET = "BadLimitOrOffset"
+
+# Returned from the API when it expected a build to be in a state other than
+# what it currently is.  This most often happens when asking for results from
+# a build that is not yet done.
+BUILD_IN_WRONG_STATE = "BuildInWrongState"
