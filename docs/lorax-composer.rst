@@ -13,6 +13,18 @@ Behind the scenes it uses `livemedia-creator <livemedia-creator.html>`_ and
 `Anaconda <https://anaconda-installer.readthedocs.io/en/latest/>`_ to handle the
 installation and configuration of the images.
 
+Important Things To Note
+------------------------
+
+* SELinux must be in Permissive mode. Anaconda requires SELinux be in permissive mode
+  for image creation to work correctly. You can either edit the setting in the
+  ``/etc/sysconfig/selinux`` file, or run ``setenforce 0`` before starting lorax-composer.
+
+* All image types lock the root account, except for live-iso. You will need to either
+  use one of the `Customizations`_ methods for setting a ssh key/password, install a
+  package that creates a user, or use something like `cloud-init` to setup access at
+  boot time.
+
 Installation
 ------------
 
