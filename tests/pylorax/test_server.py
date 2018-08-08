@@ -27,6 +27,7 @@ import unittest
 from flask import json
 import pytoml as toml
 from pylorax.api.config import configure, make_dnf_dirs, make_queue_dirs
+from pylorax.api.errors import *                               # pylint: disable=wildcard-import
 from pylorax.api.queue import start_queue_monitor
 from pylorax.api.recipes import open_or_create_repo, commit_recipe_directory
 from pylorax.api.server import server, GitLock, DNFLock
@@ -795,14 +796,15 @@ class ServerTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         self.assertEqual(data["status"], False, "Failed to get an error for a bad uuid: %s" % data)
-        self.assertEqual(data["errors"], ["NO-UUID-TO-SEE-HERE is not a valid build uuid"], "Failed to get errors: %s" % data)
+        self.assertEqual(data["errors"], [{"id": UNKNOWN_UUID, "msg": "NO-UUID-TO-SEE-HERE is not a valid build uuid"}],
+                                          "Failed to get errors: %s" % data)
 
     def test_compose_05_delete_fail(self):
         """Test that requesting a delete for a bad uuid fails."""
         resp = self.server.delete("/api/v0/compose/delete/NO-UUID-TO-SEE-HERE")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
-        self.assertEqual(data["errors"], ["no-uuid-to-see-here is not a valid build uuid"],
+        self.assertEqual(data["errors"], [{"id": UNKNOWN_UUID, "msg": "no-uuid-to-see-here is not a valid build uuid"}],
                          "Failed to get an error for a bad uuid: %s" % data)
 
     def test_compose_06_info_fail(self):
@@ -811,7 +813,7 @@ class ServerTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         self.assertEqual(data["status"], False, "Failed to get an error for a bad uuid: %s" % data)
-        self.assertEqual(data["errors"], ["NO-UUID-TO-SEE-HERE is not a valid build_id"],
+        self.assertEqual(data["errors"], [{"id": UNKNOWN_UUID, "msg": "NO-UUID-TO-SEE-HERE is not a valid build uuid"}],
                                          "Failed to get errors: %s" % data)
 
     def test_compose_07_metadata_fail(self):
@@ -820,7 +822,7 @@ class ServerTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         self.assertEqual(data["status"], False, "Failed to get an error for a bad uuid: %s" % data)
-        self.assertEqual(data["errors"], ["NO-UUID-TO-SEE-HERE is not a valid build uuid"],
+        self.assertEqual(data["errors"], [{"id": UNKNOWN_UUID, "msg": "NO-UUID-TO-SEE-HERE is not a valid build uuid"}],
                                          "Failed to get errors: %s" % data)
 
     def test_compose_08_results_fail(self):
@@ -829,7 +831,8 @@ class ServerTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         self.assertEqual(data["status"], False, "Failed to get an error for a bad uuid: %s" % data)
-        self.assertEqual(data["errors"], ["NO-UUID-TO-SEE-HERE is not a valid build uuid"], "Failed to get errors: %s" % data)
+        self.assertEqual(data["errors"], [{"id": UNKNOWN_UUID, "msg": "NO-UUID-TO-SEE-HERE is not a valid build uuid"}],
+                                          "Failed to get errors: %s" % data)
 
     def test_compose_09_logs_fail(self):
         """Test that requesting logs for a bad uuid fails."""
@@ -837,7 +840,7 @@ class ServerTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         self.assertEqual(data["status"], False, "Failed to get an error for a bad uuid: %s" % data)
-        self.assertEqual(data["errors"], ["NO-UUID-TO-SEE-HERE is not a valid build uuid"],
+        self.assertEqual(data["errors"], [{"id": UNKNOWN_UUID, "msg": "NO-UUID-TO-SEE-HERE is not a valid build uuid"}],
                                          "Failed to get errors: %s" % data)
 
     def test_compose_10_log_fail(self):
@@ -846,7 +849,7 @@ class ServerTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         self.assertEqual(data["status"], False, "Failed to get an error for a bad uuid: %s" % data)
-        self.assertEqual(data["errors"], ["NO-UUID-TO-SEE-HERE is not a valid build uuid"],
+        self.assertEqual(data["errors"], [{"id": UNKNOWN_UUID, "msg": "NO-UUID-TO-SEE-HERE is not a valid build uuid"}],
                                          "Failed to get errors: %s" % data)
 
     def test_compose_11_create_failed(self):
