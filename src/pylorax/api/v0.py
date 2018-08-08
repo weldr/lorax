@@ -1572,7 +1572,7 @@ def v0_api(api):
             with api.config["YUMLOCK"].lock:
                 repo = api.config["YUMLOCK"].yb.repos.repos.get(source, None)
             if not repo:
-                errors.append("%s is not a valid source" % source)
+                errors.append({"id": UNKNOWN_SOURCE, "msg": "%s is not a valid source" % source})
                 continue
             sources[repo.id] = repo_to_source(repo, repo.id in system_sources)
 
@@ -1596,7 +1596,7 @@ def v0_api(api):
 
         system_sources = get_repo_sources("/etc/yum.repos.d/*.repo")
         if source["name"] in system_sources:
-            return jsonify(status=False, errors=["%s is a system source, it cannot be changed." % source["name"]]), 400
+            return jsonify(status=False, errors=[{"id": SYSTEM_SOURCE, "msg": "%s is a system source, it cannot be changed." % source["name"]}]), 400
 
         try:
             # Delete it from yum (if it exists) and replace it with the new one
@@ -1659,7 +1659,7 @@ def v0_api(api):
 
         system_sources = get_repo_sources("/etc/yum.repos.d/*.repo")
         if source_name in system_sources:
-            return jsonify(status=False, errors=["%s is a system source, it cannot be deleted." % source_name]), 400
+            return jsonify(status=False, errors=[{"id": SYSTEM_SOURCE, "msg": "%s is a system source, it cannot be deleted." % source_name}]), 400
         share_dir = api.config["COMPOSER_CFG"].get("composer", "repo_dir")
         try:
             # Remove the file entry for the source
@@ -1679,7 +1679,7 @@ def v0_api(api):
 
         except ProjectsError as e:
             log.error("(v0_projects_source_delete) %s", str(e))
-            return jsonify(status=False, errors=[str(e)]), 400
+            return jsonify(status=False, errors=[{"id": UNKNOWN_SOURCE, "msg": str(e)}]), 400
 
         return jsonify(status=True)
 
