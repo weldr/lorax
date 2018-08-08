@@ -192,7 +192,7 @@ class ServerTestCase(unittest.TestCase):
     def test_03_blueprints_info_none(self):
         """Test the /api/v0/blueprints/info route with an unknown blueprint"""
         info_dict_3 = {"changes":[],
-                       "errors":["missing-blueprint: No commits for missing-blueprint.toml on the master branch."],
+                       "errors":[{"id": UNKNOWN_BLUEPRINT, "msg": "missing-blueprint: No commits for missing-blueprint.toml on the master branch."}],
                        "blueprints":[]
                       }
         resp = self.server.get("/api/v0/blueprints/info/missing-blueprint")
