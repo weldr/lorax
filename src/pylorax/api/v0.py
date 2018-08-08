@@ -1798,12 +1798,15 @@ def v0_api(api):
             return jsonify(status=False, errors=["Invalid characters in API path"]), 400
 
         results = []
+        errors = []
         for uuid in [n.strip().lower() for n in uuids.split(",")]:
             details = uuid_status(api.config["COMPOSER_CFG"], uuid)
             if details is not None:
                 results.append(details)
+            else:
+                errors.append({"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid})
 
-        return jsonify(uuids=results)
+        return jsonify(uuids=results, errors=errors)
 
     @api.route("/api/v0/compose/cancel", defaults={'uuid': ""}, methods=["DELETE"])
     @api.route("/api/v0/compose/cancel/<uuid>", methods=["DELETE"])
@@ -1816,7 +1819,7 @@ def v0_api(api):
 
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
         if status is None:
-            return jsonify(status=False, errors=["%s is not a valid build uuid" % uuid]), 400
+            return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
 
         if status["queue_status"] not in ["WAITING", "RUNNING"]:
             return jsonify(status=False, errors=[{"id": BUILD_IN_WRONG_STATE, "msg": "Build %s is not in WAITING or RUNNING." % uuid}])
@@ -1842,7 +1845,7 @@ def v0_api(api):
         for uuid in [n.strip().lower() for n in uuids.split(",")]:
             status = uuid_status(api.config["COMPOSER_CFG"], uuid)
             if status is None:
-                errors.append("%s is not a valid build uuid" % uuid)
+                errors.append({"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid})
             elif status["queue_status"] not in ["FINISHED", "FAILED"]:
                 errors.append({"id": BUILD_IN_WRONG_STATE, "msg": "Build %s is not in FINISHED or FAILED." % uuid})
             else:
@@ -1868,7 +1871,10 @@ def v0_api(api):
         except Exception as e:
             return jsonify(status=False, errors=[str(e)]), 400
 
-        return jsonify(**info)
+        if info is None:
+            return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
+        else:
+            return jsonify(**info)
 
     @api.route("/api/v0/compose/metadata", defaults={'uuid': ""})
     @api.route("/api/v0/compose/metadata/<uuid>")
@@ -1881,7 +1887,7 @@ def v0_api(api):
 
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
         if status is None:
-            return jsonify(status=False, errors=["%s is not a valid build uuid" % uuid]), 400
+            return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
         if status["queue_status"] not in ["FINISHED", "FAILED"]:
             return jsonify(status=False, errors=[{"id": BUILD_IN_WRONG_STATE, "msg": "Build %s not in FINISHED or FAILED state." % uuid}]), 400
         else:
@@ -1901,7 +1907,7 @@ def v0_api(api):
 
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
         if status is None:
-            return jsonify(status=False, errors=["%s is not a valid build uuid" % uuid]), 400
+            return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
         elif status["queue_status"] not in ["FINISHED", "FAILED"]:
             return jsonify(status=False, errors=[{"id": BUILD_IN_WRONG_STATE, "msg": "Build %s not in FINISHED or FAILED state." % uuid}]), 400
         else:
@@ -1921,7 +1927,7 @@ def v0_api(api):
 
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
         if status is None:
-            return jsonify(status=False, errors=["%s is not a valid build uuid" % uuid]), 400
+            return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
         elif status["queue_status"] not in ["FINISHED", "FAILED"]:
             return jsonify(status=False, errors=[{"id": BUILD_IN_WRONG_STATE, "msg": "Build %s not in FINISHED or FAILED state." % uuid}]), 400
         else:
@@ -1941,7 +1947,7 @@ def v0_api(api):
 
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
         if status is None:
-            return jsonify(status=False, errors=["%s is not a valid build uuid" % uuid]), 400
+            return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
         elif status["queue_status"] not in ["FINISHED", "FAILED"]:
             return jsonify(status=False, errors=[{"id": BUILD_IN_WRONG_STATE, "msg": "Build %s not in FINISHED or FAILED state." % uuid}]), 400
         else:
@@ -1972,7 +1978,7 @@ def v0_api(api):
 
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
         if status is None:
-            return jsonify(status=False, errors=["%s is not a valid build uuid" % uuid]), 400
+            return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
         elif status["queue_status"] == "WAITING":
             return jsonify(status=False, errors=[{"id": BUILD_IN_WRONG_STATE, "msg": "Build %s has not started yet. No logs to view" % uuid}])
         try:
