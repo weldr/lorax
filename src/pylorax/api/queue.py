@@ -456,7 +456,7 @@ def uuid_info(cfg, uuid):
     :type cfg: ComposerConfig
     :param uuid: The UUID of the build
     :type uuid: str
-    :returns: dictionary of information about the composition
+    :returns: dictionary of information about the composition or None
     :rtype: dict
     :raises: RuntimeError if there was a problem
 
@@ -472,7 +472,7 @@ def uuid_info(cfg, uuid):
     """
     uuid_dir = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid)
     if not os.path.exists(uuid_dir):
-        raise RuntimeError("%s is not a valid build_id" % uuid)
+        return None
 
     # Load the compose configuration
     cfg_path = joinpaths(uuid_dir, "config.toml")

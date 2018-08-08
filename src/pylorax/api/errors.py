@@ -24,3 +24,6 @@ BAD_LIMIT_OR_OFFSET = "BadLimitOrOffset"
 # what it currently is.  This most often happens when asking for results from
 # a build that is not yet done.
 BUILD_IN_WRONG_STATE = "BuildInWrongState"
+
+# Returned from the API when a UUID that was requested does not exist.
+UNKNOWN_UUID = "UnknownUUID"
