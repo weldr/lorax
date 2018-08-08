@@ -185,7 +185,7 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(data, info_dict_2)
 
         info_dict_3 = {"changes":[],
-                       "errors":["missing-blueprint: No commits for missing-blueprint.toml on the master branch."],
+                       "errors":[{"id": UNKNOWN_BLUEPRINT, "msg": "missing-blueprint: No commits for missing-blueprint.toml on the master branch."}],
                        "blueprints":[]
                       }
         resp = self.server.get("/api/v0/blueprints/info/missing-blueprint")
