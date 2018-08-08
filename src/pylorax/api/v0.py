@@ -983,6 +983,7 @@ from pylorax.sysutils import joinpaths
 from pylorax.api.checkparams import checkparams
 from pylorax.api.compose import start_build, compose_types
 from pylorax.api.crossdomain import crossdomain
+from pylorax.api.errors import *                               # pylint: disable=wildcard-import
 from pylorax.api.projects import projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError, repo_to_source
 from pylorax.api.projects import get_repo_sources, delete_repo_source, source_to_repo, dnf_repo_to_file_repo
@@ -1024,7 +1025,7 @@ def v0_api(api):
             limit = int(request.args.get("limit", "20"))
             offset = int(request.args.get("offset", "0"))
         except ValueError as e:
-            return jsonify(status=False, errors=[str(e)]), 400
+            return jsonify(status=False, errors=[{"id": BAD_LIMIT_OR_OFFSET, "msg": str(e)}]), 400
 
         with api.config["GITLOCK"].lock:
             blueprints = take_limits([f[:-5] for f in list_branch_files(api.config["GITLOCK"].repo, branch)], offset, limit)
@@ -1113,7 +1114,7 @@ def v0_api(api):
             limit = int(request.args.get("limit", "20"))
             offset = int(request.args.get("offset", "0"))
         except ValueError as e:
-            return jsonify(status=False, errors=[str(e)]), 400
+            return jsonify(status=False, errors=[{"id": BAD_LIMIT_OR_OFFSET, "msg": str(e)}]), 400
 
         blueprints = []
         errors = []
@@ -1465,7 +1466,7 @@ def v0_api(api):
             limit = int(request.args.get("limit", "20"))
             offset = int(request.args.get("offset", "0"))
         except ValueError as e:
-            return jsonify(status=False, errors=[str(e)]), 400
+            return jsonify(status=False, errors=[{"id": BAD_LIMIT_OR_OFFSET, "msg": str(e)}]), 400
 
         try:
             with api.config["DNFLOCK"].lock:
@@ -1663,7 +1664,7 @@ def v0_api(api):
             limit = int(request.args.get("limit", "20"))
             offset = int(request.args.get("offset", "0"))
         except ValueError as e:
-            return jsonify(status=False, errors=[str(e)]), 400
+            return jsonify(status=False, errors=[{"id": BAD_LIMIT_OR_OFFSET, "msg": str(e)}]), 400
 
         if module_names:
             module_names = module_names.split(",")
