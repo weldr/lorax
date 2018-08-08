@@ -32,5 +32,8 @@ INVALID_NAME = "InvalidName"
 # Returned from the API when a blueprint that was requested does not exist.
 UNKNOWN_BLUEPRINT = "UnknownBlueprint"
 
+# Returned from the API when a commit that was requested does not exist.
+UNKNOWN_COMMIT = "UnknownCommit"
+
 # Returned from the API when a UUID that was requested does not exist.
 UNKNOWN_UUID = "UnknownUUID"
