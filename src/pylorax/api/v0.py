@@ -1508,6 +1508,11 @@ def v0_api(api):
             log.error("(v0_projects_info) %s", str(e))
             return jsonify(status=False, errors=[str(e)]), 400
 
+        if not projects:
+            msg = "one of the requested projects does not exist: %s" % project_names
+            log.error("(v0_projects_info) %s", msg)
+            return jsonify(status=False, errors=[{"id": UNKNOWN_PROJECT, "msg": msg}]), 400
+
         return jsonify(projects=projects)
 
     @api.route("/api/v0/projects/depsolve", defaults={'project_names': ""})
@@ -1525,6 +1530,11 @@ def v0_api(api):
         except ProjectsError as e:
             log.error("(v0_projects_depsolve) %s", str(e))
             return jsonify(status=False, errors=[str(e)]), 400
+
+        if not deps:
+            msg = "one of the requested projects does not exist: %s" % project_names
+            log.error("(v0_projects_depsolve) %s", msg)
+            return jsonify(status=False, errors=[{"id": UNKNOWN_PROJECT, "msg": msg}]), 400
 
         return jsonify(projects=deps)
 
@@ -1697,6 +1707,11 @@ def v0_api(api):
             log.error("(v0_modules_list) %s", str(e))
             return jsonify(status=False, errors=[str(e)]), 400
 
+        if module_names and not available:
+            msg = "one of the requested modules does not exist: %s" % module_names
+            log.error("(v0_modules_list) %s", msg)
+            return jsonify(status=False, errors=[{"id": UNKNOWN_MODULE, "msg": msg}]), 400
+
         modules = take_limits(available, offset, limit)
         return jsonify(modules=modules, offset=offset, limit=limit, total=len(available))
 
@@ -1718,7 +1733,7 @@ def v0_api(api):
         if not modules:
             msg = "one of the requested modules does not exist: %s" % module_names
             log.error("(v0_modules_info) %s", msg)
-            return jsonify(status=False, errors=[msg]), 400
+            return jsonify(status=False, errors=[{"id": UNKNOWN_MODULE, "msg": msg}]), 400
 
         return jsonify(modules=modules)
 
