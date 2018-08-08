@@ -25,5 +25,12 @@ BAD_LIMIT_OR_OFFSET = "BadLimitOrOffset"
 # a build that is not yet done.
 BUILD_IN_WRONG_STATE = "BuildInWrongState"
 
+# Returned from the API when a blueprint name or other similar identifier is
+# given that contains invalid characters.
+INVALID_NAME = "InvalidName"
+
+# Returned from the API when a blueprint that was requested does not exist.
+UNKNOWN_BLUEPRINT = "UnknownBlueprint"
+
 # Returned from the API when a UUID that was requested does not exist.
 UNKNOWN_UUID = "UnknownUUID"
