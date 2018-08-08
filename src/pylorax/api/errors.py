@@ -29,6 +29,9 @@ BUILD_IN_WRONG_STATE = "BuildInWrongState"
 # given that contains invalid characters.
 INVALID_NAME = "InvalidName"
 
+# Returned from the API when someone tries to modify an immutable system source.
+SYSTEM_SOURCE = "SystemSource"
+
 # Returned from the API when a blueprint that was requested does not exist.
 UNKNOWN_BLUEPRINT = "UnknownBlueprint"
 
@@ -40,6 +43,9 @@ UNKNOWN_MODULE = "UnknownModule"
 
 # Returned from the API when a project that was requested does not exist.
 UNKNOWN_PROJECT = "UnknownProject"
+
+# Returned from the API when a source that was requested does not exist.
+UNKNOWN_SOURCE = "UnknownSource"
 
 # Returned from the API when a UUID that was requested does not exist.
 UNKNOWN_UUID = "UnknownUUID"
