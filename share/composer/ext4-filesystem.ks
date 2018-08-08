@@ -23,15 +23,8 @@ logging --level=info
 shutdown
 # System timezone
 timezone  US/Eastern
-# System bootloader configuration
+# System bootloader configuration (unpartitioned fs image doesn't use a bootloader)
 bootloader --location=none
-# Clear the Master Boot Record
-zerombr
-# Partition clearing information
-clearpart --all
-# Disk partitioning information
-part / --fstype="ext4" --size=4000
-part swap --size=1000
 
 %post
 # Remove root password

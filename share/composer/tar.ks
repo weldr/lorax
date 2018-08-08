@@ -23,12 +23,8 @@ logging --level=info
 shutdown
 # System timezone
 timezone  US/Eastern
-# System bootloader configuration
-bootloader --location=mbr
-# Clear the Master Boot Record
-zerombr
-# Partition clearing information
-clearpart --all
+# System bootloader configuration (tar doesn't need a bootloader)
+bootloader --location=none
 
 %post
 # Remove root password

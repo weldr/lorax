@@ -31,9 +31,6 @@ timezone  US/Eastern
 bootloader --location=mbr
 # Clear the Master Boot Record
 zerombr
-# Partition clearing information
-clearpart --all
-# Disk partitioning information
 
 %post
 # FIXME: it'd be better to get this installed from a package
