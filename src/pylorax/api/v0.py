@@ -1812,7 +1812,7 @@ def v0_api(api):
             return jsonify(status=False, errors=["%s is not a valid build uuid" % uuid]), 400
 
         if status["queue_status"] not in ["WAITING", "RUNNING"]:
-            return jsonify(status=False, errors=["Build %s is not in WAITING or RUNNING." % uuid])
+            return jsonify(status=False, errors=[{"id": BUILD_IN_WRONG_STATE, "msg": "Build %s is not in WAITING or RUNNING." % uuid}])
 
         try:
             uuid_cancel(api.config["COMPOSER_CFG"], uuid)
@@ -1837,7 +1837,7 @@ def v0_api(api):
             if status is None:
                 errors.append("%s is not a valid build uuid" % uuid)
             elif status["queue_status"] not in ["FINISHED", "FAILED"]:
-                errors.append("Build %s is not in FINISHED or FAILED." % uuid)
+                errors.append({"id": BUILD_IN_WRONG_STATE, "msg": "Build %s is not in FINISHED or FAILED." % uuid})
             else:
                 try:
                     uuid_delete(api.config["COMPOSER_CFG"], uuid)
@@ -1876,7 +1876,7 @@ def v0_api(api):
         if status is None:
             return jsonify(status=False, errors=["%s is not a valid build uuid" % uuid]), 400
         if status["queue_status"] not in ["FINISHED", "FAILED"]:
-            return jsonify(status=False, errors=["Build %s not in FINISHED or FAILED state." % uuid]), 400
+            return jsonify(status=False, errors=[{"id": BUILD_IN_WRONG_STATE, "msg": "Build %s not in FINISHED or FAILED state." % uuid}]), 400
         else:
             return Response(uuid_tar(api.config["COMPOSER_CFG"], uuid, metadata=True, image=False, logs=False),
                             mimetype="application/x-tar",
@@ -1896,7 +1896,7 @@ def v0_api(api):
         if status is None:
             return jsonify(status=False, errors=["%s is not a valid build uuid" % uuid]), 400
         elif status["queue_status"] not in ["FINISHED", "FAILED"]:
-            return jsonify(status=False, errors=["Build %s not in FINISHED or FAILED state." % uuid]), 400
+            return jsonify(status=False, errors=[{"id": BUILD_IN_WRONG_STATE, "msg": "Build %s not in FINISHED or FAILED state." % uuid}]), 400
         else:
             return Response(uuid_tar(api.config["COMPOSER_CFG"], uuid, metadata=True, image=True, logs=True),
                             mimetype="application/x-tar",
@@ -1916,7 +1916,7 @@ def v0_api(api):
         if status is None:
             return jsonify(status=False, errors=["%s is not a valid build uuid" % uuid]), 400
         elif status["queue_status"] not in ["FINISHED", "FAILED"]:
-            return jsonify(status=False, errors=["Build %s not in FINISHED or FAILED state." % uuid]), 400
+            return jsonify(status=False, errors=[{"id": BUILD_IN_WRONG_STATE, "msg": "Build %s not in FINISHED or FAILED state." % uuid}]), 400
         else:
             return Response(uuid_tar(api.config["COMPOSER_CFG"], uuid, metadata=False, image=False, logs=True),
                             mimetype="application/x-tar",
@@ -1936,7 +1936,7 @@ def v0_api(api):
         if status is None:
             return jsonify(status=False, errors=["%s is not a valid build uuid" % uuid]), 400
         elif status["queue_status"] not in ["FINISHED", "FAILED"]:
-            return jsonify(status=False, errors=["Build %s not in FINISHED or FAILED state." % uuid]), 400
+            return jsonify(status=False, errors=[{"id": BUILD_IN_WRONG_STATE, "msg": "Build %s not in FINISHED or FAILED state." % uuid}]), 400
         else:
             image_name, image_path = uuid_image(api.config["COMPOSER_CFG"], uuid)
 
@@ -1967,7 +1967,7 @@ def v0_api(api):
         if status is None:
             return jsonify(status=False, errors=["%s is not a valid build uuid" % uuid]), 400
         elif status["queue_status"] == "WAITING":
-            return jsonify(status=False, errors=["Build %s has not started yet. No logs to view" % uuid])
+            return jsonify(status=False, errors=[{"id": BUILD_IN_WRONG_STATE, "msg": "Build %s has not started yet. No logs to view" % uuid}])
         try:
             return Response(uuid_log(api.config["COMPOSER_CFG"], uuid, size), direct_passthrough=True)
         except RuntimeError as e:
