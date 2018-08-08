@@ -1,16 +1,14 @@
 # Lorax Composer Live ISO output kickstart template
 
-#
+# Firewall configuration
 firewall --enabled --service=mdns
 
 # X Window System configuration information
 xconfig  --startxonboot
-# Root password
+# Root password is removed for live-iso
 rootpw --plaintext removethispw
 # Network information
 network  --bootproto=dhcp --device=link --activate
-# System authorization information
-auth --useshadow --passalgo=sha512
 # System keyboard
 keyboard --xlayouts=us --vckeymap=us
 # System language
@@ -370,4 +368,4 @@ grub2-efi-ia32
 efibootmgr
 
 
-# NOTE lorax-composer will add the recipe packages below here, including the final %end%packages
+# NOTE lorax-composer will add the blueprint packages below here, including the final %end%packages
