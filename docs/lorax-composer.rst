@@ -25,6 +25,11 @@ Important Things To Note
   for information on how to enable it. Otherwise you will see image creation fail to
   depsolve even if the blueprint itself is correct.
 
+* All image types lock the root account, except for live-iso. You will need to either
+  use one of the `Customizations`_ methods for setting a ssh key/password, install a
+  package that creates a user, or use something like `cloud-init` to setup access at
+  boot time.
+
 Installation
 ------------
 

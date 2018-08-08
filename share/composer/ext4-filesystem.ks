@@ -1,16 +1,11 @@
 # Lorax Composer filesystem output kickstart template
 
-#
-sshpw --username=root --plaintext randOmStrinGhERE
 # Firewall configuration
 firewall --enabled
 
-# Root password
-rootpw --plaintext removethispw
+# NOTE: The root account is locked by default
 # Network information
 network  --bootproto=dhcp --onboot=on --activate
-# System authorization information
-auth --useshadow --enablemd5
 # System keyboard
 keyboard --xlayouts=us --vckeymap=us
 # System language
@@ -27,13 +22,10 @@ timezone  US/Eastern
 bootloader --location=none
 
 %post
-# Remove root password
-passwd -d root > /dev/null
-
 # Remove random-seed
 rm /var/lib/systemd/random-seed
 %end
 
 %packages --nobase
 
-# NOTE lorax-composer will add the recipe packages below here, including the final %end
+# NOTE lorax-composer will add the blueprint packages below here, including the final %end
