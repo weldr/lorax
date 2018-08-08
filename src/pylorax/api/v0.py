@@ -989,7 +989,7 @@ from pylorax.api.projects import modules_list, modules_info, ProjectsError, repo
 from pylorax.api.projects import get_repo_sources, delete_repo_source, source_to_repo, dnf_repo_to_file_repo
 from pylorax.api.queue import queue_status, build_status, uuid_delete, uuid_status, uuid_info
 from pylorax.api.queue import uuid_tar, uuid_image, uuid_cancel, uuid_log
-from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
+from pylorax.api.recipes import RecipeError, list_branch_files, read_recipe_commit, recipe_filename, list_commits
 from pylorax.api.recipes import recipe_from_dict, recipe_from_toml, commit_recipe, delete_recipe, revert_recipe
 from pylorax.api.recipes import tag_recipe_commit, recipe_diff
 from pylorax.api.regexes import VALID_API_STRING
@@ -1010,6 +1010,15 @@ def take_limits(iterable, offset, limit):
     :returns: A subset of the iterable
     """
     return iterable[offset:][:limit]
+
+def blueprint_exists(api, branch, blueprint_name):
+    try:
+        with api.config["GITLOCK"].lock:
+            read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
+
+        return True
+    except RecipeError:
+        return False
 
 def v0_api(api):
     # Note that Sphinx will not generate documentations for any of these.
@@ -1073,7 +1082,7 @@ def v0_api(api):
 
             if not ws_blueprint and not git_blueprint:
                 # Neither blueprint, return an error
-                errors.append("%s: %s" % (blueprint_name, ", ".join(exceptions)))
+                errors.append({"id": UNKNOWN_BLUEPRINT, "msg": "%s: %s" % (blueprint_name, ", ".join(exceptions))})
             elif ws_blueprint and not git_blueprint:
                 # No git blueprint, return the workspace blueprint
                 changes.append({"name":blueprint_name, "changed":True})
@@ -1120,6 +1129,11 @@ def v0_api(api):
         errors = []
         for blueprint_name in [n.strip() for n in blueprint_names.split(",")]:
             filename = recipe_filename(blueprint_name)
+
+            if not blueprint_exists(api, branch, blueprint_name):
+                errors.append({"id": UNKNOWN_BLUEPRINT, "msg": "Unknown blueprint name: %s" % blueprint_name})
+                continue
+
             try:
                 with api.config["GITLOCK"].lock:
                     commits = take_limits(list_commits(api.config["GITLOCK"].repo, branch, filename), offset, limit)
@@ -1173,7 +1187,7 @@ def v0_api(api):
 
         branch = request.args.get("branch", "master")
         if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=["Invalid characters in branch argument"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_NAME, "msg": "Invalid characters in branch argument"}]), 400
 
         try:
             with api.config["GITLOCK"].lock:
@@ -1220,14 +1234,14 @@ def v0_api(api):
 
         branch = request.args.get("branch", "master")
         if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=["Invalid characters in branch argument"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_NAME, "msg": "Invalid characters in branch argument"}]), 400
 
         try:
             with api.config["GITLOCK"].lock:
                 workspace_delete(api.config["GITLOCK"].repo, branch, blueprint_name)
         except Exception as e:
             log.error("(v0_blueprints_delete_workspace) %s", str(e))
-            return jsonify(status=False, error=[str(e)]), 400
+            return jsonify(status=False, errors=[str(e)]), 400
         else:
             return jsonify(status=True)
 
@@ -1244,7 +1258,7 @@ def v0_api(api):
 
         branch = request.args.get("branch", "master")
         if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=["Invalid characters in branch argument"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_NAME, "msg": "Invalid characters in branch argument"}]), 400
 
         try:
             with api.config["GITLOCK"].lock:
@@ -1270,7 +1284,7 @@ def v0_api(api):
 
         branch = request.args.get("branch", "master")
         if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=["Invalid characters in branch argument"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_NAME, "msg": "Invalid characters in branch argument"}]), 400
 
         try:
             with api.config["GITLOCK"].lock:
@@ -1297,7 +1311,7 @@ def v0_api(api):
 
         branch = request.args.get("branch", "master")
         if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=["Invalid characters in branch argument"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_NAME, "msg": "Invalid characters in branch argument"}]), 400
 
         try:
             if from_commit == "NEWEST":
@@ -1371,7 +1385,7 @@ def v0_api(api):
 
             # No blueprint found, skip it.
             if not blueprint:
-                errors.append("%s: blueprint_not_found" % (blueprint_name))
+                errors.append({"id": UNKNOWN_BLUEPRINT, "msg": "%s: blueprint_not_found" % blueprint_name})
                 continue
 
             # Combine modules and packages and depsolve the list
@@ -1431,7 +1445,7 @@ def v0_api(api):
 
             # No blueprint found, skip it.
             if not blueprint:
-                errors.append("%s: blueprint not found" % blueprint_name)
+                errors.append({"id": UNKNOWN_BLUEPRINT, "msg": "%s: blueprint not found" % blueprint_name})
                 continue
 
             # Combine modules and packages and depsolve the list
@@ -1725,7 +1739,7 @@ def v0_api(api):
             return jsonify(status=False, errors=["Missing POST body"]), 400
 
         if "blueprint_name" not in compose:
-            errors.append("No 'blueprint_name' in the JSON request")
+            errors.append({"id": UNKNOWN_BLUEPRINT,"msg": "No 'blueprint_name' in the JSON request"})
         else:
             blueprint_name = compose["blueprint_name"]
 
