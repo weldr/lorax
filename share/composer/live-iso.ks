@@ -27,8 +27,6 @@ services --disabled="network,sshd" --enabled="NetworkManager"
 timezone  US/Eastern
 # System bootloader configuration
 bootloader --location=none
-# Partition clearing information
-clearpart --all --initlabel
 
 %post
 # FIXME: it'd be better to get this installed from a package

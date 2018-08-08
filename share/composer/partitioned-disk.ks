@@ -23,8 +23,6 @@ shutdown
 timezone  US/Eastern
 # System bootloader configuration
 bootloader --location=mbr
-# Partition clearing information
-clearpart --all --initlabel
 
 %post
 # Remove random-seed
@@ -35,12 +33,6 @@ rm /var/lib/systemd/random-seed
 kernel
 -dracut-config-rescue
 
-shim
-shim-ia32
 grub2
-grub2-efi
-grub2-efi-*-cdboot
-grub2-efi-ia32
-efibootmgr
 
 # NOTE lorax-composer will add the recipe packages below here, including the final %end

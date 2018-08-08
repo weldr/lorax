@@ -21,10 +21,8 @@ logging --level=info
 shutdown
 # System timezone
 timezone  US/Eastern
-# System bootloader configuration
+# System bootloader configuration (tar doesn't need a bootloader)
 bootloader --location=none
-# Partition clearing information
-clearpart --all --initlabel
 
 %post
 # Remove random-seed
