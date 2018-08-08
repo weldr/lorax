@@ -1270,7 +1270,7 @@ def v0_api(api):
                 workspace_write(api.config["GITLOCK"].repo, branch, blueprint)
         except Exception as e:
             log.error("(v0_blueprints_undo) %s", str(e))
-            return jsonify(status=False, errors=[str(e)]), 400
+            return jsonify(status=False, errors=[{"id": UNKNOWN_COMMIT, "msg": str(e)}]), 400
         else:
             return jsonify(status=True)
 
@@ -1323,7 +1323,7 @@ def v0_api(api):
                     old_blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name, from_commit)
         except Exception as e:
             log.error("(v0_blueprints_diff) %s", str(e))
-            return jsonify(status=False, errors=[str(e)]), 400
+            return jsonify(status=False, errors=[{"id": UNKNOWN_COMMIT, "msg": str(e)}]), 400
 
         try:
             if to_commit == "WORKSPACE":
@@ -1341,7 +1341,7 @@ def v0_api(api):
                     new_blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name, to_commit)
         except Exception as e:
             log.error("(v0_blueprints_diff) %s", str(e))
-            return jsonify(status=False, errors=[str(e)]), 400
+            return jsonify(status=False, errors=[{"id": UNKNOWN_COMMIT, "msg": str(e)}]), 400
 
         diff = recipe_diff(old_blueprint, new_blueprint)
         return jsonify(diff=diff)
