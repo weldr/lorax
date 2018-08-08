@@ -334,6 +334,10 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
             log.debug("repo composer-%s = %s", idx, ks_repo)
             f.write('repo --name="composer-%s" %s\n' % (idx, ks_repo))
 
+        # Setup the disk for booting
+        # TODO Add GPT and UEFI boot support
+        f.write('clearpart --all --initlabel\n')
+
         # Write the root partition and it's size in MB (rounded up)
         f.write('part / --fstype="ext4" --size=%d\n' % ceil(installed_size / 1024**2))
 
