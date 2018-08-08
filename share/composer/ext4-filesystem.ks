@@ -3,12 +3,9 @@
 # Firewall configuration
 firewall --enabled
 
-# Root password
-rootpw --plaintext removethispw
+# NOTE: The root account is locked by default
 # Network information
 network  --bootproto=dhcp --onboot=on --activate
-# System authorization information
-auth --useshadow --enablemd5
 # System keyboard
 keyboard --xlayouts=us --vckeymap=us
 # System language
@@ -34,4 +31,4 @@ rm /var/lib/systemd/random-seed
 # Packages requires to support this output format go here
 policycoreutils
 
-# NOTE lorax-composer will add the recipe packages below here, including the final %end
+# NOTE lorax-composer will add the blueprint packages below here, including the final %end
