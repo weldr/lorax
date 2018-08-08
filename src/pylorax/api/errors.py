@@ -35,5 +35,11 @@ UNKNOWN_BLUEPRINT = "UnknownBlueprint"
 # Returned from the API when a commit that was requested does not exist.
 UNKNOWN_COMMIT = "UnknownCommit"
 
+# Returned from the API when a module that was requested does not exist.
+UNKNOWN_MODULE = "UnknownModule"
+
+# Returned from the API when a project that was requested does not exist.
+UNKNOWN_PROJECT = "UnknownProject"
+
 # Returned from the API when a UUID that was requested does not exist.
 UNKNOWN_UUID = "UnknownUUID"
