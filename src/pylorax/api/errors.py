@@ -42,9 +42,9 @@ BUILD_MISSING_FILE = "BuildMissingFile"
 # Returned from the API for all other errors from a /compose/* route.
 COMPOSE_ERROR = "ComposeError"
 
-# Returned from the API when a blueprint name or other similar identifier is
-# given that contains invalid characters.
-INVALID_NAME = "InvalidName"
+# Returned from the API when invalid characters are used in a route path or in
+# some identifier.
+INVALID_CHARS = "InvalidChars"
 
 # Returned from the API when /compose is called without the POST body telling it
 # what to compose.
