@@ -24,6 +24,9 @@ BAD_COMPOSE_TYPE = "BadComposeType"
 # not convert into an integer.
 BAD_LIMIT_OR_OFFSET = "BadLimitOrOffset"
 
+# Returned from the API for all other errors from a /blueprints/* route.
+BLUEPRINTS_ERROR = "BlueprintsError"
+
 # Returned from the API for any other error resulting from /compose failing.
 BUILD_FAILED = "BuildFailed"
 
@@ -32,6 +35,13 @@ BUILD_FAILED = "BuildFailed"
 # a build that is not yet done.
 BUILD_IN_WRONG_STATE = "BuildInWrongState"
 
+# Returned from the API when some file is requested that is not present - a log
+# file, the compose results, etc.
+BUILD_MISSING_FILE = "BuildMissingFile"
+
+# Returned from the API for all other errors from a /compose/* route.
+COMPOSE_ERROR = "ComposeError"
+
 # Returned from the API when a blueprint name or other similar identifier is
 # given that contains invalid characters.
 INVALID_NAME = "InvalidName"
@@ -39,6 +49,12 @@ INVALID_NAME = "InvalidName"
 # Returned from the API when /compose is called without the POST body telling it
 # what to compose.
 MISSING_POST = "MissingPost"
+
+# Returned from the API for all other errors from a /modules/* route.
+MODULES_ERROR = "ModulesError"
+
+# Returned from the API for all other errors from a /projects/* route.
+PROJECTS_ERROR = "ProjectsError"
 
 # Returned from the API when someone tries to modify an immutable system source.
 SYSTEM_SOURCE = "SystemSource"
