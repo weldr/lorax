@@ -1036,7 +1036,7 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(resp.status_code, 400)
         self.assertEqual(data["status"], False)
         self.assertTrue(len(data["errors"]) > 0)
-        self.assertTrue("Invalid characters in" in data["errors"][0])
+        self.assertTrue("Invalid characters in" in data["errors"][0]["msg"])
 
     def test_blueprints_list_branch(self):
         resp = self.server.get("/api/v0/blueprints/list?branch=" + UTF8_TEST_STRING)
