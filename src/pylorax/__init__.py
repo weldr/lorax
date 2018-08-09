@@ -64,6 +64,9 @@ DRACUT_DEFAULT = ["--xz", "--install", "/.buildstamp", "--no-early-microcode", "
 REMOVE_PPC64_DRIVERS = "floppy scsi_debug nouveau radeon cirrus mgag200"
 REMOVE_PPC64_MODULES = "drm plymouth"
 
+# Used for DNF conf.module_platform_id
+DEFAULT_PLATFORM_ID = "platform:el8"
+
 class ArchData(DataHolder):
     lib64_arches = ("x86_64", "ppc64", "ppc64le", "s390x", "ia64", "aarch64")
     bcj_arch = dict(i386="x86", x86_64="x86",
