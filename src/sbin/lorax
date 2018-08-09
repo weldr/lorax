@@ -33,8 +33,9 @@ import dnf
 import dnf.logging
 import librepo
 import pylorax
-from pylorax import DRACUT_DEFAULT
+from pylorax import DRACUT_DEFAULT, DEFAULT_PLATFORM_ID
 from pylorax.cmdline import lorax_parser
+from pylorax.simpleconfig import SimpleConfigFile
 import selinux
 
 def setup_logging(opts):
@@ -218,6 +219,17 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
 
     if sslverify == False:
         conf.sslverify = False
+
+    # DNF 3.2 needs to have module_platform_id set, otherwise depsolve won't work correctly
+    if not os.path.exists("/etc/os-release"):
+        log.warning("/etc/os-release is missing, cannot determine platform id, falling back to %s", DEFAULT_PLATFORM_ID)
+        platform_id = DEFAULT_PLATFORM_ID
+    else:
+        os_release = SimpleConfigFile("/etc/os-release")
+        os_release.read()
+        platform_id = os_release.get("PLATFORM_ID") or DEFAULT_PLATFORM_ID
+    log.info("Using %s for module_platform_id", platform_id)
+    conf.module_platform_id = platform_id
 
     # Add .repo files
     if repos:
