@@ -46,7 +46,7 @@ Requires:       kpartx
 Requires:       libselinux-python3
 Requires:       python3-mako
 Requires:       python3-kickstart
-Requires:       python3-dnf >= 2.0.0
+Requires:       python3-dnf >= 3.2.0
 
 
 %if 0%{?fedora}
