@@ -25,6 +25,8 @@ from glob import glob
 import os
 import shutil
 
+from pylorax import DEFAULT_PLATFORM_ID
+from pylorax.simpleconfig import SimpleConfigFile
 
 def get_base_object(conf):
     """Get the DNF object with settings from the config file
@@ -68,6 +70,17 @@ def get_base_object(conf):
         _releasever = dnf.rpm.detect_releasever("/")
     log.info("releasever = %s", _releasever)
     dbc.releasever = _releasever
+
+    # DNF 3.2 needs to have module_platform_id set, otherwise depsolve won't work correctly
+    if not os.path.exists("/etc/os-release"):
+        log.warning("/etc/os-release is missing, cannot determine platform id, falling back to %s", DEFAULT_PLATFORM_ID)
+        platform_id = DEFAULT_PLATFORM_ID
+    else:
+        os_release = SimpleConfigFile("/etc/os-release")
+        os_release.read()
+        platform_id = os_release.get("PLATFORM_ID") or DEFAULT_PLATFORM_ID
+    log.info("Using %s for module_platform_id", platform_id)
+    dbc.module_platform_id = platform_id
 
     # write the dnf configuration file
     with open(dnfconf, "w") as f:
