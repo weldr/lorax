@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.20
+Version:        19.7.21
 Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
@@ -122,6 +122,61 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash-completion/composer-cli
 
 %changelog
+* Thu Aug 09 2018 Brian C. Lane <bcl@redhat.com> 19.7.21-1
+- Move disklabel and UEFI support to compose.py (bcl)
+- Fix more tests. (clumens)
+- Change INVALID_NAME to INVALID_CHARS. (clumens)
+- Update composer-cli for the new error return types. (clumens)
+- Add default error IDs everywhere else. (clumens)
+- Add error IDs to things that can go wrong when running a compose. (clumens)
+- Add error IDs for common source-related errors. (clumens)
+- Add error IDs for unknown modules and unknown projects. (clumens)
+- Add error IDs for when an unknown commit is requested. (clumens)
+- Add error IDs for when an unknown blueprint is requested. (clumens)
+- Add error IDs for when an unknown build UUID is requested. (clumens)
+- Add error IDs for bad state conditions. (clumens)
+- Change the error return type for bad limit= and offset=. (clumens)
+- Don't sort error messages. (clumens)
+- Fix bash completion of compose info (bcl)
+- Add + to the allowed API string character set (bcl)
+- Add job_* timestamp support to compose status (bcl)
+- Add a test for the pylorax.api.timestamp functions (bcl)
+- Add etc/bash_completion.d/composer-cli (wwoods)
+- composer-cli: clean up "list" commands (wwoods)
+- Add input string checks to the branch and format arguments (bcl)
+- Add a test for invalid characters in the API route (bcl)
+- Return a JSON error instead of a 404 on certain malformed URLs. (clumens)
+- Return an error if /modules/info doesn't return anything. (clumens)
+- Update documentation (clumens).
+  Resolves: rhbz#409
+- Use constants instead of strings (clumens).
+  Resolves: rhbz#409
+- Write timestamps when important events happen during the compose (clumens).
+  Resolves: rhbz#409
+- Return multiple timestamps in API results (clumens).
+  Resolves: rhbz#409
+- Add a new timestamp.py file to the API directory (clumens).
+  Resolves: rhbz#409
+- Run as root/weldr by default. (clumens)
+- Use the first enabled system repo for the test (bcl)
+- Show more details when the system repo delete test fails (bcl)
+- Add composer-cli function tests (bcl)
+- Add a test library (bcl)
+- composer-cli: Add support for Group to blueprints diff (bcl)
+- Adjust the tests so they will pass on CentOS7 and RHEL7 (bcl)
+- Update status.py to use new handle_api_result (bcl)
+- Update sources.py to use new handle_api_result (bcl)
+- Update projects.py to use new handle_api_result (bcl)
+- Update modules.py to use new handle_api_result (bcl)
+- Update compose.py to use new handle_api_result (bcl)
+- Update blueprints.py to use new handle_api_result (bcl)
+- Modify handle_api_result so it can be used in more places (bcl)
+- composer-cli: Fix non-zero epoch in projets info (bcl)
+- Fix help output on the compose subcommand. (clumens)
+- Add timestamps to "compose-cli compose status" output. (clumens)
+- And then add real output to the status command. (clumens)
+- Add the beginnings of a new status subcommand. (clumens)
+
 * Fri Jul 20 2018 Brian C. Lane <bcl@redhat.com> 19.7.20-1
 - Document that you shouldn't run lorax-composer twice. (clumens)
 - Add PIDFile to the .service file. (clumens)
