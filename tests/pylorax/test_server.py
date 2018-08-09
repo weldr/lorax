@@ -1029,6 +1029,98 @@ class ServerTestCase(unittest.TestCase):
         self.assertNotEqual(data, None)
         self.assertEqual(data["finished"], [], "Failed to delete the failed build: %s" % data)
 
+    def test_compose_13_status_filter(self):
+        """Test filter arguments on the /api/v0/compose/status route"""
+        # Get a couple compose results going so we have something to filter
+        test_compose_fail = {"blueprint_name": "glusterfs",
+                             "compose_type": "tar",
+                             "branch": "master"}
+
+        test_compose_success = {"blueprint_name": "custom-base",
+                                "compose_type": "tar",
+                                "branch": "master"}
+
+        resp = self.server.post("/api/v0/compose?test=1",
+                                data=json.dumps(test_compose_fail),
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["status"], True, "Failed to start test compose: %s" % data)
+
+        build_id_fail = data["build_id"]
+
+        resp = self.server.get("/api/v0/compose/queue")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        ids = [e["id"] for e in data["new"] + data["run"]]
+        self.assertEqual(build_id_fail in ids, True, "Failed to add build to the queue")
+
+        # Wait for it to start
+        self.assertEqual(self.wait_for_status(build_id_fail, ["RUNNING"]), True, "Failed to start test compose")
+
+        # Wait for it to finish
+        self.assertEqual(self.wait_for_status(build_id_fail, ["FAILED"]), True, "Failed to finish test compose")
+
+        # Fire up the other one
+        resp = self.server.post("/api/v0/compose?test=2",
+                                data=json.dumps(test_compose_success),
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["status"], True, "Failed to start test compose: %s" % data)
+
+        build_id_success = data["build_id"]
+
+        resp = self.server.get("/api/v0/compose/queue")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        ids = [e["id"] for e in data["new"] + data["run"]]
+        self.assertEqual(build_id_success in ids, True, "Failed to add build to the queue")
+
+        # Wait for it to start
+        self.assertEqual(self.wait_for_status(build_id_success, ["RUNNING"]), True, "Failed to start test compose")
+
+        # Wait for it to finish
+        self.assertEqual(self.wait_for_status(build_id_success, ["FINISHED"]), True, "Failed to finish test compose")
+
+        # Test that both composes appear in /api/v0/compose/status/*
+        resp = self.server.get("/api/v0/compose/status/*")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        ids = [e["id"] for e in data["uuids"]]
+        self.assertIn(build_id_success, ids, "Finished build not listed by /compose/status/*")
+        self.assertIn(build_id_fail, ids, "Failed build not listed by /compose/status/*")
+
+        # Filter by name
+        resp = self.server.get("/api/v0/compose/status/*?blueprint=%s" % test_compose_fail["blueprint_name"])
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        ids = [e["id"] for e in data["uuids"]]
+        self.assertIn(build_id_fail, ids, "Failed build not listed by /compose/status blueprint filter")
+        self.assertNotIn(build_id_success, ids, "Finished build listed by /compose/status blueprint filter")
+
+        # Filter by type
+        resp = self.server.get("/api/v0/compose/status/*?type=tar")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        ids = [e["id"] for e in data["uuids"]]
+        self.assertIn(build_id_fail, ids, "Failed build not listed by /compose/status type filter")
+        self.assertIn(build_id_success, ids, "Finished build not listed by /compose/status type filter")
+
+        resp = self.server.get("/api/v0/compose/status/*?type=snakes")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        ids = [e["id"] for e in data["uuids"]]
+        self.assertEqual(ids, [], "Invalid type not filtered by /compose/status type filter")
+
+        # Filter by status
+        resp = self.server.get("/api/v0/compose/status/*?status=FAILED")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        ids = [e["id"] for e in data["uuids"]]
+        self.assertIn(build_id_fail, ids, "Failed build not listed by /compose/status status filter")
+        self.assertNotIn(build_id_success, "Finished build listed by /compose/status status filter")
+
     def assertInputError(self, resp):
         """Check all the conditions for a successful input check error result"""
         data = json.loads(resp.data)
