@@ -1138,7 +1138,7 @@ def v0_api(api):
                 with api.config["GITLOCK"].lock:
                     commits = take_limits(list_commits(api.config["GITLOCK"].repo, branch, filename), offset, limit)
             except Exception as e:
-                errors.append("%s: %s" % (blueprint_name, str(e)))
+                errors.append({"id": BLUEPRINTS_ERROR, "msg": "%s: %s" % (blueprint_name, str(e))})
                 log.error("(v0_blueprints_changes) %s", str(e))
             else:
                 blueprints.append({"name":blueprint_name, "changes":commits, "total":len(commits)})
@@ -1172,7 +1172,7 @@ def v0_api(api):
                 workspace_write(api.config["GITLOCK"].repo, branch, blueprint)
         except Exception as e:
             log.error("(v0_blueprints_new) %s", str(e))
-            return jsonify(status=False, errors=[str(e)]), 400
+            return jsonify(status=False, errors=[{"id": BLUEPRINTS_ERROR, "msg": str(e)}]), 400
         else:
             return jsonify(status=True)
 
@@ -1194,7 +1194,7 @@ def v0_api(api):
                 delete_recipe(api.config["GITLOCK"].repo, branch, blueprint_name)
         except Exception as e:
             log.error("(v0_blueprints_delete) %s", str(e))
-            return jsonify(status=False, errors=[str(e)]), 400
+            return jsonify(status=False, errors=[{"id": BLUEPRINTS_ERROR, "msg": str(e)}]), 400
         else:
             return jsonify(status=True)
 
@@ -1219,7 +1219,7 @@ def v0_api(api):
                 workspace_write(api.config["GITLOCK"].repo, branch, blueprint)
         except Exception as e:
             log.error("(v0_blueprints_workspace) %s", str(e))
-            return jsonify(status=False, errors=[str(e)]), 400
+            return jsonify(status=False, errors=[{"id": BLUEPRINTS_ERROR, "msg": str(e)}]), 400
         else:
             return jsonify(status=True)
 
@@ -1241,7 +1241,7 @@ def v0_api(api):
                 workspace_delete(api.config["GITLOCK"].repo, branch, blueprint_name)
         except Exception as e:
             log.error("(v0_blueprints_delete_workspace) %s", str(e))
-            return jsonify(status=False, errors=[str(e)]), 400
+            return jsonify(status=False, errors=[{"id": BLUEPRINTS_ERROR, "msg": str(e)}]), 400
         else:
             return jsonify(status=True)
 
@@ -1291,7 +1291,7 @@ def v0_api(api):
                 tag_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
         except Exception as e:
             log.error("(v0_blueprints_tag) %s", str(e))
-            return jsonify(status=False, errors=[str(e)]), 400
+            return jsonify(status=False, errors=[{"id": BLUEPRINTS_ERROR, "msg": str(e)}]), 400
         else:
             return jsonify(status=True)
 
@@ -1380,7 +1380,7 @@ def v0_api(api):
                     with api.config["GITLOCK"].lock:
                         blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
                 except Exception as e:
-                    errors.append("%s: %s" % (blueprint_name, str(e)))
+                    errors.append({"id": BLUEPRINTS_ERROR, "msg": "%s: %s" % (blueprint_name, str(e))})
                     log.error("(v0_blueprints_freeze) %s", str(e))
 
             # No blueprint found, skip it.
@@ -1398,7 +1398,7 @@ def v0_api(api):
                 with api.config["DNFLOCK"].lock:
                     deps = projects_depsolve(api.config["DNFLOCK"].dbo, projects, blueprint.group_names)
             except ProjectsError as e:
-                errors.append("%s: %s" % (blueprint_name, str(e)))
+                errors.append({"id": BLUEPRINTS_ERROR, "msg": "%s: %s" % (blueprint_name, str(e))})
                 log.error("(v0_blueprints_freeze) %s", str(e))
 
             blueprints.append({"blueprint": blueprint.freeze(deps)})
@@ -1440,7 +1440,7 @@ def v0_api(api):
                     with api.config["GITLOCK"].lock:
                         blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
                 except Exception as e:
-                    errors.append("%s: %s" % (blueprint_name, str(e)))
+                    errors.append({"id": BLUEPRINTS_ERROR, "msg": "%s: %s" % (blueprint_name, str(e))})
                     log.error("(v0_blueprints_depsolve) %s", str(e))
 
             # No blueprint found, skip it.
@@ -1458,7 +1458,7 @@ def v0_api(api):
                 with api.config["DNFLOCK"].lock:
                     deps = projects_depsolve(api.config["DNFLOCK"].dbo, projects, blueprint.group_names)
             except ProjectsError as e:
-                errors.append("%s: %s" % (blueprint_name, str(e)))
+                errors.append({"id": BLUEPRINTS_ERROR, "msg": "%s: %s" % (blueprint_name, str(e))})
                 log.error("(v0_blueprints_depsolve) %s", str(e))
 
             # Get the NEVRA's of the modules and projects, add as "modules"
@@ -1487,7 +1487,7 @@ def v0_api(api):
                 available = projects_list(api.config["DNFLOCK"].dbo)
         except ProjectsError as e:
             log.error("(v0_projects_list) %s", str(e))
-            return jsonify(status=False, errors=[str(e)]), 400
+            return jsonify(status=False, errors=[{"id": PROJECTS_ERROR, "msg": str(e)}]), 400
 
         projects = take_limits(available, offset, limit)
         return jsonify(projects=projects, offset=offset, limit=limit, total=len(available))
@@ -1506,7 +1506,7 @@ def v0_api(api):
                 projects = projects_info(api.config["DNFLOCK"].dbo, project_names.split(","))
         except ProjectsError as e:
             log.error("(v0_projects_info) %s", str(e))
-            return jsonify(status=False, errors=[str(e)]), 400
+            return jsonify(status=False, errors=[{"id": PROJECTS_ERROR, "msg": str(e)}]), 400
 
         if not projects:
             msg = "one of the requested projects does not exist: %s" % project_names
@@ -1529,7 +1529,7 @@ def v0_api(api):
                 deps = projects_depsolve(api.config["DNFLOCK"].dbo, [(n, "*") for n in project_names.split(",")], [])
         except ProjectsError as e:
             log.error("(v0_projects_depsolve) %s", str(e))
-            return jsonify(status=False, errors=[str(e)]), 400
+            return jsonify(status=False, errors=[{"id": PROJECTS_ERROR, "msg": str(e)}]), 400
 
         if not deps:
             msg = "one of the requested projects does not exist: %s" % project_names
@@ -1641,7 +1641,7 @@ def v0_api(api):
                     dbo.fill_sack(load_system_repo=False)
                     dbo.read_comps()
 
-            return jsonify(status=False, errors=[str(e)]), 400
+            return jsonify(status=False, errors=[{"id": PROJECTS_ERROR, "msg": str(e)}]), 400
 
         return jsonify(status=True)
 
@@ -1698,7 +1698,7 @@ def v0_api(api):
                 available = modules_list(api.config["DNFLOCK"].dbo, module_names)
         except ProjectsError as e:
             log.error("(v0_modules_list) %s", str(e))
-            return jsonify(status=False, errors=[str(e)]), 400
+            return jsonify(status=False, errors=[{"id": MODULES_ERROR, "msg": str(e)}]), 400
 
         if module_names and not available:
             msg = "one of the requested modules does not exist: %s" % module_names
@@ -1721,7 +1721,7 @@ def v0_api(api):
                 modules = modules_info(api.config["DNFLOCK"].dbo, module_names.split(","))
         except ProjectsError as e:
             log.error("(v0_modules_info) %s", str(e))
-            return jsonify(status=False, errors=[str(e)]), 400
+            return jsonify(status=False, errors=[{"id": MODULES_ERROR, "msg": str(e)}]), 400
 
         if not modules:
             msg = "one of the requested modules does not exist: %s" % module_names
@@ -1852,7 +1852,7 @@ def v0_api(api):
         try:
             uuid_cancel(api.config["COMPOSER_CFG"], uuid)
         except Exception as e:
-            return jsonify(status=False, errors=["%s: %s" % (uuid, str(e))]), 400
+            return jsonify(status=False, errors=[{"id": COMPOSE_ERROR, "msg": "%s: %s" % (uuid, str(e))}]),400
         else:
             return jsonify(status=True, uuid=uuid)
 
@@ -1877,7 +1877,7 @@ def v0_api(api):
                 try:
                     uuid_delete(api.config["COMPOSER_CFG"], uuid)
                 except Exception as e:
-                    errors.append("%s: %s" % (uuid, str(e)))
+                    errors.append({"id": COMPOSE_ERROR, "msg": "%s: %s" % (uuid, str(e))})
                 else:
                     results.append({"uuid":uuid, "status":True})
         return jsonify(uuids=results, errors=errors)
@@ -1894,7 +1894,7 @@ def v0_api(api):
         try:
             info = uuid_info(api.config["COMPOSER_CFG"], uuid)
         except Exception as e:
-            return jsonify(status=False, errors=[str(e)]), 400
+            return jsonify(status=False, errors=[{"id": COMPOSE_ERROR, "msg": str(e)}]), 400
 
         if info is None:
             return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
@@ -1980,7 +1980,7 @@ def v0_api(api):
 
             # Make sure it really exists
             if not os.path.exists(image_path):
-                return jsonify(status=False, errors=["Build %s is missing image file %s" % (uuid, image_name)]), 400
+                return jsonify(status=False, errors=[{"id": BUILD_MISSING_FILE, "msg": "Build %s is missing image file %s" % (uuid, image_name)}]), 400
 
             # Make the image name unique
             image_name = uuid + "-" + image_name
@@ -1999,7 +1999,7 @@ def v0_api(api):
         try:
             size = int(request.args.get("size", "1024"))
         except ValueError as e:
-            return jsonify(status=False, errors=[str(e)]), 400
+            return jsonify(status=False, errors=[{"id": COMPOSE_ERROR, "msg": str(e)}]), 400
 
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
         if status is None:
@@ -2009,4 +2009,4 @@ def v0_api(api):
         try:
             return Response(uuid_log(api.config["COMPOSER_CFG"], uuid, size), direct_passthrough=True)
         except RuntimeError as e:
-            return jsonify(status=False, errors=[str(e)]), 400
+            return jsonify(status=False, errors=[{"id": COMPOSE_ERROR, "msg": str(e)}]), 400
