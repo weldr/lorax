@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.3
+Version:        28.14.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -230,6 +230,57 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu Aug 09 2018 Brian C. Lane <bcl@redhat.com> 28.14.4-1
+- Fix bash_completion.d typo (bcl@redhat.com)
+- Move disklabel and UEFI support to compose.py (bcl@redhat.com)
+- Fix more tests. (clumens@redhat.com)
+- Change INVALID_NAME to INVALID_CHARS. (clumens@redhat.com)
+- Update composer-cli for the new error return types. (clumens@redhat.com)
+- Add default error IDs everywhere else. (clumens@redhat.com)
+- Add error IDs to things that can go wrong when running a compose.  (clumens@redhat.com)
+- Add error IDs for common source-related errors. (clumens@redhat.com)
+- Add error IDs for unknown modules and unknown projects. (clumens@redhat.com)
+- Add error IDs for when an unknown commit is requested. (clumens@redhat.com)
+- Add error IDs for when an unknown blueprint is requested.  (clumens@redhat.com)
+- Add error IDs for when an unknown build UUID is requested.  (clumens@redhat.com)
+- Add error IDs for bad state conditions. (clumens@redhat.com)
+- Change the error return type for bad limit= and offset=. (clumens@redhat.com)
+- Don't sort error messages. (clumens@redhat.com)
+- Run as root/weldr by default. (clumens@redhat.com)
+- Fix bash completion of compose info (bcl@redhat.com)
+- Add + to the allowed API string character set (bcl@redhat.com)
+- Add job_* timestamp support to compose status (bcl@redhat.com)
+- Add etc/bash_completion.d/composer-cli (wwoods@redhat.com)
+- composer-cli: clean up "list" commands (wwoods@redhat.com)
+- Drop .decode from UTF8_TEST_STRING (bcl@redhat.com)
+- Add input string checks to the branch and format arguments (bcl@redhat.com)
+- Add a test for invalid characters in the API route (bcl@redhat.com)
+- Fix logging argument (bcl@redhat.com)
+- Update get_system_repo for dnf (bcl@redhat.com)
+- Update ConfigParser usage for Py3 (bcl@redhat.com)
+- Update StringIO use for Py3 (bcl@redhat.com)
+- Add a test for the pylorax.api.timestamp functions (bcl@redhat.com)
+- Fix write_timestamp for py3 (bcl@redhat.com)
+- Return a JSON error instead of a 404 on certain malformed URLs.  (clumens@redhat.com)
+- Return an error if /modules/info doesn't return anything.  (clumens@redhat.com)
+- Update documentation (#409). (clumens@redhat.com)
+- Use constants instead of strings (#409). (clumens@redhat.com)
+- Write timestamps when important events happen during the compose (#409).  (clumens@redhat.com)
+- Return multiple timestamps in API results (#409). (clumens@redhat.com)
+- Add a new timestamp.py file to the API directory (#409). (clumens@redhat.com)
+- Use the first enabled system repo for the test (bcl@redhat.com)
+- Show more details when the system repo delete test fails (bcl@redhat.com)
+- Add composer-cli function tests (bcl@redhat.com)
+- Add a test library (bcl@redhat.com)
+- composer-cli: Add support for Group to blueprints diff (bcl@redhat.com)
+- Update status.py to use new handle_api_result (bcl@redhat.com)
+- Update sources.py to use new handle_api_result (bcl@redhat.com)
+- Update projects.py to use new handle_api_result (bcl@redhat.com)
+- Update modules.py to use new handle_api_result (bcl@redhat.com)
+- Update compose.py to use new handle_api_result (bcl@redhat.com)
+- Update blueprints.py to use new handle_api_result (bcl@redhat.com)
+- Modify handle_api_result so it can be used in more places (bcl@redhat.com)
+
 * Mon Jul 30 2018 Brian C. Lane <bcl@redhat.com> 28.14.3-1
 - Update to use only qemu-kvm (bcl@redhat.com)
 - Fix help output on the compose subcommand. (clumens@redhat.com)
