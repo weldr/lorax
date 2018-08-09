@@ -1028,7 +1028,7 @@ def v0_api(api):
         """List the available blueprints on a branch."""
         branch = request.args.get("branch", "master")
         if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=["Invalid characters in branch argument"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
 
         try:
             limit = int(request.args.get("limit", "20"))
@@ -1047,15 +1047,15 @@ def v0_api(api):
     def v0_blueprints_info(blueprint_names):
         """Return the contents of the blueprint, or a list of blueprints"""
         if VALID_API_STRING.match(blueprint_names) is None:
-            return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
         branch = request.args.get("branch", "master")
         if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=["Invalid characters in branch argument"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
 
         out_fmt = request.args.get("format", "json")
         if VALID_API_STRING.match(out_fmt) is None:
-            return jsonify(status=False, errors=["Invalid characters in format argument"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in format argument"}]), 400
 
         blueprints = []
         changes = []
@@ -1113,11 +1113,11 @@ def v0_api(api):
     def v0_blueprints_changes(blueprint_names):
         """Return the changes to a blueprint or list of blueprints"""
         if VALID_API_STRING.match(blueprint_names) is None:
-            return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
         branch = request.args.get("branch", "master")
         if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=["Invalid characters in branch argument"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
 
         try:
             limit = int(request.args.get("limit", "20"))
@@ -1153,7 +1153,7 @@ def v0_api(api):
         """Commit a new blueprint"""
         branch = request.args.get("branch", "master")
         if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=["Invalid characters in branch argument"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
 
         try:
             if request.headers['Content-Type'] == "text/x-toml":
@@ -1162,7 +1162,7 @@ def v0_api(api):
                 blueprint = recipe_from_dict(request.get_json(cache=False))
 
             if VALID_API_STRING.match(blueprint["name"]) is None:
-                return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+                return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
             with api.config["GITLOCK"].lock:
                 commit_recipe(api.config["GITLOCK"].repo, branch, blueprint)
@@ -1183,11 +1183,11 @@ def v0_api(api):
     def v0_blueprints_delete(blueprint_name):
         """Delete a blueprint from git"""
         if VALID_API_STRING.match(blueprint_name) is None:
-            return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
         branch = request.args.get("branch", "master")
         if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_NAME, "msg": "Invalid characters in branch argument"}]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
 
         try:
             with api.config["GITLOCK"].lock:
@@ -1204,7 +1204,7 @@ def v0_api(api):
         """Write a blueprint to the workspace"""
         branch = request.args.get("branch", "master")
         if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=["Invalid characters in branch argument"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
 
         try:
             if request.headers['Content-Type'] == "text/x-toml":
@@ -1213,7 +1213,7 @@ def v0_api(api):
                 blueprint = recipe_from_dict(request.get_json(cache=False))
 
             if VALID_API_STRING.match(blueprint["name"]) is None:
-                return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+                return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
             with api.config["GITLOCK"].lock:
                 workspace_write(api.config["GITLOCK"].repo, branch, blueprint)
@@ -1230,11 +1230,11 @@ def v0_api(api):
     def v0_blueprints_delete_workspace(blueprint_name):
         """Delete a blueprint from the workspace"""
         if VALID_API_STRING.match(blueprint_name) is None:
-            return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
         branch = request.args.get("branch", "master")
         if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_NAME, "msg": "Invalid characters in branch argument"}]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
 
         try:
             with api.config["GITLOCK"].lock:
@@ -1254,11 +1254,11 @@ def v0_api(api):
     def v0_blueprints_undo(blueprint_name, commit):
         """Undo changes to a blueprint by reverting to a previous commit."""
         if VALID_API_STRING.match(blueprint_name) is None:
-            return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
         branch = request.args.get("branch", "master")
         if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_NAME, "msg": "Invalid characters in branch argument"}]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
 
         try:
             with api.config["GITLOCK"].lock:
@@ -1280,11 +1280,11 @@ def v0_api(api):
     def v0_blueprints_tag(blueprint_name):
         """Tag a blueprint's latest blueprint commit as a 'revision'"""
         if VALID_API_STRING.match(blueprint_name) is None:
-            return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
         branch = request.args.get("branch", "master")
         if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_NAME, "msg": "Invalid characters in branch argument"}]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
 
         try:
             with api.config["GITLOCK"].lock:
@@ -1307,11 +1307,11 @@ def v0_api(api):
         """Return the differences between two commits of a blueprint"""
         for s in [blueprint_name, from_commit, to_commit]:
             if VALID_API_STRING.match(s) is None:
-                return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+                return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
         branch = request.args.get("branch", "master")
         if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_NAME, "msg": "Invalid characters in branch argument"}]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
 
         try:
             if from_commit == "NEWEST":
@@ -1352,15 +1352,15 @@ def v0_api(api):
     def v0_blueprints_freeze(blueprint_names):
         """Return the blueprint with the exact modules and packages selected by depsolve"""
         if VALID_API_STRING.match(blueprint_names) is None:
-            return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
         branch = request.args.get("branch", "master")
         if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=["Invalid characters in branch argument"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
 
         out_fmt = request.args.get("format", "json")
         if VALID_API_STRING.match(out_fmt) is None:
-            return jsonify(status=False, errors=["Invalid characters in format argument"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in format argument"}]), 400
 
         blueprints = []
         errors = []
@@ -1416,11 +1416,11 @@ def v0_api(api):
     def v0_blueprints_depsolve(blueprint_names):
         """Return the dependencies for a blueprint"""
         if VALID_API_STRING.match(blueprint_names) is None:
-            return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
         branch = request.args.get("branch", "master")
         if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=["Invalid characters in branch argument"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
 
         blueprints = []
         errors = []
@@ -1499,7 +1499,7 @@ def v0_api(api):
     def v0_projects_info(project_names):
         """Return detailed information about the listed projects"""
         if VALID_API_STRING.match(project_names) is None:
-            return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
         try:
             with api.config["DNFLOCK"].lock:
@@ -1522,7 +1522,7 @@ def v0_api(api):
     def v0_projects_depsolve(project_names):
         """Return detailed information about the listed projects"""
         if VALID_API_STRING.match(project_names) is None:
-            return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
         try:
             with api.config["DNFLOCK"].lock:
@@ -1554,11 +1554,11 @@ def v0_api(api):
     def v0_projects_source_info(source_names):
         """Return detailed info about the list of sources"""
         if VALID_API_STRING.match(source_names) is None:
-            return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
         out_fmt = request.args.get("format", "json")
         if VALID_API_STRING.match(out_fmt) is None:
-            return jsonify(status=False, errors=["Invalid characters in format argument"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in format argument"}]), 400
 
         # Return info on all of the sources
         if source_names == "*":
@@ -1652,7 +1652,7 @@ def v0_api(api):
     def v0_projects_source_delete(source_name):
         """Delete the named source and return a status response"""
         if VALID_API_STRING.match(source_name) is None:
-            return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
         system_sources = get_repo_sources("/etc/yum.repos.d/*.repo")
         if source_name in system_sources:
@@ -1682,7 +1682,7 @@ def v0_api(api):
     def v0_modules_list(module_names=None):
         """List available modules, filtering by module_names"""
         if module_names and VALID_API_STRING.match(module_names) is None:
-            return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
         try:
             limit = int(request.args.get("limit", "20"))
@@ -1715,7 +1715,7 @@ def v0_api(api):
     def v0_modules_info(module_names):
         """Return detailed information about the listed modules"""
         if VALID_API_STRING.match(module_names) is None:
-            return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
         try:
             with api.config["DNFLOCK"].lock:
                 modules = modules_info(api.config["DNFLOCK"].dbo, module_names.split(","))
@@ -1769,7 +1769,7 @@ def v0_api(api):
             compose_type = compose["compose_type"]
 
         if VALID_API_STRING.match(blueprint_name) is None:
-            errors.append("Invalid characters in API path")
+            errors.append({"id": INVALID_CHARS, "msg": "Invalid characters in API path"})
 
         if errors:
             return jsonify(status=False, errors=errors), 400
@@ -1820,7 +1820,7 @@ def v0_api(api):
     def v0_compose_status(uuids):
         """Return the status of the listed uuids"""
         if VALID_API_STRING.match(uuids) is None:
-            return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
         results = []
         errors = []
@@ -1840,7 +1840,7 @@ def v0_api(api):
     def v0_compose_cancel(uuid):
         """Cancel a running compose and delete its results directory"""
         if VALID_API_STRING.match(uuid) is None:
-            return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
         if status is None:
@@ -1863,7 +1863,7 @@ def v0_api(api):
     def v0_compose_delete(uuids):
         """Delete the compose results for the listed uuids"""
         if VALID_API_STRING.match(uuids) is None:
-            return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
         results = []
         errors = []
@@ -1889,7 +1889,7 @@ def v0_api(api):
     def v0_compose_info(uuid):
         """Return detailed info about a compose"""
         if VALID_API_STRING.match(uuid) is None:
-            return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
         try:
             info = uuid_info(api.config["COMPOSER_CFG"], uuid)
@@ -1908,7 +1908,7 @@ def v0_api(api):
     def v0_compose_metadata(uuid):
         """Return a tar of the metadata for the build"""
         if VALID_API_STRING.match(uuid) is None:
-            return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
         if status is None:
@@ -1928,7 +1928,7 @@ def v0_api(api):
     def v0_compose_results(uuid):
         """Return a tar of the metadata and the results for the build"""
         if VALID_API_STRING.match(uuid) is None:
-            return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
         if status is None:
@@ -1948,7 +1948,7 @@ def v0_api(api):
     def v0_compose_logs(uuid):
         """Return a tar of the metadata for the build"""
         if VALID_API_STRING.match(uuid) is None:
-            return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
         if status is None:
@@ -1968,7 +1968,7 @@ def v0_api(api):
     def v0_compose_image(uuid):
         """Return the output image for the build"""
         if VALID_API_STRING.match(uuid) is None:
-            return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
         if status is None:
@@ -1994,7 +1994,7 @@ def v0_api(api):
     def v0_compose_log_tail(uuid):
         """Return the end of the main anaconda.log, defaults to 1Mbytes"""
         if VALID_API_STRING.match(uuid) is None:
-            return jsonify(status=False, errors=["Invalid characters in API path"]), 400
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
         try:
             size = int(request.args.get("size", "1024"))
