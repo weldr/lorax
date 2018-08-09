@@ -16,6 +16,7 @@
 #
 import unittest
 
+from pylorax.api.errors import INVALID_CHARS
 from composer.cli.utilities import argify, toml_filename, frozen_toml_filename, packageNEVRA
 from composer.cli.utilities import handle_api_result
 
@@ -53,8 +54,8 @@ class CliUtilitiesTest(unittest.TestCase):
         self.assertEqual(handle_api_result(result, show_json=False), (0, False))
 
     def test_api_result_2(self):
-        """Test a result with errors=["some error"], and no status field"""
-        result = {"foo": "bar", "errors": ["some error"]}
+        """Test a result with errors=[{"id": INVALID_CHARS, "msg": "some error"}], and no status field"""
+        result = {"foo": "bar", "errors": [{"id": INVALID_CHARS, "msg": "some error"}]}
         self.assertEqual(handle_api_result(result, show_json=False), (1, False))
 
     def test_api_result_3(self):
@@ -68,8 +69,8 @@ class CliUtilitiesTest(unittest.TestCase):
         self.assertEqual(handle_api_result(result, show_json=False), (1, True))
 
     def test_api_result_5(self):
-        """Test a result with status=False, and errors=["some error"]"""
-        result = {"status": False, "errors": ["some error"]}
+        """Test a result with status=False, and errors=[{"id": INVALID_CHARS, "msg": "some error"}]"""
+        result = {"status": False, "errors": [{"id": INVALID_CHARS, "msg": "some error"}]}
         self.assertEqual(handle_api_result(result, show_json=False), (1, True))
 
     def test_api_result_6(self):
@@ -78,13 +79,13 @@ class CliUtilitiesTest(unittest.TestCase):
         self.assertEqual(handle_api_result(result, show_json=True), (0, True))
 
     def test_api_result_7(self):
-        """Test a result with show_json=True, status=False, and errors=["some error"]"""
-        result = {"status": False, "errors": ["some error"]}
+        """Test a result with show_json=True, status=False, and errors=[{"id": INVALID_CHARS, "msg": "some error"}]"""
+        result = {"status": False, "errors": [{"id": INVALID_CHARS, "msg": "some error"}]}
         self.assertEqual(handle_api_result(result, show_json=True), (1, True))
 
     def test_api_result_8(self):
-        """Test a result with show_json=True, errors=["some error"], and no status field"""
-        result = {"foo": "bar", "errors": ["some error"]}
+        """Test a result with show_json=True, errors=[{"id": INVALID_CHARS, "msg": "some error"}], and no status field"""
+        result = {"foo": "bar", "errors": [{"id": INVALID_CHARS, "msg": "some error"}]}
         self.assertEqual(handle_api_result(result, show_json=True), (1, True))
 
     def test_api_result_9(self):
