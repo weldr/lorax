@@ -1758,7 +1758,7 @@ def v0_api(api):
 
         errors = []
         if not compose:
-            return jsonify(status=False, errors=["Missing POST body"]), 400
+            return jsonify(status=False, errors=[{"id": MISSING_POST, "msg": "Missing POST body"}]), 400
 
         if "blueprint_name" not in compose:
             errors.append({"id": UNKNOWN_BLUEPRINT,"msg": "No 'blueprint_name' in the JSON request"})
@@ -1771,7 +1771,7 @@ def v0_api(api):
             branch = compose["branch"]
 
         if "compose_type" not in compose:
-            errors.append("No 'compose_type' in the JSON request")
+            errors.append({"id": BAD_COMPOSE_TYPE, "msg": "No 'compose_type' in the JSON request"})
         else:
             compose_type = compose["compose_type"]
 
@@ -1785,7 +1785,10 @@ def v0_api(api):
             build_id = start_build(api.config["COMPOSER_CFG"], api.config["YUMLOCK"], api.config["GITLOCK"],
                                    branch, blueprint_name, compose_type, test_mode)
         except Exception as e:
-            return jsonify(status=False, errors=[str(e)]), 400
+            if "Invalid compose type" in str(e):
+                return jsonify(status=False, errors=[{"id": BAD_COMPOSE_TYPE, "msg": str(e)}]), 400
+            else:
+                return jsonify(status=False, errors=[{"id": BUILD_FAILED, "msg": str(e)}]), 400
 
         return jsonify(status=True, build_id=build_id)
 
