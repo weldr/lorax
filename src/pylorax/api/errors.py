@@ -16,9 +16,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Returned from the API when either an invalid compose type is given, or not
+# compose type is given.
+BAD_COMPOSE_TYPE = "BadComposeType"
+
 # Returned from the API when ?limit= or ?offset= is given something that does
 # not convert into an integer.
 BAD_LIMIT_OR_OFFSET = "BadLimitOrOffset"
+
+# Returned from the API for any other error resulting from /compose failing.
+BUILD_FAILED = "BuildFailed"
 
 # Returned from the API when it expected a build to be in a state other than
 # what it currently is.  This most often happens when asking for results from
@@ -28,6 +35,10 @@ BUILD_IN_WRONG_STATE = "BuildInWrongState"
 # Returned from the API when a blueprint name or other similar identifier is
 # given that contains invalid characters.
 INVALID_NAME = "InvalidName"
+
+# Returned from the API when /compose is called without the POST body telling it
+# what to compose.
+MISSING_POST = "MissingPost"
 
 # Returned from the API when someone tries to modify an immutable system source.
 SYSTEM_SOURCE = "SystemSource"
