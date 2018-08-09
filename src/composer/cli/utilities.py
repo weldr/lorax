@@ -59,7 +59,7 @@ def handle_api_result(result, show_json=False):
     :param result: JSON result from the http query
     :type result: dict
     :rtype: tuple
-    :returns: (rc, errors)
+    :returns: (rc, should_exit_now)
 
     Return the correct rc for the program (0 or 1), and whether or
     not to continue processing the results.
@@ -68,7 +68,7 @@ def handle_api_result(result, show_json=False):
         print(json.dumps(result, indent=4))
     else:
         for err in result.get("errors", []):
-            log.error(err)
+            log.error(err["msg"])
 
     # What's the rc? If status is present, use that
     # If not, use length of errors

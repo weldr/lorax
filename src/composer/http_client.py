@@ -50,7 +50,8 @@ def get_url_raw(socket_path, url):
     if r.status == 400:
         err = json.loads(r.data.decode("utf-8"))
         if "status" in err and err["status"] == False:
-            raise RuntimeError(", ".join(err["errors"]))
+            msgs = [e["msg"] for e in err["errors"]]
+            raise RuntimeError(", ".join(msgs))
 
     return r.data.decode('utf-8')
 
@@ -172,7 +173,8 @@ def download_file(socket_path, url, progress=True):
     if r.status == 400:
         err = json.loads(r.data.decode("utf-8"))
         if not err["status"]:
-            raise RuntimeError(", ".join(err["errors"]))
+            msgs = [e["msg"] for e in err["errors"]]
+            raise RuntimeError(", ".join(msgs))
 
     filename = get_filename(r.headers)
     if os.path.exists(filename):
