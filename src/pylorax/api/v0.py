@@ -804,7 +804,8 @@ POST `/api/v0/compose`
 `/api/v0/compose/status/<uuids>[?blueprint=<blueprint_name>&status=<compose_status>&type=<compose_type>]`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  Return the details for each of the comma-separated list of uuids.
+  Return the details for each of the comma-separated list of uuids. A uuid of '*' will return
+  details for all composes.
 
   Example::
 
@@ -1828,13 +1829,22 @@ def v0_api(api):
 
         results = []
         errors = []
-        for uuid in [n.strip().lower() for n in uuids.split(",")]:
-            details = uuid_status(api.config["COMPOSER_CFG"], uuid)
 
-            if details is None:
-                errors.append({"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid})
-                continue
+        if uuids.strip() == '*':
+            queue_status_dict = queue_status(api.config["COMPOSER_CFG"])
+            queue_new = queue_status_dict["new"]
+            queue_running = queue_status_dict["run"]
+            candidates = queue_new + queue_running + build_status(api.config["COMPOSER_CFG"])
+        else:
+            candidates = []
+            for uuid in [n.strip().lower() for n in uuids.split(",")]:
+                details = uuid_status(api.config["COMPOSER_CFG"], uuid)
+                if details is None:
+                    errors.append({"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid})
+                else:
+                    candidates.append(details)
 
+        for details in candidates:
             if blueprint is not None and details['blueprint'] != blueprint:
                 continue
 
