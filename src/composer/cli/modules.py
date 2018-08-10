@@ -37,7 +37,7 @@ def modules_cmd(opts):
         return 1
 
     api_route = client.api_url(opts.api_version, "/modules/list")
-    result = client.get_url_json(opts.socket, api_route)
+    result = client.get_url_json_unlimited(opts.socket, api_route)
     (rc, exit_now) = handle_api_result(result, opts.json)
     if exit_now:
         return rc
