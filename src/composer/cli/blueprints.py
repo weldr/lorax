@@ -72,7 +72,7 @@ def blueprints_list(socket_path, api_version, args, show_json=False):
     blueprints list
     """
     api_route = client.api_url(api_version, "/blueprints/list")
-    result = client.get_url_json(socket_path, api_route)
+    result = client.get_url_json_unlimited(socket_path, api_route)
     (rc, exit_now) = handle_api_result(result, show_json)
     if exit_now:
         return rc
@@ -119,7 +119,7 @@ def blueprints_changes(socket_path, api_version, args, show_json=False):
     blueprints changes <blueprint,...>     Display the changes for each blueprint.
     """
     api_route = client.api_url(api_version, "/blueprints/changes/%s" % (",".join(argify(args))))
-    result = client.get_url_json(socket_path, api_route)
+    result = client.get_url_json_unlimited(socket_path, api_route)
     (rc, exit_now) = handle_api_result(result, show_json)
     if exit_now:
         return rc
