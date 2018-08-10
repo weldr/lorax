@@ -59,7 +59,7 @@ def projects_list(socket_path, api_version, args, show_json=False):
     projects list
     """
     api_route = client.api_url(api_version, "/projects/list")
-    result = client.get_url_json(socket_path, api_route)
+    result = client.get_url_json_unlimited(socket_path, api_route)
     (rc, exit_now) = handle_api_result(result, show_json)
     if exit_now:
         return rc
