@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>composer-cli &mdash; Lorax 28.16 documentation</title>
+  <title>composer-cli &mdash; Lorax 28.17 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                28.16
+                28.17
               </div>
             
           
@@ -247,6 +247,8 @@ group. They do not need to be root, but all of the <a class="reference external"
 <dd>List the supported output types.</dd>
 <dt>compose status</dt>
 <dd>List the status of all running and finished composes.</dd>
+<dt>compose list [waiting|running|finished|failed]</dt>
+<dd>List basic information about composes.</dd>
 <dt>compose log &lt;UUID&gt; [&lt;SIZE&gt;]</dt>
 <dd>Show the last SIZE kB of the compose log.</dd>
 <dt>compose cancel &lt;UUID&gt;</dt>
@@ -310,6 +312,7 @@ TO-COMMIT  can be a commit hash, NEWEST, or WORKSPACE</dd>
 <dt>sources delete &lt;SOURCE-NAME&gt;</dt>
 <dd>Delete a package source.</dd>
 </dl>
+<p>status show                         Show API server status.</p>
 </p>
 </div>
 <div class="section" id="edit-a-blueprint">
@@ -392,7 +395,7 @@ save the qcow2 image as <code class="docutils literal notranslate"><span class="
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'28.16',
+            VERSION:'28.17',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

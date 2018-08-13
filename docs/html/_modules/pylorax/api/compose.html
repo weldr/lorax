@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.compose &mdash; Lorax 28.16 documentation</title>
+  <title>pylorax.api.compose &mdash; Lorax 28.17 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                28.16
+                28.17
               </div>
             
           
@@ -206,6 +206,7 @@
 <span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="k">import</span> <span class="n">projects_depsolve</span><span class="p">,</span> <span class="n">projects_depsolve_with_size</span><span class="p">,</span> <span class="n">dep_nevra</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="k">import</span> <span class="n">ProjectsError</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="k">import</span> <span class="n">read_recipe_and_id</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.timestamp</span> <span class="k">import</span> <span class="n">TS_CREATED</span><span class="p">,</span> <span class="n">write_timestamp</span>
 <span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="k">import</span> <span class="n">default_image_name</span>
 <span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span>
 
@@ -490,6 +491,10 @@
             <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;repo composer-</span><span class="si">%s</span><span class="s2"> = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">ks_repo</span><span class="p">)</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;repo --name=&quot;composer-</span><span class="si">%s</span><span class="s1">&quot; </span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">ks_repo</span><span class="p">))</span>
 
+        <span class="c1"># Setup the disk for booting</span>
+        <span class="c1"># TODO Add GPT and UEFI boot support</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;clearpart --all --initlabel</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
         <span class="c1"># Write the root partition and it&#39;s size in MB (rounded up)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;part / --fstype=&quot;ext4&quot; --size=</span><span class="si">%d</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">ceil</span><span class="p">(</span><span class="n">installed_size</span> <span class="o">/</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
 
@@ -535,6 +540,7 @@
     <span class="k">if</span> <span class="n">test_mode</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="s2">&quot;TEST&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">test_mode</span><span class="p">)</span>
 
+    <span class="n">write_timestamp</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="n">TS_CREATED</span><span class="p">)</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Adding </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">) to compose queue&quot;</span><span class="p">,</span> <span class="n">build_id</span><span class="p">,</span> <span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">compose_type</span><span class="p">)</span>
     <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">lib_dir</span><span class="p">,</span> <span class="s2">&quot;queue/new/&quot;</span><span class="p">,</span> <span class="n">build_id</span><span class="p">))</span>
 
@@ -728,7 +734,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'28.16',
+            VERSION:'28.17',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
