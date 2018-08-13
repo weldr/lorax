@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api package &mdash; Lorax 29.7 documentation</title>
+  <title>pylorax.api package &mdash; Lorax 29.11 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                29.7
+                29.11
               </div>
             
           
@@ -193,6 +193,14 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
+<div class="section" id="module-pylorax.api.checkparams">
+<span id="pylorax-api-checkparams-module"></span><h2>pylorax.api.checkparams module<a class="headerlink" href="#module-pylorax.api.checkparams" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pylorax.api.checkparams.checkparams">
+<code class="descclassname">pylorax.api.checkparams.</code><code class="descname">checkparams</code><span class="sig-paren">(</span><em>tuples</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/checkparams.html#checkparams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.checkparams.checkparams" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
 <div class="section" id="module-pylorax.api.cmdline">
 <span id="pylorax-api-cmdline-module"></span><h2>pylorax.api.cmdline module<a class="headerlink" href="#module-pylorax.api.cmdline" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
@@ -247,7 +255,7 @@ parameters needed to generate the desired output. Other types should be set to F
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>compose_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The type of compose to create, from <cite>compose_types()</cite></td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>compose_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The type of compose to create, from <cite>compose_types()</cite></td>
 </tr>
 </tbody>
 </table>
@@ -273,7 +281,7 @@ Other options will be filled in by <cite>make_compose()</cite></p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>cfg</strong> (<a class="reference internal" href="pylorax.html#pylorax.base.DataHolder" title="pylorax.base.DataHolder"><em>DataHolder</em></a>) – Build configuration</li>
-<li><strong>results_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Directory to put the results into</li>
+<li><strong>results_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Directory to put the results into</li>
 </ul>
 </td>
 </tr>
@@ -305,19 +313,38 @@ Other options will be filled in by <cite>make_compose()</cite></p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>cfg</strong> (<a class="reference internal" href="#pylorax.api.config.ComposerConfig" title="pylorax.api.config.ComposerConfig"><em>ComposerConfig</em></a>) – Configuration object</li>
 <li><strong>dnflock</strong> (<em>YumLock</em>) – Lock and YumBase for depsolving</li>
-<li><strong>recipe</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The recipe to build</li>
-<li><strong>compose_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The type of output to create from the recipe</li>
+<li><strong>recipe</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The recipe to build</li>
+<li><strong>compose_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The type of output to create from the recipe</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Unique ID for the build that can be used to track its status</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
 </td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.test_templates">
+<code class="descclassname">pylorax.api.compose.</code><code class="descname">test_templates</code><span class="sig-paren">(</span><em>dbo</em>, <em>share_dir</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/compose.html#test_templates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.test_templates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Try depsolving each of the the templates and report any errors</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dbo</strong> (<em>dnf.Base</em>) – dnf base object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of template types and errors</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">List of errors</td>
+</tr>
+</tbody>
+</table>
+<p>Return a list of templates and errors encountered or an empty list</p>
 </dd></dl>
 
 <dl class="function">
@@ -349,7 +376,7 @@ Other options will be filled in by <cite>make_compose()</cite></p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>f</strong> (<em>open file object</em>) – kickstart file object</li>
-<li><strong>user</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) – A blueprint user dictionary</li>
+<li><strong>user</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – A blueprint user dictionary</li>
 </ul>
 </td>
 </tr>
@@ -384,9 +411,9 @@ with whatever options are relevant.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>conf_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to the config file overriding the default settings</li>
-<li><strong>root_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Directory to prepend to paths, defaults to /</li>
-<li><strong>test_config</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – Set to True to skip reading conf_file</li>
+<li><strong>conf_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to the config file overriding the default settings</li>
+<li><strong>root_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Directory to prepend to paths, defaults to /</li>
+<li><strong>test_config</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Set to True to skip reading conf_file</li>
 </ul>
 </td>
 </tr>
@@ -420,7 +447,7 @@ with whatever options are relevant.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>conf</strong> (<a class="reference internal" href="#pylorax.api.config.ComposerConfig" title="pylorax.api.config.ComposerConfig"><em>ComposerConfig</em></a>) – The configuration to use</li>
-<li><strong>gid</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Group ID that has access to the queue directories</li>
+<li><strong>gid</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Group ID that has access to the queue directories</li>
 </ul>
 </td>
 </tr>
@@ -443,15 +470,36 @@ with whatever options are relevant.</p>
 <dd></dd></dl>
 
 </div>
-<div class="section" id="pylorax-api-dnfbase-module">
-<h2>pylorax.api.dnfbase module<a class="headerlink" href="#pylorax-api-dnfbase-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-pylorax.api.dnfbase">
+<span id="pylorax-api-dnfbase-module"></span><h2>pylorax.api.dnfbase module<a class="headerlink" href="#module-pylorax.api.dnfbase" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pylorax.api.dnfbase.get_base_object">
+<code class="descclassname">pylorax.api.dnfbase.</code><code class="descname">get_base_object</code><span class="sig-paren">(</span><em>conf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/dnfbase.html#get_base_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.dnfbase.get_base_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the DNF object with settings from the config file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>conf</strong> (<em>ComposerParser</em>) – configuration object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A DNF Base object</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dnf.Base</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.api.errors">
+<span id="pylorax-api-errors-module"></span><h2>pylorax.api.errors module<a class="headerlink" href="#module-pylorax.api.errors" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-pylorax.api.projects">
 <span id="pylorax-api-projects-module"></span><h2>pylorax.api.projects module<a class="headerlink" href="#module-pylorax.api.projects" title="Permalink to this headline">¶</a></h2>
 <dl class="exception">
 <dt id="pylorax.api.projects.ProjectsError">
 <em class="property">exception </em><code class="descclassname">pylorax.api.projects.</code><code class="descname">ProjectsError</code><a class="reference internal" href="_modules/pylorax/api/projects.html#ProjectsError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.ProjectsError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
 </dd></dl>
 
 <dl class="function">
@@ -462,11 +510,11 @@ with whatever options are relevant.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>changelog</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.6)"><em>tuple</em></a>) – A list of time, author, string tuples.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>changelog</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a>) – A list of time, author, string tuples.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The most recent changelog text or “”</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
 </tr>
 </tbody>
 </table>
@@ -481,11 +529,11 @@ with whatever options are relevant.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Seconds since epoch</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Seconds since epoch</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Time string</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
 </tr>
 </tbody>
 </table>
@@ -499,7 +547,7 @@ with whatever options are relevant.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>source_glob</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – A glob of the repo sources to search</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>source_glob</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – A glob of the repo sources to search</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -521,11 +569,11 @@ source_name isn’t passed to it.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dep</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) – dependency dict</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dep</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – dependency dict</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">epoch:version-release.arch</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
 </tr>
 </tbody>
 </table>
@@ -549,7 +597,7 @@ source_name isn’t passed to it.</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A string</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
 </tr>
 </tbody>
 </table>
@@ -568,14 +616,14 @@ only the attributes we care about.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>packages</strong> (<em>list of hawkey.Package objects</em>) – The packages to be installed</li>
-<li><strong>block_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – The block size to use for rounding up file sizes.</li>
+<li><strong>block_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The block size to use for rounding up file sizes.</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The estimated size of installed packages</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)">int</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></p>
 </td>
 </tr>
 </tbody>
@@ -593,7 +641,7 @@ a minimum size for each package.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>source_glob</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – A glob to use to match the source files, including full path</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>source_glob</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – A glob to use to match the source files, including full path</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of the source ids in all of the matching files</td>
 </tr>
@@ -611,7 +659,7 @@ a minimum size for each package.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>source_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Full path and filename of the source (yum repo) file</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>source_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Full path and filename of the source (yum repo) file</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of source id strings</td>
 </tr>
@@ -631,7 +679,7 @@ a minimum size for each package.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>dbo</strong> (<em>dnf.Base</em>) – dnf base object</li>
-<li><strong>module_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Names of the modules to get info about</li>
+<li><strong>module_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Names of the modules to get info about</li>
 </ul>
 </td>
 </tr>
@@ -656,7 +704,7 @@ a minimum size for each package.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>dbo</strong> (<em>dnf.Base</em>) – dnf base object</li>
 <li><strong>offset</strong> – Number of modules to skip</li>
-<li><strong>limit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Maximum number of modules to return</li>
+<li><strong>limit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Maximum number of modules to return</li>
 </ul>
 </td>
 </tr>
@@ -684,7 +732,7 @@ and sets the type to “rpm”</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dict with name, epoch, version, release, arch</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)">dict</a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></td>
 </tr>
 </tbody>
 </table>
@@ -702,7 +750,7 @@ and sets the type to “rpm”</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dict with the name, summary, description, and url.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)">dict</a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></td>
 </tr>
 </tbody>
 </table>
@@ -721,7 +769,7 @@ and sets the type to “rpm”</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dict with the project details, as well as epoch, release, arch, build_time, changelog, …</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)">dict</a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></td>
 </tr>
 </tbody>
 </table>
@@ -736,11 +784,11 @@ and sets the type to “rpm”</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pkg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) – dict with package details</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pkg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – dict with package details</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dict with name, and group_type</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)">dict</a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></td>
 </tr>
 </tbody>
 </table>
@@ -749,7 +797,7 @@ and sets the type to “rpm”</p>
 
 <dl class="function">
 <dt id="pylorax.api.projects.projects_depsolve">
-<code class="descclassname">pylorax.api.projects.</code><code class="descname">projects_depsolve</code><span class="sig-paren">(</span><em>dbo</em>, <em>projects</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/projects.html#projects_depsolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.projects_depsolve" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pylorax.api.projects.</code><code class="descname">projects_depsolve</code><span class="sig-paren">(</span><em>dbo</em>, <em>projects</em>, <em>groups</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/projects.html#projects_depsolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.projects_depsolve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the dependencies for a list of projects</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -758,6 +806,7 @@ and sets the type to “rpm”</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>dbo</strong> (<em>dnf.Base</em>) – dnf base object</li>
 <li><strong>projects</strong> (<em>List of Strings</em>) – The projects to find the dependencies for</li>
+<li><strong>groups</strong> (<em>List of str</em>) – The groups to include in dependency solving</li>
 </ul>
 </td>
 </tr>
@@ -776,7 +825,7 @@ and sets the type to “rpm”</p>
 
 <dl class="function">
 <dt id="pylorax.api.projects.projects_depsolve_with_size">
-<code class="descclassname">pylorax.api.projects.</code><code class="descname">projects_depsolve_with_size</code><span class="sig-paren">(</span><em>dbo</em>, <em>projects</em>, <em>with_core=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/projects.html#projects_depsolve_with_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.projects_depsolve_with_size" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pylorax.api.projects.</code><code class="descname">projects_depsolve_with_size</code><span class="sig-paren">(</span><em>dbo</em>, <em>projects</em>, <em>groups</em>, <em>with_core=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/projects.html#projects_depsolve_with_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.projects_depsolve_with_size" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the dependencies and installed size for a list of projects</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -785,13 +834,14 @@ and sets the type to “rpm”</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>dbo</strong> (<em>dnf.Base</em>) – dnf base object</li>
 <li><strong>project_names</strong> (<em>List of Strings</em>) – The projects to find the dependencies for</li>
+<li><strong>groups</strong> (<em>List of str</em>) – The groups to include in dependency solving</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">installed size and a list of NEVRA’s of the project and its dependencies</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">tuple of (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)">int</a>, list of dicts)</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">tuple of (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a>, list of dicts)</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">ProjectsError if there was a problem installing something</p>
@@ -811,7 +861,7 @@ and sets the type to “rpm”</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>dbo</strong> (<em>dnf.Base</em>) – dnf base object</li>
-<li><strong>project_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – List of names of projects to get info about</li>
+<li><strong>project_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – List of names of projects to get info about</li>
 </ul>
 </td>
 </tr>
@@ -854,14 +904,14 @@ and sets the type to “rpm”</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>dnf.RepoDict</em>) – DNF Repository</li>
-<li><strong>system_source</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – True if this source is an immutable system source</li>
+<li><strong>system_source</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – True if this source is an immutable system source</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A dict with Weldr Source fields filled in</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)">dict</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
 </td>
 </tr>
 </tbody>
@@ -891,7 +941,7 @@ and sets the type to “rpm”</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>source</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) – A Weldr source dict</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>source</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – A Weldr source dict</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dnf Repo object</td>
 </tr>
@@ -930,7 +980,7 @@ and sets the type to “rpm”</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>cfg</strong> (<a class="reference internal" href="#pylorax.api.config.ComposerConfig" title="pylorax.api.config.ComposerConfig"><em>ComposerConfig</em></a>) – Configuration settings</li>
-<li><strong>status_filter</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – What builds to return. None == all, “FINISHED”, or “FAILED”</li>
+<li><strong>status_filter</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What builds to return. None == all, “FINISHED”, or “FAILED”</li>
 </ul>
 </td>
 </tr>
@@ -955,11 +1005,11 @@ Use queue_status() for those.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>results_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The directory containing the metadata and results for the build</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>results_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The directory containing the metadata and results for the build</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dictionary with details about the compose</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)">dict</a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body">IOError if it cannot read the directory, STATUS, or blueprint file.</td>
 </tr>
@@ -969,11 +1019,18 @@ Use queue_status() for those.</p>
 <ul class="simple">
 <li>id - The uuid of the comoposition</li>
 <li>queue_status - The final status of the composition (FINISHED or FAILED)</li>
-<li>timestamp - The time of the last status change</li>
 <li>compose_type - The type of output generated (tar, iso, etc.)</li>
 <li>blueprint - Blueprint name</li>
 <li>version - Blueprint version</li>
 <li>image_size - Size of the image, if finished. 0 otherwise.</li>
+</ul>
+<p>Various timestamps are also included in the dict.  These are all Unix UTC timestamps.
+It is possible for these timestamps to not always exist, in which case they will be
+None in Python (or null in JSON).  The following timestamps are included:</p>
+<ul class="simple">
+<li>job_created - When the user submitted the compose</li>
+<li>job_started - Anaconda started running</li>
+<li>job_finished - Job entered FINISHED or FAILED state</li>
 </ul>
 </dd></dl>
 
@@ -985,11 +1042,11 @@ Use queue_status() for those.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>results_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The directory containing the metadata and results for the build</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>results_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The directory containing the metadata and results for the build</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The type of compose (eg. ‘tar’)</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body">RuntimeError if no kickstart template can be found.</td>
 </tr>
@@ -1005,7 +1062,7 @@ Use queue_status() for those.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The UUID of the build</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The UUID of the build</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The image filename and full path</td>
 </tr>
@@ -1027,7 +1084,7 @@ Use queue_status() for those.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>cfg</strong> (<a class="reference internal" href="pylorax.html#pylorax.base.DataHolder" title="pylorax.base.DataHolder"><em>DataHolder</em></a>) – Configuration settings</li>
-<li><strong>results_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The directory containing the metadata and results for the build</li>
+<li><strong>results_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The directory containing the metadata and results for the build</li>
 </ul>
 </td>
 </tr>
@@ -1083,7 +1140,7 @@ from ./queue/run/ to ./queue/new/ and rerun them.</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of the new composes, and a list of the running composes</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)">dict</a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></td>
 </tr>
 </tbody>
 </table>
@@ -1101,8 +1158,8 @@ and “run” has the uuids that are being built (currently limited to 1 at a ti
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>cfg</strong> (<a class="reference internal" href="#pylorax.api.config.ComposerConfig" title="pylorax.api.config.ComposerConfig"><em>ComposerConfig</em></a>) – Configuration settings</li>
-<li><strong>uid</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – User ID that owns the queue</li>
-<li><strong>gid</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Group ID that owns the queue</li>
+<li><strong>uid</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – User ID that owns the queue</li>
+<li><strong>gid</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Group ID that owns the queue</li>
 </ul>
 </td>
 </tr>
@@ -1123,14 +1180,14 @@ and “run” has the uuids that are being built (currently limited to 1 at a ti
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>cfg</strong> (<a class="reference internal" href="#pylorax.api.config.ComposerConfig" title="pylorax.api.config.ComposerConfig"><em>ComposerConfig</em></a>) – Configuration settings</li>
-<li><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The UUID of the build</li>
+<li><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The UUID of the build</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if it was canceled and deleted</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)">bool</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
 </td>
 </tr>
 </tbody>
@@ -1148,14 +1205,14 @@ and “run” has the uuids that are being built (currently limited to 1 at a ti
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>cfg</strong> (<a class="reference internal" href="#pylorax.api.config.ComposerConfig" title="pylorax.api.config.ComposerConfig"><em>ComposerConfig</em></a>) – Configuration settings</li>
-<li><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The UUID of the build</li>
+<li><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The UUID of the build</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if it was deleted</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)">bool</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">This will raise an error if the delete failed</p>
@@ -1175,7 +1232,7 @@ and “run” has the uuids that are being built (currently limited to 1 at a ti
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>cfg</strong> (<a class="reference internal" href="#pylorax.api.config.ComposerConfig" title="pylorax.api.config.ComposerConfig"><em>ComposerConfig</em></a>) – Configuration settings</li>
-<li><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The UUID of the build</li>
+<li><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The UUID of the build</li>
 </ul>
 </td>
 </tr>
@@ -1202,14 +1259,14 @@ and “run” has the uuids that are being built (currently limited to 1 at a ti
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>cfg</strong> (<a class="reference internal" href="#pylorax.api.config.ComposerConfig" title="pylorax.api.config.ComposerConfig"><em>ComposerConfig</em></a>) – Configuration settings</li>
-<li><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The UUID of the build</li>
+<li><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The UUID of the build</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">dictionary of information about the composition</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">dictionary of information about the composition or None</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)">dict</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">RuntimeError if there was a problem</p>
@@ -1239,15 +1296,15 @@ and “run” has the uuids that are being built (currently limited to 1 at a ti
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>cfg</strong> (<a class="reference internal" href="#pylorax.api.config.ComposerConfig" title="pylorax.api.config.ComposerConfig"><em>ComposerConfig</em></a>) – Configuration settings</li>
-<li><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The UUID of the build</li>
-<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Number of kbytes to read. Default is 1024</li>
+<li><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The UUID of the build</li>
+<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Number of kbytes to read. Default is 1024</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Up to <cite>size</cite> kbytes from the end of the log</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">RuntimeError if there was a problem (eg. no log file available)</p>
@@ -1269,14 +1326,14 @@ attempt to start on a line boundry, and may return less than <cite>size</cite> k
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>cfg</strong> (<a class="reference internal" href="#pylorax.api.config.ComposerConfig" title="pylorax.api.config.ComposerConfig"><em>ComposerConfig</em></a>) – Configuration settings</li>
-<li><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The UUID of the build</li>
+<li><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The UUID of the build</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Details about the build</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)">dict</a> or None</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a> or None</p>
 </td>
 </tr>
 </tbody>
@@ -1294,10 +1351,10 @@ attempt to start on a line boundry, and may return less than <cite>size</cite> k
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>cfg</strong> (<a class="reference internal" href="#pylorax.api.config.ComposerConfig" title="pylorax.api.config.ComposerConfig"><em>ComposerConfig</em></a>) – Configuration settings</li>
-<li><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The UUID of the build</li>
-<li><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – Set to true to include all the metadata needed to reproduce the build</li>
-<li><strong>image</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – Set to true to include the output image</li>
-<li><strong>logs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – Set to true to include the logs from the build</li>
+<li><strong>uuid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The UUID of the build</li>
+<li><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Set to true to include all the metadata needed to reproduce the build</li>
+<li><strong>image</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Set to true to include the output image</li>
+<li><strong>logs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Set to true to include the logs from the build</li>
 </ul>
 </td>
 </tr>
@@ -1328,13 +1385,13 @@ the selected data to the caller by returning the Popen stdout from the tar proce
 <dl class="exception">
 <dt id="pylorax.api.recipes.CommitTimeValError">
 <em class="property">exception </em><code class="descclassname">pylorax.api.recipes.</code><code class="descname">CommitTimeValError</code><a class="reference internal" href="_modules/pylorax/api/recipes.html#CommitTimeValError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.CommitTimeValError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="pylorax.api.recipes.Recipe">
-<em class="property">class </em><code class="descclassname">pylorax.api.recipes.</code><code class="descname">Recipe</code><span class="sig-paren">(</span><em>name</em>, <em>description</em>, <em>version</em>, <em>modules</em>, <em>packages</em>, <em>customizations=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/recipes.html#Recipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.Recipe" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+<em class="property">class </em><code class="descclassname">pylorax.api.recipes.</code><code class="descname">Recipe</code><span class="sig-paren">(</span><em>name</em>, <em>description</em>, <em>version</em>, <em>modules</em>, <em>packages</em>, <em>groups</em>, <em>customizations=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/recipes.html#Recipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.Recipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
 <p>A Recipe of package and modules</p>
 <p>This is a subclass of dict that enforces the constructor arguments
 and adds a .filename property to return the recipe’s filename,
@@ -1347,11 +1404,11 @@ and a .toml() function to return the recipe as a TOML string.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>old_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – An optional old version number</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>old_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – An optional old version number</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The new version number or None</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body">ValueError</td>
 </tr>
@@ -1379,7 +1436,7 @@ If they are different, check and return the new version</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>deps</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a><em>(</em>) – A list of dependency NEVRA to use to fill in the modules and packages</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>deps</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>(</em>) – A list of dependency NEVRA to use to fill in the modules and packages</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A new Recipe object</td>
 </tr>
@@ -1387,6 +1444,12 @@ If they are different, check and return the new version</p>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pylorax.api.recipes.Recipe.group_names">
+<code class="descname">group_names</code><a class="headerlink" href="#pylorax.api.recipes.Recipe.group_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the names of the groups.  Groups do not have versions.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -1424,19 +1487,25 @@ If they are different, check and return the new version</p>
 <dl class="exception">
 <dt id="pylorax.api.recipes.RecipeError">
 <em class="property">exception </em><code class="descclassname">pylorax.api.recipes.</code><code class="descname">RecipeError</code><a class="reference internal" href="_modules/pylorax/api/recipes.html#RecipeError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.RecipeError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
 </dd></dl>
 
 <dl class="exception">
 <dt id="pylorax.api.recipes.RecipeFileError">
 <em class="property">exception </em><code class="descclassname">pylorax.api.recipes.</code><code class="descname">RecipeFileError</code><a class="reference internal" href="_modules/pylorax/api/recipes.html#RecipeFileError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.RecipeFileError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pylorax.api.recipes.RecipeGroup">
+<em class="property">class </em><code class="descclassname">pylorax.api.recipes.</code><code class="descname">RecipeGroup</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/recipes.html#RecipeGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.RecipeGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="pylorax.api.recipes.RecipeModule">
 <em class="property">class </em><code class="descclassname">pylorax.api.recipes.</code><code class="descname">RecipeModule</code><span class="sig-paren">(</span><em>name</em>, <em>version</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/recipes.html#RecipeModule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.RecipeModule" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
@@ -1455,7 +1524,7 @@ If they are different, check and return the new version</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Branch name</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Branch name</li>
 <li><strong>recipe</strong> (<a class="reference internal" href="#pylorax.api.recipes.Recipe" title="pylorax.api.recipes.Recipe"><em>Recipe</em></a>) – Recipe to commit</li>
 </ul>
 </td>
@@ -1483,8 +1552,8 @@ If they are different, check and return the new version</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Branch name</li>
-<li><strong>directory</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The directory of *.toml recipes to commit</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Branch name</li>
+<li><strong>directory</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The directory of *.toml recipes to commit</li>
 </ul>
 </td>
 </tr>
@@ -1510,8 +1579,8 @@ be tried.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Branch name</li>
-<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to the recipe file to commit</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Branch name</li>
+<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to the recipe file to commit</li>
 </ul>
 </td>
 </tr>
@@ -1538,8 +1607,8 @@ be tried.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Branch name</li>
-<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – filename to delete</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Branch name</li>
+<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – filename to delete</li>
 </ul>
 </td>
 </tr>
@@ -1566,8 +1635,8 @@ be tried.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Branch name</li>
-<li><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Recipe name to delete</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Branch name</li>
+<li><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Recipe name to delete</li>
 </ul>
 </td>
 </tr>
@@ -1593,16 +1662,16 @@ be tried.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Title of the entry</li>
-<li><strong>old_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a><em>)</em>) – List of item dicts with “name” field</li>
-<li><strong>new_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a><em>)</em>) – List of item dicts with “name” field</li>
+<li><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Title of the entry</li>
+<li><strong>old_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>)</em>) – List of item dicts with “name” field</li>
+<li><strong>new_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>)</em>) – List of item dicts with “name” field</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of diff dicts with old/new entries</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)">list</a>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)">dict</a>)</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a>)</p>
 </td>
 </tr>
 </tbody>
@@ -1619,8 +1688,8 @@ be tried.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Branch name</li>
-<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – filename to revert</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Branch name</li>
+<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – filename to revert</li>
 <li><strong>commit_id</strong> (<em>Git.OId</em>) – The commit id to check</li>
 </ul>
 </td>
@@ -1628,7 +1697,7 @@ be tried.</p>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The tag or None if there isn’t one</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a> or None</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a> or None</p>
 </td>
 </tr>
 </tbody>
@@ -1647,7 +1716,7 @@ be a tag at all.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Name to search for</li>
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Name to search for</li>
 <li><strong>lst</strong> – List of dict’s with “name” field</li>
 </ul>
 </td>
@@ -1655,7 +1724,7 @@ be a tag at all.</p>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">First dict with matching name, or None</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)">dict</a> or None</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a> or None</p>
 </td>
 </tr>
 </tbody>
@@ -1672,7 +1741,7 @@ be a tag at all.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>commit</strong> (<em>Git.Commit</em>) – The commit to get details from</li>
-<li><strong>revision</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Optional commit revision</li>
+<li><strong>revision</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Optional commit revision</li>
 </ul>
 </td>
 </tr>
@@ -1697,11 +1766,11 @@ be a tag at all.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tag</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The tag to exract the revision from</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tag</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The tag to exract the revision from</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The integer revision or None</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)">int</a> or None</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a> or None</td>
 </tr>
 </tbody>
 </table>
@@ -1724,7 +1793,7 @@ be a tag at all.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Branch name</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Branch name</li>
 </ul>
 </td>
 </tr>
@@ -1752,14 +1821,14 @@ be a tag at all.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
 <li><strong>commit_id</strong> (<em>Git.OId</em>) – The commit id to check</li>
-<li><strong>tag</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The tag to check</li>
+<li><strong>tag</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The tag to check</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if the tag points to the commit, False otherwise</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)">bool</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
 </td>
 </tr>
 </tbody>
@@ -1776,7 +1845,7 @@ be a tag at all.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – filename to revert</li>
+<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – filename to revert</li>
 <li><strong>tree</strong> (<em>Git.Tree</em>) – The commit’s tree</li>
 <li><strong>parent</strong> (<em>Git.Commit</em>) – The commit’s parent commit</li>
 </ul>
@@ -1785,7 +1854,7 @@ be a tag at all.</p>
 <tr class="field-even field"><th class="field-name">Retuns:</th><td class="field-body"><p class="first">True if filename in the commit is different from its parents</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)">bool</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
 </td>
 </tr>
 </tbody>
@@ -1802,14 +1871,14 @@ be a tag at all.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Branch name</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Branch name</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A sorted list of the filenames</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)">list</a>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a>)</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a>)</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">Can raise errors from Ggit</p>
@@ -1829,14 +1898,14 @@ be a tag at all.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>commit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The commit hash to list</li>
+<li><strong>commit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The commit hash to list</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A sorted list of the filenames</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)">list</a>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a>)</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a>)</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">Can raise errors from Ggit</p>
@@ -1856,16 +1925,16 @@ be a tag at all.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Branch name</li>
-<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – filename to revert</li>
-<li><strong>limit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Number of commits to return (0=all)</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Branch name</li>
+<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – filename to revert</li>
+<li><strong>limit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Number of commits to return (0=all)</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A list of commit details</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)">list</a>(<a class="reference internal" href="#pylorax.api.recipes.CommitDetails" title="pylorax.api.recipes.CommitDetails">CommitDetails</a>)</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>(<a class="reference internal" href="#pylorax.api.recipes.CommitDetails" title="pylorax.api.recipes.CommitDetails">CommitDetails</a>)</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">Can raise errors from Ggit</p>
@@ -1908,7 +1977,7 @@ creating a new one.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Branch name</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Branch name</li>
 <li><strong>builder</strong> (<a class="reference internal" href="pylorax.html#pylorax.treebuilder.TreeBuilder" title="pylorax.treebuilder.TreeBuilder"><em>TreeBuilder</em></a>) – instance of TreeBuilder</li>
 </ul>
 </td>
@@ -1916,7 +1985,7 @@ creating a new one.</p>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">(Tree, Sig, Ref)</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.6)">tuple</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a></p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">Can raise errors from Ggit</p>
@@ -1936,16 +2005,16 @@ creating a new one.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Branch name</li>
-<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – filename to read</li>
-<li><strong>commit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Optional commit hash</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Branch name</li>
+<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – filename to read</li>
+<li><strong>commit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Optional commit hash</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The commit id, and the contents of the commit</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.6)">tuple</a>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a>)</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a>)</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">Can raise errors from Ggit</p>
@@ -1967,14 +2036,14 @@ commit:filename</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>spec</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Git revparse spec</li>
+<li><strong>spec</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Git revparse spec</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Contents of the commit</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">Can raise errors from Ggit</p>
@@ -1995,16 +2064,16 @@ commit:filename</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Branch name</li>
-<li><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Recipe name to read</li>
-<li><strong>commit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Optional commit hash</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Branch name</li>
+<li><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Recipe name to read</li>
+<li><strong>commit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Optional commit hash</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The commit id, and a Recipe object</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.6)">tuple</a>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a>, <a class="reference internal" href="#pylorax.api.recipes.Recipe" title="pylorax.api.recipes.Recipe">Recipe</a>)</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a>, <a class="reference internal" href="#pylorax.api.recipes.Recipe" title="pylorax.api.recipes.Recipe">Recipe</a>)</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">Can raise errors from Ggit</p>
@@ -2026,9 +2095,9 @@ commit:filename</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Branch name</li>
-<li><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Recipe name to read</li>
-<li><strong>commit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Optional commit hash</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Branch name</li>
+<li><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Recipe name to read</li>
+<li><strong>commit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Optional commit hash</li>
 </ul>
 </td>
 </tr>
@@ -2064,7 +2133,7 @@ commit:filename</p>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A list of diff dict entries with old/new</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)">list</a>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)">dict</a>)</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a>)</p>
 </td>
 </tr>
 </tbody>
@@ -2086,7 +2155,7 @@ commit:filename</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>recipe_dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) – A plain dict of the recipe</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>recipe_dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – A plain dict of the recipe</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A Recipe object</td>
 </tr>
@@ -2106,7 +2175,7 @@ commit:filename</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>recipe_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to the recipe fila</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>recipe_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to the recipe fila</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A Recipe object</td>
 </tr>
@@ -2124,7 +2193,7 @@ commit:filename</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>recipe_str</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The Recipe TOML string</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>recipe_str</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The Recipe TOML string</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A Recipe object</td>
 </tr>
@@ -2146,9 +2215,9 @@ commit:filename</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Branch name</li>
-<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – filename to revert</li>
-<li><strong>commit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Commit hash</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Branch name</li>
+<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – filename to revert</li>
+<li><strong>commit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Commit hash</li>
 </ul>
 </td>
 </tr>
@@ -2175,9 +2244,9 @@ commit:filename</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Branch name</li>
-<li><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Recipe name to revert</li>
-<li><strong>commit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Commit hash</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Branch name</li>
+<li><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Recipe name to revert</li>
+<li><strong>commit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Commit hash</li>
 </ul>
 </td>
 </tr>
@@ -2204,8 +2273,8 @@ commit:filename</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Branch name</li>
-<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Filename to tag</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Branch name</li>
+<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Filename to tag</li>
 </ul>
 </td>
 </tr>
@@ -2236,8 +2305,8 @@ If the commit has already been tagged it will return false.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Branch name</li>
-<li><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Recipe name to tag</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Branch name</li>
+<li><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Recipe name to tag</li>
 </ul>
 </td>
 </tr>
@@ -2265,10 +2334,10 @@ If the commit has already been tagged it will return false.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Branch name</li>
-<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – full path of the file to add</li>
-<li><strong>message</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The commit message</li>
-<li><strong>content</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The data to write</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Branch name</li>
+<li><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – full path of the file to add</li>
+<li><strong>message</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The commit message</li>
+<li><strong>content</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The data to write</li>
 </ul>
 </td>
 </tr>
@@ -2286,12 +2355,15 @@ If the commit has already been tagged it will return false.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-pylorax.api.regexes">
+<span id="pylorax-api-regexes-module"></span><h2>pylorax.api.regexes module<a class="headerlink" href="#module-pylorax.api.regexes" title="Permalink to this headline">¶</a></h2>
+</div>
 <div class="section" id="module-pylorax.api.server">
 <span id="pylorax-api-server-module"></span><h2>pylorax.api.server module<a class="headerlink" href="#module-pylorax.api.server" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pylorax.api.server.GitLock">
 <em class="property">class </em><code class="descclassname">pylorax.api.server.</code><code class="descname">GitLock</code><span class="sig-paren">(</span><em>repo</em>, <em>lock</em>, <em>dir</em><span class="sig-paren">)</span><a class="headerlink" href="#pylorax.api.server.GitLock" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></p>
 <dl class="attribute">
 <dt id="pylorax.api.server.GitLock.dir">
 <code class="descname">dir</code><a class="headerlink" href="#pylorax.api.server.GitLock.dir" title="Permalink to this definition">¶</a></dt>
@@ -2311,6 +2383,19 @@ If the commit has already been tagged it will return false.</p>
 </dd></dl>
 
 </dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.api.timestamp">
+<span id="pylorax-api-timestamp-module"></span><h2>pylorax.api.timestamp module<a class="headerlink" href="#module-pylorax.api.timestamp" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pylorax.api.timestamp.timestamp_dict">
+<code class="descclassname">pylorax.api.timestamp.</code><code class="descname">timestamp_dict</code><span class="sig-paren">(</span><em>destdir</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/timestamp.html#timestamp_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.timestamp.timestamp_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.timestamp.write_timestamp">
+<code class="descclassname">pylorax.api.timestamp.</code><code class="descname">write_timestamp</code><span class="sig-paren">(</span><em>destdir</em>, <em>ty</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/timestamp.html#write_timestamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.timestamp.write_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 <div class="section" id="module-pylorax.api.v0">
@@ -3042,14 +3127,14 @@ and the build that is running.</p>
       <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;45502a6d-06e8-48a5-a215-2b4174b3614b&quot;</span><span class="p">,</span>
       <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
       <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;WAITING&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517362647.4570868</span><span class="p">,</span>
+      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517362647.4570868</span><span class="p">,</span>
       <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.6&quot;</span>
     <span class="p">},</span>
     <span class="p">{</span>
       <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;6d292bd0-bec7-4825-8d7d-41ef9c3e4b73&quot;</span><span class="p">,</span>
       <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;kubernetes&quot;</span><span class="p">,</span>
       <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;WAITING&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517362659.0034983</span><span class="p">,</span>
+      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517362659.0034983</span><span class="p">,</span>
       <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.1&quot;</span>
     <span class="p">}</span>
   <span class="p">],</span>
@@ -3058,7 +3143,8 @@ and the build that is running.</p>
       <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;745712b2-96db-44c0-8014-fe925c35e795&quot;</span><span class="p">,</span>
       <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
       <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;RUNNING&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517362633.7965999</span><span class="p">,</span>
+      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517362633.7965999</span><span class="p">,</span>
+      <span class="s2">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517362633.8001345</span><span class="p">,</span>
       <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.6&quot;</span>
     <span class="p">}</span>
   <span class="p">]</span>
@@ -3078,14 +3164,18 @@ and the build that is running.</p>
       <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;70b84195-9817-4b8a-af92-45e380f39894&quot;</span><span class="p">,</span>
       <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
       <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;FINISHED&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517351003.8210032</span><span class="p">,</span>
+      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517351003.8210032</span><span class="p">,</span>
+      <span class="s2">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517351003.8230415</span><span class="p">,</span>
+      <span class="s2">&quot;job_finished&quot;</span><span class="p">:</span> <span class="mf">1517359234.1003145</span><span class="p">,</span>
       <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.6&quot;</span>
     <span class="p">},</span>
     <span class="p">{</span>
       <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;e695affd-397f-4af9-9022-add2636e7459&quot;</span><span class="p">,</span>
       <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
       <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;FINISHED&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517362289.7193348</span><span class="p">,</span>
+      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517362289.7193348</span><span class="p">,</span>
+      <span class="s2">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517362289.9751132</span><span class="p">,</span>
+      <span class="s2">&quot;job_finished&quot;</span><span class="p">:</span> <span class="mf">1517363500.1234567</span><span class="p">,</span>
       <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.6&quot;</span>
     <span class="p">}</span>
   <span class="p">]</span>
@@ -3105,7 +3195,9 @@ and the build that is running.</p>
       <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a&quot;</span><span class="p">,</span>
       <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;http-server&quot;</span><span class="p">,</span>
       <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;FAILED&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517523249.9301329</span><span class="p">,</span>
+      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517523249.9301329</span><span class="p">,</span>
+      <span class="s2">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517523249.9314211</span><span class="p">,</span>
+      <span class="s2">&quot;job_finished&quot;</span><span class="p">:</span> <span class="mf">1517523255.5623411</span><span class="p">,</span>
       <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.2&quot;</span>
     <span class="p">}</span>
   <span class="p">]</span>
@@ -3125,14 +3217,18 @@ and the build that is running.</p>
       <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a&quot;</span><span class="p">,</span>
       <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;http-server&quot;</span><span class="p">,</span>
       <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;FINISHED&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517523644.2384307</span><span class="p">,</span>
+      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517523644.2384307</span><span class="p">,</span>
+      <span class="s2">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517523644.2551234</span><span class="p">,</span>
+      <span class="s2">&quot;job_finished&quot;</span><span class="p">:</span> <span class="mf">1517523689.9864314</span><span class="p">,</span>
       <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.2&quot;</span>
     <span class="p">},</span>
     <span class="p">{</span>
       <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;45502a6d-06e8-48a5-a215-2b4174b3614b&quot;</span><span class="p">,</span>
       <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
       <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;FINISHED&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517363442.188399</span><span class="p">,</span>
+      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517363442.188399</span><span class="p">,</span>
+      <span class="s2">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517363442.325324</span><span class="p">,</span>
+      <span class="s2">&quot;job_finished&quot;</span><span class="p">:</span> <span class="mf">1517363451.653621</span><span class="p">,</span>
       <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.6&quot;</span>
     <span class="p">}</span>
   <span class="p">]</span>
@@ -3141,8 +3237,8 @@ and the build that is running.</p>
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="delete-api-v0-blueprints-cancel-uuid">
-<h4>DELETE <cite>/api/v0/blueprints/cancel/&lt;uuid&gt;</cite><a class="headerlink" href="#delete-api-v0-blueprints-cancel-uuid" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="delete-api-v0-compose-cancel-uuid">
+<h4>DELETE <cite>/api/v0/compose/cancel/&lt;uuid&gt;</cite><a class="headerlink" href="#delete-api-v0-compose-cancel-uuid" title="Permalink to this headline">¶</a></h4>
 <blockquote>
 <div><p>Cancel the build, if it is not finished, and delete the results. It will return a
 status of True if it is successful.</p>
@@ -3286,6 +3382,11 @@ a line boundry.</p>
 </div>
 </div></blockquote>
 <dl class="function">
+<dt id="pylorax.api.v0.blueprint_exists">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">blueprint_exists</code><span class="sig-paren">(</span><em>api</em>, <em>branch</em>, <em>blueprint_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#blueprint_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.blueprint_exists" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="pylorax.api.v0.take_limits">
 <code class="descclassname">pylorax.api.v0.</code><code class="descname">take_limits</code><span class="sig-paren">(</span><em>iterable</em>, <em>offset</em>, <em>limit</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#take_limits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.take_limits" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply offset and limit to an iterable object</p>
@@ -3295,8 +3396,8 @@ a line boundry.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>iterable</strong> (<em>iter</em>) – The object to limit</li>
-<li><strong>offset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – The number of items to skip</li>
-<li><strong>limit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – The total number of items to return</li>
+<li><strong>offset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The number of items to skip</li>
+<li><strong>limit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The total number of items to return</li>
 </ul>
 </td>
 </tr>
@@ -3327,8 +3428,8 @@ a line boundry.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Branch name</li>
-<li><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The name of the recipe</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Branch name</li>
+<li><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The name of the recipe</li>
 </ul>
 </td>
 </tr>
@@ -3352,14 +3453,14 @@ a line boundry.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Branch name</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Branch name</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The path to the branch’s workspace directory</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
 </td>
 </tr>
 </tbody>
@@ -3376,8 +3477,8 @@ a line boundry.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Branch name</li>
-<li><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The name of the recipe</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Branch name</li>
+<li><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The name of the recipe</li>
 </ul>
 </td>
 </tr>
@@ -3404,7 +3505,7 @@ a line boundry.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>repo</strong> (<em>Git.Repository</em>) – Open repository</li>
-<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Branch name</li>
+<li><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Branch name</li>
 <li><strong>recipe</strong> (<a class="reference internal" href="#pylorax.api.recipes.Recipe" title="pylorax.api.recipes.Recipe"><em>Recipe</em></a>) – The recipe to write to the workspace</li>
 </ul>
 </td>
@@ -3470,7 +3571,7 @@ a line boundry.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'29.7',
+            VERSION:'29.11',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax package &mdash; Lorax 29.7 documentation</title>
+  <title>pylorax package &mdash; Lorax 29.11 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                29.7
+                29.11
               </div>
             
           
@@ -195,6 +195,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="pylorax.api.html">pylorax.api package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.checkparams">pylorax.api.checkparams module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.cmdline">pylorax.api.cmdline module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.compose">pylorax.api.compose module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="pylorax.api.html#adding-new-output-types">Adding New Output Types</a></li>
@@ -202,11 +203,14 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.config">pylorax.api.config module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.crossdomain">pylorax.api.crossdomain module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#pylorax-api-dnfbase-module">pylorax.api.dnfbase module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.dnfbase">pylorax.api.dnfbase module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.errors">pylorax.api.errors module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.projects">pylorax.api.projects module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.queue">pylorax.api.queue module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.recipes">pylorax.api.recipes module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.regexes">pylorax.api.regexes module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.server">pylorax.api.server module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.timestamp">pylorax.api.timestamp module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.v0">pylorax.api.v0 module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="pylorax.api.html#status-responses">Status Responses</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pylorax.api.html#api-routes">API Routes</a><ul>
@@ -238,7 +242,7 @@
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-compose-finished"><cite>/api/v0/compose/finished</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-compose-failed"><cite>/api/v0/compose/failed</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-compose-status-uuids"><cite>/api/v0/compose/status/&lt;uuids&gt;</cite></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#delete-api-v0-blueprints-cancel-uuid">DELETE <cite>/api/v0/blueprints/cancel/&lt;uuid&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#delete-api-v0-compose-cancel-uuid">DELETE <cite>/api/v0/compose/cancel/&lt;uuid&gt;</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#delete-api-v0-compose-delete-uuids">DELETE <cite>/api/v0/compose/delete/&lt;uuids&gt;</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-compose-info-uuid"><cite>/api/v0/compose/info/&lt;uuid&gt;</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-compose-metadata-uuid"><cite>/api/v0/compose/metadata/&lt;uuid&gt;</cite></a></li>
@@ -265,7 +269,7 @@
 <dl class="class">
 <dt id="pylorax.base.BaseLoraxClass">
 <em class="property">class </em><code class="descclassname">pylorax.base.</code><code class="descname">BaseLoraxClass</code><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="method">
 <dt id="pylorax.base.BaseLoraxClass.pcritical">
 <code class="descname">pcritical</code><span class="sig-paren">(</span><em>msg</em>, <em>fobj=&lt;_io.TextIOWrapper name='&lt;stdout&gt;' mode='w' encoding='UTF-8'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/base.html#BaseLoraxClass.pcritical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.BaseLoraxClass.pcritical" title="Permalink to this definition">¶</a></dt>
@@ -296,7 +300,7 @@
 <dl class="class">
 <dt id="pylorax.base.DataHolder">
 <em class="property">class </em><code class="descclassname">pylorax.base.</code><code class="descname">DataHolder</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/base.html#DataHolder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.DataHolder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
 <dl class="method">
 <dt id="pylorax.base.DataHolder.copy">
 <code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; a shallow copy of D<a class="reference internal" href="_modules/pylorax/base.html#DataHolder.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.base.DataHolder.copy" title="Permalink to this definition">¶</a></dt>
@@ -310,7 +314,7 @@
 <dl class="class">
 <dt id="pylorax.buildstamp.BuildStamp">
 <em class="property">class </em><code class="descclassname">pylorax.buildstamp.</code><code class="descname">BuildStamp</code><span class="sig-paren">(</span><em>product</em>, <em>version</em>, <em>bugurl</em>, <em>isfinal</em>, <em>buildarch</em>, <em>variant=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/buildstamp.html#BuildStamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.buildstamp.BuildStamp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="method">
 <dt id="pylorax.buildstamp.BuildStamp.write">
 <code class="descname">write</code><span class="sig-paren">(</span><em>outfile</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/buildstamp.html#BuildStamp.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.buildstamp.BuildStamp.write" title="Permalink to this definition">¶</a></dt>
@@ -339,7 +343,7 @@
 <dl class="class">
 <dt id="pylorax.creator.FakeDNF">
 <em class="property">class </em><code class="descclassname">pylorax.creator.</code><code class="descname">FakeDNF</code><span class="sig-paren">(</span><em>conf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#FakeDNF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.FakeDNF" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>A minimal DNF object suitable for passing to RuntimeBuilder</p>
 <p>lmc uses RuntimeBuilder to run the arch specific iso creation
 templates, so the the installroot config value is the important part of
@@ -361,14 +365,14 @@ this. Everything else should be a nop.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>opts</strong> (<em>argparse options</em>) – options passed to livemedia-creator</li>
-<li><strong>ks</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to the kickstart to use for the installation</li>
+<li><strong>ks</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to the kickstart to use for the installation</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Disk size in MiB</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)">int</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></p>
 </td>
 </tr>
 </tbody>
@@ -384,9 +388,9 @@ this. Everything else should be a nop.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>images_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path of directory with images to be used</li>
-<li><strong>live_image_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Name of live rootfs image file</li>
-<li><strong>add_args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – Arguments to be added to initrd= pxe config</li>
+<li><strong>images_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path of directory with images to be used</li>
+<li><strong>live_image_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Name of live rootfs image file</li>
+<li><strong>add_args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – Arguments to be added to initrd= pxe config</li>
 </ul>
 </td>
 </tr>
@@ -402,13 +406,13 @@ this. Everything else should be a nop.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>phys_root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to physical root</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>phys_root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to physical root</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Relative path of ostree deployment root</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.6)"><strong>Exception</strong></a> – More than one deployment roots were found</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><strong>Exception</strong></a> – More than one deployment roots were found</td>
 </tr>
 </tbody>
 </table>
@@ -424,7 +428,7 @@ this. Everything else should be a nop.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Arch of first kernel found at mount_dir/boot/ or i386</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
 </tr>
 </tbody>
 </table>
@@ -440,7 +444,7 @@ this. Everything else should be a nop.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if disk_img is in /proc/mounts</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)">bool</a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></td>
 </tr>
 </tbody>
 </table>
@@ -455,17 +459,17 @@ this. Everything else should be a nop.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>disk_img</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Full path of the disk image</li>
-<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Name of the appliance, passed to the template</li>
-<li><strong>template</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Full path of Mako template</li>
-<li><strong>outfile</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Full path of file to write, using template</li>
-<li><strong>networks</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – List of networks(str) from the kickstart</li>
-<li><strong>ram</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Ram, in MiB, passed to template. Default is 1024</li>
-<li><strong>vcpus</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – CPUs, passed to template. Default is 1</li>
-<li><strong>arch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – CPU architecture. Default is ‘x86_64’</li>
-<li><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Title, passed to template. Default is ‘Linux’</li>
-<li><strong>project</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Project, passed to template. Default is ‘Linux’</li>
-<li><strong>releasever</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Release version, passed to template. Default is 29</li>
+<li><strong>disk_img</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Full path of the disk image</li>
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Name of the appliance, passed to the template</li>
+<li><strong>template</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Full path of Mako template</li>
+<li><strong>outfile</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Full path of file to write, using template</li>
+<li><strong>networks</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of networks(str) from the kickstart</li>
+<li><strong>ram</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Ram, in MiB, passed to template. Default is 1024</li>
+<li><strong>vcpus</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – CPUs, passed to template. Default is 1</li>
+<li><strong>arch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – CPU architecture. Default is ‘x86_64’</li>
+<li><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Title, passed to template. Default is ‘Linux’</li>
+<li><strong>project</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Project, passed to template. Default is ‘Linux’</li>
+<li><strong>releasever</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Release version, passed to template. Default is 29</li>
 </ul>
 </td>
 </tr>
@@ -483,14 +487,14 @@ this. Everything else should be a nop.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>opts</strong> (<em>argparse options</em>) – options passed to livemedia-creator</li>
-<li><strong>ks</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to the kickstart to use for the installation</li>
+<li><strong>ks</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to the kickstart to use for the installation</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Path of the image created</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
 </td>
 </tr>
 </tbody>
@@ -508,15 +512,15 @@ this. Everything else should be a nop.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>opts</strong> (<em>argparse options</em>) – options passed to livemedia-creator</li>
-<li><strong>work_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Directory for storing results</li>
-<li><strong>disk_img</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to disk image (fsimage or partitioned)</li>
+<li><strong>work_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Directory for storing results</li>
+<li><strong>disk_img</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to disk image (fsimage or partitioned)</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Path of directory with created images or None</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
 </td>
 </tr>
 </tbody>
@@ -536,8 +540,8 @@ it will return None and log the error.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>opts</strong> (<em>argparse options</em>) – options passed to livemedia-creator</li>
-<li><strong>mount_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Directory tree to compress</li>
-<li><strong>work_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Output compressed image to work_dir+images/install.img</li>
+<li><strong>mount_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Directory tree to compress</li>
+<li><strong>work_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Output compressed image to work_dir+images/install.img</li>
 </ul>
 </td>
 </tr>
@@ -565,9 +569,9 @@ root=live:CDLABEL=&lt;volid&gt; rd.live.image</li>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>opts</strong> (<em>argparse options</em>) – options passed to livemedia-creator</li>
-<li><strong>mount_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Directory tree to compress</li>
-<li><strong>work_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Output compressed image to work_dir+images/install.img</li>
-<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Size of disk image, in GiB</li>
+<li><strong>mount_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Directory tree to compress</li>
+<li><strong>work_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Output compressed image to work_dir+images/install.img</li>
+<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Size of disk image, in GiB</li>
 </ul>
 </td>
 </tr>
@@ -584,16 +588,16 @@ root=live:CDLABEL=&lt;volid&gt; rd.live.image</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>disk_img</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to the unpartitioned filesystem disk image</li>
-<li><strong>work_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Output compressed image to work_dir+images/install.img</li>
-<li><strong>compression</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Compression type to use</li>
+<li><strong>disk_img</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to the unpartitioned filesystem disk image</li>
+<li><strong>work_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Output compressed image to work_dir+images/install.img</li>
+<li><strong>compression</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Compression type to use</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if squashfs creation was successful. False if there was an error.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)">bool</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
 </td>
 </tr>
 </tbody>
@@ -624,8 +628,8 @@ type img_mount: imgutils.PartitionMount</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>opts</strong> (<em>argparse options</em>) – options passed to livemedia-creator</li>
-<li><strong>sys_root_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to root of the system</li>
-<li><strong>results_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path of directory for storing results</li>
+<li><strong>sys_root_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to root of the system</li>
+<li><strong>results_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path of directory for storing results</li>
 </ul>
 </td>
 </tr>
@@ -666,7 +670,7 @@ See the cmdline –help for livemedia-creator for the possible options</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">tuple of compression type and args</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.6)">tuple</a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a></td>
 </tr>
 </tbody>
 </table>
@@ -686,7 +690,7 @@ See the cmdline –help for livemedia-creator for the possible options</p>
 <dl class="class">
 <dt id="pylorax.discinfo.DiscInfo">
 <em class="property">class </em><code class="descclassname">pylorax.discinfo.</code><code class="descname">DiscInfo</code><span class="sig-paren">(</span><em>release</em>, <em>basearch</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/discinfo.html#DiscInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.discinfo.DiscInfo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="method">
 <dt id="pylorax.discinfo.DiscInfo.write">
 <code class="descname">write</code><span class="sig-paren">(</span><em>outfile</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/discinfo.html#DiscInfo.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.discinfo.DiscInfo.write" title="Permalink to this definition">¶</a></dt>
@@ -740,7 +744,7 @@ See the cmdline –help for livemedia-creator for the possible options</p>
 <dl class="class">
 <dt id="pylorax.executils.ExecProduct">
 <em class="property">class </em><code class="descclassname">pylorax.executils.</code><code class="descname">ExecProduct</code><span class="sig-paren">(</span><em>rc</em>, <em>stdout</em>, <em>stderr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/executils.html#ExecProduct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.executils.ExecProduct" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 </dd></dl>
 
 <dl class="function">
@@ -873,8 +877,8 @@ variable name, the old value is overwritten.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The name of the environment variable</li>
-<li><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The value of the environment variable</li>
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The name of the environment variable</li>
+<li><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The value of the environment variable</li>
 </ul>
 </td>
 </tr>
@@ -922,25 +926,25 @@ last.</p>
 <dl class="class">
 <dt id="pylorax.imgutils.DMDev">
 <em class="property">class </em><code class="descclassname">pylorax.imgutils.</code><code class="descname">DMDev</code><span class="sig-paren">(</span><em>dev</em>, <em>size</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/imgutils.html#DMDev"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.DMDev" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="pylorax.imgutils.LoopDev">
 <em class="property">class </em><code class="descclassname">pylorax.imgutils.</code><code class="descname">LoopDev</code><span class="sig-paren">(</span><em>filename</em>, <em>size=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/imgutils.html#LoopDev"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.LoopDev" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="pylorax.imgutils.Mount">
 <em class="property">class </em><code class="descclassname">pylorax.imgutils.</code><code class="descname">Mount</code><span class="sig-paren">(</span><em>dev</em>, <em>opts=''</em>, <em>mnt=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/imgutils.html#Mount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.Mount" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="pylorax.imgutils.PartitionMount">
 <em class="property">class </em><code class="descclassname">pylorax.imgutils.</code><code class="descname">PartitionMount</code><span class="sig-paren">(</span><em>disk_img</em>, <em>mount_ok=None</em>, <em>submount=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/imgutils.html#PartitionMount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.PartitionMount" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Mount a partitioned image file using kpartx</p>
 </dd></dl>
 
@@ -971,8 +975,8 @@ raises CalledProcessError if copy fails.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>compression</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Compression type</li>
-<li><strong>basename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Base filename</li>
+<li><strong>compression</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Compression type</li>
+<li><strong>basename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Base filename</li>
 </ul>
 </td>
 </tr>
@@ -1021,8 +1025,11 @@ Raises RuntimeError if more than one loop is associated</p>
 <dl class="function">
 <dt id="pylorax.imgutils.loop_attach">
 <code class="descclassname">pylorax.imgutils.</code><code class="descname">loop_attach</code><span class="sig-paren">(</span><em>outfile</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/imgutils.html#loop_attach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.loop_attach" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attach a loop device to the given file. Return the loop device name.
-Raises CalledProcessError if losetup fails.</p>
+<dd><p>Attach a loop device to the given file. Return the loop device name.</p>
+<p>On rare occasions it appears that the device never shows up, some experiments
+seem to indicate that it may be a race with another process using /dev/loop* devices.</p>
+<p>So we now try 3 times before actually failing.</p>
+<p>Raises CalledProcessError if losetup fails.</p>
 </dd></dl>
 
 <dl class="function">
@@ -1082,11 +1089,11 @@ disk image.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>diskimage</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The full path to partitioned disk image with a /</li>
-<li><strong>fsimage</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The full path of the output fs image file</li>
-<li><strong>img_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Optional size of the fsimage in MiB or None to make
+<li><strong>diskimage</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The full path to partitioned disk image with a /</li>
+<li><strong>fsimage</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The full path of the output fs image file</li>
+<li><strong>img_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Optional size of the fsimage in MiB or None to make
 it as small as possible</li>
-<li><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The label to apply to the image. Defaults to “Anaconda”</li>
+<li><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The label to apply to the image. Defaults to “Anaconda”</li>
 </ul>
 </td>
 </tr>
@@ -1126,11 +1133,11 @@ in options.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>rootdir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Root directory</li>
-<li><strong>outfile</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path of output image file</li>
-<li><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Filesystem label</li>
-<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Size of the image in GiB, if None computed automatically</li>
-<li><strong>sysroot</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to system (deployment) root relative to physical root</li>
+<li><strong>rootdir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Root directory</li>
+<li><strong>outfile</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path of output image file</li>
+<li><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Filesystem label</li>
+<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Size of the image in GiB, if None computed automatically</li>
+<li><strong>sysroot</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to system (deployment) root relative to physical root</li>
 </ul>
 </td>
 </tr>
@@ -1185,13 +1192,13 @@ raises CalledProcessError if umount fails.</p>
 <dl class="exception">
 <dt id="pylorax.installer.InstallError">
 <em class="property">exception </em><code class="descclassname">pylorax.installer.</code><code class="descname">InstallError</code><a class="reference internal" href="_modules/pylorax/installer.html#InstallError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.InstallError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="pylorax.installer.QEMUInstall">
 <em class="property">class </em><code class="descclassname">pylorax.installer.</code><code class="descname">QEMUInstall</code><span class="sig-paren">(</span><em>opts</em>, <em>iso</em>, <em>ks_paths</em>, <em>disk_img</em>, <em>img_size=2048</em>, <em>kernel_args=None</em>, <em>memory=1024</em>, <em>vcpus=None</em>, <em>vnc=None</em>, <em>arch=None</em>, <em>log_check=None</em>, <em>virtio_host='127.0.0.1'</em>, <em>virtio_port=6080</em>, <em>image_type=None</em>, <em>boot_uefi=False</em>, <em>ovmf_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/installer.html#QEMUInstall"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.QEMUInstall" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Run qemu using an iso and a kickstart</p>
 <dl class="attribute">
 <dt id="pylorax.installer.QEMUInstall.QEMU_CMDS">
@@ -1208,7 +1215,7 @@ raises CalledProcessError if umount fails.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dirinstall_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path where anaconda mounts things</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dirinstall_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path where anaconda mounts things</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if cleanups were successful. False if any of them failed.</td>
 </tr>
@@ -1229,15 +1236,15 @@ other mountpoints.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>initrd</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to initrd</li>
-<li><strong>files</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – list of file paths to add</li>
+<li><strong>initrd</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to initrd</li>
+<li><strong>files</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – list of file paths to add</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Path to a new initrd</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
 </td>
 </tr>
 </tbody>
@@ -1258,8 +1265,8 @@ cpio archive.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to metadata.json file</li>
-<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Disk size in MiB</li>
+<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to metadata.json file</li>
+<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Disk size in MiB</li>
 </ul>
 </td>
 </tr>
@@ -1276,16 +1283,16 @@ cpio archive.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Starting port number</li>
-<li><strong>end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Ending port number</li>
-<li><strong>host</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Host IP to search</li>
+<li><strong>start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Starting port number</li>
+<li><strong>end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Ending port number</li>
+<li><strong>host</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Host IP to search</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">First free port or -1 if none found</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)">int</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></p>
 </td>
 </tr>
 </tbody>
@@ -1302,8 +1309,8 @@ cpio archive.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>opts</strong> (<em>argparse options</em>) – options passed to livemedia-creator</li>
-<li><strong>disk_img</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The full path to the disk image to be created</li>
-<li><strong>disk_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – The size of the disk_img in MiB</li>
+<li><strong>disk_img</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The full path to the disk image to be created</li>
+<li><strong>disk_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The size of the disk_img in MiB</li>
 </ul>
 </td>
 </tr>
@@ -1345,8 +1352,8 @@ When an error is detected the process is terminated and this returns True</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to metadata.json file</li>
-<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Disk size in MiB</li>
+<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to metadata.json file</li>
+<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Disk size in MiB</li>
 </ul>
 </td>
 </tr>
@@ -1366,9 +1373,9 @@ metadata file are set correctly. All other values are left untouched.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>opts</strong> (<em>argparse options</em>) – options passed to livemedia-creator</li>
-<li><strong>install_log</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The path to write the log from qemu</li>
-<li><strong>disk_img</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The full path to the disk image to be created</li>
-<li><strong>disk_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – The size of the disk_img in MiB</li>
+<li><strong>install_log</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The path to write the log from qemu</li>
+<li><strong>disk_img</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The full path to the disk image to be created</li>
+<li><strong>disk_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The size of the disk_img in MiB</li>
 </ul>
 </td>
 </tr>
@@ -1384,7 +1391,7 @@ image and then optionally, based on the opts passed, creates tarfile.</p>
 <dl class="class">
 <dt id="pylorax.ltmpl.LoraxTemplate">
 <em class="property">class </em><code class="descclassname">pylorax.ltmpl.</code><code class="descname">LoraxTemplate</code><span class="sig-paren">(</span><em>directories=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="method">
 <dt id="pylorax.ltmpl.LoraxTemplate.parse">
 <code class="descname">parse</code><span class="sig-paren">(</span><em>template_file</em>, <em>variables</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplate.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplate.parse" title="Permalink to this definition">¶</a></dt>
@@ -1395,7 +1402,7 @@ image and then optionally, based on the opts passed, creates tarfile.</p>
 <dl class="class">
 <dt id="pylorax.ltmpl.LoraxTemplateRunner">
 <em class="property">class </em><code class="descclassname">pylorax.ltmpl.</code><code class="descname">LoraxTemplateRunner</code><span class="sig-paren">(</span><em>inroot</em>, <em>outroot</em>, <em>dbo=None</em>, <em>fatalerrors=True</em>, <em>templatedir=None</em>, <em>defaults=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/ltmpl.html#LoraxTemplateRunner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.ltmpl.LoraxTemplateRunner" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>This class parses and executes Lorax templates. Sample usage:</p>
 <blockquote>
 <div><p># install a bunch of packages
@@ -1801,7 +1808,7 @@ Example:</p>
 <dl class="class">
 <dt id="pylorax.monitor.LogMonitor">
 <em class="property">class </em><code class="descclassname">pylorax.monitor.</code><code class="descname">LogMonitor</code><span class="sig-paren">(</span><em>log_path=None</em>, <em>host='localhost'</em>, <em>port=0</em>, <em>timeout=None</em>, <em>log_request_handler_class=&lt;class 'pylorax.monitor.LogRequestHandler'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/monitor.html#LogMonitor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.monitor.LogMonitor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Setup a server to monitor the logs output by the installation</p>
 <p>This needs to be running before the virt-install runs, it expects
 there to be a listener on the port used for the virtio log port.</p>
@@ -1816,7 +1823,7 @@ there to be a listener on the port used for the virtio log port.</p>
 <dl class="class">
 <dt id="pylorax.monitor.LogRequestHandler">
 <em class="property">class </em><code class="descclassname">pylorax.monitor.</code><code class="descname">LogRequestHandler</code><span class="sig-paren">(</span><em>request</em>, <em>client_address</em>, <em>server</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/monitor.html#LogRequestHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.monitor.LogRequestHandler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/socketserver.html#socketserver.BaseRequestHandler" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">socketserver.BaseRequestHandler</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/socketserver.html#socketserver.BaseRequestHandler" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">socketserver.BaseRequestHandler</span></code></a></p>
 <p>Handle monitoring and saving the logfiles from the virtual install</p>
 <p>Incoming data is written to self.server.log_path and each line is checked
 for patterns that would indicate that the installation failed.
@@ -1843,7 +1850,7 @@ errors that indicate that the install failed.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – log line to check for failure</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – log line to check for failure</td>
 </tr>
 </tbody>
 </table>
@@ -1871,7 +1878,7 @@ errors that indicate that the install failed.</p>
 <dl class="class">
 <dt id="pylorax.monitor.LogServer">
 <em class="property">class </em><code class="descclassname">pylorax.monitor.</code><code class="descname">LogServer</code><span class="sig-paren">(</span><em>log_path</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/monitor.html#LogServer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.monitor.LogServer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/socketserver.html#socketserver.TCPServer" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">socketserver.TCPServer</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/socketserver.html#socketserver.TCPServer" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">socketserver.TCPServer</span></code></a></p>
 <p>A TCP Server that listens for log data</p>
 <dl class="method">
 <dt id="pylorax.monitor.LogServer.log_check">
@@ -1883,7 +1890,7 @@ errors that indicate that the install failed.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if there has been an error</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)">bool</a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></td>
 </tr>
 </tbody>
 </table>
@@ -1902,7 +1909,7 @@ errors that indicate that the install failed.</p>
 <dl class="class">
 <dt id="pylorax.mount.IsoMountpoint">
 <em class="property">class </em><code class="descclassname">pylorax.mount.</code><code class="descname">IsoMountpoint</code><span class="sig-paren">(</span><em>iso_path</em>, <em>initrd_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/mount.html#IsoMountpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.mount.IsoMountpoint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Mount the iso and check to make sure the vmlinuz and initrd.img files exist</p>
 <p>Also check the iso for a a stage2 image and set a flag and extract the
 iso’s label.</p>
@@ -1969,7 +1976,7 @@ iso’s label.</p>
 <dl class="class">
 <dt id="pylorax.treebuilder.RuntimeBuilder">
 <em class="property">class </em><code class="descclassname">pylorax.treebuilder.</code><code class="descname">RuntimeBuilder</code><span class="sig-paren">(</span><em>product</em>, <em>arch</em>, <em>dbo</em>, <em>templatedir=None</em>, <em>installpkgs=None</em>, <em>excludepkgs=None</em>, <em>add_templates=None</em>, <em>add_template_vars=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/treebuilder.html#RuntimeBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.RuntimeBuilder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Builds the anaconda runtime image.</p>
 <dl class="method">
 <dt id="pylorax.treebuilder.RuntimeBuilder.cleanup">
@@ -2029,7 +2036,7 @@ iso’s label.</p>
 <dl class="class">
 <dt id="pylorax.treebuilder.TreeBuilder">
 <em class="property">class </em><code class="descclassname">pylorax.treebuilder.</code><code class="descname">TreeBuilder</code><span class="sig-paren">(</span><em>product</em>, <em>arch</em>, <em>inroot</em>, <em>outroot</em>, <em>runtime</em>, <em>isolabel</em>, <em>domacboot=True</em>, <em>doupgrade=True</em>, <em>templatedir=None</em>, <em>add_templates=None</em>, <em>add_template_vars=None</em>, <em>workdir=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/treebuilder.html#TreeBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treebuilder.TreeBuilder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Builds the arch-specific boot images.
 inroot should be the installtree root (the newly-built runtime dir)</p>
 <dl class="method">
@@ -2116,7 +2123,7 @@ name of the kernel.</p>
 <dl class="class">
 <dt id="pylorax.treeinfo.TreeInfo">
 <em class="property">class </em><code class="descclassname">pylorax.treeinfo.</code><code class="descname">TreeInfo</code><span class="sig-paren">(</span><em>product</em>, <em>version</em>, <em>variant</em>, <em>basearch</em>, <em>packagedir=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/treeinfo.html#TreeInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treeinfo.TreeInfo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="method">
 <dt id="pylorax.treeinfo.TreeInfo.add_section">
 <code class="descname">add_section</code><span class="sig-paren">(</span><em>section</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/treeinfo.html#TreeInfo.add_section"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.treeinfo.TreeInfo.add_section" title="Permalink to this definition">¶</a></dt>
@@ -2190,11 +2197,11 @@ Otherwise use the sharedir</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>templatedir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Top directory to search for templates</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>templatedir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Top directory to search for templates</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Path to templates</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)">str</a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></td>
 </tr>
 </tbody>
 </table>
@@ -2218,7 +2225,7 @@ lowest numbered directory entry is returned.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>logfile</strong> (<em>string</em>) – filename to write the log to</li>
-<li><strong>theLogger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.6)"><em>logging.Logger</em></a>) – top-level logger</li>
+<li><strong>theLogger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.7)"><em>logging.Logger</em></a>) – top-level logger</li>
 </ul>
 </td>
 </tr>
@@ -2271,7 +2278,7 @@ lowest numbered directory entry is returned.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'29.7',
+            VERSION:'29.11',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

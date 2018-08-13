@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>src &mdash; Lorax 29.7 documentation</title>
+  <title>src &mdash; Lorax 29.11 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                29.7
+                29.11
               </div>
             
           
@@ -171,9 +171,11 @@
 <li class="toctree-l4"><a class="reference internal" href="composer.cli.html#module-composer.cli.blueprints">composer.cli.blueprints module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="composer.cli.html#module-composer.cli.cmdline">composer.cli.cmdline module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="composer.cli.html#module-composer.cli.compose">composer.cli.compose module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="composer.cli.html#module-composer.cli.help">composer.cli.help module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="composer.cli.html#module-composer.cli.modules">composer.cli.modules module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="composer.cli.html#module-composer.cli.projects">composer.cli.projects module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="composer.cli.html#module-composer.cli.sources">composer.cli.sources module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="composer.cli.html#module-composer.cli.status">composer.cli.status module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="composer.cli.html#module-composer.cli.utilities">composer.cli.utilities module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="composer.cli.html#module-composer.cli">Module contents</a></li>
 </ul>
@@ -190,15 +192,19 @@
 <li class="toctree-l2"><a class="reference internal" href="pylorax.html#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="pylorax.api.html">pylorax.api package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.checkparams">pylorax.api.checkparams module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.cmdline">pylorax.api.cmdline module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.compose">pylorax.api.compose module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.config">pylorax.api.config module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.crossdomain">pylorax.api.crossdomain module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#pylorax-api-dnfbase-module">pylorax.api.dnfbase module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.dnfbase">pylorax.api.dnfbase module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.errors">pylorax.api.errors module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.projects">pylorax.api.projects module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.queue">pylorax.api.queue module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.recipes">pylorax.api.recipes module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.regexes">pylorax.api.regexes module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.server">pylorax.api.server module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.timestamp">pylorax.api.timestamp module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.v0">pylorax.api.v0 module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#module-pylorax.api.workspace">pylorax.api.workspace module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#module-pylorax.api">Module contents</a></li>
@@ -273,7 +279,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'29.7',
+            VERSION:'29.11',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

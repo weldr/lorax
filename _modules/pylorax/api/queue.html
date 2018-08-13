@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.queue &mdash; Lorax 29.7 documentation</title>
+  <title>pylorax.api.queue &mdash; Lorax 29.11 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                29.7
+                29.11
               </div>
             
           
@@ -188,6 +188,7 @@
 <span class="kn">from</span> <span class="nn">pylorax</span> <span class="k">import</span> <span class="n">find_templates</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.compose</span> <span class="k">import</span> <span class="n">move_compose_results</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="k">import</span> <span class="n">recipe_from_file</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.timestamp</span> <span class="k">import</span> <span class="n">TS_CREATED</span><span class="p">,</span> <span class="n">TS_STARTED</span><span class="p">,</span> <span class="n">TS_FINISHED</span><span class="p">,</span> <span class="n">write_timestamp</span><span class="p">,</span> <span class="n">timestamp_dict</span>
 <span class="kn">from</span> <span class="nn">pylorax.base</span> <span class="k">import</span> <span class="n">DataHolder</span>
 <span class="kn">from</span> <span class="nn">pylorax.creator</span> <span class="k">import</span> <span class="n">run_creator</span>
 <span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span>
@@ -264,6 +265,7 @@
                 <span class="n">make_compose</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">dst</span><span class="p">))</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Finished building </span><span class="si">%s</span><span class="s2">, results are in </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">dst</span><span class="p">))</span>
                 <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="s2">&quot;STATUS&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;FINISHED</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">write_timestamp</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">TS_FINISHED</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="kn">import</span> <span class="nn">traceback</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;traceback: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
@@ -271,6 +273,7 @@
 <span class="c1"># TODO - Write the error message to an ERROR-LOG file to include with the status</span>
 <span class="c1">#                log.error(&quot;Error running compose: %s&quot;, e)</span>
                 <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="s2">&quot;STATUS&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;FAILED</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">write_timestamp</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">TS_FINISHED</span><span class="p">)</span>
 
             <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span></div>
 
@@ -351,6 +354,7 @@
     <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;cfg  = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">install_cfg</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">test_path</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="s2">&quot;TEST&quot;</span><span class="p">)</span>
+        <span class="n">write_timestamp</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="n">TS_STARTED</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">test_path</span><span class="p">):</span>
             <span class="c1"># Pretend to run the compose</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
@@ -410,15 +414,21 @@
 
 <span class="sd">    * id - The uuid of the comoposition</span>
 <span class="sd">    * queue_status - The final status of the composition (FINISHED or FAILED)</span>
-<span class="sd">    * timestamp - The time of the last status change</span>
 <span class="sd">    * compose_type - The type of output generated (tar, iso, etc.)</span>
 <span class="sd">    * blueprint - Blueprint name</span>
 <span class="sd">    * version - Blueprint version</span>
 <span class="sd">    * image_size - Size of the image, if finished. 0 otherwise.</span>
+
+<span class="sd">    Various timestamps are also included in the dict.  These are all Unix UTC timestamps.</span>
+<span class="sd">    It is possible for these timestamps to not always exist, in which case they will be</span>
+<span class="sd">    None in Python (or null in JSON).  The following timestamps are included:</span>
+
+<span class="sd">    * job_created - When the user submitted the compose</span>
+<span class="sd">    * job_started - Anaconda started running</span>
+<span class="sd">    * job_finished - Job entered FINISHED or FAILED state</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">build_id</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">results_dir</span><span class="p">))</span>
     <span class="n">status</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="s2">&quot;STATUS&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-    <span class="n">mtime</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="s2">&quot;STATUS&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">st_mtime</span>
     <span class="n">blueprint</span> <span class="o">=</span> <span class="n">recipe_from_file</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="s2">&quot;blueprint.toml&quot;</span><span class="p">))</span>
 
     <span class="n">compose_type</span> <span class="o">=</span> <span class="n">get_compose_type</span><span class="p">(</span><span class="n">results_dir</span><span class="p">)</span>
@@ -429,9 +439,13 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">image_size</span> <span class="o">=</span> <span class="mi">0</span>
 
+    <span class="n">times</span> <span class="o">=</span> <span class="n">timestamp_dict</span><span class="p">(</span><span class="n">results_dir</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span>           <span class="n">build_id</span><span class="p">,</span>
             <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="n">status</span><span class="p">,</span>
-            <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span>    <span class="n">mtime</span><span class="p">,</span>
+            <span class="s2">&quot;job_created&quot;</span><span class="p">:</span>  <span class="n">times</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">TS_CREATED</span><span class="p">),</span>
+            <span class="s2">&quot;job_started&quot;</span><span class="p">:</span>  <span class="n">times</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">TS_STARTED</span><span class="p">),</span>
+            <span class="s2">&quot;job_finished&quot;</span><span class="p">:</span> <span class="n">times</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">TS_FINISHED</span><span class="p">),</span>
             <span class="s2">&quot;compose_type&quot;</span><span class="p">:</span> <span class="n">compose_type</span><span class="p">,</span>
             <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span>    <span class="n">blueprint</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
             <span class="s2">&quot;version&quot;</span><span class="p">:</span>      <span class="n">blueprint</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">],</span>
@@ -599,7 +613,7 @@
 <span class="sd">    :type cfg: ComposerConfig</span>
 <span class="sd">    :param uuid: The UUID of the build</span>
 <span class="sd">    :type uuid: str</span>
-<span class="sd">    :returns: dictionary of information about the composition</span>
+<span class="sd">    :returns: dictionary of information about the composition or None</span>
 <span class="sd">    :rtype: dict</span>
 <span class="sd">    :raises: RuntimeError if there was a problem</span>
 
@@ -615,7 +629,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">uuid_dir</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;lib_dir&quot;</span><span class="p">),</span> <span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">uuid_dir</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is not a valid build_id&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
 
     <span class="c1"># Load the compose configuration</span>
     <span class="n">cfg_path</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">uuid_dir</span><span class="p">,</span> <span class="s2">&quot;config.toml&quot;</span><span class="p">)</span>
@@ -805,7 +819,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'29.7',
+            VERSION:'29.11',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

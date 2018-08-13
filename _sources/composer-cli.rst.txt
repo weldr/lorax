@@ -27,7 +27,7 @@ blueprints save http-server``. If there are no blueprints available you can
 copy one of the examples `from the test suite
 <https://github.com/weldr/lorax/tree/master/tests/pylorax/blueprints/>`_.
 
-Edit the file (it will be saved with a .toml extension) and chance the
+Edit the file (it will be saved with a .toml extension) and change the
 description, add a package or module to it. Send it back to the server by
 running ``composer-cli blueprints push http-server.toml``. You can verify that it was
 saved by viewing the changelog - ``composer-cli blueprints changes http-server``.
