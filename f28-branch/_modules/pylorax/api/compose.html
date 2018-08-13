@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.compose &mdash; Lorax 28.14 documentation</title>
+  <title>pylorax.api.compose &mdash; Lorax 28.17 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                28.14
+                28.17
               </div>
             
           
@@ -203,11 +203,42 @@
 <span class="kn">from</span> <span class="nn">pykickstart.parser</span> <span class="k">import</span> <span class="n">KickstartParser</span>
 <span class="kn">from</span> <span class="nn">pykickstart.version</span> <span class="k">import</span> <span class="n">makeVersion</span>
 
-<span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="k">import</span> <span class="n">projects_depsolve_with_size</span><span class="p">,</span> <span class="n">dep_nevra</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="k">import</span> <span class="n">projects_depsolve</span><span class="p">,</span> <span class="n">projects_depsolve_with_size</span><span class="p">,</span> <span class="n">dep_nevra</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="k">import</span> <span class="n">ProjectsError</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="k">import</span> <span class="n">read_recipe_and_id</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.timestamp</span> <span class="k">import</span> <span class="n">TS_CREATED</span><span class="p">,</span> <span class="n">write_timestamp</span>
 <span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="k">import</span> <span class="n">default_image_name</span>
 <span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span>
+
+
+<div class="viewcode-block" id="test_templates"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.test_templates">[docs]</a><span class="k">def</span> <span class="nf">test_templates</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">share_dir</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Try depsolving each of the the templates and report any errors</span>
+
+<span class="sd">    :param dbo: dnf base object</span>
+<span class="sd">    :type dbo: dnf.Base</span>
+<span class="sd">    :returns: List of template types and errors</span>
+<span class="sd">    :rtype: List of errors</span>
+
+<span class="sd">    Return a list of templates and errors encountered or an empty list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">template_errors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">compose_type</span> <span class="ow">in</span> <span class="n">compose_types</span><span class="p">(</span><span class="n">share_dir</span><span class="p">):</span>
+        <span class="c1"># Read the kickstart template for this type</span>
+        <span class="n">ks_template_path</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">share_dir</span><span class="p">,</span> <span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="n">compose_type</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.ks&quot;</span>
+        <span class="n">ks_template</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">ks_template_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+        <span class="c1"># How much space will the packages in the default template take?</span>
+        <span class="n">ks_version</span> <span class="o">=</span> <span class="n">makeVersion</span><span class="p">()</span>
+        <span class="n">ks</span> <span class="o">=</span> <span class="n">KickstartParser</span><span class="p">(</span><span class="n">ks_version</span><span class="p">,</span> <span class="n">errorsAreFatal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">missingIncludeIsFatal</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">readKickstartFromString</span><span class="p">(</span><span class="n">ks_template</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">%e</span><span class="s2">nd</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">pkgs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">packageList</span><span class="p">]</span>
+        <span class="n">grps</span> <span class="o">=</span> <span class="p">[</span><span class="n">grp</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">grp</span> <span class="ow">in</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">groupList</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">projects_depsolve</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">pkgs</span><span class="p">,</span> <span class="n">grps</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">ProjectsError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">template_errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Error depsolving </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">compose_type</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+
+    <span class="k">return</span> <span class="n">template_errors</span></div>
 
 
 <div class="viewcode-block" id="repo_to_ks"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.repo_to_ks">[docs]</a><span class="k">def</span> <span class="nf">repo_to_ks</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s2">&quot;url&quot;</span><span class="p">):</span>
@@ -386,7 +417,7 @@
     <span class="n">deps</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">dnflock</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
-            <span class="p">(</span><span class="n">installed_size</span><span class="p">,</span> <span class="n">deps</span><span class="p">)</span> <span class="o">=</span> <span class="n">projects_depsolve_with_size</span><span class="p">(</span><span class="n">dnflock</span><span class="o">.</span><span class="n">dbo</span><span class="p">,</span> <span class="n">projects</span><span class="p">,</span> <span class="n">with_core</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="p">(</span><span class="n">installed_size</span><span class="p">,</span> <span class="n">deps</span><span class="p">)</span> <span class="o">=</span> <span class="n">projects_depsolve_with_size</span><span class="p">(</span><span class="n">dnflock</span><span class="o">.</span><span class="n">dbo</span><span class="p">,</span> <span class="n">projects</span><span class="p">,</span> <span class="n">recipe</span><span class="o">.</span><span class="n">group_names</span><span class="p">,</span> <span class="n">with_core</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">ProjectsError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;start_build depsolve: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Problem depsolving </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
@@ -399,11 +430,11 @@
     <span class="n">ks_version</span> <span class="o">=</span> <span class="n">makeVersion</span><span class="p">()</span>
     <span class="n">ks</span> <span class="o">=</span> <span class="n">KickstartParser</span><span class="p">(</span><span class="n">ks_version</span><span class="p">,</span> <span class="n">errorsAreFatal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">missingIncludeIsFatal</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">ks</span><span class="o">.</span><span class="n">readKickstartFromString</span><span class="p">(</span><span class="n">ks_template</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">%e</span><span class="s2">nd</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">ks_projects</span> <span class="o">=</span> <span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">packageList</span><span class="p">]</span>
+    <span class="n">pkgs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">packageList</span><span class="p">]</span>
+    <span class="n">grps</span> <span class="o">=</span> <span class="p">[</span><span class="n">grp</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">grp</span> <span class="ow">in</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">groupList</span><span class="p">]</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">dnflock</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
-            <span class="p">(</span><span class="n">template_size</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">projects_depsolve_with_size</span><span class="p">(</span><span class="n">dnflock</span><span class="o">.</span><span class="n">dbo</span><span class="p">,</span> <span class="n">ks_projects</span><span class="p">,</span>
-                                                             <span class="n">with_core</span><span class="o">=</span><span class="ow">not</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">nocore</span><span class="p">)</span>
+            <span class="p">(</span><span class="n">template_size</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">projects_depsolve_with_size</span><span class="p">(</span><span class="n">dnflock</span><span class="o">.</span><span class="n">dbo</span><span class="p">,</span> <span class="n">pkgs</span><span class="p">,</span> <span class="n">grps</span><span class="p">,</span> <span class="n">with_core</span><span class="o">=</span><span class="ow">not</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">nocore</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">ProjectsError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;start_build depsolve: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Problem depsolving </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
@@ -460,6 +491,10 @@
             <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;repo composer-</span><span class="si">%s</span><span class="s2"> = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">ks_repo</span><span class="p">)</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;repo --name=&quot;composer-</span><span class="si">%s</span><span class="s1">&quot; </span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">ks_repo</span><span class="p">))</span>
 
+        <span class="c1"># Setup the disk for booting</span>
+        <span class="c1"># TODO Add GPT and UEFI boot support</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;clearpart --all --initlabel</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
         <span class="c1"># Write the root partition and it&#39;s size in MB (rounded up)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;part / --fstype=&quot;ext4&quot; --size=</span><span class="si">%d</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">ceil</span><span class="p">(</span><span class="n">installed_size</span> <span class="o">/</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
 
@@ -505,6 +540,7 @@
     <span class="k">if</span> <span class="n">test_mode</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="s2">&quot;TEST&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">test_mode</span><span class="p">)</span>
 
+    <span class="n">write_timestamp</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="n">TS_CREATED</span><span class="p">)</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Adding </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">) to compose queue&quot;</span><span class="p">,</span> <span class="n">build_id</span><span class="p">,</span> <span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">compose_type</span><span class="p">)</span>
     <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">lib_dir</span><span class="p">,</span> <span class="s2">&quot;queue/new/&quot;</span><span class="p">,</span> <span class="n">build_id</span><span class="p">))</span>
 
@@ -698,7 +734,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'28.14',
+            VERSION:'28.17',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

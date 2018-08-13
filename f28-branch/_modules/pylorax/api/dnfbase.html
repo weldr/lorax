@@ -1,0 +1,310 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pylorax.api.dnfbase &mdash; Lorax 28.17 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Lorax
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                28.17
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro.html">Introduction to Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro.html#before-lorax">Before Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lorax.html">Lorax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../livemedia-creator.html">livemedia-creator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lorax-composer.html">lorax-composer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../composer-cli.html">composer-cli</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../product-images.html">Product and Updates Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">pylorax</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Lorax</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../../pylorax.html">pylorax</a> &raquo;</li>
+        
+      <li>pylorax.api.dnfbase</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pylorax.api.dnfbase</h1><div class="highlight"><pre>
+<span></span><span class="c1">#</span>
+<span class="c1"># Copyright (C) 2017-2018 Red Hat, Inc.</span>
+<span class="c1">#</span>
+<span class="c1"># This program is free software; you can redistribute it and/or modify</span>
+<span class="c1"># it under the terms of the GNU General Public License as published by</span>
+<span class="c1"># the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c1"># (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># This program is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="c1">#</span>
+<span class="c1"># pylint: disable=bad-preconf-access</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;lorax-composer&quot;</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">dnf</span>
+<span class="kn">import</span> <span class="nn">dnf.logging</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="k">import</span> <span class="n">glob</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+
+
+<div class="viewcode-block" id="get_base_object"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.dnfbase.get_base_object">[docs]</a><span class="k">def</span> <span class="nf">get_base_object</span><span class="p">(</span><span class="n">conf</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the DNF object with settings from the config file</span>
+
+<span class="sd">    :param conf: configuration object</span>
+<span class="sd">    :type conf: ComposerParser</span>
+<span class="sd">    :returns: A DNF Base object</span>
+<span class="sd">    :rtype: dnf.Base</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cachedir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;cache_dir&quot;</span><span class="p">))</span>
+    <span class="n">dnfconf</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;dnf_conf&quot;</span><span class="p">))</span>
+    <span class="n">dnfroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;dnf_root&quot;</span><span class="p">))</span>
+    <span class="n">repodir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;repo_dir&quot;</span><span class="p">))</span>
+
+    <span class="c1"># Setup the config for the DNF Base object</span>
+    <span class="n">dbo</span> <span class="o">=</span> <span class="n">dnf</span><span class="o">.</span><span class="n">Base</span><span class="p">()</span>
+    <span class="n">dbc</span> <span class="o">=</span> <span class="n">dbo</span><span class="o">.</span><span class="n">conf</span>
+<span class="c1"># TODO - Handle this</span>
+<span class="c1">#    dbc.logdir = logdir</span>
+    <span class="n">dbc</span><span class="o">.</span><span class="n">installroot</span> <span class="o">=</span> <span class="n">dnfroot</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">dnfroot</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dnfroot</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">repodir</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">repodir</span><span class="p">)</span>
+
+    <span class="n">dbc</span><span class="o">.</span><span class="n">cachedir</span> <span class="o">=</span> <span class="n">cachedir</span>
+    <span class="n">dbc</span><span class="o">.</span><span class="n">reposdir</span> <span class="o">=</span> <span class="p">[</span><span class="n">repodir</span><span class="p">]</span>
+    <span class="n">dbc</span><span class="o">.</span><span class="n">install_weak_deps</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">dbc</span><span class="o">.</span><span class="n">prepend_installroot</span><span class="p">(</span><span class="s1">&#39;persistdir&#39;</span><span class="p">)</span>
+    <span class="n">dbc</span><span class="o">.</span><span class="n">tsflags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;nodocs&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">conf</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;dnf&quot;</span><span class="p">,</span> <span class="s2">&quot;proxy&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">dbc</span><span class="o">.</span><span class="n">proxy</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dnf&quot;</span><span class="p">,</span> <span class="s2">&quot;proxy&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">conf</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s2">&quot;dnf&quot;</span><span class="p">,</span> <span class="s2">&quot;sslverify&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">conf</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s2">&quot;dnf&quot;</span><span class="p">,</span> <span class="s2">&quot;sslverify&quot;</span><span class="p">):</span>
+        <span class="n">dbc</span><span class="o">.</span><span class="n">sslverify</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">_releasever</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;releasever&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_releasever</span><span class="p">:</span>
+        <span class="c1"># Use the releasever of the host system</span>
+        <span class="n">_releasever</span> <span class="o">=</span> <span class="n">dnf</span><span class="o">.</span><span class="n">rpm</span><span class="o">.</span><span class="n">detect_releasever</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;releasever = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">_releasever</span><span class="p">)</span>
+    <span class="n">dbc</span><span class="o">.</span><span class="n">releasever</span> <span class="o">=</span> <span class="n">_releasever</span>
+
+    <span class="c1"># write the dnf configuration file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dnfconf</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">dbc</span><span class="o">.</span><span class="n">dump</span><span class="p">())</span>
+
+    <span class="c1"># dnf needs the repos all in one directory, composer uses repodir for this</span>
+    <span class="c1"># if system repos are supposed to be used, copy them into repodir, overwriting any previous copies</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">conf</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s2">&quot;repos&quot;</span><span class="p">,</span> <span class="s2">&quot;use_system_repos&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">conf</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s2">&quot;repos&quot;</span><span class="p">,</span> <span class="s2">&quot;use_system_repos&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">repo_file</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="s2">&quot;/etc/yum.repos.d/*.repo&quot;</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">repo_file</span><span class="p">,</span> <span class="n">repodir</span><span class="p">)</span>
+    <span class="n">dbo</span><span class="o">.</span><span class="n">read_all_repos</span><span class="p">()</span>
+
+    <span class="c1"># Update the metadata from the enabled repos to speed up later operations</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Updating repository metadata&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">dbo</span><span class="o">.</span><span class="n">fill_sack</span><span class="p">(</span><span class="n">load_system_repo</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">dbo</span><span class="o">.</span><span class="n">read_comps</span><span class="p">()</span>
+    <span class="k">except</span> <span class="n">dnf</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to update metadata: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Fetching metadata failed: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">dbo</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Red Hat, Inc..
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'28.17',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>lorax-composer &mdash; Lorax 28.14 documentation</title>
+  <title>lorax-composer &mdash; Lorax 28.17 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                28.14
+                28.17
               </div>
             
           
@@ -102,6 +102,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#composing-images">Composing Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#blueprints">Blueprints</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#packages-and-modules">[[packages]] and [[modules]]</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groups">[[groups]]</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#customizations">Customizations</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#customizations-sshkey">[[customizations.sshkey]]</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#customizations-user">[[customizations.user]]</a></li>
@@ -209,7 +210,13 @@ systemd socket activation service. You will then need to enable it with <code cl
 <span class="pre">systemctl</span> <span class="pre">enable</span> <span class="pre">lorax-composer.socket</span> <span class="pre">&amp;&amp;</span> <span class="pre">sudo</span> <span class="pre">systemctl</span> <span class="pre">start</span>
 <span class="pre">lorax-composer.socket</span></code>. This will leave the server off until the first request
 is made. Systemd will then launch the server and it will remain running until
-the system is rebooted.</p>
+the system is rebooted. This will cause some delay in responding to the first
+request from the UI or <cite>composer-cli</cite>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you want lorax-composer to respond immediately to the first request you can
+start and enable <cite>lorax-composer.service</cite> instead of <cite>lorax-composer.socket</cite></p>
+</div>
 </div>
 <div class="section" id="quickstart">
 <h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
@@ -218,9 +225,13 @@ the system is rebooted.</p>
 <li>Remove any pre-existing socket directory with <code class="docutils literal notranslate"><span class="pre">rm</span> <span class="pre">-rf</span> <span class="pre">/run/weldr/</span></code>
 A new directory with correct permissions will be created the first time the server runs.</li>
 <li>Enable the socket activation with <code class="docutils literal notranslate"><span class="pre">systemctl</span> <span class="pre">enable</span> <span class="pre">lorax-composer.socket</span>
-<span class="pre">&amp;&amp;</span> <span class="pre">sudo</span> <span class="pre">systemctl</span> <span class="pre">start</span> <span class="pre">lorax-composer.socket</span></code> or run it directly with
-<code class="docutils literal notranslate"><span class="pre">lorax-composer</span> <span class="pre">/path/to/blueprints/</span></code></li>
+<span class="pre">&amp;&amp;</span> <span class="pre">sudo</span> <span class="pre">systemctl</span> <span class="pre">start</span> <span class="pre">lorax-composer.socket</span></code>.</li>
 </ol>
+<p>NOTE: You can also run it directly with <code class="docutils literal notranslate"><span class="pre">lorax-composer</span> <span class="pre">/path/to/blueprints</span></code>.  However,
+<code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> does not react well to being started both on the command line and via
+socket activation at the same time.  It is therefore recommended that you run it directly
+on the command line only for testing or development purposes.  For real use or development
+of other projects that simply use the API, you should stick to socket activation only.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">/path/to/blueprints/</span></code> directory is where the blueprints’ git repo will
 be created, and all the blueprints created with the <code class="docutils literal notranslate"><span class="pre">/api/v0/blueprints/new</span></code>
 route will be stored.  If there are blueprint <code class="docutils literal notranslate"><span class="pre">.toml</span></code> files in the top level
@@ -368,7 +379,9 @@ when it is written to disk. It should be short and descriptive.</p>
 <p><code class="docutils literal notranslate"><span class="pre">version</span></code> is a <a class="reference external" href="https://semver.org/">semver compatible</a> version number. If
 a new blueprint is uploaded with the same <code class="docutils literal notranslate"><span class="pre">version</span></code> the server will
 automatically bump the PATCH level of the <code class="docutils literal notranslate"><span class="pre">version</span></code>. If the <code class="docutils literal notranslate"><span class="pre">version</span></code>
-doesn’t match it will be used as is. eg. Uploading a blueprint with <code class="docutils literal notranslate"><span class="pre">version</span></code> set to <code class="docutils literal notranslate"><span class="pre">0.0.1</span></code> when the existing blueprint <code class="docutils literal notranslate"><span class="pre">version</span></code> is <code class="docutils literal notranslate"><span class="pre">0.0.1</span></code> will result in the new blueprint being stored as <code class="docutils literal notranslate"><span class="pre">version</span> <span class="pre">0.0.1</span></code>.</p>
+doesn’t match it will be used as is. eg. Uploading a blueprint with <code class="docutils literal notranslate"><span class="pre">version</span></code>
+set to <code class="docutils literal notranslate"><span class="pre">0.1.0</span></code> when the existing blueprint <code class="docutils literal notranslate"><span class="pre">version</span></code> is <code class="docutils literal notranslate"><span class="pre">0.0.1</span></code> will
+result in the new blueprint being stored as <code class="docutils literal notranslate"><span class="pre">version</span> <span class="pre">0.1.0</span></code>.</p>
 <div class="section" id="packages-and-modules">
 <h3>[[packages]] and [[modules]]<a class="headerlink" href="#packages-and-modules" title="Permalink to this headline">¶</a></h3>
 <p>These entries describe the package names and matching version glob to be installed into the image.</p>
@@ -378,6 +391,16 @@ character matching.</p>
 <p>NOTE: As of lorax-composer-29.2-1 the versions are not used for depsolving,
 that is planned for a future release. And currently there are no differences
 between <code class="docutils literal notranslate"><span class="pre">packages</span></code> and <code class="docutils literal notranslate"><span class="pre">modules</span></code> in <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code>.</p>
+</div>
+<div class="section" id="groups">
+<h3>[[groups]]<a class="headerlink" href="#groups" title="Permalink to this headline">¶</a></h3>
+<p>These entries describe a group of packages to be installed into the image.  Package groups are
+defined in the repository metadata.  Each group has a descriptive name used primarily for display
+in user interfaces and an ID more commonly used in kickstart files.  Here, the ID is the expected
+way of listing a group.</p>
+<p>Groups have three different ways of categorizing their packages:  mandatory, default, and optional.
+For purposes of blueprints, mandatory and default packages will be installed.  There is no mechanism
+for selecting optional packages.</p>
 </div>
 <div class="section" id="customizations">
 <h3>Customizations<a class="headerlink" href="#customizations" title="Permalink to this headline">¶</a></h3>
@@ -558,7 +581,7 @@ conflict with any other package sources, otherwise depsolving will fail.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'28.14',
+            VERSION:'28.17',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
