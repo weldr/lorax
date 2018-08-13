@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>composer.cli &mdash; Lorax 29.10 documentation</title>
+  <title>composer.cli &mdash; Lorax 29.11 documentation</title>
   
 
   
@@ -24,7 +24,8 @@
 
   
 
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -56,7 +57,7 @@
             
             
               <div class="version">
-                29.10
+                29.11
               </div>
             
           
@@ -178,13 +179,15 @@
 <span class="kn">from</span> <span class="nn">composer.cli.projects</span> <span class="k">import</span> <span class="n">projects_cmd</span>
 <span class="kn">from</span> <span class="nn">composer.cli.compose</span> <span class="k">import</span> <span class="n">compose_cmd</span>
 <span class="kn">from</span> <span class="nn">composer.cli.sources</span> <span class="k">import</span> <span class="n">sources_cmd</span>
+<span class="kn">from</span> <span class="nn">composer.cli.status</span> <span class="k">import</span> <span class="n">status_cmd</span>
 
 <span class="n">command_map</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;blueprints&quot;</span><span class="p">:</span> <span class="n">blueprints_cmd</span><span class="p">,</span>
     <span class="s2">&quot;modules&quot;</span><span class="p">:</span> <span class="n">modules_cmd</span><span class="p">,</span>
     <span class="s2">&quot;projects&quot;</span><span class="p">:</span> <span class="n">projects_cmd</span><span class="p">,</span>
     <span class="s2">&quot;compose&quot;</span><span class="p">:</span> <span class="n">compose_cmd</span><span class="p">,</span>
-    <span class="s2">&quot;sources&quot;</span><span class="p">:</span> <span class="n">sources_cmd</span>
+    <span class="s2">&quot;sources&quot;</span><span class="p">:</span> <span class="n">sources_cmd</span><span class="p">,</span>
+    <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">status_cmd</span>
     <span class="p">}</span>
 
 
@@ -240,7 +243,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'29.10',
+            VERSION:'29.11',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -254,7 +257,10 @@
 
   
 
-  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
 
   <script type="text/javascript">
       jQuery(function () {

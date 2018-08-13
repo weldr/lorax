@@ -4,6 +4,14 @@ pylorax.api package
 Submodules
 ----------
 
+pylorax.api.checkparams module
+------------------------------
+
+.. automodule:: pylorax.api.checkparams
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 pylorax.api.cmdline module
 --------------------------
 
@@ -44,6 +52,14 @@ pylorax.api.dnfbase module
     :undoc-members:
     :show-inheritance:
 
+pylorax.api.errors module
+-------------------------
+
+.. automodule:: pylorax.api.errors
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 pylorax.api.projects module
 ---------------------------
 
@@ -68,10 +84,26 @@ pylorax.api.recipes module
     :undoc-members:
     :show-inheritance:
 
+pylorax.api.regexes module
+--------------------------
+
+.. automodule:: pylorax.api.regexes
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 pylorax.api.server module
 -------------------------
 
 .. automodule:: pylorax.api.server
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pylorax.api.timestamp module
+----------------------------
+
+.. automodule:: pylorax.api.timestamp
     :members:
     :undoc-members:
     :show-inheritance:

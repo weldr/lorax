@@ -60,6 +60,14 @@ composer.cli.sources module
     :undoc-members:
     :show-inheritance:
 
+composer.cli.status module
+--------------------------
+
+.. automodule:: composer.cli.status
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 composer.cli.utilities module
 -----------------------------
 

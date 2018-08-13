@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>livemedia-creator &mdash; Lorax 29.10 documentation</title>
+  <title>livemedia-creator &mdash; Lorax 29.11 documentation</title>
   
 
   
@@ -24,7 +24,8 @@
 
   
 
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -58,7 +59,7 @@
             
             
               <div class="version">
-                29.10
+                29.11
               </div>
             
           
@@ -87,7 +88,17 @@
 <li class="toctree-l1"><a class="reference internal" href="intro.html#before-lorax">Before Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lorax.html">Lorax</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">livemedia-creator</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#livemedia-creator-cmdline-arguments">livemedia-creator cmdline arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#livemedia-creator-cmdline-arguments">livemedia-creator cmdline arguments</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#disk/fs image arguments">disk/fs image arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#appliance arguments">appliance arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qemu arguments">qemu arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dracut arguments">dracut arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pxe to live arguments">pxe to live arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#OCI arguments">OCI arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Vagrant arguments">Vagrant arguments</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#quickstart">Quickstart</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#how-iso-creation-works">How ISO creation works</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#kickstarts">Kickstarts</a><ul>
@@ -214,6 +225,372 @@ you have the anaconda-tui package installed.</p>
 <p><code class="docutils literal notranslate"><span class="pre">image</span></code> is the disk image being created by running livemedia-creator</p>
 <div class="section" id="livemedia-creator-cmdline-arguments">
 <h2>livemedia-creator cmdline arguments<a class="headerlink" href="#livemedia-creator-cmdline-arguments" title="Permalink to this headline">¶</a></h2>
+<p>Create Live Install Media</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+                         <span class="p">(</span><span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">iso</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">disk</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">fsimage</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">appliance</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">ami</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">tar</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">pxe</span><span class="o">-</span><span class="n">live</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">ostree</span><span class="o">-</span><span class="n">live</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">oci</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">vagrant</span><span class="p">)</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">iso</span> <span class="n">ISO</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">iso</span><span class="o">-</span><span class="n">only</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">iso</span><span class="o">-</span><span class="n">name</span> <span class="n">ISO_NAME</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">ks</span> <span class="n">KS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="n">only</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">virt</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span> <span class="n">PROXY</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">anaconda</span><span class="o">-</span><span class="n">arg</span> <span class="n">ANACONDA_ARGS</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">armplatform</span> <span class="n">ARMPLATFORM</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">location</span> <span class="n">LOCATION</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">logfile</span> <span class="n">LOGFILE</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">lorax</span><span class="o">-</span><span class="n">templates</span> <span class="n">LORAX_TEMPLATES</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tmp</span> <span class="n">TMP</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">resultdir</span> <span class="n">RESULT_DIR</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">macboot</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">nomacboot</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">disk</span><span class="o">-</span><span class="n">image</span> <span class="n">DISK_IMAGE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">keep</span><span class="o">-</span><span class="n">image</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">fs</span><span class="o">-</span><span class="n">image</span> <span class="n">FS_IMAGE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="n">name</span> <span class="n">IMAGE_NAME</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">fs</span><span class="o">-</span><span class="n">label</span> <span class="n">FS_LABEL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="nb">type</span> <span class="n">IMAGE_TYPE</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">qemu</span><span class="o">-</span><span class="n">arg</span> <span class="n">QEMU_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">qcow2</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">qcow2</span><span class="o">-</span><span class="n">arg</span> <span class="n">QEMU_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="n">COMPRESSION</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">compress</span><span class="o">-</span><span class="n">arg</span> <span class="n">COMPRESS_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">app</span><span class="o">-</span><span class="n">name</span> <span class="n">APP_NAME</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">app</span><span class="o">-</span><span class="n">template</span> <span class="n">APP_TEMPLATE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">app</span><span class="o">-</span><span class="n">file</span> <span class="n">APP_FILE</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">ram</span> <span class="n">MEMORY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">vcpus</span> <span class="n">VCPUS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">vnc</span> <span class="n">VNC</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">arch</span> <span class="n">ARCH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">kernel</span><span class="o">-</span><span class="n">args</span> <span class="n">KERNEL_ARGS</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">ovmf</span><span class="o">-</span><span class="n">path</span> <span class="n">OVMF_PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">virt</span><span class="o">-</span><span class="n">uefi</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">kvm</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="k">with</span><span class="o">-</span><span class="n">rng</span> <span class="n">WITH_RNG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dracut</span><span class="o">-</span><span class="n">arg</span> <span class="n">DRACUT_ARGS</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">live</span><span class="o">-</span><span class="n">rootfs</span><span class="o">-</span><span class="n">size</span> <span class="n">LIVE_ROOTFS_SIZE</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">live</span><span class="o">-</span><span class="n">rootfs</span><span class="o">-</span><span class="n">keep</span><span class="o">-</span><span class="n">size</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">oci</span><span class="o">-</span><span class="n">config</span> <span class="n">OCI_CONFIG</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">oci</span><span class="o">-</span><span class="n">runtime</span> <span class="n">OCI_RUNTIME</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">vagrant</span><span class="o">-</span><span class="n">metadata</span> <span class="n">VAGRANT_METADATA</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">vagrantfile</span> <span class="n">VAGRANTFILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">title</span> <span class="n">TITLE</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">project</span> <span class="n">PROJECT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">releasever</span> <span class="n">RELEASEVER</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">volid</span> <span class="n">VOLID</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">squashfs_args</span> <span class="n">SQUASHFS_ARGS</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">timeout</span> <span class="n">TIMEOUT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--make-iso</kbd></td>
+<td><p class="first">Build a live iso</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--make-disk</kbd></td>
+<td><p class="first">Build a partitioned disk image</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--make-fsimage</kbd></td>
+<td><p class="first">Build a filesystem image</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--make-appliance</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Build an appliance image and XML description</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--make-ami</kbd></td>
+<td><p class="first">Build an ami image</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--make-tar</kbd></td>
+<td><p class="first">Build a tar of the root filesystem</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--make-pxe-live</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Build a live pxe boot squashfs image</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--make-ostree-live</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Build a live pxe boot squashfs image of Atomic Host</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--make-oci</kbd></td>
+<td><p class="first">Build an Open Container Initiative image</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--make-vagrant</kbd></td>
+<td><p class="first">Build a Vagrant Box image</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--iso</kbd></td>
+<td>Anaconda installation .iso path to use for qemu</td></tr>
+<tr><td class="option-group">
+<kbd>--iso-only</kbd></td>
+<td><p class="first">Remove all iso creation artifacts except the boot.iso, combine with –iso-name to rename the boot.iso</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--iso-name</kbd></td>
+<td>Name of output iso file for –iso-only. Default is boot.iso</td></tr>
+<tr><td class="option-group">
+<kbd>--ks</kbd></td>
+<td>Kickstart file defining the install.</td></tr>
+<tr><td class="option-group">
+<kbd>--image-only</kbd></td>
+<td><p class="first">Exit after creating fs/disk image.</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--no-virt</kbd></td>
+<td><p class="first">Run anaconda directly on host instead of using qemu</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--proxy</kbd></td>
+<td>proxy URL to use for the install</td></tr>
+<tr><td class="option-group">
+<kbd>--anaconda-arg</kbd></td>
+<td>Additional argument to pass to anaconda (no-virt mode). Pass once for each argument</td></tr>
+<tr><td class="option-group">
+<kbd>--armplatform</kbd></td>
+<td>the platform to use when creating images for ARM, i.e., highbank, mvebu, omap, tegra, etc.</td></tr>
+<tr><td class="option-group">
+<kbd>--location</kbd></td>
+<td>location of iso directory tree with initrd.img and vmlinuz. Used to run qemu with a newer initrd than the iso.</td></tr>
+<tr><td class="option-group">
+<kbd>--logfile</kbd></td>
+<td><p class="first">Name and path for primary logfile, other logs will be created in the same directory.</p>
+<p class="last">Default: ./livemedia.log</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--lorax-templates</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Path to mako templates for lorax</td></tr>
+<tr><td class="option-group">
+<kbd>--tmp</kbd></td>
+<td><p class="first">Top level temporary directory</p>
+<p class="last">Default: /var/tmp</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--resultdir</kbd></td>
+<td>Directory to copy the resulting images and iso into. Defaults to the temporary working directory</td></tr>
+<tr><td class="option-group">
+<kbd>--macboot</kbd></td>
+<td>Default: True</td></tr>
+<tr><td class="option-group">
+<kbd>--nomacboot</kbd></td>
+<td>Default: True</td></tr>
+<tr><td class="option-group">
+<kbd>--title</kbd></td>
+<td><p class="first">Substituted for &#64;TITLE&#64; in bootloader config files</p>
+<p class="last">Default: “Linux Live Media”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--project</kbd></td>
+<td><p class="first">substituted for &#64;PROJECT&#64; in bootloader config files</p>
+<p class="last">Default: “Linux”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--releasever</kbd></td>
+<td><p class="first">substituted for &#64;VERSION&#64; in bootloader config files</p>
+<p class="last">Default: “29”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--volid</kbd></td>
+<td>volume id</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--squashfs_args</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>additional squashfs args</td></tr>
+<tr><td class="option-group">
+<kbd>--timeout</kbd></td>
+<td>Cancel installer after X minutes</td></tr>
+<tr><td class="option-group">
+<kbd>-V</kbd></td>
+<td>show program’s version number and exit</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="disk/fs image arguments">
+<h3>disk/fs image arguments<a class="headerlink" href="#disk/fs image arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--disk-image</kbd></td>
+<td>Path to existing disk image to use for creating final image.</td></tr>
+<tr><td class="option-group">
+<kbd>--keep-image</kbd></td>
+<td><p class="first">Keep raw disk image after .iso creation</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--fs-image</kbd></td>
+<td>Path to existing filesystem image to use for creating final image.</td></tr>
+<tr><td class="option-group">
+<kbd>--image-name</kbd></td>
+<td>Name of output file to create. Used for tar, fs and disk image. Default is a random name.</td></tr>
+<tr><td class="option-group">
+<kbd>--fs-label</kbd></td>
+<td><p class="first">Label to set on fsimage, default is ‘Anaconda’</p>
+<p class="last">Default: “Anaconda”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--image-type</kbd></td>
+<td>Create an image with qemu-img. See qemu-img –help for supported formats.</td></tr>
+<tr><td class="option-group">
+<kbd>--qemu-arg</kbd></td>
+<td><p class="first">Arguments to pass to qemu-img. Pass once for each argument, they will be used for ALL calls to qemu-img.</p>
+<p class="last">Default: []</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--qcow2</kbd></td>
+<td><p class="first">Create qcow2 image instead of raw sparse image when making disk images.</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--qcow2-arg</kbd></td>
+<td><p class="first">Arguments to pass to qemu-img. Pass once for each argument, they will be used for ALL calls to qemu-img.</p>
+<p class="last">Default: []</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--compression</kbd></td>
+<td><p class="first">Compression binary for make-tar. xz, lzma, gzip, and bzip2 are supported. xz is the default.</p>
+<p class="last">Default: “xz”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--compress-arg</kbd></td>
+<td><p class="first">Arguments to pass to compression. Pass once for each argument</p>
+<p class="last">Default: []</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="appliance arguments">
+<h3>appliance arguments<a class="headerlink" href="#appliance arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--app-name</kbd></td>
+<td>Name of appliance to pass to template</td></tr>
+<tr><td class="option-group">
+<kbd>--app-template</kbd></td>
+<td>Path to template to use for appliance data.</td></tr>
+<tr><td class="option-group">
+<kbd>--app-file</kbd></td>
+<td><p class="first">Appliance template results file.</p>
+<p class="last">Default: “appliance.xml”</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="qemu arguments">
+<h3>qemu arguments<a class="headerlink" href="#qemu arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--ram</kbd></td>
+<td><p class="first">Memory to allocate for installer in megabytes.</p>
+<p class="last">Default: 2048</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--vcpus</kbd></td>
+<td>Passed to qemu -smp command</td></tr>
+<tr><td class="option-group">
+<kbd>--vnc</kbd></td>
+<td>Passed to qemu -display command. eg. vnc=127.0.0.1:5, default is to choose the first unused vnc port.</td></tr>
+<tr><td class="option-group">
+<kbd>--arch</kbd></td>
+<td>System arch to build for. Used to select qemu-system-* command. Defaults to qemu-system-&lt;arch&gt;</td></tr>
+<tr><td class="option-group">
+<kbd>--kernel-args</kbd></td>
+<td>Additional argument to pass to the installation kernel</td></tr>
+<tr><td class="option-group">
+<kbd>--ovmf-path</kbd></td>
+<td><p class="first">Path to OVMF firmware</p>
+<p class="last">Default: “/usr/share/edk2/ovmf/”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--virt-uefi</kbd></td>
+<td><p class="first">Use OVMF firmware to boot the VM in UEFI mode</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--no-kvm</kbd></td>
+<td><p class="first">Skip using kvm with qemu even if it is available.</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--with-rng</kbd></td>
+<td><p class="first">RNG device for QEMU (none for no RNG)</p>
+<p class="last">Default: “/dev/random”</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="dracut arguments">
+<h3>dracut arguments<a class="headerlink" href="#dracut arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--dracut-arg</kbd></td>
+<td>Argument to pass to dracut when rebuilding the initramfs. Pass this once for each argument. NOTE: this overrides the default. (default: )</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="pxe to live arguments">
+<h3>pxe to live arguments<a class="headerlink" href="#pxe to live arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd>--live-rootfs-size</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Size of root filesystem of live image in GiB</p>
+<p class="last">Default: 0</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--live-rootfs-keep-size</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Keep the original size of root filesystem in live image</p>
+<p class="last">Default: False</p>
+</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="OCI arguments">
+<h3>OCI arguments<a class="headerlink" href="#OCI arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--oci-config</kbd></td>
+<td>config.json OCI configuration file</td></tr>
+<tr><td class="option-group">
+<kbd>--oci-runtime</kbd></td>
+<td>runtime.json OCI configuration file</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Vagrant arguments">
+<h3>Vagrant arguments<a class="headerlink" href="#Vagrant arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd>--vagrant-metadata</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>optional metadata.json file</td></tr>
+<tr><td class="option-group">
+<kbd>--vagrantfile</kbd></td>
+<td>optional vagrantfile</td></tr>
+</tbody>
+</table>
+</div>
 </div>
 <div class="section" id="quickstart">
 <h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
@@ -801,7 +1178,7 @@ report bugs against the lorax component.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'29.10',
+            VERSION:'29.11',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -815,7 +1192,10 @@ report bugs against the lorax component.</p>
 
   
 
-  <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
 
   <script type="text/javascript">
       jQuery(function () {

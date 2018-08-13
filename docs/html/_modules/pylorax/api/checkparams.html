@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>composer.cli.modules &mdash; Lorax 29.11 documentation</title>
+  <title>pylorax.api.checkparams &mdash; Lorax 29.11 documentation</title>
   
 
   
@@ -137,9 +137,9 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-          <li><a href="../cli.html">composer.cli</a> &raquo;</li>
+          <li><a href="../../pylorax.html">pylorax</a> &raquo;</li>
         
-      <li>composer.cli.modules</li>
+      <li>pylorax.api.checkparams</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -154,7 +154,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for composer.cli.modules</h1><div class="highlight"><pre>
+  <h1>Source code for pylorax.api.checkparams</h1><div class="highlight"><pre>
 <span></span><span class="c1">#</span>
 <span class="c1"># Copyright (C) 2018  Red Hat, Inc.</span>
 <span class="c1">#</span>
@@ -171,38 +171,34 @@
 <span class="c1"># You should have received a copy of the GNU General Public License</span>
 <span class="c1"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 <span class="c1">#</span>
+
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;composer-cli&quot;</span><span class="p">)</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;lorax-composer&quot;</span><span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">composer</span> <span class="k">import</span> <span class="n">http_client</span> <span class="k">as</span> <span class="n">client</span>
-<span class="kn">from</span> <span class="nn">composer.cli.help</span> <span class="k">import</span> <span class="n">modules_help</span>
-<span class="kn">from</span> <span class="nn">composer.cli.utilities</span> <span class="k">import</span> <span class="n">handle_api_result</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">jsonify</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">update_wrapper</span>
 
-<div class="viewcode-block" id="modules_cmd"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.modules.modules_cmd">[docs]</a><span class="k">def</span> <span class="nf">modules_cmd</span><span class="p">(</span><span class="n">opts</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Process modules commands</span>
+<span class="c1"># A decorator for checking the parameters provided to the API route implementing</span>
+<span class="c1"># functions.  The tuples parameter is a list of tuples.  Each tuple is the string</span>
+<span class="c1"># name of a parameter (&quot;blueprint_name&quot;, not blueprint_name), the value it&#39;s set</span>
+<span class="c1"># to by flask if the caller did not provide it, and a message to be returned to</span>
+<span class="c1"># the user.</span>
+<span class="c1">#</span>
+<span class="c1"># If the parameter is set to its default, the error message is returned.  Otherwise,</span>
+<span class="c1"># the decorated function is called and its return value is returned.</span>
+<div class="viewcode-block" id="checkparams"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.checkparams.checkparams">[docs]</a><span class="k">def</span> <span class="nf">checkparams</span><span class="p">(</span><span class="n">tuples</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">wrapped_function</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">tuples</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">==</span> <span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;(</span><span class="si">%s</span><span class="s2">) </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">tup</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[</span><span class="n">tup</span><span class="p">[</span><span class="mi">2</span><span class="p">]]),</span> <span class="mi">400</span>
 
-<span class="sd">    :param opts: Cmdline arguments</span>
-<span class="sd">    :type opts: argparse.Namespace</span>
-<span class="sd">    :returns: Value to return from sys.exit()</span>
-<span class="sd">    :rtype: int</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;help&quot;</span> <span class="ow">or</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;--help&quot;</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">modules_help</span><span class="p">)</span>
-        <span class="k">return</span> <span class="mi">0</span>
-    <span class="k">elif</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;list&quot;</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unknown modules command: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-        <span class="k">return</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">api_version</span><span class="p">,</span> <span class="s2">&quot;/modules/list&quot;</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_url_json</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
-    <span class="p">(</span><span class="n">rc</span><span class="p">,</span> <span class="n">exit_now</span><span class="p">)</span> <span class="o">=</span> <span class="n">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">exit_now</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">rc</span>
+        <span class="k">return</span> <span class="n">update_wrapper</span><span class="p">(</span><span class="n">wrapped_function</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
 
-    <span class="c1"># &quot;list&quot; should output a plain list of identifiers, one per line.</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;modules&quot;</span><span class="p">]))</span>
-
-    <span class="k">return</span> <span class="n">rc</span></div>
+    <span class="k">return</span> <span class="n">decorator</span></div>
 </pre></div>
 
            </div>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>composer.cli package &mdash; Lorax 29.10 documentation</title>
+  <title>composer.cli package &mdash; Lorax 29.11 documentation</title>
   
 
   
@@ -24,7 +24,8 @@
 
   
 
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -58,7 +59,7 @@
             
             
               <div class="version">
-                29.10
+                29.11
               </div>
             
           
@@ -660,6 +661,12 @@ of compose that was selected.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="composer.cli.compose.compose_list">
+<code class="descclassname">composer.cli.compose.</code><code class="descname">compose_list</code><span class="sig-paren">(</span><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em>, <em>testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a simple list of compose identifiers</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="composer.cli.compose.compose_log">
 <code class="descclassname">composer.cli.compose.</code><code class="descname">compose_log</code><span class="sig-paren">(</span><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em>, <em>testmode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/compose.html#compose_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_log" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show the last part of the compose log</p>
@@ -1014,6 +1021,27 @@ include this extra information.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-composer.cli.status">
+<span id="composer-cli-status-module"></span><h2>composer.cli.status module<a class="headerlink" href="#module-composer.cli.status" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="composer.cli.status.status_cmd">
+<code class="descclassname">composer.cli.status.</code><code class="descname">status_cmd</code><span class="sig-paren">(</span><em>opts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/status.html#status_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.status.status_cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process status commands</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>opts</strong> (<a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.7)"><em>argparse.Namespace</em></a>) – Cmdline arguments</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Value to return from sys.exit()</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
 <div class="section" id="module-composer.cli.utilities">
 <span id="composer-cli-utilities-module"></span><h2>composer.cli.utilities module<a class="headerlink" href="#module-composer.cli.utilities" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
@@ -1064,8 +1092,14 @@ include this extra information.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>result</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – JSON result from the http query</td>
 </tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(rc, should_exit_now)</td>
+</tr>
 </tbody>
 </table>
+<p>Return the correct rc for the program (0 or 1), and whether or
+not to continue processing the results.</p>
 </dd></dl>
 
 <dl class="function">
@@ -1166,7 +1200,7 @@ include this extra information.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'29.10',
+            VERSION:'29.11',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -1180,7 +1214,10 @@ include this extra information.</p>
 
   
 
-  <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
 
   <script type="text/javascript">
       jQuery(function () {
