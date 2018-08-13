@@ -392,6 +392,6 @@ class Mock(object):
     def __getitem__(cls, key):
         return cls.__getattr__(key)
 
-MOCK_MODULES = ["selinux", "dnf", "dnf.transaction", "rpmUtils", "rpmUtils.arch"]
+MOCK_MODULES = ["selinux", "dnf", "dnf.logging", "dnf.transaction", "rpmUtils", "rpmUtils.arch"]
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = Mock()
