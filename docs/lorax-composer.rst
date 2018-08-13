@@ -34,7 +34,13 @@ systemd socket activation service. You will then need to enable it with ``sudo
 systemctl enable lorax-composer.socket && sudo systemctl start
 lorax-composer.socket``. This will leave the server off until the first request
 is made. Systemd will then launch the server and it will remain running until
-the system is rebooted.
+the system is rebooted. This will cause some delay in responding to the first
+request from the UI or `composer-cli`.
+
+.. note::
+
+   If you want lorax-composer to respond immediately to the first request you can
+   start and enable `lorax-composer.service` instead of `lorax-composer.socket`
 
 Quickstart
 ----------
