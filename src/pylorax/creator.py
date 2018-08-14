@@ -45,7 +45,7 @@ from pylorax.installer import InstallError, novirt_install, virt_install
 
 RUNTIME = "images/install.img"
 
-# Default parameters for rebuilding initramfs, override with --dracut-args
+# Default parameters for rebuilding initramfs, override with --dracut-arg
 DRACUT_DEFAULT = ["--xz", "--add", "livenet dmsquash-live convertfs pollcdrom",
                   "--omit", "plymouth", "--no-hostonly", "--no-early-microcode"]
 

@@ -162,6 +162,7 @@ def main(args):
     # add the option groups to the parser
     parser.add_option_group(required)
     parser.add_option_group(optional)
+    parser.add_option_group(dracut_group)
 
     # add the show version option
     parser.add_option("-V", help="show program's version number and exit",
