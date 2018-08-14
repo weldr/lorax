@@ -1,4 +1,4 @@
-.TH LORAX 1 2013\-07\-26
+.TH LORAX 1 2018\-08\-14
 .SH NAME
 lorax \- Create installer boot iso
 
@@ -96,6 +96,12 @@ Top level temporary directory
 .TP
 \fB\-\-noverifyssl\fR
 This disables SSL certificate checking. eg. to allow using https: sources with self-signed certificates.
+
+.SH DRACUT ARGUMENTS:
+.TP
+\fB\-\-dracut-arg='ARG'\fR
+Argument to pass to dracut when rebuilding the initramfs. Pass this once for each argument, single quoting
+the arguments like this: '--xz' NOTE: this overrides the default, so all dracut arguments must be included.
 
 .SH AUTHORS
 .nf

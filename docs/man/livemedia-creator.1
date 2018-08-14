@@ -1,4 +1,4 @@
-.TH LIVEMEDIA-CREATOR 1 2013\-07\-26
+.TH LIVEMEDIA-CREATOR 1 2018\-08\-14
 .SH NAME
 livemedia-creator \- Create live install media
 
@@ -235,8 +235,9 @@ firmware files need to be installed manually, they are not shipped with RHEL.
 
 .SH DRACUT ARGUMENTS:
 .TP
-\fB\-\-dracut\-arg DRACUT_ARGS\fR
-Argument to pass to dracut when rebuilding the initramfs. Pass this once foreach argument. NOTE: this overrides the default.
+\fB\-\-dracut-arg='ARG'\fR
+Argument to pass to dracut when rebuilding the initramfs. Pass this once for each argument, single quoting
+the arguments like this: '--xz' NOTE: this overrides the default, so all dracut arguments must be included.
 
 .SH "SEE ALSO"
 Documentation in /usr/share/docs/lorax/README.livemedia-creator
