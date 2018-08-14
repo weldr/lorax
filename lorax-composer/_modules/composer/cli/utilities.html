@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>composer.cli.utilities &mdash; Lorax 19.7.18 documentation</title>
+    <title>composer.cli.utilities &mdash; Lorax 19.7.21 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '19.7.18',
+        VERSION:     '19.7.21',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.18 documentation" href="../../../index.html" />
+    <link rel="top" title="Lorax 19.7.21 documentation" href="../../../index.html" />
     <link rel="up" title="composer.cli" href="../cli.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.21 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../cli.html" accesskey="U">composer.cli</a> &raquo;</li> 
       </ul>
@@ -110,17 +110,28 @@
 
 <span class="sd">    :param result: JSON result from the http query</span>
 <span class="sd">    :type result: dict</span>
+<span class="sd">    :rtype: tuple</span>
+<span class="sd">    :returns: (rc, should_exit_now)</span>
+
+<span class="sd">    Return the correct rc for the program (0 or 1), and whether or</span>
+<span class="sd">    not to continue processing the results.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">show_json</span><span class="p">:</span>
         <span class="k">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
-
-    <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;errors&quot;</span><span class="p">,</span> <span class="p">[]):</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
-        <span class="k">return</span> <span class="mi">0</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;errors&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">err</span><span class="p">[</span><span class="s">&quot;msg&quot;</span><span class="p">])</span>
+
+    <span class="c"># What&#39;s the rc? If status is present, use that</span>
+    <span class="c"># If not, use length of errors</span>
+    <span class="k">if</span> <span class="s">&quot;status&quot;</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="ow">not</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;status&quot;</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;errors&quot;</span><span class="p">,</span> <span class="p">[]))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="c"># Caller should return if showing json, or status was present and False</span>
+    <span class="n">exit_now</span> <span class="o">=</span> <span class="n">show_json</span> <span class="ow">or</span> <span class="p">(</span><span class="s">&quot;status&quot;</span> <span class="ow">in</span> <span class="n">result</span> <span class="ow">and</span> <span class="n">rc</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">rc</span><span class="p">,</span> <span class="n">exit_now</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="packageNEVRA"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.utilities.packageNEVRA">[docs]</a><span class="k">def</span> <span class="nf">packageNEVRA</span><span class="p">(</span><span class="n">pkg</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return the package info as a NEVRA</span>
@@ -167,7 +178,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.21 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../cli.html" >composer.cli</a> &raquo;</li> 
       </ul>

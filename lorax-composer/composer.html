@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>composer Package &mdash; Lorax 19.7.18 documentation</title>
+    <title>composer Package &mdash; Lorax 19.7.21 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '19.7.18',
+        VERSION:     '19.7.21',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.18 documentation" href="index.html" />
+    <link rel="top" title="Lorax 19.7.21 documentation" href="index.html" />
     <link rel="up" title="src" href="modules.html" />
     <link rel="next" title="cli Package" href="composer.cli.html" />
     <link rel="prev" title="src" href="modules.html" /> 
@@ -46,7 +46,7 @@
         <li class="right" >
           <a href="modules.html" title="src"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
+        <li><a href="index.html">Lorax 19.7.21 documentation</a> &raquo;</li>
           <li><a href="modules.html" accesskey="U">src</a> &raquo;</li> 
       </ul>
     </div>  
@@ -78,6 +78,33 @@
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The full url to use for the route and API version</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.http_client.append_query">
+<tt class="descclassname">composer.http_client.</tt><tt class="descname">append_query</tt><big>(</big><em>url</em>, <em>query</em><big>)</big><a class="reference internal" href="_modules/composer/http_client.html#append_query"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.append_query" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a query argument to a URL</p>
+<p>The query should be of the form &#8220;param1=what&amp;param2=ever&#8221;, i.e., no
+leading &#8216;?&#8217;. The new query data will be appended to any existing
+query string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>url</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The original URL</li>
+<li><strong>query</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The query to append</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The new URL with the query argument included</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
@@ -153,6 +180,32 @@
 <dt id="composer.http_client.get_url_json">
 <tt class="descclassname">composer.http_client.</tt><tt class="descname">get_url_json</tt><big>(</big><em>socket_path</em>, <em>url</em><big>)</big><a class="reference internal" href="_modules/composer/http_client.html#get_url_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.get_url_json" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the JSON results of a GET request</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>socket_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path to the Unix socket to use for API communication</li>
+<li><strong>url</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; URL to request</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The json response from the server</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.http_client.get_url_json_unlimited">
+<tt class="descclassname">composer.http_client.</tt><tt class="descname">get_url_json_unlimited</tt><big>(</big><em>socket_path</em>, <em>url</em><big>)</big><a class="reference internal" href="_modules/composer/http_client.html#get_url_json_unlimited"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.http_client.get_url_json_unlimited" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the JSON results of a GET request</p>
+<p>For URLs that use offset/limit arguments, this command will
+fetch all results for the given request.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -305,6 +358,7 @@
 <li class="toctree-l2"><a class="reference internal" href="composer.cli.html#module-composer.cli.modules"><tt class="docutils literal"><span class="pre">modules</span></tt> Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="composer.cli.html#module-composer.cli.projects"><tt class="docutils literal"><span class="pre">projects</span></tt> Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="composer.cli.html#module-composer.cli.sources"><tt class="docutils literal"><span class="pre">sources</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="composer.cli.html#module-composer.cli.status"><tt class="docutils literal"><span class="pre">status</span></tt> Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="composer.cli.html#module-composer.cli.utilities"><tt class="docutils literal"><span class="pre">utilities</span></tt> Module</a></li>
 </ul>
 </li>
@@ -375,7 +429,7 @@
         <li class="right" >
           <a href="modules.html" title="src"
              >previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
+        <li><a href="index.html">Lorax 19.7.21 documentation</a> &raquo;</li>
           <li><a href="modules.html" >src</a> &raquo;</li> 
       </ul>
     </div>

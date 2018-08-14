@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pylorax.api.yumbase &mdash; Lorax 19.7.18 documentation</title>
+    <title>pylorax.api.yumbase &mdash; Lorax 19.7.21 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '19.7.18',
+        VERSION:     '19.7.21',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.18 documentation" href="../../../index.html" />
+    <link rel="top" title="Lorax 19.7.21 documentation" href="../../../index.html" />
     <link rel="up" title="pylorax.api" href="../api.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.21 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../../pylorax.html" >pylorax</a> &raquo;</li>
           <li><a href="../api.html" accesskey="U">pylorax.api</a> &raquo;</li> 
@@ -77,6 +77,8 @@
 <span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">yum</span>
+<span class="kn">from</span> <span class="nn">yum.Errors</span> <span class="kn">import</span> <span class="n">YumBaseError</span>
+
 <span class="c"># This is a hack to short circuit yum&#39;s internal logging</span>
 <span class="n">yum</span><span class="o">.</span><span class="n">logginglevels</span><span class="o">.</span><span class="n">_added_handlers</span> <span class="o">=</span> <span class="bp">True</span>
 
@@ -171,9 +173,13 @@
     <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">yb</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">sort</span><span class="p">():</span>
         <span class="n">r</span><span class="o">.</span><span class="n">metadata_expire</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">r</span><span class="o">.</span><span class="n">mdpolicy</span> <span class="o">=</span> <span class="s">&quot;group:all&quot;</span>
-    <span class="n">yb</span><span class="o">.</span><span class="n">doRepoSetup</span><span class="p">()</span>
-    <span class="n">yb</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">doSetup</span><span class="p">()</span>
-    <span class="n">yb</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">populateSack</span><span class="p">(</span><span class="n">mdtype</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="n">cacheonly</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">yb</span><span class="o">.</span><span class="n">doRepoSetup</span><span class="p">()</span>
+        <span class="n">yb</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">doSetup</span><span class="p">()</span>
+        <span class="n">yb</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">populateSack</span><span class="p">(</span><span class="n">mdtype</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="n">cacheonly</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">YumBaseError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Failed to update metadata: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Fetching metadata failed: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
 </pre></div>
 
           </div>
@@ -207,7 +213,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.21 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../../pylorax.html" >pylorax</a> &raquo;</li>
           <li><a href="../api.html" >pylorax.api</a> &raquo;</li> 

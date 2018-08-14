@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>cli Package &mdash; Lorax 19.7.18 documentation</title>
+    <title>cli Package &mdash; Lorax 19.7.21 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '19.7.18',
+        VERSION:     '19.7.21',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.18 documentation" href="index.html" />
+    <link rel="top" title="Lorax 19.7.21 documentation" href="index.html" />
     <link rel="up" title="composer Package" href="composer.html" />
     <link rel="next" title="pylorax Package" href="pylorax.html" />
     <link rel="prev" title="composer Package" href="composer.html" /> 
@@ -46,7 +46,7 @@
         <li class="right" >
           <a href="composer.html" title="composer Package"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
+        <li><a href="index.html">Lorax 19.7.21 documentation</a> &raquo;</li>
           <li><a href="modules.html" >src</a> &raquo;</li>
           <li><a href="composer.html" accesskey="U">composer Package</a> &raquo;</li> 
       </ul>
@@ -549,6 +549,12 @@ of compose that was selected.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="composer.cli.compose.compose_list">
+<tt class="descclassname">composer.cli.compose.</tt><tt class="descname">compose_list</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em>, <em>testmode=0</em><big>)</big><a class="reference internal" href="_modules/composer/cli/compose.html#compose_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a simple list of compose identifiers</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="composer.cli.compose.compose_log">
 <tt class="descclassname">composer.cli.compose.</tt><tt class="descname">compose_log</tt><big>(</big><em>socket_path</em>, <em>api_version</em>, <em>args</em>, <em>show_json=False</em>, <em>testmode=0</em><big>)</big><a class="reference internal" href="_modules/composer/cli/compose.html#compose_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.compose.compose_log" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show the last part of the compose log</p>
@@ -903,6 +909,27 @@ include this extra information.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-composer.cli.status">
+<span id="status-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">status</span></tt> Module<a class="headerlink" href="#module-composer.cli.status" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="composer.cli.status.status_cmd">
+<tt class="descclassname">composer.cli.status.</tt><tt class="descname">status_cmd</tt><big>(</big><em>opts</em><big>)</big><a class="reference internal" href="_modules/composer/cli/status.html#status_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.status.status_cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process status commands</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>opts</strong> (<a class="reference external" href="https://docs.python.org/2/library/argparse.html#argparse.Namespace" title="(in Python v2.7)"><em>argparse.Namespace</em></a>) &#8211; Cmdline arguments</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Value to return from sys.exit()</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
 <div class="section" id="module-composer.cli.utilities">
 <span id="utilities-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">utilities</span></tt> Module<a class="headerlink" href="#module-composer.cli.utilities" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
@@ -953,8 +980,14 @@ include this extra information.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>result</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; JSON result from the http query</td>
 </tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(rc, should_exit_now)</td>
+</tr>
 </tbody>
 </table>
+<p>Return the correct rc for the program (0 or 1), and whether or
+not to continue processing the results.</p>
 </dd></dl>
 
 <dl class="function">
@@ -1012,6 +1045,7 @@ include this extra information.</p>
 <li><a class="reference internal" href="#module-composer.cli.modules"><tt class="docutils literal"><span class="pre">modules</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-composer.cli.projects"><tt class="docutils literal"><span class="pre">projects</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-composer.cli.sources"><tt class="docutils literal"><span class="pre">sources</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-composer.cli.status"><tt class="docutils literal"><span class="pre">status</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-composer.cli.utilities"><tt class="docutils literal"><span class="pre">utilities</span></tt> Module</a></li>
 </ul>
 </li>
@@ -1060,7 +1094,7 @@ include this extra information.</p>
         <li class="right" >
           <a href="composer.html" title="composer Package"
              >previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
+        <li><a href="index.html">Lorax 19.7.21 documentation</a> &raquo;</li>
           <li><a href="modules.html" >src</a> &raquo;</li>
           <li><a href="composer.html" >composer Package</a> &raquo;</li> 
       </ul>

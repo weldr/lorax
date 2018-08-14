@@ -57,6 +57,14 @@ cli Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`status` Module
+--------------------
+
+.. automodule:: composer.cli.status
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`utilities` Module
 -----------------------
 

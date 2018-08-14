@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lorax-composer &mdash; Lorax 19.7.18 documentation</title>
+    <title>lorax-composer &mdash; Lorax 19.7.21 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '19.7.18',
+        VERSION:     '19.7.21',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.18 documentation" href="index.html" />
+    <link rel="top" title="Lorax 19.7.21 documentation" href="index.html" />
     <link rel="next" title="composer-cli" href="composer-cli.html" />
     <link rel="prev" title="livemedia-creator" href="livemedia-creator.html" /> 
   </head>
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="livemedia-creator.html" title="livemedia-creator"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.18 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Lorax 19.7.21 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -91,7 +91,13 @@ systemd socket activation service. You will then need to enable it with <tt clas
 <span class="pre">systemctl</span> <span class="pre">enable</span> <span class="pre">lorax-composer.socket</span> <span class="pre">&amp;&amp;</span> <span class="pre">sudo</span> <span class="pre">systemctl</span> <span class="pre">start</span>
 <span class="pre">lorax-composer.socket</span></tt>. This will leave the server off until the first request
 is made. Systemd will then launch the server and it will remain running until
-the system is rebooted.</p>
+the system is rebooted. This will cause some delay in responding to the first
+request from the UI or <cite>composer-cli</cite>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you want lorax-composer to respond immediately to the first request you can
+start and enable <cite>lorax-composer.service</cite> instead of <cite>lorax-composer.socket</cite></p>
+</div>
 </div>
 <div class="section" id="quickstart">
 <h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
@@ -100,9 +106,13 @@ the system is rebooted.</p>
 <li>Remove any pre-existing socket directory with <tt class="docutils literal"><span class="pre">rm</span> <span class="pre">-rf</span> <span class="pre">/run/weldr/</span></tt>
 A new directory with correct permissions will be created the first time the server runs.</li>
 <li>Enable the socket activation with <tt class="docutils literal"><span class="pre">systemctl</span> <span class="pre">enable</span> <span class="pre">lorax-composer.socket</span>
-<span class="pre">&amp;&amp;</span> <span class="pre">sudo</span> <span class="pre">systemctl</span> <span class="pre">start</span> <span class="pre">lorax-composer.socket</span></tt> or run it directly with
-<tt class="docutils literal"><span class="pre">lorax-composer</span> <span class="pre">/path/to/blueprints/</span></tt></li>
+<span class="pre">&amp;&amp;</span> <span class="pre">sudo</span> <span class="pre">systemctl</span> <span class="pre">start</span> <span class="pre">lorax-composer.socket</span></tt>.</li>
 </ol>
+<p>NOTE: You can also run it directly with <tt class="docutils literal"><span class="pre">lorax-composer</span> <span class="pre">/path/to/blueprints</span></tt>.  However,
+<tt class="docutils literal"><span class="pre">lorax-composer</span></tt> does not react well to being started both on the command line and via
+socket activation at the same time.  It is therefore recommended that you run it directly
+on the command line only for testing or development purposes.  For real use or development
+of other projects that simply use the API, you should stick to socket activation only.</p>
 <p>The <tt class="docutils literal"><span class="pre">/path/to/blueprints/</span></tt> directory is where the blueprints&#8217; git repo will
 be created, and all the blueprints created with the <tt class="docutils literal"><span class="pre">/api/v0/blueprints/new</span></tt>
 route will be stored.  If there are blueprint <tt class="docutils literal"><span class="pre">.toml</span></tt> files in the top level
@@ -181,6 +191,16 @@ character matching.</p>
 <p>NOTE: As of lorax-composer-29.2-1 the versions are not used for depsolving,
 that is planned for a future release. And currently there are no differences
 between <tt class="docutils literal"><span class="pre">packages</span></tt> and <tt class="docutils literal"><span class="pre">modules</span></tt> in <tt class="docutils literal"><span class="pre">lorax-composer</span></tt>.</p>
+</div>
+<div class="section" id="groups">
+<h3>[[groups]]<a class="headerlink" href="#groups" title="Permalink to this headline">¶</a></h3>
+<p>These entries describe a group of packages to be installed into the image.  Package groups are
+defined in the repository metadata.  Each group has a descriptive name used primarily for display
+in user interfaces and an ID more commonly used in kickstart files.  Here, the ID is the expected
+way of listing a group.</p>
+<p>Groups have three different ways of categorizing their packages:  mandatory, default, and optional.
+For purposes of blueprints, mandatory and default packages will be installed.  There is no mechanism
+for selecting optional packages.</p>
 </div>
 <div class="section" id="customizations">
 <h3>Customizations<a class="headerlink" href="#customizations" title="Permalink to this headline">¶</a></h3>
@@ -337,6 +357,7 @@ conflict with any other package sources, otherwise depsolving will fail.</p>
 <li><a class="reference internal" href="#composing-images">Composing Images</a></li>
 <li><a class="reference internal" href="#blueprints">Blueprints</a><ul>
 <li><a class="reference internal" href="#packages-and-modules">[[packages]] and [[modules]]</a></li>
+<li><a class="reference internal" href="#groups">[[groups]]</a></li>
 <li><a class="reference internal" href="#customizations">Customizations</a><ul>
 <li><a class="reference internal" href="#customizations-sshkey">[[customizations.sshkey]]</a></li>
 <li><a class="reference internal" href="#customizations-user">[[customizations.user]]</a></li>
@@ -397,7 +418,7 @@ conflict with any other package sources, otherwise depsolving will fail.</p>
         <li class="right" >
           <a href="livemedia-creator.html" title="livemedia-creator"
              >previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.18 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Lorax 19.7.21 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

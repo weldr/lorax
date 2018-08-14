@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>composer.cli.compose &mdash; Lorax 19.7.18 documentation</title>
+    <title>composer.cli.compose &mdash; Lorax 19.7.21 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '19.7.18',
+        VERSION:     '19.7.21',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.18 documentation" href="../../../index.html" />
+    <link rel="top" title="Lorax 19.7.21 documentation" href="../../../index.html" />
     <link rel="up" title="composer.cli" href="../cli.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.21 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../cli.html" accesskey="U">composer.cli</a> &raquo;</li> 
       </ul>
@@ -69,6 +69,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&quot;composer-cli&quot;</span><span class="p">)</span>
 
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">json</span>
 
@@ -87,6 +88,7 @@
 <span class="sd">    This dispatches the compose commands to a function</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">cmd_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&quot;list&quot;</span><span class="p">:</span>     <span class="n">compose_list</span><span class="p">,</span>
         <span class="s">&quot;status&quot;</span><span class="p">:</span>   <span class="n">compose_status</span><span class="p">,</span>
         <span class="s">&quot;types&quot;</span><span class="p">:</span>    <span class="n">compose_types</span><span class="p">,</span>
         <span class="s">&quot;start&quot;</span><span class="p">:</span>    <span class="n">compose_start</span><span class="p">,</span>
@@ -99,7 +101,7 @@
         <span class="s">&quot;logs&quot;</span><span class="p">:</span>     <span class="n">compose_logs</span><span class="p">,</span>
         <span class="s">&quot;image&quot;</span><span class="p">:</span>    <span class="n">compose_image</span><span class="p">,</span>
         <span class="p">}</span>
-    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span> <span class="o">==</span> <span class="s">&quot;help&quot;</span> <span class="ow">or</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span> <span class="o">==</span> <span class="s">&quot;--help&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;help&quot;</span> <span class="ow">or</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;--help&quot;</span><span class="p">:</span>
         <span class="k">print</span><span class="p">(</span><span class="n">compose_help</span><span class="p">)</span>
         <span class="k">return</span> <span class="mi">0</span>
     <span class="k">elif</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cmd_map</span><span class="p">:</span>
@@ -107,6 +109,50 @@
         <span class="k">return</span> <span class="mi">1</span>
 
     <span class="k">return</span> <span class="n">cmd_map</span><span class="p">[</span><span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]](</span><span class="n">opts</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">api_version</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="p">:],</span> <span class="n">opts</span><span class="o">.</span><span class="n">json</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">testmode</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="compose_list"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_list">[docs]</a><span class="k">def</span> <span class="nf">compose_list</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a simple list of compose identifiers&quot;&quot;&quot;</span>
+
+    <span class="n">states</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;running&quot;</span><span class="p">,</span> <span class="s">&quot;waiting&quot;</span><span class="p">,</span> <span class="s">&quot;finished&quot;</span><span class="p">,</span> <span class="s">&quot;failed&quot;</span><span class="p">)</span>
+
+    <span class="n">which</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">a</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">states</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">):</span>
+        <span class="c"># TODO: error about unknown state</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
+        <span class="n">which</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">states</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">which</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="s">&quot;running&quot;</span> <span class="ow">in</span> <span class="n">which</span> <span class="ow">or</span> <span class="s">&quot;waiting&quot;</span> <span class="ow">in</span> <span class="n">which</span><span class="p">:</span>
+        <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose/queue&quot;</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s">&quot;running&quot;</span> <span class="ow">in</span> <span class="n">which</span><span class="p">:</span>
+            <span class="n">results</span> <span class="o">+=</span> <span class="n">r</span><span class="p">[</span><span class="s">&quot;run&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s">&quot;waiting&quot;</span> <span class="ow">in</span> <span class="n">which</span><span class="p">:</span>
+            <span class="n">results</span> <span class="o">+=</span> <span class="n">r</span><span class="p">[</span><span class="s">&quot;new&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="s">&quot;finished&quot;</span> <span class="ow">in</span> <span class="n">which</span><span class="p">:</span>
+        <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose/finished&quot;</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">+=</span> <span class="n">r</span><span class="p">[</span><span class="s">&quot;finished&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="s">&quot;failed&quot;</span> <span class="ow">in</span> <span class="n">which</span><span class="p">:</span>
+        <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose/failed&quot;</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">+=</span> <span class="n">r</span><span class="p">[</span><span class="s">&quot;failed&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">show_json</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">list_fmt</span> <span class="o">=</span> <span class="s">&quot;{id} {queue_status} {blueprint} {version} {compose_type}&quot;</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">list_fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">results</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="mi">0</span>
 </div>
 <div class="viewcode-block" id="compose_status"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_status">[docs]</a><span class="k">def</span> <span class="nf">compose_status</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return the status of all known composes</span>
@@ -131,7 +177,10 @@
                 <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="n">compose</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">],</span>
                 <span class="s">&quot;compose_type&quot;</span><span class="p">:</span> <span class="n">compose</span><span class="p">[</span><span class="s">&quot;compose_type&quot;</span><span class="p">],</span>
                 <span class="s">&quot;image_size&quot;</span><span class="p">:</span> <span class="n">compose</span><span class="p">[</span><span class="s">&quot;image_size&quot;</span><span class="p">],</span>
-                <span class="s">&quot;status&quot;</span><span class="p">:</span> <span class="n">compose</span><span class="p">[</span><span class="s">&quot;queue_status&quot;</span><span class="p">]}</span>
+                <span class="s">&quot;status&quot;</span><span class="p">:</span> <span class="n">compose</span><span class="p">[</span><span class="s">&quot;queue_status&quot;</span><span class="p">],</span>
+                <span class="s">&quot;created&quot;</span><span class="p">:</span> <span class="n">compose</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;job_created&quot;</span><span class="p">),</span>
+                <span class="s">&quot;started&quot;</span><span class="p">:</span> <span class="n">compose</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;job_started&quot;</span><span class="p">),</span>
+                <span class="s">&quot;finished&quot;</span><span class="p">:</span> <span class="n">compose</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;job_finished&quot;</span><span class="p">)}</span>
 
     <span class="c"># Sort the status in a specific order</span>
     <span class="k">def</span> <span class="nf">sort_status</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
@@ -169,8 +218,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">image_size</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
 
-        <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> </span><span class="si">%-8s</span><span class="s"> </span><span class="si">%-15s</span><span class="s"> </span><span class="si">%s</span><span class="s"> </span><span class="si">%-16s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s">&quot;id&quot;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s">&quot;status&quot;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s">&quot;blueprint&quot;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s">&quot;compose_type&quot;</span><span class="p">],</span>
-                                             <span class="n">image_size</span><span class="p">))</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;finished&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;started&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;created&quot;</span><span class="p">))</span>
+
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> </span><span class="si">%-8s</span><span class="s"> </span><span class="si">%s</span><span class="s"> </span><span class="si">%-15s</span><span class="s"> </span><span class="si">%s</span><span class="s"> </span><span class="si">%-16s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s">&quot;id&quot;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s">&quot;status&quot;</span><span class="p">],</span> <span class="n">dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%c</span><span class="s">&quot;</span><span class="p">),</span> <span class="n">c</span><span class="p">[</span><span class="s">&quot;blueprint&quot;</span><span class="p">],</span>
+                                                <span class="n">c</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s">&quot;compose_type&quot;</span><span class="p">],</span> <span class="n">image_size</span><span class="p">))</span>
 
 </div>
 <div class="viewcode-block" id="compose_types"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_types">[docs]</a><span class="k">def</span> <span class="nf">compose_types</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
@@ -196,7 +247,7 @@
         <span class="k">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
         <span class="k">return</span> <span class="mi">0</span>
 
-    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Compose Types: &quot;</span> <span class="o">+</span> <span class="s">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;types&quot;</span><span class="p">]]))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;types&quot;</span><span class="p">]))</span>
 </div>
 <div class="viewcode-block" id="compose_start"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_start">[docs]</a><span class="k">def</span> <span class="nf">compose_start</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Start a new compose using the selected blueprint and type</span>
@@ -232,19 +283,12 @@
         <span class="n">test_url</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
     <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose&quot;</span> <span class="o">+</span> <span class="n">test_url</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">config</span><span class="p">))</span>
-
-    <span class="k">if</span> <span class="n">show_json</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
-        <span class="k">return</span> <span class="mi">0</span>
-
-    <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;errors&quot;</span><span class="p">,</span> <span class="p">[]):</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">False</span> <span class="ow">or</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;errors&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
-        <span class="k">return</span> <span class="mi">1</span>
+    <span class="p">(</span><span class="n">rc</span><span class="p">,</span> <span class="n">exit_now</span><span class="p">)</span> <span class="o">=</span> <span class="n">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">exit_now</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">rc</span>
 
     <span class="k">print</span><span class="p">(</span><span class="s">&quot;Compose </span><span class="si">%s</span><span class="s"> added to the queue&quot;</span> <span class="o">%</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;build_id&quot;</span><span class="p">])</span>
-    <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">rc</span>
 </div>
 <div class="viewcode-block" id="compose_log"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_log">[docs]</a><span class="k">def</span> <span class="nf">compose_log</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Show the last part of the compose log</span>
@@ -311,7 +355,7 @@
 
     <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose/cancel/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">delete_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 </div>
 <div class="viewcode-block" id="compose_delete"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_delete">[docs]</a><span class="k">def</span> <span class="nf">compose_delete</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Delete a finished compose&#39;s results</span>
@@ -338,19 +382,7 @@
 
     <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose/delete/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">argify</span><span class="p">(</span><span class="n">args</span><span class="p">))))</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">delete_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">show_json</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
-        <span class="k">return</span> <span class="mi">0</span>
-
-    <span class="c"># Print any errors</span>
-    <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;errors&quot;</span><span class="p">,</span> <span class="p">[]):</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;errors&quot;</span><span class="p">,</span> <span class="p">[]):</span>
-        <span class="k">return</span> <span class="mi">1</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 </div>
 <div class="viewcode-block" id="compose_details"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_details">[docs]</a><span class="k">def</span> <span class="nf">compose_details</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return detailed information about the compose</span>
@@ -376,15 +408,9 @@
 
     <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose/info/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">show_json</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
-        <span class="k">return</span> <span class="mi">0</span>
-
-    <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;errors&quot;</span><span class="p">,</span> <span class="p">[]):</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;errors&quot;</span><span class="p">,</span> <span class="p">[]):</span>
-        <span class="k">return</span> <span class="mi">1</span>
+    <span class="p">(</span><span class="n">rc</span><span class="p">,</span> <span class="n">exit_now</span><span class="p">)</span> <span class="o">=</span> <span class="n">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">exit_now</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">rc</span>
 
     <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;image_size&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">image_size</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s">&quot;image_size&quot;</span><span class="p">])</span>
@@ -409,6 +435,8 @@
     <span class="k">print</span><span class="p">(</span><span class="s">&quot;Dependencies:&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;deps&quot;</span><span class="p">][</span><span class="s">&quot;packages&quot;</span><span class="p">]:</span>
         <span class="k">print</span><span class="p">(</span><span class="s">&quot;    &quot;</span> <span class="o">+</span> <span class="n">packageNEVRA</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">rc</span>
 </div>
 <div class="viewcode-block" id="compose_metadata"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_metadata">[docs]</a><span class="k">def</span> <span class="nf">compose_metadata</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Download a tar file of the compose&#39;s metadata</span>
@@ -433,7 +461,13 @@
         <span class="k">return</span> <span class="mi">1</span>
 
     <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose/metadata/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">client</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">rc</span>
 </div>
 <div class="viewcode-block" id="compose_results"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_results">[docs]</a><span class="k">def</span> <span class="nf">compose_results</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Download a tar file of the compose&#39;s results</span>
@@ -459,7 +493,13 @@
         <span class="k">return</span> <span class="mi">1</span>
 
     <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose/results/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">client</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">isatty</span><span class="p">())</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">isatty</span><span class="p">())</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">rc</span>
 </div>
 <div class="viewcode-block" id="compose_logs"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_logs">[docs]</a><span class="k">def</span> <span class="nf">compose_logs</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Download a tar of the compose&#39;s logs</span>
@@ -484,7 +524,13 @@
         <span class="k">return</span> <span class="mi">1</span>
 
     <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose/logs/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">client</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">isatty</span><span class="p">())</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">isatty</span><span class="p">())</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">rc</span>
 </div>
 <div class="viewcode-block" id="compose_image"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.compose.compose_image">[docs]</a><span class="k">def</span> <span class="nf">compose_image</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">testmode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Download the compose&#39;s output image</span>
@@ -510,7 +556,13 @@
         <span class="k">return</span> <span class="mi">1</span>
 
     <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/compose/image/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">client</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">isatty</span><span class="p">())</span></div>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">isatty</span><span class="p">())</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">rc</span></div>
 </pre></div>
 
           </div>
@@ -544,7 +596,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.21 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../cli.html" >composer.cli</a> &raquo;</li> 
       </ul>

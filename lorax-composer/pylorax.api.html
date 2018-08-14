@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>api Package &mdash; Lorax 19.7.18 documentation</title>
+    <title>api Package &mdash; Lorax 19.7.21 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '19.7.18',
+        VERSION:     '19.7.21',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.18 documentation" href="index.html" />
+    <link rel="top" title="Lorax 19.7.21 documentation" href="index.html" />
     <link rel="up" title="pylorax Package" href="pylorax.html" />
     <link rel="prev" title="pylorax Package" href="pylorax.html" /> 
   </head>
@@ -42,7 +42,7 @@
         <li class="right" >
           <a href="pylorax.html" title="pylorax Package"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
+        <li><a href="index.html">Lorax 19.7.21 documentation</a> &raquo;</li>
           <li><a href="modules.html" >src</a> &raquo;</li>
           <li><a href="pylorax.html" accesskey="U">pylorax Package</a> &raquo;</li> 
       </ul>
@@ -60,6 +60,14 @@
 <span class="target" id="module-pylorax.api"></span><dl class="function">
 <dt id="pylorax.api.crossdomain">
 <tt class="descclassname">pylorax.api.</tt><tt class="descname">crossdomain</tt><big>(</big><em>origin</em>, <em>methods=None</em>, <em>headers=None</em>, <em>max_age=21600</em>, <em>attach_to_all=True</em>, <em>automatic_options=True</em><big>)</big><a class="headerlink" href="#pylorax.api.crossdomain" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.api.checkparams">
+<span id="checkparams-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">checkparams</span></tt> Module<a class="headerlink" href="#module-pylorax.api.checkparams" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pylorax.api.checkparams.checkparams">
+<tt class="descclassname">pylorax.api.checkparams.</tt><tt class="descname">checkparams</tt><big>(</big><em>tuples</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/checkparams.html#checkparams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.checkparams.checkparams" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -173,6 +181,25 @@ Other options will be filled in by <cite>make_compose()</cite></p>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.test_templates">
+<tt class="descclassname">pylorax.api.compose.</tt><tt class="descname">test_templates</tt><big>(</big><em>yb</em>, <em>share_dir</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/compose.html#test_templates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.test_templates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Try depsolving each of the the templates and report any errors</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>yb</strong> (<em>YumBase</em>) &#8211; yum base object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of template types and errors</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">List of errors</td>
+</tr>
+</tbody>
+</table>
+<p>Return a list of templates and errors encountered or an empty list</p>
 </dd></dl>
 
 <dl class="function">
@@ -297,6 +324,9 @@ with whatever options are relevant.</p>
 <tt class="descclassname">pylorax.api.crossdomain.</tt><tt class="descname">crossdomain</tt><big>(</big><em>origin</em>, <em>methods=None</em>, <em>headers=None</em>, <em>max_age=21600</em>, <em>attach_to_all=True</em>, <em>automatic_options=True</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/crossdomain.html#crossdomain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.crossdomain.crossdomain" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</div>
+<div class="section" id="module-pylorax.api.errors">
+<span id="errors-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">errors</span></tt> Module<a class="headerlink" href="#module-pylorax.api.errors" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-pylorax.api.projects">
 <span id="projects-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">projects</span></tt> Module<a class="headerlink" href="#module-pylorax.api.projects" title="Permalink to this headline">¶</a></h2>
@@ -505,7 +535,7 @@ and sets the type to &#8220;rpm&#8221;</p>
 
 <dl class="function">
 <dt id="pylorax.api.projects.projects_depsolve">
-<tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">projects_depsolve</tt><big>(</big><em>yb</em>, <em>projects</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#projects_depsolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.projects_depsolve" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">projects_depsolve</tt><big>(</big><em>yb</em>, <em>projects</em>, <em>groups</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#projects_depsolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.projects_depsolve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the dependencies for a list of projects</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -514,6 +544,7 @@ and sets the type to &#8220;rpm&#8221;</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>yb</strong> (<em>YumBase</em>) &#8211; yum base object</li>
 <li><strong>projects</strong> (<em>List of tuples</em>) &#8211; The projects and version globs to find the dependencies for</li>
+<li><strong>groups</strong> (<em>List of str</em>) &#8211; The groups to include in dependency solving</li>
 </ul>
 </td>
 </tr>
@@ -532,7 +563,7 @@ and sets the type to &#8220;rpm&#8221;</p>
 
 <dl class="function">
 <dt id="pylorax.api.projects.projects_depsolve_with_size">
-<tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">projects_depsolve_with_size</tt><big>(</big><em>yb</em>, <em>projects</em>, <em>with_core=True</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#projects_depsolve_with_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.projects_depsolve_with_size" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">pylorax.api.projects.</tt><tt class="descname">projects_depsolve_with_size</tt><big>(</big><em>yb</em>, <em>projects</em>, <em>groups</em>, <em>with_core=True</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/projects.html#projects_depsolve_with_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.projects.projects_depsolve_with_size" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the dependencies and installed size for a list of projects</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -541,6 +572,7 @@ and sets the type to &#8220;rpm&#8221;</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>yb</strong> (<em>YumBase</em>) &#8211; yum base object</li>
 <li><strong>projects</strong> (<em>List of tuples</em>) &#8211; The projects and version globs to find the dependencies for</li>
+<li><strong>groups</strong> (<em>List of str</em>) &#8211; The groups to include in dependency solving</li>
 </ul>
 </td>
 </tr>
@@ -818,11 +850,18 @@ Use queue_status() for those.</p>
 <ul class="simple">
 <li>id - The uuid of the comoposition</li>
 <li>queue_status - The final status of the composition (FINISHED or FAILED)</li>
-<li>timestamp - The time of the last status change</li>
 <li>compose_type - The type of output generated (tar, iso, etc.)</li>
 <li>blueprint - Blueprint name</li>
 <li>version - Blueprint version</li>
 <li>image_size - Size of the image, if finished. 0 otherwise.</li>
+</ul>
+<p>Various timestamps are also included in the dict.  These are all Unix UTC timestamps.
+It is possible for these timestamps to not always exist, in which case they will be
+None in Python (or null in JSON).  The following timestamps are included:</p>
+<ul class="simple">
+<li>job_created - When the user submitted the compose</li>
+<li>job_started - Anaconda started running</li>
+<li>job_finished - Job entered FINISHED or FAILED state</li>
 </ul>
 </dd></dl>
 
@@ -1055,7 +1094,7 @@ and &#8220;run&#8221; has the uuids that are being built (currently limited to 1
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">dictionary of information about the composition</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">dictionary of information about the composition or None</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">dict</p>
@@ -1182,7 +1221,7 @@ the selected data to the caller by returning the Popen stdout from the tar proce
 
 <dl class="class">
 <dt id="pylorax.api.recipes.Recipe">
-<em class="property">class </em><tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">Recipe</tt><big>(</big><em>name</em>, <em>description</em>, <em>version</em>, <em>modules</em>, <em>packages</em>, <em>customizations=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#Recipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.Recipe" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">Recipe</tt><big>(</big><em>name</em>, <em>description</em>, <em>version</em>, <em>modules</em>, <em>packages</em>, <em>groups</em>, <em>customizations=None</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#Recipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.Recipe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">dict</span></tt></a></p>
 <p>A Recipe of package and modules</p>
 <p>This is a subclass of dict that enforces the constructor arguments
@@ -1239,6 +1278,12 @@ If they are different, check and return the new version</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="pylorax.api.recipes.Recipe.group_names">
+<tt class="descname">group_names</tt><a class="reference internal" href="_modules/pylorax/api/recipes.html#Recipe.group_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.Recipe.group_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the names of the groups.  Groups do not have versions.</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="pylorax.api.recipes.Recipe.module_names">
 <tt class="descname">module_names</tt><a class="reference internal" href="_modules/pylorax/api/recipes.html#Recipe.module_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.Recipe.module_names" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the names of the modules</p>
@@ -1280,6 +1325,12 @@ If they are different, check and return the new version</p>
 <dt id="pylorax.api.recipes.RecipeFileError">
 <em class="property">exception </em><tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">RecipeFileError</tt><a class="reference internal" href="_modules/pylorax/api/recipes.html#RecipeFileError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.RecipeFileError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pylorax.api.recipes.RecipeGroup">
+<em class="property">class </em><tt class="descclassname">pylorax.api.recipes.</tt><tt class="descname">RecipeGroup</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/recipes.html#RecipeGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.RecipeGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">dict</span></tt></a></p>
 </dd></dl>
 
 <dl class="class">
@@ -2135,6 +2186,9 @@ If the commit has already been tagged it will return false.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-pylorax.api.regexes">
+<span id="regexes-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">regexes</span></tt> Module<a class="headerlink" href="#module-pylorax.api.regexes" title="Permalink to this headline">¶</a></h2>
+</div>
 <div class="section" id="module-pylorax.api.server">
 <span id="server-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">server</span></tt> Module<a class="headerlink" href="#module-pylorax.api.server" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
@@ -2161,6 +2215,19 @@ If the commit has already been tagged it will return false.</p>
 </dd></dl>
 
 </dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.api.timestamp">
+<span id="timestamp-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">timestamp</span></tt> Module<a class="headerlink" href="#module-pylorax.api.timestamp" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pylorax.api.timestamp.timestamp_dict">
+<tt class="descclassname">pylorax.api.timestamp.</tt><tt class="descname">timestamp_dict</tt><big>(</big><em>destdir</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/timestamp.html#timestamp_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.timestamp.timestamp_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.timestamp.write_timestamp">
+<tt class="descclassname">pylorax.api.timestamp.</tt><tt class="descname">write_timestamp</tt><big>(</big><em>destdir</em>, <em>ty</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/timestamp.html#write_timestamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.timestamp.write_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 <div class="section" id="module-pylorax.api.v0">
@@ -2887,14 +2954,14 @@ and the build that is running.</p>
       <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;45502a6d-06e8-48a5-a215-2b4174b3614b&quot;</span><span class="p">,</span>
       <span class="s">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
       <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s">&quot;WAITING&quot;</span><span class="p">,</span>
-      <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517362647.4570868</span><span class="p">,</span>
+      <span class="s">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517362647.4570868</span><span class="p">,</span>
       <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.6&quot;</span>
     <span class="p">},</span>
     <span class="p">{</span>
       <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;6d292bd0-bec7-4825-8d7d-41ef9c3e4b73&quot;</span><span class="p">,</span>
       <span class="s">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s">&quot;kubernetes&quot;</span><span class="p">,</span>
       <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s">&quot;WAITING&quot;</span><span class="p">,</span>
-      <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517362659.0034983</span><span class="p">,</span>
+      <span class="s">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517362659.0034983</span><span class="p">,</span>
       <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.1&quot;</span>
     <span class="p">}</span>
   <span class="p">],</span>
@@ -2903,7 +2970,8 @@ and the build that is running.</p>
       <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;745712b2-96db-44c0-8014-fe925c35e795&quot;</span><span class="p">,</span>
       <span class="s">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
       <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s">&quot;RUNNING&quot;</span><span class="p">,</span>
-      <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517362633.7965999</span><span class="p">,</span>
+      <span class="s">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517362633.7965999</span><span class="p">,</span>
+      <span class="s">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517362633.8001345</span><span class="p">,</span>
       <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.6&quot;</span>
     <span class="p">}</span>
   <span class="p">]</span>
@@ -2923,14 +2991,18 @@ and the build that is running.</p>
       <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;70b84195-9817-4b8a-af92-45e380f39894&quot;</span><span class="p">,</span>
       <span class="s">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
       <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s">&quot;FINISHED&quot;</span><span class="p">,</span>
-      <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517351003.8210032</span><span class="p">,</span>
+      <span class="s">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517351003.8210032</span><span class="p">,</span>
+      <span class="s">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517351003.8230415</span><span class="p">,</span>
+      <span class="s">&quot;job_finished&quot;</span><span class="p">:</span> <span class="mf">1517359234.1003145</span><span class="p">,</span>
       <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.6&quot;</span>
     <span class="p">},</span>
     <span class="p">{</span>
       <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;e695affd-397f-4af9-9022-add2636e7459&quot;</span><span class="p">,</span>
       <span class="s">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
       <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s">&quot;FINISHED&quot;</span><span class="p">,</span>
-      <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517362289.7193348</span><span class="p">,</span>
+      <span class="s">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517362289.7193348</span><span class="p">,</span>
+      <span class="s">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517362289.9751132</span><span class="p">,</span>
+      <span class="s">&quot;job_finished&quot;</span><span class="p">:</span> <span class="mf">1517363500.1234567</span><span class="p">,</span>
       <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.6&quot;</span>
     <span class="p">}</span>
   <span class="p">]</span>
@@ -2950,7 +3022,9 @@ and the build that is running.</p>
       <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a&quot;</span><span class="p">,</span>
       <span class="s">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s">&quot;http-server&quot;</span><span class="p">,</span>
       <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s">&quot;FAILED&quot;</span><span class="p">,</span>
-      <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517523249.9301329</span><span class="p">,</span>
+      <span class="s">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517523249.9301329</span><span class="p">,</span>
+      <span class="s">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517523249.9314211</span><span class="p">,</span>
+      <span class="s">&quot;job_finished&quot;</span><span class="p">:</span> <span class="mf">1517523255.5623411</span><span class="p">,</span>
       <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.2&quot;</span>
     <span class="p">}</span>
   <span class="p">]</span>
@@ -2959,10 +3033,11 @@ and the build that is running.</p>
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="api-v0-compose-status-uuids">
-<h4><cite>/api/v0/compose/status/&lt;uuids&gt;</cite><a class="headerlink" href="#api-v0-compose-status-uuids" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="api-v0-compose-status-uuids-blueprint-blueprint-name-status-compose-status-type-compose-type">
+<h4><cite>/api/v0/compose/status/&lt;uuids&gt;[?blueprint=&lt;blueprint_name&gt;&amp;status=&lt;compose_status&gt;&amp;type=&lt;compose_type&gt;]</cite><a class="headerlink" href="#api-v0-compose-status-uuids-blueprint-blueprint-name-status-compose-status-type-compose-type" title="Permalink to this headline">¶</a></h4>
 <blockquote>
-<div><p>Return the details for each of the comma-separated list of uuids.</p>
+<div><p>Return the details for each of the comma-separated list of uuids. A uuid of &#8216;*&#8217; will return
+details for all composes.</p>
 <p>Example:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
   <span class="s">&quot;uuids&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -2970,14 +3045,18 @@ and the build that is running.</p>
       <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a&quot;</span><span class="p">,</span>
       <span class="s">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s">&quot;http-server&quot;</span><span class="p">,</span>
       <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s">&quot;FINISHED&quot;</span><span class="p">,</span>
-      <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517523644.2384307</span><span class="p">,</span>
+      <span class="s">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517523644.2384307</span><span class="p">,</span>
+      <span class="s">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517523644.2551234</span><span class="p">,</span>
+      <span class="s">&quot;job_finished&quot;</span><span class="p">:</span> <span class="mf">1517523689.9864314</span><span class="p">,</span>
       <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.2&quot;</span>
     <span class="p">},</span>
     <span class="p">{</span>
       <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="s">&quot;45502a6d-06e8-48a5-a215-2b4174b3614b&quot;</span><span class="p">,</span>
       <span class="s">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s">&quot;glusterfs&quot;</span><span class="p">,</span>
       <span class="s">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s">&quot;FINISHED&quot;</span><span class="p">,</span>
-      <span class="s">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517363442.188399</span><span class="p">,</span>
+      <span class="s">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517363442.188399</span><span class="p">,</span>
+      <span class="s">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517363442.325324</span><span class="p">,</span>
+      <span class="s">&quot;job_finished&quot;</span><span class="p">:</span> <span class="mf">1517363451.653621</span><span class="p">,</span>
       <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;0.0.6&quot;</span>
     <span class="p">}</span>
   <span class="p">]</span>
@@ -3128,6 +3207,11 @@ a line boundry.</p>
 12:59:50,784 INFO anaconda: Thread Done: AnaConfigurationThread (140629395244800)</pre>
 </div>
 </div></blockquote>
+<dl class="function">
+<dt id="pylorax.api.v0.blueprint_exists">
+<tt class="descclassname">pylorax.api.v0.</tt><tt class="descname">blueprint_exists</tt><big>(</big><em>api</em>, <em>branch</em>, <em>blueprint_name</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/v0.html#blueprint_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.blueprint_exists" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="function">
 <dt id="pylorax.api.v0.take_limits">
 <tt class="descclassname">pylorax.api.v0.</tt><tt class="descname">take_limits</tt><big>(</big><em>iterable</em>, <em>offset</em>, <em>limit</em><big>)</big><a class="reference internal" href="_modules/pylorax/api/v0.html#take_limits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.take_limits" title="Permalink to this definition">¶</a></dt>
@@ -3314,16 +3398,20 @@ a line boundry.</p>
   <ul>
 <li><a class="reference internal" href="#">api Package</a><ul>
 <li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">api</span></tt> Package</a></li>
+<li><a class="reference internal" href="#module-pylorax.api.checkparams"><tt class="docutils literal"><span class="pre">checkparams</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-pylorax.api.compose"><tt class="docutils literal"><span class="pre">compose</span></tt> Module</a><ul>
 <li><a class="reference internal" href="#adding-new-output-types">Adding New Output Types</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-pylorax.api.config"><tt class="docutils literal"><span class="pre">config</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-pylorax.api.crossdomain"><tt class="docutils literal"><span class="pre">crossdomain</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-pylorax.api.errors"><tt class="docutils literal"><span class="pre">errors</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-pylorax.api.projects"><tt class="docutils literal"><span class="pre">projects</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-pylorax.api.queue"><tt class="docutils literal"><span class="pre">queue</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-pylorax.api.recipes"><tt class="docutils literal"><span class="pre">recipes</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-pylorax.api.regexes"><tt class="docutils literal"><span class="pre">regexes</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-pylorax.api.server"><tt class="docutils literal"><span class="pre">server</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-pylorax.api.timestamp"><tt class="docutils literal"><span class="pre">timestamp</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-pylorax.api.v0"><tt class="docutils literal"><span class="pre">v0</span></tt> Module</a><ul>
 <li><a class="reference internal" href="#status-responses">Status Responses</a></li>
 <li><a class="reference internal" href="#api-routes">API Routes</a><ul>
@@ -3354,7 +3442,7 @@ a line boundry.</p>
 <li><a class="reference internal" href="#api-v0-compose-queue"><cite>/api/v0/compose/queue</cite></a></li>
 <li><a class="reference internal" href="#api-v0-compose-finished"><cite>/api/v0/compose/finished</cite></a></li>
 <li><a class="reference internal" href="#api-v0-compose-failed"><cite>/api/v0/compose/failed</cite></a></li>
-<li><a class="reference internal" href="#api-v0-compose-status-uuids"><cite>/api/v0/compose/status/&lt;uuids&gt;</cite></a></li>
+<li><a class="reference internal" href="#api-v0-compose-status-uuids-blueprint-blueprint-name-status-compose-status-type-compose-type"><cite>/api/v0/compose/status/&lt;uuids&gt;[?blueprint=&lt;blueprint_name&gt;&amp;status=&lt;compose_status&gt;&amp;type=&lt;compose_type&gt;]</cite></a></li>
 <li><a class="reference internal" href="#delete-api-v0-blueprints-cancel-uuid">DELETE <cite>/api/v0/blueprints/cancel/&lt;uuid&gt;</cite></a></li>
 <li><a class="reference internal" href="#delete-api-v0-compose-delete-uuids">DELETE <cite>/api/v0/compose/delete/&lt;uuids&gt;</cite></a></li>
 <li><a class="reference internal" href="#api-v0-compose-info-uuid"><cite>/api/v0/compose/info/&lt;uuid&gt;</cite></a></li>
@@ -3410,7 +3498,7 @@ a line boundry.</p>
         <li class="right" >
           <a href="pylorax.html" title="pylorax Package"
              >previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
+        <li><a href="index.html">Lorax 19.7.21 documentation</a> &raquo;</li>
           <li><a href="modules.html" >src</a> &raquo;</li>
           <li><a href="pylorax.html" >pylorax Package</a> &raquo;</li> 
       </ul>

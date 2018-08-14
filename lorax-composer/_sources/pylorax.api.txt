@@ -9,6 +9,14 @@ api Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`checkparams` Module
+-------------------------
+
+.. automodule:: pylorax.api.checkparams
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`compose` Module
 ---------------------
 
@@ -29,6 +37,14 @@ api Package
 -------------------------
 
 .. automodule:: pylorax.api.crossdomain
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`errors` Module
+--------------------
+
+.. automodule:: pylorax.api.errors
     :members:
     :undoc-members:
     :show-inheritance:
@@ -57,10 +73,26 @@ api Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`regexes` Module
+---------------------
+
+.. automodule:: pylorax.api.regexes
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`server` Module
 --------------------
 
 .. automodule:: pylorax.api.server
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`timestamp` Module
+-----------------------
+
+.. automodule:: pylorax.api.timestamp
     :members:
     :undoc-members:
     :show-inheritance:

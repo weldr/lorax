@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>composer.cli.blueprints &mdash; Lorax 19.7.18 documentation</title>
+    <title>composer.cli.blueprints &mdash; Lorax 19.7.21 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '19.7.18',
+        VERSION:     '19.7.21',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.18 documentation" href="../../../index.html" />
+    <link rel="top" title="Lorax 19.7.21 documentation" href="../../../index.html" />
     <link rel="up" title="composer.cli" href="../cli.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.21 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../cli.html" accesskey="U">composer.cli</a> &raquo;</li> 
       </ul>
@@ -70,7 +70,6 @@
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&quot;composer-cli&quot;</span><span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">json</span>
 
 <span class="kn">from</span> <span class="nn">composer</span> <span class="kn">import</span> <span class="n">http_client</span> <span class="k">as</span> <span class="n">client</span>
 <span class="kn">from</span> <span class="nn">composer.cli.help</span> <span class="kn">import</span> <span class="n">blueprints_help</span>
@@ -125,14 +124,15 @@
 <span class="sd">    blueprints list</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/blueprints/list&quot;</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">show_json</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
-        <span class="k">return</span> <span class="mi">0</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_url_json_unlimited</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">rc</span><span class="p">,</span> <span class="n">exit_now</span><span class="p">)</span> <span class="o">=</span> <span class="n">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">exit_now</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">rc</span>
 
-    <span class="k">print</span><span class="p">(</span><span class="s">&quot;blueprints: &quot;</span> <span class="o">+</span> <span class="s">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;blueprints&quot;</span><span class="p">]]))</span>
+    <span class="c"># &quot;list&quot; should output a plain list of identifiers, one per line.</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s">&quot;blueprints&quot;</span><span class="p">]))</span>
 
-    <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">rc</span>
 </div>
 <div class="viewcode-block" id="blueprints_show"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.blueprints.blueprints_show">[docs]</a><span class="k">def</span> <span class="nf">blueprints_show</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Show the blueprints, in TOML format</span>
@@ -171,17 +171,17 @@
 <span class="sd">    blueprints changes &lt;blueprint,...&gt;     Display the changes for each blueprint.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/blueprints/changes/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">argify</span><span class="p">(</span><span class="n">args</span><span class="p">))))</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">show_json</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
-        <span class="k">return</span> <span class="mi">0</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_url_json_unlimited</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">rc</span><span class="p">,</span> <span class="n">exit_now</span><span class="p">)</span> <span class="o">=</span> <span class="n">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">exit_now</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">rc</span>
 
     <span class="k">for</span> <span class="n">blueprint</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;blueprints&quot;</span><span class="p">]:</span>
         <span class="k">print</span><span class="p">(</span><span class="n">blueprint</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">])</span>
         <span class="k">for</span> <span class="n">change</span> <span class="ow">in</span> <span class="n">blueprint</span><span class="p">[</span><span class="s">&quot;changes&quot;</span><span class="p">]:</span>
             <span class="n">prettyCommitDetails</span><span class="p">(</span><span class="n">change</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">rc</span>
 </div>
 <div class="viewcode-block" id="prettyCommitDetails"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.blueprints.prettyCommitDetails">[docs]</a><span class="k">def</span> <span class="nf">prettyCommitDetails</span><span class="p">(</span><span class="n">change</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Print the blueprint&#39;s change in a nice way</span>
@@ -197,8 +197,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="s">&quot;&quot;</span>
 
-    <span class="k">print</span> <span class="s">&quot; &quot;</span> <span class="o">*</span> <span class="n">indent</span> <span class="o">+</span> <span class="n">change</span><span class="p">[</span><span class="s">&quot;timestamp&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&quot;  &quot;</span> <span class="o">+</span> <span class="n">change</span><span class="p">[</span><span class="s">&quot;commit&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">revision</span><span class="p">()</span>
-    <span class="k">print</span> <span class="s">&quot; &quot;</span> <span class="o">*</span> <span class="n">indent</span> <span class="o">+</span> <span class="n">change</span><span class="p">[</span><span class="s">&quot;message&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot; &quot;</span> <span class="o">*</span> <span class="n">indent</span> <span class="o">+</span> <span class="n">change</span><span class="p">[</span><span class="s">&quot;timestamp&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&quot;  &quot;</span> <span class="o">+</span> <span class="n">change</span><span class="p">[</span><span class="s">&quot;commit&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">revision</span><span class="p">())</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot; &quot;</span> <span class="o">*</span> <span class="n">indent</span> <span class="o">+</span> <span class="n">change</span><span class="p">[</span><span class="s">&quot;message&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="blueprints_diff"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.blueprints.blueprints_diff">[docs]</a><span class="k">def</span> <span class="nf">blueprints_diff</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Display the differences between 2 versions of a blueprint</span>
@@ -228,21 +228,14 @@
 
     <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/blueprints/diff/</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">args</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">show_json</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
-        <span class="k">return</span> <span class="mi">0</span>
-
-    <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;errors&quot;</span><span class="p">,</span> <span class="p">[]):</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;errors&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
-        <span class="k">return</span> <span class="mi">1</span>
+    <span class="p">(</span><span class="n">rc</span><span class="p">,</span> <span class="n">exit_now</span><span class="p">)</span> <span class="o">=</span> <span class="n">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">exit_now</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">rc</span>
 
     <span class="k">for</span> <span class="n">diff</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;diff&quot;</span><span class="p">]:</span>
         <span class="k">print</span><span class="p">(</span><span class="n">prettyDiffEntry</span><span class="p">(</span><span class="n">diff</span><span class="p">))</span>
 
-    <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">rc</span>
 </div>
 <div class="viewcode-block" id="prettyDiffEntry"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.blueprints.prettyDiffEntry">[docs]</a><span class="k">def</span> <span class="nf">prettyDiffEntry</span><span class="p">(</span><span class="n">diff</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Generate nice diff entry string.</span>
@@ -283,11 +276,15 @@
         <span class="k">elif</span> <span class="n">change</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span> <span class="o">==</span> <span class="s">&quot;Added&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">name</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;Module&quot;</span><span class="p">,</span> <span class="s">&quot;Package&quot;</span><span class="p">]:</span>
                 <span class="k">return</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">diff</span><span class="p">[</span><span class="s">&quot;new&quot;</span><span class="p">][</span><span class="n">name</span><span class="p">(</span><span class="n">diff</span><span class="p">)][</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">diff</span><span class="p">[</span><span class="s">&quot;new&quot;</span><span class="p">][</span><span class="n">name</span><span class="p">(</span><span class="n">diff</span><span class="p">)][</span><span class="s">&quot;version&quot;</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">name</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;Group&quot;</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="n">diff</span><span class="p">[</span><span class="s">&quot;new&quot;</span><span class="p">][</span><span class="n">name</span><span class="p">(</span><span class="n">diff</span><span class="p">)][</span><span class="s">&quot;name&quot;</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="s">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">diff</span><span class="p">[</span><span class="s">&quot;new&quot;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">diff</span><span class="p">[</span><span class="s">&quot;new&quot;</span><span class="p">]])</span>
         <span class="k">elif</span> <span class="n">change</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span> <span class="o">==</span> <span class="s">&quot;Removed&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">name</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;Module&quot;</span><span class="p">,</span> <span class="s">&quot;Package&quot;</span><span class="p">]:</span>
                 <span class="k">return</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">diff</span><span class="p">[</span><span class="s">&quot;old&quot;</span><span class="p">][</span><span class="n">name</span><span class="p">(</span><span class="n">diff</span><span class="p">)][</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">diff</span><span class="p">[</span><span class="s">&quot;old&quot;</span><span class="p">][</span><span class="n">name</span><span class="p">(</span><span class="n">diff</span><span class="p">)][</span><span class="s">&quot;version&quot;</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">name</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;Group&quot;</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="n">diff</span><span class="p">[</span><span class="s">&quot;old&quot;</span><span class="p">][</span><span class="n">name</span><span class="p">(</span><span class="n">diff</span><span class="p">)][</span><span class="s">&quot;name&quot;</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="s">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">diff</span><span class="p">[</span><span class="s">&quot;old&quot;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">diff</span><span class="p">[</span><span class="s">&quot;old&quot;</span><span class="p">]])</span>
 
@@ -331,7 +328,7 @@
     <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/blueprints/delete/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">delete_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 </div>
 <div class="viewcode-block" id="blueprints_depsolve"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.blueprints.blueprints_depsolve">[docs]</a><span class="k">def</span> <span class="nf">blueprints_depsolve</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Display the packages needed to install the blueprint</span>
@@ -349,10 +346,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/blueprints/depsolve/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">argify</span><span class="p">(</span><span class="n">args</span><span class="p">))))</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">show_json</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
-        <span class="k">return</span> <span class="mi">0</span>
+    <span class="p">(</span><span class="n">rc</span><span class="p">,</span> <span class="n">exit_now</span><span class="p">)</span> <span class="o">=</span> <span class="n">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">exit_now</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">rc</span>
 
     <span class="k">for</span> <span class="n">blueprint</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;blueprints&quot;</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">blueprint</span><span class="p">[</span><span class="s">&quot;blueprint&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;version&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">):</span>
@@ -362,7 +358,7 @@
         <span class="k">for</span> <span class="n">dep</span> <span class="ow">in</span> <span class="n">blueprint</span><span class="p">[</span><span class="s">&quot;dependencies&quot;</span><span class="p">]:</span>
             <span class="k">print</span><span class="p">(</span><span class="s">&quot;    &quot;</span> <span class="o">+</span> <span class="n">packageNEVRA</span><span class="p">(</span><span class="n">dep</span><span class="p">))</span>
 
-    <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">rc</span>
 </div>
 <div class="viewcode-block" id="blueprints_push"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.blueprints.blueprints_push">[docs]</a><span class="k">def</span> <span class="nf">blueprints_push</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Push a blueprint TOML file to the server, updating the blueprint</span>
@@ -387,7 +383,7 @@
         <span class="n">blueprint_toml</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">blueprint</span><span class="p">,</span> <span class="s">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post_url_toml</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">,</span> <span class="n">blueprint_toml</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span>
             <span class="n">rval</span> <span class="o">=</span> <span class="mi">1</span>
 
     <span class="k">return</span> <span class="n">rval</span>
@@ -419,32 +415,24 @@
 
     <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/blueprints/freeze/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">argify</span><span class="p">(</span><span class="n">args</span><span class="p">))))</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">rc</span><span class="p">,</span> <span class="n">exit_now</span><span class="p">)</span> <span class="o">=</span> <span class="n">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">exit_now</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">rc</span>
 
-    <span class="k">if</span> <span class="n">show_json</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;blueprints&quot;</span><span class="p">]:</span>
-            <span class="n">blueprint</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s">&quot;blueprint&quot;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">blueprint</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;version&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">):</span>
-                <span class="k">print</span><span class="p">(</span><span class="s">&quot;blueprint: </span><span class="si">%s</span><span class="s"> v</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">blueprint</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">blueprint</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">]))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">print</span><span class="p">(</span><span class="s">&quot;blueprint: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">blueprint</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s">&quot;blueprints&quot;</span><span class="p">]:</span>
+        <span class="n">blueprint</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s">&quot;blueprint&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">blueprint</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;version&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">):</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;blueprint: </span><span class="si">%s</span><span class="s"> v</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">blueprint</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">blueprint</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;blueprint: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">blueprint</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]))</span>
 
-            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">blueprint</span><span class="p">[</span><span class="s">&quot;modules&quot;</span><span class="p">]:</span>
-                <span class="k">print</span><span class="p">(</span><span class="s">&quot;    </span><span class="si">%s</span><span class="s">-</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">]))</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">blueprint</span><span class="p">[</span><span class="s">&quot;modules&quot;</span><span class="p">]:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;    </span><span class="si">%s</span><span class="s">-</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">]))</span>
 
-            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">blueprint</span><span class="p">[</span><span class="s">&quot;packages&quot;</span><span class="p">]:</span>
-                <span class="k">print</span><span class="p">(</span><span class="s">&quot;    </span><span class="si">%s</span><span class="s">-</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">]))</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">blueprint</span><span class="p">[</span><span class="s">&quot;packages&quot;</span><span class="p">]:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;    </span><span class="si">%s</span><span class="s">-</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s">&quot;version&quot;</span><span class="p">]))</span>
 
-        <span class="c"># Print any errors</span>
-        <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;errors&quot;</span><span class="p">,</span> <span class="p">[]):</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
-
-    <span class="c"># Return a 1 if there are any errors</span>
-    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;errors&quot;</span><span class="p">,</span> <span class="p">[]):</span>
-        <span class="k">return</span> <span class="mi">1</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">rc</span>
 </div>
 <div class="viewcode-block" id="blueprints_freeze_show"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.blueprints.blueprints_freeze_show">[docs]</a><span class="k">def</span> <span class="nf">blueprints_freeze_show</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Show the frozen blueprint in TOML format</span>
@@ -512,7 +500,7 @@
     <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/blueprints/tag/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post_url</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 </div>
 <div class="viewcode-block" id="blueprints_undo"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.blueprints.blueprints_undo">[docs]</a><span class="k">def</span> <span class="nf">blueprints_undo</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Undo changes to a blueprint</span>
@@ -538,7 +526,7 @@
     <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s">&quot;/blueprints/undo/</span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post_url</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 </div>
 <div class="viewcode-block" id="blueprints_workspace"><a class="viewcode-back" href="../../../composer.cli.html#composer.cli.blueprints.blueprints_workspace">[docs]</a><span class="k">def</span> <span class="nf">blueprints_workspace</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_version</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">show_json</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Push the blueprint TOML to the temporary workspace storage</span>
@@ -563,14 +551,7 @@
         <span class="n">blueprint_toml</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">blueprint</span><span class="p">,</span> <span class="s">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post_url_toml</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">,</span> <span class="n">blueprint_toml</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">show_json</span><span class="p">:</span>
-            <span class="k">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
-
-        <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;errors&quot;</span><span class="p">,</span> <span class="p">[]):</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
-
-        <span class="c"># Any errors results in returning a 1, but we continue with the rest first</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;status&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span>
             <span class="n">rval</span> <span class="o">=</span> <span class="mi">1</span>
 
     <span class="k">return</span> <span class="n">rval</span></div>
@@ -607,7 +588,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.18 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.21 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../cli.html" >composer.cli</a> &raquo;</li> 
       </ul>
