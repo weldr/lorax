@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.7.18
+Version:        19.7.19
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -119,6 +119,12 @@ rm -f $RPM_BUILD_ROOT/%{_tmpfilesdir}/lorax-composer.conf
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Aug 15 2018 Brian C. Lane <bcl@redhat.com> 19.7.19-1
+- Add documentation for --dracut-arg to lorax.1 (bcl)
+  Related: rhbz#1452220
+- Add the dracut options to the lorax help output (bcl)
+  Related: rhbz#1452220
+
 * Thu Jun 21 2018 Brian C. Lane <bcl@redhat.com> 19.7.18-1
 - Add redhat.exec to s390 .treeinfo (bcl)
   Resolves: rhbz#1593657
