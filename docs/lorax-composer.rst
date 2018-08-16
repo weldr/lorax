@@ -306,3 +306,33 @@ The documentation for the source API routes can be `found here <pylorax.api.html
 The configured sources are used for all blueprint depsolve operations, and for composing images.
 When adding additional sources you must make sure that the packages in the source do not
 conflict with any other package sources, otherwise depsolving will fail.
+
+DVD ISO Package Source
+~~~~~~~~~~~~~~~~~~~~~~
+
+In some situations the system may want to *only* use a DVD iso as the package
+source, not the repos from the network. ``lorax-composer`` and ``anaconda``
+understand ``file://`` URLs so you can mount an iso on the host, and replace the
+system repo files with a configuration file pointing to the DVD.
+
+* Stop the ``lorax-composer.service`` if it is running
+* Move the repo files in ``/etc/yum.repos.d/`` someplace safe
+* Create a new ``iso.repo`` file in ``/etc/yum.repos.d/``::
+
+     [iso]
+     name=iso
+     baseurl=file:///mnt/iso/
+     enabled=1
+     gpgcheck=1
+     gpgkey=file:///mnt/iso/RPM-GPG-KEY-redhat-release
+
+* Remove all the cached repo files from ``/var/lib/lorax/composer/repos/``
+* Restart the ``lorax-composer.service``
+* Check the output of ``composer-cli status show`` for any output specific depsolve errors.
+  For example, the DVD usually does not include ``grub2-efi-*-cdboot-*`` so the live-iso image
+  type will not be available.
+
+If you want to *add* the DVD source to the existing sources you can do that by
+mounting the iso and creating a source file to point to it as described in the
+`Package Sources`_ documentation.  In that case there is no need to remove the other
+sources from ``/etc/yum.repos.d/`` or clear the cached repos.
