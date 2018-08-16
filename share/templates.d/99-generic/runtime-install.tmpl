@@ -30,11 +30,15 @@ installpkg glibc-all-langpacks
 
 ## arch-specific packages (bootloaders etc.)
 %if basearch == "aarch64":
-    installpkg efibootmgr grub2-efi-aa64-cdboot grubby shim-aa64
+    installpkg grub2-tools-efi
+    installpkg efibootmgr
+    installpkg grub2-efi-aa64-cdboot shim-aa64
 %endif
 %if basearch in ("arm", "armhfp"):
+    installpkg grub2-tools-efi
+    installpkg efibootmgr
+    installpkg grub2-efi-arm-cdboot
     installpkg kernel-lpae
-    installpkg uboot-tools
 %endif
 %if basearch == "i386":
     installpkg gpart
