@@ -230,7 +230,7 @@ if __name__ == '__main__':
         listener.bind(opts.socket)
         os.chmod(opts.socket, 0o660)
         os.chown(opts.socket, 0, gid)
-        listener.listen(1)
+        listener.listen(socket.SOMAXCONN)
 
     start_queue_monitor(server.config["COMPOSER_CFG"], uid, gid)
 
