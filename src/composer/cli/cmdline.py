@@ -35,7 +35,7 @@ def composer_cli_parser():
                         help="Output the raw JSON response instead of the normal output.")
     parser.add_argument("-s", "--socket", default="/run/weldr/api.socket", metavar="SOCKET",
                         help="Path to the socket file to listen on")
-    parser.add_argument("--log", dest="logfile", default="./composer-cli.log", metavar="LOG",
+    parser.add_argument("--log", dest="logfile", default=None, metavar="LOG",
                         help="Path to logfile (./composer-cli.log)")
     parser.add_argument("-a", "--api", dest="api_version", default="0", metavar="APIVER",
                         help="API Version to use")
