@@ -29,8 +29,12 @@ from composer.cli.cmdline import composer_cli_parser
 
 VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
 
-def setup_logging(logfile):
-    # Setup logging to console and to logfile
+def setup_logging(logfile=None):
+    """ Setup logging to console and to an optional logfile
+
+    :param logfile: Optional path to file to store logs in
+    :type logfile: None or str
+    """
     log.setLevel(logging.DEBUG)
 
     sh = logging.StreamHandler()
@@ -39,11 +43,12 @@ def setup_logging(logfile):
     sh.setFormatter(fmt)
     log.addHandler(sh)
 
-    fh = logging.FileHandler(filename=logfile)
-    fh.setLevel(logging.DEBUG)
-    fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
-    fh.setFormatter(fmt)
-    log.addHandler(fh)
+    if logfile != None:
+        fh = logging.FileHandler(filename=logfile)
+        fh.setLevel(logging.DEBUG)
+        fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
+        fh.setFormatter(fmt)
+        log.addHandler(fh)
 
 if __name__ == '__main__':
     # parse the arguments
@@ -54,9 +59,10 @@ if __name__ == '__main__':
         print(VERSION)
         sys.exit(0)
 
-    logpath = os.path.abspath(os.path.dirname(opts.logfile))
-    if not os.path.isdir(logpath):
-        os.makedirs(logpath)
+    if opts.logfile != None:
+        logpath = os.path.abspath(os.path.dirname(opts.logfile))
+        if not os.path.isdir(logpath):
+            os.makedirs(logpath)
     setup_logging(opts.logfile)
     log.debug("opts=%s", opts)
 
