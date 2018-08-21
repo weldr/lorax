@@ -1,7 +1,7 @@
 PYTHON ?= /usr/bin/python
 DESTDIR ?= /
 
-PKGNAME = lorax
+PKGNAME = lorax-composer
 VERSION = $(shell awk '/Version:/ { print $$2 }' $(PKGNAME).spec)
 RELEASE = $(shell awk '/Release:/ { print $$2 }' $(PKGNAME).spec | sed -e 's|%.*$$||g')
 TAG = lorax-$(VERSION)-$(RELEASE)
@@ -17,7 +17,10 @@ src/composer/version.py:
 src/pylorax/version.py:
 	echo "num = '$(VERSION)-$(RELEASE)'" > src/pylorax/version.py
 
-all: src/pylorax/version.py src/composer/version.py
+src/pylorax/api/version.py:
+	echo "num = '$(VERSION)-$(RELEASE)'" > src/pylorax/api/version.py
+
+all: src/pylorax/version.py src/pylorax/api/version.py src/composer/version.py
 	$(PYTHON) setup.py build
 
 install: all
@@ -47,6 +50,7 @@ test: docs
 
 clean:
 	-rm -rf build src/pylorax/version.py
+	-rm -rf build src/pylorax/api/version.py
 	-rm -rf build src/composer/version.py
 
 tag:
