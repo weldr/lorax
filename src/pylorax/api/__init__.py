@@ -17,5 +17,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from pylorax.api.crossdomain import crossdomain
 
-__all__ = ["crossdomain"]
+# get the lorax-composer api version
+try:
+    from pylorax.api.version import num as vernum
+except ImportError:
+    vernum = "devel"
 
+__all__ = ["crossdomain", "vernum"]

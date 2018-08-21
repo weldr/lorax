@@ -22,7 +22,7 @@ from flask import Flask, jsonify, redirect, send_from_directory
 from glob import glob
 import os
 
-from pylorax import vernum
+from pylorax.api import vernum
 from pylorax.api.crossdomain import crossdomain
 from pylorax.api.v0 import v0_api
 from pylorax.sysutils import joinpaths
