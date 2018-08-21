@@ -33,7 +33,7 @@ class WorkspaceTest(unittest.TestCase):
         self.results_path = "./tests/pylorax/results/"
         self.examples_path = "./tests/pylorax/blueprints/"
 
-        recipe_path = joinpaths(self.examples_path, "http-server.toml")
+        recipe_path = joinpaths(self.examples_path, "example-http-server.toml")
         f = open(recipe_path, 'rb')
         self.example_recipe = recipes.recipe_from_toml(f.read())
 
@@ -58,13 +58,13 @@ class WorkspaceTest(unittest.TestCase):
         workspace_write(self.repo, "master", self.example_recipe)
 
         # The file should have ended up here
-        ws_recipe_path = joinpaths(self.repo_dir, "git", "workspace", "master", "http-server.toml")
+        ws_recipe_path = joinpaths(self.repo_dir, "git", "workspace", "master", "example-http-server.toml")
         self.assertEqual(os.path.exists(ws_recipe_path), True)
 
     def test_04_workspace_read(self):
         """Test the workspace_read function"""
         # The recipe was written by the workspace_write test. Read it and compare with the source recipe.
-        recipe = workspace_read(self.repo, "master", "http-server")
+        recipe = workspace_read(self.repo, "master", "example-http-server")
         self.assertEqual(self.example_recipe, recipe)
 
     def test_04_workspace_read_ioerror(self):
@@ -72,14 +72,14 @@ class WorkspaceTest(unittest.TestCase):
         # The recipe was written by the workspace_write test.
         with self.assertRaises(recipes.RecipeFileError):
             with mock.patch('pylorax.api.workspace.recipe_from_toml', side_effect=IOError('TESTING')):
-                workspace_read(self.repo, "master", "http-server")
+                workspace_read(self.repo, "master", "example-http-server")
 
     def test_05_workspace_delete(self):
         """Test the workspace_delete function"""
-        ws_recipe_path = joinpaths(self.repo_dir, "git", "workspace", "master", "http-server.toml")
+        ws_recipe_path = joinpaths(self.repo_dir, "git", "workspace", "master", "example-http-server.toml")
 
         self.assertEqual(os.path.exists(ws_recipe_path), True)
-        workspace_delete(self.repo, "master", "http-server")
+        workspace_delete(self.repo, "master", "example-http-server")
         self.assertEqual(os.path.exists(ws_recipe_path), False)
 
     def test_05_workspace_delete_non_existing(self):
