@@ -1,4 +1,4 @@
-name = "glusterfs"
+name = "example-glusterfs"
 description = "An example GlusterFS server with samba"
 
 [[modules]]

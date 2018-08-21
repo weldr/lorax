@@ -1,4 +1,4 @@
-name = "jboss"
+name = "example-jboss"
 description = "An example jboss server"
 
 [[modules]]

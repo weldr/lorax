@@ -1,4 +1,4 @@
-name = "kubernetes"
+name = "example-kubernetes"
 description = "An example kubernetes master"
 
 [[modules]]

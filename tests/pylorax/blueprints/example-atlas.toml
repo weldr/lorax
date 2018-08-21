@@ -1,4 +1,4 @@
-name = "atlas"
+name = "example-atlas"
 description = "Automatically Tuned Linear Algebra Software"
 
 [[modules]]
