@@ -20,7 +20,7 @@ log = logging.getLogger("composer-cli")
 import os
 import sys
 import json
-from urlparse import urlparse, urlunparse
+from urllib.parse import urlparse, urlunparse
 
 from composer.unix_socket import UnixHTTPConnectionPool
 
