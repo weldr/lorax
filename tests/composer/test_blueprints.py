@@ -51,15 +51,15 @@ class BlueprintsTest(unittest.TestCase):
             rc = blueprints_list("/run/weldr/api.socket", 0, [], show_json=False)
         output = out.getvalue().strip()
         self.assertTrue(rc == 0)
-        self.assertTrue("http-server" in output)
+        self.assertTrue("example-http-server" in output)
 
     @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Test requires a running API server")
     def test_show(self):
         """blueprints show"""
         with captured_output() as (out, _):
-            blueprints_show("/run/weldr/api.socket", 0, ["http-server"], show_json=False)
+            blueprints_show("/run/weldr/api.socket", 0, ["example-http-server"], show_json=False)
         output = out.getvalue().strip()
-        self.assertTrue("http-server" in output)
+        self.assertTrue("example-http-server" in output)
         self.assertTrue("[[packages]]" in output)
         self.assertTrue("[[modules]]" in output)
 
@@ -67,23 +67,23 @@ class BlueprintsTest(unittest.TestCase):
     def test_changes(self):
         """blueprints changes"""
         with captured_output() as (out, _):
-            rc = blueprints_changes("/run/weldr/api.socket", 0, ["http-server"], show_json=False)
+            rc = blueprints_changes("/run/weldr/api.socket", 0, ["example-http-server"], show_json=False)
         output = out.getvalue().strip()
         self.assertTrue(rc == 0)
-        self.assertTrue("http-server" in output)
-        self.assertTrue("Recipe http-server, version 0.0.1 saved." in output)
+        self.assertTrue("example-http-server" in output)
+        self.assertTrue("Recipe example-http-server, version 0.0.1 saved." in output)
 
     @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Test requires a running API server")
     def test_diff(self):
         """blueprints diff"""
         # Get the oldest commit, it should be 2nd to last line
         with captured_output() as (out, _):
-            rc = blueprints_changes("/run/weldr/api.socket", 0, ["http-server"], show_json=False)
+            rc = blueprints_changes("/run/weldr/api.socket", 0, ["example-http-server"], show_json=False)
         output = out.getvalue().strip().splitlines()
         first_commit = output[-2].split()[1]
 
         with captured_output() as (out, _):
-            rc = blueprints_diff("/run/weldr/api.socket", 0, ["http-server", first_commit, "HEAD"], show_json=False)
+            rc = blueprints_diff("/run/weldr/api.socket", 0, ["example-http-server", first_commit, "HEAD"], show_json=False)
         output = out.getvalue().strip()
         self.assertTrue(rc == 0)
         self.assertTrue("Changed Version" in output)
@@ -91,40 +91,40 @@ class BlueprintsTest(unittest.TestCase):
     @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Test requires a running API server")
     def test_save_0(self):
         """blueprints save"""
-        blueprints_save("/run/weldr/api.socket", 0, ["http-server"], show_json=False)
-        self.assertTrue(os.path.exists("http-server.toml"))
+        blueprints_save("/run/weldr/api.socket", 0, ["example-http-server"], show_json=False)
+        self.assertTrue(os.path.exists("example-http-server.toml"))
 
     @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Test requires a running API server")
     def test_save_1(self):
         """blueprints push"""
-        rc = blueprints_push("/run/weldr/api.socket", 0, ["http-server.toml"], show_json=False)
+        rc = blueprints_push("/run/weldr/api.socket", 0, ["example-http-server.toml"], show_json=False)
         self.assertTrue(rc == 0)
 
     @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Test requires a running API server")
     def test_delete(self):
         """blueprints delete"""
-        rc = blueprints_delete("/run/weldr/api.socket", 0, ["development"], show_json=False)
+        rc = blueprints_delete("/run/weldr/api.socket", 0, ["example-development"], show_json=False)
         self.assertTrue(rc == 0)
 
     @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Test requires a running API server")
     def test_depsolve(self):
         """blueprints depsolve"""
         with captured_output() as (out, _):
-            rc = blueprints_depsolve("/run/weldr/api.socket", 0, ["http-server"], show_json=False)
+            rc = blueprints_depsolve("/run/weldr/api.socket", 0, ["example-http-server"], show_json=False)
         output = out.getvalue().strip()
         self.assertTrue(rc == 0)
-        self.assertTrue("blueprint: http-server v" in output)
+        self.assertTrue("blueprint: example-http-server v" in output)
         self.assertTrue("httpd" in output)
 
     @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Test requires a running API server")
     def test_freeze_show(self):
         """blueprints freeze show"""
         with captured_output() as (out, _):
-            rc = blueprints_freeze("/run/weldr/api.socket", 0, ["show", "http-server"], show_json=False)
+            rc = blueprints_freeze("/run/weldr/api.socket", 0, ["show", "example-http-server"], show_json=False)
         output = out.getvalue().strip()
         self.assertTrue(rc == 0)
         self.assertTrue("version" in output)
-        self.assertTrue("http-server" in output)
+        self.assertTrue("example-http-server" in output)
         self.assertTrue("x86_64" in output)
         self.assertTrue("[[packages]]" in output)
         self.assertTrue("[[modules]]" in output)
@@ -132,18 +132,18 @@ class BlueprintsTest(unittest.TestCase):
     @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Test requires a running API server")
     def test_freeze_save(self):
         """blueprints freeze save"""
-        rc = blueprints_freeze("/run/weldr/api.socket", 0, ["save", "http-server"], show_json=False)
+        rc = blueprints_freeze("/run/weldr/api.socket", 0, ["save", "example-http-server"], show_json=False)
         self.assertTrue(rc == 0)
-        self.assertTrue(os.path.exists("http-server.frozen.toml"))
+        self.assertTrue(os.path.exists("example-http-server.frozen.toml"))
 
     @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Test requires a running API server")
     def test_freeze(self):
         """blueprints freeze"""
         with captured_output() as (out, _):
-            rc = blueprints_freeze("/run/weldr/api.socket", 0, ["http-server"], show_json=False)
+            rc = blueprints_freeze("/run/weldr/api.socket", 0, ["example-http-server"], show_json=False)
         output = out.getvalue().strip()
         self.assertTrue(rc == 0)
-        self.assertTrue("blueprint: http-server v" in output)
+        self.assertTrue("blueprint: example-http-server v" in output)
         self.assertTrue("httpd" in output)
         self.assertTrue("x86_64" in output)
 
@@ -158,17 +158,17 @@ class BlueprintsTest(unittest.TestCase):
         """blueprints undo"""
         # Get the oldest commit, it should be 2nd to last line
         with captured_output() as (out, _):
-            rc = blueprints_changes("/run/weldr/api.socket", 0, ["http-server"], show_json=False)
+            rc = blueprints_changes("/run/weldr/api.socket", 0, ["example-http-server"], show_json=False)
         output = out.getvalue().strip().splitlines()
         first_commit = output[-2].split()[1]
 
         with captured_output() as (out, _):
-            rc = blueprints_undo("/run/weldr/api.socket", 0, ["http-server", first_commit, "HEAD"], show_json=False)
+            rc = blueprints_undo("/run/weldr/api.socket", 0, ["example-http-server", first_commit, "HEAD"], show_json=False)
         output = out.getvalue().strip()
         self.assertTrue(rc == 0)
 
     @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Test requires a running API server")
     def test_workspace(self):
         """blueprints workspace"""
-        rc = blueprints_push("/run/weldr/api.socket", 0, ["http-server.toml"], show_json=False)
+        rc = blueprints_push("/run/weldr/api.socket", 0, ["example-http-server.toml"], show_json=False)
         self.assertTrue(rc == 0)
