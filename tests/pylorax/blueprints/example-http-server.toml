@@ -1,4 +1,4 @@
-name = "http-server"
+name = "example-http-server"
 description = "An example http server with PHP and MySQL support."
 version = "0.0.1"
 
