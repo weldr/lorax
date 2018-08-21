@@ -168,7 +168,9 @@ make DESTDIR=%{buildroot} mandir=%{_mandir} install
 # Install example blueprints from the test suite.
 # This path MUST match the lorax-composer.service blueprint path.
 mkdir -p %{buildroot}/var/lib/lorax/composer/blueprints/
-cp ./tests/pylorax/blueprints/*toml %{buildroot}/var/lib/lorax/composer/blueprints/
+for bp in http-server.toml development.toml atlas.toml; do
+    cp ./tests/pylorax/blueprints/$bp %{buildroot}/var/lib/lorax/composer/blueprints/
+done
 
 %pre composer
 getent group weldr >/dev/null 2>&1 || groupadd -r weldr >/dev/null 2>&1 || :
