@@ -131,15 +131,16 @@ class ServerTestCase(unittest.TestCase):
 
     def test_02_blueprints_list(self):
         """Test the /api/v0/blueprints/list route"""
-        list_dict = {"blueprints":["atlas", "custom-base", "development", "glusterfs", "http-server",
-                     "jboss", "kubernetes"], "limit":20, "offset":0, "total":7}
+        list_dict = {"blueprints":["example-atlas", "example-custom-base", "example-development",
+                                   "example-glusterfs", "example-http-server", "example-jboss",
+                                   "example-kubernetes"], "limit":20, "offset":0, "total":7}
         resp = self.server.get("/api/v0/blueprints/list")
         data = json.loads(resp.data)
         self.assertEqual(data, list_dict)
 
     def test_03_blueprints_info(self):
         """Test the /api/v0/blueprints/info route"""
-        info_dict_1 = {"changes":[{"changed":False, "name":"http-server"}],
+        info_dict_1 = {"changes":[{"changed":False, "name":"example-http-server"}],
                        "errors":[],
                        "blueprints":[{"description":"An example http server with PHP and MySQL support.",
                                    "modules":[{"name":"httpd", "version":"2.4.*"},
@@ -147,23 +148,23 @@ class ServerTestCase(unittest.TestCase):
                                               {"name":"mod_ssl", "version":"2.4.*"},
                                               {"name":"php", "version":"5.4.*"},
                                               {"name": "php-mysql", "version":"5.4.*"}],
-                                   "name":"http-server",
+                                   "name":"example-http-server",
                                    "packages": [{"name":"openssh-server", "version": "7.*"},
                                                 {"name": "rsync", "version": "3.1.*"},
                                                 {"name": "tmux", "version": "1.8"}],
                                    "groups": [],
                                    "version": "0.0.1"}]}
-        resp = self.server.get("/api/v0/blueprints/info/http-server")
+        resp = self.server.get("/api/v0/blueprints/info/example-http-server")
         data = json.loads(resp.data)
         self.assertEqual(data, info_dict_1)
 
-        info_dict_2 = {"changes":[{"changed":False, "name":"glusterfs"},
-                                  {"changed":False, "name":"http-server"}],
+        info_dict_2 = {"changes":[{"changed":False, "name":"example-glusterfs"},
+                                  {"changed":False, "name":"example-http-server"}],
                        "errors":[],
                        "blueprints":[{"description": "An example GlusterFS server with samba",
                                    "modules":[{"name":"glusterfs", "version":"3.*.*"},
                                               {"name":"glusterfs-cli", "version":"3.*.*"}],
-                                   "name":"glusterfs",
+                                   "name":"example-glusterfs",
                                    "packages":[{"name":"samba", "version":"4.*.*"}],
                                    "groups": [],
                                    "version": "0.0.1"},
@@ -173,14 +174,14 @@ class ServerTestCase(unittest.TestCase):
                                               {"name":"mod_ssl", "version":"2.4.*"},
                                               {"name":"php", "version":"5.4.*"},
                                               {"name": "php-mysql", "version":"5.4.*"}],
-                                   "name":"http-server",
+                                   "name":"example-http-server",
                                    "packages": [{"name":"openssh-server", "version": "7.*"},
                                                 {"name": "rsync", "version": "3.1.*"},
                                                 {"name": "tmux", "version": "1.8"}],
                                    "groups": [],
                                    "version": "0.0.1"},
                                  ]}
-        resp = self.server.get("/api/v0/blueprints/info/http-server,glusterfs")
+        resp = self.server.get("/api/v0/blueprints/info/example-http-server,example-glusterfs")
         data = json.loads(resp.data)
         self.assertEqual(data, info_dict_2)
 
@@ -194,7 +195,7 @@ class ServerTestCase(unittest.TestCase):
 
     def test_04_blueprints_changes(self):
         """Test the /api/v0/blueprints/changes route"""
-        resp = self.server.get("/api/v0/blueprints/changes/http-server")
+        resp = self.server.get("/api/v0/blueprints/changes/example-http-server")
         data = json.loads(resp.data)
 
         # Can't compare a whole dict since commit hash and timestamps will change.
@@ -203,12 +204,12 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(data["offset"], 0)
         self.assertEqual(len(data["errors"]), 0)
         self.assertEqual(len(data["blueprints"]), 1)
-        self.assertEqual(data["blueprints"][0]["name"], "http-server")
+        self.assertEqual(data["blueprints"][0]["name"], "example-http-server")
         self.assertEqual(len(data["blueprints"][0]["changes"]), 1)
 
     def test_04a_blueprints_diff_empty_ws(self):
         """Test the /api/v0/diff/NEWEST/WORKSPACE with empty workspace"""
-        resp = self.server.get("/api/v0/blueprints/diff/glusterfs/NEWEST/WORKSPACE")
+        resp = self.server.get("/api/v0/blueprints/diff/example-glusterfs/NEWEST/WORKSPACE")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         self.assertEqual(data, {"diff": []})
@@ -216,7 +217,7 @@ class ServerTestCase(unittest.TestCase):
     def test_05_blueprints_new_json(self):
         """Test the /api/v0/blueprints/new route with json blueprint"""
         test_blueprint = {"description": "An example GlusterFS server with samba",
-                       "name":"glusterfs",
+                       "name":"example-glusterfs",
                        "version": "0.2.0",
                        "modules":[{"name":"glusterfs", "version":"3.*.*"},
                                   {"name":"glusterfs-cli", "version":"3.*.*"}],
@@ -230,7 +231,7 @@ class ServerTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
 
-        resp = self.server.get("/api/v0/blueprints/info/glusterfs")
+        resp = self.server.get("/api/v0/blueprints/info/example-glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         blueprints = data.get("blueprints")
@@ -239,14 +240,14 @@ class ServerTestCase(unittest.TestCase):
 
     def test_06_blueprints_new_toml(self):
         """Test the /api/v0/blueprints/new route with toml blueprint"""
-        test_blueprint = open(joinpaths(self.examples_path, "glusterfs.toml"), "rb").read()
+        test_blueprint = open(joinpaths(self.examples_path, "example-glusterfs.toml"), "rb").read()
         resp = self.server.post("/api/v0/blueprints/new",
                                 data=test_blueprint,
                                 content_type="text/x-toml")
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
 
-        resp = self.server.get("/api/v0/blueprints/info/glusterfs")
+        resp = self.server.get("/api/v0/blueprints/info/example-glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         blueprints = data.get("blueprints")
@@ -267,7 +268,7 @@ class ServerTestCase(unittest.TestCase):
     def test_07_blueprints_ws_json(self):
         """Test the /api/v0/blueprints/workspace route with json blueprint"""
         test_blueprint = {"description": "An example GlusterFS server with samba, ws version",
-                       "name":"glusterfs",
+                       "name":"example-glusterfs",
                        "version": "0.3.0",
                        "modules":[{"name":"glusterfs", "version":"3.*.*"},
                                   {"name":"glusterfs-cli", "version":"3.*.*"}],
@@ -281,7 +282,7 @@ class ServerTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
 
-        resp = self.server.get("/api/v0/blueprints/info/glusterfs")
+        resp = self.server.get("/api/v0/blueprints/info/example-glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         blueprints = data.get("blueprints")
@@ -289,12 +290,12 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(blueprints[0], test_blueprint)
         changes = data.get("changes")
         self.assertEqual(len(changes), 1)
-        self.assertEqual(changes[0], {"name":"glusterfs", "changed":True})
+        self.assertEqual(changes[0], {"name":"example-glusterfs", "changed":True})
 
     def test_08_blueprints_ws_toml(self):
         """Test the /api/v0/blueprints/workspace route with toml blueprint"""
         test_blueprint = {"description": "An example GlusterFS server with samba, ws version",
-                       "name":"glusterfs",
+                       "name":"example-glusterfs",
                        "version": "0.4.0",
                        "modules":[{"name":"glusterfs", "version":"3.*.*"},
                                   {"name":"glusterfs-cli", "version":"3.*.*"}],
@@ -308,7 +309,7 @@ class ServerTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
 
-        resp = self.server.get("/api/v0/blueprints/info/glusterfs")
+        resp = self.server.get("/api/v0/blueprints/info/example-glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         blueprints = data.get("blueprints")
@@ -316,7 +317,7 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(blueprints[0], test_blueprint)
         changes = data.get("changes")
         self.assertEqual(len(changes), 1)
-        self.assertEqual(changes[0], {"name":"glusterfs", "changed":True})
+        self.assertEqual(changes[0], {"name":"example-glusterfs", "changed":True})
 
     def test_09_blueprints_ws_delete(self):
         """Test DELETE /api/v0/blueprints/workspace/<blueprint_name>"""
@@ -324,12 +325,12 @@ class ServerTestCase(unittest.TestCase):
         self.test_07_blueprints_ws_json()
 
         # Delete it
-        resp = self.server.delete("/api/v0/blueprints/workspace/glusterfs")
+        resp = self.server.delete("/api/v0/blueprints/workspace/example-glusterfs")
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
 
         # Make sure it isn't the workspace copy and that changed is False
-        resp = self.server.get("/api/v0/blueprints/info/glusterfs")
+        resp = self.server.get("/api/v0/blueprints/info/example-glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         blueprints = data.get("blueprints")
@@ -337,24 +338,24 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(blueprints[0]["version"], "0.2.1")
         changes = data.get("changes")
         self.assertEqual(len(changes), 1)
-        self.assertEqual(changes[0], {"name":"glusterfs", "changed":False})
+        self.assertEqual(changes[0], {"name":"example-glusterfs", "changed":False})
 
     def test_10_blueprints_delete(self):
         """Test DELETE /api/v0/blueprints/delete/<blueprint_name>"""
-        resp = self.server.delete("/api/v0/blueprints/delete/glusterfs")
+        resp = self.server.delete("/api/v0/blueprints/delete/example-glusterfs")
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
 
-        # Make sure glusterfs is no longer in the list of blueprints
+        # Make sure example-glusterfs is no longer in the list of blueprints
         resp = self.server.get("/api/v0/blueprints/list")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         blueprints = data.get("blueprints")
-        self.assertEqual("glusterfs" in blueprints, False)
+        self.assertEqual("example-glusterfs" in blueprints, False)
 
     def test_11_blueprints_undo(self):
         """Test POST /api/v0/blueprints/undo/<blueprint_name>/<commit>"""
-        resp = self.server.get("/api/v0/blueprints/changes/glusterfs")
+        resp = self.server.get("/api/v0/blueprints/changes/example-glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
 
@@ -366,11 +367,11 @@ class ServerTestCase(unittest.TestCase):
 
         # Revert it to the first commit
         commit = changes[-1]["commit"]
-        resp = self.server.post("/api/v0/blueprints/undo/glusterfs/%s" % commit)
+        resp = self.server.post("/api/v0/blueprints/undo/example-glusterfs/%s" % commit)
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
 
-        resp = self.server.get("/api/v0/blueprints/changes/glusterfs")
+        resp = self.server.get("/api/v0/blueprints/changes/example-glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
 
@@ -379,16 +380,16 @@ class ServerTestCase(unittest.TestCase):
         changes = blueprints[0].get("changes")
         self.assertEqual(len(changes) > 1, True)
 
-        expected_msg = "glusterfs.toml reverted to commit %s" % commit
+        expected_msg = "example-glusterfs.toml reverted to commit %s" % commit
         self.assertEqual(changes[0]["message"], expected_msg)
 
     def test_12_blueprints_tag(self):
         """Test POST /api/v0/blueprints/tag/<blueprint_name>"""
-        resp = self.server.post("/api/v0/blueprints/tag/glusterfs")
+        resp = self.server.post("/api/v0/blueprints/tag/example-glusterfs")
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
 
-        resp = self.server.get("/api/v0/blueprints/changes/glusterfs")
+        resp = self.server.get("/api/v0/blueprints/changes/example-glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
 
@@ -401,7 +402,7 @@ class ServerTestCase(unittest.TestCase):
 
     def test_13_blueprints_diff(self):
         """Test /api/v0/blueprints/diff/<blueprint_name>/<from_commit>/<to_commit>"""
-        resp = self.server.get("/api/v0/blueprints/changes/glusterfs")
+        resp = self.server.get("/api/v0/blueprints/changes/example-glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         blueprints = data.get("blueprints")
@@ -415,14 +416,14 @@ class ServerTestCase(unittest.TestCase):
         self.assertNotEqual(to_commit, None)
 
         # Get the differences between the two commits
-        resp = self.server.get("/api/v0/blueprints/diff/glusterfs/%s/%s" % (from_commit, to_commit))
+        resp = self.server.get("/api/v0/blueprints/diff/example-glusterfs/%s/%s" % (from_commit, to_commit))
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         self.assertEqual(data, {"diff": [{"new": {"Version": "0.0.1"}, "old": {"Version": "0.2.1"}}]})
 
         # Write to the workspace and check the diff
         test_blueprint = {"description": "An example GlusterFS server with samba, ws version",
-                       "name":"glusterfs",
+                       "name":"example-glusterfs",
                        "version": "0.3.0",
                        "modules":[{"name":"glusterfs", "version":"3.*.*"},
                                   {"name":"glusterfs-cli", "version":"3.*.*"}],
@@ -436,7 +437,7 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(data, {"status":True})
 
         # Get the differences between the newest commit and the workspace
-        resp = self.server.get("/api/v0/blueprints/diff/glusterfs/NEWEST/WORKSPACE")
+        resp = self.server.get("/api/v0/blueprints/diff/example-glusterfs/NEWEST/WORKSPACE")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         result = {"diff": [{"new": {"Description": "An example GlusterFS server with samba, ws version"},
@@ -449,14 +450,14 @@ class ServerTestCase(unittest.TestCase):
 
     def test_14_blueprints_depsolve(self):
         """Test /api/v0/blueprints/depsolve/<blueprint_names>"""
-        resp = self.server.get("/api/v0/blueprints/depsolve/glusterfs")
+        resp = self.server.get("/api/v0/blueprints/depsolve/example-glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         blueprints = data.get("blueprints")
         self.assertNotEqual(blueprints, None)
         self.assertEqual(len(blueprints), 1)
         self.assertTrue(len(blueprints[0]["blueprint"]["modules"]) > 0)
-        self.assertEqual(blueprints[0]["blueprint"]["name"], "glusterfs")
+        self.assertEqual(blueprints[0]["blueprint"]["name"], "example-glusterfs")
         self.assertEqual(len(blueprints[0]["dependencies"]) > 10, True)
         self.assertFalse(data.get("errors"))
 
@@ -485,14 +486,14 @@ class ServerTestCase(unittest.TestCase):
 
     def test_15_blueprints_freeze(self):
         """Test /api/v0/blueprints/freeze/<blueprint_names>"""
-        resp = self.server.get("/api/v0/blueprints/freeze/glusterfs")
+        resp = self.server.get("/api/v0/blueprints/freeze/example-glusterfs")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         blueprints = data.get("blueprints")
         self.assertNotEqual(blueprints, None)
         self.assertEqual(len(blueprints), 1)
         self.assertTrue(len(blueprints[0]["blueprint"]["modules"]) > 0)
-        self.assertEqual(blueprints[0]["blueprint"]["name"], "glusterfs")
+        self.assertEqual(blueprints[0]["blueprint"]["name"], "example-glusterfs")
         evra = blueprints[0]["blueprint"]["modules"][0]["version"]
         self.assertEqual(len(evra) > 10, True)
 
@@ -685,7 +686,7 @@ class ServerTestCase(unittest.TestCase):
     def test_blueprint_new_branch(self):
         """Test the /api/v0/blueprints/new route with a new branch"""
         test_blueprint = {"description": "An example GlusterFS server with samba",
-                       "name":"glusterfs",
+                       "name":"example-glusterfs",
                        "version": "0.2.0",
                        "modules":[{"name":"glusterfs", "version":"3.*.*"},
                                   {"name":"glusterfs-cli", "version":"3.*.*"}],
@@ -699,7 +700,7 @@ class ServerTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
 
-        resp = self.server.get("/api/v0/blueprints/info/glusterfs?branch=test")
+        resp = self.server.get("/api/v0/blueprints/info/example-glusterfs?branch=test")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         blueprints = data.get("blueprints")
@@ -760,7 +761,7 @@ class ServerTestCase(unittest.TestCase):
 
     def test_compose_02_bad_type(self):
         """Test that using an unsupported image type failes"""
-        test_compose = {"blueprint_name": "glusterfs",
+        test_compose = {"blueprint_name": "example-glusterfs",
                         "compose_type": "snakes",
                         "branch": "master"}
 
@@ -844,7 +845,7 @@ class ServerTestCase(unittest.TestCase):
 
     def test_compose_11_create_failed(self):
         """Test the /api/v0/compose routes with a failed test compose"""
-        test_compose = {"blueprint_name": "glusterfs",
+        test_compose = {"blueprint_name": "example-glusterfs",
                         "compose_type": "tar",
                         "branch": "master"}
 
@@ -930,7 +931,7 @@ class ServerTestCase(unittest.TestCase):
 
     def test_compose_12_create_finished(self):
         """Test the /api/v0/compose routes with a finished test compose"""
-        test_compose = {"blueprint_name": "custom-base",
+        test_compose = {"blueprint_name": "example-custom-base",
                         "compose_type": "tar",
                         "branch": "master"}
 
@@ -1022,11 +1023,11 @@ class ServerTestCase(unittest.TestCase):
     def test_compose_13_status_filter(self):
         """Test filter arguments on the /api/v0/compose/status route"""
         # Get a couple compose results going so we have something to filter
-        test_compose_fail = {"blueprint_name": "glusterfs",
+        test_compose_fail = {"blueprint_name": "example-glusterfs",
                              "compose_type": "tar",
                              "branch": "master"}
 
-        test_compose_success = {"blueprint_name": "custom-base",
+        test_compose_success = {"blueprint_name": "example-custom-base",
                                 "compose_type": "tar",
                                 "branch": "master"}
 
@@ -1130,10 +1131,10 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/blueprints/info/" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
-        resp = self.server.get("/api/v0/blueprints/info/http-server?branch=" + UTF8_TEST_STRING)
+        resp = self.server.get("/api/v0/blueprints/info/example-http-server?branch=" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
-        resp = self.server.get("/api/v0/blueprints/info/http-server?format=" + UTF8_TEST_STRING)
+        resp = self.server.get("/api/v0/blueprints/info/example-http-server?format=" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
     def test_blueprints_changes_input(self):
@@ -1142,7 +1143,7 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/blueprints/changes/" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
-        resp = self.server.get("/api/v0/blueprints/changes/http-server?branch=" + UTF8_TEST_STRING)
+        resp = self.server.get("/api/v0/blueprints/changes/example-http-server?branch=" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
     def test_blueprints_new_input(self):
@@ -1162,7 +1163,7 @@ class ServerTestCase(unittest.TestCase):
                                 content_type="application/json")
         self.assertInputError(resp)
 
-        test_blueprint["name"] = "glusterfs"
+        test_blueprint["name"] = "example-glusterfs"
         resp = self.server.post("/api/v0/blueprints/new?branch=" + UTF8_TEST_STRING,
                                 data=json.dumps(test_blueprint),
                                 content_type="application/json")
@@ -1173,7 +1174,7 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.delete("/api/v0/blueprints/delete/" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
-        resp = self.server.delete("/api/v0/blueprints/delete/http-server?branch=" + UTF8_TEST_STRING)
+        resp = self.server.delete("/api/v0/blueprints/delete/example-http-server?branch=" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
     def test_blueprints_workspace_input(self):
@@ -1192,7 +1193,7 @@ class ServerTestCase(unittest.TestCase):
                                 content_type="application/json")
         self.assertInputError(resp)
 
-        test_blueprint["name"] = "glusterfs"
+        test_blueprint["name"] = "example-glusterfs"
         resp = self.server.post("/api/v0/blueprints/workspace?branch=" + UTF8_TEST_STRING,
                                 data=json.dumps(test_blueprint),
                                 content_type="application/json")
@@ -1203,7 +1204,7 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.delete("/api/v0/blueprints/workspace/" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
-        resp = self.server.delete("/api/v0/blueprints/workspace/http-server?branch=" + UTF8_TEST_STRING)
+        resp = self.server.delete("/api/v0/blueprints/workspace/example-http-server?branch=" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
     def test_blueprints_undo_input(self):
@@ -1211,7 +1212,7 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.post("/api/v0/blueprints/undo/" + UTF8_TEST_STRING + "/deadbeef")
         self.assertInputError(resp)
 
-        resp = self.server.post("/api/v0/blueprints/undo/http-server/deadbeef?branch=" + UTF8_TEST_STRING)
+        resp = self.server.post("/api/v0/blueprints/undo/example-http-server/deadbeef?branch=" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
     def test_blueprints_tag_input(self):
@@ -1219,7 +1220,7 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.post("/api/v0/blueprints/tag/" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
-        resp = self.server.post("/api/v0/blueprints/tag/http-server?branch=" + UTF8_TEST_STRING)
+        resp = self.server.post("/api/v0/blueprints/tag/example-http-server?branch=" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
     def test_blueprints_diff_input(self):
@@ -1228,7 +1229,7 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/blueprints/diff/" + UTF8_TEST_STRING + "/NEWEST/WORKSPACE")
         self.assertInputError(resp)
 
-        resp = self.server.get("/api/v0/blueprints/diff/http-server/NEWEST/WORKSPACE?branch=" + UTF8_TEST_STRING)
+        resp = self.server.get("/api/v0/blueprints/diff/example-http-server/NEWEST/WORKSPACE?branch=" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
     def test_blueprints_freeze_input(self):
@@ -1236,10 +1237,10 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/blueprints/freeze/" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
-        resp = self.server.get("/api/v0/blueprints/freeze/http-server?branch=" + UTF8_TEST_STRING)
+        resp = self.server.get("/api/v0/blueprints/freeze/example-http-server?branch=" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
-        resp = self.server.get("/api/v0/blueprints/freeze/http-server?format=" + UTF8_TEST_STRING)
+        resp = self.server.get("/api/v0/blueprints/freeze/example-http-server?format=" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
     def test_blueprints_depsolve_input(self):
@@ -1247,7 +1248,7 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/blueprints/depsolve/" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
-        resp = self.server.get("/api/v0/blueprints/depsolve/http-server?branch=" + UTF8_TEST_STRING)
+        resp = self.server.get("/api/v0/blueprints/depsolve/example-http-server?branch=" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
     def test_projects_info_input(self):

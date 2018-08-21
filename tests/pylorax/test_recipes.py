@@ -265,20 +265,20 @@ version = "2.7.*"
 
     def test_06_read_recipe(self):
         """Test reading a recipe from a commit"""
-        commits = recipes.list_commits(self.repo, "master", "http-server.toml")
+        commits = recipes.list_commits(self.repo, "master", "example-http-server.toml")
         self.assertEqual(len(commits), 1, "Wrong number of commits: %s" % commits)
 
-        recipe = recipes.read_recipe_commit(self.repo, "master", "http-server")
+        recipe = recipes.read_recipe_commit(self.repo, "master", "example-http-server")
         self.assertNotEqual(recipe, None)
-        self.assertEqual(recipe["name"], "http-server")
+        self.assertEqual(recipe["name"], "example-http-server")
 
         # Read by commit id
-        recipe = recipes.read_recipe_commit(self.repo, "master", "http-server", commits[0].commit)
+        recipe = recipes.read_recipe_commit(self.repo, "master", "example-http-server", commits[0].commit)
         self.assertNotEqual(recipe, None)
-        self.assertEqual(recipe["name"], "http-server")
+        self.assertEqual(recipe["name"], "example-http-server")
 
         # Read the recipe and its commit id
-        (commit_id, recipe) = recipes.read_recipe_and_id(self.repo, "master", "http-server", commits[0].commit)
+        (commit_id, recipe) = recipes.read_recipe_and_id(self.repo, "master", "example-http-server", commits[0].commit)
         self.assertEqual(commit_id, commits[0].commit)
 
     def test_07_tag_commit(self):
@@ -286,44 +286,44 @@ version = "2.7.*"
         result = recipes.tag_file_commit(self.repo, "master", "not-a-file")
         self.assertEqual(result, None)
 
-        result = recipes.tag_recipe_commit(self.repo, "master", "http-server")
+        result = recipes.tag_recipe_commit(self.repo, "master", "example-http-server")
         self.assertNotEqual(result, None)
 
-        commits = recipes.list_commits(self.repo, "master", "http-server.toml")
+        commits = recipes.list_commits(self.repo, "master", "example-http-server.toml")
         self.assertEqual(len(commits), 1, "Wrong number of commits: %s" % commits)
         self.assertEqual(commits[0].revision, 1)
 
     def test_08_delete_recipe(self):
         """Test deleting a file from a branch"""
-        oid = recipes.delete_recipe(self.repo, "master", "http-server")
+        oid = recipes.delete_recipe(self.repo, "master", "example-http-server")
         self.assertNotEqual(oid, None)
 
         master_files = recipes.list_branch_files(self.repo, "master")
-        self.assertEqual("http-server.toml" in master_files, False)
+        self.assertEqual("example-http-server.toml" in master_files, False)
 
     def test_09_revert_commit(self):
         """Test reverting a file on a branch"""
-        commits = recipes.list_commits(self.repo, "master", "http-server.toml")
+        commits = recipes.list_commits(self.repo, "master", "example-http-server.toml")
         revert_to = commits[0].commit
-        oid = recipes.revert_recipe(self.repo, "master", "http-server", revert_to)
+        oid = recipes.revert_recipe(self.repo, "master", "example-http-server", revert_to)
         self.assertNotEqual(oid, None)
 
-        commits = recipes.list_commits(self.repo, "master", "http-server.toml")
+        commits = recipes.list_commits(self.repo, "master", "example-http-server.toml")
         self.assertEqual(len(commits), 2, "Wrong number of commits: %s" % commits)
-        self.assertEqual(commits[0].message, "http-server.toml reverted to commit %s" % revert_to)
+        self.assertEqual(commits[0].message, "example-http-server.toml reverted to commit %s" % revert_to)
 
     def test_10_tag_new_commit(self):
         """Test tagging a newer commit of a recipe"""
-        recipe = recipes.read_recipe_commit(self.repo, "master", "http-server")
+        recipe = recipes.read_recipe_commit(self.repo, "master", "example-http-server")
         recipe["description"] = "A modified description"
         oid = recipes.commit_recipe(self.repo, "master", recipe)
         self.assertNotEqual(oid, None)
 
         # Tag the new commit
-        result = recipes.tag_recipe_commit(self.repo, "master", "http-server")
+        result = recipes.tag_recipe_commit(self.repo, "master", "example-http-server")
         self.assertNotEqual(result, None)
 
-        commits = recipes.list_commits(self.repo, "master", "http-server.toml")
+        commits = recipes.list_commits(self.repo, "master", "example-http-server.toml")
         self.assertEqual(len(commits), 3, "Wrong number of commits: %s" % commits)
         self.assertEqual(commits[0].revision, 2)
 
