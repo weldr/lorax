@@ -1,4 +1,4 @@
-name = "custom-base"
+name = "example-custom-base"
 description = "A base system with customizations"
 version = "0.0.1"
 

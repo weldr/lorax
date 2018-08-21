@@ -1,4 +1,4 @@
-name = "development"
+name = "example-development"
 description = "A general purpose development image"
 
 [[packages]]
