@@ -141,6 +141,13 @@ class ServerTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertEqual(data, list_dict)
 
+        # Make sure limit=0 still returns the correct total
+        resp = self.server.get("/api/v0/blueprints/list?limit=0")
+        data = json.loads(resp.data)
+        self.assertEqual(data["limit"], 0)
+        self.assertEqual(data["offset"], 0)
+        self.assertEqual(data["total"], list_dict["total"])
+
     def test_03_blueprints_info_1(self):
         """Test the /api/v0/blueprints/info route with one blueprint"""
         info_dict_1 = {"changes":[{"changed":False, "name":"example-http-server"}],
@@ -213,6 +220,13 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(len(data["blueprints"]), 1)
         self.assertEqual(data["blueprints"][0]["name"], "example-http-server")
         self.assertEqual(len(data["blueprints"][0]["changes"]), 1)
+
+        # Make sure limit=0 still returns the correct total
+        resp = self.server.get("/api/v0/blueprints/changes/example-http-server?limit=0")
+        data = json.loads(resp.data)
+        self.assertEqual(data["limit"], 0)
+        self.assertEqual(data["offset"], 0)
+        self.assertEqual(data["blueprints"][0]["total"], 1)
 
     def test_04a_blueprints_diff_empty_ws(self):
         """Test the /api/v0/diff/NEWEST/WORKSPACE with empty workspace"""
@@ -515,6 +529,13 @@ class ServerTestCase(unittest.TestCase):
         projects = data.get("projects")
         self.assertEqual(len(projects) > 10, True)
 
+        expected_total = data["total"]
+
+        # Make sure limit=0 still returns the correct total
+        resp = self.server.get("/api/v0/projects/list?limit=0")
+        data = json.loads(resp.data)
+        self.assertEqual(data["total"], expected_total)
+
     def test_projects_info(self):
         """Test /api/v0/projects/info/<project_names>"""
         resp = self.server.get("/api/v0/projects/info/bash")
@@ -676,12 +697,20 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(len(modules) > 10, True)
         self.assertEqual(modules[0]["group_type"], "rpm")
 
+        expected_total = data["total"]
+
         resp = self.server.get("/api/v0/modules/list/d*")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         modules = data.get("modules")
         self.assertEqual(len(modules) > 0, True)
         self.assertEqual(modules[0]["name"].startswith("d"), True)
+
+        # Make sure limit=0 still returns the correct total
+        resp = self.server.get("/api/v0/modules/list?limit=0")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["total"], expected_total)
 
     def test_modules_info(self):
         """Test /api/v0/modules/info"""
