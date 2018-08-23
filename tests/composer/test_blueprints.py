@@ -74,21 +74,6 @@ class BlueprintsTest(unittest.TestCase):
         self.assertTrue("Recipe example-http-server, version 0.0.1 saved." in output)
 
     @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Test requires a running API server")
-    def test_diff(self):
-        """blueprints diff"""
-        # Get the oldest commit, it should be 2nd to last line
-        with captured_output() as (out, _):
-            rc = blueprints_changes("/run/weldr/api.socket", 0, ["example-http-server"], show_json=False)
-        output = out.getvalue().strip().splitlines()
-        first_commit = output[-2].split()[1]
-
-        with captured_output() as (out, _):
-            rc = blueprints_diff("/run/weldr/api.socket", 0, ["example-http-server", first_commit, "HEAD"], show_json=False)
-        output = out.getvalue().strip()
-        self.assertTrue(rc == 0)
-        self.assertTrue("Changed Version" in output)
-
-    @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Test requires a running API server")
     def test_save_0(self):
         """blueprints save"""
         blueprints_save("/run/weldr/api.socket", 0, ["example-http-server"], show_json=False)
@@ -172,3 +157,20 @@ class BlueprintsTest(unittest.TestCase):
         """blueprints workspace"""
         rc = blueprints_push("/run/weldr/api.socket", 0, ["example-http-server.toml"], show_json=False)
         self.assertTrue(rc == 0)
+
+    # XXX MUST COME LAST
+    # XXX which is what _z_ ensures
+    @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Test requires a running API server")
+    def test_z_diff(self):
+        """blueprints diff"""
+        # Get the oldest commit, it should be 2nd to last line
+        with captured_output() as (out, _):
+            rc = blueprints_changes("/run/weldr/api.socket", 0, ["example-http-server"], show_json=False)
+        output = out.getvalue().strip().splitlines()
+        first_commit = output[-2].split()[1]
+
+        with captured_output() as (out, _):
+            rc = blueprints_diff("/run/weldr/api.socket", 0, ["example-http-server", first_commit, "HEAD"], show_json=False)
+        output = out.getvalue().strip()
+        self.assertTrue(rc == 0)
+        self.assertTrue("Changed Version" in output)
