@@ -118,8 +118,14 @@ def blueprints_changes(socket_path, api_version, args, show_json=False):
 
     blueprints changes <blueprint,...>     Display the changes for each blueprint.
     """
+    def changes_total_fn(data):
+        """Return the maximum number of possible changes"""
+
+        # Each blueprint can have a different total, return the largest one
+        return max([c["total"] for c in data["blueprints"]])
+
     api_route = client.api_url(api_version, "/blueprints/changes/%s" % (",".join(argify(args))))
-    result = client.get_url_json_unlimited(socket_path, api_route)
+    result = client.get_url_json_unlimited(socket_path, api_route, total_fn=changes_total_fn)
     (rc, exit_now) = handle_api_result(result, show_json)
     if exit_now:
         return rc
