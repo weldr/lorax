@@ -93,7 +93,7 @@ def get_url_json(socket_path, url):
     r = http.request("GET", url)
     return json.loads(r.data.decode('utf-8'))
 
-def get_url_json_unlimited(socket_path, url):
+def get_url_json_unlimited(socket_path, url, total_fn=None):
     """Return the JSON results of a GET request
 
     For URLs that use offset/limit arguments, this command will
@@ -106,6 +106,10 @@ def get_url_json_unlimited(socket_path, url):
     :returns: The json response from the server
     :rtype: dict
     """
+    def default_total_fn(data):
+        """Return the total number of available results"""
+        return data["total"]
+
     http = UnixHTTPConnectionPool(socket_path)
 
     # Start with limit=0 to just get the number of objects
@@ -113,8 +117,12 @@ def get_url_json_unlimited(socket_path, url):
     r_total = http.request("GET", total_url)
     json_total = json.loads(r_total.data.decode('utf-8'))
 
+    # Where to get the total from
+    if not total_fn:
+        total_fn = default_total_fn
+
     # Add the "total" returned by limit=0 as the new limit
-    unlimited_url = append_query(url, "limit=%d" % json_total["total"])
+    unlimited_url = append_query(url, "limit=%d" % total_fn(json_total))
     r_unlimited = http.request("GET", unlimited_url)
     return json.loads(r_unlimited.data.decode('utf-8'))
 
