@@ -1038,8 +1038,9 @@ def v0_api(api):
             return jsonify(status=False, errors=[{"id": BAD_LIMIT_OR_OFFSET, "msg": str(e)}]), 400
 
         with api.config["GITLOCK"].lock:
-            blueprints = take_limits([f[:-5] for f in list_branch_files(api.config["GITLOCK"].repo, branch)], offset, limit)
-        return jsonify(blueprints=blueprints, limit=limit, offset=offset, total=len(blueprints))
+            blueprints = [f[:-5] for f in list_branch_files(api.config["GITLOCK"].repo, branch)]
+            limited_blueprints = take_limits(blueprints, offset, limit)
+        return jsonify(blueprints=limited_blueprints, limit=limit, offset=offset, total=len(blueprints))
 
     @api.route("/api/v0/blueprints/info", defaults={'blueprint_names': ""})
     @api.route("/api/v0/blueprints/info/<blueprint_names>")
@@ -1137,12 +1138,13 @@ def v0_api(api):
 
             try:
                 with api.config["GITLOCK"].lock:
-                    commits = take_limits(list_commits(api.config["GITLOCK"].repo, branch, filename), offset, limit)
+                    commits = list_commits(api.config["GITLOCK"].repo, branch, filename)
+                    limited_commits = take_limits(list_commits(api.config["GITLOCK"].repo, branch, filename), offset, limit)
             except Exception as e:
                 errors.append({"id": BLUEPRINTS_ERROR, "msg": "%s: %s" % (blueprint_name, str(e))})
                 log.error("(v0_blueprints_changes) %s", str(e))
             else:
-                blueprints.append({"name":blueprint_name, "changes":commits, "total":len(commits)})
+                blueprints.append({"name":blueprint_name, "changes":limited_commits, "total":len(commits)})
 
         blueprints = sorted(blueprints, key=lambda r: r["name"].lower())
 
