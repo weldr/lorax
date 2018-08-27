@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.17
+Version:        28.18
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -230,6 +230,26 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Aug 27 2018 Brian C. Lane <bcl@redhat.com> 28.18-1
+- Fix composer-cli blueprints changes to get correct total (bcl@redhat.com)
+- Fix blueprints/list and blueprints/changes to return the correct total (bcl@redhat.com)
+- Add tests for limit=0 routes (bcl@redhat.com)
+- Add a function to get_url_json_unlimited to retrieve the total (bcl@redhat.com)
+- Fix tests related to blueprint name changes (bcl@redhat.com)
+- Add 'example' to the example blueprint names (bcl@redhat.com)
+- Use urllib.parse instead of urlparse (bcl@redhat.com)
+- In composer-cli, request all results (dshea@redhat.com)
+- Add tests for /compose/status filter arguments (dshea@redhat.com)
+- Allow '*' as a uuid in /compose/status/<uuid> (dshea@redhat.com)
+- Add filter arguments to /compose/status (dshea@redhat.com)
+- composer-cli should not log to a file by default (bcl@redhat.com)
+- Add documentation for using a DVD as the package source (bcl@redhat.com)
+- Set TCP listen backlog for API socket to SOMAXCONN (lars@karlitski.net)
+- New lorax documentation - 28.17 (bcl@redhat.com)
+- Add a note about using lorax-composer.service (bcl@redhat.com)
+- Ignore dnf.logging when building docs (bcl@redhat.com)
+- Fix a little bug in running "modules list". (clumens@redhat.com)
+
 * Thu Aug 09 2018 Brian C. Lane <bcl@redhat.com> 28.17-1
 - Fix bash_completion.d typo (bcl@redhat.com)
 - Move disklabel and UEFI support to compose.py (bcl@redhat.com)
