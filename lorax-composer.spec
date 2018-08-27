@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.21
+Version:        19.7.22
 Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
@@ -122,6 +122,26 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Aug 27 2018 Brian C. Lane <bcl@redhat.com> 19.7.22-1
+- Fix composer-cli blueprints changes to get correct total (bcl)
+- Fix blueprints/list and blueprints/changes to return the correct total (bcl)
+- Add tests for limit=0 routes (bcl)
+- Add a function to get_url_json_unlimited to retrieve the total (bcl)
+- Fix tests related to blueprint name changes (bcl)
+- Add 'example' to the example blueprint names (bcl)
+- Don't include glusterfs.toml as an example blueprint (bcl)
+- Add a pylorax.api.version number (bcl)
+- composer-cli should not log to a file by default (bcl)
+- Add documentation for using a DVD as the package source (bcl)
+- Set TCP listen backlog for API socket to SOMAXCONN (lars)
+- Add a note about using lorax-composer.service (bcl)
+- In composer-cli, request all results (dshea)
+- Fix bash_completion.d typo (bcl)
+- Fix a little bug in running "modules list". (clumens)
+- Add tests for /compose/status filter arguments (dshea)
+- Allow '*' as a uuid in /compose/status/<uuid> (dshea)
+- Add filter arguments to /compose/status (dshea)
+
 * Thu Aug 09 2018 Brian C. Lane <bcl@redhat.com> 19.7.21-1
 - Move disklabel and UEFI support to compose.py (bcl)
 - Fix more tests. (clumens)
