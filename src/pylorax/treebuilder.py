@@ -209,11 +209,11 @@ class RuntimeBuilder(object):
     def generate_module_data(self):
         root = self.vars.root
         moddir = joinpaths(root, "lib/modules/")
-        for kver in os.listdir(moddir):
-            ksyms = joinpaths(root, "boot/System.map-%s" % kver)
-            logger.info("doing depmod and module-info for %s", kver)
-            runcmd(["depmod", "-a", "-F", ksyms, "-b", root, kver])
-            generate_module_info(moddir+kver, outfile=moddir+"module-info")
+        for kernel in findkernels(root=root):
+            ksyms = joinpaths(root, "boot/System.map-%s" % kernel.version)
+            logger.info("doing depmod and module-info for %s", kernel.version)
+            runcmd(["depmod", "-a", "-F", ksyms, "-b", root, kernel.version])
+            generate_module_info(moddir+kernel.version, outfile=moddir+"module-info")
 
     def create_runtime(self, outfile="/var/tmp/squashfs.img", compression="xz", compressargs=None, size=2):
         # make live rootfs image - must be named "LiveOS/rootfs.img" for dracut
