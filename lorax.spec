@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        29.11
+Version:        29.12
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -230,6 +230,9 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Tue Aug 28 2018 Brian C. Lane <bcl@redhat.com> 29.12-1
+- Minor package fixes for aarch64/ARMv7 (pbrobinson@gmail.com)
+
 * Mon Aug 27 2018 Brian C. Lane <bcl@redhat.com> 29.11-1
 - Fix composer-cli blueprints changes to get correct total (bcl@redhat.com)
 - Fix blueprints/list and blueprints/changes to return the correct total (bcl@redhat.com)
