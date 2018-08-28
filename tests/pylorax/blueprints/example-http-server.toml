@@ -7,10 +7,6 @@ name = "httpd"
 version = "2.4.*"
 
 [[modules]]
-name = "mod_auth_openidc"
-version = "1.8.10.*"
-
-[[modules]]
 name = "mod_ssl"
 version = "2.4.*"
 
