@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.5
+Version:        28.14.6
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -232,6 +232,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Wed Aug 29 2018 Brian C. Lane <bcl@redhat.com> 28.14.6-1
+- Drop mod_auth_openidc from httpd example blueprint (bcl@redhat.com)
+- Bump required dnf version to 3.2.0 for module_platform_id support (bcl@redhat.com)
+- Add support for DNF 3.2 module_platform_id config value (bcl@redhat.com)
+- Fix /compose/cancel API documentation (bcl@redhat.com)
+
 * Mon Aug 27 2018 Brian C. Lane <bcl@redhat.com> 28.14.5-1
 - Fix composer-cli blueprints changes to get correct total (bcl@redhat.com)
 - Fix blueprints/list and blueprints/changes to return the correct total (bcl@redhat.com)
