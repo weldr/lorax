@@ -16,11 +16,11 @@ version = "2.4.*"
 
 [[modules]]
 name = "php"
-version = "7.2.4"
+version = "7.2.*"
 
 [[modules]]
 name = "php-mysqlnd"
-version = "7.2.4"
+version = "7.2.*"
 
 [[packages]]
 name = "tmux"
