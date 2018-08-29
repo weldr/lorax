@@ -8,4 +8,4 @@ version = "3.10.*"
 
 [[modules]]
 name = "python3-numpy"
-version = "1.14.*"
+version = "1.15.*"

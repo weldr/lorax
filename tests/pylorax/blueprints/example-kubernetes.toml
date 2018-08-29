@@ -4,7 +4,7 @@ version = "0.0.1"
 
 [[modules]]
 name = "kubernetes"
-version = "1.9.*"
+version = "1.10.*"
 
 [[modules]]
 name = "docker"
