@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        29.12
+Version:        29.13
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -230,6 +230,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Wed Aug 29 2018 Brian C. Lane <bcl@redhat.com> 29.13-1
+- Update the example blueprints for rawhide (bcl@redhat.com)
+- Bump required dnf version to 3.2.0 for module_platform_id support (bcl@redhat.com)
+- Add support for DNF 3.2 module_platform_id config value (bcl@redhat.com)
+- lorax: Only run depmod on the installed kernels (bcl@redhat.com)
+
 * Tue Aug 28 2018 Brian C. Lane <bcl@redhat.com> 29.12-1
 - Minor package fixes for aarch64/ARMv7 (pbrobinson@gmail.com)
 
