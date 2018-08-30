@@ -26,7 +26,7 @@ import os
 import shutil
 
 from pylorax import DEFAULT_PLATFORM_ID
-from pylorax.simpleconfig import SimpleConfigFile
+from pylorax.sysutils import flatconfig
 
 def get_base_object(conf):
     """Get the DNF object with settings from the config file
@@ -76,9 +76,8 @@ def get_base_object(conf):
         log.warning("/etc/os-release is missing, cannot determine platform id, falling back to %s", DEFAULT_PLATFORM_ID)
         platform_id = DEFAULT_PLATFORM_ID
     else:
-        os_release = SimpleConfigFile("/etc/os-release")
-        os_release.read()
-        platform_id = os_release.get("PLATFORM_ID") or DEFAULT_PLATFORM_ID
+        os_release = flatconfig("/etc/os-release")
+        platform_id = os_release.get("PLATFORM_ID", DEFAULT_PLATFORM_ID)
     log.info("Using %s for module_platform_id", platform_id)
     dbc.module_platform_id = platform_id
 

@@ -30,6 +30,8 @@ import pwd
 import grp
 import glob
 import shutil
+import shlex
+from configparser import ConfigParser
 
 from pylorax.executils import runcmd
 
@@ -106,3 +108,24 @@ def remove(target):
 
 def linktree(src, dst):
     runcmd(["/bin/cp", "-alx", src, dst])
+
+def unquote(s):
+    return ' '.join(shlex.split(s))
+
+class UnquotingConfigParser(ConfigParser):
+    """A ConfigParser, only with unquoting of the values."""
+    def get(self, *args, **kwargs):
+        ret = super().get(*args, **kwargs)
+        if ret:
+            ret = unquote(ret)
+        return ret
+
+def flatconfig(filename):
+    """Use UnquotingConfigParser to read a flat config file (without
+    section headers) by adding a section header.
+    """
+    with open (filename, 'r') as conffh:
+        conftext = "[main]\n" + conffh.read()
+    config = UnquotingConfigParser()
+    config.read_string(conftext)
+    return config['main']
