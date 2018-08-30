@@ -35,7 +35,7 @@ import librepo
 import pylorax
 from pylorax import DRACUT_DEFAULT, DEFAULT_PLATFORM_ID
 from pylorax.cmdline import lorax_parser
-from pylorax.simpleconfig import SimpleConfigFile
+from pylorax.sysutils import flatconfig
 import selinux
 
 def setup_logging(opts):
@@ -215,9 +215,8 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
         log.warning("/etc/os-release is missing, cannot determine platform id, falling back to %s", DEFAULT_PLATFORM_ID)
         platform_id = DEFAULT_PLATFORM_ID
     else:
-        os_release = SimpleConfigFile("/etc/os-release")
-        os_release.read()
-        platform_id = os_release.get("PLATFORM_ID") or DEFAULT_PLATFORM_ID
+        os_release = flatconfig("/etc/os-release")
+        platform_id = os_release.get("PLATFORM_ID", DEFAULT_PLATFORM_ID)
     log.info("Using %s for module_platform_id", platform_id)
     conf.module_platform_id = platform_id
 
