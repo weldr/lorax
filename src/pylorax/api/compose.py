@@ -40,8 +40,6 @@ import pytoml as toml
 import shutil
 from uuid import uuid4
 
-from pyanaconda.simpleconfig import SimpleConfigFile
-
 # Use pykickstart to calculate disk image size
 from pykickstart.parser import KickstartParser
 from pykickstart.version import makeVersion
@@ -51,7 +49,7 @@ from pylorax.api.projects import ProjectsError
 from pylorax.api.recipes import read_recipe_and_id
 from pylorax.api.timestamp import TS_CREATED, write_timestamp
 from pylorax.imgutils import default_image_name
-from pylorax.sysutils import joinpaths
+from pylorax.sysutils import joinpaths, flatconfig
 
 
 def test_templates(dbo, share_dir):
@@ -356,14 +354,13 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
     # Get the title, project, and release version from the host
     if not os.path.exists("/etc/os-release"):
         log.error("/etc/os-release is missing, cannot determine product or release version")
-    os_release = SimpleConfigFile("/etc/os-release")
-    os_release.read()
+    os_release = flatconfig("/etc/os-release")
 
-    log.debug("os_release = %s", os_release)
+    log.debug("os_release = %s", dict(os_release.items()))
 
-    cfg_args["title"] = os_release.get("PRETTY_NAME")
-    cfg_args["project"] = os_release.get("NAME")
-    cfg_args["releasever"] = os_release.get("VERSION_ID")
+    cfg_args["title"] = os_release.get("PRETTY_NAME", "")
+    cfg_args["project"] = os_release.get("NAME", "")
+    cfg_args["releasever"] = os_release.get("VERSION_ID", "")
     cfg_args["volid"] = ""
 
     cfg_args.update({
