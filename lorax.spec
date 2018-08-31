@@ -4,7 +4,7 @@
 
 Name:           lorax
 Version:        28.14.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
@@ -50,6 +50,7 @@ Requires:       libselinux-python3
 Requires:       python3-mako
 Requires:       python3-kickstart
 Requires:       python3-dnf >= 3.2.0
+Requires:       python3-librepo
 
 
 %if 0%{?fedora}
@@ -232,6 +233,9 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Fri Aug 31 2018 Josh Boyer <jwboyer@redhat.com> 28.14.6-2
+- Require python3-librepo
+
 * Wed Aug 29 2018 Brian C. Lane <bcl@redhat.com> 28.14.6-1
 - Drop mod_auth_openidc from httpd example blueprint (bcl@redhat.com)
 - Bump required dnf version to 3.2.0 for module_platform_id support (bcl@redhat.com)
