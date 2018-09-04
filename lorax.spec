@@ -3,8 +3,8 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.6
-Release:        2%{?dist}
+Version:        28.14.7
+Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
@@ -233,6 +233,13 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Tue Sep 04 2018 Brian C. Lane <bcl@redhat.com> 28.14.7-1
+- Ignore a pylint warning about UnquotingConfigParser get args (bcl@redhat.com)
+  Related: rhbz#1613058
+- Ditch all use of pyanaconda's simpleconfig (awilliam@redhat.com)
+  Related: rhbz#1613058
+- Require python3-librepo (jwboyer@redhat.com)
+  Resolves: rhbz#1624423
 * Fri Aug 31 2018 Josh Boyer <jwboyer@redhat.com> 28.14.6-2
 - Require python3-librepo
 
