@@ -355,7 +355,7 @@ class Lorax(BaseLoraxClass):
             for arg in user_dracut_args:
                 dracut_args += arg.split(" ", 1)
 
-        anaconda_args = dracut_args + ["--add", "anaconda pollcdrom qemu qemu-net"]
+        anaconda_args = dracut_args + ["--add", "anaconda pollcdrom qemu qemu-net prefixdevname-tools"]
 
         # ppc64 cannot boot an initrd > 32MiB so remove some drivers
         if self.arch.basearch in ("ppc64", "ppc64le"):
