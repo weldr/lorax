@@ -114,6 +114,7 @@ def unquote(s):
 
 class UnquotingConfigParser(ConfigParser):
     """A ConfigParser, only with unquoting of the values."""
+    # pylint: disable=arguments-differ
     def get(self, *args, **kwargs):
         ret = super().get(*args, **kwargs)
         if ret:
