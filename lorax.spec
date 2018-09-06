@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        29.13
+Version:        29.14
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -230,6 +230,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu Sep 06 2018 Brian C. Lane <bcl@redhat.com> 29.14-1
+- Add the create ISO component for ARMv7 (pbrobinson@gmail.com)
+- Don't activate default auto connections after switchroot (rvykydal@redhat.com)
+- Ignore a pylint warning about UnquotingConfigParser get args (bcl@redhat.com)
+- Ditch all use of pyanaconda's simpleconfig (awilliam@redhat.com)
+
 * Wed Aug 29 2018 Brian C. Lane <bcl@redhat.com> 29.13-1
 - Update the example blueprints for rawhide (bcl@redhat.com)
 - Bump required dnf version to 3.2.0 for module_platform_id support (bcl@redhat.com)
