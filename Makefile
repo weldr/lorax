@@ -70,6 +70,9 @@ local:
 test-in-docker:
 	sudo docker build -t welder/lorax:latest -f Dockerfile.test .
 
+docs-in-docker:
+	sudo docker run -it --rm -v `pwd`/docs/html/:/lorax/docs/html/ --security-opt label=disable welder/lorax-composer:latest make docs
+
 ci: check test
 
 .PHONY: docs
