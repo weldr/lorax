@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api package &mdash; Lorax 29.11 documentation</title>
+  <title>pylorax.api package &mdash; Lorax 29.14 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                29.11
+                29.14
               </div>
             
           
@@ -3206,10 +3206,11 @@ and the build that is running.</p>
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="api-v0-compose-status-uuids">
-<h4><cite>/api/v0/compose/status/&lt;uuids&gt;</cite><a class="headerlink" href="#api-v0-compose-status-uuids" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="api-v0-compose-status-uuids-blueprint-blueprint-name-status-compose-status-type-compose-type">
+<h4><cite>/api/v0/compose/status/&lt;uuids&gt;[?blueprint=&lt;blueprint_name&gt;&amp;status=&lt;compose_status&gt;&amp;type=&lt;compose_type&gt;]</cite><a class="headerlink" href="#api-v0-compose-status-uuids-blueprint-blueprint-name-status-compose-status-type-compose-type" title="Permalink to this headline">¶</a></h4>
 <blockquote>
-<div><p>Return the details for each of the comma-separated list of uuids.</p>
+<div><p>Return the details for each of the comma-separated list of uuids. A uuid of ‘*’ will return
+details for all composes.</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="s2">&quot;uuids&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -3571,7 +3572,7 @@ a line boundry.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'29.11',
+            VERSION:'29.14',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
