@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.v0 &mdash; Lorax 28.17 documentation</title>
+  <title>pylorax.api.v0 &mdash; Lorax 28.18 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                28.17
+                28.18
               </div>
             
           
@@ -958,10 +958,11 @@
 <span class="sd">        ]</span>
 <span class="sd">      }</span>
 
-<span class="sd">`/api/v0/compose/status/&lt;uuids&gt;`</span>
-<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+<span class="sd">`/api/v0/compose/status/&lt;uuids&gt;[?blueprint=&lt;blueprint_name&gt;&amp;status=&lt;compose_status&gt;&amp;type=&lt;compose_type&gt;]`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
 
-<span class="sd">  Return the details for each of the comma-separated list of uuids.</span>
+<span class="sd">  Return the details for each of the comma-separated list of uuids. A uuid of &#39;*&#39; will return</span>
+<span class="sd">  details for all composes.</span>
 
 <span class="sd">  Example::</span>
 
@@ -988,8 +989,8 @@
 <span class="sd">        ]</span>
 <span class="sd">      }</span>
 
-<span class="sd">DELETE `/api/v0/blueprints/cancel/&lt;uuid&gt;`</span>
-<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+<span class="sd">DELETE `/api/v0/compose/cancel/&lt;uuid&gt;`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
 
 <span class="sd">  Cancel the build, if it is not finished, and delete the results. It will return a</span>
 <span class="sd">  status of True if it is successful.</span>
@@ -1194,8 +1195,9 @@
             <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">BAD_LIMIT_OR_OFFSET</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}]),</span> <span class="mi">400</span>
 
         <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
-            <span class="n">blueprints</span> <span class="o">=</span> <span class="n">take_limits</span><span class="p">([</span><span class="n">f</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">list_branch_files</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">)],</span> <span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">blueprints</span><span class="o">=</span><span class="n">blueprints</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">blueprints</span><span class="p">))</span>
+            <span class="n">blueprints</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">list_branch_files</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">)]</span>
+            <span class="n">limited_blueprints</span> <span class="o">=</span> <span class="n">take_limits</span><span class="p">(</span><span class="n">blueprints</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">blueprints</span><span class="o">=</span><span class="n">limited_blueprints</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">blueprints</span><span class="p">))</span>
 
     <span class="nd">@api</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/api/v0/blueprints/info&quot;</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;blueprint_names&#39;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">})</span>
     <span class="nd">@api</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/api/v0/blueprints/info/&lt;blueprint_names&gt;&quot;</span><span class="p">)</span>
@@ -1293,12 +1295,13 @@
 
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
-                    <span class="n">commits</span> <span class="o">=</span> <span class="n">take_limits</span><span class="p">(</span><span class="n">list_commits</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span> <span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+                    <span class="n">commits</span> <span class="o">=</span> <span class="n">list_commits</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+                    <span class="n">limited_commits</span> <span class="o">=</span> <span class="n">take_limits</span><span class="p">(</span><span class="n">list_commits</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span> <span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">BLUEPRINTS_ERROR</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">blueprint_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))})</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;(v0_blueprints_changes) </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">blueprints</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="n">blueprint_name</span><span class="p">,</span> <span class="s2">&quot;changes&quot;</span><span class="p">:</span><span class="n">commits</span><span class="p">,</span> <span class="s2">&quot;total&quot;</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">commits</span><span class="p">)})</span>
+                <span class="n">blueprints</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="n">blueprint_name</span><span class="p">,</span> <span class="s2">&quot;changes&quot;</span><span class="p">:</span><span class="n">limited_commits</span><span class="p">,</span> <span class="s2">&quot;total&quot;</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">commits</span><span class="p">)})</span>
 
         <span class="n">blueprints</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">blueprints</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
 
@@ -1979,14 +1982,38 @@
         <span class="k">if</span> <span class="n">VALID_API_STRING</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">uuids</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">INVALID_CHARS</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid characters in API path&quot;</span><span class="p">}]),</span> <span class="mi">400</span>
 
+        <span class="n">blueprint</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;blueprint&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">compose_type</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
         <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">uuid</span> <span class="ow">in</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">uuids</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]:</span>
-            <span class="n">details</span> <span class="o">=</span> <span class="n">uuid_status</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;COMPOSER_CFG&quot;</span><span class="p">],</span> <span class="n">uuid</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">details</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">details</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">UNKNOWN_UUID</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is not a valid build uuid&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="p">})</span>
+
+        <span class="k">if</span> <span class="n">uuids</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;*&#39;</span><span class="p">:</span>
+            <span class="n">queue_status_dict</span> <span class="o">=</span> <span class="n">queue_status</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;COMPOSER_CFG&quot;</span><span class="p">])</span>
+            <span class="n">queue_new</span> <span class="o">=</span> <span class="n">queue_status_dict</span><span class="p">[</span><span class="s2">&quot;new&quot;</span><span class="p">]</span>
+            <span class="n">queue_running</span> <span class="o">=</span> <span class="n">queue_status_dict</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span>
+            <span class="n">candidates</span> <span class="o">=</span> <span class="n">queue_new</span> <span class="o">+</span> <span class="n">queue_running</span> <span class="o">+</span> <span class="n">build_status</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;COMPOSER_CFG&quot;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">candidates</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">uuid</span> <span class="ow">in</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">uuids</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]:</span>
+                <span class="n">details</span> <span class="o">=</span> <span class="n">uuid_status</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;COMPOSER_CFG&quot;</span><span class="p">],</span> <span class="n">uuid</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">details</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">UNKNOWN_UUID</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is not a valid build uuid&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="p">})</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">candidates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">details</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">details</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">blueprint</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">details</span><span class="p">[</span><span class="s1">&#39;blueprint&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">blueprint</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">details</span><span class="p">[</span><span class="s1">&#39;queue_status&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">status</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">compose_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">details</span><span class="p">[</span><span class="s1">&#39;compose_type&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">compose_type</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">details</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">uuids</span><span class="o">=</span><span class="n">results</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="n">errors</span><span class="p">)</span>
 
@@ -2201,7 +2228,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'28.17',
+            VERSION:'28.18',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
