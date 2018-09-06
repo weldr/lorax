@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax &mdash; Lorax 29.11 documentation</title>
+  <title>pylorax &mdash; Lorax 29.14 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                29.11
+                29.14
               </div>
             
           
@@ -218,6 +218,9 @@
 <span class="c1"># List of drivers to remove on ppc64 arch to keep initrd &lt; 32MiB</span>
 <span class="n">REMOVE_PPC64_DRIVERS</span> <span class="o">=</span> <span class="s2">&quot;floppy scsi_debug nouveau radeon cirrus mgag200&quot;</span>
 <span class="n">REMOVE_PPC64_MODULES</span> <span class="o">=</span> <span class="s2">&quot;drm plymouth&quot;</span>
+
+<span class="c1"># Used for DNF conf.module_platform_id</span>
+<span class="n">DEFAULT_PLATFORM_ID</span> <span class="o">=</span> <span class="s2">&quot;platform:f30&quot;</span>
 
 <div class="viewcode-block" id="ArchData"><a class="viewcode-back" href="../pylorax.html#pylorax.ArchData">[docs]</a><span class="k">class</span> <span class="nc">ArchData</span><span class="p">(</span><span class="n">DataHolder</span><span class="p">):</span>
     <span class="n">lib64_arches</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;x86_64&quot;</span><span class="p">,</span> <span class="s2">&quot;ppc64&quot;</span><span class="p">,</span> <span class="s2">&quot;ppc64le&quot;</span><span class="p">,</span> <span class="s2">&quot;s390x&quot;</span><span class="p">,</span> <span class="s2">&quot;ia64&quot;</span><span class="p">,</span> <span class="s2">&quot;aarch64&quot;</span><span class="p">)</span>
@@ -642,7 +645,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'29.11',
+            VERSION:'29.14',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

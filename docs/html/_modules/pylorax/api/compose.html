@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.compose &mdash; Lorax 29.11 documentation</title>
+  <title>pylorax.api.compose &mdash; Lorax 29.14 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                29.11
+                29.14
               </div>
             
           
@@ -197,8 +197,6 @@
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">from</span> <span class="nn">uuid</span> <span class="k">import</span> <span class="n">uuid4</span>
 
-<span class="kn">from</span> <span class="nn">pyanaconda.simpleconfig</span> <span class="k">import</span> <span class="n">SimpleConfigFile</span>
-
 <span class="c1"># Use pykickstart to calculate disk image size</span>
 <span class="kn">from</span> <span class="nn">pykickstart.parser</span> <span class="k">import</span> <span class="n">KickstartParser</span>
 <span class="kn">from</span> <span class="nn">pykickstart.version</span> <span class="k">import</span> <span class="n">makeVersion</span>
@@ -208,7 +206,7 @@
 <span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="k">import</span> <span class="n">read_recipe_and_id</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.timestamp</span> <span class="k">import</span> <span class="n">TS_CREATED</span><span class="p">,</span> <span class="n">write_timestamp</span>
 <span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="k">import</span> <span class="n">default_image_name</span>
-<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span>
+<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span><span class="p">,</span> <span class="n">flatconfig</span>
 
 
 <div class="viewcode-block" id="test_templates"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.test_templates">[docs]</a><span class="k">def</span> <span class="nf">test_templates</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">share_dir</span><span class="p">):</span>
@@ -513,14 +511,13 @@
     <span class="c1"># Get the title, project, and release version from the host</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;/etc/os-release&quot;</span><span class="p">):</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;/etc/os-release is missing, cannot determine product or release version&quot;</span><span class="p">)</span>
-    <span class="n">os_release</span> <span class="o">=</span> <span class="n">SimpleConfigFile</span><span class="p">(</span><span class="s2">&quot;/etc/os-release&quot;</span><span class="p">)</span>
-    <span class="n">os_release</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">os_release</span> <span class="o">=</span> <span class="n">flatconfig</span><span class="p">(</span><span class="s2">&quot;/etc/os-release&quot;</span><span class="p">)</span>
 
-    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;os_release = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">os_release</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;os_release = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">os_release</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
 
-    <span class="n">cfg_args</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os_release</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PRETTY_NAME&quot;</span><span class="p">)</span>
-    <span class="n">cfg_args</span><span class="p">[</span><span class="s2">&quot;project&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os_release</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;NAME&quot;</span><span class="p">)</span>
-    <span class="n">cfg_args</span><span class="p">[</span><span class="s2">&quot;releasever&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os_release</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;VERSION_ID&quot;</span><span class="p">)</span>
+    <span class="n">cfg_args</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os_release</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PRETTY_NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">cfg_args</span><span class="p">[</span><span class="s2">&quot;project&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os_release</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">cfg_args</span><span class="p">[</span><span class="s2">&quot;releasever&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os_release</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;VERSION_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
     <span class="n">cfg_args</span><span class="p">[</span><span class="s2">&quot;volid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
     <span class="n">cfg_args</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
@@ -734,7 +731,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'29.11',
+            VERSION:'29.14',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
