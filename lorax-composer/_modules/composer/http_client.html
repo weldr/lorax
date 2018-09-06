@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>composer.http_client &mdash; Lorax 19.7.21 documentation</title>
+    <title>composer.http_client &mdash; Lorax 19.7.22 documentation</title>
     
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '19.7.21',
+        VERSION:     '19.7.22',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.21 documentation" href="../../index.html" />
+    <link rel="top" title="Lorax 19.7.22 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Lorax 19.7.21 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -144,7 +144,7 @@
     <span class="n">r</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">))</span>
 </div>
-<div class="viewcode-block" id="get_url_json_unlimited"><a class="viewcode-back" href="../../composer.html#composer.http_client.get_url_json_unlimited">[docs]</a><span class="k">def</span> <span class="nf">get_url_json_unlimited</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+<div class="viewcode-block" id="get_url_json_unlimited"><a class="viewcode-back" href="../../composer.html#composer.http_client.get_url_json_unlimited">[docs]</a><span class="k">def</span> <span class="nf">get_url_json_unlimited</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">total_fn</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return the JSON results of a GET request</span>
 
 <span class="sd">    For URLs that use offset/limit arguments, this command will</span>
@@ -157,6 +157,10 @@
 <span class="sd">    :returns: The json response from the server</span>
 <span class="sd">    :rtype: dict</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">default_total_fn</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the total number of available results&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="s">&quot;total&quot;</span><span class="p">]</span>
+
     <span class="n">http</span> <span class="o">=</span> <span class="n">UnixHTTPConnectionPool</span><span class="p">(</span><span class="n">socket_path</span><span class="p">)</span>
 
     <span class="c"># Start with limit=0 to just get the number of objects</span>
@@ -164,8 +168,12 @@
     <span class="n">r_total</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s">&quot;GET&quot;</span><span class="p">,</span> <span class="n">total_url</span><span class="p">)</span>
     <span class="n">json_total</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r_total</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">))</span>
 
+    <span class="c"># Where to get the total from</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">total_fn</span><span class="p">:</span>
+        <span class="n">total_fn</span> <span class="o">=</span> <span class="n">default_total_fn</span>
+
     <span class="c"># Add the &quot;total&quot; returned by limit=0 as the new limit</span>
-    <span class="n">unlimited_url</span> <span class="o">=</span> <span class="n">append_query</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="s">&quot;limit=</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">json_total</span><span class="p">[</span><span class="s">&quot;total&quot;</span><span class="p">])</span>
+    <span class="n">unlimited_url</span> <span class="o">=</span> <span class="n">append_query</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="s">&quot;limit=</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">total_fn</span><span class="p">(</span><span class="n">json_total</span><span class="p">))</span>
     <span class="n">r_unlimited</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s">&quot;GET&quot;</span><span class="p">,</span> <span class="n">unlimited_url</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r_unlimited</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">))</span>
 </div>
@@ -334,7 +342,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Lorax 19.7.21 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

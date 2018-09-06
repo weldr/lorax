@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pylorax.api.v0 &mdash; Lorax 19.7.21 documentation</title>
+    <title>pylorax.api.v0 &mdash; Lorax 19.7.22 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '19.7.21',
+        VERSION:     '19.7.22',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.21 documentation" href="../../../index.html" />
+    <link rel="top" title="Lorax 19.7.22 documentation" href="../../../index.html" />
     <link rel="up" title="pylorax.api" href="../api.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.21 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../../pylorax.html" >pylorax</a> &raquo;</li>
           <li><a href="../api.html" accesskey="U">pylorax.api</a> &raquo;</li> 
@@ -885,8 +885,8 @@
 <span class="sd">        ]</span>
 <span class="sd">      }</span>
 
-<span class="sd">DELETE `/api/v0/blueprints/cancel/&lt;uuid&gt;`</span>
-<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+<span class="sd">DELETE `/api/v0/compose/cancel/&lt;uuid&gt;`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
 
 <span class="sd">  Cancel the build, if it is not finished, and delete the results. It will return a</span>
 <span class="sd">  status of True if it is successful.</span>
@@ -1092,8 +1092,9 @@
             <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[{</span><span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="n">BAD_LIMIT_OR_OFFSET</span><span class="p">,</span> <span class="s">&quot;msg&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}]),</span> <span class="mi">400</span>
 
         <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
-            <span class="n">blueprints</span> <span class="o">=</span> <span class="n">take_limits</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">],</span> <span class="n">list_branch_files</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">)),</span> <span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">blueprints</span><span class="o">=</span><span class="n">blueprints</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">blueprints</span><span class="p">))</span>
+            <span class="n">blueprints</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">],</span> <span class="n">list_branch_files</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">))</span>
+            <span class="n">limited_blueprints</span> <span class="o">=</span> <span class="n">take_limits</span><span class="p">(</span><span class="n">blueprints</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">blueprints</span><span class="o">=</span><span class="n">limited_blueprints</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">blueprints</span><span class="p">))</span>
 
     <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/blueprints/info&quot;</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;blueprint_names&#39;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">})</span>
     <span class="nd">@api.route</span><span class="p">(</span><span class="s">&quot;/api/v0/blueprints/info/&lt;blueprint_names&gt;&quot;</span><span class="p">)</span>
@@ -1191,12 +1192,13 @@
 
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
-                    <span class="n">commits</span> <span class="o">=</span> <span class="n">take_limits</span><span class="p">(</span><span class="n">list_commits</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span> <span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+                    <span class="n">commits</span> <span class="o">=</span> <span class="n">list_commits</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+                    <span class="n">limited_commits</span> <span class="o">=</span> <span class="n">take_limits</span><span class="p">(</span><span class="n">list_commits</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span> <span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="n">BLUEPRINTS_ERROR</span><span class="p">,</span> <span class="s">&quot;msg&quot;</span><span class="p">:</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">blueprint_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))})</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;(v0_blueprints_changes) </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">blueprints</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;name&quot;</span><span class="p">:</span><span class="n">blueprint_name</span><span class="p">,</span> <span class="s">&quot;changes&quot;</span><span class="p">:</span><span class="n">commits</span><span class="p">,</span> <span class="s">&quot;total&quot;</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">commits</span><span class="p">)})</span>
+                <span class="n">blueprints</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&quot;name&quot;</span><span class="p">:</span><span class="n">blueprint_name</span><span class="p">,</span> <span class="s">&quot;changes&quot;</span><span class="p">:</span><span class="n">limited_commits</span><span class="p">,</span> <span class="s">&quot;total&quot;</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">commits</span><span class="p">)})</span>
 
         <span class="n">blueprints</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">blueprints</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
 
@@ -2128,7 +2130,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">Lorax 19.7.21 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li>
           <li><a href="../../pylorax.html" >pylorax</a> &raquo;</li>
           <li><a href="../api.html" >pylorax.api</a> &raquo;</li> 

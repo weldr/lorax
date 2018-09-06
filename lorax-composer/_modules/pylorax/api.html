@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pylorax.api &mdash; Lorax 19.7.21 documentation</title>
+    <title>pylorax.api &mdash; Lorax 19.7.22 documentation</title>
     
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '19.7.21',
+        VERSION:     '19.7.22',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.21 documentation" href="../../index.html" />
+    <link rel="top" title="Lorax 19.7.22 documentation" href="../../index.html" />
     <link rel="up" title="pylorax" href="../pylorax.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Lorax 19.7.21 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li>
           <li><a href="../pylorax.html" accesskey="U">pylorax</a> &raquo;</li> 
       </ul>
@@ -69,7 +69,13 @@
 <span class="c"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.crossdomain</span> <span class="kn">import</span> <span class="n">crossdomain</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;crossdomain&quot;</span><span class="p">]</span>
+<span class="c"># get the lorax-composer api version</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">pylorax.api.version</span> <span class="kn">import</span> <span class="n">num</span> <span class="k">as</span> <span class="n">vernum</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">vernum</span> <span class="o">=</span> <span class="s">&quot;devel&quot;</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;crossdomain&quot;</span><span class="p">,</span> <span class="s">&quot;vernum&quot;</span><span class="p">]</span>
 </pre></div>
 
           </div>
@@ -103,7 +109,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Lorax 19.7.21 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">Lorax 19.7.22 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li>
           <li><a href="../pylorax.html" >pylorax</a> &raquo;</li> 
       </ul>

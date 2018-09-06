@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lorax-composer &mdash; Lorax 19.7.21 documentation</title>
+    <title>lorax-composer &mdash; Lorax 19.7.22 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '19.7.21',
+        VERSION:     '19.7.22',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Lorax 19.7.21 documentation" href="index.html" />
+    <link rel="top" title="Lorax 19.7.22 documentation" href="index.html" />
     <link rel="next" title="composer-cli" href="composer-cli.html" />
     <link rel="prev" title="livemedia-creator" href="livemedia-creator.html" /> 
   </head>
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="livemedia-creator.html" title="livemedia-creator"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.21 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Lorax 19.7.22 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -336,6 +336,40 @@ it returns JSON but it can also return TOML if <tt class="docutils literal"><spa
 <p>The configured sources are used for all blueprint depsolve operations, and for composing images.
 When adding additional sources you must make sure that the packages in the source do not
 conflict with any other package sources, otherwise depsolving will fail.</p>
+<div class="section" id="dvd-iso-package-source">
+<h3>DVD ISO Package Source<a class="headerlink" href="#dvd-iso-package-source" title="Permalink to this headline">¶</a></h3>
+<p>In some situations the system may want to <em>only</em> use a DVD iso as the package
+source, not the repos from the network. <tt class="docutils literal"><span class="pre">lorax-composer</span></tt> and <tt class="docutils literal"><span class="pre">anaconda</span></tt>
+understand <tt class="docutils literal"><span class="pre">file://</span></tt> URLs so you can mount an iso on the host, and replace the
+system repo files with a configuration file pointing to the DVD.</p>
+<ul>
+<li><p class="first">Stop the <tt class="docutils literal"><span class="pre">lorax-composer.service</span></tt> if it is running</p>
+</li>
+<li><p class="first">Move the repo files in <tt class="docutils literal"><span class="pre">/etc/yum.repos.d/</span></tt> someplace safe</p>
+</li>
+<li><p class="first">Create a new <tt class="docutils literal"><span class="pre">iso.repo</span></tt> file in <tt class="docutils literal"><span class="pre">/etc/yum.repos.d/</span></tt>:</p>
+<div class="highlight-python"><pre>[iso]
+name=iso
+baseurl=file:///mnt/iso/
+enabled=1
+gpgcheck=1
+gpgkey=file:///mnt/iso/RPM-GPG-KEY-redhat-release</pre>
+</div>
+</li>
+<li><p class="first">Remove all the cached repo files from <tt class="docutils literal"><span class="pre">/var/lib/lorax/composer/repos/</span></tt></p>
+</li>
+<li><p class="first">Restart the <tt class="docutils literal"><span class="pre">lorax-composer.service</span></tt></p>
+</li>
+<li><p class="first">Check the output of <tt class="docutils literal"><span class="pre">composer-cli</span> <span class="pre">status</span> <span class="pre">show</span></tt> for any output specific depsolve errors.
+For example, the DVD usually does not include <tt class="docutils literal"><span class="pre">grub2-efi-*-cdboot-*</span></tt> so the live-iso image
+type will not be available.</p>
+</li>
+</ul>
+<p>If you want to <em>add</em> the DVD source to the existing sources you can do that by
+mounting the iso and creating a source file to point to it as described in the
+<a class="reference internal" href="#package-sources">Package Sources</a> documentation.  In that case there is no need to remove the other
+sources from <tt class="docutils literal"><span class="pre">/etc/yum.repos.d/</span></tt> or clear the cached repos.</p>
+</div>
 </div>
 </div>
 
@@ -370,7 +404,10 @@ conflict with any other package sources, otherwise depsolving will fail.</p>
 <li><a class="reference internal" href="#example-add-partitioned-disk-support">Example: Add partitioned disk support</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#package-sources">Package Sources</a></li>
+<li><a class="reference internal" href="#package-sources">Package Sources</a><ul>
+<li><a class="reference internal" href="#dvd-iso-package-source">DVD ISO Package Source</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -418,7 +455,7 @@ conflict with any other package sources, otherwise depsolving will fail.</p>
         <li class="right" >
           <a href="livemedia-creator.html" title="livemedia-creator"
              >previous</a> |</li>
-        <li><a href="index.html">Lorax 19.7.21 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Lorax 19.7.22 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
