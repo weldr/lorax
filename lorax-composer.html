@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>lorax-composer &mdash; Lorax 29.11 documentation</title>
+  <title>lorax-composer &mdash; Lorax 29.14 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                29.11
+                29.14
               </div>
             
           
@@ -115,7 +115,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#example-add-partitioned-disk-support">Example: Add partitioned disk support</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#package-sources">Package Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#package-sources">Package Sources</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dvd-iso-package-source">DVD ISO Package Source</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="composer-cli.html">composer-cli</a></li>
@@ -536,6 +539,41 @@ it returns JSON but it can also return TOML if <code class="docutils literal not
 <p>The configured sources are used for all blueprint depsolve operations, and for composing images.
 When adding additional sources you must make sure that the packages in the source do not
 conflict with any other package sources, otherwise depsolving will fail.</p>
+<div class="section" id="dvd-iso-package-source">
+<h3>DVD ISO Package Source<a class="headerlink" href="#dvd-iso-package-source" title="Permalink to this headline">¶</a></h3>
+<p>In some situations the system may want to <em>only</em> use a DVD iso as the package
+source, not the repos from the network. <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> and <code class="docutils literal notranslate"><span class="pre">anaconda</span></code>
+understand <code class="docutils literal notranslate"><span class="pre">file://</span></code> URLs so you can mount an iso on the host, and replace the
+system repo files with a configuration file pointing to the DVD.</p>
+<ul>
+<li><p class="first">Stop the <code class="docutils literal notranslate"><span class="pre">lorax-composer.service</span></code> if it is running</p>
+</li>
+<li><p class="first">Move the repo files in <code class="docutils literal notranslate"><span class="pre">/etc/yum.repos.d/</span></code> someplace safe</p>
+</li>
+<li><p class="first">Create a new <code class="docutils literal notranslate"><span class="pre">iso.repo</span></code> file in <code class="docutils literal notranslate"><span class="pre">/etc/yum.repos.d/</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">iso</span><span class="p">]</span>
+<span class="n">name</span><span class="o">=</span><span class="n">iso</span>
+<span class="n">baseurl</span><span class="o">=</span><span class="n">file</span><span class="p">:</span><span class="o">///</span><span class="n">mnt</span><span class="o">/</span><span class="n">iso</span><span class="o">/</span>
+<span class="n">enabled</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">gpgcheck</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">gpgkey</span><span class="o">=</span><span class="n">file</span><span class="p">:</span><span class="o">///</span><span class="n">mnt</span><span class="o">/</span><span class="n">iso</span><span class="o">/</span><span class="n">RPM</span><span class="o">-</span><span class="n">GPG</span><span class="o">-</span><span class="n">KEY</span><span class="o">-</span><span class="n">redhat</span><span class="o">-</span><span class="n">release</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Remove all the cached repo files from <code class="docutils literal notranslate"><span class="pre">/var/lib/lorax/composer/repos/</span></code></p>
+</li>
+<li><p class="first">Restart the <code class="docutils literal notranslate"><span class="pre">lorax-composer.service</span></code></p>
+</li>
+<li><p class="first">Check the output of <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">status</span> <span class="pre">show</span></code> for any output specific depsolve errors.
+For example, the DVD usually does not include <code class="docutils literal notranslate"><span class="pre">grub2-efi-*-cdboot-*</span></code> so the live-iso image
+type will not be available.</p>
+</li>
+</ul>
+<p>If you want to <em>add</em> the DVD source to the existing sources you can do that by
+mounting the iso and creating a source file to point to it as described in the
+<a class="reference internal" href="#package-sources">Package Sources</a> documentation.  In that case there is no need to remove the other
+sources from <code class="docutils literal notranslate"><span class="pre">/etc/yum.repos.d/</span></code> or clear the cached repos.</p>
+</div>
 </div>
 </div>
 
@@ -581,7 +619,7 @@ conflict with any other package sources, otherwise depsolving will fail.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'29.11',
+            VERSION:'29.14',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

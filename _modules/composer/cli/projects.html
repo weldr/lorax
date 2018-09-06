@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>composer.cli.projects &mdash; Lorax 29.11 documentation</title>
+  <title>composer.cli.projects &mdash; Lorax 29.14 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                29.11
+                29.14
               </div>
             
           
@@ -216,7 +216,7 @@
 <span class="sd">    projects list</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">api_route</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">api_url</span><span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="s2">&quot;/projects/list&quot;</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_url_json_unlimited</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">api_route</span><span class="p">)</span>
     <span class="p">(</span><span class="n">rc</span><span class="p">,</span> <span class="n">exit_now</span><span class="p">)</span> <span class="o">=</span> <span class="n">handle_api_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">show_json</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">exit_now</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">rc</span>
@@ -299,7 +299,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'29.11',
+            VERSION:'29.14',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
