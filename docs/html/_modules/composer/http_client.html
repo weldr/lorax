@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>composer.http_client &mdash; Lorax 29.11 documentation</title>
+  <title>composer.http_client &mdash; Lorax 29.14 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                29.11
+                29.14
               </div>
             
           
@@ -175,6 +175,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="k">import</span> <span class="n">urlparse</span><span class="p">,</span> <span class="n">urlunparse</span>
 
 <span class="kn">from</span> <span class="nn">composer.unix_socket</span> <span class="k">import</span> <span class="n">UnixHTTPConnectionPool</span>
 
@@ -189,6 +190,29 @@
 <span class="sd">    :rtype: str</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="s2">&quot;/api/v</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">api_version</span><span class="p">,</span> <span class="n">url</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="append_query"><a class="viewcode-back" href="../../composer.html#composer.http_client.append_query">[docs]</a><span class="k">def</span> <span class="nf">append_query</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add a query argument to a URL</span>
+
+<span class="sd">    The query should be of the form &quot;param1=what&amp;param2=ever&quot;, i.e., no</span>
+<span class="sd">    leading &#39;?&#39;. The new query data will be appended to any existing</span>
+<span class="sd">    query string.</span>
+
+<span class="sd">    :param url: The original URL</span>
+<span class="sd">    :type url: str</span>
+<span class="sd">    :param query: The query to append</span>
+<span class="sd">    :type query: str</span>
+<span class="sd">    :returns: The new URL with the query argument included</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">url_parts</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">url_parts</span><span class="o">.</span><span class="n">query</span><span class="p">:</span>
+        <span class="n">new_query</span> <span class="o">=</span> <span class="n">url_parts</span><span class="o">.</span><span class="n">query</span> <span class="o">+</span> <span class="s2">&quot;&amp;&quot;</span> <span class="o">+</span> <span class="n">query</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">new_query</span> <span class="o">=</span> <span class="n">query</span>
+    <span class="k">return</span> <span class="n">urlunparse</span><span class="p">([</span><span class="n">url_parts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">url_parts</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">url_parts</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                       <span class="n">url_parts</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">new_query</span><span class="p">,</span> <span class="n">url_parts</span><span class="p">[</span><span class="mi">5</span><span class="p">]])</span></div>
 
 <div class="viewcode-block" id="get_url_raw"><a class="viewcode-back" href="../../composer.html#composer.http_client.get_url_raw">[docs]</a><span class="k">def</span> <span class="nf">get_url_raw</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return the raw results of a GET request</span>
@@ -223,6 +247,39 @@
     <span class="n">http</span> <span class="o">=</span> <span class="n">UnixHTTPConnectionPool</span><span class="p">(</span><span class="n">socket_path</span><span class="p">)</span>
     <span class="n">r</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="get_url_json_unlimited"><a class="viewcode-back" href="../../composer.html#composer.http_client.get_url_json_unlimited">[docs]</a><span class="k">def</span> <span class="nf">get_url_json_unlimited</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">total_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the JSON results of a GET request</span>
+
+<span class="sd">    For URLs that use offset/limit arguments, this command will</span>
+<span class="sd">    fetch all results for the given request.</span>
+
+<span class="sd">    :param socket_path: Path to the Unix socket to use for API communication</span>
+<span class="sd">    :type socket_path: str</span>
+<span class="sd">    :param url: URL to request</span>
+<span class="sd">    :type url: str</span>
+<span class="sd">    :returns: The json response from the server</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">default_total_fn</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the total number of available results&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">]</span>
+
+    <span class="n">http</span> <span class="o">=</span> <span class="n">UnixHTTPConnectionPool</span><span class="p">(</span><span class="n">socket_path</span><span class="p">)</span>
+
+    <span class="c1"># Start with limit=0 to just get the number of objects</span>
+    <span class="n">total_url</span> <span class="o">=</span> <span class="n">append_query</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;limit=0&quot;</span><span class="p">)</span>
+    <span class="n">r_total</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">total_url</span><span class="p">)</span>
+    <span class="n">json_total</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r_total</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+
+    <span class="c1"># Where to get the total from</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">total_fn</span><span class="p">:</span>
+        <span class="n">total_fn</span> <span class="o">=</span> <span class="n">default_total_fn</span>
+
+    <span class="c1"># Add the &quot;total&quot; returned by limit=0 as the new limit</span>
+    <span class="n">unlimited_url</span> <span class="o">=</span> <span class="n">append_query</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;limit=</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">total_fn</span><span class="p">(</span><span class="n">json_total</span><span class="p">))</span>
+    <span class="n">r_unlimited</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">unlimited_url</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r_unlimited</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="delete_url_json"><a class="viewcode-back" href="../../composer.html#composer.http_client.delete_url_json">[docs]</a><span class="k">def</span> <span class="nf">delete_url_json</span><span class="p">(</span><span class="n">socket_path</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Send a DELETE request to the url and return JSON response</span>
@@ -390,7 +447,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'29.11',
+            VERSION:'29.14',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
