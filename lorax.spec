@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        29.14
+Version:        29.15
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -230,6 +230,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Fri Sep 07 2018 Brian C. Lane <bcl@redhat.com> 29.15-1
+- Add a Makefile target for building html docs using a rawhide environment (bcl@redhat.com)
+- Revert "Don't activate default auto connections after switchroot" (rvykydal@redhat.com)
+- Need to explicitly require python3-librepo (#1626413) (bcl@redhat.com)
+- New lorax documentation - 29.14 (bcl@redhat.com)
+
 * Thu Sep 06 2018 Brian C. Lane <bcl@redhat.com> 29.14-1
 - Add the create ISO component for ARMv7 (pbrobinson@gmail.com)
 - Don't activate default auto connections after switchroot (rvykydal@redhat.com)
