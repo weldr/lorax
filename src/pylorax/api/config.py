@@ -20,7 +20,7 @@ import os
 
 from pylorax.sysutils import joinpaths
 
-class ComposerConfig(configparser.SafeConfigParser):
+class ComposerConfig(configparser.ConfigParser):
     def get_default(self, section, option, default):
         try:
             return self.get(section, option)
