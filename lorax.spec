@@ -47,7 +47,7 @@ Requires:       libselinux-python3
 Requires:       python3-mako
 Requires:       python3-kickstart
 Requires:       python3-dnf >= 2.0.0
-
+Requires:       python3-librepo
 
 %if 0%{?fedora}
 # Fedora specific deps
