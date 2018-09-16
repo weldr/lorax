@@ -1,5 +1,7 @@
 PYTHON ?= /usr/bin/python3
 DESTDIR ?= /
+PREFIX ?= /usr
+mandir ?= $(PREFIX)/share/man
 
 PKGNAME = lorax
 VERSION = $(shell awk '/Version:/ { print $$2 }' $(PKGNAME).spec)
@@ -19,7 +21,7 @@ all: src/pylorax/version.py src/composer/version.py
 	$(PYTHON) setup.py build
 
 install: all
-	$(PYTHON) setup.py install --root=$(DESTDIR)
+	$(PYTHON) setup.py install --root=$(DESTDIR) --prefix=$(PREFIX)
 	mkdir -p $(DESTDIR)/$(mandir)/man1
 	install -m 644 docs/man/lorax.1 $(DESTDIR)/$(mandir)/man1
 	install -m 644 docs/man/livemedia-creator.1 $(DESTDIR)/$(mandir)/man1
