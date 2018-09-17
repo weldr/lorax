@@ -19,6 +19,7 @@ log = logging.getLogger("lorax-composer")
 
 import os
 from ConfigParser import ConfigParser
+import fnmatch
 from glob import glob
 import time
 
@@ -188,6 +189,24 @@ def projects_info(yb, project_names):
         yb.closeRpmDB()
     return sorted(map(yaps_to_project_info, ybl.available), key=lambda p: p["name"].lower())
 
+def filterVersionGlob(pkgs, version):
+    """Filter a list of yum package objects with a version glob
+
+    :param pkgs: list of yum package objects
+    :type pkgs: list
+    :param version: version matching glob
+    :type version: str
+
+    pkgs should be a list of all the versions of the *same* package.
+    Return the latest package that matches the 'version' glob.
+    """
+    # Pick the version(s) matching the version glob
+    matches = [po for po in pkgs if fnmatch.fnmatchcase(po.version, version)]
+    if not matches:
+        raise RuntimeError("No package version matching %s" % version)
+
+    # yum implements __cmd__ using verCMP so this will return the highest matching version
+    return max(matches)
 
 def projects_depsolve(yb, projects, groups):
     """Return the dependencies for a list of projects
@@ -212,10 +231,21 @@ def projects_depsolve(yb, projects, groups):
         for name, version in projects:
             if not version:
                 version = "*"
-            pattern = "%s-%s" % (name, version)
+            pattern = "%s %s" % (name, version)
+
+            # yum.install's pattern matches the whole nevra, which can result in -* matching
+            # unexpected packages. So we need to implement our own version globbing.
+            pkgs = yb.pkgSack.searchNames([name])
+            if not pkgs:
+                install_errors.append((name, "No package name matching %s" % name))
+                continue
+
             try:
-                yb.install(pattern=pattern)
-            except YumBaseError as e:
+                po = filterVersionGlob(pkgs, version)
+                log.debug("Chose %s as best match for %s", po.nevra, pattern)
+
+                yb.install(po=po)
+            except (YumBaseError, RuntimeError) as e:
                 install_errors.append((pattern, str(e)))
 
         # Were there problems installing these packages?

@@ -23,6 +23,7 @@ import tempfile
 import unittest
 
 from yum.Errors import YumBaseError
+from yum.packages import PackageObject
 
 from pylorax.sysutils import joinpaths
 from pylorax.api.config import configure, make_yum_dirs
@@ -30,7 +31,7 @@ from pylorax.api.projects import api_time, api_changelog, yaps_to_project, yaps_
 from pylorax.api.projects import tm_to_dep, yaps_to_module, projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError, dep_evra, dep_nevra
 from pylorax.api.projects import repo_to_source, get_repo_sources, delete_repo_source, source_to_repo
-from pylorax.api.projects import yum_repo_to_file_repo
+from pylorax.api.projects import yum_repo_to_file_repo, filterVersionGlob
 from pylorax.api.yumbase import get_base_object
 
 
@@ -59,6 +60,15 @@ class TM(object):
     release = "release"
     arch = "arch"
 
+def NewPackageObject(name, epoch, version, release, arch):
+    po = PackageObject()
+    po.name = name
+    po.epoch = epoch
+    po.version = version
+    po.release = release
+    po.arch = arch
+    po.pkgtup = (po.name, po.arch, po.epoch, po.version, po.release)
+    return po
 
 class ProjectsTest(unittest.TestCase):
     @classmethod
@@ -203,6 +213,52 @@ class ProjectsTest(unittest.TestCase):
     def test_projects_depsolve_fail(self):
         with self.assertRaises(ProjectsError):
             projects_depsolve(self.yb, [("nada-package", "*.*")], [])
+
+    def test_projects_depsolve_glob(self):
+        """Test that depsolving with a '*' version glob doesn't glob package names"""
+        deps = projects_depsolve(self.yb, [("python", "*")], [])
+        self.assertTrue(len(deps) > 1)
+        self.assertTrue("python" in [dep["name"] for dep in deps])
+        self.assertTrue("python-blivet" not in [dep["name"] for dep in deps])
+
+    def test_projects_filterVersionGlob(self):
+        """Test the filterVersionGlob function"""
+        pkgs = [NewPackageObject("foopkg", "0", "1.1.5", "el7", "x86_64"),
+                NewPackageObject("foopkg", "0", "1.2.0", "el7", "x86_64"),
+                NewPackageObject("foopkg", "0", "2.4.3", "el7", "x86_64"),
+                NewPackageObject("foopkg", "0", "2.4.17", "el7", "x86_64"),
+                NewPackageObject("foopkg", "0", "2.10.0", "el7", "x86_64"),
+                NewPackageObject("foopkg", "0", "3.0.0", "el7", "x86_64")]
+
+        # 1.1.5 version
+        self.assertEqual(filterVersionGlob(pkgs, "1.1.5"), pkgs[0])
+
+        # Newest 1.x.x version
+        self.assertEqual(filterVersionGlob(pkgs, "1.*.*"), pkgs[1])
+
+        # Newest 2.4.x version
+        self.assertEqual(filterVersionGlob(pkgs, "2.4.*"), pkgs[3])
+
+        # Newest 2.x version
+        self.assertEqual(filterVersionGlob(pkgs, "2.*"), pkgs[4])
+
+        # Newest version
+        self.assertEqual(filterVersionGlob(pkgs, "*"), pkgs[5])
+
+    def test_projects_filterVersionGlob_epoch(self):
+        """Test the filterVersionGlob function with epoch"""
+        pkgs = [NewPackageObject("foopkg", "2", "1.1.5", "el7", "x86_64"),
+                NewPackageObject("foopkg", "2", "1.2.0", "el7", "x86_64"),
+                NewPackageObject("foopkg", "0", "2.4.3", "el7", "x86_64")]
+
+        # 1.1.5 version
+        self.assertEqual(filterVersionGlob(pkgs, "1.1.5"), pkgs[0])
+
+        # Newest 1.x.x version
+        self.assertEqual(filterVersionGlob(pkgs, "1.*.*"), pkgs[1])
+
+        # Newest version
+        self.assertEqual(filterVersionGlob(pkgs, "*"), pkgs[1])
 
     def test_modules_list(self):
         modules = modules_list(self.yb, None)
