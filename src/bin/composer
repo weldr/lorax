@@ -23,9 +23,11 @@ log = logging.getLogger("composer")
 import os
 import sys
 
-from composer import vernum
-from composer.cli import main
-from composer.cli.cmdline import composer_cli_parser
+# Disable pylint warnings for these, because it cannot deal with this file and
+# the module both being called "composer"
+from composer import vernum                             # pylint: disable=import-self
+from composer.cli import main                           # pylint: disable=no-name-in-module
+from composer.cli.cmdline import composer_cli_parser    # pylint: disable=no-name-in-module
 
 VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
 
