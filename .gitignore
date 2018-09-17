@@ -5,3 +5,4 @@ tests/pylint/.pylint.d/
 __pycache__/
 .coverage
 pylint-log
+.pytest_cache/
