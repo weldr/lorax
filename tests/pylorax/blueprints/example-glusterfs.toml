@@ -11,4 +11,4 @@ version = "4.1.*"
 
 [[packages]]
 name = "samba"
-version = "4.9.*"
+version = "4.*.*"
