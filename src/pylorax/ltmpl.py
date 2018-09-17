@@ -248,10 +248,10 @@ class LoraxTemplateRunner(object):
                 # skip the bit about "ltmpl.py, in _run()" - we know that
                 exclines.pop(1)
                 # log the "ErrorType: this is what happened" line
-                logger.error("  " + exclines[-1].strip())
+                logger.error("  %s", exclines[-1].strip())
                 # and log the entire traceback to the debug log
                 for _line in ''.join(exclines).splitlines():
-                    logger.debug("  " + _line)
+                    logger.debug("  %s", _line)
                 if self.fatalerrors:
                     raise
 
