@@ -196,10 +196,7 @@ def loop_attach(outfile):
 
             # Sometimes the loop device isn't ready yet, make extra sure before returning
             loop_waitfor(dev, outfile)
-        except CalledProcessError:
-            # Problems running losetup are always errors, raise immediately
-            raise
-        except RuntimeError as e:
+        except RuntimeError:
             # Try to setup the loop device 3 times
             if retries == 3:
                 logger.error("loop_attach failed, retries exhausted.")

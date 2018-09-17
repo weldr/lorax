@@ -9,9 +9,6 @@ class LoraxLintConfig(PocketLintConfig):
         PocketLintConfig.__init__(self)
 
         self.falsePositives = [ FalsePositive(r"Module 'pylorax' has no 'version' member"),
-                                # threading.Lock() is a factory function which returns an
-                                # instance of the Lock class that is supported by the platform
-                                FalsePositive(r"Context manager 'lock' doesn't implement __enter__ and __exit__"),
                                 FalsePositive(r"Catching too general exception Exception"),
                                 FalsePositive(r"^E0712.*: Catching an exception which doesn't inherit from (Base|)Exception: GError$"),
                                 FalsePositive(r"Module 'composer' has no 'version' member"),
