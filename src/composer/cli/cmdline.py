@@ -24,7 +24,7 @@ from composer.cli.help import epilog
 VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
 
 def composer_cli_parser():
-    """ Return the ArgumentParser for composer-cli"""
+    """ Return the ArgumentParser for composer"""
 
     parser = argparse.ArgumentParser(description="Lorax Composer commandline tool",
                                      epilog=epilog,
@@ -36,7 +36,7 @@ def composer_cli_parser():
     parser.add_argument("-s", "--socket", default="/run/weldr/api.socket", metavar="SOCKET",
                         help="Path to the socket file to listen on")
     parser.add_argument("--log", dest="logfile", default=None, metavar="LOG",
-                        help="Path to logfile (./composer-cli.log)")
+                        help="Path to logfile (./composer.log)")
     parser.add_argument("-a", "--api", dest="api_version", default="0", metavar="APIVER",
                         help="API Version to use")
     parser.add_argument("--test", dest="testmode", default=0, type=int, metavar="TESTMODE",

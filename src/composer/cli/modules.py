@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import logging
-log = logging.getLogger("composer-cli")
+log = logging.getLogger("composer")
 
 from composer import http_client as client
 from composer.cli.help import modules_help

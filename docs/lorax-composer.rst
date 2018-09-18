@@ -29,12 +29,18 @@ Installation
 ------------
 
 The best way to install ``lorax-composer`` is to use ``sudo dnf install
-lorax-composer composer-cli``, this will setup the weldr user and install the
+lorax-composer composer``, this will setup the weldr user and install the
 systemd socket activation service. You will then need to enable it with ``sudo
 systemctl enable lorax-composer.socket && sudo systemctl start
 lorax-composer.socket``. This will leave the server off until the first request
 is made. Systemd will then launch the server and it will remain running until
-the system is rebooted.
+the system is rebooted. This will cause some delay in responding to the first
+request from the UI or `composer`.
+
+.. note::
+
+   If you want lorax-composer to respond immediately to the first request you can
+   start and enable `lorax-composer.service` instead of `lorax-composer.socket`
 
 Quickstart
 ----------
@@ -108,7 +114,7 @@ Composing Images
 The `welder-web <https://github.com/weldr/welder-web/>`_ GUI project can be used to construct
 blueprints and create composes using a web browser.
 
-Or use the command line with `composer-cli <composer-cli.html>`_.
+Or use the command line with `composer <composer-cli.html>`_.
 
 Blueprints
 ----------
@@ -340,7 +346,7 @@ system repo files with a configuration file pointing to the DVD.
 
 * Remove all the cached repo files from ``/var/lib/lorax/composer/repos/``
 * Restart the ``lorax-composer.service``
-* Check the output of ``composer-cli status show`` for any output specific depsolve errors.
+* Check the output of ``composer status show`` for any output specific depsolve errors.
   For example, the DVD usually does not include ``grub2-efi-*-cdboot-*`` so the live-iso image
   type will not be available.
 

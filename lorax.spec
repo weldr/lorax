@@ -228,9 +228,9 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %attr(0771, weldr, weldr) %{_sharedstatedir}/lorax/composer/blueprints/*
 
 %files -n composer-cli
-%{_bindir}/composer-cli
+%{_bindir}/composer
 %{python3_sitelib}/composer/*
-%{_sysconfdir}/bash_completion.d/composer-cli
+%{_sysconfdir}/bash_completion.d/composer
 
 %changelog
 * Wed Oct 03 2018 Brian C. Lane <bcl@redhat.com> 28.14.12-1
