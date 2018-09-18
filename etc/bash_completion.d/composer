@@ -1,4 +1,4 @@
-# bash completion for composer-cli
+# bash completion for composer
 
 __composer_cli_flags="-h --help -j --json -s --socket --log -a --api --test -V"
 
@@ -16,19 +16,19 @@ __composer_socket_ok() {
 }
 
 __composer_blueprints() {
-    __composer_socket_ok && composer-cli blueprints list
+    __composer_socket_ok && composer blueprints list
 }
 
 __composer_sources() {
-    __composer_socket_ok && composer-cli sources list
+    __composer_socket_ok && composer sources list
 }
 
 __composer_compose_types() {
-    __composer_socket_ok && composer-cli compose types
+    __composer_socket_ok && composer compose types
 }
 
 __composer_composes() {
-    __composer_socket_ok && composer-cli compose list $@ | while read id rest; do echo $id; done
+    __composer_socket_ok && composer compose list $@ | while read id rest; do echo $id; done
 }
 
 __word_in_list() {
@@ -39,7 +39,7 @@ __word_in_list() {
     return 1
 }
 
-_composer_cli() {
+_composer() {
     local cur="${COMP_WORDS[COMP_CWORD]}" prev="${COMP_WORDS[COMP_CWORD-1]}"
     local w="" wi=0 cmd="__NONE__" subcmd="__NONE__" cmd_cword=0
 
@@ -140,4 +140,4 @@ _composer_cli() {
     fi
 }
 
-complete -F _composer_cli composer-cli
+complete -F _composer composer
