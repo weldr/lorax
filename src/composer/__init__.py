@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# composer-cli
+# composer
 #
 # Copyright (C) 2018  Red Hat, Inc.
 #
