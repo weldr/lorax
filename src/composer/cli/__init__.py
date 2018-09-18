@@ -1,5 +1,5 @@
 #
-# composer-cli
+# composer
 #
 # Copyright (C) 2018  Red Hat, Inc.
 #
@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import logging
-log = logging.getLogger("composer-cli")
+log = logging.getLogger("composer")
 
 from composer.cli.blueprints import blueprints_cmd
 from composer.cli.modules import modules_cmd
@@ -44,7 +44,7 @@ def main(opts):
     """
 
     # Making sure opts.args is not empty (thus, has a command and subcommand)
-    # is already handled in src/bin/composer-cli.
+    # is already handled in src/bin/composer.
     if opts.args[0] not in command_map:
         log.error("Unknown command %s", opts.args[0])
         return 1
