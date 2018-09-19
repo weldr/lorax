@@ -42,6 +42,9 @@ test: docs
 	coverage combine
 	coverage report -m
 	[ -f "/usr/bin/coveralls" ] && [ -n "$(COVERALLS_REPO_TOKEN)" ] && coveralls || echo
+	
+	./tests/test_cli.sh
+
 
 check:
 	@echo "*** Running pylint ***"
