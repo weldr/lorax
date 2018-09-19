@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.22
+Version:        19.7.23
 Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
@@ -122,6 +122,11 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Wed Sep 19 2018 Brian C. Lane <bcl@redhat.com> 19.7.23-1
+- Fix depsolve version globbing (bcl)
+  Resolves: rhbz#1628114
+- Fix /compose/cancel API documentation (bcl)
+
 * Mon Aug 27 2018 Brian C. Lane <bcl@redhat.com> 19.7.22-1
 - Fix composer-cli blueprints changes to get correct total (bcl)
 - Fix blueprints/list and blueprints/changes to return the correct total (bcl)
