@@ -63,15 +63,23 @@ store the new blueprint on the new branch.
           "kubernetes" ],
         "total": 6 }
 
-`/api/v0/blueprints/info/<blueprint_names>`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+`/api/v0/blueprints/info/<blueprint_names>[?format=<json|toml>]`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   Return the JSON representation of the blueprint. This includes 3 top level
   objects.  `changes` which lists whether or not the workspace is different from
   the most recent commit. `blueprints` which lists the JSON representation of the
   blueprint, and `errors` which will list any errors, like non-existant blueprints.
 
-  Example::
+  By default the response is JSON, but if `?format=toml` is included in the URL's
+  arguments it will return the response as the blueprint's raw TOML content.
+  *Unless* there is an error which will only return a 400 and a standard error
+  `Status Response`_.
+
+  If there is an error when JSON is requested the successful blueprints and the
+  errors will both be returned.
+
+  Example of json response::
 
       {
         "changes": [
@@ -1104,8 +1112,12 @@ def v0_api(api):
         blueprints = sorted(blueprints, key=lambda r: r["name"].lower())
 
         if out_fmt == "toml":
-            # With TOML output we just want to dump the raw blueprint, skipping the rest.
-            return "\n\n".join([r.toml() for r in blueprints])
+            if errors:
+                # If there are errors they need to be reported, use JSON and 400 for this
+                return jsonify(status=False, errors=errors), 400
+            else:
+                # With TOML output we just want to dump the raw blueprint, skipping the rest.
+                return "\n\n".join([r.toml() for r in blueprints])
         else:
             return jsonify(changes=changes, blueprints=blueprints, errors=errors)
 
