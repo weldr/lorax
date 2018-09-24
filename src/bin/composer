@@ -79,10 +79,9 @@ if __name__ == '__main__':
     errors = []
 
     # Check to see if the socket exists and can be accessed
-    if not os.path.exists(opts.socket):
-        errors.append("%s does not exist" % opts.socket)
-    elif not os.access(opts.socket, os.R_OK|os.W_OK):
-        errors.append("This user cannot access %s" % opts.socket)
+    if not os.access(opts.socket, os.R_OK|os.W_OK):
+        errors.append("Cannot access '%s'. Is lorax-composer running and "
+                      "this user allowed to access it?" % opts.socket)
 
     # No point in continuing if there are errors
     if errors:
