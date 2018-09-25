@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.8
+Version:        28.14.9
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -233,6 +233,9 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Tue Sep 25 2018 Brian C. Lane <bcl@redhat.com> 28.14.9-1
+- lorax: Only run depmod on the installed kernels (bcl@redhat.com)
+  Resolves: rhbz#1632140
 * Tue Sep 18 2018 Brian C. Lane <bcl@redhat.com> 28.14.8-1
 - Add prefixdevname support to the boot.iso (bcl@redhat.com)
   Resolves: rhbz#1623000
