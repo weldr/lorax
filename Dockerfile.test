@@ -1,12 +1,27 @@
 FROM fedora:28
 
-RUN dnf -y install make libgit2-glib tito python3-pylint  \
-                    python3-nose python3-mako python3-flask \
-                    python3-coverage libselinux-python3 sudo \
-                    pykickstart python3-pytoml python3-sphinx \
-                    python3-semantic_version \
-                    anaconda-tui python3-gevent beakerlib && \
-    useradd weldr
+RUN dnf -y install \
+  anaconda-tui \
+  libgit2-glib \
+  libselinux-python3 \
+  make \
+  pykickstart \
+  python3-coverage \
+  python3-coveralls \
+  python3-flask \
+  python3-gevent \
+  python3-mako \
+  python3-nose \
+  python3-pocketlint \
+  python3-pylint \
+  python3-pytoml \
+  python3-semantic_version \
+  python3-sphinx \
+  sudo \
+  tito \
+  which
+
+RUN useradd weldr
 
 RUN mkdir /lorax
 COPY . /lorax
@@ -15,4 +30,4 @@ COPY . /lorax
 RUN find /lorax -name "*.pyc" -exec rm -f {} \;
 
 WORKDIR /lorax
-RUN make test
+RUN make check test
