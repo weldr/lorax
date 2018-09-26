@@ -56,7 +56,8 @@ def get_base_object(conf):
     dbc.reposdir = [repodir]
     dbc.install_weak_deps = False
     dbc.prepend_installroot('persistdir')
-    dbc.tsflags.append('nodocs')
+    # tsflags is append option therefor the action result in append operation into tsflags
+    dbc.tsflags = ('nodocs', )
 
     if conf.get_default("dnf", "proxy", None):
         dbc.proxy = conf.get("dnf", "proxy")

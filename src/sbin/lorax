@@ -212,7 +212,8 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
     conf.releasever = releasever
     conf.installroot = installroot
     conf.prepend_installroot('persistdir')
-    conf.tsflags.append('nodocs')
+    # tsflags is append option therefor the action result in append operation into tsflags
+    conf.tsflags = ('nodocs',)
 
     if proxy:
         conf.proxy = proxy
