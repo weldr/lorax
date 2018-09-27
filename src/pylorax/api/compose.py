@@ -296,7 +296,8 @@ def start_build(cfg, yumlock, gitlock, branch, recipe_name, compose_type, test_m
     projects = sorted(set(module_nver+package_nver), key=lambda p: p[0].lower())
     deps = []
     try:
-        with yumlock.lock:
+        # This can possibly update repodata and reset the YumBase object.
+        with yumlock.lock_check:
             (installed_size, deps) = projects_depsolve_with_size(yumlock.yb, projects, recipe.group_names, with_core=False)
     except ProjectsError as e:
         log.error("start_build depsolve: %s", str(e))

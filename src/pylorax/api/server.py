@@ -28,7 +28,6 @@ from pylorax.api.v0 import v0_api
 from pylorax.sysutils import joinpaths
 
 GitLock = namedtuple("GitLock", ["repo", "lock", "dir"])
-YumLock = namedtuple("YumLock", ["yb", "lock"])
 
 server = Flask(__name__)
 

@@ -23,6 +23,8 @@ import ConfigParser
 from fnmatch import fnmatchcase
 from glob import glob
 import os
+from threading import Lock
+import time
 import yum
 from yum.Errors import YumBaseError
 
@@ -30,6 +32,74 @@ from yum.Errors import YumBaseError
 yum.logginglevels._added_handlers = True
 
 from pylorax.sysutils import joinpaths
+
+class YumLock(object):
+    """Hold the YumBase object and a Lock to control access to it.
+
+    self.yb is a property that returns the YumBase object, but it *may* change
+    from one call to the next if the upstream repositories have changed.
+    """
+    def __init__(self, conf, expire_secs=6*60*60):
+        self._conf = conf
+        self._lock = Lock()
+        self.yb = get_base_object(self._conf)
+        self._expire_secs = expire_secs
+        self._expire_time = time.time() + self._expire_secs
+
+    @property
+    def lock(self):
+        """Check for repo updates (using expiration time) and return the lock
+
+        If the repository has been updated, tear down the old YumBase and
+        create a new one. This is the only way to force yum to use the new
+        metadata.
+        """
+        if time.time() > self._expire_time:
+            return self.lock_check
+        return self._lock
+
+    @property
+    def lock_check(self):
+        """Force a check for repo updates and return the lock
+
+        If the repository has been updated, tear down the old YumBase and
+        create a new one. This is the only way to force yum to use the new
+        metadata.
+
+        Use this method sparingly, it removes the repodata and downloads a new copy every time.
+        """
+        self._expire_time = time.time() + self._expire_secs
+        if self._haveReposChanged():
+            self._destroyYb()
+            self.yb = get_base_object(self._conf)
+        return self._lock
+
+    def _destroyYb(self):
+        # Do our best to get yum to let go of all the things...
+        self.yb.pkgSack.dropCachedData()
+        for s in self.yb.pkgSack.sacks.values():
+            s.close()
+            del s
+        del self.yb.pkgSack
+        self.yb.closeRpmDB()
+        del self.yb.tsInfo
+        del self.yb.ts
+        self.yb.close()
+        del self.yb
+
+    def _haveReposChanged(self):
+        """Return True if the repo has new metadata"""
+        # This is a total kludge, yum doesn't really expect to deal with things changing while the
+        # object is is use.
+        try:
+            before = [(r.id, r.repoXML.checksums["sha256"]) for r in sorted(self.yb.repos.listEnabled())]
+            for r in sorted(self.yb.repos.listEnabled()):
+                r.metadata_expire = 0
+                del r.repoXML
+            after = [(r.id, r.repoXML.checksums["sha256"]) for r in sorted(self.yb.repos.listEnabled())]
+            return before != after
+        except Exception:
+            return False
 
 def get_base_object(conf):
     """Get the Yum object with settings from the config file
