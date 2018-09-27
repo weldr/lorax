@@ -8,10 +8,9 @@ RUN yum -y install --nogpgcheck epel-release && \
                     python-coverage libselinux-python sudo \
                     pykickstart python2-pytoml python-sphinx \
                     python2-mock python-semantic_version \
-                    anaconda-tui && \
+                    anaconda-tui python-rpmfluff && \
     yum clean all && \
     rm -rf /var/cache/yum
-
 
 RUN mkdir /lorax
 COPY . /lorax
