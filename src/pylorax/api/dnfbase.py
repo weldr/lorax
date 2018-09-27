@@ -56,7 +56,10 @@ def get_base_object(conf):
     dbc.reposdir = [repodir]
     dbc.install_weak_deps = False
     dbc.prepend_installroot('persistdir')
-    dbc.tsflags.append('nodocs')
+    # this is a weird 'AppendOption' thing that, when you set it,
+    # actually appends. Doing this adds 'nodocs' to the existing list
+    # of values, over in libdnf, it does not replace the existing values.
+    dbc.tsflags = ['nodocs']
 
     if conf.get_default("dnf", "proxy", None):
         dbc.proxy = conf.get("dnf", "proxy")
