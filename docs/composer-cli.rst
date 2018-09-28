@@ -41,7 +41,7 @@ keep track of the build. You can also cancel the build if needed.
 
 The available types of images is displayed by ``composer compose types``.
 Currently this consists of: ext4-filesystem, live-iso, partitioned-disk, qcow2,
-tar
+tar, vhd
 
 Monitor the build status
 ------------------------
