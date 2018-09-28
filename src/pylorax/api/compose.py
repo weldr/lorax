@@ -544,6 +544,28 @@ def compose_args(compose_type):
                                  "app_template":            None,
                                  "app_file":                None
                                 },
+            "ami":              {"make_iso":                False,
+                                 "make_disk":               True,
+                                 "make_fsimage":            False,
+                                 "make_appliance":          False,
+                                 "make_ami":                False,
+                                 "make_tar":                False,
+                                 "make_pxe_live":           False,
+                                 "make_ostree_live":        False,
+                                 "make_oci":                False,
+                                 "make_vagrant":            False,
+                                 "ostree":                  False,
+                                 "live_rootfs_keep_size":   False,
+                                 "live_rootfs_size":        0,
+                                 "image_type":              False,
+                                 "qemu_args":               [],
+                                 "image_name":              "disk.ami",
+                                 "fs_label":                "",
+                                 "image_only":              True,
+                                 "app_name":                None,
+                                 "app_template":            None,
+                                 "app_file":                None,
+                                },
             }
     return _MAP[compose_type]
 
