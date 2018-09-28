@@ -39,8 +39,12 @@ USER = BASE_RECIPE + """[[customizations.user]]
 name = "tester"
 """
 
+ROOT_USER = BASE_RECIPE + """[[customizations.user]]
+name = "root"
+"""
+
 USER_KEY = """
-key = "A SSH KEY FOR TESTER"
+key = "A SSH KEY FOR THE USER"
 """
 
 USER_DESC = """
@@ -89,9 +93,16 @@ USER_GROUP = USER + """[[customizations.group]]
 name = "tester"
 """
 
-KS_USER_ALL = '''sshkey --user tester "A SSH KEY FOR TESTER"
+KS_USER_ALL = '''sshkey --user tester "A SSH KEY FOR THE USER"
 user --name tester --homedir /opt/users/tester/ --iscrypted --password "$6$CHO2$3rN8eviE2t50lmVyBYihTgVRHcaecmeCk31LeOUleVK/R/aeWVHVZDi26zAH.o0ywBKH9Tc0/wm7sW/q39uyd1" --shell /usr/bin/zsh --uid 1013 --gid 4242 --gecos "a test user account"
 '''
+
+# ROOT TESTS
+ROOT_CRYPT = ROOT_USER + USER_CRYPT
+ROOT_PLAIN = ROOT_USER + USER_PLAIN
+ROOT_CRYPT_KEY = ROOT_USER + USER_CRYPT + USER_KEY
+ROOT_PLAIN_KEY = ROOT_USER + USER_PLAIN + USER_KEY
+ROOT_KEY = ROOT_USER + USER_KEY
 
 class CustomizationsTestCase(unittest.TestCase):
     def assertCustomization(self, test, result):
@@ -116,7 +127,7 @@ class CustomizationsTestCase(unittest.TestCase):
 
     def test_sshkey_only(self):
         """Test adding a sshkey to an existing user account"""
-        self.assertCustomization(USER + USER_KEY, 'sshkey --user tester "A SSH KEY FOR TESTER"')
+        self.assertCustomization(USER + USER_KEY, 'sshkey --user tester "A SSH KEY FOR THE USER"')
 
     def test_create_user(self):
         """Test creating a user with no options"""
@@ -176,3 +187,16 @@ class CustomizationsTestCase(unittest.TestCase):
         """Test creating group with gid set"""
         self.assertCustomization(GROUP_GID, "group --name testgroup --gid 1011")
 
+    def test_root_crypt(self):
+        self.assertCustomization(ROOT_CRYPT, 'rootpw --iscrypted "$6$CHO2$3r')
+
+    def test_root_plain(self):
+        self.assertCustomization(ROOT_PLAIN, 'rootpw --plaintext "plainpassword"')
+
+    def test_root_crypt_key(self):
+        self.assertCustomization(ROOT_CRYPT_KEY, 'rootpw --iscrypted "$6$CHO2$3r')
+        self.assertCustomization(ROOT_CRYPT_KEY, 'sshkey --user root "A SSH KEY FOR THE USER"')
+
+    def test_root_plain_key(self):
+        self.assertCustomization(ROOT_PLAIN_KEY, 'rootpw --plaintext "plainpassword"')
+        self.assertCustomization(ROOT_PLAIN_KEY, 'sshkey --user root "A SSH KEY FOR THE USER"')
