@@ -369,7 +369,7 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
         f.write('clearpart --all --initlabel\n')
 
         # Write the root partition and it's size in MB (rounded up)
-        f.write('part / --fstype="ext4" --size=%d\n' % ceil(installed_size / 1024**2))
+        f.write('part / --size=%d\n' % ceil(installed_size / 1024**2))
 
         f.write(ks_template)
 
