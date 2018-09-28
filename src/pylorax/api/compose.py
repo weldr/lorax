@@ -122,6 +122,32 @@ def repo_to_ks(r, url="url"):
     return cmd
 
 
+def write_ks_root(f, user):
+    """ Write kickstart root password and sshkey entry
+
+    :param f: kickstart file object
+    :type f: open file object
+    :param user: A blueprint user dictionary
+    :type user: dict
+
+    If the entry contains a ssh key, use sshkey to write it
+    If it contains password, use rootpw to set it
+
+    root cannot be used with the user command. So only key and password are supported
+    for root.
+    """
+    # ssh key uses the sshkey kickstart command
+    if "key" in user:
+        f.write('sshkey --user %s "%s"\n' % (user["name"], user["key"]))
+
+    if "password" in user:
+        if any(user["password"].startswith(prefix) for prefix in ["$2b$", "$6$", "$5$"]):
+            log.debug("Detected pre-crypted password")
+            f.write('rootpw --iscrypted "%s"\n' % user["password"])
+        else:
+            log.debug("Detected plaintext password")
+            f.write('rootpw --plaintext "%s"\n' % user["password"])
+
 def write_ks_user(f, user):
     """ Write kickstart user and sshkey entry
 
@@ -134,9 +160,6 @@ def write_ks_user(f, user):
     All of the user fields are optional, except name, write out a kickstart user entry
     with whatever options are relevant.
     """
-    if "name" not in user:
-        raise RuntimeError("user entry requires a name")
-
     # ssh key uses the sshkey kickstart command
     if "key" in user:
         f.write('sshkey --user %s "%s"\n' % (user["name"], user["key"]))
@@ -225,6 +248,14 @@ def add_customizations(f, recipe):
     if "user" in customizations:
         # only name is required, everything else is optional
         for user in customizations["user"]:
+            if "name" not in user:
+                raise RuntimeError("user entry requires a name")
+
+            # root is special, cannot use normal user command for it
+            if user["name"] == "root":
+                write_ks_root(f, user)
+                continue
+
             write_ks_user(f, user)
             user_groups.append(user["name"])
 
