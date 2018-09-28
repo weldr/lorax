@@ -800,7 +800,7 @@ class ServerTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         self.assertEqual(data["status"], False, "Failed to fail to start test compose: %s" % data)
-        self.assertEqual(data["errors"], [{"id": BAD_COMPOSE_TYPE, "msg": "Invalid compose type (snakes), must be one of ['ami', 'ext4-filesystem', 'live-iso', 'partitioned-disk', 'qcow2', 'tar', 'vhd']"}],
+        self.assertEqual(data["errors"], [{"id": BAD_COMPOSE_TYPE, "msg": "Invalid compose type (snakes), must be one of ['ami', 'ext4-filesystem', 'live-iso', 'partitioned-disk', 'qcow2', 'tar', 'vhd', 'vmdk']"}],
                                          "Failed to get errors: %s" % data)
 
     def test_compose_03_status_fail(self):
