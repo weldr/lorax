@@ -34,4 +34,8 @@ kernel
 selinux-policy-targeted
 grub2
 
+# Make sure virt guest agents are installed
+qemu-guest-agent
+spice-vdagent
+
 # NOTE lorax-composer will add the blueprint packages below here, including the final %end
