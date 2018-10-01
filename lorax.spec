@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.9
+Version:        28.14.10
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -233,6 +233,20 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Oct 01 2018 Brian C. Lane <bcl@redhat.com> 28.14.10-1
+- Add tito support for Related/Resolves to the branch (bcl)
+  Related: rhbz#1613058
+- Always update repo metadata when building an image (bcl)
+  Resolves: rhbz#1631561
+- Add a test for repo metadata expiration (bcl)
+  Related: rhbz#1631561
+- Add tests for setting root password and ssh key with blueprints (bcl)
+  Related: rhbz#1626120
+- Use rootpw for setting the root password instead of user (bcl)
+  Related: rhbz#1626122
+- Lock the root account, except on live-iso (bcl)
+  Resolves: rhbz#1626122
+
 * Tue Sep 25 2018 Brian C. Lane <bcl@redhat.com> 28.14.9-1
 - lorax: Only run depmod on the installed kernels (bcl@redhat.com)
   Resolves: rhbz#1632140
