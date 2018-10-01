@@ -24,7 +24,44 @@ import dnf.logging
 from glob import glob
 import os
 import shutil
+from threading import Lock
+import time
 
+
+class DNFLock(object):
+    """Hold the dnf.Base object and a Lock to control access to it.
+
+    self.dbo is a property that returns the dnf.Base object, but it *may* change
+    from one call to the next if the upstream repositories have changed.
+    """
+    def __init__(self, conf, expire_secs=6*60*60):
+        self._conf = conf
+        self._lock = Lock()
+        self.dbo = get_base_object(self._conf)
+        self._expire_secs = expire_secs
+        self._expire_time = time.time() + self._expire_secs
+
+    @property
+    def lock(self):
+        """Check for repo updates (using expiration time) and return the lock
+
+        If the repository has been updated, tear down the old dnf.Base and
+        create a new one. This is the only way to force dnf to use the new
+        metadata.
+        """
+        if time.time() > self._expire_time:
+            return self.lock_check
+        return self._lock
+
+    @property
+    def lock_check(self):
+        """Force a check for repo updates and return the lock
+
+        Use this method sparingly, it removes the repodata and downloads a new copy every time.
+        """
+        self._expire_time = time.time() + self._expire_secs
+        self.dbo.update_cache()
+        return self._lock
 
 def get_base_object(conf):
     """Get the DNF object with settings from the config file
@@ -69,6 +106,10 @@ def get_base_object(conf):
     log.info("releasever = %s", _releasever)
     dbc.releasever = _releasever
 
+    # Make sure metadata is always current
+    dbc.metadata_expire = 0
+    dbc.metadata_expire_filter = "never"
+
     # write the dnf configuration file
     with open(dnfconf, "w") as f:
         f.write(dbc.dump())
@@ -85,6 +126,7 @@ def get_base_object(conf):
     try:
         dbo.fill_sack(load_system_repo=False)
         dbo.read_comps()
+        dbo.update_cache()
     except dnf.exceptions.Error as e:
         log.error("Failed to update metadata: %s", str(e))
         raise RuntimeError("Fetching metadata failed: %s" % str(e))
