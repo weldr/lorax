@@ -17,7 +17,9 @@
 #
 import os
 from configparser import ConfigParser, NoOptionError
+from contextlib import contextmanager
 from glob import glob
+from rpmfluff import SimpleRpmBuild, expectedArch
 import shutil
 import tempfile
 import time
@@ -30,8 +32,8 @@ from pylorax.api.config import configure, make_dnf_dirs, make_queue_dirs
 from pylorax.api.errors import *                               # pylint: disable=wildcard-import
 from pylorax.api.queue import start_queue_monitor
 from pylorax.api.recipes import open_or_create_repo, commit_recipe_directory
-from pylorax.api.server import server, GitLock, DNFLock
-from pylorax.api.dnfbase import get_base_object
+from pylorax.api.server import server, GitLock
+from pylorax.api.dnfbase import DNFLock
 from pylorax.sysutils import joinpaths
 
 # Used for testing UTF-8 input support
@@ -57,7 +59,6 @@ def get_system_repo():
     return "base"
 
 class ServerTestCase(unittest.TestCase):
-
     @classmethod
     def setUpClass(self):
         self.rawhide = False
@@ -90,8 +91,7 @@ class ServerTestCase(unittest.TestCase):
         os.makedirs("/tmp/lorax-empty-repo/")
         os.system("createrepo_c /tmp/lorax-empty-repo/")
 
-        dbo = get_base_object(server.config["COMPOSER_CFG"])
-        server.config["DNFLOCK"] = DNFLock(dbo=dbo, lock=Lock())
+        server.config["DNFLOCK"] = DNFLock(server.config["COMPOSER_CFG"])
 
         # Include a message in /api/status output
         server.config["TEMPLATE_ERRORS"] = ["Test message"]
@@ -1364,3 +1364,163 @@ class ServerTestCase(unittest.TestCase):
         """Test the compose/log input character checking"""
         resp = self.server.get("/api/v0/compose/log/" + UTF8_TEST_STRING)
         self.assertInputError(resp)
+
+@contextmanager
+def in_tempdir(prefix='tmp'):
+    """Execute a block of code with chdir in a temporary location"""
+    oldcwd = os.getcwd()
+    tmpdir = tempfile.mkdtemp(prefix=prefix)
+    os.chdir(tmpdir)
+    yield
+    os.chdir(oldcwd)
+    shutil.rmtree(tmpdir)
+
+def makeFakeRPM(repo_dir, name, epoch, version, release):
+    """Make a fake rpm file in repo_dir"""
+    p = SimpleRpmBuild(name, version, release)
+    if epoch:
+        p.epoch = epoch
+    p.add_simple_payload_file_random()
+    with in_tempdir("lorax-test-rpms."):
+        p.make()
+        rpmfile = p.get_built_rpm(expectedArch)
+        shutil.move(rpmfile, repo_dir)
+
+class RepoCacheTestCase(unittest.TestCase):
+    """Test to make sure that changes to the repository are picked up immediately."""
+    @classmethod
+    def setUpClass(self):
+        repo_dir = tempfile.mkdtemp(prefix="lorax.test.repo.")
+        server.config["REPO_DIR"] = repo_dir
+        repo = open_or_create_repo(server.config["REPO_DIR"])
+        server.config["GITLOCK"] = GitLock(repo=repo, lock=Lock(), dir=repo_dir)
+
+        server.config["COMPOSER_CFG"] = configure(root_dir=repo_dir, test_config=True)
+        os.makedirs(joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), "composer"))
+        errors = make_queue_dirs(server.config["COMPOSER_CFG"], 0)
+        if errors:
+            raise RuntimeError("\n".join(errors))
+
+        make_dnf_dirs(server.config["COMPOSER_CFG"])
+
+        # Modify fedora vs. rawhide tests when running on rawhide
+        if os.path.exists("/etc/yum.repos.d/fedora-rawhide.repo"):
+            self.rawhide = True
+
+        # Create an extra repo to use for checking the metadata expire handling
+        os.makedirs("/tmp/lorax-test-repo/")
+        makeFakeRPM("/tmp/lorax-test-repo/", "fake-milhouse", 0, "1.0.0", "1")
+        os.system("createrepo_c /tmp/lorax-test-repo/")
+
+        server.config["DNFLOCK"] = DNFLock(server.config["COMPOSER_CFG"], expire_secs=10)
+
+        # Include a message in /api/status output
+        server.config["TEMPLATE_ERRORS"] = ["Test message"]
+
+        server.config['TESTING'] = True
+        self.server = server.test_client()
+        self.repo_dir = repo_dir
+
+        # Copy the shared files over to the directory tree we are using
+        share_path = "./share/composer/"
+        for f in glob(joinpaths(share_path, "*")):
+            shutil.copy(f, joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), "composer"))
+
+        start_queue_monitor(server.config["COMPOSER_CFG"], 0, 0)
+
+    @classmethod
+    def tearDownClass(self):
+        shutil.rmtree(server.config["REPO_DIR"])
+        shutil.rmtree("/tmp/lorax-test-repo/")
+
+    def add_new_source(self, repo_dir):
+        json_source = """{"name": "new-repo-1", "url": "file:///tmp/lorax-test-repo/", "type": "yum-baseurl",
+                          "check_ssl": false, "check_gpg": false}"""
+        self.assertTrue(len(json_source) > 0)
+        resp = self.server.post("/api/v0/projects/source/new",
+                                data=json_source,
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+    def add_blueprint(self):
+        test_blueprint = {"description": "Metadata expire test blueprint",
+                          "name":"milhouse-test",
+                          "version": "0.0.1",
+                          "modules":[],
+                          "packages":[{"name":"fake-milhouse", "version":"1.*.*"}],
+                          "groups": []}
+
+        resp = self.server.post("/api/v0/blueprints/new",
+                                data=json.dumps(test_blueprint),
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+    def test_metadata_expires(self):
+        """Ensure that metadata expire settings pick up changes to the repo immediately"""
+
+        # Metadata can change at any time, but checking for that is expensive. So we only want
+        # to check when the timeout has expired, OR when starting a new compose
+        # Add a new repository at /tmp/lorax-test-repo/
+        self.add_new_source("/tmp/lorax-test-repo")
+
+        # Add a new blueprint with fake-milhouse in it
+        self.add_blueprint()
+
+        # Depsolve the blueprint
+        resp = self.server.get("/api/v0/blueprints/depsolve/milhouse-test")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        blueprints = data.get("blueprints")
+        self.assertNotEqual(blueprints, None)
+        self.assertEqual(len(blueprints), 1)
+        self.assertEqual(blueprints[0]["blueprint"]["name"], "milhouse-test")
+        deps = blueprints[0]["dependencies"]
+        print(deps)
+        self.assertTrue(any([True for d in deps if d["name"] == "fake-milhouse" and d["version"] == "1.0.0"]))
+        self.assertFalse(data.get("errors"))
+
+        # Make a new version of fake-milhouse
+        makeFakeRPM("/tmp/lorax-test-repo/", "fake-milhouse", 0, "1.0.1", "1")
+        os.system("createrepo_c /tmp/lorax-test-repo/")
+
+        # Expire time has been set to 10 seconds, so wait 11 and try it.
+        time.sleep(11)
+
+        resp = self.server.get("/api/v0/blueprints/depsolve/milhouse-test")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        blueprints = data.get("blueprints")
+        self.assertNotEqual(blueprints, None)
+        self.assertEqual(len(blueprints), 1)
+        self.assertEqual(blueprints[0]["blueprint"]["name"], "milhouse-test")
+        deps = blueprints[0]["dependencies"]
+        print(deps)
+        self.assertTrue(any([True for d in deps if d["name"] == "fake-milhouse" and d["version"] == "1.0.1"]))
+        self.assertFalse(data.get("errors"))
+
+        # Make a new version of fake-milhouse
+        makeFakeRPM("/tmp/lorax-test-repo/", "fake-milhouse", 0, "1.0.2", "1")
+        os.system("createrepo_c /tmp/lorax-test-repo/")
+
+        test_compose = {"blueprint_name": "milhouse-test",
+                        "compose_type": "tar",
+                        "branch": "master"}
+
+        resp = self.server.post("/api/v0/compose?test=2",
+                                data=json.dumps(test_compose),
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["status"], True, "Failed to start test compose: %s" % data)
+
+        build_id = data["build_id"]
+
+        # Check to see which version was used for the compose, should be 1.0.2
+        resp = self.server.get("/api/v0/compose/info/%s" % build_id)
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        pkg_deps = data["deps"]["packages"]
+        print(pkg_deps)
+        self.assertTrue(any([True for d in pkg_deps if d["name"] == "fake-milhouse" and d["version"] == "1.0.2"]))
