@@ -4,7 +4,7 @@ RUN dnf -y install make libgit2-glib tito python3-pylint  \
                     python3-nose python3-mako python3-flask \
                     python3-coverage libselinux-python3 sudo \
                     pykickstart python3-pytoml python3-sphinx \
-                    python3-semantic_version \
+                    python3-semantic_version python3-rpmfluff \
                     anaconda-tui
 
 RUN mkdir /lorax
