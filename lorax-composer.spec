@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.23
+Version:        19.7.24
 Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
@@ -122,6 +122,22 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Oct 01 2018 Brian C. Lane <bcl@redhat.com> 19.7.24-1
+- Add a test for repo metadata expiration (bcl)
+  Related: rhbz#1632962
+- Create a new YumBase object when repodata changes (bcl)
+  Resolves: rhbz#1632962
+- Fix projects_depsolve_with_size version globbing (bcl)
+  Resolves: rhbz#1628114
+- Add a version glob test forprojects_depsolve_with_size (bcl)
+  Resolves: rhbz#1628114
+- Add tests for setting root password and ssh key with blueprints (bcl)
+  Related: rhbz#1626120
+- Use rootpw for setting the root password instead of user (bcl)
+  Related: rhbz#1626120
+- Lock the root account, except on live-iso (bcl)
+  Resolves: rhbz#1626120
+
 * Wed Sep 19 2018 Brian C. Lane <bcl@redhat.com> 19.7.23-1
 - Fix depsolve version globbing (bcl)
   Resolves: rhbz#1628114
