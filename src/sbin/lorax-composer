@@ -39,10 +39,10 @@ from pylorax import vernum
 from pylorax.api.cmdline import lorax_composer_parser
 from pylorax.api.config import configure, make_dnf_dirs, make_queue_dirs
 from pylorax.api.compose import test_templates
+from pylorax.api.dnfbase import DNFLock
 from pylorax.api.queue import start_queue_monitor
 from pylorax.api.recipes import open_or_create_repo, commit_recipe_directory
-from pylorax.api.server import server, GitLock, DNFLock
-from pylorax.api.dnfbase import get_base_object
+from pylorax.api.server import server, GitLock
 
 VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
 
@@ -247,14 +247,14 @@ if __name__ == '__main__':
 
     # Get a dnf.Base to share with the requests
     try:
-        dbo = get_base_object(server.config["COMPOSER_CFG"])
+        server.config["DNFLOCK"] = DNFLock(server.config["COMPOSER_CFG"])
     except RuntimeError:
         # Error has already been logged. Just exit cleanly.
         sys.exit(1)
-    server.config["DNFLOCK"] = DNFLock(dbo=dbo, lock=Lock())
 
     # Depsolve the templates and make a note of the failures for /api/status to report
-    server.config["TEMPLATE_ERRORS"] = test_templates(dbo, server.config["COMPOSER_CFG"].get("composer", "share_dir"))
+    with server.config["DNFLOCK"].lock:
+        server.config["TEMPLATE_ERRORS"] = test_templates(server.config["DNFLOCK"].dbo, server.config["COMPOSER_CFG"].get("composer", "share_dir"))
 
     # Setup access to the git repo
     server.config["REPO_DIR"] = opts.BLUEPRINTS
