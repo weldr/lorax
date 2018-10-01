@@ -195,7 +195,9 @@ def _depsolve(dbo, projects, groups):
     :rtype: None
     :raises: ProjectsError if there was a problem installing something
     """
-    # This resets the transaction
+    # This resets the transaction and updates the cache.
+    # It is important that the cache always be synchronized because Anaconda will grab its own copy
+    # and if that is different the NEVRAs will not match and the build will fail.
     dbo.reset(goal=True)
     install_errors = []
     for name in groups:
