@@ -208,6 +208,47 @@ def filterVersionGlob(pkgs, version):
     # yum implements __cmd__ using verCMP so this will return the highest matching version
     return max(matches)
 
+def _depsolve(yb, projects, groups):
+    """Find the dependencies for a list of projects and groups
+
+    :param yb: yum base object
+    :type yb: YumBase
+    :param projects: The projects and version globs to find the dependencies for
+    :type projects: List of tuples
+    :param groups: The groups to include in dependency solving
+    :type groups: List of str
+    :returns: A list of errors that were encountered while depsolving the packages
+    :rtype: list of strings
+    :raises: ProjectsError if there was a problem installing something
+    """
+    # This resets the transaction
+    yb.closeRpmDB()
+    install_errors = []
+    for name in groups:
+        yb.selectGroup(name, ["mandatory", "default"])
+
+    for name, version in projects:
+        if not version:
+            version = "*"
+        pattern = "%s %s" % (name, version)
+
+        # yum.install's pattern matches the whole nevra, which can result in -* matching
+        # unexpected packages. So we need to implement our own version globbing.
+        pkgs = yb.pkgSack.searchNames([name])
+        if not pkgs:
+            install_errors.append((name, "No package name matching %s" % name))
+            continue
+
+        try:
+            po = filterVersionGlob(pkgs, version)
+            log.debug("Chose %s as best match for %s", po.nevra, pattern)
+
+            yb.install(po=po)
+        except (YumBaseError, RuntimeError) as e:
+            install_errors.append((pattern, str(e)))
+
+    return install_errors
+
 def projects_depsolve(yb, projects, groups):
     """Return the dependencies for a list of projects
 
@@ -222,31 +263,7 @@ def projects_depsolve(yb, projects, groups):
     :raises: ProjectsError if there was a problem installing something
     """
     try:
-        # This resets the transaction
-        yb.closeRpmDB()
-        install_errors = []
-        for name in groups:
-            yb.selectGroup(name, ["mandatory", "default"])
-
-        for name, version in projects:
-            if not version:
-                version = "*"
-            pattern = "%s %s" % (name, version)
-
-            # yum.install's pattern matches the whole nevra, which can result in -* matching
-            # unexpected packages. So we need to implement our own version globbing.
-            pkgs = yb.pkgSack.searchNames([name])
-            if not pkgs:
-                install_errors.append((name, "No package name matching %s" % name))
-                continue
-
-            try:
-                po = filterVersionGlob(pkgs, version)
-                log.debug("Chose %s as best match for %s", po.nevra, pattern)
-
-                yb.install(po=po)
-            except (YumBaseError, RuntimeError) as e:
-                install_errors.append((pattern, str(e)))
+        install_errors = _depsolve(yb, projects, groups)
 
         # Were there problems installing these packages?
         if install_errors:
@@ -297,20 +314,7 @@ def projects_depsolve_with_size(yb, projects, groups, with_core=True):
     :raises: ProjectsError if there was a problem installing something
     """
     try:
-        # This resets the transaction
-        yb.closeRpmDB()
-        install_errors = []
-        for name in groups:
-            yb.selectGroup(name, ["mandatory", "default"])
-
-        for name, version in projects:
-            if not version:
-                version = "*"
-            pattern = "%s-%s" % (name, version)
-            try:
-                yb.install(pattern=pattern)
-            except YumBaseError as e:
-                install_errors.append((pattern, str(e)))
+        install_errors = _depsolve(yb, projects, groups)
 
         # Were there problems installing these packages?
         if install_errors:
