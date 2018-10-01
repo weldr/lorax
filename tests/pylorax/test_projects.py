@@ -31,7 +31,7 @@ from pylorax.api.projects import api_time, api_changelog, yaps_to_project, yaps_
 from pylorax.api.projects import tm_to_dep, yaps_to_module, projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError, dep_evra, dep_nevra
 from pylorax.api.projects import repo_to_source, get_repo_sources, delete_repo_source, source_to_repo
-from pylorax.api.projects import yum_repo_to_file_repo, filterVersionGlob
+from pylorax.api.projects import yum_repo_to_file_repo, filterVersionGlob, projects_depsolve_with_size
 from pylorax.api.yumbase import get_base_object
 
 
@@ -217,6 +217,14 @@ class ProjectsTest(unittest.TestCase):
     def test_projects_depsolve_glob(self):
         """Test that depsolving with a '*' version glob doesn't glob package names"""
         deps = projects_depsolve(self.yb, [("python", "*")], [])
+        self.assertTrue(len(deps) > 1)
+        self.assertTrue("python" in [dep["name"] for dep in deps])
+        self.assertTrue("python-blivet" not in [dep["name"] for dep in deps])
+
+    def test_projects_size_depsolve_glob(self):
+        """Test that depsolving with a '*' version glob doesn't glob package names"""
+        size, deps = projects_depsolve_with_size(self.yb, [("python", "*")], [], with_core=False)
+        self.assertTrue(size > 0)
         self.assertTrue(len(deps) > 1)
         self.assertTrue("python" in [dep["name"] for dep in deps])
         self.assertTrue("python-blivet" not in [dep["name"] for dep in deps])
