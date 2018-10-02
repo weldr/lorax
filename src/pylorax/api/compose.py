@@ -122,6 +122,8 @@ def write_ks_root(f, user):
     :type f: open file object
     :param user: A blueprint user dictionary
     :type user: dict
+    :returns: True if it wrote a rootpw command to the kickstart
+    :rtype: bool
 
     If the entry contains a ssh key, use sshkey to write it
     If it contains password, use rootpw to set it
@@ -129,6 +131,8 @@ def write_ks_root(f, user):
     root cannot be used with the user command. So only key and password are supported
     for root.
     """
+    wrote_rootpw = False
+
     # ssh key uses the sshkey kickstart command
     if "key" in user:
         f.write('sshkey --user %s "%s"\n' % (user["name"], user["key"]))
@@ -137,9 +141,13 @@ def write_ks_root(f, user):
         if any(user["password"].startswith(prefix) for prefix in ["$2b$", "$6$", "$5$"]):
             log.debug("Detected pre-crypted password")
             f.write('rootpw --iscrypted "%s"\n' % user["password"])
+            wrote_rootpw = True
         else:
             log.debug("Detected plaintext password")
             f.write('rootpw --plaintext "%s"\n' % user["password"])
+            wrote_rootpw = True
+
+    return wrote_rootpw
 
 def write_ks_user(f, user):
     """ Write kickstart user and sshkey entry
@@ -221,6 +229,7 @@ def add_customizations(f, recipe):
     :raises: RuntimeError if there was a problem writing to the kickstart
     """
     if "customizations" not in recipe:
+        f.write('rootpw --lock\n')
         return
     customizations = recipe["customizations"]
 
@@ -238,6 +247,8 @@ def add_customizations(f, recipe):
 
     # Creating a user also creates a group. Make a list of the names for later
     user_groups = []
+    # kickstart requires a rootpw line
+    wrote_rootpw = False
     if "user" in customizations:
         # only name is required, everything else is optional
         for user in customizations["user"]:
@@ -246,7 +257,7 @@ def add_customizations(f, recipe):
 
             # root is special, cannot use normal user command for it
             if user["name"] == "root":
-                write_ks_root(f, user)
+                wrote_rootpw = write_ks_root(f, user)
                 continue
 
             write_ks_user(f, user)
@@ -258,6 +269,10 @@ def add_customizations(f, recipe):
                 write_ks_group(f, group)
             else:
                 log.warning("Skipping group %s, already created by user", group["name"])
+
+    # Lock the root account if no root user password has been specified
+    if not wrote_rootpw:
+        f.write('rootpw --lock\n')
 
 def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_mode=0):
     """ Start the build
