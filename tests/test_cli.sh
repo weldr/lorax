@@ -19,6 +19,10 @@ done;
 ./tests/cli/test_blueprints_sanity.sh
 ./tests/cli/test_compose_sanity.sh
 
+# Stop lorax-composer and remove /run/weldr/api.socket
+pkill -9 lorax-composer
+rm -f /run/weldr/api.socket
+
 # look for failures
 grep RESULT_STRING /var/tmp/beakerlib-*/TestResults | grep -v PASS && exit 1
 
