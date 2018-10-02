@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        29.15
+Version:        30.0
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -230,6 +230,40 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer
 
 %changelog
+* Tue Oct 02 2018 Brian C. Lane <bcl@redhat.com> 30.0-1
+- Add beakerlib to Dockerfile.test (bcl@redhat.com)
+- Adjust the new templates for locked root (bcl@redhat.com)
+- Adjust projects test for DNF 3.6.1 tuple issue (bcl@redhat.com)
+- Don't try to append to DNF config value that can't take it
+  (awilliam@redhat.com)
+- Always update repo metadata when building an image (bcl@redhat.com)
+- Add a test for repo metadata expiration (bcl@redhat.com)
+- Add tests for setting root password and ssh key with blueprints
+  (bcl@redhat.com)
+- Use rootpw for setting the root password instead of user (bcl@redhat.com)
+- Lock the root account, except on live-iso (bcl@redhat.com)
+- Add new compose types to compose sanity test (dshea@redhat.com)
+- Add virt guest agents to the qcow2 compose (dshea@redhat.com)
+- Add a vmdk compose type. (dshea@redhat.com)
+- Add a vhd compose type for Azure images (dshea@redhat.com)
+- Add an ami compose type for AWS images (dshea@redhat.com)
+- Remove --fstype from the generated part line (dshea@redhat.com)
+- Also run `make check` on travis (lars@karlitski.net)
+- Fix pylint errors and warnings (lars@karlitski.net)
+- New cli test covering basic compose commands (atodorov@redhat.com)
+- Update glusterfs to 5.* (atodorov@redhat.com)
+- Execute bash tests for composer-cli (atodorov@redhat.com)
+- Rename composer-cli to composer (lars@karlitski.net)
+- Include python3-pyatspi on boot.iso (#1506595) (bcl@redhat.com)
+- Start a HACKING.md file and document how to run the tests (stefw@redhat.com)
+- tests: Fix tests so they run on Fedora 28 (stefw@redhat.com)
+- Ignore files created by tests (stefw@redhat.com)
+- Makefile: Fix the 'make install' target (stefw@redhat.com)
+- Replace CJK fonts with Google Noto CJK (akira@tagoh.org)
+- Fix a DeprecationWarning (dshea@redhat.com)
+- Fix the expected versions of blueprint components (dshea@redhat.com)
+- Switch the test container back to rawhide (dshea@redhat.com)
+
 * Fri Sep 07 2018 Brian C. Lane <bcl@redhat.com> 29.15-1
 - Add a Makefile target for building html docs using a rawhide environment (bcl@redhat.com)
 - Revert "Don't activate default auto connections after switchroot" (rvykydal@redhat.com)
