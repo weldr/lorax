@@ -23,6 +23,8 @@ done;
 # invoke cli/ tests
 ./tests/cli/test_blueprints_sanity.sh
 ./tests/cli/test_compose_sanity.sh
+./tests/cli/test_compose_ext4-filesystem.sh
+./tests/cli/test_compose_partitioned-disk.sh
 
 # Stop lorax-composer and remove /run/weldr/api.socket
 pkill -9 lorax-composer
