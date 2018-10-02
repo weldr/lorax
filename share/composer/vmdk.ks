@@ -3,12 +3,9 @@
 # Firewall configuration
 firewall --enabled
 
-# Root password
-rootpw --plaintext removethispw
+# NOTE: The root account is locked by default
 # Network information
 network  --bootproto=dhcp --onboot=on --activate
-# System authorization information
-auth --useshadow --enablemd5
 # System keyboard
 keyboard --xlayouts=us --vckeymap=us
 # System language
