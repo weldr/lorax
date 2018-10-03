@@ -216,17 +216,11 @@ class RuntimeBuilder(object):
             generate_module_info(moddir+kernel.version, outfile=moddir+"module-info")
 
     def create_runtime(self, outfile="/var/tmp/squashfs.img", compression="xz", compressargs=None, size=2):
-        # make live rootfs image - must be named "LiveOS/rootfs.img" for dracut
         compressargs = compressargs or []
-        workdir = joinpaths(os.path.dirname(outfile), "runtime-workdir")
-        os.makedirs(joinpaths(workdir, "LiveOS"))
+        os.makedirs(os.path.dirname(outfile))
 
-        imgutils.mkrootfsimg(self.vars.root, joinpaths(workdir, "LiveOS/rootfs.img"),
-                             "Anaconda", size=size)
-
-        # squash the live rootfs and clean up workdir
-        imgutils.mksquashfs(workdir, outfile, compression, compressargs)
-        remove(workdir)
+        # squash the rootfs
+        imgutils.mksquashfs(self.vars.root, outfile, compression, compressargs)
 
     def finished(self):
         """ Done using RuntimeBuilder
