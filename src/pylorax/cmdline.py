@@ -109,6 +109,8 @@ def lorax_parser(dracut_default=""):
                           help="Do not verify SSL certificates")
     optional.add_argument("--skip-branding", action="store_true", default=False,
                           help="Disable automatic branding package selection. Use --installpkgs to add custom branding.")
+    optional.add_argument("--squashfs-only", action="store_true", default=False,
+                          help="Use a plain squashfs filesystem for the runtime.")
 
     # dracut arguments
     dracut_group = parser.add_argument_group("dracut arguments")
