@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.11
+Version:        28.14.12
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -233,6 +233,10 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Wed Oct 03 2018 Brian C. Lane <bcl@redhat.com> 28.14.12-1
+- Write a rootpw line if no root customizations in the blueprint (bcl)
+  Resolves: rhbz#1626122
+
 * Tue Oct 02 2018 Brian C. Lane <bcl@redhat.com> 28.14.11-1
 - Add beakerlib to Dockerfile.test (bcl)
   Related: rhbz#1613058
