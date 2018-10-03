@@ -3,7 +3,7 @@
 
 . /usr/share/beakerlib/beakerlib.sh
 
-CLI="./src/bin/composer-cli"
+CLI="./src/bin/composer"
 
 
 rlJournalStart
