@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        30.0
+Version:        30.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -230,6 +230,11 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer
 
 %changelog
+* Wed Oct 03 2018 Brian C. Lane <bcl@redhat.com> 30.1-1
+- Report an error if the blueprint doesn't exist (bcl@redhat.com)
+- cli: Clarify error message for unprivileged access (lars@karlitski.net)
+- Write a rootpw line if no root customizations in the blueprint (bcl@redhat.com)
+
 * Tue Oct 02 2018 Brian C. Lane <bcl@redhat.com> 30.0-1
 - Add beakerlib to Dockerfile.test (bcl@redhat.com)
 - Adjust the new templates for locked root (bcl@redhat.com)
