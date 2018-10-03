@@ -109,6 +109,8 @@ def lorax_parser(dracut_default=""):
                           help="Do not verify SSL certificates")
     optional.add_argument("--dnfplugin", action="append", default=[], dest="dnfplugins",
                           help="Enable a DNF plugin by name/glob, or * to enable all of them.")
+    optional.add_argument("--squashfs-only", action="store_true", default=False,
+                          help="Use a plain squashfs filesystem for the runtime.")
 
     # dracut arguments
     dracut_group = parser.add_argument_group("dracut arguments")
