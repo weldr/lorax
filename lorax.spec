@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.10
+Version:        28.14.11
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -233,6 +233,23 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Tue Oct 02 2018 Brian C. Lane <bcl@redhat.com> 28.14.11-1
+- Add beakerlib to Dockerfile.test (bcl)
+  Related: rhbz#1613058
+- New cli test covering basic compose commands (atodorov) (atodorov)
+- Execute bash tests for composer-cli (atodorov) (atodorov)
+- Add virt guest agents to the qcow2 compose (dshea)
+  Resolves: rhbz#1628645
+- Add a vmdk compose type. (dshea)
+  Resolves: rhbz#1628646
+- Add a vhd compose type for Azure images (dshea)
+  Resolves: rhbz#1628648
+- Add an ami compose type for AWS images (dshea)
+  Resolves: rhbz#1628647
+- Remove --fstype from the generated part line (dshea)
+  Related: rhbz#1628647
+  Related: rhbz#1628648
+
 * Mon Oct 01 2018 Brian C. Lane <bcl@redhat.com> 28.14.10-1
 - Add tito support for Related/Resolves to the branch (bcl)
   Related: rhbz#1613058
