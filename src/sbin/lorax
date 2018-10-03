@@ -145,7 +145,8 @@ def main():
               add_arch_templates=opts.add_arch_templates,
               add_arch_template_vars=parsed_add_arch_template_vars,
               remove_temp=True, verify=opts.verify,
-              user_dracut_args=opts.dracut_args)
+              user_dracut_args=opts.dracut_args,
+              squashfs_only=opts.squashfs_only)
 
 
 def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,

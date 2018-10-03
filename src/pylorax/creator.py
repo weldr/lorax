@@ -203,7 +203,7 @@ def make_runtime(opts, mount_dir, work_dir, size=None):
     rb = RuntimeBuilder(product, arch, fake_dbo)
     compression, compressargs = squashfs_args(opts)
     log.info("Creating runtime")
-    rb.create_runtime(joinpaths(work_dir, RUNTIME), size=size,
+    rb.create_ext4_runtime(joinpaths(work_dir, RUNTIME), size=size,
                       compression=compression, compressargs=compressargs)
 
 

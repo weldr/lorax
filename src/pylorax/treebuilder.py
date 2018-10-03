@@ -215,7 +215,16 @@ class RuntimeBuilder(object):
             runcmd(["depmod", "-a", "-F", ksyms, "-b", root, kernel.version])
             generate_module_info(moddir+kernel.version, outfile=moddir+"module-info")
 
-    def create_runtime(self, outfile="/var/tmp/squashfs.img", compression="xz", compressargs=None, size=2):
+    def create_squashfs_runtime(self, outfile="/var/tmp/squashfs.img", compression="xz", compressargs=None, size=2):
+        """Create a plain squashfs runtime"""
+        compressargs = compressargs or []
+        os.makedirs(os.path.dirname(outfile))
+
+        # squash the rootfs
+        imgutils.mksquashfs(self.vars.root, outfile, compression, compressargs)
+
+    def create_ext4_runtime(self, outfile="/var/tmp/squashfs.img", compression="xz", compressargs=None, size=2):
+        """Create a squashfs compressed ext4 runtime"""
         # make live rootfs image - must be named "LiveOS/rootfs.img" for dracut
         compressargs = compressargs or []
         workdir = joinpaths(os.path.dirname(outfile), "runtime-workdir")

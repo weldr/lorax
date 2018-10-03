@@ -186,7 +186,8 @@ class Lorax(BaseLoraxClass):
             add_arch_templates=None,
             add_arch_template_vars=None,
             verify=True,
-            user_dracut_args=None):
+            user_dracut_args=None,
+            squashfs_only=False):
 
         assert self._configured
 
@@ -332,9 +333,16 @@ class Lorax(BaseLoraxClass):
                 compressargs += ["-Xbcj", self.arch.bcj]
             else:
                 logger.info("no BCJ filter for arch %s", self.arch.basearch)
-        rb.create_runtime(joinpaths(installroot,runtime),
-                          compression=compression, compressargs=compressargs,
-                          size=size)
+        if squashfs_only:
+            # Create an ext4 rootfs.img and compress it with squashfs
+            rb.create_squashfs_runtime(joinpaths(installroot,runtime),
+                compression=compression, compressargs=compressargs,
+                size=size)
+        else:
+            # Create an ext4 rootfs.img and compress it with squashfs
+            rb.create_ext4_runtime(joinpaths(installroot,runtime),
+                compression=compression, compressargs=compressargs,
+                size=size)
         rb.finished()
 
         logger.info("preparing to build output tree and boot images")
