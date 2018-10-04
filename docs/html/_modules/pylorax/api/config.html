@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.config &mdash; Lorax 29.14 documentation</title>
+  <title>pylorax.api.config &mdash; Lorax 30.1 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                29.14
+                30.1
               </div>
             
           
@@ -87,7 +87,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../lorax.html">Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../livemedia-creator.html">livemedia-creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lorax-composer.html">lorax-composer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../composer-cli.html">composer-cli</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../composer-cli.html">composer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../product-images.html">Product and Updates Images</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules.html">src</a></li>
 </ul>
@@ -177,7 +177,7 @@
 
 <span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span>
 
-<div class="viewcode-block" id="ComposerConfig"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.config.ComposerConfig">[docs]</a><span class="k">class</span> <span class="nc">ComposerConfig</span><span class="p">(</span><span class="n">configparser</span><span class="o">.</span><span class="n">SafeConfigParser</span><span class="p">):</span>
+<div class="viewcode-block" id="ComposerConfig"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.config.ComposerConfig">[docs]</a><span class="k">class</span> <span class="nc">ComposerConfig</span><span class="p">(</span><span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">):</span>
 <div class="viewcode-block" id="ComposerConfig.get_default"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.config.ComposerConfig.get_default">[docs]</a>    <span class="k">def</span> <span class="nf">get_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">default</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">)</span>
@@ -302,7 +302,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'29.14',
+            VERSION:'30.1',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
