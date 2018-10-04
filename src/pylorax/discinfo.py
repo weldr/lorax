@@ -22,6 +22,7 @@
 import logging
 logger = logging.getLogger("pylorax.discinfo")
 
+import os
 import time
 
 
@@ -32,8 +33,13 @@ class DiscInfo(object):
         self.basearch = basearch
 
     def write(self, outfile):
+        if 'SOURCE_DATE_EPOCH' in os.environ:
+            timestamp = int(os.environ['SOURCE_DATE_EPOCH'])
+        else:
+            timestamp = time.time()
+
         logger.info("writing .discinfo file")
         with open(outfile, "w") as fobj:
-            fobj.write("{0:f}\n".format(time.time()))
+            fobj.write("{0:f}\n".format(timestamp))
             fobj.write("{0.release}\n".format(self))
             fobj.write("{0.basearch}\n".format(self))

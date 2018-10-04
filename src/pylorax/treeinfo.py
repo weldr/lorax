@@ -23,6 +23,7 @@ import logging
 logger = logging.getLogger("pylorax.treeinfo")
 
 import configparser
+import os
 import time
 
 
@@ -33,8 +34,13 @@ class TreeInfo(object):
 
         self.c = configparser.ConfigParser()
 
+        if 'SOURCE_DATE_EPOCH' in os.environ:
+            timestamp = os.environ['SOURCE_DATE_EPOCH']
+        else:
+            timestamp = str(time.time())
+
         section = "general"
-        data = {"timestamp": str(time.time()),
+        data = {"timestamp": timestamp,
                 "family": product,
                 "version": version,
                 "name": "%s-%s" % (product, version),
