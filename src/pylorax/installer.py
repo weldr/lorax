@@ -379,16 +379,23 @@ def novirt_install(opts, disk_img, disk_size):
         setfiles_args = ["-e", "/proc", "-e", "/sys", "-e", "/dev",
                          "/etc/selinux/targeted/contexts/files/file_contexts", "/"]
 
-        # setfiles may not be available, warn instead of fail
-        try:
-            if "--dirinstall" in args:
+        if "--dirinstall" in args:
+            # setfiles may not be available, warn instead of fail
+            try:
                 execWithRedirect("setfiles", setfiles_args, root=dirinstall_path)
-            else:
-                with PartitionMount(disk_img) as img_mount:
-                    if img_mount and img_mount.mount_dir:
+            except (subprocess.CalledProcessError, OSError) as e:
+                log.warning("Running setfiles on install tree failed: %s", str(e))
+        else:
+            with PartitionMount(disk_img) as img_mount:
+                if img_mount and img_mount.mount_dir:
+                    try:
                         execWithRedirect("setfiles", setfiles_args, root=img_mount.mount_dir)
-        except (subprocess.CalledProcessError, OSError) as e:
-            log.warning("Running setfiles on install tree failed: %s", str(e))
+                    except (subprocess.CalledProcessError, OSError) as e:
+                        log.warning("Running setfiles on install tree failed: %s", str(e))
+
+                    # For image installs, run fstrim to discard unused blocks. This way
+                    # unused blocks do not need to be allocated for sparse image types
+                    execWithRedirect("fstrim", [img_mount.mount_dir])
 
     except (subprocess.CalledProcessError, OSError) as e:
         log.error("Running anaconda failed: %s", e)
@@ -475,6 +482,9 @@ def novirt_install(opts, disk_img, disk_size):
 
         if rc:
             raise InstallError("novirt_install mktar failed: rc=%s" % rc)
+    else:
+        # For raw disk images, use fallocate to deallocate unused space
+        execWithRedirect("fallocate", ["--dig-holes", disk_img], raise_err=True)
 
 
 def virt_install(opts, install_log, disk_img, disk_size):
