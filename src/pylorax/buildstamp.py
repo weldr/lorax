@@ -23,6 +23,7 @@ import logging
 logger = logging.getLogger("pylorax.buildstamp")
 
 import datetime
+import os
 
 
 class BuildStamp(object):
@@ -34,7 +35,11 @@ class BuildStamp(object):
         self.isfinal = isfinal
         self.variant = variant
 
-        now = datetime.datetime.now()
+        if 'SOURCE_DATE_EPOCH' in os.environ:
+            now = datetime.datetime.utcfromtimestamp(
+                int(os.environ['SOURCE_DATE_EPOCH']))
+        else:
+            now = datetime.datetime.now()
         now = now.strftime("%Y%m%d%H%M")
         self.uuid = "{0}.{1}".format(now, buildarch)
 
