@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.24
+Version:        19.7.25
 Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
@@ -122,6 +122,10 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer
 
 %changelog
+* Fri Oct 05 2018 Brian C. Lane <bcl@redhat.com> 19.7.25-1
+- Rename composer-cli to composer (lars)
+  Resolves: rhbz#1635760
+
 * Mon Oct 01 2018 Brian C. Lane <bcl@redhat.com> 19.7.24-1
 - Add a test for repo metadata expiration (bcl)
   Related: rhbz#1632962
