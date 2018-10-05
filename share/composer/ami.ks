@@ -25,11 +25,14 @@ timezone  US/Eastern
 bootloader --location=mbr --append="no_timer_check console=ttyS0,115200n8 console=tty1 net.ifnames=0"
 
 # Basic services
-services --enabled=sshd,chronyd
+services --enabled=sshd,chronyd,cloud-init
 
 %post
 # Remove random-seed
 rm /var/lib/systemd/random-seed
+
+# tell cloud-init to create the ec2-user account
+sed -i 's/cloud-user/ec2-user/' /etc/cloud/cloud.cfg
 %end
 
 %packages
@@ -39,5 +42,7 @@ kernel
 grub2
 
 chrony
+
+cloud-init
 
 # NOTE lorax-composer will add the blueprint packages below here, including the final %end
