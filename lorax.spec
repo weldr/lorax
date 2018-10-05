@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        30.1
+Version:        30.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -230,6 +230,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer
 
 %changelog
+* Fri Oct 05 2018 Brian C. Lane <bcl@redhat.com> 30.2-1
+- Work around dnf problem with multiple repos (bcl@redhat.com)
+- Add and enable cloud-init for ami images (lars@karlitski.net)
+- Make no-virt generated images sparser (dshea@redhat.com)
+- New lorax documentation - 30.1 (bcl@redhat.com)
+
 * Wed Oct 03 2018 Brian C. Lane <bcl@redhat.com> 30.1-1
 - Report an error if the blueprint doesn't exist (bcl@redhat.com)
 - cli: Clarify error message for unprivileged access (lars@karlitski.net)
