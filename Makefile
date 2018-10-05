@@ -74,7 +74,10 @@ local:
 	@echo "The archive is in $(PKGNAME)-$(VERSION).tar.gz"
 
 test-in-docker:
-	sudo docker build -t welder/lorax-composer:latest -f Dockerfile.test .
+	sudo docker build -t welder/lorax-composer:7 -f Dockerfile.test .
+
+docs-in-docker:
+	sudo docker run -it --rm -v `pwd`/docs/html/:/lorax/docs/html/ --security-opt label=disable welder/lorax-composer:7 make docs
 
 ci: check test
 
