@@ -33,6 +33,10 @@ services --enabled=sshd,chronyd,cloud-init
 # Remove random-seed
 rm /var/lib/systemd/random-seed
 
+# Clear /etc/machine-id
+rm /etc/machine-id
+touch /etc/machine-id
+
 # tell cloud-init to create the ec2-user account
 sed -i 's/cloud-user/ec2-user/' /etc/cloud/cloud.cfg
 %end
