@@ -25,7 +25,7 @@ timezone  US/Eastern
 bootloader --location=mbr --append="no_timer_check console=ttyS0,115200n8 console=tty1 net.ifnames=0"
 
 # Basic services
-services --enabled=sshd,chronyd,waagent
+services --enabled=sshd,chronyd,waagent,cloud-init
 
 %post
 # Remove random-seed
@@ -43,6 +43,7 @@ kernel
 grub2
 
 chrony
+cloud-init
 
 # Uninstall NetworkManager, install WALinuxAgent
 -NetworkManager
