@@ -284,7 +284,7 @@ def copytree(src, dest, preserve=True):
     If preserve is False, uses cp -R (useful for modeless filesystems)
     raises CalledProcessError if copy fails.'''
     logger.debug("copytree %s %s", src, dest)
-    cp = ["cp", "-a"] if preserve else ["cp", "-R", "-L"]
+    cp = ["cp", "-a"] if preserve else ["cp", "-R", "-L", "--preserve=timestamps"]
     cp += [join(src, "."), os.path.abspath(dest)]
     runcmd(cp)
 
