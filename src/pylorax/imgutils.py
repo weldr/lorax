@@ -484,8 +484,12 @@ def mkfsimage(fstype, rootdir, outfile, size=None, mkfsargs=None, mountargs="", 
 # convenience functions with useful defaults
 def mkdosimg(rootdir, outfile, size=None, label="", mountargs="shortname=winnt,umask=0077", graft=None):
     graft = graft or {}
+    mkfsargs = ["-n", label]
+    if 'SOURCE_DATE_EPOCH' in os.environ:
+        mkfsargs.extend(["-i",
+                "{:x}".format(int(os.environ['SOURCE_DATE_EPOCH']))])
     mkfsimage("msdos", rootdir, outfile, size, mountargs=mountargs,
-              mkfsargs=["-n", label], graft=graft)
+              mkfsargs=mkfsargs, graft=graft)
 
 def mkext4img(rootdir, outfile, size=None, label="", mountargs="", graft=None):
     graft = graft or {}
