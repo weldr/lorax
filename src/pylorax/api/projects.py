@@ -210,13 +210,13 @@ def _depsolve(dbo, projects, groups):
         try:
             if not version:
                 version = "*"
-            pkgs = [pkg for pkg in dnf.subject.Subject(name).get_best_query(dbo.sack).filter(version__glob=version, latest=True)]
-            if not pkgs:
+            # Find the best package matching the name + version glob
+            # dnf can return multiple packages if it is in more than 1 repository, so use max() to select one of them
+            pkg = max([pkg for pkg in dnf.subject.Subject(name).get_best_query(dbo.sack).filter(version__glob=version, latest=True)] or [None])
+            if not pkg:
                 install_errors.append(("%s-%s" % (name, version), "No match"))
                 continue
-
-            for p in pkgs:
-                dbo.package_install(p)
+            dbo.package_install(pkg)
         except dnf.exceptions.MarkingError as e:
             install_errors.append(("%s-%s" % (name, version), str(e)))
 
