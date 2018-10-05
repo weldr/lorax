@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        29.15
+Version:        29.16
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -230,6 +230,59 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer
 
 %changelog
+* Fri Oct 05 2018 Brian C. Lane <bcl@redhat.com> 29.16-1
+- Work around dnf problem with multiple repos (bcl@redhat.com)
+- Add and enable cloud-init for ami images (lars@karlitski.net)
+- Switch default platform id to f29 (bcl@redhat.com)
+- Report an error if the blueprint doesn't exist (bcl@redhat.com)
+- cli: Clarify error message for unprivileged access (lars@karlitski.net)
+- Write a rootpw line if no root customizations in the blueprint (bcl@redhat.com)
+- Add beakerlib to Dockerfile.test (bcl@redhat.com)
+- Adjust the new templates for locked root (bcl@redhat.com)
+- Adjust projects test for DNF 3.6.1 tuple issue (bcl@redhat.com)
+- Don't try to append to DNF config value that can't take it (awilliam@redhat.com)
+- Always update repo metadata when building an image (bcl@redhat.com)
+- Add a test for repo metadata expiration (bcl@redhat.com)
+- Add tests for setting root password and ssh key with blueprints (bcl@redhat.com)
+- Use rootpw for setting the root password instead of user (bcl@redhat.com)
+- Lock the root account, except on live-iso (bcl@redhat.com)
+- Add new compose types to compose sanity test (dshea@redhat.com)
+- Add virt guest agents to the qcow2 compose (dshea@redhat.com)
+- Add a vmdk compose type. (dshea@redhat.com)
+- Add a vhd compose type for Azure images (dshea@redhat.com)
+- Add an ami compose type for AWS images (dshea@redhat.com)
+- Remove --fstype from the generated part line (dshea@redhat.com)
+- Also run `make check` on travis (lars@karlitski.net)
+- Fix pylint errors and warnings (lars@karlitski.net)
+- New cli test covering basic compose commands (atodorov@redhat.com)
+- Execute bash tests for composer-cli (atodorov@redhat.com)
+- Rename composer-cli to composer (lars@karlitski.net)
+- Include python3-pyatspi on boot.iso (#1506595) (bcl@redhat.com)
+- Start a HACKING.md file and document how to run the tests (stefw@redhat.com)
+- tests: Fix tests so they run on Fedora 28 (stefw@redhat.com)
+- Ignore files created by tests (stefw@redhat.com)
+- Makefile: Fix the 'make install' target (stefw@redhat.com)
+- Replace CJK fonts with Google Noto CJK (akira@tagoh.org)
+- Fix a DeprecationWarning (dshea@redhat.com)
+- Fix the expected versions of blueprint components (dshea@redhat.com)
+- Automatic commit of package [lorax] release [29.15-1]. (bcl@redhat.com)
+- Add a Makefile target for building html docs using a rawhide environment (bcl@redhat.com)
+- Revert "Don't activate default auto connections after switchroot" (rvykydal@redhat.com)
+- New lorax documentation - 29.14 (bcl@redhat.com)
+- Automatic commit of package [lorax] release [29.14-1]. (bcl@redhat.com)
+- Add the create ISO component for ARMv7 (pbrobinson@gmail.com)
+- Don't activate default auto connections after switchroot (rvykydal@redhat.com)
+- Ignore a pylint warning about UnquotingConfigParser get args (bcl@redhat.com)
+- Ditch all use of pyanaconda's simpleconfig (awilliam@redhat.com)
+- Automatic commit of package [lorax] release [29.13-1]. (bcl@redhat.com)
+- Update the example blueprints for rawhide (bcl@redhat.com)
+- Bump required dnf version to 3.2.0 for module_platform_id support (bcl@redhat.com)
+- Add support for DNF 3.2 module_platform_id config value (bcl@redhat.com)
+- lorax: Only run depmod on the installed kernels (bcl@redhat.com)
+- Make no-virt generated images sparser (dshea@redhat.com)
+- Update Dockerfile.test to use f29 from fedora registry (bcl@redhat.com)
+- Need to explicitly require python3-librepo (#1626413) (bcl@redhat.com)
+
 * Fri Sep 07 2018 Brian C. Lane <bcl@redhat.com> 29.15-1
 - Add a Makefile target for building html docs using a rawhide environment (bcl@redhat.com)
 - Revert "Don't activate default auto connections after switchroot" (rvykydal@redhat.com)
