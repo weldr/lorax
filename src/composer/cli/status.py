@@ -48,6 +48,7 @@ def status_cmd(opts):
     print("    API version:        "   + result["api"])
     print("    Backend:            "   + result["backend"])
     print("    Build:              "   + result["build"])
+    print("    Results directory:  "   + result["results_path"])
 
     if result["msgs"]:
         print("Error messages:")

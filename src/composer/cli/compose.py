@@ -18,6 +18,7 @@ import logging
 log = logging.getLogger("composer")
 
 from datetime import datetime
+import os
 import sys
 import json
 
@@ -48,6 +49,7 @@ def compose_cmd(opts):
         "results":  compose_results,
         "logs":     compose_logs,
         "image":    compose_image,
+        "localimage": compose_localimage,
         }
     if opts.args[1] == "help" or opts.args[1] == "--help":
         print(compose_help)
@@ -512,3 +514,27 @@ def compose_image(socket_path, api_version, args, show_json=False, testmode=0):
         rc = 1
 
     return rc
+
+def compose_localimage(socket_path, api_version, args, show_json=False, testmode=0):
+    """Print the local path to the compose results
+
+    :param socket_path: Path to the Unix socket to use for API communication
+    :type socket_path: str
+    :param api_version: Version of the API to talk to. eg. "0"
+    :type api_version: str
+    :param args: List of remaining arguments from the cmdline
+    :type args: list of str
+    :param show_json: Set to True to show the JSON output instead of the human readable output
+    :type show_json: bool
+    :param testmode: unused in this function
+    :type testmode: int
+
+    compose localimage <uuid>
+
+    This prints the local path to the compose results
+    """
+    result = client.get_url_json(socket_path, "/api/status")
+    (rc, exit_now) = handle_api_result(result, show_json)
+    if exit_now:
+        return rc
+    print(os.path.join(result["results_path"], args[0]))
