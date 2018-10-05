@@ -65,6 +65,7 @@ def v0_status():
             "db_version": "0",
             "schema_version": "0",
             "backend": "lorax-composer",
+            "results_path": "/var/lib/lorax/composer/results/",
             "msgs": []}
 
     The 'msgs' field can be a list of strings describing startup problems or status that
@@ -77,6 +78,7 @@ def v0_status():
                    db_version="0",
                    schema_version="0",
                    db_supported=True,
-                   msgs=server.config["TEMPLATE_ERRORS"])
+                   msgs=server.config["TEMPLATE_ERRORS"],
+                   results_path=joinpaths(server.config["COMPOSER_CFG"].get("composer", "lib_dir"), "results"))
 
 v0_api(server)

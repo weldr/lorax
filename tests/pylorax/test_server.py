@@ -122,7 +122,7 @@ class ServerTestCase(unittest.TestCase):
 
     def test_01_status(self):
         """Test the /api/status route"""
-        status_fields = ["build", "api", "db_version", "schema_version", "db_supported", "backend", "msgs"]
+        status_fields = ["build", "api", "db_version", "schema_version", "db_supported", "backend", "msgs", "results_path"]
         resp = self.server.get("/api/status")
         data = json.loads(resp.data)
         # Make sure the fields are present
