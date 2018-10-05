@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>lorax-composer &mdash; Lorax 28.14.2 documentation</title>
+  <title>lorax-composer &mdash; Lorax 28.14.12 documentation</title>
   
 
   
@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="composer-cli" href="composer-cli.html" />
+    <link rel="next" title="composer" href="composer-cli.html" />
     <link rel="prev" title="livemedia-creator" href="livemedia-creator.html" /> 
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                28.14.2
+                28.14.12
               </div>
             
           
@@ -89,11 +89,16 @@
 <li class="toctree-l1"><a class="reference internal" href="lorax.html">Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="livemedia-creator.html">livemedia-creator</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">lorax-composer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#important-things-to-note">Important Things To Note</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#quickstart">Quickstart</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#logs">Logs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#security">Security</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#lorax-composer-cmdline-arguments">lorax-composer cmdline arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lorax-composer-cmdline-arguments">lorax-composer cmdline arguments</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#how-it-works">How it Works</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#composing-images">Composing Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#blueprints">Blueprints</a><ul>
@@ -111,10 +116,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#example-add-partitioned-disk-support">Example: Add partitioned disk support</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#package-sources">Package Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#package-sources">Package Sources</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dvd-iso-package-source">DVD ISO Package Source</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="composer-cli.html">composer-cli</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="composer-cli.html">composer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="product-images.html">Product and Updates Images</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">pylorax</a></li>
 </ul>
@@ -198,15 +206,33 @@ information on Weldr can be found <a class="reference external" href="http://www
 <p>Behind the scenes it uses <a class="reference external" href="livemedia-creator.html">livemedia-creator</a> and
 <a class="reference external" href="https://anaconda-installer.readthedocs.io/en/latest/">Anaconda</a> to handle the
 installation and configuration of the images.</p>
+<div class="section" id="important-things-to-note">
+<h2>Important Things To Note<a class="headerlink" href="#important-things-to-note" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>SELinux must be in Permissive mode. Anaconda requires SELinux be in permissive mode
+for image creation to work correctly. You can either edit the setting in the
+<code class="docutils literal notranslate"><span class="pre">/etc/sysconfig/selinux</span></code> file, or run <code class="docutils literal notranslate"><span class="pre">setenforce</span> <span class="pre">0</span></code> before starting lorax-composer.</li>
+<li>All image types lock the root account, except for live-iso. You will need to either
+use one of the <a class="reference internal" href="#customizations">Customizations</a> methods for setting a ssh key/password, install a
+package that creates a user, or use something like <cite>cloud-init</cite> to setup access at
+boot time.</li>
+</ul>
+</div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>The best way to install <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> is to use <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">dnf</span> <span class="pre">install</span>
-<span class="pre">lorax-composer</span> <span class="pre">composer-cli</span></code>, this will setup the weldr user and install the
+<span class="pre">lorax-composer</span> <span class="pre">composer</span></code>, this will setup the weldr user and install the
 systemd socket activation service. You will then need to enable it with <code class="docutils literal notranslate"><span class="pre">sudo</span>
 <span class="pre">systemctl</span> <span class="pre">enable</span> <span class="pre">lorax-composer.socket</span> <span class="pre">&amp;&amp;</span> <span class="pre">sudo</span> <span class="pre">systemctl</span> <span class="pre">start</span>
 <span class="pre">lorax-composer.socket</span></code>. This will leave the server off until the first request
 is made. Systemd will then launch the server and it will remain running until
-the system is rebooted.</p>
+the system is rebooted. This will cause some delay in responding to the first
+request from the UI or <cite>composer</cite>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you want lorax-composer to respond immediately to the first request you can
+start and enable <cite>lorax-composer.service</cite> instead of <cite>lorax-composer.socket</cite></p>
+</div>
 </div>
 <div class="section" id="quickstart">
 <h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
@@ -248,6 +274,84 @@ images using <code class="docutils literal notranslate"><span class="pre">lorax-
 </div>
 <div class="section" id="lorax-composer-cmdline-arguments">
 <h2>lorax-composer cmdline arguments<a class="headerlink" href="#lorax-composer-cmdline-arguments" title="Permalink to this headline">¶</a></h2>
+<p>Lorax Composer API Server</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">lorax</span><span class="o">-</span><span class="n">composer</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">socket</span> <span class="n">SOCKET</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">user</span> <span class="n">USER</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">group</span> <span class="n">GROUP</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">log</span> <span class="n">LOG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">mockfiles</span> <span class="n">MOCKFILES</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">sharedir</span> <span class="n">SHAREDIR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">CONFIG</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">releasever</span> <span class="n">STRING</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tmp</span> <span class="n">TMP</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span> <span class="n">PROXY</span><span class="p">]</span>
+                      <span class="n">BLUEPRINTS</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>BLUEPRINTS</kbd></td>
+<td>Path to the blueprints</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--socket</kbd></td>
+<td><p class="first">Path to the socket file to listen on</p>
+<p class="last">Default: “/run/weldr/api.socket”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--user</kbd></td>
+<td><p class="first">User to use for reduced permissions</p>
+<p class="last">Default: “root”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--group</kbd></td>
+<td><p class="first">Group to set ownership of the socket to</p>
+<p class="last">Default: “weldr”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--log</kbd></td>
+<td><p class="first">Path to logfile (/var/log/lorax-composer/composer.log)</p>
+<p class="last">Default: “/var/log/lorax-composer/composer.log”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--mockfiles</kbd></td>
+<td><p class="first">Path to JSON files used for /api/mock/ paths (/var/tmp/bdcs-mockfiles/)</p>
+<p class="last">Default: “/var/tmp/bdcs-mockfiles/”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--sharedir</kbd></td>
+<td>Directory containing all the templates. Overrides config file sharedir</td></tr>
+<tr><td class="option-group">
+<kbd>-V</kbd></td>
+<td><p class="first">show program’s version number and exit</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>-c, --config</kbd></td>
+<td><p class="first">Path to lorax-composer configuration file.</p>
+<p class="last">Default: “/etc/lorax/composer.conf”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--releasever</kbd></td>
+<td>Release version to use for $releasever in dnf repository urls</td></tr>
+<tr><td class="option-group">
+<kbd>--tmp</kbd></td>
+<td><p class="first">Top level temporary directory</p>
+<p class="last">Default: “/var/tmp”</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--proxy</kbd></td>
+<td>Set proxy for DNF, overrides configuration file setting.</td></tr>
+</tbody>
+</table>
+</div>
 </div>
 <div class="section" id="how-it-works">
 <h2>How it Works<a class="headerlink" href="#how-it-works" title="Permalink to this headline">¶</a></h2>
@@ -267,7 +371,7 @@ able to mount/umount files and run Anaconda.</p>
 <h2>Composing Images<a class="headerlink" href="#composing-images" title="Permalink to this headline">¶</a></h2>
 <p>The <a class="reference external" href="https://github.com/weldr/welder-web/">welder-web</a> GUI project can be used to construct
 blueprints and create composes using a web browser.</p>
-<p>Or use the command line with <a class="reference external" href="composer-cli.html">composer-cli</a>.</p>
+<p>Or use the command line with <a class="reference external" href="composer-cli.html">composer</a>.</p>
 </div>
 <div class="section" id="blueprints">
 <h2>Blueprints<a class="headerlink" href="#blueprints" title="Permalink to this headline">¶</a></h2>
@@ -368,12 +472,12 @@ these are currently available via <code class="docutils literal notranslate"><sp
 lorax-composer a kickstart file needs to be added to <code class="docutils literal notranslate"><span class="pre">./share/composer/</span></code>. The
 name of the kickstart is what will be used by the <code class="docutils literal notranslate"><span class="pre">/compose/types</span></code> route, and the
 <code class="docutils literal notranslate"><span class="pre">compose_type</span></code> field of the POST to start a compose. It also needs to have
-code added to the <code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.compose_args()</span></code> function. The
+code added to the <a class="reference internal" href="pylorax.api.html#pylorax.api.compose.compose_args" title="pylorax.api.compose.compose_args"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.compose_args()</span></code></a> function. The
 <code class="docutils literal notranslate"><span class="pre">_MAP</span></code> entry in this function defines what lorax-composer will pass to
-<code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.installer.novirt_install()</span></code> when it runs the compose.  When the
+<a class="reference internal" href="pylorax.html#pylorax.installer.novirt_install" title="pylorax.installer.novirt_install"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.installer.novirt_install()</span></code></a> when it runs the compose.  When the
 compose is finished the output files need to be copied out of the build
 directory (<code class="docutils literal notranslate"><span class="pre">/var/lib/lorax/composer/results/&lt;UUID&gt;/compose/</span></code>),
-<code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.move_compose_results()</span></code> handles this for each type.
+<a class="reference internal" href="pylorax.api.html#pylorax.api.compose.move_compose_results" title="pylorax.api.compose.move_compose_results"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.move_compose_results()</span></code></a> handles this for each type.
 You should move them instead of copying to save space.</p>
 <p>If the new output type does not have support in livemedia-creator it should be
 added there first. This will make the output available to the widest number of
@@ -385,8 +489,8 @@ via the <code class="docutils literal notranslate"><span class="pre">--make-disk
 needs 3 things:</p>
 <ul class="simple">
 <li>A <code class="docutils literal notranslate"><span class="pre">partitioned-disk.ks</span></code> file in <code class="docutils literal notranslate"><span class="pre">./share/composer/</span></code></li>
-<li>A new entry in the _MAP in <code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.compose_args()</span></code></li>
-<li>Add a bit of code to <code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.move_compose_results()</span></code> to move the disk image from
+<li>A new entry in the _MAP in <a class="reference internal" href="pylorax.api.html#pylorax.api.compose.compose_args" title="pylorax.api.compose.compose_args"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.compose_args()</span></code></a></li>
+<li>Add a bit of code to <a class="reference internal" href="pylorax.api.html#pylorax.api.compose.move_compose_results" title="pylorax.api.compose.move_compose_results"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.move_compose_results()</span></code></a> to move the disk image from
 the compose directory to the results directory.</li>
 </ul>
 <p>The <code class="docutils literal notranslate"><span class="pre">partitioned-disk.ks</span></code> is pretty similar to the example minimal kickstart
@@ -448,6 +552,41 @@ it returns JSON but it can also return TOML if <code class="docutils literal not
 <p>The configured sources are used for all blueprint depsolve operations, and for composing images.
 When adding additional sources you must make sure that the packages in the source do not
 conflict with any other package sources, otherwise depsolving will fail.</p>
+<div class="section" id="dvd-iso-package-source">
+<h3>DVD ISO Package Source<a class="headerlink" href="#dvd-iso-package-source" title="Permalink to this headline">¶</a></h3>
+<p>In some situations the system may want to <em>only</em> use a DVD iso as the package
+source, not the repos from the network. <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> and <code class="docutils literal notranslate"><span class="pre">anaconda</span></code>
+understand <code class="docutils literal notranslate"><span class="pre">file://</span></code> URLs so you can mount an iso on the host, and replace the
+system repo files with a configuration file pointing to the DVD.</p>
+<ul>
+<li><p class="first">Stop the <code class="docutils literal notranslate"><span class="pre">lorax-composer.service</span></code> if it is running</p>
+</li>
+<li><p class="first">Move the repo files in <code class="docutils literal notranslate"><span class="pre">/etc/yum.repos.d/</span></code> someplace safe</p>
+</li>
+<li><p class="first">Create a new <code class="docutils literal notranslate"><span class="pre">iso.repo</span></code> file in <code class="docutils literal notranslate"><span class="pre">/etc/yum.repos.d/</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">iso</span><span class="p">]</span>
+<span class="n">name</span><span class="o">=</span><span class="n">iso</span>
+<span class="n">baseurl</span><span class="o">=</span><span class="n">file</span><span class="p">:</span><span class="o">///</span><span class="n">mnt</span><span class="o">/</span><span class="n">iso</span><span class="o">/</span>
+<span class="n">enabled</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">gpgcheck</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">gpgkey</span><span class="o">=</span><span class="n">file</span><span class="p">:</span><span class="o">///</span><span class="n">mnt</span><span class="o">/</span><span class="n">iso</span><span class="o">/</span><span class="n">RPM</span><span class="o">-</span><span class="n">GPG</span><span class="o">-</span><span class="n">KEY</span><span class="o">-</span><span class="n">redhat</span><span class="o">-</span><span class="n">release</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Remove all the cached repo files from <code class="docutils literal notranslate"><span class="pre">/var/lib/lorax/composer/repos/</span></code></p>
+</li>
+<li><p class="first">Restart the <code class="docutils literal notranslate"><span class="pre">lorax-composer.service</span></code></p>
+</li>
+<li><p class="first">Check the output of <code class="docutils literal notranslate"><span class="pre">composer</span> <span class="pre">status</span> <span class="pre">show</span></code> for any output specific depsolve errors.
+For example, the DVD usually does not include <code class="docutils literal notranslate"><span class="pre">grub2-efi-*-cdboot-*</span></code> so the live-iso image
+type will not be available.</p>
+</li>
+</ul>
+<p>If you want to <em>add</em> the DVD source to the existing sources you can do that by
+mounting the iso and creating a source file to point to it as described in the
+<a class="reference internal" href="#package-sources">Package Sources</a> documentation.  In that case there is no need to remove the other
+sources from <code class="docutils literal notranslate"><span class="pre">/etc/yum.repos.d/</span></code> or clear the cached repos.</p>
+</div>
 </div>
 </div>
 
@@ -459,7 +598,7 @@ conflict with any other package sources, otherwise depsolving will fail.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="composer-cli.html" class="btn btn-neutral float-right" title="composer-cli" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="composer-cli.html" class="btn btn-neutral float-right" title="composer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="livemedia-creator.html" class="btn btn-neutral" title="livemedia-creator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -493,7 +632,7 @@ conflict with any other package sources, otherwise depsolving will fail.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'28.14.2',
+            VERSION:'28.14.12',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

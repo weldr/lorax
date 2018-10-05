@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api package &mdash; Lorax 28.14.2 documentation</title>
+  <title>pylorax.api package &mdash; Lorax 28.14.12 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                28.14.2
+                28.14.12
               </div>
             
           
@@ -88,7 +88,7 @@
 <li class="toctree-l1"><a class="reference internal" href="lorax.html">Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="livemedia-creator.html">livemedia-creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lorax-composer.html">lorax-composer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="composer-cli.html">composer-cli</a></li>
+<li class="toctree-l1"><a class="reference internal" href="composer-cli.html">composer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="product-images.html">Product and Updates Images</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">pylorax</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="pylorax.html">pylorax package</a><ul class="current">
@@ -355,6 +355,34 @@ Other options will be filled in by <cite>make_compose()</cite></p>
 </tbody>
 </table>
 <p>gid is optional</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.write_ks_root">
+<code class="descclassname">pylorax.api.compose.</code><code class="descname">write_ks_root</code><span class="sig-paren">(</span><em>f</em>, <em>user</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/compose.html#write_ks_root"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.write_ks_root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write kickstart root password and sshkey entry</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>f</strong> (<em>open file object</em>) – kickstart file object</li>
+<li><strong>user</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – A blueprint user dictionary</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if it wrote a rootpw command to the kickstart</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>If the entry contains a ssh key, use sshkey to write it
+If it contains password, use rootpw to set it</p>
+<p>root cannot be used with the user command. So only key and password are supported
+for root.</p>
 </dd></dl>
 
 <dl class="function">
@@ -989,11 +1017,18 @@ Use queue_status() for those.</p>
 <ul class="simple">
 <li>id - The uuid of the comoposition</li>
 <li>queue_status - The final status of the composition (FINISHED or FAILED)</li>
-<li>timestamp - The time of the last status change</li>
 <li>compose_type - The type of output generated (tar, iso, etc.)</li>
 <li>blueprint - Blueprint name</li>
 <li>version - Blueprint version</li>
 <li>image_size - Size of the image, if finished. 0 otherwise.</li>
+</ul>
+<p>Various timestamps are also included in the dict.  These are all Unix UTC timestamps.
+It is possible for these timestamps to not always exist, in which case they will be
+None in Python (or null in JSON).  The following timestamps are included:</p>
+<ul class="simple">
+<li>job_created - When the user submitted the compose</li>
+<li>job_started - Anaconda started running</li>
+<li>job_finished - Job entered FINISHED or FAILED state</li>
 </ul>
 </dd></dl>
 
@@ -1226,7 +1261,7 @@ and “run” has the uuids that are being built (currently limited to 1 at a ti
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">dictionary of information about the composition</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">dictionary of information about the composition or None</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
@@ -3074,14 +3109,14 @@ and the build that is running.</p>
       <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;45502a6d-06e8-48a5-a215-2b4174b3614b&quot;</span><span class="p">,</span>
       <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
       <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;WAITING&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517362647.4570868</span><span class="p">,</span>
+      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517362647.4570868</span><span class="p">,</span>
       <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.6&quot;</span>
     <span class="p">},</span>
     <span class="p">{</span>
       <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;6d292bd0-bec7-4825-8d7d-41ef9c3e4b73&quot;</span><span class="p">,</span>
       <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;kubernetes&quot;</span><span class="p">,</span>
       <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;WAITING&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517362659.0034983</span><span class="p">,</span>
+      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517362659.0034983</span><span class="p">,</span>
       <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.1&quot;</span>
     <span class="p">}</span>
   <span class="p">],</span>
@@ -3090,7 +3125,8 @@ and the build that is running.</p>
       <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;745712b2-96db-44c0-8014-fe925c35e795&quot;</span><span class="p">,</span>
       <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
       <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;RUNNING&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517362633.7965999</span><span class="p">,</span>
+      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517362633.7965999</span><span class="p">,</span>
+      <span class="s2">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517362633.8001345</span><span class="p">,</span>
       <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.6&quot;</span>
     <span class="p">}</span>
   <span class="p">]</span>
@@ -3110,14 +3146,18 @@ and the build that is running.</p>
       <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;70b84195-9817-4b8a-af92-45e380f39894&quot;</span><span class="p">,</span>
       <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
       <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;FINISHED&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517351003.8210032</span><span class="p">,</span>
+      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517351003.8210032</span><span class="p">,</span>
+      <span class="s2">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517351003.8230415</span><span class="p">,</span>
+      <span class="s2">&quot;job_finished&quot;</span><span class="p">:</span> <span class="mf">1517359234.1003145</span><span class="p">,</span>
       <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.6&quot;</span>
     <span class="p">},</span>
     <span class="p">{</span>
       <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;e695affd-397f-4af9-9022-add2636e7459&quot;</span><span class="p">,</span>
       <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
       <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;FINISHED&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517362289.7193348</span><span class="p">,</span>
+      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517362289.7193348</span><span class="p">,</span>
+      <span class="s2">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517362289.9751132</span><span class="p">,</span>
+      <span class="s2">&quot;job_finished&quot;</span><span class="p">:</span> <span class="mf">1517363500.1234567</span><span class="p">,</span>
       <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.6&quot;</span>
     <span class="p">}</span>
   <span class="p">]</span>
@@ -3137,7 +3177,9 @@ and the build that is running.</p>
       <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a&quot;</span><span class="p">,</span>
       <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;http-server&quot;</span><span class="p">,</span>
       <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;FAILED&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517523249.9301329</span><span class="p">,</span>
+      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517523249.9301329</span><span class="p">,</span>
+      <span class="s2">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517523249.9314211</span><span class="p">,</span>
+      <span class="s2">&quot;job_finished&quot;</span><span class="p">:</span> <span class="mf">1517523255.5623411</span><span class="p">,</span>
       <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.2&quot;</span>
     <span class="p">}</span>
   <span class="p">]</span>
@@ -3146,10 +3188,11 @@ and the build that is running.</p>
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="api-v0-compose-status-uuids">
-<h4><cite>/api/v0/compose/status/&lt;uuids&gt;</cite><a class="headerlink" href="#api-v0-compose-status-uuids" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="api-v0-compose-status-uuids-blueprint-blueprint-name-status-compose-status-type-compose-type">
+<h4><cite>/api/v0/compose/status/&lt;uuids&gt;[?blueprint=&lt;blueprint_name&gt;&amp;status=&lt;compose_status&gt;&amp;type=&lt;compose_type&gt;]</cite><a class="headerlink" href="#api-v0-compose-status-uuids-blueprint-blueprint-name-status-compose-status-type-compose-type" title="Permalink to this headline">¶</a></h4>
 <blockquote>
-<div><p>Return the details for each of the comma-separated list of uuids.</p>
+<div><p>Return the details for each of the comma-separated list of uuids. A uuid of ‘*’ will return
+details for all composes.</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="s2">&quot;uuids&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -3157,14 +3200,18 @@ and the build that is running.</p>
       <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a&quot;</span><span class="p">,</span>
       <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;http-server&quot;</span><span class="p">,</span>
       <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;FINISHED&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517523644.2384307</span><span class="p">,</span>
+      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517523644.2384307</span><span class="p">,</span>
+      <span class="s2">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517523644.2551234</span><span class="p">,</span>
+      <span class="s2">&quot;job_finished&quot;</span><span class="p">:</span> <span class="mf">1517523689.9864314</span><span class="p">,</span>
       <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.2&quot;</span>
     <span class="p">},</span>
     <span class="p">{</span>
       <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;45502a6d-06e8-48a5-a215-2b4174b3614b&quot;</span><span class="p">,</span>
       <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
       <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;FINISHED&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="mf">1517363442.188399</span><span class="p">,</span>
+      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517363442.188399</span><span class="p">,</span>
+      <span class="s2">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517363442.325324</span><span class="p">,</span>
+      <span class="s2">&quot;job_finished&quot;</span><span class="p">:</span> <span class="mf">1517363451.653621</span><span class="p">,</span>
       <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.6&quot;</span>
     <span class="p">}</span>
   <span class="p">]</span>
@@ -3173,8 +3220,8 @@ and the build that is running.</p>
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="delete-api-v0-blueprints-cancel-uuid">
-<h4>DELETE <cite>/api/v0/blueprints/cancel/&lt;uuid&gt;</cite><a class="headerlink" href="#delete-api-v0-blueprints-cancel-uuid" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="delete-api-v0-compose-cancel-uuid">
+<h4>DELETE <cite>/api/v0/compose/cancel/&lt;uuid&gt;</cite><a class="headerlink" href="#delete-api-v0-compose-cancel-uuid" title="Permalink to this headline">¶</a></h4>
 <blockquote>
 <div><p>Cancel the build, if it is not finished, and delete the results. It will return a
 status of True if it is successful.</p>
@@ -3317,6 +3364,11 @@ a line boundry.</p>
 </pre></div>
 </div>
 </div></blockquote>
+<dl class="function">
+<dt id="pylorax.api.v0.blueprint_exists">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">blueprint_exists</code><span class="sig-paren">(</span><em>api</em>, <em>branch</em>, <em>blueprint_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#blueprint_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.blueprint_exists" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="function">
 <dt id="pylorax.api.v0.take_limits">
 <code class="descclassname">pylorax.api.v0.</code><code class="descname">take_limits</code><span class="sig-paren">(</span><em>iterable</em>, <em>offset</em>, <em>limit</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#take_limits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.take_limits" title="Permalink to this definition">¶</a></dt>
@@ -3502,7 +3554,7 @@ a line boundry.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'28.14.2',
+            VERSION:'28.14.12',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

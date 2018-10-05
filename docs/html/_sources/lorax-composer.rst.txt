@@ -13,16 +13,34 @@ Behind the scenes it uses `livemedia-creator <livemedia-creator.html>`_ and
 `Anaconda <https://anaconda-installer.readthedocs.io/en/latest/>`_ to handle the
 installation and configuration of the images.
 
+Important Things To Note
+------------------------
+
+* SELinux must be in Permissive mode. Anaconda requires SELinux be in permissive mode
+  for image creation to work correctly. You can either edit the setting in the
+  ``/etc/sysconfig/selinux`` file, or run ``setenforce 0`` before starting lorax-composer.
+
+* All image types lock the root account, except for live-iso. You will need to either
+  use one of the `Customizations`_ methods for setting a ssh key/password, install a
+  package that creates a user, or use something like `cloud-init` to setup access at
+  boot time.
+
 Installation
 ------------
 
 The best way to install ``lorax-composer`` is to use ``sudo dnf install
-lorax-composer composer-cli``, this will setup the weldr user and install the
+lorax-composer composer``, this will setup the weldr user and install the
 systemd socket activation service. You will then need to enable it with ``sudo
 systemctl enable lorax-composer.socket && sudo systemctl start
 lorax-composer.socket``. This will leave the server off until the first request
 is made. Systemd will then launch the server and it will remain running until
-the system is rebooted.
+the system is rebooted. This will cause some delay in responding to the first
+request from the UI or `composer`.
+
+.. note::
+
+   If you want lorax-composer to respond immediately to the first request you can
+   start and enable `lorax-composer.service` instead of `lorax-composer.socket`
 
 Quickstart
 ----------
@@ -96,7 +114,7 @@ Composing Images
 The `welder-web <https://github.com/weldr/welder-web/>`_ GUI project can be used to construct
 blueprints and create composes using a web browser.
 
-Or use the command line with `composer-cli <composer-cli.html>`_.
+Or use the command line with `composer <composer-cli.html>`_.
 
 Blueprints
 ----------
@@ -306,3 +324,33 @@ The documentation for the source API routes can be `found here <pylorax.api.html
 The configured sources are used for all blueprint depsolve operations, and for composing images.
 When adding additional sources you must make sure that the packages in the source do not
 conflict with any other package sources, otherwise depsolving will fail.
+
+DVD ISO Package Source
+~~~~~~~~~~~~~~~~~~~~~~
+
+In some situations the system may want to *only* use a DVD iso as the package
+source, not the repos from the network. ``lorax-composer`` and ``anaconda``
+understand ``file://`` URLs so you can mount an iso on the host, and replace the
+system repo files with a configuration file pointing to the DVD.
+
+* Stop the ``lorax-composer.service`` if it is running
+* Move the repo files in ``/etc/yum.repos.d/`` someplace safe
+* Create a new ``iso.repo`` file in ``/etc/yum.repos.d/``::
+
+     [iso]
+     name=iso
+     baseurl=file:///mnt/iso/
+     enabled=1
+     gpgcheck=1
+     gpgkey=file:///mnt/iso/RPM-GPG-KEY-redhat-release
+
+* Remove all the cached repo files from ``/var/lib/lorax/composer/repos/``
+* Restart the ``lorax-composer.service``
+* Check the output of ``composer status show`` for any output specific depsolve errors.
+  For example, the DVD usually does not include ``grub2-efi-*-cdboot-*`` so the live-iso image
+  type will not be available.
+
+If you want to *add* the DVD source to the existing sources you can do that by
+mounting the iso and creating a source file to point to it as described in the
+`Package Sources`_ documentation.  In that case there is no need to remove the other
+sources from ``/etc/yum.repos.d/`` or clear the cached repos.

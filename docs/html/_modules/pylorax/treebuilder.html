@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.treebuilder &mdash; Lorax 28.14.2 documentation</title>
+  <title>pylorax.treebuilder &mdash; Lorax 28.14.12 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                28.14.2
+                28.14.12
               </div>
             
           
@@ -87,7 +87,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../lorax.html">Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../livemedia-creator.html">livemedia-creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../lorax-composer.html">lorax-composer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../composer-cli.html">composer-cli</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../composer-cli.html">composer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../product-images.html">Product and Updates Images</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">pylorax</a></li>
 </ul>
@@ -366,11 +366,11 @@
 <div class="viewcode-block" id="RuntimeBuilder.generate_module_data"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.generate_module_data">[docs]</a>    <span class="k">def</span> <span class="nf">generate_module_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span>
         <span class="n">moddir</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;lib/modules/&quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">kver</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">moddir</span><span class="p">):</span>
-            <span class="n">ksyms</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;boot/System.map-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">kver</span><span class="p">)</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;doing depmod and module-info for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">kver</span><span class="p">)</span>
-            <span class="n">runcmd</span><span class="p">([</span><span class="s2">&quot;depmod&quot;</span><span class="p">,</span> <span class="s2">&quot;-a&quot;</span><span class="p">,</span> <span class="s2">&quot;-F&quot;</span><span class="p">,</span> <span class="n">ksyms</span><span class="p">,</span> <span class="s2">&quot;-b&quot;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">kver</span><span class="p">])</span>
-            <span class="n">generate_module_info</span><span class="p">(</span><span class="n">moddir</span><span class="o">+</span><span class="n">kver</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="n">moddir</span><span class="o">+</span><span class="s2">&quot;module-info&quot;</span><span class="p">)</span></div>
+        <span class="k">for</span> <span class="n">kernel</span> <span class="ow">in</span> <span class="n">findkernels</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">):</span>
+            <span class="n">ksyms</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;boot/System.map-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">kernel</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;doing depmod and module-info for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">kernel</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+            <span class="n">runcmd</span><span class="p">([</span><span class="s2">&quot;depmod&quot;</span><span class="p">,</span> <span class="s2">&quot;-a&quot;</span><span class="p">,</span> <span class="s2">&quot;-F&quot;</span><span class="p">,</span> <span class="n">ksyms</span><span class="p">,</span> <span class="s2">&quot;-b&quot;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">kernel</span><span class="o">.</span><span class="n">version</span><span class="p">])</span>
+            <span class="n">generate_module_info</span><span class="p">(</span><span class="n">moddir</span><span class="o">+</span><span class="n">kernel</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="n">moddir</span><span class="o">+</span><span class="s2">&quot;module-info&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="RuntimeBuilder.create_runtime"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.create_runtime">[docs]</a>    <span class="k">def</span> <span class="nf">create_runtime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="s2">&quot;/var/tmp/squashfs.img&quot;</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;xz&quot;</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
         <span class="c1"># make live rootfs image - must be named &quot;LiveOS/rootfs.img&quot; for dracut</span>
@@ -589,7 +589,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'28.14.2',
+            VERSION:'28.14.12',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
