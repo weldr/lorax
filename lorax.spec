@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.12
+Version:        28.14.13
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -233,6 +233,21 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer
 
 %changelog
+* Fri Oct 05 2018 Brian C. Lane <bcl@redhat.com> 28.14.13-1
+- New lorax documentation - 28.14.12 (bcl)
+  Related: rhbz#1635763
+- Adjust the composer-cli tests for the rename to composer (bcl)
+  Related: rhbz#1635763
+- Rename composer-cli to composer (lars)
+  Resolves: rhbz#1635763
+- Add and enable cloud-init for ami images (lars)
+  Related: rhbz#1628647
+- Make no-virt generated images sparser (dshea)
+  Related: rhbz#1628645
+  Related: rhbz#1628646
+  Related: rhbz#1628648
+  Related: rhbz#1628647
+
 * Wed Oct 03 2018 Brian C. Lane <bcl@redhat.com> 28.14.12-1
 - Write a rootpw line if no root customizations in the blueprint (bcl)
   Resolves: rhbz#1626122
