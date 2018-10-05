@@ -26,6 +26,10 @@ zerombr
 %post
 # Remove random-seed
 rm /var/lib/systemd/random-seed
+
+# Clear /etc/machine-id
+rm /etc/machine-id
+touch /etc/machine-id
 %end
 
 %packages

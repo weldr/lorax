@@ -24,6 +24,10 @@ bootloader --location=none
 %post
 # Remove random-seed
 rm /var/lib/systemd/random-seed
+
+# Clear /etc/machine-id
+rm /etc/machine-id
+touch /etc/machine-id
 %end
 
 # NOTE Do NOT add any other sections after %packages

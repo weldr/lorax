@@ -31,6 +31,10 @@ services --enabled=sshd,chronyd,waagent
 # Remove random-seed
 rm /var/lib/systemd/random-seed
 
+# Clear /etc/machine-id
+rm /etc/machine-id
+touch /etc/machine-id
+
 # This file is required by waagent in RHEL, but compatible with NetworkManager
 cat > /etc/sysconfig/network-scripts/ifcfg-eth0 << EOF
 DEVICE=eth0
