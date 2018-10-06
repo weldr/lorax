@@ -362,3 +362,19 @@ removepkg cdparanoia-libs opus libtheora libvisual flac-libs gsm avahi-glib avah
 
 ## metacity requires libvorbis and libvorbisfile, but enc/dec are no longer needed
 removefrom libvorbis --allbut /usr/${libdir}/libvorbisfile.* /usr/${libdir}/libvorbis.*
+
+## make the image more reproducible
+
+## make machine-id empty but present to avoid systemd populating /etc with
+## preset settings
+remove /etc/machine-id
+append /etc/machine-id ""
+## journalctl message catalog, non-deterministic
+remove /var/lib/systemd/catalog/database
+## non-reproducible caches
+remove /var/cache/ldconfig/aux-cache
+remove /etc/pki/ca-trust/extracted/java/cacerts
+
+## sort groups
+runcmd chroot ${root} /bin/sh -c "LC_ALL=C sort /etc/group > /etc/group- && mv /etc/group- /etc/group"
+runcmd chroot ${root} /bin/sh -c "LC_ALL=C sort /etc/gshadow > /etc/gshadow- && mv /etc/gshadow- /etc/gschadow"
