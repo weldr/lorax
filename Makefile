@@ -26,7 +26,7 @@ install: all
 	install -m 644 docs/man/lorax.1 $(DESTDIR)/$(mandir)/man1
 	install -m 644 docs/man/livemedia-creator.1 $(DESTDIR)/$(mandir)/man1
 	mkdir -p $(DESTDIR)/etc/bash_completion.d
-	install -m 644 etc/bash_completion.d/composer $(DESTDIR)/etc/bash_completion.d
+	install -m 644 etc/bash_completion.d/composer-cli $(DESTDIR)/etc/bash_completion.d
 
 check:
 	@echo "*** Running pylint ***"

@@ -23,7 +23,7 @@ data_files.append(("/usr/sbin", ["src/sbin/lorax", "src/sbin/mkefiboot",
                                  "src/sbin/livemedia-creator", "src/sbin/lorax-composer"]))
 data_files.append(("/usr/bin",  ["src/bin/image-minimizer",
                                  "src/bin/mk-s390-cdboot",
-                                 "src/bin/composer"]))
+                                 "src/bin/composer-cli"]))
 
 # get the version
 sys.path.insert(0, "src")
