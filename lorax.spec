@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        29.16
+Version:        29.17
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -230,6 +230,10 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Oct 08 2018 Brian C. Lane <bcl@redhat.com> 29.17-1
+- Update cli tests to use composer-cli name (bcl@redhat.com)
+- Revert "Rename composer-cli to composer" (bcl@redhat.com)
+
 * Fri Oct 05 2018 Brian C. Lane <bcl@redhat.com> 29.16-1
 - Work around dnf problem with multiple repos (bcl@redhat.com)
 - Add and enable cloud-init for ami images (lars@karlitski.net)
