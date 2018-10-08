@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.13
+Version:        28.14.14
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -233,6 +233,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Oct 08 2018 Brian C. Lane <bcl@redhat.com> 28.14.14-1
+- Update cli tests to use composer-cli name (bcl)
+  Related: rhbz#1635763
+- Revert "Rename composer-cli to composer" (bcl)
+  Related: rhbz#1635763
+
 * Fri Oct 05 2018 Brian C. Lane <bcl@redhat.com> 28.14.13-1
 - New lorax documentation - 28.14.12 (bcl)
   Related: rhbz#1635763
