@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 #
-# composer
+# composer-cli
 #
 # Copyright (C) 2018  Red Hat, Inc.
 #
@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import logging
-log = logging.getLogger("composer")
+log = logging.getLogger("composer-cli")
 
 import os
 import sys
