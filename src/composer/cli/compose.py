@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import logging
-log = logging.getLogger("composer")
+log = logging.getLogger("composer-cli")
 
 from datetime import datetime
 import sys
@@ -186,7 +186,7 @@ def compose_types(socket_path, api_version, args, show_json=False, testmode=0):
     :param testmode: unused in this function
     :type testmode: int
 
-    Add additional details to types that are known to composer. Raw JSON output does not
+    Add additional details to types that are known to composer-cli. Raw JSON output does not
     include this extra information.
     """
     api_route = client.api_url(api_version, "/compose/types")
