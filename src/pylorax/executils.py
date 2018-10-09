@@ -27,6 +27,7 @@ import logging
 log = logging.getLogger("pylorax")
 program_log = logging.getLogger("program")
 
+# pylint: disable=not-context-manager
 from threading import Lock
 program_log_lock = Lock()
 
