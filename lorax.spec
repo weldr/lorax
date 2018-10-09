@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.14
+Version:        28.14.15
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -233,6 +233,17 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Tue Oct 09 2018 Brian C. Lane <bcl@redhat.com> 28.14.15-1
+- Add an openstack image type (bcl)
+  Resolves: rhbz#1628645
+- Add cloud-init to vhd images. (dshea)
+  Related: rhbz#1628648
+- Replace /etc/machine-id with an empty file (dshea)
+  Related: rhbz#1628648
+  Related: rhbz#1628645
+  Related: rhbz#1628647
+  Related: rhbz#1628646
+
 * Mon Oct 08 2018 Brian C. Lane <bcl@redhat.com> 28.14.14-1
 - Update cli tests to use composer-cli name (bcl)
   Related: rhbz#1635763
