@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.25
+Version:        19.7.26
 Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
@@ -122,6 +122,10 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Oct 08 2018 Brian C. Lane <bcl@redhat.com> 19.7.26-1
+- Revert "Rename composer-cli to composer" (bcl)
+  Related: rhbz#1635760
+
 * Fri Oct 05 2018 Brian C. Lane <bcl@redhat.com> 19.7.25-1
 - Rename composer-cli to composer (lars)
   Resolves: rhbz#1635760
