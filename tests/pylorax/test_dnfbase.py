@@ -42,7 +42,7 @@ use_system_repos = False
 
         # will read the above configuration
         config = configure(conf_file=conf_file, root_dir=self.tmp_dir)
-        make_dnf_dirs(config)
+        make_dnf_dirs(config, os.getuid(), os.getgid())
 
         # will read composer config and store a dnf config file
         self.dbo = get_base_object(config)
@@ -76,7 +76,7 @@ class DnfbaseSystemReposTest(unittest.TestCase):
 
         # will read the above configuration
         config = configure(root_dir=self.tmp_dir)
-        make_dnf_dirs(config)
+        make_dnf_dirs(config, os.getuid(), os.getgid())
 
         # will read composer config and store a dnf config file
         self.dbo = get_base_object(config)
@@ -107,6 +107,6 @@ class CreateDnfDirsTest(unittest.TestCase):
         config = configure(test_config=True, root_dir=self.tmp_dir)
 
         # will create the above directory if missing
-        make_dnf_dirs(config)
+        make_dnf_dirs(config, os.getuid(), os.getgid())
 
         self.assertTrue(os.path.exists(self.tmp_dir + '/var/tmp/composer/dnf/root'))
