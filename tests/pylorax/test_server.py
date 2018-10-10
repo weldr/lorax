@@ -71,11 +71,11 @@ class ServerTestCase(unittest.TestCase):
 
         server.config["COMPOSER_CFG"] = configure(root_dir=repo_dir, test_config=True)
         os.makedirs(joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), "composer"))
-        errors = make_queue_dirs(server.config["COMPOSER_CFG"], 0)
+        errors = make_queue_dirs(server.config["COMPOSER_CFG"], os.getgid())
         if errors:
             raise RuntimeError("\n".join(errors))
 
-        make_dnf_dirs(server.config["COMPOSER_CFG"])
+        make_dnf_dirs(server.config["COMPOSER_CFG"], os.getuid(), os.getgid())
 
         # copy over the test dnf repositories
         dnf_repo_dir = server.config["COMPOSER_CFG"].get("composer", "repo_dir")
@@ -1397,11 +1397,11 @@ class RepoCacheTestCase(unittest.TestCase):
 
         server.config["COMPOSER_CFG"] = configure(root_dir=repo_dir, test_config=True)
         os.makedirs(joinpaths(server.config["COMPOSER_CFG"].get("composer", "share_dir"), "composer"))
-        errors = make_queue_dirs(server.config["COMPOSER_CFG"], 0)
+        errors = make_queue_dirs(server.config["COMPOSER_CFG"], os.getgid())
         if errors:
             raise RuntimeError("\n".join(errors))
 
-        make_dnf_dirs(server.config["COMPOSER_CFG"])
+        make_dnf_dirs(server.config["COMPOSER_CFG"], os.getuid(), os.getgid())
 
         # Modify fedora vs. rawhide tests when running on rawhide
         if os.path.exists("/etc/yum.repos.d/fedora-rawhide.repo"):
