@@ -22,10 +22,10 @@ shutdown
 # System timezone
 timezone  US/Eastern
 # System bootloader configuration
-bootloader --location=mbr --append="no_timer_check console=ttyS0,115200n8 console=tty1 net.ifnames=0"
+bootloader --location=mbr --append="no_timer_check console=ttyS0,115200n8 earlyprintk=ttyS0,115200 rootdelay=300 net.ifnames=0"
 
 # Basic services
-services --enabled=sshd,chronyd,waagent,cloud-init
+services --enabled=sshd,chronyd,waagent
 
 %post
 # Remove random-seed
@@ -34,6 +34,28 @@ rm /var/lib/systemd/random-seed
 # Clear /etc/machine-id
 rm /etc/machine-id
 touch /etc/machine-id
+
+# This file is required by waagent in RHEL, but compatible with NetworkManager
+cat > /etc/sysconfig/network-scripts/ifcfg-eth0 << EOF
+DEVICE=eth0
+ONBOOT=yes
+BOOTPROTO=dhcp
+TYPE=Ethernet
+USERCTL=yes
+PEERDNS=yes
+IPV6INIT=no
+EOF
+
+# Add Hyper-V modules into initramfs
+cat > /etc/dracut.conf.d/10-hyperv.conf << EOF
+add_drivers+=" hv_vmbus hv_netvsc hv_storvsc "
+EOF
+
+# Regenerate the intramfs image
+dracut -f -v --persistent-policy by-uuid
+%end
+
+%addon com_redhat_kdump --disable
 %end
 
 %packages
@@ -43,10 +65,11 @@ selinux-policy-targeted
 grub2
 
 chrony
-cloud-init
 
-# Uninstall NetworkManager, install WALinuxAgent
--NetworkManager
 WALinuxAgent
+
+# Requirements of WALinuxAgent
+python3
+net-tools
 
 # NOTE lorax-composer will add the recipe packages below here, including the final %end
