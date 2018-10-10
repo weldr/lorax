@@ -49,7 +49,7 @@ class ProjectsTest(unittest.TestCase):
     def setUpClass(self):
         self.tmp_dir = tempfile.mkdtemp(prefix="lorax.test.repo.")
         self.config = configure(root_dir=self.tmp_dir, test_config=True)
-        make_dnf_dirs(self.config)
+        make_dnf_dirs(self.config, os.getuid(), os.getgid())
         self.dbo = get_base_object(self.config)
         os.environ["TZ"] = "UTC"
         time.tzset()
