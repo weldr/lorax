@@ -210,6 +210,9 @@ if __name__ == '__main__':
             log.error(e)
         sys.exit(1)
 
+    # Make sure dnf directories are created (owned by user:group)
+    make_dnf_dirs(server.config["COMPOSER_CFG"], uid, gid)
+
     # Did systemd pass any extra fds (for socket activation)?
     try:
         fds = int(os.environ['LISTEN_FDS'])
@@ -240,9 +243,6 @@ if __name__ == '__main__':
     log.debug("user is now %s:%s", os.getresuid(), os.getresgid())
     # Switch to a home directory we can access (libgit2 uses this to look for .gitconfig)
     os.environ["HOME"] = server.config["COMPOSER_CFG"].get("composer", "lib_dir")
-
-    # Make sure dnf directories are created
-    make_dnf_dirs(server.config["COMPOSER_CFG"])
 
     # Get a dnf.Base to share with the requests
     try:

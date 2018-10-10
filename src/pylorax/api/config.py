@@ -17,6 +17,7 @@
 import configparser
 import grp
 import os
+import pwd
 
 from pylorax.sysutils import joinpaths
 
@@ -67,20 +68,57 @@ def configure(conf_file="/etc/lorax/composer.conf", root_dir="/", test_config=Fa
 
     return conf
 
-def make_dnf_dirs(conf):
-    """Make any missing dnf directories
+def make_owned_dir(p_dir, uid, gid):
+    """Make a directory and its parents, setting owner and group
+
+    :param p_dir: path to directory to create
+    :type p_dir: string
+    :param uid: uid of owner
+    :type uid: int
+    :param gid: gid of owner
+    :type gid: int
+    :returns: list of errors
+    :rtype: list of str
+
+    Check to make sure it does not have o+rw permissions and that it is owned by uid:gid
+    """
+    errors = []
+    if not os.path.isdir(p_dir):
+        # Make sure no o+rw permissions are set
+        orig_umask = os.umask(0o006)
+        os.makedirs(p_dir, 0o771)
+        os.chown(p_dir, uid, gid)
+        os.umask(orig_umask)
+    else:
+        p_stat = os.stat(p_dir)
+        if p_stat.st_mode & 0o006 != 0:
+            errors.append("Incorrect permissions on %s, no o+rw permissions are allowed." % p_dir)
+
+        if p_stat.st_gid != gid or p_stat.st_uid != 0:
+            gr_name = grp.getgrgid(gid).gr_name
+            u_name = pwd.getpwuid(uid)
+            errors.append("%s should be owned by %s:%s" % (p_dir, u_name, gr_name))
+
+    return errors
+
+def make_dnf_dirs(conf, uid, gid):
+    """Make any missing dnf directories owned by user:group
 
     :param conf: The configuration to use
     :type conf: ComposerConfig
-    :returns: None
+    :param uid: uid of owner
+    :type uid: int
+    :param gid: gid of owner
+    :type gid: int
+    :returns: list of errors
+    :rtype: list of str
     """
+    errors = []
     for p in ["dnf_conf", "repo_dir", "cache_dir", "dnf_root"]:
         p_dir = os.path.abspath(conf.get("composer", p))
         if p == "dnf_conf":
             p_dir = os.path.dirname(p_dir)
-
-        if not os.path.isdir(p_dir):
-            os.makedirs(p_dir)
+        errors.extend(make_owned_dir(p_dir, uid, gid))
 
 def make_queue_dirs(conf, gid):
     """Make any missing queue directories
@@ -96,18 +134,5 @@ def make_queue_dirs(conf, gid):
     lib_dir = conf.get("composer", "lib_dir")
     for p in ["queue/run", "queue/new", "results"]:
         p_dir = joinpaths(lib_dir, p)
-        if not os.path.exists(p_dir):
-            orig_umask = os.umask(0)
-            os.makedirs(p_dir, 0o771)
-            os.chown(p_dir, 0, gid)
-            os.umask(orig_umask)
-        else:
-            p_stat = os.stat(p_dir)
-            if p_stat.st_mode & 0o006 != 0:
-                errors.append("Incorrect permissions on %s, no o+rw permissions are allowed." % p_dir)
-
-            if p_stat.st_gid != gid or p_stat.st_uid != 0:
-                gr_name = grp.getgrgid(gid).gr_name
-                errors.append("%s should be owned by root:%s" % (p_dir, gr_name))
-
+        errors.extend(make_owned_dir(p_dir, 0, gid))
     return errors
