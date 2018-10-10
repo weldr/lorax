@@ -10,7 +10,12 @@ export top_srcdir=`pwd`
 ./src/sbin/lorax-composer --sharedir ./share/ ./tests/pylorax/blueprints/ &
 
 # wait for the backend to become ready
-until curl --unix-socket /run/weldr/api.socket http://localhost:4000/api/status | grep '"db_supported":true'; do
+tries=0
+until curl -m 15 --unix-socket /run/weldr/api.socket http://localhost:4000/api/status | grep 'db_supported.*true'; do
+    tries=$((tries + 1))
+    if [ $tries -gt 20 ]; then
+        exit 1
+    fi
     sleep 2
     echo "DEBUG: Waiting for backend API to become ready before testing ..."
 done;
