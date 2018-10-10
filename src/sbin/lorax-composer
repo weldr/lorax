@@ -37,7 +37,7 @@ from gevent.pywsgi import WSGIServer
 
 from pylorax import vernum
 from pylorax.api.cmdline import lorax_composer_parser
-from pylorax.api.config import configure, make_dnf_dirs, make_queue_dirs
+from pylorax.api.config import configure, make_dnf_dirs, make_queue_dirs, make_owned_dir
 from pylorax.api.compose import test_templates
 from pylorax.api.dnfbase import DNFLock
 from pylorax.api.queue import start_queue_monitor
@@ -185,12 +185,6 @@ if __name__ == '__main__':
     server.config["COMPOSER_CFG"] = configure(conf_file=opts.config)
     server.config["COMPOSER_CFG"].set("composer", "tmp", opts.tmp)
 
-    # Make sure the git repo can be accessed by the API uid/gid
-    if os.path.exists(opts.BLUEPRINTS):
-        repodir_stat = os.stat(opts.BLUEPRINTS)
-        if repodir_stat.st_gid != gid or repodir_stat.st_uid != uid:
-            subprocess.call(["chown", "-R", "%s:%s" % (opts.user, opts.group), opts.BLUEPRINTS])
-
     # If the user passed in a releasever set it in the configuration
     if opts.releasever:
         server.config["COMPOSER_CFG"].set("composer", "releasever", opts.releasever)
@@ -212,6 +206,14 @@ if __name__ == '__main__':
 
     # Make sure dnf directories are created (owned by user:group)
     make_dnf_dirs(server.config["COMPOSER_CFG"], uid, gid)
+
+    # Make sure the git repo can be accessed by the API uid/gid
+    if os.path.exists(opts.BLUEPRINTS):
+        repodir_stat = os.stat(opts.BLUEPRINTS)
+        if repodir_stat.st_gid != gid or repodir_stat.st_uid != uid:
+            subprocess.call(["chown", "-R", "%s:%s" % (opts.user, opts.group), opts.BLUEPRINTS])
+    else:
+        make_owned_dir(opts.BLUEPRINTS, uid, gid)
 
     # Did systemd pass any extra fds (for socket activation)?
     try:
@@ -244,6 +246,14 @@ if __name__ == '__main__':
     # Switch to a home directory we can access (libgit2 uses this to look for .gitconfig)
     os.environ["HOME"] = server.config["COMPOSER_CFG"].get("composer", "lib_dir")
 
+    # Setup access to the git repo
+    server.config["REPO_DIR"] = opts.BLUEPRINTS
+    repo = open_or_create_repo(server.config["REPO_DIR"])
+    server.config["GITLOCK"] = GitLock(repo=repo, lock=Lock(), dir=opts.BLUEPRINTS)
+
+    # Import example blueprints
+    commit_recipe_directory(server.config["GITLOCK"].repo, "master", opts.BLUEPRINTS)
+
     # Get a dnf.Base to share with the requests
     try:
         server.config["DNFLOCK"] = DNFLock(server.config["COMPOSER_CFG"])
@@ -254,14 +264,6 @@ if __name__ == '__main__':
     # Depsolve the templates and make a note of the failures for /api/status to report
     with server.config["DNFLOCK"].lock:
         server.config["TEMPLATE_ERRORS"] = test_templates(server.config["DNFLOCK"].dbo, server.config["COMPOSER_CFG"].get("composer", "share_dir"))
-
-    # Setup access to the git repo
-    server.config["REPO_DIR"] = opts.BLUEPRINTS
-    repo = open_or_create_repo(server.config["REPO_DIR"])
-    server.config["GITLOCK"] = GitLock(repo=repo, lock=Lock(), dir=opts.BLUEPRINTS)
-
-    # Import example blueprints
-    commit_recipe_directory(server.config["GITLOCK"].repo, "master", opts.BLUEPRINTS)
 
     log.info("Starting %s on %s with blueprints from %s", VERSION, opts.socket, opts.BLUEPRINTS)
     http_server = WSGIServer(listener, server, log=LogWrapper(server_log))
