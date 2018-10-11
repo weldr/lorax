@@ -207,22 +207,24 @@ def _depsolve(dbo, projects, groups):
             install_errors.append(("Group %s" % (name), str(e)))
 
     for name, version in projects:
-        try:
-            if not version:
-                version = "*"
-            pkgs = [pkg for pkg in dnf.subject.Subject(name).get_best_query(dbo.sack).filter(version__glob=version, latest=True)]
-            if not pkgs:
-                install_errors.append(("%s-%s" % (name, version), "No match"))
-                continue
+        # Find the best package matching the name + version glob
+        # dnf can return multiple packages if it is in more than 1 repository
+        query = dbo.sack.query().filterm(provides__glob=name)
+        if version:
+            query.filterm(version__glob=version)
 
-            for p in pkgs:
-                dbo.package_install(p)
-        except dnf.exceptions.MarkingError as e:
-            install_errors.append(("%s-%s" % (name, version), str(e)))
+        query.filterm(latest=1)
+        if not query:
+            install_errors.append(("%s-%s" % (name, version), "No match"))
+            continue
+        sltr = dnf.selector.Selector(dbo.sack).set(pkg=query)
+
+        # NOTE: dnf says in near future there will be a "goal" attribute of Base class
+        #       so yes, we're using a 'private' attribute here on purpose and with permission.
+        dbo._goal.install(select=sltr, optional=False)
 
     if install_errors:
         raise ProjectsError("The following package(s) had problems: %s" % ",".join(["%s (%s)" % (pattern, err) for pattern, err in install_errors]))
-
 
 def projects_depsolve(dbo, projects, groups):
     """Return the dependencies for a list of projects
