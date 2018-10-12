@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.15
+Version:        28.14.16
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -233,6 +233,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Fri Oct 12 2018 Brian C. Lane <bcl@redhat.com> 28.14.16-1
+- Fix vhd images (vponcova)
+  Related: rhbz#1628648
+- Update depsolving with suggestions from dnf (bcl)
+  Resolves: rhbz#1638683
+
 * Tue Oct 09 2018 Brian C. Lane <bcl@redhat.com> 28.14.15-1
 - Add an openstack image type (bcl)
   Resolves: rhbz#1628645
