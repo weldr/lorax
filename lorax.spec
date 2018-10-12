@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        30.4
+Version:        30.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -230,6 +230,14 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Fri Oct 12 2018 Brian C. Lane <bcl@redhat.com> 30.5-1
+- Update depsolving with suggestions from dnf (#1636239) (bcl@redhat.com)
+- Disable false context-manager pylint error (bcl@redhat.com)
+- Fix directory creation for blueprints (bcl@redhat.com)
+- Update the tests for new make_dnf_dir arguments. (bcl@redhat.com)
+- Change make_dnf_dirs to be run as root (bcl@redhat.com)
+- Fix vhd images (vponcova@redhat.com)
+
 * Tue Oct 09 2018 Brian C. Lane <bcl@redhat.com> 30.4-1
 - Add an openstack image type (bcl@redhat.com)
 - Add cloud-init to vhd images. (dshea@redhat.com)
