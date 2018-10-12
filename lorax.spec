@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.18
+Version:        28.19
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -230,6 +230,45 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Fri Oct 12 2018 Brian C. Lane <bcl@redhat.com> 28.19-1
+- Fix directory creation for blueprints (bcl@redhat.com)
+- Update the tests for new make_dnf_dir arguments. (bcl@redhat.com)
+- Change make_dnf_dirs to be run as root (bcl@redhat.com)
+- Disable false context-manager pylint error (bcl@redhat.com)
+- Add an openstack image type (bcl@redhat.com)
+- Add cloud-init to vhd images. (dshea@redhat.com)
+- Replace /etc/machine-id with an empty file (dshea@redhat.com)
+- Update cli tests to use composer-cli name (bcl@redhat.com)
+- Work around dnf problem with multiple repos (bcl@redhat.com)
+- Add and enable cloud-init for ami images (lars@karlitski.net)
+- Make no-virt generated images sparser (dshea@redhat.com)
+- Report an error if the blueprint doesn't exist (bcl@redhat.com)
+- cli: Clarify error message for unprivileged access (lars@karlitski.net)
+- Write a rootpw line if no root customizations in the blueprint (bcl@redhat.com)
+- Add beakerlib to Dockerfile.test (bcl@redhat.com)
+- Adjust the new templates for locked root (bcl@redhat.com)
+- Always update repo metadata when building an image (bcl@redhat.com)
+- Add a test for repo metadata expiration (bcl@redhat.com)
+- Add tests for setting root password and ssh key with blueprints (bcl@redhat.com)
+- Use rootpw for setting the root password instead of user (bcl@redhat.com)
+- Lock the root account, except on live-iso (bcl@redhat.com)
+- Add new compose types to compose sanity test (dshea@redhat.com)
+- Also run `make check` on travis (lars@karlitski.net)
+- Fix pylint errors and warnings (lars@karlitski.net)
+- New cli test covering basic compose commands (atodorov@redhat.com)
+- Execute bash tests for composer-cli (atodorov@redhat.com)
+- Start a HACKING.md file and document how to run the tests (stefw@redhat.com)
+- Ignore files created by tests (stefw@redhat.com)
+- Makefile: Fix the 'make install' target (stefw@redhat.com)
+- lorax: Only run depmod on the installed kernels (bcl@redhat.com)
+- Add virt guest agents to the qcow2 compose (dshea@redhat.com)
+- Add a vmdk compose type. (dshea@redhat.com)
+- Add a vhd compose type for Azure images (dshea@redhat.com)
+- Add an ami compose type for AWS images (dshea@redhat.com)
+- Remove --fstype from the generated part line (dshea@redhat.com)
+- New lorax documentation - 28.18 (bcl@redhat.com)
+- Fix /compose/cancel API documentation (bcl@redhat.com)
+
 * Mon Aug 27 2018 Brian C. Lane <bcl@redhat.com> 28.18-1
 - Fix composer-cli blueprints changes to get correct total (bcl@redhat.com)
 - Fix blueprints/list and blueprints/changes to return the correct total (bcl@redhat.com)
