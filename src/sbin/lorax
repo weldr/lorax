@@ -122,6 +122,9 @@ def main():
             raise ValueError("Missing '=' for key=value in " % kv)
         parsed_add_arch_template_vars[k] = v
 
+    if 'SOURCE_DATE_EPOCH' in os.environ:
+        log.info("Using SOURCE_DATE_EPOCH=%s as the current time.", os.environ["SOURCE_DATE_EPOCH"])
+
     # run lorax
     lorax = pylorax.Lorax()
     lorax.configure(conf_file=opts.config)
