@@ -1,0 +1,6 @@
+[fake-repo-gpgkey]
+name = A fake repo with a gpgkey
+baseurl = https://fake-repo.base.url
+sslverify = True
+gpgcheck = True
+gpgkey = https://fake-repo.gpgkey
