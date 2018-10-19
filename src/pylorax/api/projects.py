@@ -355,7 +355,7 @@ def dnf_repo_to_file_repo(repo):
     it ouputs baseurl and gpgkey as python lists which DNF cannot read. So do this manually with
     only the attributes we care about.
     """
-    repo_str = "[%s]\n" % repo.id
+    repo_str = "[%s]\nname = %s\n" % (repo.id, repo.name)
     if repo.metalink:
         repo_str += "metalink = %s\n" % repo.metalink
     elif repo.mirrorlist:
@@ -430,7 +430,7 @@ def repo_to_source(repo, system_source):
         source["check_gpg"] = True
 
     if repo.gpgkey:
-        source["gpgkey_urls"] = repo.gpgkey
+        source["gpgkey_urls"] = list(repo.gpgkey)
 
     return source
 
@@ -484,7 +484,7 @@ def source_to_repo(source, dnf_conf):
         repo.gpgcheck = False
 
     if "gpgkey_urls" in source:
-        repo.gpgkey = ",".join(source["gpgkey_urls"])
+        repo.gpgkey = tuple(source["gpgkey_urls"])
 
     repo.enable()
 
