@@ -1,0 +1,5 @@
+[fake-repo-baseurl]
+name = A fake repo with a baseurl
+baseurl = https://fake-repo.base.url
+sslverify = True
+gpgcheck = True

@@ -1,0 +1,6 @@
+[fake-repo-proxy]
+name = A fake repo with a proxy
+baseurl = https://fake-repo.base.url
+proxy = https://fake-repo.proxy
+sslverify = True
+gpgcheck = True

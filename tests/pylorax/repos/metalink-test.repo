@@ -1,0 +1,5 @@
+[fake-repo-metalink]
+name = A fake repo with a metalink
+metalink = https://fake-repo.metalink
+sslverify = True
+gpgcheck = True

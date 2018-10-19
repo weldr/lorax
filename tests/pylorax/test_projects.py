@@ -222,16 +222,6 @@ class ConfigureTest(unittest.TestCase):
         config = configure(conf_file=self.conf_file + '.non-existing')
         self.assertEqual(config.get('composer', 'cache_dir'), '/var/tmp/composer/cache')
 
-class FakeRepoBaseUrl():
-    id = "fake-repo-baseurl"
-    baseurl = ["https://fake-repo.base.url"]
-    metalink = ""
-    mirrorlist = ""
-    proxy = ""
-    sslverify = True
-    gpgcheck = True
-    gpgkey = []
-
 def fakerepo_baseurl():
     return {
         "check_gpg": True,
@@ -242,41 +232,15 @@ def fakerepo_baseurl():
         "url": "https://fake-repo.base.url"
     }
 
-def fakerepo_baseurl_str():
-    return """[fake-repo-baseurl]
-baseurl = https://fake-repo.base.url
-sslverify = True
-gpgcheck = True
-"""
-
-class FakeSystemRepo():
-    id = "fake-system-repo"
-    baseurl = ["https://fake-repo.base.url"]
-    metalink = ""
-    mirrorlist = ""
-    proxy = ""
-    sslverify = True
-    gpgcheck = True
-    gpgkey = []
-
 def fakesystem_repo():
     return {
         "check_gpg": True,
         "check_ssl": True,
-        "name": "fake-system-repo",
+        "name": "fake-repo-baseurl",
         "system": True,
         "type": "yum-baseurl",
         "url": "https://fake-repo.base.url"
     }
-
-class FakeRepoMetalink():
-    id = "fake-repo-metalink"
-    baseurl = []
-    metalink = "https://fake-repo.metalink"
-    proxy = ""
-    sslverify = True
-    gpgcheck = True
-    gpgkey = []
 
 def fakerepo_metalink():
     return {
@@ -288,23 +252,6 @@ def fakerepo_metalink():
         "url": "https://fake-repo.metalink"
     }
 
-def fakerepo_metalink_str():
-    return """[fake-repo-metalink]
-metalink = https://fake-repo.metalink
-sslverify = True
-gpgcheck = True
-"""
-
-class FakeRepoMirrorlist():
-    id = "fake-repo-mirrorlist"
-    baseurl = []
-    metalink = ""
-    mirrorlist = "https://fake-repo.mirrorlist"
-    proxy = ""
-    sslverify = True
-    gpgcheck = True
-    gpgkey = []
-
 def fakerepo_mirrorlist():
     return {
         "check_gpg": True,
@@ -314,23 +261,6 @@ def fakerepo_mirrorlist():
         "type": "yum-mirrorlist",
         "url": "https://fake-repo.mirrorlist"
     }
-
-def fakerepo_mirrorlist_str():
-    return """[fake-repo-mirrorlist]
-mirrorlist = https://fake-repo.mirrorlist
-sslverify = True
-gpgcheck = True
-"""
-
-class FakeRepoProxy():
-    id = "fake-repo-proxy"
-    baseurl = ["https://fake-repo.base.url"]
-    metalink = ""
-    mirrorlist = ""
-    proxy = "https://fake-repo.proxy"
-    sslverify = True
-    gpgcheck = True
-    gpgkey = []
 
 def fakerepo_proxy():
     return {
@@ -342,24 +272,6 @@ def fakerepo_proxy():
         "type": "yum-baseurl",
         "url": "https://fake-repo.base.url"
     }
-
-def fakerepo_proxy_str():
-    return """[fake-repo-proxy]
-baseurl = https://fake-repo.base.url
-proxy = https://fake-repo.proxy
-sslverify = True
-gpgcheck = True
-"""
-
-class FakeRepoGPGKey():
-    id = "fake-repo-gpgkey"
-    baseurl = ["https://fake-repo.base.url"]
-    metalink = ""
-    mirrorlist = ""
-    proxy = ""
-    sslverify = True
-    gpgcheck = True
-    gpgkey = ["https://fake-repo.gpgkey"]
 
 def fakerepo_gpgkey():
     return {
@@ -374,13 +286,18 @@ def fakerepo_gpgkey():
         "url": "https://fake-repo.base.url"
     }
 
-def fakerepo_gpgkey_str():
-    return """[fake-repo-gpgkey]
-baseurl = https://fake-repo.base.url
-sslverify = True
-gpgcheck = True
-gpgkey = https://fake-repo.gpgkey
-"""
+def singlerepo():
+    return {
+        "check_gpg": True,
+        "check_ssl": True,
+        "gpgkey_urls": [
+            "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-x86_64"
+        ],
+        "name": "single-repo",
+        "system": False,
+        "type": "yum-baseurl",
+        "url": "file:///tmp/lorax-empty-repo/"
+    }
 
 class SourceTest(unittest.TestCase):
     @classmethod
@@ -391,33 +308,40 @@ class SourceTest(unittest.TestCase):
 
         self.dbo = dnf.Base()
 
+        # Load all the test repos
+        self.dbo.conf.reposdir = [self.tmp_dir]
+        self.dbo.read_all_repos()
+
     @classmethod
     def tearDownClass(self):
         shutil.rmtree(self.tmp_dir)
 
+    def _read(self, repo_file):
+        return open(joinpaths(self.tmp_dir, repo_file), "r").read()
+
     def test_repo_to_source_baseurl(self):
         """Test a repo with a baseurl"""
-        self.assertEqual(repo_to_source(FakeRepoBaseUrl(), False), fakerepo_baseurl())
+        self.assertEqual(repo_to_source(self.dbo.repos.get("fake-repo-baseurl"), False), fakerepo_baseurl())
 
     def test_system_repo(self):
         """Test a system repo with a baseurl"""
-        self.assertEqual(repo_to_source(FakeSystemRepo(), True), fakesystem_repo())
+        self.assertEqual(repo_to_source(self.dbo.repos.get("fake-repo-baseurl"), True), fakesystem_repo())
 
     def test_repo_to_source_metalink(self):
         """Test a repo with a metalink"""
-        self.assertEqual(repo_to_source(FakeRepoMetalink(), False), fakerepo_metalink())
+        self.assertEqual(repo_to_source(self.dbo.repos.get("fake-repo-metalink"), False), fakerepo_metalink())
 
     def test_repo_to_source_mirrorlist(self):
         """Test a repo with a mirrorlist"""
-        self.assertEqual(repo_to_source(FakeRepoMirrorlist(), False), fakerepo_mirrorlist())
+        self.assertEqual(repo_to_source(self.dbo.repos.get("fake-repo-mirrorlist"), False), fakerepo_mirrorlist())
 
     def test_repo_to_source_proxy(self):
         """Test a repo with a proxy"""
-        self.assertEqual(repo_to_source(FakeRepoProxy(), False), fakerepo_proxy())
+        self.assertEqual(repo_to_source(self.dbo.repos.get("fake-repo-proxy"), False), fakerepo_proxy())
 
     def test_repo_to_source_gpgkey(self):
         """Test a repo with a GPG key"""
-        self.assertEqual(repo_to_source(FakeRepoGPGKey(), False), fakerepo_gpgkey())
+        self.assertEqual(repo_to_source(self.dbo.repos.get("fake-repo-gpgkey"), False), fakerepo_gpgkey())
 
     def test_get_repo_sources(self):
         """Test getting a list of sources from a repo directory"""
@@ -475,20 +399,29 @@ class SourceTest(unittest.TestCase):
 
     def test_drtfr_baseurl(self):
         """Test creating a dnf .repo file from a baseurl Repo object"""
-        self.assertEqual(dnf_repo_to_file_repo(FakeRepoBaseUrl()), fakerepo_baseurl_str())
+        self.assertEqual(dnf_repo_to_file_repo(self.dbo.repos.get("fake-repo-baseurl")),
+                         self._read("baseurl-test.repo"))
 
     def test_drtfr_metalink(self):
         """Test creating a dnf .repo file from a metalink Repo object"""
-        self.assertEqual(dnf_repo_to_file_repo(FakeRepoMetalink()), fakerepo_metalink_str())
+        self.assertEqual(dnf_repo_to_file_repo(self.dbo.repos.get("fake-repo-metalink")),
+                         self._read("metalink-test.repo"))
 
     def test_drtfr_mirrorlist(self):
         """Test creating a dnf .repo file from a mirrorlist Repo object"""
-        self.assertEqual(dnf_repo_to_file_repo(FakeRepoMirrorlist()), fakerepo_mirrorlist_str())
+        self.assertEqual(dnf_repo_to_file_repo(self.dbo.repos.get("fake-repo-mirrorlist")),
+                         self._read("mirrorlist-test.repo"))
 
     def test_drtfr_proxy(self):
         """Test creating a dnf .repo file from a baseurl Repo object with proxy"""
-        self.assertEqual(dnf_repo_to_file_repo(FakeRepoProxy()), fakerepo_proxy_str())
+        self.assertEqual(dnf_repo_to_file_repo(self.dbo.repos.get("fake-repo-proxy")),
+                         self._read("proxy-test.repo"))
 
     def test_drtfr_gpgkey(self):
         """Test creating a dnf .repo file from a baseurl Repo object with gpgkey"""
-        self.assertEqual(dnf_repo_to_file_repo(FakeRepoGPGKey()), fakerepo_gpgkey_str())
+        self.assertEqual(dnf_repo_to_file_repo(self.dbo.repos.get("fake-repo-gpgkey")),
+                         self._read("gpgkey-test.repo"))
+
+    def test_repo_to_source_json(self):
+        """Test serializing repo_to_source results"""
+        self.assertEqual(repo_to_source(self.dbo.repos.get("single-repo"), False), singlerepo())
