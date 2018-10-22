@@ -208,6 +208,29 @@ def filterVersionGlob(pkgs, version):
     # yum implements __cmd__ using verCMP so this will return the highest matching version
     return max(matches)
 
+def _findPackageGlob(yb, pkg_name):
+    """Find the package(s) that match a name glob
+
+    :param yb: yum base object
+    :type yb: YumBase
+    :param pkg_name: Name or fileglob of the name to find
+    :type pkg_name: str
+    :returns: list of yum package objects or empty list
+    """
+    (exact, globbed, _unmatched) = yb.pkgSack.matchPackageNames([pkg_name])
+    pkgs = exact + globbed
+    if pkgs:
+        return pkgs
+
+    # Nothing matched, check rpmdb
+    pkgs = yb.rpmdb.returnPackages(patterns=[pkg_name], ignore_case=False)
+    if pkgs:
+        return pkgs
+
+    # Nothing matched, find a matching dep
+    return yb.returnPackagesByDep(pkg_name)
+
+
 def _depsolve(yb, projects, groups):
     """Find the dependencies for a list of projects and groups
 
@@ -234,7 +257,8 @@ def _depsolve(yb, projects, groups):
 
         # yum.install's pattern matches the whole nevra, which can result in -* matching
         # unexpected packages. So we need to implement our own version globbing.
-        pkgs = yb.pkgSack.searchNames([name])
+        # First get a list of packages, then filter that by the version
+        pkgs = _findPackageGlob(yb, name)
         if not pkgs:
             install_errors.append((name, "No package name matching %s" % name))
             continue
