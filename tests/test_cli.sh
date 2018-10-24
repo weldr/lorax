@@ -23,8 +23,13 @@ done;
 # invoke cli/ tests
 ./tests/cli/test_blueprints_sanity.sh
 ./tests/cli/test_compose_sanity.sh
-./tests/cli/test_compose_ext4-filesystem.sh
-./tests/cli/test_compose_partitioned-disk.sh
+
+# need `losetup`, which needs Docker to be in privileged mode (--privileged),
+# which is available only for `docker run`, however we use `docker build`!
+# And all of this may not even work on Travis CI so disabling execution for now!
+# maybe we will figure out how to execute these two scripts on internal Jenkins instance
+#./tests/cli/test_compose_ext4-filesystem.sh
+#./tests/cli/test_compose_partitioned-disk.sh
 
 # Stop lorax-composer and remove /run/weldr/api.socket
 pkill -9 lorax-composer
