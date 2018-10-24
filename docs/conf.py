@@ -218,7 +218,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   ('index', 'Lorax.tex', u'Lorax Documentation',
-   u'Anaconda Team', 'manual'),
+   u'Weldr Team', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -247,8 +247,10 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('lorax', 'lorax', u'Lorax Documentation', [u'Anaconda Team'], 1),
-    ('livemedia-creator', 'livemedia-creator', u'Live Media Creator Documentation', [u'Anaconda Team'], 1)
+    ('lorax', 'lorax', u'Lorax Documentation', [u'Weldr Team'], 1),
+    ('livemedia-creator', 'livemedia-creator', u'Live Media Creator Documentation', [u'Weldr Team'], 1),
+    ('lorax-composer', 'lorax-composer', u'Lorax Composer Documentation', [u'Weldr Team'], 1),
+    ('composer-cli', 'composer-cli', u'Composer Cmdline Utility Documentation', [u'Weldr Team'], 1),
 ]
 
 # If true, show URL addresses after external links.
@@ -262,7 +264,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'Lorax', u'Lorax Documentation',
-   u'Anaconda Team', 'Lorax', 'One line description of project.',
+   u'Weldr Team', 'Lorax', 'One line description of project.',
    'Miscellaneous'),
 ]
 
@@ -283,8 +285,8 @@ texinfo_documents = [
 
 # Bibliographic Dublin Core info.
 epub_title = u'Lorax'
-epub_author = u'Anaconda Team'
-epub_publisher = u'Anaconda Team'
+epub_author = u'Weldr Team'
+epub_publisher = u'Weldr Team'
 epub_copyright = u'2018, Red Hat, Inc.'
 
 # The basename for the epub file. It defaults to the project name.

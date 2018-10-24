@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LORAX" "1" "Nov 29, 2016" "26.2" "Lorax"
+.TH "LORAX" "1" "Oct 30, 2018" "28.14.16" "Lorax"
 .SH NAME
 lorax \- Lorax Documentation
 .
@@ -66,123 +66,175 @@ usage: lorax [\-h] \-p PRODUCT \-v VERSION \-r RELEASE [\-s REPOSITORY]
              [\-\-add\-arch\-template ADD_ARCH_TEMPLATES]
              [\-\-add\-arch\-template\-var ADD_ARCH_TEMPLATE_VARS] [\-\-noverify]
              [\-\-sharedir SHAREDIR] [\-\-enablerepo [repo]]
-             [\-\-disablerepo [repo]] [\-\-rootfs\-size ROOTFS_SIZE] [\-V]
+             [\-\-disablerepo [repo]] [\-\-rootfs\-size ROOTFS_SIZE]
+             [\-\-noverifyssl] [\-\-dracut\-arg DRACUT_ARGS] [\-V]
              OUTPUTDIR
 .ft P
 .fi
 .UNINDENT
 .UNINDENT
+.SS Positional Arguments
 .INDENT 0.0
 .TP
-.B Positional arguments:
-.INDENT 7.0
-.TP
-.Boutputdir
+.BOUTPUTDIR
 Output directory
 .UNINDENT
+.SS Named Arguments
+.INDENT 0.0
 .TP
-.B Options:
-.INDENT 7.0
-.TP
-.B \-p\fP,\fB  \-\-product
-product name
-.TP
-.B \-v\fP,\fB  \-\-version
-version identifier
-.TP
-.B \-r\fP,\fB  \-\-release
-release information
-.TP
-.B \-s=[]\fP,\fB  \-\-source=[]
-source repository (may be listed multiple times)
-.TP
-.B \-\-repo=[]
-source dnf repository file
-.TP
-.B \-m=[]\fP,\fB  \-\-mirrorlist=[]
-mirrorlist repository (may be listed multiple times)
-.TP
-.B \-t\fP,\fB  \-\-variant
-variant name
-.TP
-.B \-b=your distribution provided bug reporting tool\fP,\fB  \-\-bugurl=your distribution provided bug reporting tool
-bug reporting URL for the product
-.TP
-.B \-\-isfinal=False
-Undocumented
-.TP
-.B \-c=/etc/lorax/lorax.conf\fP,\fB  \-\-config=/etc/lorax/lorax.conf
-config file
-.TP
-.B \-\-proxy
-repo proxy url:port
-.TP
-.B \-i=[]\fP,\fB  \-\-installpkgs=[]
-package glob to install before runtime\-install.tmpl runs. (may be listed multiple times)
-.TP
-.B \-e=[]\fP,\fB  \-\-excludepkgs=[]
-package glob to remove before runtime\-install.tmpl runs. (may be listed multiple times)
-.TP
-.B \-\-buildarch
-build architecture
-.TP
-.B \-\-volid
-volume id
-.TP
-.B \-\-macboot=True
-Undocumented
-.TP
-.B \-\-nomacboot=True
-Undocumented
-.TP
-.B \-\-noupgrade=True
-Undocumented
-.TP
-.B \-\-logfile=./lorax.log
-Path to logfile
-.TP
-.B \-\-tmp=/var/tmp
-Top level temporary directory
-.TP
-.B \-\-cachedir
-DNF cache directory. Default is a temporary dir.
-.TP
-.B \-\-workdir
-Work directory, overrides \-\-tmp. Default is a temporary dir under /var/tmp
-.TP
-.B \-\-force=False
-Run even when the destination directory exists
-.TP
-.B \-\-add\-template=[]
-Additional template for runtime image
-.TP
-.B \-\-add\-template\-var=[]
-Set variable for runtime image template
-.TP
-.B \-\-add\-arch\-template=[]
-Additional template for architecture\-specific image
-.TP
-.B \-\-add\-arch\-template\-var=[]
-Set variable for architecture\-specific image
-.TP
-.B \-\-noverify=True
-Do not verify the install root
-.TP
-.B \-\-sharedir
-Directory containing all the templates. Overrides config file sharedir
-.TP
-.B \-\-enablerepo=[]
-Names of repos to enable
-.TP
-.B \-\-disablerepo=[]
-Names of repos to disable
-.TP
-.B \-\-rootfs\-size=2
-Size of root filesystem in GiB. Defaults to 2.
-.TP
-.B \-V
+.B\-V
 show program\(aqs version number and exit
 .UNINDENT
+.SS required arguments
+.INDENT 0.0
+.TP
+.B\-p, \-\-product
+product name
+.TP
+.B\-v, \-\-version
+version identifier
+.TP
+.B\-r, \-\-release
+release information
+.TP
+.B\-s, \-\-source
+source repository (may be listed multiple times)
+.sp
+Default: []
+.TP
+.B\-\-repo
+source dnf repository file
+.sp
+Default: []
+.UNINDENT
+.SS Named Arguments
+.INDENT 0.0
+.TP
+.B\-m, \-\-mirrorlist
+mirrorlist repository (may be listed multiple times)
+.sp
+Default: []
+.TP
+.B\-t, \-\-variant
+variant name
+.sp
+Default: ""
+.TP
+.B\-b, \-\-bugurl
+bug reporting URL for the product
+.sp
+Default: "your distribution provided bug reporting tool"
+.TP
+.B\-\-isfinal
+Default: False
+.TP
+.B\-c, \-\-config
+config file
+.sp
+Default: "/etc/lorax/lorax.conf"
+.TP
+.B\-\-proxy
+repo proxy url:port
+.TP
+.B\-i, \-\-installpkgs
+package glob to install before runtime\-install.tmpl runs. (may be listed multiple times)
+.sp
+Default: []
+.TP
+.B\-e, \-\-excludepkgs
+package glob to remove before runtime\-install.tmpl runs. (may be listed multiple times)
+.sp
+Default: []
+.TP
+.B\-\-buildarch
+build architecture
+.TP
+.B\-\-volid
+volume id
+.TP
+.B\-\-macboot
+Default: True
+.TP
+.B\-\-nomacboot
+Default: True
+.TP
+.B\-\-noupgrade
+Default: True
+.TP
+.B\-\-logfile
+Path to logfile
+.sp
+Default: ./lorax.log
+.TP
+.B\-\-tmp
+Top level temporary directory
+.sp
+Default: "/var/tmp"
+.TP
+.B\-\-cachedir
+DNF cache directory. Default is a temporary dir.
+.TP
+.B\-\-workdir
+Work directory, overrides \-\-tmp. Default is a temporary dir under /var/tmp
+.TP
+.B\-\-force
+Run even when the destination directory exists
+.sp
+Default: False
+.TP
+.B\-\-add\-template
+Additional template for runtime image
+.sp
+Default: []
+.TP
+.B\-\-add\-template\-var
+Set variable for runtime image template
+.sp
+Default: []
+.TP
+.B\-\-add\-arch\-template
+Additional template for architecture\-specific image
+.sp
+Default: []
+.TP
+.B\-\-add\-arch\-template\-var
+Set variable for architecture\-specific image
+.sp
+Default: []
+.TP
+.B\-\-noverify
+Do not verify the install root
+.sp
+Default: True
+.TP
+.B\-\-sharedir
+Directory containing all the templates. Overrides config file sharedir
+.TP
+.B\-\-enablerepo
+Names of repos to enable
+.sp
+Default: []
+.TP
+.B\-\-disablerepo
+Names of repos to disable
+.sp
+Default: []
+.TP
+.B\-\-rootfs\-size
+Size of root filesystem in GiB. Defaults to 2.
+.sp
+Default: 2
+.TP
+.B\-\-noverifyssl
+Do not verify SSL certificates
+.sp
+Default: False
+.UNINDENT
+.SS dracut arguments
+.INDENT 0.0
+.TP
+.B\-\-dracut\-arg
+Argument to pass to dracut when rebuilding the initramfs. Pass this once for each argument. NOTE: this overrides the default. (default: )
 .UNINDENT
 .SH QUICKSTART
 .sp
@@ -209,6 +261,12 @@ override the ones in the distribution repositories.
 .sp
 Under \fB\&./results/\fP will be the release tree files: .discinfo, .treeinfo, everything that
 goes onto the boot.iso, the pxeboot directory, and the boot.iso under \fB\&./images/\fP\&.
+.SH RUNNING INSIDE OF MOCK
+.sp
+If you are using lorax with mock v1.3.4 or later you will need to pass
+\fB\-\-old\-chroot\fP to mock. Mock now defaults to using systemd\-nspawn which cannot
+create the needed loop device nodes. Passing \fB\-\-old\-chroot\fP will use the old
+system where \fB/dev/loop*\fP is setup for you.
 .SH HOW IT WORKS
 .sp
 Lorax uses \fI\%dnf\fP to install
@@ -243,8 +301,6 @@ installation. A number of template commands are used here:
 \fBappend\fP to add text to a file.
 .IP \(bu 2
 \fBchmod\fP changes the file\(aqs mode.
-.IP \(bu 2
-\fBgconfset\fP runs gconfset.
 .IP \(bu 2
 \fBinstall\fP to install a file into the installroot.
 .IP \(bu 2
@@ -304,8 +360,8 @@ and they will be used instead if their sort order is below all other directories
 allows multiple packages to ship lorax templates without conflict. You can (and probably
 should) select the specific template directory by passing \fB\-\-sharedir\fP to lorax.
 .SH AUTHOR
-Anaconda Team
+Weldr Team
 .SH COPYRIGHT
-2015, Red Hat, Inc.
+2018, Red Hat, Inc.
 .\" Generated by docutils manpage writer.
 .

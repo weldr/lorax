@@ -1,0 +1,495 @@
+.\" Man page generated from reStructuredText.
+.
+.TH "LORAX-COMPOSER" "1" "Oct 30, 2018" "28.14.16" "Lorax"
+.SH NAME
+lorax-composer \- Lorax Composer Documentation
+.
+.nr rst2man-indent-level 0
+.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.INDENT 0.0
+.TP
+.B Authors
+Brian C. Lane <\fI\%bcl@redhat.com\fP>
+.UNINDENT
+.sp
+\fBlorax\-composer\fP is an API server that allows you to build disk images using
+\fI\%Blueprints\fP to describe the package versions to be installed into the image.
+It is compatible with the Weldr project\(aqs bdcs\-api REST protocol. More
+information on Weldr can be found \fI\%on the Weldr blog\fP\&.
+.sp
+Behind the scenes it uses \fI\%livemedia\-creator\fP and
+\fI\%Anaconda\fP to handle the
+installation and configuration of the images.
+.SH IMPORTANT THINGS TO NOTE
+.INDENT 0.0
+.IP \(bu 2
+SELinux must be in Permissive mode. Anaconda requires SELinux be in permissive mode
+for image creation to work correctly. You can either edit the setting in the
+\fB/etc/sysconfig/selinux\fP file, or run \fBsetenforce 0\fP before starting lorax\-composer.
+.IP \(bu 2
+All image types lock the root account, except for live\-iso. You will need to either
+use one of the \fI\%Customizations\fP methods for setting a ssh key/password, install a
+package that creates a user, or use something like \fIcloud\-init\fP to setup access at
+boot time.
+.UNINDENT
+.SH INSTALLATION
+.sp
+The best way to install \fBlorax\-composer\fP is to use \fBsudo dnf install
+lorax\-composer composer\-cli\fP, this will setup the weldr user and install the
+systemd socket activation service. You will then need to enable it with \fBsudo
+systemctl enable lorax\-composer.socket && sudo systemctl start
+lorax\-composer.socket\fP\&. This will leave the server off until the first request
+is made. Systemd will then launch the server and it will remain running until
+the system is rebooted.
+.SH QUICKSTART
+.INDENT 0.0
+.IP 1. 3
+Create a \fBweldr\fP user and group by running \fBuseradd weldr\fP
+.IP 2. 3
+Remove any pre\-existing socket directory with \fBrm \-rf /run/weldr/\fP
+A new directory with correct permissions will be created the first time the server runs.
+.IP 3. 3
+Enable the socket activation with \fBsystemctl enable lorax\-composer.socket
+&& sudo systemctl start lorax\-composer.socket\fP\&.
+.UNINDENT
+.sp
+NOTE: You can also run it directly with \fBlorax\-composer /path/to/blueprints\fP\&.  However,
+\fBlorax\-composer\fP does not react well to being started both on the command line and via
+socket activation at the same time.  It is therefore recommended that you run it directly
+on the command line only for testing or development purposes.  For real use or development
+of other projects that simply use the API, you should stick to socket activation only.
+.sp
+The \fB/path/to/blueprints/\fP directory is where the blueprints\(aq git repo will
+be created, and all the blueprints created with the \fB/api/v0/blueprints/new\fP
+route will be stored.  If there are blueprint \fB\&.toml\fP files in the top level
+of the directory they will be imported into the blueprint git storage when
+\fBlorax\-composer\fP starts.
+.SH LOGS
+.sp
+Logs are stored under \fB/var/log/lorax\-composer/\fP and include all console
+messages as well as extra debugging info and API requests.
+.SH SECURITY
+.sp
+Some security related issues that you should be aware of before running \fBlorax\-composer\fP:
+.INDENT 0.0
+.IP \(bu 2
+One of the API server threads needs to retain root privileges in order to run Anaconda.
+.IP \(bu 2
+SELinux must be set to Permissive or disabled to allow \fBlivemedia\-creator\fP to run Anaconda.
+.IP \(bu 2
+Only allow authorized users access to the \fBweldr\fP group and socket.
+.UNINDENT
+.sp
+Since Anaconda kickstarts are used there is the possibility that a user could
+inject commands into a blueprint that would result in the kickstart executing
+arbitrary code on the host.  Only authorized users should be allowed to build
+images using \fBlorax\-composer\fP\&.
+.SH LORAX-COMPOSER CMDLINE ARGUMENTS
+.sp
+Lorax Composer API Server
+
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+usage: lorax\-composer [\-h] [\-\-socket SOCKET] [\-\-user USER] [\-\-group GROUP]
+                      [\-\-log LOG] [\-\-mockfiles MOCKFILES]
+                      [\-\-sharedir SHAREDIR] [\-V] [\-c CONFIG]
+                      [\-\-releasever STRING] [\-\-tmp TMP] [\-\-proxy PROXY]
+                      BLUEPRINTS
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SS Positional Arguments
+.INDENT 0.0
+.TP
+.BBLUEPRINTS
+Path to the blueprints
+.UNINDENT
+.SS Named Arguments
+.INDENT 0.0
+.TP
+.B\-\-socket
+Path to the socket file to listen on
+.sp
+Default: "/run/weldr/api.socket"
+.TP
+.B\-\-user
+User to use for reduced permissions
+.sp
+Default: "root"
+.TP
+.B\-\-group
+Group to set ownership of the socket to
+.sp
+Default: "weldr"
+.TP
+.B\-\-log
+Path to logfile (/var/log/lorax\-composer/composer.log)
+.sp
+Default: "/var/log/lorax\-composer/composer.log"
+.TP
+.B\-\-mockfiles
+Path to JSON files used for /api/mock/ paths (/var/tmp/bdcs\-mockfiles/)
+.sp
+Default: "/var/tmp/bdcs\-mockfiles/"
+.TP
+.B\-\-sharedir
+Directory containing all the templates. Overrides config file sharedir
+.TP
+.B\-V
+show program\(aqs version number and exit
+.sp
+Default: False
+.TP
+.B\-c, \-\-config
+Path to lorax\-composer configuration file.
+.sp
+Default: "/etc/lorax/composer.conf"
+.TP
+.B\-\-releasever
+Release version to use for $releasever in dnf repository urls
+.TP
+.B\-\-tmp
+Top level temporary directory
+.sp
+Default: "/var/tmp"
+.TP
+.B\-\-proxy
+Set proxy for DNF, overrides configuration file setting.
+.UNINDENT
+.SH HOW IT WORKS
+.sp
+The server runs as root, and as \fBweldr\fP\&. Communication with it is via a unix
+domain socket (\fB/run/weldr/api.socket\fP by default). The directory and socket
+are owned by \fBroot:weldr\fP so that any user in the \fBweldr\fP group can use the API
+to control \fBlorax\-composer\fP\&.
+.sp
+At startup the server will check for the correct permissions and
+ownership of a pre\-existing directory, or it will create a new one if it
+doesn\(aqt exist.  The socket path and group owner\(aqs name can be changed from the
+cmdline by passing it the \fB\-\-socket\fP and \fB\-\-group\fP arguments.
+.sp
+It will then drop root privileges for the API thread and run as the \fBweldr\fP
+user. The queue and compose thread still runs as root because it needs to be
+able to mount/umount files and run Anaconda.
+.SH COMPOSING IMAGES
+.sp
+The \fI\%welder\-web\fP GUI project can be used to construct
+blueprints and create composes using a web browser.
+.sp
+Or use the command line with \fI\%composer\-cli\fP\&.
+.SH BLUEPRINTS
+.sp
+Blueprints are simple text files in \fI\%TOML\fP format that describe
+which packages, and what versions, to install into the image. They can also define a limited set
+of customizations to make to the final image.
+.sp
+Example blueprints can be found in the \fBlorax\-composer\fP \fI\%test suite\fP, with a simple one
+looking like this:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+name = "base"
+description = "A base system with bash"
+version = "0.0.1"
+
+[[packages]]
+name = "bash"
+version = "4.4.*"
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+The \fBname\fP field is the name of the blueprint. It can contain spaces, but they will be converted to \fB\-\fP
+when it is written to disk. It should be short and descriptive.
+.sp
+\fBdescription\fP can be a longer description of the blueprint, it is only used for display purposes.
+.sp
+\fBversion\fP is a \fI\%semver compatible\fP version number. If
+a new blueprint is uploaded with the same \fBversion\fP the server will
+automatically bump the PATCH level of the \fBversion\fP\&. If the \fBversion\fP
+doesn\(aqt match it will be used as is. eg. Uploading a blueprint with \fBversion\fP
+set to \fB0.1.0\fP when the existing blueprint \fBversion\fP is \fB0.0.1\fP will
+result in the new blueprint being stored as \fBversion 0.1.0\fP\&.
+.SS [[packages]] and [[modules]]
+.sp
+These entries describe the package names and matching version glob to be installed into the image.
+.sp
+The names must match the names exactly, and the versions can be an exact match
+or a filesystem\-like glob of the version using \fB*\fP wildcards and \fB?\fP
+character matching.
+.sp
+NOTE: As of lorax\-composer\-29.2\-1 the versions are not used for depsolving,
+that is planned for a future release. And currently there are no differences
+between \fBpackages\fP and \fBmodules\fP in \fBlorax\-composer\fP\&.
+.SS [[groups]]
+.sp
+These entries describe a group of packages to be installed into the image.  Package groups are
+defined in the repository metadata.  Each group has a descriptive name used primarily for display
+in user interfaces and an ID more commonly used in kickstart files.  Here, the ID is the expected
+way of listing a group.
+.sp
+Groups have three different ways of categorizing their packages:  mandatory, default, and optional.
+For purposes of blueprints, mandatory and default packages will be installed.  There is no mechanism
+for selecting optional packages.
+.SS Customizations
+.sp
+The \fB[[customizations]]\fP section can be used to configure the hostname of the final image. eg.:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+[[customizations]]
+hostname = "baseimage"
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SS [[customizations.sshkey]]
+.sp
+Set an existing user\(aqs ssh key in the final image:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+[[customizations.sshkey]]
+user = "root"
+key = "PUBLIC SSH KEY"
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+The key will be added to the user\(aqs authorized_keys file.
+.SS [[customizations.user]]
+.sp
+Add a user to the image, and/or set their ssh key.
+All fields for this section are optional except for the \fBname\fP, here is a complete example:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+[[customizations.user]]
+name = "admin"
+description = "Administrator account"
+password = "$6$CHO2$3rN8eviE2t50lmVyBYihTgVRHcaecmeCk31L..."
+key = "PUBLIC SSH KEY"
+home = "/srv/widget/"
+shell = "/usr/bin/bash"
+groups = ["widget", "users", "wheel"]
+uid = 1200
+gid = 1200
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+If the password starts with \fB$6$\fP, \fB$5$\fP, or \fB$2b$\fP it will be stored as
+an encrypted password. Otherwise it will be treated as a plain text password.
+.SS [[customizations.group]]
+.sp
+Add a group to the image. \fBname\fP is required and \fBgid\fP is optional:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+[[customizations.group]]
+name = "widget"
+gid = 1130
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SH ADDING OUTPUT TYPES
+.sp
+\fBlivemedia\-creator\fP supports a large number of output types, and only some of
+these are currently available via \fBlorax\-composer\fP\&. To add a new output type to
+lorax\-composer a kickstart file needs to be added to \fB\&./share/composer/\fP\&. The
+name of the kickstart is what will be used by the \fB/compose/types\fP route, and the
+\fBcompose_type\fP field of the POST to start a compose. It also needs to have
+code added to the \fBpylorax.api.compose.compose_args()\fP function. The
+\fB_MAP\fP entry in this function defines what lorax\-composer will pass to
+\fBpylorax.installer.novirt_install()\fP when it runs the compose.  When the
+compose is finished the output files need to be copied out of the build
+directory (\fB/var/lib/lorax/composer/results/<UUID>/compose/\fP),
+\fBpylorax.api.compose.move_compose_results()\fP handles this for each type.
+You should move them instead of copying to save space.
+.sp
+If the new output type does not have support in livemedia\-creator it should be
+added there first. This will make the output available to the widest number of
+users.
+.SS Example: Add partitioned disk support
+.sp
+Partitioned disk support is something that livemedia\-creator already supports
+via the \fB\-\-make\-disk\fP cmdline argument. To add this to lorax\-composer it
+needs 3 things:
+.INDENT 0.0
+.IP \(bu 2
+A \fBpartitioned\-disk.ks\fP file in \fB\&./share/composer/\fP
+.IP \(bu 2
+A new entry in the _MAP in \fBpylorax.api.compose.compose_args()\fP
+.IP \(bu 2
+Add a bit of code to \fBpylorax.api.compose.move_compose_results()\fP to move the disk image from
+the compose directory to the results directory.
+.UNINDENT
+.sp
+The \fBpartitioned\-disk.ks\fP is pretty similar to the example minimal kickstart
+in \fB\&./docs/fedora\-minimal.ks\fP\&. You should remove the \fBurl\fP and \fBrepo\fP
+commands, they will be added by the compose process. Make sure the bootloader
+packages are included in the \fB%packages\fP section at the end of the kickstart,
+and you will want to leave off the \fB%end\fP so that the compose can append the
+list of packages from the blueprint.
+.sp
+The new \fB_MAP\fP entry should be a copy of one of the existing entries, but with \fBmake_disk\fP set
+to \fBTrue\fP\&. Make sure that none of the other \fBmake_*\fP options are \fBTrue\fP\&. The \fBimage_name\fP is
+what the name of the final image will be.
+.sp
+\fBmove_compose_results()\fP can be as simple as moving the output file into
+the results directory, or it could do some post\-processing on it. The end of
+the function should always clean up the \fB\&./compose/\fP directory, removing any
+unneeded extra files. This is especially true for the \fBlive\-iso\fP since it produces
+the contents of the iso as well as the boot.iso itself.
+.SH PACKAGE SOURCES
+.sp
+By default lorax\-composer uses the host\(aqs configured repositories. It copies
+the \fB*.repo\fP files from \fB/etc/yum.repos.d/\fP into
+\fB/var/lib/lorax/composer/repos.d/\fP at startup, these are immutable system
+repositories and cannot be deleted or changed. If you want to add additional
+repos you can put them into \fB/var/lib/lorax/composer/repos.d/\fP or use the
+\fB/api/v0/projects/source/*\fP API routes to create them.
+.sp
+The new source can be added by doing a POST to the \fB/api/v0/projects/source/new\fP
+route using JSON (with \fIContent\-Type\fP header set to \fIapplication/json\fP) or TOML
+(with it set to \fItext/x\-toml\fP).  The format of the source looks like this (in
+TOML):
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+name = "custom\-source\-1"
+url = "https://url/path/to/repository/"
+type = "yum\-baseurl"
+proxy = "https://proxy\-url/"
+check_ssl = true
+check_gpg = true
+gpgkey_urls = ["https://url/path/to/gpg\-key"]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+The \fBproxy\fP and \fBgpgkey_urls\fP entries are optional. All of the others are required. The supported
+types for the urls are:
+.INDENT 0.0
+.IP \(bu 2
+\fByum\-baseurl\fP is a URL to a yum repository.
+.IP \(bu 2
+\fByum\-mirrorlist\fP is a URL for a mirrorlist.
+.IP \(bu 2
+\fByum\-metalink\fP is a URL for a metalink.
+.UNINDENT
+.sp
+If \fBcheck_ssl\fP is true the https certificates must be valid. If they are self\-signed you can either set
+this to false, or add your Certificate Authority to the host system.
+.sp
+If \fBcheck_gpg\fP is true the GPG key must either be installed on the host system, or \fBgpgkey_urls\fP
+should point to it.
+.sp
+You can edit an existing source (other than system sources), by doing a POST to the \fBnew\fP route
+with the new version of the source. It will overwrite the previous one.
+.sp
+A list of existing sources is available from \fB/api/v0/projects/source/list\fP, and detailed info
+on a source can be retrieved with the \fB/api/v0/projects/source/info/<source\-name>\fP route. By default
+it returns JSON but it can also return TOML if \fB?format=toml\fP is added to the request.
+.sp
+Non\-system sources can be deleted by doing a \fBDELETE\fP request to the
+\fB/api/v0/projects/source/delete/<source\-name>\fP route.
+.sp
+The documentation for the source API routes can be \fI\%found here\fP
+.sp
+The configured sources are used for all blueprint depsolve operations, and for composing images.
+When adding additional sources you must make sure that the packages in the source do not
+conflict with any other package sources, otherwise depsolving will fail.
+.SS DVD ISO Package Source
+.sp
+In some situations the system may want to \fIonly\fP use a DVD iso as the package
+source, not the repos from the network. \fBlorax\-composer\fP and \fBanaconda\fP
+understand \fBfile://\fP URLs so you can mount an iso on the host, and replace the
+system repo files with a configuration file pointing to the DVD.
+.INDENT 0.0
+.IP \(bu 2
+Stop the \fBlorax\-composer.service\fP if it is running
+.IP \(bu 2
+Move the repo files in \fB/etc/yum.repos.d/\fP someplace safe
+.IP \(bu 2
+Create a new \fBiso.repo\fP file in \fB/etc/yum.repos.d/\fP:
+.INDENT 2.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+[iso]
+name=iso
+baseurl=file:///mnt/iso/
+enabled=1
+gpgcheck=1
+gpgkey=file:///mnt/iso/RPM\-GPG\-KEY\-redhat\-release
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.IP \(bu 2
+Remove all the cached repo files from \fB/var/lib/lorax/composer/repos/\fP
+.IP \(bu 2
+Restart the \fBlorax\-composer.service\fP
+.IP \(bu 2
+Check the output of \fBcomposer\-cli status show\fP for any output specific depsolve errors.
+For example, the DVD usually does not include \fBgrub2\-efi\-*\-cdboot\-*\fP so the live\-iso image
+type will not be available.
+.UNINDENT
+.sp
+If you want to \fIadd\fP the DVD source to the existing sources you can do that by
+mounting the iso and creating a source file to point to it as described in the
+\fI\%Package Sources\fP documentation.  In that case there is no need to remove the other
+sources from \fB/etc/yum.repos.d/\fP or clear the cached repos.
+.SH AUTHOR
+Weldr Team
+.SH COPYRIGHT
+2018, Red Hat, Inc.
+.\" Generated by docutils manpage writer.
+.
