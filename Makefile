@@ -25,6 +25,8 @@ install: all
 	mkdir -p $(DESTDIR)/$(mandir)/man1
 	install -m 644 docs/man/lorax.1 $(DESTDIR)/$(mandir)/man1
 	install -m 644 docs/man/livemedia-creator.1 $(DESTDIR)/$(mandir)/man1
+	install -m 644 docs/man/lorax-composer.1 $(DESTDIR)/$(mandir)/man1
+	install -m 644 docs/man/composer-cli.1 $(DESTDIR)/$(mandir)/man1
 	mkdir -p $(DESTDIR)/etc/bash_completion.d
 	install -m 644 etc/bash_completion.d/composer-cli $(DESTDIR)/etc/bash_completion.d
 
@@ -53,7 +55,7 @@ tag:
 	git tag -f $(TAG)
 
 docs:
-	$(MAKE) -C docs apidoc html
+	$(MAKE) -C docs apidoc html man
 
 archive:
 	@git archive --format=tar --prefix=$(PKGNAME)-$(VERSION)/ $(TAG) > $(PKGNAME)-$(VERSION).tar
