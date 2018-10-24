@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LORAX" "1" "Oct 24, 2018" "30.5" "Lorax"
+.TH "LORAX" "1" "Oct 29, 2018" "30.5" "Lorax"
 .SH NAME
 lorax \- Lorax Documentation
 .
@@ -67,7 +67,7 @@ usage: lorax [\-h] \-p PRODUCT \-v VERSION \-r RELEASE [\-s REPOSITORY]
              [\-\-add\-arch\-template\-var ADD_ARCH_TEMPLATE_VARS] [\-\-noverify]
              [\-\-sharedir SHAREDIR] [\-\-enablerepo [repo]]
              [\-\-disablerepo [repo]] [\-\-rootfs\-size ROOTFS_SIZE]
-             [\-\-noverifyssl] [\-\-dnfplugin DNFPLUGINS]
+             [\-\-noverifyssl] [\-\-dnfplugin DNFPLUGINS] [\-\-squashfs\-only]
              [\-\-dracut\-arg DRACUT_ARGS] [\-V]
              OUTPUTDIR
 .ft P
@@ -235,6 +235,11 @@ Default: False
 Enable a DNF plugin by name/glob, or * to enable all of them.
 .sp
 Default: []
+.TP
+.B\-\-squashfs\-only
+Use a plain squashfs filesystem for the runtime.
+.sp
+Default: False
 .UNINDENT
 .SS dracut arguments
 .INDENT 0.0

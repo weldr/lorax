@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.imgutils &mdash; Lorax 30.1 documentation</title>
+  <title>pylorax.imgutils &mdash; Lorax 30.5 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                30.1
+                30.5
               </div>
             
           
@@ -87,7 +87,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../lorax.html">Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../livemedia-creator.html">livemedia-creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../lorax-composer.html">lorax-composer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../composer-cli.html">composer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../composer-cli.html">composer-cli</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../product-images.html">Product and Updates Images</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">src</a></li>
 </ul>
@@ -441,7 +441,7 @@
 <span class="sd">    If preserve is False, uses cp -R (useful for modeless filesystems)</span>
 <span class="sd">    raises CalledProcessError if copy fails.&#39;&#39;&#39;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;copytree </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
-    <span class="n">cp</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;cp&quot;</span><span class="p">,</span> <span class="s2">&quot;-a&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">preserve</span> <span class="k">else</span> <span class="p">[</span><span class="s2">&quot;cp&quot;</span><span class="p">,</span> <span class="s2">&quot;-R&quot;</span><span class="p">,</span> <span class="s2">&quot;-L&quot;</span><span class="p">]</span>
+    <span class="n">cp</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;cp&quot;</span><span class="p">,</span> <span class="s2">&quot;-a&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">preserve</span> <span class="k">else</span> <span class="p">[</span><span class="s2">&quot;cp&quot;</span><span class="p">,</span> <span class="s2">&quot;-R&quot;</span><span class="p">,</span> <span class="s2">&quot;-L&quot;</span><span class="p">,</span> <span class="s2">&quot;--preserve=timestamps&quot;</span><span class="p">]</span>
     <span class="n">cp</span> <span class="o">+=</span> <span class="p">[</span><span class="n">join</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">dest</span><span class="p">)]</span>
     <span class="n">runcmd</span><span class="p">(</span><span class="n">cp</span><span class="p">)</span></div>
 
@@ -641,8 +641,12 @@
 <span class="c1"># convenience functions with useful defaults</span>
 <div class="viewcode-block" id="mkdosimg"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.mkdosimg">[docs]</a><span class="k">def</span> <span class="nf">mkdosimg</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">mountargs</span><span class="o">=</span><span class="s2">&quot;shortname=winnt,umask=0077&quot;</span><span class="p">,</span> <span class="n">graft</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">graft</span> <span class="o">=</span> <span class="n">graft</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="n">mkfsargs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-n&quot;</span><span class="p">,</span> <span class="n">label</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s1">&#39;SOURCE_DATE_EPOCH&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+        <span class="n">mkfsargs</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-i&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;</span><span class="si">{:x}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;SOURCE_DATE_EPOCH&#39;</span><span class="p">]))])</span>
     <span class="n">mkfsimage</span><span class="p">(</span><span class="s2">&quot;msdos&quot;</span><span class="p">,</span> <span class="n">rootdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">mountargs</span><span class="o">=</span><span class="n">mountargs</span><span class="p">,</span>
-              <span class="n">mkfsargs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;-n&quot;</span><span class="p">,</span> <span class="n">label</span><span class="p">],</span> <span class="n">graft</span><span class="o">=</span><span class="n">graft</span><span class="p">)</span></div>
+              <span class="n">mkfsargs</span><span class="o">=</span><span class="n">mkfsargs</span><span class="p">,</span> <span class="n">graft</span><span class="o">=</span><span class="n">graft</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="mkext4img"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.mkext4img">[docs]</a><span class="k">def</span> <span class="nf">mkext4img</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">mountargs</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">graft</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">graft</span> <span class="o">=</span> <span class="n">graft</span> <span class="ow">or</span> <span class="p">{}</span>
@@ -726,7 +730,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'30.1',
+            VERSION:'30.5',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

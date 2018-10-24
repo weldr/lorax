@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.compose &mdash; Lorax 30.1 documentation</title>
+  <title>pylorax.api.compose &mdash; Lorax 30.5 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                30.1
+                30.5
               </div>
             
           
@@ -87,7 +87,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../lorax.html">Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../livemedia-creator.html">livemedia-creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lorax-composer.html">lorax-composer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../composer-cli.html">composer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../composer-cli.html">composer-cli</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../product-images.html">Product and Updates Images</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules.html">src</a></li>
 </ul>
@@ -785,6 +785,28 @@
                                  <span class="s2">&quot;app_template&quot;</span><span class="p">:</span>            <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;app_file&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
                                 <span class="p">},</span>
+            <span class="s2">&quot;openstack&quot;</span><span class="p">:</span>        <span class="p">{</span><span class="s2">&quot;make_iso&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_disk&quot;</span><span class="p">:</span>               <span class="kc">True</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_fsimage&quot;</span><span class="p">:</span>            <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_appliance&quot;</span><span class="p">:</span>          <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_ami&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_tar&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_pxe_live&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_ostree_live&quot;</span><span class="p">:</span>        <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_oci&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_vagrant&quot;</span><span class="p">:</span>            <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;ostree&quot;</span><span class="p">:</span>                  <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;live_rootfs_keep_size&quot;</span><span class="p">:</span>   <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;live_rootfs_size&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
+                                 <span class="s2">&quot;image_type&quot;</span><span class="p">:</span>              <span class="s2">&quot;qcow2&quot;</span><span class="p">,</span>
+                                 <span class="s2">&quot;qemu_args&quot;</span><span class="p">:</span>               <span class="p">[],</span>
+                                 <span class="s2">&quot;image_name&quot;</span><span class="p">:</span>              <span class="s2">&quot;disk.qcow2&quot;</span><span class="p">,</span>
+                                 <span class="s2">&quot;fs_label&quot;</span><span class="p">:</span>                <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                 <span class="s2">&quot;image_only&quot;</span><span class="p">:</span>              <span class="kc">True</span><span class="p">,</span>
+                                 <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;app_template&quot;</span><span class="p">:</span>            <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;app_file&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
+                                <span class="p">},</span>
             <span class="p">}</span>
     <span class="k">return</span> <span class="n">_MAP</span><span class="p">[</span><span class="n">compose_type</span><span class="p">]</span></div>
 
@@ -844,7 +866,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'30.1',
+            VERSION:'30.5',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

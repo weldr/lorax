@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.installer &mdash; Lorax 30.1 documentation</title>
+  <title>pylorax.installer &mdash; Lorax 30.5 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                30.1
+                30.5
               </div>
             
           
@@ -87,7 +87,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../lorax.html">Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../livemedia-creator.html">livemedia-creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../lorax-composer.html">lorax-composer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../composer-cli.html">composer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../composer-cli.html">composer-cli</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../product-images.html">Product and Updates Images</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">src</a></li>
 </ul>
@@ -542,16 +542,23 @@
         <span class="n">setfiles_args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="s2">&quot;/proc&quot;</span><span class="p">,</span> <span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="s2">&quot;/sys&quot;</span><span class="p">,</span> <span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="s2">&quot;/dev&quot;</span><span class="p">,</span>
                          <span class="s2">&quot;/etc/selinux/targeted/contexts/files/file_contexts&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">]</span>
 
-        <span class="c1"># setfiles may not be available, warn instead of fail</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;--dirinstall&quot;</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;--dirinstall&quot;</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="c1"># setfiles may not be available, warn instead of fail</span>
+            <span class="k">try</span><span class="p">:</span>
                 <span class="n">execWithRedirect</span><span class="p">(</span><span class="s2">&quot;setfiles&quot;</span><span class="p">,</span> <span class="n">setfiles_args</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">dirinstall_path</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">with</span> <span class="n">PartitionMount</span><span class="p">(</span><span class="n">disk_img</span><span class="p">)</span> <span class="k">as</span> <span class="n">img_mount</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">img_mount</span> <span class="ow">and</span> <span class="n">img_mount</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">:</span>
+            <span class="k">except</span> <span class="p">(</span><span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Running setfiles on install tree failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">PartitionMount</span><span class="p">(</span><span class="n">disk_img</span><span class="p">)</span> <span class="k">as</span> <span class="n">img_mount</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">img_mount</span> <span class="ow">and</span> <span class="n">img_mount</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
                         <span class="n">execWithRedirect</span><span class="p">(</span><span class="s2">&quot;setfiles&quot;</span><span class="p">,</span> <span class="n">setfiles_args</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">img_mount</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">)</span>
-        <span class="k">except</span> <span class="p">(</span><span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Running setfiles on install tree failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                    <span class="k">except</span> <span class="p">(</span><span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Running setfiles on install tree failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+                    <span class="c1"># For image installs, run fstrim to discard unused blocks. This way</span>
+                    <span class="c1"># unused blocks do not need to be allocated for sparse image types</span>
+                    <span class="n">execWithRedirect</span><span class="p">(</span><span class="s2">&quot;fstrim&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">img_mount</span><span class="o">.</span><span class="n">mount_dir</span><span class="p">])</span>
 
     <span class="k">except</span> <span class="p">(</span><span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Running anaconda failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
@@ -637,7 +644,10 @@
         <span class="n">rc</span> <span class="o">=</span> <span class="n">mktar</span><span class="p">(</span><span class="n">ROOT_PATH</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">compression</span><span class="p">,</span> <span class="n">compress_args</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">rc</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s2">&quot;novirt_install mktar failed: rc=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">rc</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s2">&quot;novirt_install mktar failed: rc=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">rc</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># For raw disk images, use fallocate to deallocate unused space</span>
+        <span class="n">execWithRedirect</span><span class="p">(</span><span class="s2">&quot;fallocate&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;--dig-holes&quot;</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">],</span> <span class="n">raise_err</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="virt_install"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.virt_install">[docs]</a><span class="k">def</span> <span class="nf">virt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">install_log</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">):</span>
@@ -792,7 +802,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'30.1',
+            VERSION:'30.5',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
