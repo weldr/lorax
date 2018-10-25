@@ -1,0 +1,4 @@
+<%page />
+mkdir /etc/systemd/system/
+append /etc/systemd/system/foo.service "[unit]\nDescription=foo\n[Install]\nWantedBy=multi-user.target"
+systemctl enable foo.service
