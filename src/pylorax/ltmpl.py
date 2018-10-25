@@ -534,7 +534,7 @@ class LoraxTemplateRunner(object):
             pkgs = pkgs[:idx] + pkgs[idx+2:]
 
         errors = False
-        for p in pkgs:
+        for pkg in pkgs:
             try:
                 # Start by using Subject to generate a package query, which will
                 # give us a query object similar to what dbo.install would select,
@@ -547,20 +547,27 @@ class LoraxTemplateRunner(object):
                 # dnf queries don't have a concept of negative globs which is why
                 # the filtering is done the hard way.
 
-                pkgnames = [pkg for pkg in dnf.subject.Subject(p).get_best_query(self.dbo.sack).filter(latest=True)]
+                pkgnames = [p for p in dnf.subject.Subject(pkg).get_best_query(self.dbo.sack).filter(latest=True)]
                 if not pkgnames:
-                    raise dnf.exceptions.PackageNotFoundError("no package matched", p)
+                    raise dnf.exceptions.PackageNotFoundError("no package matched", pkg)
 
                 # Apply excludes to the name only
                 for exclude in excludes:
-                    pkgnames = [pkg for pkg in pkgnames if not fnmatch.fnmatch(pkg.name, exclude)]
+                    pkgnames = [p for p in pkgnames if not fnmatch.fnmatch(p.name, exclude)]
+
+                # dnf doesn't handle globs and multiple repos correctly, we need to find the highest nvr for each unique
+                # package name and install those. Except that we also support version pinning but in that case it
+                # won't be a glob so this should work.
+                d = {}
+                for p in pkgnames:
+                    d[p.name] = max(p, d.get(p.name, p))
 
                 # Convert to a sorted NVR list for installation
-                pkgnvrs = sorted(["{}-{}-{}".format(pkg.name, pkg.version, pkg.release) for pkg in pkgnames])
+                pkgnvrs = sorted(["{}-{}-{}".format(p.name, p.version, p.release) for p in d.values()])
 
                 # If the request is a glob, expand it in the log
-                if any(g for g in ['*','?','.'] if g in p):
-                    logger.info("installpkg: %s expands to %s", p, ",".join(pkgnvrs))
+                if any(g for g in ['*','?','.'] if g in pkg):
+                    logger.info("installpkg: %s expands to %s", pkg, ",".join(pkgnvrs))
 
                 for pkgnvr in pkgnvrs:
                     try:
@@ -571,7 +578,7 @@ class LoraxTemplateRunner(object):
                         # Not required, log it and continue processing pkgs
                         logger.error("installpkg %s failed: %s", pkgnvr, str(e))
             except Exception as e: # pylint: disable=broad-except
-                logger.error("installpkg %s failed: %s", p, str(e))
+                logger.error("installpkg %s failed: %s", pkg, str(e))
                 errors = True
 
         if errors and required:
