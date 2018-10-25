@@ -1,7 +1,7 @@
 #
 # ltmpl.py
 #
-# Copyright (C) 2009-2015  Red Hat, Inc.
+# Copyright (C) 2009-2018  Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -208,7 +208,6 @@ class LoraxTemplateRunner(object):
         with open(self._out("root/debug-pkgs.log"), "w") as f:
             for pkg in debug_pkgs:
                 f.write("%s\n" % pkg)
-
 
     def run(self, templatefile, **variables):
         for k,v in list(self.defaults.items()) + list(self.builtins.items()):

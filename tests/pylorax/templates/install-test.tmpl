@@ -1,0 +1,8 @@
+<%page />
+installpkg anaconda-core
+installpkg --optional exact-1.3.17
+installpkg --except fake-homer fake-*
+installpkg --required lots-of-files
+installpkg known-path
+-installpkg missing-package
+run_pkg_transaction

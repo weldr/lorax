@@ -1,0 +1,10 @@
+<%page args="basearch"/>
+
+installpkg common-package
+installpkg foo-{one,two}
+
+%if basearch != "s390x":
+installpkg not-s390x-package
+%endif
+
+run_pkg_transaction

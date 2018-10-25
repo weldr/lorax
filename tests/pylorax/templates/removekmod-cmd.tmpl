@@ -1,0 +1,10 @@
+<%page />
+mkdir /lib/modules/1.2.3/kernel/sound
+mkdir /lib/modules/1.2.3/kernel/drivers/video
+append /lib/modules/1.2.3/kernel/sound/foo1.ko "I AM A DRIVER"
+append /lib/modules/1.2.3/kernel/sound/foo2.ko "I AM A DRIVER"
+append /lib/modules/1.2.3/kernel/drivers/video/bar1.ko "I AM A DRIVER"
+append /lib/modules/1.2.3/kernel/drivers/video/bar2.ko "I AM A DRIVER"
+
+removekmod sound
+removekmod drivers/video --allbut bar1
