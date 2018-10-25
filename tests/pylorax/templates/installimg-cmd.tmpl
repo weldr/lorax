@@ -1,0 +1,6 @@
+<%page />
+mkdir /product
+append /product/a-file "TEXT INSIDE A FILE"
+mkdir /images
+installimg /product images/product.img
+installimg --gzip -3 /product images/product.img.gz

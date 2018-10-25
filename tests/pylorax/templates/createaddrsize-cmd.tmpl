@@ -1,0 +1,6 @@
+<%page args="root" />
+<%
+INITRD_ADDRESS="0x02000000"
+%>
+append /initrd.img "I AM AN INITRD. TRUST ME!"
+createaddrsize ${INITRD_ADDRESS} ${root}/initrd.img ${root}/initrd.addrsize
