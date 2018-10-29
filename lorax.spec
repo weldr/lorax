@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        29.19
+Version:        29.20
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -230,6 +230,16 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Oct 29 2018 Brian C. Lane <bcl@redhat.com> 29.20-1
+- New lorax documentation - 29.20 (bcl@redhat.com)
+- Add tests for ltmpl.py (bcl@redhat.com)
+- Move get_dnf_base_object into a module (bcl@redhat.com)
+- Build manpages for composer-cli and lorax-composer (bcl@redhat.com)
+- Fix singlerepo test for f29 (bcl@redhat.com)
+- Update the projects tests to use DNF Repo object (bcl@redhat.com)
+- dnf changed the type of gpgkey to a tuple (bcl@redhat.com)
+- Install python3-librepo in the test container (bcl@redhat.com)
+
 * Fri Oct 12 2018 Brian C. Lane <bcl@redhat.com> 29.19-1
 - Update depsolving with suggestions from dnf (#1636239) (bcl@redhat.com)
 - Disable false context-manager pylint error (bcl@redhat.com)
