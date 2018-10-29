@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.ltmpl &mdash; Lorax 29.14 documentation</title>
+  <title>pylorax.ltmpl &mdash; Lorax 29.20 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                29.14
+                29.20
               </div>
             
           
@@ -158,7 +158,7 @@
 <span></span><span class="c1">#</span>
 <span class="c1"># ltmpl.py</span>
 <span class="c1">#</span>
-<span class="c1"># Copyright (C) 2009-2015  Red Hat, Inc.</span>
+<span class="c1"># Copyright (C) 2009-2018  Red Hat, Inc.</span>
 <span class="c1">#</span>
 <span class="c1"># This program is free software; you can redistribute it and/or modify</span>
 <span class="c1"># it under the terms of the GNU General Public License as published by</span>
@@ -366,7 +366,6 @@
             <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">debug_pkgs</span><span class="p">:</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">pkg</span><span class="p">)</span>
 
-
 <div class="viewcode-block" id="LoraxTemplateRunner.run"><a class="viewcode-back" href="../../pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">templatefile</span><span class="p">,</span> <span class="o">**</span><span class="n">variables</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">builtins</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
             <span class="n">variables</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span>
@@ -405,10 +404,10 @@
                 <span class="c1"># skip the bit about &quot;ltmpl.py, in _run()&quot; - we know that</span>
                 <span class="n">exclines</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
                 <span class="c1"># log the &quot;ErrorType: this is what happened&quot; line</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;  &quot;</span> <span class="o">+</span> <span class="n">exclines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;  </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">exclines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
                 <span class="c1"># and log the entire traceback to the debug log</span>
                 <span class="k">for</span> <span class="n">_line</span> <span class="ow">in</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exclines</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;  &quot;</span> <span class="o">+</span> <span class="n">_line</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;  </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">_line</span><span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fatalerrors</span><span class="p">:</span>
                     <span class="k">raise</span>
 
@@ -960,7 +959,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'29.14',
+            VERSION:'29.20',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

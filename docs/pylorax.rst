@@ -59,6 +59,14 @@ pylorax.discinfo module
     :undoc-members:
     :show-inheritance:
 
+pylorax.dnfbase module
+----------------------
+
+.. automodule:: pylorax.dnfbase
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 pylorax.dnfhelper module
 ------------------------
 
