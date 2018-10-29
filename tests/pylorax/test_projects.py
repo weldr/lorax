@@ -291,7 +291,7 @@ def singlerepo():
         "check_gpg": True,
         "check_ssl": True,
         "gpgkey_urls": [
-            "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-30-x86_64"
+            "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-29-x86_64"
         ],
         "name": "single-repo",
         "system": False,
