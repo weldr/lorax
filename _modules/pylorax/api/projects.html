@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.projects &mdash; Lorax 30.1 documentation</title>
+  <title>pylorax.api.projects &mdash; Lorax 30.5 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                30.1
+                30.5
               </div>
             
           
@@ -87,7 +87,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../lorax.html">Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../livemedia-creator.html">livemedia-creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lorax-composer.html">lorax-composer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../composer-cli.html">composer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../composer-cli.html">composer-cli</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../product-images.html">Product and Updates Images</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules.html">src</a></li>
 </ul>
@@ -364,22 +364,24 @@
             <span class="n">install_errors</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;Group </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
 
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">version</span> <span class="ow">in</span> <span class="n">projects</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">version</span><span class="p">:</span>
-                <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span>
-            <span class="n">pkgs</span> <span class="o">=</span> <span class="p">[</span><span class="n">pkg</span> <span class="k">for</span> <span class="n">pkg</span> <span class="ow">in</span> <span class="n">dnf</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">Subject</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">get_best_query</span><span class="p">(</span><span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">version__glob</span><span class="o">=</span><span class="n">version</span><span class="p">,</span> <span class="n">latest</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">pkgs</span><span class="p">:</span>
-                <span class="n">install_errors</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">),</span> <span class="s2">&quot;No match&quot;</span><span class="p">))</span>
-                <span class="k">continue</span>
+        <span class="c1"># Find the best package matching the name + version glob</span>
+        <span class="c1"># dnf can return multiple packages if it is in more than 1 repository</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="o">.</span><span class="n">query</span><span class="p">()</span><span class="o">.</span><span class="n">filterm</span><span class="p">(</span><span class="n">provides__glob</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">version</span><span class="p">:</span>
+            <span class="n">query</span><span class="o">.</span><span class="n">filterm</span><span class="p">(</span><span class="n">version__glob</span><span class="o">=</span><span class="n">version</span><span class="p">)</span>
 
-            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pkgs</span><span class="p">:</span>
-                <span class="n">dbo</span><span class="o">.</span><span class="n">package_install</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">dnf</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">MarkingError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">install_errors</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+        <span class="n">query</span><span class="o">.</span><span class="n">filterm</span><span class="p">(</span><span class="n">latest</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">query</span><span class="p">:</span>
+            <span class="n">install_errors</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">),</span> <span class="s2">&quot;No match&quot;</span><span class="p">))</span>
+            <span class="k">continue</span>
+        <span class="n">sltr</span> <span class="o">=</span> <span class="n">dnf</span><span class="o">.</span><span class="n">selector</span><span class="o">.</span><span class="n">Selector</span><span class="p">(</span><span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">pkg</span><span class="o">=</span><span class="n">query</span><span class="p">)</span>
+
+        <span class="c1"># NOTE: dnf says in near future there will be a &quot;goal&quot; attribute of Base class</span>
+        <span class="c1">#       so yes, we&#39;re using a &#39;private&#39; attribute here on purpose and with permission.</span>
+        <span class="n">dbo</span><span class="o">.</span><span class="n">_goal</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">select</span><span class="o">=</span><span class="n">sltr</span><span class="p">,</span> <span class="n">optional</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">install_errors</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">ProjectsError</span><span class="p">(</span><span class="s2">&quot;The following package(s) had problems: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span> <span class="k">for</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">install_errors</span><span class="p">]))</span>
-
 
 <div class="viewcode-block" id="projects_depsolve"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.projects_depsolve">[docs]</a><span class="k">def</span> <span class="nf">projects_depsolve</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">projects</span><span class="p">,</span> <span class="n">groups</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return the dependencies for a list of projects</span>
@@ -510,7 +512,7 @@
 <span class="sd">    it ouputs baseurl and gpgkey as python lists which DNF cannot read. So do this manually with</span>
 <span class="sd">    only the attributes we care about.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">repo_str</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">%s</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">repo</span><span class="o">.</span><span class="n">id</span>
+    <span class="n">repo_str</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">%s</span><span class="s2">]</span><span class="se">\n</span><span class="s2">name = </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">repo</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">repo</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">metalink</span><span class="p">:</span>
         <span class="n">repo_str</span> <span class="o">+=</span> <span class="s2">&quot;metalink = </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">repo</span><span class="o">.</span><span class="n">metalink</span>
     <span class="k">elif</span> <span class="n">repo</span><span class="o">.</span><span class="n">mirrorlist</span><span class="p">:</span>
@@ -585,7 +587,7 @@
         <span class="n">source</span><span class="p">[</span><span class="s2">&quot;check_gpg&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">gpgkey</span><span class="p">:</span>
-        <span class="n">source</span><span class="p">[</span><span class="s2">&quot;gpgkey_urls&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">gpgkey</span>
+        <span class="n">source</span><span class="p">[</span><span class="s2">&quot;gpgkey_urls&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repo</span><span class="o">.</span><span class="n">gpgkey</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">source</span></div>
 
@@ -639,7 +641,7 @@
         <span class="n">repo</span><span class="o">.</span><span class="n">gpgcheck</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">if</span> <span class="s2">&quot;gpgkey_urls&quot;</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
-        <span class="n">repo</span><span class="o">.</span><span class="n">gpgkey</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s2">&quot;gpgkey_urls&quot;</span><span class="p">])</span>
+        <span class="n">repo</span><span class="o">.</span><span class="n">gpgkey</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s2">&quot;gpgkey_urls&quot;</span><span class="p">])</span>
 
     <span class="n">repo</span><span class="o">.</span><span class="n">enable</span><span class="p">()</span>
 
@@ -740,7 +742,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'30.1',
+            VERSION:'30.5',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

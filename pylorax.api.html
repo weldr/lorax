@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api package &mdash; Lorax 30.1 documentation</title>
+  <title>pylorax.api package &mdash; Lorax 30.5 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                30.1
+                30.5
               </div>
             
           
@@ -88,7 +88,7 @@
 <li class="toctree-l1"><a class="reference internal" href="lorax.html">Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="livemedia-creator.html">livemedia-creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lorax-composer.html">lorax-composer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="composer-cli.html">composer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="composer-cli.html">composer-cli</a></li>
 <li class="toctree-l1"><a class="reference internal" href="product-images.html">Product and Updates Images</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="composer.html">composer package</a></li>
@@ -451,18 +451,53 @@ with whatever options are relevant.</p>
 
 <dl class="function">
 <dt id="pylorax.api.config.make_dnf_dirs">
-<code class="descclassname">pylorax.api.config.</code><code class="descname">make_dnf_dirs</code><span class="sig-paren">(</span><em>conf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/config.html#make_dnf_dirs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.config.make_dnf_dirs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make any missing dnf directories</p>
+<code class="descclassname">pylorax.api.config.</code><code class="descname">make_dnf_dirs</code><span class="sig-paren">(</span><em>conf</em>, <em>uid</em>, <em>gid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/config.html#make_dnf_dirs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.config.make_dnf_dirs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make any missing dnf directories owned by user:group</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>conf</strong> (<a class="reference internal" href="#pylorax.api.config.ComposerConfig" title="pylorax.api.config.ComposerConfig"><em>ComposerConfig</em></a>) – The configuration to use</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>conf</strong> (<a class="reference internal" href="#pylorax.api.config.ComposerConfig" title="pylorax.api.config.ComposerConfig"><em>ComposerConfig</em></a>) – The configuration to use</li>
+<li><strong>uid</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – uid of owner</li>
+<li><strong>gid</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – gid of owner</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list of errors</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of str</p>
+</td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.config.make_owned_dir">
+<code class="descclassname">pylorax.api.config.</code><code class="descname">make_owned_dir</code><span class="sig-paren">(</span><em>p_dir</em>, <em>uid</em>, <em>gid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/config.html#make_owned_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.config.make_owned_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a directory and its parents, setting owner and group</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p_dir</strong> (<em>string</em>) – path to directory to create</li>
+<li><strong>uid</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – uid of owner</li>
+<li><strong>gid</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – gid of owner</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list of errors</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of str</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Check to make sure it does not have o+rw permissions and that it is owned by uid:gid</p>
 </dd></dl>
 
 <dl class="function">
@@ -3631,7 +3666,7 @@ a line boundry.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'30.1',
+            VERSION:'30.5',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
