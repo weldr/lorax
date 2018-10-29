@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>lorax-composer &mdash; Lorax 28.18 documentation</title>
+  <title>lorax-composer &mdash; Lorax 28.20 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                28.18
+                28.20
               </div>
             
           
@@ -89,6 +89,7 @@
 <li class="toctree-l1"><a class="reference internal" href="lorax.html">Lorax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="livemedia-creator.html">livemedia-creator</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">lorax-composer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#important-things-to-note">Important Things To Note</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#quickstart">Quickstart</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#logs">Logs</a></li>
@@ -205,6 +206,18 @@ information on Weldr can be found <a class="reference external" href="http://www
 <p>Behind the scenes it uses <a class="reference external" href="livemedia-creator.html">livemedia-creator</a> and
 <a class="reference external" href="https://anaconda-installer.readthedocs.io/en/latest/">Anaconda</a> to handle the
 installation and configuration of the images.</p>
+<div class="section" id="important-things-to-note">
+<h2>Important Things To Note<a class="headerlink" href="#important-things-to-note" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>SELinux must be in Permissive mode. Anaconda requires SELinux be in permissive mode
+for image creation to work correctly. You can either edit the setting in the
+<code class="docutils literal notranslate"><span class="pre">/etc/sysconfig/selinux</span></code> file, or run <code class="docutils literal notranslate"><span class="pre">setenforce</span> <span class="pre">0</span></code> before starting lorax-composer.</li>
+<li>All image types lock the root account, except for live-iso. You will need to either
+use one of the <a class="reference internal" href="#customizations">Customizations</a> methods for setting a ssh key/password, install a
+package that creates a user, or use something like <cite>cloud-init</cite> to setup access at
+boot time.</li>
+</ul>
+</div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>The best way to install <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> is to use <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">dnf</span> <span class="pre">install</span>
@@ -619,7 +632,7 @@ sources from <code class="docutils literal notranslate"><span class="pre">/etc/y
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'28.18',
+            VERSION:'28.20',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

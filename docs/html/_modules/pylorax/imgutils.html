@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.imgutils &mdash; Lorax 28.18 documentation</title>
+  <title>pylorax.imgutils &mdash; Lorax 28.20 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                28.18
+                28.20
               </div>
             
           
@@ -353,10 +353,7 @@
 
             <span class="c1"># Sometimes the loop device isn&#39;t ready yet, make extra sure before returning</span>
             <span class="n">loop_waitfor</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">CalledProcessError</span><span class="p">:</span>
-            <span class="c1"># Problems running losetup are always errors, raise immediately</span>
-            <span class="k">raise</span>
-        <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
             <span class="c1"># Try to setup the loop device 3 times</span>
             <span class="k">if</span> <span class="n">retries</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;loop_attach failed, retries exhausted.&quot;</span><span class="p">)</span>
@@ -729,7 +726,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'28.18',
+            VERSION:'28.20',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

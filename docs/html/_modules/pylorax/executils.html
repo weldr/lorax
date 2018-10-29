@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.executils &mdash; Lorax 28.18 documentation</title>
+  <title>pylorax.executils &mdash; Lorax 28.20 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                28.18
+                28.20
               </div>
             
           
@@ -184,6 +184,7 @@
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;pylorax&quot;</span><span class="p">)</span>
 <span class="n">program_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;program&quot;</span><span class="p">)</span>
 
+<span class="c1"># pylint: disable=not-context-manager</span>
 <span class="kn">from</span> <span class="nn">threading</span> <span class="k">import</span> <span class="n">Lock</span>
 <span class="n">program_log_lock</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>
 
@@ -272,6 +273,7 @@
     <span class="k">if</span> <span class="n">env_add</span><span class="p">:</span>
         <span class="n">env</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">env_add</span><span class="p">)</span>
 
+    <span class="c1"># pylint: disable=subprocess-popen-preexec-fn</span>
     <span class="k">return</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span>
                             <span class="n">stdin</span><span class="o">=</span><span class="n">stdin</span><span class="p">,</span>
                             <span class="n">stdout</span><span class="o">=</span><span class="n">stdout</span><span class="p">,</span>
@@ -536,7 +538,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'28.18',
+            VERSION:'28.20',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

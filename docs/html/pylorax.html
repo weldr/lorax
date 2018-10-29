@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax package &mdash; Lorax 28.18 documentation</title>
+  <title>pylorax package &mdash; Lorax 28.20 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                28.18
+                28.20
               </div>
             
           
@@ -104,6 +104,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.creator">pylorax.creator module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.decorators">pylorax.decorators module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.discinfo">pylorax.discinfo module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pylorax.dnfbase">pylorax.dnfbase module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.dnfhelper">pylorax.dnfhelper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.executils">pylorax.executils module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.imgutils">pylorax.imgutils module</a></li>
@@ -210,7 +211,7 @@
 <li class="toctree-l3"><a class="reference internal" href="pylorax.api.html#status-responses">Status Responses</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pylorax.api.html#api-routes">API Routes</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-blueprints-list"><cite>/api/v0/blueprints/list</cite></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-blueprints-info-blueprint-names"><cite>/api/v0/blueprints/info/&lt;blueprint_names&gt;</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-blueprints-info-blueprint-names-format-json-toml"><cite>/api/v0/blueprints/info/&lt;blueprint_names&gt;[?format=&lt;json|toml&gt;]</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#api-v0-blueprints-changes-blueprint-names-offset-0-limit-20"><cite>/api/v0/blueprints/changes/&lt;blueprint_names&gt;[?offset=0&amp;limit=20]</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#post-api-v0-blueprints-new">POST <cite>/api/v0/blueprints/new</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="pylorax.api.html#delete-api-v0-blueprints-delete-blueprint-name">DELETE <cite>/api/v0/blueprints/delete/&lt;blueprint_name&gt;</cite></a></li>
@@ -691,6 +692,37 @@ See the cmdline –help for livemedia-creator for the possible options</p>
 <code class="descname">write</code><span class="sig-paren">(</span><em>outfile</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/discinfo.html#DiscInfo.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.discinfo.DiscInfo.write" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+</div>
+<div class="section" id="module-pylorax.dnfbase">
+<span id="pylorax-dnfbase-module"></span><h2>pylorax.dnfbase module<a class="headerlink" href="#module-pylorax.dnfbase" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pylorax.dnfbase.get_dnf_base_object">
+<code class="descclassname">pylorax.dnfbase.</code><code class="descname">get_dnf_base_object</code><span class="sig-paren">(</span><em>installroot</em>, <em>sources</em>, <em>mirrorlists=None</em>, <em>repos=None</em>, <em>enablerepos=None</em>, <em>disablerepos=None</em>, <em>tempdir='/var/tmp'</em>, <em>proxy=None</em>, <em>releasever='28'</em>, <em>cachedir=None</em>, <em>logdir=None</em>, <em>sslverify=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfbase.html#get_dnf_base_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.dnfbase.get_dnf_base_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a dnf Base object and setup the repositories and installroot</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>installroot</strong> (<em>string</em>) – Full path to the installroot</li>
+<li><strong>sources</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of source repo urls to use for the installation</li>
+<li><strong>enablerepos</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of repo names to enable</li>
+<li><strong>disablerepos</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of repo names to disable</li>
+<li><strong>mirrorlist</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of mirrors to use</li>
+<li><strong>tempdir</strong> (<em>string</em>) – Path of temporary directory</li>
+<li><strong>proxy</strong> (<em>string</em>) – http proxy to use when fetching packages</li>
+<li><strong>releasever</strong> (<em>string</em>) – Release version to pass to dnf</li>
+<li><strong>cachedir</strong> (<em>string</em>) – Directory to use for caching packages</li>
+<li><strong>noverifyssl</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Set to True to ignore the CA of ssl certs. eg. use self-signed ssl for https repos.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>If tempdir is not set /var/tmp is used.
+If cachedir is None a dnf.cache directory is created inside tmpdir</p>
 </dd></dl>
 
 </div>
@@ -2273,7 +2305,7 @@ lowest numbered directory entry is returned.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'28.18',
+            VERSION:'28.20',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

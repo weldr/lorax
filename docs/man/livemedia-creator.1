@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LIVEMEDIA-CREATOR" "1" "Oct 24, 2018" "30.5" "Lorax"
+.TH "LIVEMEDIA-CREATOR" "1" "Oct 29, 2018" "28.20" "Lorax"
 .SH NAME
 livemedia-creator \- Live Media Creator Documentation
 .
@@ -233,7 +233,7 @@ Default: "Linux"
 .B\-\-releasever
 substituted for @VERSION@ in bootloader config files
 .sp
-Default: "29"
+Default: "28"
 .TP
 .B\-\-volid
 volume id
@@ -536,16 +536,10 @@ When creating live iso\(aqs you need to have, at least, these packages in the %p
 dracut\-config\-generic
 dracut\-live
 \-dracut\-config\-rescue
-grub2\-efi
+grub\-efi
 memtest86+
 syslinux
 .UNINDENT
-.SS User created repositories
-.sp
-If you are using your own repositories and installing groups (eg. @core) make
-sure you create the repodata with groups like this \fBcreaterepo \-g
-/path/to/groups.xml /path/to/rpms\fP
-.SS Using a Proxy with repos
 .sp
 One drawback to using qemu is that it pulls the packages from the repo each
 time you run it. To speed things up you either need a local mirror of the
@@ -566,21 +560,7 @@ packages will get cached, so your kickstart url would look like:
 .UNINDENT
 .sp
 You can also add an update repo, but don\(aqt name it updates. Add \-\-proxy to it
-as well. You can use all of the \fI\%kickstart commands\fP in your kickstart. Make sure there
-is only one \fBurl\fP command, other repos have to use the \fBrepo\fP command and cannot be
-named \fBupdates\fP which is reserved for Anaconda\(aqs use. eg.:
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-url \-\-url=PRIMARY\-REPO\-URL \-\-proxy=PROXY\-URL
-repo \-\-name="repo1" \-\-baseurl=FIRST\-REPO\-URL \-\-proxy=PROXY\-URL
-repo \-\-name="repo2" \-\-baseurl=SECOND\-REPO_URL \-\-proxy=PROXY\-URL
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
+as well.
 .SH ANACONDA IMAGE INSTALL (NO-VIRT)
 .sp
 You can create images without using qemu by passing \fB\-\-no\-virt\fP on the
@@ -1096,24 +1076,6 @@ cancel the installation when they happen. But not everything can be caught.
 When creating a new kickstart it is helpful to use vnc so that you can monitor
 the installation as it happens, and if it gets stuck without lmc detecting the
 problem you can switch to tty1 and examine the system directly.
-.sp
-If you suspect problems with %pre or %post sections you can redirect the output
-to the terminal and examine it by logging into the VM. eg.:
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-%pre
-chvt
-exec < /dev/tty3 > /dev/tty3 2>/dev/tty3
-#do stuff
-echo hello world
-%end
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
 .sp
 If it does get stuck the best way to cancel is to use kill \-9 on the qemu pid,
 lmc will detect that the process died and cleanup.

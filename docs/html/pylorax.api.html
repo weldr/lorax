@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api package &mdash; Lorax 28.18 documentation</title>
+  <title>pylorax.api package &mdash; Lorax 28.20 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                28.18
+                28.20
               </div>
             
           
@@ -103,6 +103,7 @@
 <li class="toctree-l3"><a class="reference internal" href="pylorax.html#module-pylorax.creator">pylorax.creator module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pylorax.html#module-pylorax.decorators">pylorax.decorators module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pylorax.html#module-pylorax.discinfo">pylorax.discinfo module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pylorax.html#module-pylorax.dnfbase">pylorax.dnfbase module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pylorax.html#module-pylorax.dnfhelper">pylorax.dnfhelper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pylorax.html#module-pylorax.executils">pylorax.executils module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pylorax.html#module-pylorax.imgutils">pylorax.imgutils module</a></li>
@@ -358,6 +359,34 @@ Other options will be filled in by <cite>make_compose()</cite></p>
 </dd></dl>
 
 <dl class="function">
+<dt id="pylorax.api.compose.write_ks_root">
+<code class="descclassname">pylorax.api.compose.</code><code class="descname">write_ks_root</code><span class="sig-paren">(</span><em>f</em>, <em>user</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/compose.html#write_ks_root"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.write_ks_root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write kickstart root password and sshkey entry</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>f</strong> (<em>open file object</em>) – kickstart file object</li>
+<li><strong>user</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – A blueprint user dictionary</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if it wrote a rootpw command to the kickstart</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>If the entry contains a ssh key, use sshkey to write it
+If it contains password, use rootpw to set it</p>
+<p>root cannot be used with the user command. So only key and password are supported
+for root.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="pylorax.api.compose.write_ks_user">
 <code class="descclassname">pylorax.api.compose.</code><code class="descname">write_ks_user</code><span class="sig-paren">(</span><em>f</em>, <em>user</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/compose.html#write_ks_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.write_ks_user" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write kickstart user and sshkey entry</p>
@@ -414,18 +443,53 @@ with whatever options are relevant.</p>
 
 <dl class="function">
 <dt id="pylorax.api.config.make_dnf_dirs">
-<code class="descclassname">pylorax.api.config.</code><code class="descname">make_dnf_dirs</code><span class="sig-paren">(</span><em>conf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/config.html#make_dnf_dirs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.config.make_dnf_dirs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make any missing dnf directories</p>
+<code class="descclassname">pylorax.api.config.</code><code class="descname">make_dnf_dirs</code><span class="sig-paren">(</span><em>conf</em>, <em>uid</em>, <em>gid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/config.html#make_dnf_dirs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.config.make_dnf_dirs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make any missing dnf directories owned by user:group</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>conf</strong> (<a class="reference internal" href="#pylorax.api.config.ComposerConfig" title="pylorax.api.config.ComposerConfig"><em>ComposerConfig</em></a>) – The configuration to use</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>conf</strong> (<a class="reference internal" href="#pylorax.api.config.ComposerConfig" title="pylorax.api.config.ComposerConfig"><em>ComposerConfig</em></a>) – The configuration to use</li>
+<li><strong>uid</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – uid of owner</li>
+<li><strong>gid</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – gid of owner</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list of errors</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of str</p>
+</td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.config.make_owned_dir">
+<code class="descclassname">pylorax.api.config.</code><code class="descname">make_owned_dir</code><span class="sig-paren">(</span><em>p_dir</em>, <em>uid</em>, <em>gid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/config.html#make_owned_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.config.make_owned_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a directory and its parents, setting owner and group</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p_dir</strong> (<em>string</em>) – path to directory to create</li>
+<li><strong>uid</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – uid of owner</li>
+<li><strong>gid</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – gid of owner</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list of errors</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of str</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Check to make sure it does not have o+rw permissions and that it is owned by uid:gid</p>
 </dd></dl>
 
 <dl class="function">
@@ -463,6 +527,31 @@ with whatever options are relevant.</p>
 </div>
 <div class="section" id="module-pylorax.api.dnfbase">
 <span id="pylorax-api-dnfbase-module"></span><h2>pylorax.api.dnfbase module<a class="headerlink" href="#module-pylorax.api.dnfbase" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pylorax.api.dnfbase.DNFLock">
+<em class="property">class </em><code class="descclassname">pylorax.api.dnfbase.</code><code class="descname">DNFLock</code><span class="sig-paren">(</span><em>conf</em>, <em>expire_secs=21600</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/dnfbase.html#DNFLock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.dnfbase.DNFLock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Hold the dnf.Base object and a Lock to control access to it.</p>
+<p>self.dbo is a property that returns the dnf.Base object, but it <em>may</em> change
+from one call to the next if the upstream repositories have changed.</p>
+<dl class="attribute">
+<dt id="pylorax.api.dnfbase.DNFLock.lock">
+<code class="descname">lock</code><a class="headerlink" href="#pylorax.api.dnfbase.DNFLock.lock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for repo updates (using expiration time) and return the lock</p>
+<p>If the repository has been updated, tear down the old dnf.Base and
+create a new one. This is the only way to force dnf to use the new
+metadata.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pylorax.api.dnfbase.DNFLock.lock_check">
+<code class="descname">lock_check</code><a class="headerlink" href="#pylorax.api.dnfbase.DNFLock.lock_check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Force a check for repo updates and return the lock</p>
+<p>Use this method sparingly, it removes the repodata and downloads a new copy every time.</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="function">
 <dt id="pylorax.api.dnfbase.get_base_object">
 <code class="descclassname">pylorax.api.dnfbase.</code><code class="descname">get_base_object</code><span class="sig-paren">(</span><em>conf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/dnfbase.html#get_base_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.dnfbase.get_base_object" title="Permalink to this definition">¶</a></dt>
@@ -2419,14 +2508,20 @@ store the new blueprint on the new branch.</p>
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="api-v0-blueprints-info-blueprint-names">
-<h4><cite>/api/v0/blueprints/info/&lt;blueprint_names&gt;</cite><a class="headerlink" href="#api-v0-blueprints-info-blueprint-names" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="api-v0-blueprints-info-blueprint-names-format-json-toml">
+<h4><cite>/api/v0/blueprints/info/&lt;blueprint_names&gt;[?format=&lt;json|toml&gt;]</cite><a class="headerlink" href="#api-v0-blueprints-info-blueprint-names-format-json-toml" title="Permalink to this headline">¶</a></h4>
 <blockquote>
 <div><p>Return the JSON representation of the blueprint. This includes 3 top level
 objects.  <cite>changes</cite> which lists whether or not the workspace is different from
 the most recent commit. <cite>blueprints</cite> which lists the JSON representation of the
 blueprint, and <cite>errors</cite> which will list any errors, like non-existant blueprints.</p>
-<p>Example:</p>
+<p>By default the response is JSON, but if <cite>?format=toml</cite> is included in the URL’s
+arguments it will return the response as the blueprint’s raw TOML content.
+<em>Unless</em> there is an error which will only return a 400 and a standard error
+<a href="#id1"><span class="problematic" id="id2">`Status Response`_</span></a>.</p>
+<p>If there is an error when JSON is requested the successful blueprints and the
+errors will both be returned.</p>
+<p>Example of json response:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="s2">&quot;changes&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="p">{</span>
@@ -3544,7 +3639,7 @@ a line boundry.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'28.18',
+            VERSION:'28.20',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

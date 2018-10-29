@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; Lorax 28.18 documentation</title>
+  <title>Index &mdash; Lorax 28.20 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                28.18
+                28.20
               </div>
             
           
@@ -333,6 +333,8 @@
 </li>
       <li><a href="pylorax.api.html#pylorax.api.projects.dnf_repo_to_file_repo">dnf_repo_to_file_repo() (in module pylorax.api.projects)</a>
 </li>
+      <li><a href="pylorax.api.html#pylorax.api.dnfbase.DNFLock">DNFLock (class in pylorax.api.dnfbase)</a>
+</li>
       <li><a href="pylorax.html#pylorax.imgutils.do_grafts">do_grafts() (in module pylorax.imgutils)</a>
 </li>
       <li><a href="pylorax.html#pylorax.treebuilder.TreeBuilder.dracut_hooks_path">dracut_hooks_path (pylorax.treebuilder.TreeBuilder attribute)</a>
@@ -414,6 +416,8 @@
       <li><a href="pylorax.api.html#pylorax.api.queue.get_compose_type">get_compose_type() (in module pylorax.api.queue)</a>
 </li>
       <li><a href="pylorax.api.html#pylorax.api.config.ComposerConfig.get_default">get_default() (pylorax.api.config.ComposerConfig method)</a>
+</li>
+      <li><a href="pylorax.html#pylorax.dnfbase.get_dnf_base_object">get_dnf_base_object() (in module pylorax.dnfbase)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -525,7 +529,13 @@
 </li>
       <li><a href="pylorax.html#pylorax.cmdline.lmc_parser">lmc_parser() (in module pylorax.cmdline)</a>
 </li>
-      <li><a href="pylorax.api.html#pylorax.api.server.GitLock.lock">lock (pylorax.api.server.GitLock attribute)</a>
+      <li><a href="pylorax.api.html#pylorax.api.dnfbase.DNFLock.lock">lock (pylorax.api.dnfbase.DNFLock attribute)</a>
+
+      <ul>
+        <li><a href="pylorax.api.html#pylorax.api.server.GitLock.lock">(pylorax.api.server.GitLock attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="pylorax.api.html#pylorax.api.dnfbase.DNFLock.lock_check">lock_check (pylorax.api.dnfbase.DNFLock attribute)</a>
 </li>
       <li><a href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.log">log() (pylorax.ltmpl.LoraxTemplateRunner method)</a>
 </li>
@@ -533,10 +543,10 @@
 </li>
       <li><a href="pylorax.html#pylorax.monitor.LogMonitor">LogMonitor (class in pylorax.monitor)</a>
 </li>
-      <li><a href="pylorax.html#pylorax.monitor.LogRequestHandler">LogRequestHandler (class in pylorax.monitor)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pylorax.html#pylorax.monitor.LogRequestHandler">LogRequestHandler (class in pylorax.monitor)</a>
+</li>
       <li><a href="pylorax.html#pylorax.monitor.LogServer">LogServer (class in pylorax.monitor)</a>
 </li>
       <li><a href="pylorax.html#pylorax.imgutils.loop_attach">loop_attach() (in module pylorax.imgutils)</a>
@@ -578,6 +588,8 @@
       <li><a href="pylorax.html#pylorax.creator.make_live_images">make_live_images() (in module pylorax.creator)</a>
 </li>
       <li><a href="pylorax.html#pylorax.creator.make_livecd">make_livecd() (in module pylorax.creator)</a>
+</li>
+      <li><a href="pylorax.api.html#pylorax.api.config.make_owned_dir">make_owned_dir() (in module pylorax.api.config)</a>
 </li>
       <li><a href="pylorax.api.html#pylorax.api.config.make_queue_dirs">make_queue_dirs() (in module pylorax.api.config)</a>
 </li>
@@ -746,6 +758,8 @@
       <li><a href="pylorax.html#module-pylorax.decorators">pylorax.decorators (module)</a>
 </li>
       <li><a href="pylorax.html#module-pylorax.discinfo">pylorax.discinfo (module)</a>
+</li>
+      <li><a href="pylorax.html#module-pylorax.dnfbase">pylorax.dnfbase (module)</a>
 </li>
       <li><a href="pylorax.html#module-pylorax.dnfhelper">pylorax.dnfhelper (module)</a>
 </li>
@@ -1027,6 +1041,8 @@
 </li>
       <li><a href="pylorax.api.html#pylorax.api.compose.write_ks_group">write_ks_group() (in module pylorax.api.compose)</a>
 </li>
+      <li><a href="pylorax.api.html#pylorax.api.compose.write_ks_root">write_ks_root() (in module pylorax.api.compose)</a>
+</li>
       <li><a href="pylorax.api.html#pylorax.api.compose.write_ks_user">write_ks_user() (in module pylorax.api.compose)</a>
 </li>
       <li><a href="pylorax.html#pylorax.treebuilder.RuntimeBuilder.writepkglists">writepkglists() (pylorax.treebuilder.RuntimeBuilder method)</a>
@@ -1070,7 +1086,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'28.18',
+            VERSION:'28.20',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.v0 &mdash; Lorax 28.18 documentation</title>
+  <title>pylorax.api.v0 &mdash; Lorax 28.20 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                28.18
+                28.20
               </div>
             
           
@@ -220,15 +220,23 @@
 <span class="sd">          &quot;kubernetes&quot; ],</span>
 <span class="sd">        &quot;total&quot;: 6 }</span>
 
-<span class="sd">`/api/v0/blueprints/info/&lt;blueprint_names&gt;`</span>
-<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+<span class="sd">`/api/v0/blueprints/info/&lt;blueprint_names&gt;[?format=&lt;json|toml&gt;]`</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
 
 <span class="sd">  Return the JSON representation of the blueprint. This includes 3 top level</span>
 <span class="sd">  objects.  `changes` which lists whether or not the workspace is different from</span>
 <span class="sd">  the most recent commit. `blueprints` which lists the JSON representation of the</span>
 <span class="sd">  blueprint, and `errors` which will list any errors, like non-existant blueprints.</span>
 
-<span class="sd">  Example::</span>
+<span class="sd">  By default the response is JSON, but if `?format=toml` is included in the URL&#39;s</span>
+<span class="sd">  arguments it will return the response as the blueprint&#39;s raw TOML content.</span>
+<span class="sd">  *Unless* there is an error which will only return a 400 and a standard error</span>
+<span class="sd">  `Status Response`_.</span>
+
+<span class="sd">  If there is an error when JSON is requested the successful blueprints and the</span>
+<span class="sd">  errors will both be returned.</span>
+
+<span class="sd">  Example of json response::</span>
 
 <span class="sd">      {</span>
 <span class="sd">        &quot;changes&quot;: [</span>
@@ -1260,8 +1268,12 @@
         <span class="n">blueprints</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">blueprints</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
 
         <span class="k">if</span> <span class="n">out_fmt</span> <span class="o">==</span> <span class="s2">&quot;toml&quot;</span><span class="p">:</span>
-            <span class="c1"># With TOML output we just want to dump the raw blueprint, skipping the rest.</span>
-            <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">r</span><span class="o">.</span><span class="n">toml</span><span class="p">()</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">blueprints</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+                <span class="c1"># If there are errors they need to be reported, use JSON and 400 for this</span>
+                <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="n">errors</span><span class="p">),</span> <span class="mi">400</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># With TOML output we just want to dump the raw blueprint, skipping the rest.</span>
+                <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">r</span><span class="o">.</span><span class="n">toml</span><span class="p">()</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">blueprints</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">changes</span><span class="o">=</span><span class="n">changes</span><span class="p">,</span> <span class="n">blueprints</span><span class="o">=</span><span class="n">blueprints</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="n">errors</span><span class="p">)</span>
 
@@ -2228,7 +2240,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'28.18',
+            VERSION:'28.20',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

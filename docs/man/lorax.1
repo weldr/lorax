@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LORAX" "1" "Oct 24, 2018" "30.5" "Lorax"
+.TH "LORAX" "1" "Oct 29, 2018" "28.20" "Lorax"
 .SH NAME
 lorax \- Lorax Documentation
 .
@@ -67,8 +67,7 @@ usage: lorax [\-h] \-p PRODUCT \-v VERSION \-r RELEASE [\-s REPOSITORY]
              [\-\-add\-arch\-template\-var ADD_ARCH_TEMPLATE_VARS] [\-\-noverify]
              [\-\-sharedir SHAREDIR] [\-\-enablerepo [repo]]
              [\-\-disablerepo [repo]] [\-\-rootfs\-size ROOTFS_SIZE]
-             [\-\-noverifyssl] [\-\-dnfplugin DNFPLUGINS]
-             [\-\-dracut\-arg DRACUT_ARGS] [\-V]
+             [\-\-noverifyssl] [\-\-dracut\-arg DRACUT_ARGS] [\-V]
              OUTPUTDIR
 .ft P
 .fi
@@ -230,11 +229,6 @@ Default: 2
 Do not verify SSL certificates
 .sp
 Default: False
-.TP
-.B\-\-dnfplugin
-Enable a DNF plugin by name/glob, or * to enable all of them.
-.sp
-Default: []
 .UNINDENT
 .SS dracut arguments
 .INDENT 0.0
