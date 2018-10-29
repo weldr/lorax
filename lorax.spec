@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.19
+Version:        28.20
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -230,6 +230,13 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Oct 29 2018 Brian C. Lane <bcl@redhat.com> 28.20-1
+- New lorax documentation - 28.20 (bcl@redhat.com)
+- Build manpages for composer-cli and lorax-composer (bcl@redhat.com)
+- Add tests for ltmpl.py (bcl@redhat.com)
+- Move get_dnf_base_object into a module (bcl@redhat.com)
+- lorax: Fix dnf problems with selecting highest NEVRA from multiple repos (bcl@redhat.com)
+
 * Fri Oct 12 2018 Brian C. Lane <bcl@redhat.com> 28.19-1
 - Fix directory creation for blueprints (bcl@redhat.com)
 - Update the tests for new make_dnf_dir arguments. (bcl@redhat.com)
