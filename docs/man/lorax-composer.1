@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LORAX-COMPOSER" "1" "Oct 30, 2018" "28.14.16" "Lorax"
+.TH "LORAX-COMPOSER" "1" "Nov 27, 2018" "28.14.17" "Lorax"
 .SH NAME
 lorax-composer \- Lorax Composer Documentation
 .
@@ -121,6 +121,7 @@ usage: lorax\-composer [\-h] [\-\-socket SOCKET] [\-\-user USER] [\-\-group GROU
                       [\-\-log LOG] [\-\-mockfiles MOCKFILES]
                       [\-\-sharedir SHAREDIR] [\-V] [\-c CONFIG]
                       [\-\-releasever STRING] [\-\-tmp TMP] [\-\-proxy PROXY]
+                      [\-\-no\-system\-repos]
                       BLUEPRINTS
 .ft P
 .fi
@@ -183,6 +184,11 @@ Default: "/var/tmp"
 .TP
 .B\-\-proxy
 Set proxy for DNF, overrides configuration file setting.
+.TP
+.B\-\-no\-system\-repos
+Do not copy over system repos from /etc/yum.repos.d/ at startup
+.sp
+Default: False
 .UNINDENT
 .SH HOW IT WORKS
 .sp

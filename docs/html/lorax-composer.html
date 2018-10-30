@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>lorax-composer &mdash; Lorax 28.14.12 documentation</title>
+  <title>lorax-composer &mdash; Lorax 28.14.17 documentation</title>
   
 
   
@@ -24,12 +24,11 @@
 
   
 
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="composer" href="composer-cli.html" />
+    <link rel="next" title="composer-cli" href="composer-cli.html" />
     <link rel="prev" title="livemedia-creator" href="livemedia-creator.html" /> 
 
   
@@ -59,7 +58,7 @@
             
             
               <div class="version">
-                28.14.12
+                28.14.17
               </div>
             
           
@@ -122,7 +121,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="composer-cli.html">composer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="composer-cli.html">composer-cli</a></li>
 <li class="toctree-l1"><a class="reference internal" href="product-images.html">Product and Updates Images</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">pylorax</a></li>
 </ul>
@@ -221,18 +220,12 @@ boot time.</li>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>The best way to install <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> is to use <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">dnf</span> <span class="pre">install</span>
-<span class="pre">lorax-composer</span> <span class="pre">composer</span></code>, this will setup the weldr user and install the
+<span class="pre">lorax-composer</span> <span class="pre">composer-cli</span></code>, this will setup the weldr user and install the
 systemd socket activation service. You will then need to enable it with <code class="docutils literal notranslate"><span class="pre">sudo</span>
 <span class="pre">systemctl</span> <span class="pre">enable</span> <span class="pre">lorax-composer.socket</span> <span class="pre">&amp;&amp;</span> <span class="pre">sudo</span> <span class="pre">systemctl</span> <span class="pre">start</span>
 <span class="pre">lorax-composer.socket</span></code>. This will leave the server off until the first request
 is made. Systemd will then launch the server and it will remain running until
-the system is rebooted. This will cause some delay in responding to the first
-request from the UI or <cite>composer</cite>.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">If you want lorax-composer to respond immediately to the first request you can
-start and enable <cite>lorax-composer.service</cite> instead of <cite>lorax-composer.socket</cite></p>
-</div>
+the system is rebooted.</p>
 </div>
 <div class="section" id="quickstart">
 <h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
@@ -279,6 +272,7 @@ images using <code class="docutils literal notranslate"><span class="pre">lorax-
                       <span class="p">[</span><span class="o">--</span><span class="n">log</span> <span class="n">LOG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">mockfiles</span> <span class="n">MOCKFILES</span><span class="p">]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">sharedir</span> <span class="n">SHAREDIR</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">CONFIG</span><span class="p">]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">releasever</span> <span class="n">STRING</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tmp</span> <span class="n">TMP</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span> <span class="n">PROXY</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">system</span><span class="o">-</span><span class="n">repos</span><span class="p">]</span>
                       <span class="n">BLUEPRINTS</span>
 </pre></div>
 </div>
@@ -349,6 +343,12 @@ images using <code class="docutils literal notranslate"><span class="pre">lorax-
 <tr><td class="option-group">
 <kbd>--proxy</kbd></td>
 <td>Set proxy for DNF, overrides configuration file setting.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--no-system-repos</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Do not copy over system repos from /etc/yum.repos.d/ at startup</p>
+<p class="last">Default: False</p>
+</td></tr>
 </tbody>
 </table>
 </div>
@@ -371,7 +371,7 @@ able to mount/umount files and run Anaconda.</p>
 <h2>Composing Images<a class="headerlink" href="#composing-images" title="Permalink to this headline">¶</a></h2>
 <p>The <a class="reference external" href="https://github.com/weldr/welder-web/">welder-web</a> GUI project can be used to construct
 blueprints and create composes using a web browser.</p>
-<p>Or use the command line with <a class="reference external" href="composer-cli.html">composer</a>.</p>
+<p>Or use the command line with <a class="reference external" href="composer-cli.html">composer-cli</a>.</p>
 </div>
 <div class="section" id="blueprints">
 <h2>Blueprints<a class="headerlink" href="#blueprints" title="Permalink to this headline">¶</a></h2>
@@ -577,7 +577,7 @@ system repo files with a configuration file pointing to the DVD.</p>
 </li>
 <li><p class="first">Restart the <code class="docutils literal notranslate"><span class="pre">lorax-composer.service</span></code></p>
 </li>
-<li><p class="first">Check the output of <code class="docutils literal notranslate"><span class="pre">composer</span> <span class="pre">status</span> <span class="pre">show</span></code> for any output specific depsolve errors.
+<li><p class="first">Check the output of <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">status</span> <span class="pre">show</span></code> for any output specific depsolve errors.
 For example, the DVD usually does not include <code class="docutils literal notranslate"><span class="pre">grub2-efi-*-cdboot-*</span></code> so the live-iso image
 type will not be available.</p>
 </li>
@@ -598,7 +598,7 @@ sources from <code class="docutils literal notranslate"><span class="pre">/etc/y
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="composer-cli.html" class="btn btn-neutral float-right" title="composer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="composer-cli.html" class="btn btn-neutral float-right" title="composer-cli" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="livemedia-creator.html" class="btn btn-neutral" title="livemedia-creator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -610,7 +610,7 @@ sources from <code class="docutils literal notranslate"><span class="pre">/etc/y
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Red Hat, Inc..
+        &copy; Copyright 2018, Red Hat, Inc.
 
     </p>
   </div>
@@ -629,27 +629,27 @@ sources from <code class="docutils literal notranslate"><span class="pre">/etc/y
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'28.14.12',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'28.14.17',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
 
   
 
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {
