@@ -1,6 +1,5 @@
 FROM registry.fedoraproject.org/fedora:rawhide
-
-RUN dnf -y install \
+RUN  dnf -y install \
   anaconda-tui \
   libgit2-glib \
   libselinux-python3 \
@@ -22,15 +21,8 @@ RUN dnf -y install \
   beakerlib \
   sudo \
   tito \
+  rsync \
   which
-
 RUN useradd weldr
-
-RUN mkdir /lorax
-COPY . /lorax
-# remove byte-compiled files to avoid issues between Python 2/3
-# this can happen when you switch between rhel7 and master branches
-RUN find /lorax -name "*.pyc" -exec rm -f {} \;
-
+VOLUME /lorax
 WORKDIR /lorax
-RUN make check test
