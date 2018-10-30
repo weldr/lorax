@@ -2,12 +2,14 @@ PYTHON ?= /usr/bin/python3
 DESTDIR ?= /
 PREFIX ?= /usr
 mandir ?= $(PREFIX)/share/man
+DOCKER ?= docker
 
 PKGNAME = lorax
 VERSION = $(shell awk '/Version:/ { print $$2 }' $(PKGNAME).spec)
 RELEASE = $(shell awk '/Release:/ { print $$2 }' $(PKGNAME).spec | sed -e 's|%.*$$||g')
 TAG = lorax-$(VERSION)-$(RELEASE)
 
+IMAGE_RELEASE = $(shell awk -F: '/FROM/ { print $$2}' Dockerfile.test)
 
 default: all
 
@@ -74,11 +76,16 @@ local:
 	@rm -rf /var/tmp/$(PKGNAME)-$(VERSION)
 	@echo "The archive is in $(PKGNAME)-$(VERSION).tar.gz"
 
+test-in-copy:
+	rsync -aP --exclude=.git /lorax/ /lorax-test/
+	make -C /lorax-test/ check test
+
 test-in-docker:
-	sudo docker build -t welder/lorax:latest -f Dockerfile.test .
+	sudo $(DOCKER) build -t welder/lorax-tests:$(IMAGE_RELEASE) -f Dockerfile.test .
+	sudo $(DOCKER) run --rm -it -v `pwd`:/lorax:ro --security-opt label=disable welder/lorax-tests:$(IMAGE_RELEASE) make test-in-copy
 
 docs-in-docker:
-	sudo docker run -it --rm -v `pwd`/docs/html/:/lorax/docs/html/ --security-opt label=disable welder/lorax-composer:latest make docs
+	sudo $(DOCKER) run -it --rm -v `pwd`/docs/html/:/lorax/docs/html/ --security-opt label=disable welder/lorax-tests:$(IMAGE_RELEASE) make docs
 
 ci: check test
 
