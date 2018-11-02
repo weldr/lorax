@@ -29,6 +29,9 @@ mkdir ${KERNELDIR}
     ## normal aarch64
     installkernel images-${basearch} ${kernel.path} ${KERNELDIR}/vmlinuz
     installinitrd images-${basearch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
+    %if doupgrade:
+        installupgradeinitrd images-${basearch} ${kernel.upgrade.path} ${KERNELDIR}/upgrade.img
+    %endif
 %endfor
 
 #FIXME: this will need adjusted when we have a real bootloader.

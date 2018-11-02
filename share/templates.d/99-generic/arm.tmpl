@@ -32,9 +32,18 @@ mkdir ${KERNELDIR}
         platforms = platforms + delimiter + kernel.flavor
         delimiter = ','
 %>
+        %if doupgrade:
+            ## install upgrade image
+            installupgradeinitrd images-${kernel.flavor}-${basearch} ${kernel.upgrade.path} ${KERNELDIR}/upgrade-${kernel.flavor}.img
+        %endif
     %else:
         installkernel images-${basearch} ${kernel.path} ${KERNELDIR}/vmlinuz
         installinitrd images-${basearch} ${kernel.initrd.path} ${KERNELDIR}/initrd.img
+
+        %if doupgrade:
+            ## install upgrade image
+            installupgradeinitrd images-${basearch} ${kernel.upgrade.path} ${KERNELDIR}/upgrade.img
+        %endif
     %endif
 %endfor
 
