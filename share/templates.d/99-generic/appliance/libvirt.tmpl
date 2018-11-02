@@ -9,7 +9,7 @@
       <os>
         <loader dev='hd'/>
       </os>
-%for disk, letter in zip(disks, xrange(97, 123)):
+%for disk, letter in zip(disks, range(97, 123)):
       <drive disk='${disk.name}' target='hd${chr(letter)}'/>
 %endfor
     </boot>

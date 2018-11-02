@@ -155,7 +155,7 @@ def make_appliance(disk_img, name, template, outfile, networks=None, ram=1024,
 
     log.info("Calculating SHA256 checksum of %s", disk_img)
     sha256 = hashlib.sha256()
-    with open(disk_img) as f:
+    with open(disk_img, "rb") as f:
         while True:
             data = f.read(1024**2)
             if not data:
