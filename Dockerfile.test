@@ -22,6 +22,8 @@ RUN  dnf -y install \
   sudo \
   tito \
   rsync \
+  e2fsprogs \
+  squashfs-tools \
   which
 RUN useradd weldr
 VOLUME /lorax
