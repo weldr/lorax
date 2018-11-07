@@ -192,6 +192,10 @@ Set an existing user's ssh key in the final image::
 
 The key will be added to the user's authorized_keys file.
 
+.. warning::
+
+    ``key`` expects the entire content of ``~/.ssh/id_rsa.pub``
+
 
 [[customizations.user]]
 ***********************
@@ -212,6 +216,10 @@ All fields for this section are optional except for the ``name``, here is a comp
 
 If the password starts with ``$6$``, ``$5$``, or ``$2b$`` it will be stored as
 an encrypted password. Otherwise it will be treated as a plain text password.
+
+.. warning::
+
+    ``key`` expects the entire content of ``~/.ssh/id_rsa.pub``
 
 
 [[customizations.group]]
