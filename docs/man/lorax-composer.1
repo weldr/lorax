@@ -301,7 +301,8 @@ key = "PUBLIC SSH KEY"
 .UNINDENT
 .UNINDENT
 .sp
-The key will be added to the user\(aqs authorized_keys file.
+The key will be added to the user\(aqs authorized_keys file. Expected value is the content
+of ~/.ssh/id_rsa.pub.
 .SS [[customizations.user]]
 .sp
 Add a user to the image, and/or set their ssh key.
@@ -327,7 +328,8 @@ gid = 1200
 .UNINDENT
 .sp
 If the password starts with \fB$6$\fP, \fB$5$\fP, or \fB$2b$\fP it will be stored as
-an encrypted password. Otherwise it will be treated as a plain text password.
+an encrypted password. Otherwise it will be treated as a plain text password. For
+ssh keys the expected value is the content of ~/.ssh/id_rsa.pub.
 .SS [[customizations.group]]
 .sp
 Add a group to the image. \fBname\fP is required and \fBgid\fP is optional:
