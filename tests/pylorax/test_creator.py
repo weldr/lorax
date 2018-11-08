@@ -19,9 +19,11 @@ import tempfile
 import unittest
 import xml.etree.ElementTree as ET
 
+from ..lib import get_file_magic
 from pylorax import find_templates
 from pylorax.base import DataHolder
 from pylorax.creator import FakeDNF, create_pxe_config, make_appliance, make_squashfs, squashfs_args
+from pylorax.creator import get_arch, find_ostree_root
 from pylorax.executils import runcmd
 from pylorax.imgutils import mksparse
 from pylorax.sysutils import joinpaths
@@ -117,5 +119,27 @@ class CreatorTest(unittest.TestCase):
                 self.assertTrue(os.path.exists(joinpaths(work_dir, "images/install.img")))
 
                 # Make sure it looks like a squashfs filesystem
-                squashfs_sig = open(joinpaths(work_dir, "images/install.img"), "rb").read(4)
-                self.assertTrue(squashfs_sig in [b"hsqs", b"sqsh"])
+                file_details = get_file_magic(joinpaths(work_dir, "images/install.img"))
+                self.assertTrue("Squashfs" in file_details)
+
+    def get_arch_test(self):
+        """Test getting the arch of the installed kernel"""
+        with tempfile.TemporaryDirectory(prefix="lorax.test.") as work_dir:
+            # Make a fake kernel and initrd
+            os.makedirs(joinpaths(work_dir, "boot"))
+            open(joinpaths(work_dir, "boot", "vmlinuz-4.18.13-200.fc28.x86_64"), "w").write("I AM A FAKE KERNEL")
+            open(joinpaths(work_dir, "boot", "initramfs-4.18.13-200.fc28.x86_64.img"), "w").write("I AM A FAKE INITRD")
+            arch = get_arch(work_dir)
+            self.assertTrue(arch == "x86_64")
+
+    def find_ostree_root_test(self):
+        with tempfile.TemporaryDirectory(prefix="lorax.test.") as work_dir:
+            ostree_path = "ostree/boot.1/apu/c8f294c479fc948375a001f06bc524d02900d32c6a1a72061a1dc281e9e93e41/0"
+            os.makedirs(joinpaths(work_dir, ostree_path))
+            self.assertEqual(find_ostree_root(work_dir), ostree_path)
+
+    @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
+    def boot_over_root_test(self):
+        """Test the mount_boot_part_over_root ostree function"""
+        # Make a fake disk image with a / and a /boot/loader.0
+        # Mount the / partition
