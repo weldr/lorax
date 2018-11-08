@@ -14,6 +14,7 @@ RUN  dnf -y install \
   python3-nose \
   python3-pocketlint \
   python3-pylint \
+  python3-pyparted \
   python3-pytoml \
   python3-semantic_version \
   python3-sphinx \
