@@ -16,6 +16,7 @@
 #
 import sys
 from contextlib import contextmanager
+import magic
 from io import StringIO
 
 @contextmanager
@@ -27,3 +28,17 @@ def captured_output():
         yield sys.stdout, sys.stderr
     finally:
         sys.stdout, sys.stderr = old_out, old_err
+
+def get_file_magic(filename):
+    """Get the file type details using libmagic
+
+    Returns "" on failure or a string containing the description of the file
+    """
+    details = ""
+    try:
+        ms = magic.open(magic.NONE)
+        ms.load()
+        details = ms.file(filename)
+    finally:
+        ms.close()
+    return details
