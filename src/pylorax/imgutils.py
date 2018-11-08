@@ -1,6 +1,6 @@
 # imgutils.py - utility functions/classes for building disk images
 #
-# Copyright (C) 2011-2015 Red Hat, Inc.
+# Copyright (C) 2011-2018 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -369,6 +369,31 @@ class Mount(object):
     def __exit__(self, exc_type, exc_value, tracebk):
         umount(self.mnt)
 
+def kpartx_disk_img(disk_img):
+    """Attach a disk image's partitions to /dev/loopX using kpartx
+
+    :param disk_img: The full path to a partitioned disk image
+    :type disk_img: str
+    :returns: list of (loopXpN, size)
+    :rtype: list of tuples
+    """
+    # Example kpartx output
+    # kpartx -p p -v -a /tmp/diskV2DiCW.im
+    # add map loop2p1 (253:2): 0 3481600 linear /dev/loop2 2048
+    # add map loop2p2 (253:3): 0 614400 linear /dev/loop2 3483648
+    kpartx_output = runcmd_output(["kpartx", "-v", "-a", "-s", disk_img])
+    logger.debug(kpartx_output)
+
+    # list of (deviceName, sizeInBytes)
+    loop_devices = []
+    for line in kpartx_output.splitlines():
+        # add map loop2p3 (253:4): 0 7139328 linear /dev/loop2 528384
+        # 3rd element is size in 512 byte blocks
+        if line.startswith("add map "):
+            fields = line[8:].split()
+            loop_devices.append( (fields[0], int(fields[3])*512) )
+    return loop_devices
+
 class PartitionMount(object):
     """ Mount a partitioned image file using kpartx """
     def __init__(self, disk_img, mount_ok=None, submount=None):
@@ -400,21 +425,8 @@ class PartitionMount(object):
         if not self.mount_ok:
             self.mount_ok = lambda mount_dir: os.path.isfile(mount_dir+"/etc/passwd")
 
-        # Example kpartx output
-        # kpartx -p p -v -a /tmp/diskV2DiCW.im
-        # add map loop2p1 (253:2): 0 3481600 linear /dev/loop2 2048
-        # add map loop2p2 (253:3): 0 614400 linear /dev/loop2 3483648
-        kpartx_output = runcmd_output(["kpartx", "-v", "-a", "-s", self.disk_img])
-        logger.debug(kpartx_output)
-
         # list of (deviceName, sizeInBytes)
-        self.loop_devices = []
-        for line in kpartx_output.splitlines():
-            # add map loop2p3 (253:4): 0 7139328 linear /dev/loop2 528384
-            # 3rd element is size in 512 byte blocks
-            if line.startswith("add map "):
-                fields = line[8:].split()
-                self.loop_devices.append( (fields[0], int(fields[3])*512) )
+        self.loop_devices = kpartx_disk_img(self.disk_img)
 
     def __enter__(self):
         # Mount the device selected by mount_ok, if possible
