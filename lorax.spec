@@ -37,8 +37,10 @@ Requires:       module-init-tools
 Requires:       parted
 Requires:       squashfs-tools >= 4.2
 Requires:       util-linux
+Requires:       xz-lzma-compat
 Requires:       xz
 Requires:       pigz
+Requires:       pbzip2
 Requires:       dracut >= 030
 Requires:       kpartx
 

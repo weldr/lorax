@@ -27,6 +27,7 @@ RUN  dnf -y install \
   xz-lzma-compat \
   pbzip2 \
   squashfs-tools \
+  qemu-img \
   which && \
   touch /.in-container
 RUN useradd weldr
