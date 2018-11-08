@@ -9,6 +9,7 @@ RUN  dnf -y install \
   python3-coveralls \
   python3-flask \
   python3-gevent \
+  python3-magic \
   python3-mako \
   python3-nose \
   python3-pocketlint \
@@ -23,8 +24,11 @@ RUN  dnf -y install \
   tito \
   rsync \
   e2fsprogs \
+  xz-lzma-compat \
+  pbzip2 \
   squashfs-tools \
-  which
+  which && \
+  touch /.in-container
 RUN useradd weldr
 VOLUME /lorax
 WORKDIR /lorax
