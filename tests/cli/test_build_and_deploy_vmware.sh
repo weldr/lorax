@@ -112,7 +112,7 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartTest "Start VM instance"
-        VM_NAME="Composer-Auto-VM-$UUID774"
+        VM_NAME="Composer-Auto-VM-$UUID"
         INSTANCE_UUID=`python3 $SAMPLES/create_vm.py -S -s $V_HOST -u $V_USERNAME -p $V_PASSWORD \
                         --datacenter $V_DATACENTER -c $V_CLUSTER -f $V_FOLDER -d $V_DATASTORE \
                         --portgroup $V_NETWORK -v $IMAGE -m 2048 -g rhel7_64Guest -n $VM_NAME \
@@ -149,7 +149,7 @@ __EOF__
         python3 $SAMPLES/destroy_vm.py -S -s $V_HOST -u $V_USERNAME -p $V_PASSWORD --uuid $INSTANCE_UUID
         rlAssert0 "VM destroyed" $?
         rlRun -t -c "$CLI compose delete $UUID"
-        rlRun -t -c "rm -rf $AMI $TMP_DIR"
+        rlRun -t -c "rm -rf $IMAGE $TMP_DIR"
     rlPhaseEnd
 
 rlJournalEnd
