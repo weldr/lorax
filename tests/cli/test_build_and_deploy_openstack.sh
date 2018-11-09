@@ -44,7 +44,24 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
-        UUID=`$CLI compose start example-http-server openstack`
+        # workaround for https://bugzilla.redhat.com/show_bug.cgi?id=1639326
+        cat > $TMP_DIR/http-with-rng.toml << __EOF__
+name = "http-with-rng"
+description = "HTTP image for OpenStack with rng-tools"
+version = "0.0.1"
+
+[[modules]]
+name = "httpd"
+version = "*"
+
+[[modules]]
+name = "rng-tools"
+version = "*"
+__EOF__
+
+        rlRun -t -c "$CLI blueprints push http-with-rng.toml"
+
+        UUID=`$CLI compose start http-with-rng openstack`
         rlAssertEquals "exit code should be zero" $? 0
 
         UUID=`echo $UUID | cut -f 2 -d' '`
@@ -103,7 +120,7 @@ rlJournalStart
         rlRun -t -c "ansible localhost -m os_server -a 'name=$VM_NAME state=absent'"
         rlRun -t -c "ansible localhost -m os_image -a 'name=$OS_IMAGE_NAME state=absent'"
         rlRun -t -c "$CLI compose delete $UUID"
-        rlRun -t -c "rm -rf $IMAGE"
+        rlRun -t -c "rm -rf $IMAGE http-with-rng.toml"
     rlPhaseEnd
 
 rlJournalEnd
