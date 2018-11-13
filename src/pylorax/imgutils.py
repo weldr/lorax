@@ -112,19 +112,6 @@ def mkrootfsimg(rootdir, outfile, label, size=2, sysroot=""):
         fssize = None       # Let mkext4img figure out the needed size
 
     mkext4img(rootdir, outfile, label=label, size=fssize)
-    # Reset selinux context on new rootfs
-    with LoopDev(outfile) as loopdev:
-        with Mount(loopdev) as mnt:
-            cmd = [ "setfiles", "-e", "/proc", "-e", "/sys", "-e", "/dev",
-                    "-e", "/install", "-e", "/ostree",
-                    "/etc/selinux/targeted/contexts/files/file_contexts", "/"]
-            root = join(mnt, sysroot.lstrip("/"))
-            try:
-                runcmd(cmd, root=root)
-            except CalledProcessError as e:
-                logger.error("setfiles exited with a non-zero return code (%d) which may "
-                             "be caused by running without SELinux in Permissive mode.", e.returncode)
-                raise
 
 
 ######## Utility functions ###############################################
