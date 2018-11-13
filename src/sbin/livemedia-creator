@@ -22,12 +22,11 @@ log = logging.getLogger("livemedia-creator")
 
 import glob
 import os
-import selinux
 import sys
 import tempfile
 
 # Use the Lorax treebuilder branch for iso creation
-from pylorax import setup_logging, find_templates, vernum
+from pylorax import setup_logging, find_templates, vernum, log_selinux_state
 from pylorax.cmdline import lmc_parser
 from pylorax.creator import run_creator, DRACUT_DEFAULT
 from pylorax.imgutils import default_image_name
@@ -43,6 +42,7 @@ def main():
     log.debug( opts )
 
     log.info("livemedia-creator v%s", vernum)
+    log_selinux_state()
 
     # Find the lorax templates
     opts.lorax_templates = find_templates(opts.lorax_templates or "/usr/share/lorax")
@@ -90,10 +90,6 @@ def main():
     if is_install and opts.no_virt \
        and not os.path.exists("/usr/sbin/anaconda"):
         errors.append("no-virt requires anaconda to be installed.")
-
-    if is_install and opts.no_virt:
-        if selinux.is_selinux_enabled() and selinux.security_getenforce():
-            errors.append("selinux must be disabled or in Permissive mode.")
 
     if opts.make_appliance and not opts.app_template:
         opts.app_template = joinpaths(opts.lorax_templates,
