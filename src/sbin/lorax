@@ -33,10 +33,9 @@ import dnf
 import dnf.logging
 import librepo
 import pylorax
-from pylorax import DRACUT_DEFAULT
+from pylorax import DRACUT_DEFAULT, log_selinux_state
 from pylorax.cmdline import lorax_parser
 from pylorax.dnfbase import get_dnf_base_object
-import selinux
 
 def setup_logging(opts):
     pylorax.setup_logging(opts.logfile, log)
@@ -74,10 +73,7 @@ def main():
 
     setup_logging(opts)
 
-    log.info("checking the selinux mode")
-    if selinux.is_selinux_enabled() and selinux.security_getenforce():
-        log.critical("selinux must be disabled or in Permissive mode")
-        sys.exit(1)
+    log_selinux_state()
 
     if not opts.workdir:
         tempfile.tempdir = opts.tmp
