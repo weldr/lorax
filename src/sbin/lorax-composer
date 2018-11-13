@@ -27,7 +27,6 @@ dnf_log = logging.getLogger("dnf")
 import grp
 import os
 import pwd
-import selinux
 import sys
 import subprocess
 import tempfile
@@ -35,7 +34,7 @@ from threading import Lock
 from gevent import socket
 from gevent.pywsgi import WSGIServer
 
-from pylorax import vernum
+from pylorax import vernum, log_selinux_state
 from pylorax.api.cmdline import lorax_composer_parser
 from pylorax.api.config import configure, make_dnf_dirs, make_queue_dirs
 from pylorax.api.compose import test_templates
@@ -134,6 +133,7 @@ if __name__ == '__main__':
         os.makedirs(logpath)
     setup_logging(opts.logfile)
     log.debug("opts=%s", opts)
+    log_selinux_state()
 
     if not make_pidfile():
         log.error("PID file exists, lorax-composer already running. Quitting.")
@@ -151,9 +151,6 @@ if __name__ == '__main__':
         gid = grp.getgrnam(opts.group).gr_gid
     except KeyError:
         errors.append("Missing group '%s'" % opts.group)
-
-    if selinux.is_selinux_enabled() and selinux.security_getenforce():
-        errors.append("selinux must be disabled or in Permissive mode.")
 
     # No point in continuing if there are uid or gid errors
     if errors:
