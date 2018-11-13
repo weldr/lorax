@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax package &mdash; Lorax 30.5 documentation</title>
+  <title>pylorax package &mdash; Lorax 30.7 documentation</title>
   
 
   
@@ -24,8 +24,7 @@
 
   
 
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -59,7 +58,7 @@
             
             
               <div class="version">
-                30.5
+                30.7
               </div>
             
           
@@ -105,6 +104,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.creator">pylorax.creator module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.decorators">pylorax.decorators module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.discinfo">pylorax.discinfo module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pylorax.dnfbase">pylorax.dnfbase module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.dnfhelper">pylorax.dnfhelper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.executils">pylorax.executils module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pylorax.imgutils">pylorax.imgutils module</a></li>
@@ -699,6 +699,37 @@ See the cmdline –help for livemedia-creator for the possible options</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-pylorax.dnfbase">
+<span id="pylorax-dnfbase-module"></span><h2>pylorax.dnfbase module<a class="headerlink" href="#module-pylorax.dnfbase" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pylorax.dnfbase.get_dnf_base_object">
+<code class="descclassname">pylorax.dnfbase.</code><code class="descname">get_dnf_base_object</code><span class="sig-paren">(</span><em>installroot</em>, <em>sources</em>, <em>mirrorlists=None</em>, <em>repos=None</em>, <em>enablerepos=None</em>, <em>disablerepos=None</em>, <em>tempdir='/var/tmp'</em>, <em>proxy=None</em>, <em>releasever='29'</em>, <em>cachedir=None</em>, <em>logdir=None</em>, <em>sslverify=True</em>, <em>dnfplugins=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/dnfbase.html#get_dnf_base_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.dnfbase.get_dnf_base_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a dnf Base object and setup the repositories and installroot</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>installroot</strong> (<em>string</em>) – Full path to the installroot</li>
+<li><strong>sources</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of source repo urls to use for the installation</li>
+<li><strong>enablerepos</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of repo names to enable</li>
+<li><strong>disablerepos</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of repo names to disable</li>
+<li><strong>mirrorlist</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of mirrors to use</li>
+<li><strong>tempdir</strong> (<em>string</em>) – Path of temporary directory</li>
+<li><strong>proxy</strong> (<em>string</em>) – http proxy to use when fetching packages</li>
+<li><strong>releasever</strong> (<em>string</em>) – Release version to pass to dnf</li>
+<li><strong>cachedir</strong> (<em>string</em>) – Directory to use for caching packages</li>
+<li><strong>noverifyssl</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Set to True to ignore the CA of ssl certs. eg. use self-signed ssl for https repos.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>If tempdir is not set /var/tmp is used.
+If cachedir is None a dnf.cache directory is created inside tmpdir</p>
+</dd></dl>
+
+</div>
 <div class="section" id="module-pylorax.dnfhelper">
 <span id="pylorax-dnfhelper-module"></span><h2>pylorax.dnfhelper module<a class="headerlink" href="#module-pylorax.dnfhelper" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
@@ -1020,6 +1051,24 @@ created, otherwise just the leading directories will be created.</p>
 <code class="descclassname">pylorax.imgutils.</code><code class="descname">get_loop_name</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/imgutils.html#get_loop_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.get_loop_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the loop device associated with the path.
 Raises RuntimeError if more than one loop is associated</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.imgutils.kpartx_disk_img">
+<code class="descclassname">pylorax.imgutils.</code><code class="descname">kpartx_disk_img</code><span class="sig-paren">(</span><em>disk_img</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/imgutils.html#kpartx_disk_img"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.imgutils.kpartx_disk_img" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attach a disk image’s partitions to /dev/loopX using kpartx</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>disk_img</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The full path to a partitioned disk image</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of (loopXpN, size)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list of tuples</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -2223,6 +2272,12 @@ lowest numbered directory entry is returned.</p>
 <dd></dd></dl>
 
 <dl class="function">
+<dt id="pylorax.log_selinux_state">
+<code class="descclassname">pylorax.</code><code class="descname">log_selinux_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax.html#log_selinux_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.log_selinux_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log the current state of selinux</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="pylorax.setup_logging">
 <code class="descclassname">pylorax.</code><code class="descname">setup_logging</code><span class="sig-paren">(</span><em>logfile</em>, <em>theLogger</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax.html#setup_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.setup_logging" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setup the various logs</p>
@@ -2263,7 +2318,7 @@ lowest numbered directory entry is returned.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Red Hat, Inc..
+        &copy; Copyright 2018, Red Hat, Inc.
 
     </p>
   </div>
@@ -2282,27 +2337,27 @@ lowest numbered directory entry is returned.</p>
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'30.5',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'30.7',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
 
   
 
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {

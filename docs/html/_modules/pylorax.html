@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax &mdash; Lorax 30.5 documentation</title>
+  <title>pylorax &mdash; Lorax 30.7 documentation</title>
   
 
   
@@ -24,8 +24,7 @@
 
   
 
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -57,7 +56,7 @@
             
             
               <div class="version">
-                30.5
+                30.7
               </div>
             
           
@@ -370,6 +369,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">init_file_logging</span><span class="p">(</span><span class="n">logdir</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;version is </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">vernum</span><span class="p">)</span>
+        <span class="n">log_selinux_state</span><span class="p">()</span>
+
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;using work directory </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">workdir</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;using log directory </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">logdir</span><span class="p">)</span>
 
@@ -383,22 +384,6 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;checking for root privileges&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">geteuid</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;no root privileges&quot;</span><span class="p">)</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-
-        <span class="c1"># is selinux disabled?</span>
-        <span class="c1"># With selinux in enforcing mode the rpcbind package required for</span>
-        <span class="c1"># dracut nfs module, which is in turn required by anaconda module,</span>
-        <span class="c1"># will not get installed, because it&#39;s preinstall scriptlet fails,</span>
-        <span class="c1"># resulting in an incomplete initial ramdisk image.</span>
-        <span class="c1"># The reason is that the scriptlet runs tools from the shadow-utils</span>
-        <span class="c1"># package in chroot, particularly groupadd and useradd to add the</span>
-        <span class="c1"># required rpc group and rpc user. This operation fails, because</span>
-        <span class="c1"># the selinux context on files in the chroot, that the shadow-utils</span>
-        <span class="c1"># tools need to access (/etc/group, /etc/passwd, /etc/shadow etc.),</span>
-        <span class="c1"># is wrong and selinux therefore disallows access to these files.</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;checking the selinux mode&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">selinux</span><span class="o">.</span><span class="n">is_selinux_enabled</span><span class="p">()</span> <span class="ow">and</span> <span class="n">selinux</span><span class="o">.</span><span class="n">security_getenforce</span><span class="p">():</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;selinux must be disabled or in Permissive mode&quot;</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="c1"># do we have a proper dnf base object?</span>
@@ -619,6 +604,16 @@
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
             <span class="k">pass</span>
     <span class="k">return</span> <span class="n">templatedir</span></div>
+
+<div class="viewcode-block" id="log_selinux_state"><a class="viewcode-back" href="../pylorax.html#pylorax.log_selinux_state">[docs]</a><span class="k">def</span> <span class="nf">log_selinux_state</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Log the current state of selinux&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">selinux</span><span class="o">.</span><span class="n">is_selinux_enabled</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">selinux</span><span class="o">.</span><span class="n">security_getenforce</span><span class="p">():</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;selinux is enabled and in Enforcing mode&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;selinux is enabled and in Permissive mode&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;selinux is Disabled&quot;</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
@@ -631,7 +626,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Red Hat, Inc..
+        &copy; Copyright 2018, Red Hat, Inc.
 
     </p>
   </div>
@@ -650,27 +645,27 @@
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'30.5',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'30.7',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+    
 
   
 
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {

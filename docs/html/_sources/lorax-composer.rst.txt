@@ -16,14 +16,15 @@ installation and configuration of the images.
 Important Things To Note
 ------------------------
 
-* SELinux must be in Permissive mode. Anaconda requires SELinux be in permissive mode
-  for image creation to work correctly. You can either edit the setting in the
-  ``/etc/sysconfig/selinux`` file, or run ``setenforce 0`` before starting lorax-composer.
+* As of version 30.7 SELinux can be set to Enforcing. The current state is
+  logged for debugging purposes and if there are SELinux denials they should
+  be reported as a bug.
 
 * All image types lock the root account, except for live-iso. You will need to either
   use one of the `Customizations`_ methods for setting a ssh key/password, install a
   package that creates a user, or use something like `cloud-init` to setup access at
   boot time.
+
 
 Installation
 ------------
@@ -75,7 +76,6 @@ Security
 Some security related issues that you should be aware of before running ``lorax-composer``:
 
 * One of the API server threads needs to retain root privileges in order to run Anaconda.
-* SELinux must be set to Permissive or disabled to allow ``livemedia-creator`` to run Anaconda.
 * Only allow authorized users access to the ``weldr`` group and socket.
 
 Since Anaconda kickstarts are used there is the possibility that a user could
@@ -192,6 +192,10 @@ Set an existing user's ssh key in the final image::
 
 The key will be added to the user's authorized_keys file.
 
+.. warning::
+
+    ``key`` expects the entire content of ``~/.ssh/id_rsa.pub``
+
 
 [[customizations.user]]
 ***********************
@@ -212,6 +216,10 @@ All fields for this section are optional except for the ``name``, here is a comp
 
 If the password starts with ``$6$``, ``$5$``, or ``$2b$`` it will be stored as
 an encrypted password. Otherwise it will be treated as a plain text password.
+
+.. warning::
+
+    ``key`` expects the entire content of ``~/.ssh/id_rsa.pub``
 
 
 [[customizations.group]]

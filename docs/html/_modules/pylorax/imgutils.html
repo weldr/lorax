@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.imgutils &mdash; Lorax 30.5 documentation</title>
+  <title>pylorax.imgutils &mdash; Lorax 30.7 documentation</title>
   
 
   
@@ -24,8 +24,7 @@
 
   
 
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -57,7 +56,7 @@
             
             
               <div class="version">
-                30.5
+                30.7
               </div>
             
           
@@ -157,7 +156,7 @@
   <h1>Source code for pylorax.imgutils</h1><div class="highlight"><pre>
 <span></span><span class="c1"># imgutils.py - utility functions/classes for building disk images</span>
 <span class="c1">#</span>
-<span class="c1"># Copyright (C) 2011-2015 Red Hat, Inc.</span>
+<span class="c1"># Copyright (C) 2011-2018 Red Hat, Inc.</span>
 <span class="c1">#</span>
 <span class="c1"># This program is free software; you can redistribute it and/or modify</span>
 <span class="c1"># it under the terms of the GNU General Public License as published by</span>
@@ -526,6 +525,31 @@
     <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">tracebk</span><span class="p">):</span>
         <span class="n">umount</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mnt</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="kpartx_disk_img"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.kpartx_disk_img">[docs]</a><span class="k">def</span> <span class="nf">kpartx_disk_img</span><span class="p">(</span><span class="n">disk_img</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Attach a disk image&#39;s partitions to /dev/loopX using kpartx</span>
+
+<span class="sd">    :param disk_img: The full path to a partitioned disk image</span>
+<span class="sd">    :type disk_img: str</span>
+<span class="sd">    :returns: list of (loopXpN, size)</span>
+<span class="sd">    :rtype: list of tuples</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Example kpartx output</span>
+    <span class="c1"># kpartx -p p -v -a /tmp/diskV2DiCW.im</span>
+    <span class="c1"># add map loop2p1 (253:2): 0 3481600 linear /dev/loop2 2048</span>
+    <span class="c1"># add map loop2p2 (253:3): 0 614400 linear /dev/loop2 3483648</span>
+    <span class="n">kpartx_output</span> <span class="o">=</span> <span class="n">runcmd_output</span><span class="p">([</span><span class="s2">&quot;kpartx&quot;</span><span class="p">,</span> <span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;-a&quot;</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">])</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">kpartx_output</span><span class="p">)</span>
+
+    <span class="c1"># list of (deviceName, sizeInBytes)</span>
+    <span class="n">loop_devices</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">kpartx_output</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+        <span class="c1"># add map loop2p3 (253:4): 0 7139328 linear /dev/loop2 528384</span>
+        <span class="c1"># 3rd element is size in 512 byte blocks</span>
+        <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;add map &quot;</span><span class="p">):</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">8</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">loop_devices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span><span class="o">*</span><span class="mi">512</span><span class="p">)</span> <span class="p">)</span>
+    <span class="k">return</span> <span class="n">loop_devices</span></div>
+
 <div class="viewcode-block" id="PartitionMount"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.PartitionMount">[docs]</a><span class="k">class</span> <span class="nc">PartitionMount</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Mount a partitioned image file using kpartx &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">mount_ok</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">submount</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -557,21 +581,8 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_ok</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mount_ok</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">mount_dir</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">mount_dir</span><span class="o">+</span><span class="s2">&quot;/etc/passwd&quot;</span><span class="p">)</span>
 
-        <span class="c1"># Example kpartx output</span>
-        <span class="c1"># kpartx -p p -v -a /tmp/diskV2DiCW.im</span>
-        <span class="c1"># add map loop2p1 (253:2): 0 3481600 linear /dev/loop2 2048</span>
-        <span class="c1"># add map loop2p2 (253:3): 0 614400 linear /dev/loop2 3483648</span>
-        <span class="n">kpartx_output</span> <span class="o">=</span> <span class="n">runcmd_output</span><span class="p">([</span><span class="s2">&quot;kpartx&quot;</span><span class="p">,</span> <span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;-a&quot;</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">disk_img</span><span class="p">])</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">kpartx_output</span><span class="p">)</span>
-
         <span class="c1"># list of (deviceName, sizeInBytes)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">loop_devices</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">kpartx_output</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
-            <span class="c1"># add map loop2p3 (253:4): 0 7139328 linear /dev/loop2 528384</span>
-            <span class="c1"># 3rd element is size in 512 byte blocks</span>
-            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;add map &quot;</span><span class="p">):</span>
-                <span class="n">fields</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">8</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">loop_devices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span><span class="o">*</span><span class="mi">512</span><span class="p">)</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loop_devices</span> <span class="o">=</span> <span class="n">kpartx_disk_img</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">disk_img</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Mount the device selected by mount_ok, if possible</span>
@@ -708,7 +719,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Red Hat, Inc..
+        &copy; Copyright 2018, Red Hat, Inc.
 
     </p>
   </div>
@@ -727,27 +738,27 @@
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'30.5',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'30.7',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
 
   
 
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {

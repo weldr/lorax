@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>lorax-composer &mdash; Lorax 30.5 documentation</title>
+  <title>lorax-composer &mdash; Lorax 30.7 documentation</title>
   
 
   
@@ -24,8 +24,7 @@
 
   
 
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -59,7 +58,7 @@
             
             
               <div class="version">
-                30.5
+                30.7
               </div>
             
           
@@ -209,9 +208,9 @@ installation and configuration of the images.</p>
 <div class="section" id="important-things-to-note">
 <h2>Important Things To Note<a class="headerlink" href="#important-things-to-note" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>SELinux must be in Permissive mode. Anaconda requires SELinux be in permissive mode
-for image creation to work correctly. You can either edit the setting in the
-<code class="docutils literal notranslate"><span class="pre">/etc/sysconfig/selinux</span></code> file, or run <code class="docutils literal notranslate"><span class="pre">setenforce</span> <span class="pre">0</span></code> before starting lorax-composer.</li>
+<li>As of version 30.7 SELinux can be set to Enforcing. The current state is
+logged for debugging purposes and if there are SELinux denials they should
+be reported as a bug.</li>
 <li>All image types lock the root account, except for live-iso. You will need to either
 use one of the <a class="reference internal" href="#customizations">Customizations</a> methods for setting a ssh key/password, install a
 package that creates a user, or use something like <cite>cloud-init</cite> to setup access at
@@ -264,7 +263,6 @@ messages as well as extra debugging info and API requests.</p>
 <p>Some security related issues that you should be aware of before running <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code>:</p>
 <ul class="simple">
 <li>One of the API server threads needs to retain root privileges in order to run Anaconda.</li>
-<li>SELinux must be set to Permissive or disabled to allow <code class="docutils literal notranslate"><span class="pre">livemedia-creator</span></code> to run Anaconda.</li>
 <li>Only allow authorized users access to the <code class="docutils literal notranslate"><span class="pre">weldr</span></code> group and socket.</li>
 </ul>
 <p>Since Anaconda kickstarts are used there is the possibility that a user could
@@ -434,6 +432,10 @@ for selecting optional packages.</p>
 </pre></div>
 </div>
 <p>The key will be added to the user’s authorized_keys file.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last"><code class="docutils literal notranslate"><span class="pre">key</span></code> expects the entire content of <code class="docutils literal notranslate"><span class="pre">~/.ssh/id_rsa.pub</span></code></p>
+</div>
 </div>
 <div class="section" id="customizations-user">
 <h4>[[customizations.user]]<a class="headerlink" href="#customizations-user" title="Permalink to this headline">¶</a></h4>
@@ -453,6 +455,10 @@ All fields for this section are optional except for the <code class="docutils li
 </div>
 <p>If the password starts with <code class="docutils literal notranslate"><span class="pre">$6$</span></code>, <code class="docutils literal notranslate"><span class="pre">$5$</span></code>, or <code class="docutils literal notranslate"><span class="pre">$2b$</span></code> it will be stored as
 an encrypted password. Otherwise it will be treated as a plain text password.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last"><code class="docutils literal notranslate"><span class="pre">key</span></code> expects the entire content of <code class="docutils literal notranslate"><span class="pre">~/.ssh/id_rsa.pub</span></code></p>
+</div>
 </div>
 <div class="section" id="customizations-group">
 <h4>[[customizations.group]]<a class="headerlink" href="#customizations-group" title="Permalink to this headline">¶</a></h4>
@@ -610,7 +616,7 @@ sources from <code class="docutils literal notranslate"><span class="pre">/etc/y
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Red Hat, Inc..
+        &copy; Copyright 2018, Red Hat, Inc.
 
     </p>
   </div>
@@ -629,27 +635,27 @@ sources from <code class="docutils literal notranslate"><span class="pre">/etc/y
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'30.5',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'30.7',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
 
   
 
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {

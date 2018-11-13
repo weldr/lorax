@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LORAX-COMPOSER" "1" "Oct 29, 2018" "30.5" "Lorax"
+.TH "LORAX-COMPOSER" "1" "Nov 13, 2018" "30.7" "Lorax"
 .SH NAME
 lorax-composer \- Lorax Composer Documentation
 .
@@ -47,9 +47,9 @@ installation and configuration of the images.
 .SH IMPORTANT THINGS TO NOTE
 .INDENT 0.0
 .IP \(bu 2
-SELinux must be in Permissive mode. Anaconda requires SELinux be in permissive mode
-for image creation to work correctly. You can either edit the setting in the
-\fB/etc/sysconfig/selinux\fP file, or run \fBsetenforce 0\fP before starting lorax\-composer.
+As of version 30.7 SELinux can be set to Enforcing. The current state is
+logged for debugging purposes and if there are SELinux denials they should
+be reported as a bug.
 .IP \(bu 2
 All image types lock the root account, except for live\-iso. You will need to either
 use one of the \fI\%Customizations\fP methods for setting a ssh key/password, install a
@@ -107,8 +107,6 @@ Some security related issues that you should be aware of before running \fBlorax
 .INDENT 0.0
 .IP \(bu 2
 One of the API server threads needs to retain root privileges in order to run Anaconda.
-.IP \(bu 2
-SELinux must be set to Permissive or disabled to allow \fBlivemedia\-creator\fP to run Anaconda.
 .IP \(bu 2
 Only allow authorized users access to the \fBweldr\fP group and socket.
 .UNINDENT
@@ -301,8 +299,14 @@ key = "PUBLIC SSH KEY"
 .UNINDENT
 .UNINDENT
 .sp
-The key will be added to the user\(aqs authorized_keys file. Expected value is the content
-of ~/.ssh/id_rsa.pub.
+The key will be added to the user\(aqs authorized_keys file.
+.sp
+\fBWARNING:\fP
+.INDENT 0.0
+.INDENT 3.5
+\fBkey\fP expects the entire content of \fB~/.ssh/id_rsa.pub\fP
+.UNINDENT
+.UNINDENT
 .SS [[customizations.user]]
 .sp
 Add a user to the image, and/or set their ssh key.
@@ -328,8 +332,14 @@ gid = 1200
 .UNINDENT
 .sp
 If the password starts with \fB$6$\fP, \fB$5$\fP, or \fB$2b$\fP it will be stored as
-an encrypted password. Otherwise it will be treated as a plain text password. For
-ssh keys the expected value is the content of ~/.ssh/id_rsa.pub.
+an encrypted password. Otherwise it will be treated as a plain text password.
+.sp
+\fBWARNING:\fP
+.INDENT 0.0
+.INDENT 3.5
+\fBkey\fP expects the entire content of \fB~/.ssh/id_rsa.pub\fP
+.UNINDENT
+.UNINDENT
 .SS [[customizations.group]]
 .sp
 Add a group to the image. \fBname\fP is required and \fBgid\fP is optional:
