@@ -35,7 +35,7 @@ from threading import Lock
 from gevent import socket
 from gevent.pywsgi import WSGIServer
 
-from pylorax import vernum
+from pylorax import vernum, log_selinux_state
 from pylorax.api.config import configure, make_yum_dirs, make_queue_dirs
 from pylorax.api.compose import test_templates
 from pylorax.api.queue import start_queue_monitor
@@ -170,6 +170,7 @@ if __name__ == '__main__':
         os.makedirs(logpath)
     setup_logging(opts.logfile)
     log.debug("opts=%s", opts)
+    log_selinux_state()
 
     if not make_pidfile():
         log.error("PID file exists, lorax-composer already running. Quitting.")
