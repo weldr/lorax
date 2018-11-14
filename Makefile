@@ -77,12 +77,13 @@ local:
 	@echo "The archive is in $(PKGNAME)-$(VERSION).tar.gz"
 
 test-in-copy:
-	rsync -aP --exclude=.git /lorax/ /lorax-test/
-	make -C /lorax-test/ check test
+	rsync -aP --exclude=.git /lorax-ro/ /lorax/
+	make -C /lorax/ check test
+	cp /lorax/.coverage /test-results/
 
 test-in-docker:
 	sudo $(DOCKER) build -t welder/lorax-tests:$(IMAGE_RELEASE) -f Dockerfile.test .
-	sudo $(DOCKER) run --rm -it -v `pwd`:/lorax:ro --security-opt label=disable welder/lorax-tests:$(IMAGE_RELEASE) make test-in-copy
+	sudo $(DOCKER) run --rm -it -v `pwd`/.test-results/:/test-results -v `pwd`:/lorax-ro:ro --security-opt label=disable welder/lorax-tests:$(IMAGE_RELEASE) make test-in-copy
 
 docs-in-docker:
 	sudo $(DOCKER) run -it --rm -v `pwd`/docs/html/:/lorax/docs/html/ --security-opt label=disable welder/lorax-tests:$(IMAGE_RELEASE) make docs

@@ -32,5 +32,6 @@ RUN  dnf -y install \
   which && \
   touch /.in-container
 RUN useradd weldr
-VOLUME /lorax
-WORKDIR /lorax
+VOLUME /lorax-ro
+VOLUME /test-results
+WORKDIR /lorax-ro
