@@ -6,3 +6,4 @@ __pycache__/
 .coverage
 pylint-log
 .pytest_cache/
+.test-results/
