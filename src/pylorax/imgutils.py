@@ -102,13 +102,6 @@ def mkrootfsimg(rootdir, outfile, label, size=2, sysroot=""):
         fssize = None       # Let mkext4img figure out the needed size
 
     mkext4img(rootdir, outfile, label=label, size=fssize)
-    # Reset selinux context on new rootfs
-    with LoopDev(outfile) as loopdev:
-        with Mount(loopdev) as mnt:
-            cmd = [ "setfiles", "-e", "/proc", "-e", "/sys", "-e", "/dev", "-e", "/install",
-                    "/etc/selinux/targeted/contexts/files/file_contexts", "/"]
-            root = join(mnt, sysroot.lstrip("/"))
-            runcmd(cmd, root=root)
 
 def mkdiskfsimage(diskimage, fsimage, label="Anaconda"):
     """
@@ -189,7 +182,7 @@ def loop_attach(outfile):
         except CalledProcessError:
             # Problems running losetup are always errors, raise immediately
             raise
-        except RuntimeError as e:
+        except RuntimeError:
             # Try to setup the loop device 3 times
             if retries == 3:
                 logger.error("loop_attach failed, retries exhausted.")
