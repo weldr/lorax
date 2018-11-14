@@ -194,6 +194,8 @@ class Lorax(BaseLoraxClass):
         self.init_file_logging(logdir)
 
         logger.debug("version is %s", vernum)
+        log_selinux_state()
+
         logger.debug("using work directory %s", self.workdir)
         logger.debug("using log directory %s", logdir)
 
@@ -207,22 +209,6 @@ class Lorax(BaseLoraxClass):
         logger.info("checking for root privileges")
         if not os.geteuid() == 0:
             logger.critical("no root privileges")
-            sys.exit(1)
-
-        # is selinux disabled?
-        # With selinux in enforcing mode the rpcbind package required for
-        # dracut nfs module, which is in turn required by anaconda module,
-        # will not get installed, because it's preinstall scriptlet fails,
-        # resulting in an incomplete initial ramdisk image.
-        # The reason is that the scriptlet runs tools from the shadow-utils
-        # package in chroot, particularly groupadd and useradd to add the
-        # required rpc group and rpc user. This operation fails, because
-        # the selinux context on files in the chroot, that the shadow-utils
-        # tools need to access (/etc/group, /etc/passwd, /etc/shadow etc.),
-        # is wrong and selinux therefore disallows access to these files.
-        logger.info("checking the selinux mode")
-        if selinux.is_selinux_enabled() and selinux.security_getenforce():
-            logger.critical("selinux must be disabled or in Permissive mode")
             sys.exit(1)
 
         # do we have a proper yum base object?
@@ -384,3 +370,13 @@ def get_buildarch(ybo):
         sys.exit(1)
 
     return buildarch
+
+def log_selinux_state():
+    """Log the current state of selinux"""
+    if selinux.is_selinux_enabled():
+        if selinux.security_getenforce():
+            logger.info("selinux is enabled and in Enforcing mode")
+        else:
+            logger.info("selinux is enabled and in Permissive mode")
+    else:
+        logger.info("selinux is Disabled")

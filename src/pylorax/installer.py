@@ -238,13 +238,13 @@ def novirt_install(opts, disk_img, disk_size, repo_url, callback_func=None):
     """
     Use Anaconda to install to a disk image
     """
-    import selinux
+#    import selinux
 
     # Set selinux to Permissive if it is Enforcing
-    selinux_enforcing = False
-    if selinux.is_selinux_enabled() and selinux.security_getenforce():
-        selinux_enforcing = True
-        selinux.security_setenforce(0)
+#    selinux_enforcing = False
+#    if selinux.is_selinux_enabled() and selinux.security_getenforce():
+#        selinux_enforcing = True
+#        selinux.security_setenforce(0)
 
     # Clean up /tmp/ from previous runs to prevent stale info from being used
     for path in ["/tmp/yum.repos.d/", "/tmp/yum.cache/", "/tmp/yum.root/", "/tmp/yum.pluginconf.d/"]:
@@ -311,8 +311,8 @@ def novirt_install(opts, disk_img, disk_size, repo_url, callback_func=None):
                 dm_detach(dm_path)
                 loop_detach(get_loop_name(disk_img))
 
-    if selinux_enforcing:
-        selinux.security_setenforce(1)
+#    if selinux_enforcing:
+#        selinux.security_setenforce(1)
 
     if rc:
         raise InstallError("novirt_install failed")

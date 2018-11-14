@@ -27,7 +27,7 @@ import os
 import sys
 import tempfile
 
-from pylorax import vernum
+from pylorax import vernum, log_selinux_state
 from pylorax.creator import DRACUT_DEFAULT, run_creator
 from pylorax.imgutils import default_image_name
 from pylorax.sysutils import joinpaths
@@ -225,6 +225,7 @@ def main():
     setup_logging(opts)
 
     log.info("livemedia-creator %s", vernum)
+    log_selinux_state()
     log.debug( opts )
 
     if os.getuid() != 0:
