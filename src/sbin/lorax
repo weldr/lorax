@@ -45,7 +45,7 @@ import yum
 # handler setup.  We already set one up so we don't need it to run.
 yum.logginglevels._added_handlers = True
 import pylorax
-from pylorax import DRACUT_DEFAULT
+from pylorax import DRACUT_DEFAULT, log_selinux_state
 
 VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), pylorax.vernum)
 
@@ -239,6 +239,7 @@ def main(args):
     if not os.path.exists(opts.tmp):
         os.makedirs(opts.tmp)
 
+    log_selinux_state()
     tempfile.tempdir = opts.tmp
 
     # Remove any orphaned lorax tempdirs
