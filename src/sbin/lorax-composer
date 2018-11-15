@@ -203,6 +203,10 @@ if __name__ == '__main__':
     if opts.proxy:
         server.config["COMPOSER_CFG"].set("dnf", "proxy", opts.proxy)
 
+    # Override using system repos
+    if opts.no_system_repos:
+        server.config["COMPOSER_CFG"].set("repos", "use_system_repos", "0")
+
     # Make sure the queue paths are setup correctly, exit on errors
     errors = make_queue_dirs(server.config["COMPOSER_CFG"], gid)
     if errors:
