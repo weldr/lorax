@@ -52,6 +52,8 @@ def lorax_composer_parser():
                         help="Top level temporary directory")
     parser.add_argument("--proxy", default=None, metavar="PROXY",
                         help="Set proxy for DNF, overrides configuration file setting.")
+    parser.add_argument("--no-system-repos", action="store_true", default=False,
+                        help="Do not copy over system repos from /etc/yum.repos.d/ at startup")
     parser.add_argument("BLUEPRINTS", metavar="BLUEPRINTS",
                         help="Path to the blueprints")
 
