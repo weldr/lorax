@@ -3,7 +3,7 @@
 
 #####
 #
-# Make sure we can build an image and deploy it inside vSphere!
+# Make sure we can build an image and deploy it inside OpenStack!
 #
 #####
 
