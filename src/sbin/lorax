@@ -142,7 +142,7 @@ def main():
 
 def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
                         enablerepos=None, disablerepos=None,
-                        tempdir="/var/tmp", proxy=None, releasever="28",
+                        tempdir="/var/tmp", proxy=None, releasever="8",
                         cachedir=None, logdir=None, sslverify=True):
     """ Create a dnf Base object and setup the repositories and installroot
 
