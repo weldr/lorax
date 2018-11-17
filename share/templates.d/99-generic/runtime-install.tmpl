@@ -37,6 +37,7 @@ installpkg glibc-all-langpacks
 %if basearch in ("arm", "armhfp"):
     installpkg efibootmgr
     installpkg grub2-efi-arm-cdboot
+    installpkg grubby-deprecated
     installpkg kernel-lpae
     installpkg uboot-tools
 %endif
