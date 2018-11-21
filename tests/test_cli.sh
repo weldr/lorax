@@ -20,16 +20,25 @@ until curl -m 15 --unix-socket /run/weldr/api.socket http://localhost:4000/api/s
     echo "DEBUG: Waiting for backend API to become ready before testing ..."
 done;
 
-# invoke cli/ tests
-./tests/cli/test_blueprints_sanity.sh
-./tests/cli/test_compose_sanity.sh
 
-# need `losetup`, which needs Docker to be in privileged mode (--privileged),
-# which is available only for `docker run`, however we use `docker build`!
-# And all of this may not even work on Travis CI so disabling execution for now!
-# maybe we will figure out how to execute these two scripts on internal Jenkins instance
-#./tests/cli/test_compose_ext4-filesystem.sh
-#./tests/cli/test_compose_partitioned-disk.sh
+if [ -z "$*" ]; then
+    # invoke cli/ tests which can be executed without special preparation
+    ./tests/cli/test_blueprints_sanity.sh
+    ./tests/cli/test_compose_sanity.sh
+    # need `losetup`, which needs Docker to be in privileged mode (--privileged),
+    # which is available only for `docker run`, however we use `docker build`!
+    # And all of this may not even work on Travis CI so disabling execution for now!
+    # maybe we will figure out how to execute these two scripts on internal Jenkins instance
+    #./tests/cli/test_compose_ext4-filesystem.sh
+    #./tests/cli/test_compose_partitioned-disk.sh
+else
+    # execute other cli tests which need more adjustments in the calling environment
+    # or can't be executed inside Travis CI
+    for TEST in "$*"; do
+        ./$TEST
+    done
+fi
+
 
 # Stop lorax-composer and remove /run/weldr/api.socket
 pkill -9 lorax-composer
