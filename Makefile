@@ -47,7 +47,23 @@ test:
 	
 	./tests/test_cli.sh
 
+# need `losetup`, which needs Docker to be in privileged mode (--privileged)
+# but even so fails in Travis CI
+test_images:
+	sudo -E ./tests/test_cli.sh tests/cli/test_compose_ext4-filesystem.sh \
+				    tests/cli/test_compose_partitioned-disk.sh
 
+test_aws:
+	sudo -E ./tests/test_cli.sh tests/cli/test_build_and_deploy_aws.sh
+
+test_azure:
+	sudo -E ./tests/test_cli.sh tests/cli/test_build_and_deploy_azure.sh
+
+test_openstack:
+	sudo -E ./tests/test_cli.sh tests/cli/test_build_and_deploy_openstack.sh
+
+test_vmware:
+	sudo -E ./tests/test_cli.sh tests/cli/test_build_and_deploy_vmware.sh
 
 clean:
 	-rm -rf build src/pylorax/version.py
