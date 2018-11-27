@@ -34,6 +34,6 @@ touch /etc/machine-id
 %packages --nocore
 # Packages requires to support this output format go here
 policycoreutils
-
+selinux-policy-targeted
 
 # NOTE lorax-composer will add the blueprint packages below here, including the final %end

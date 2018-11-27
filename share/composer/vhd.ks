@@ -39,7 +39,7 @@ touch /etc/machine-id
 %packages
 kernel
 -dracut-config-rescue
-
+selinux-policy-targeted
 grub2
 
 chrony
