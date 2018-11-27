@@ -357,6 +357,7 @@ syslinux
 dracut-config-generic
 dracut-live
 system-logos
+selinux-policy-targeted
 
 # This package is needed to boot the iso on UEFI
 shim

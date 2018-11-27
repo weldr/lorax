@@ -42,7 +42,7 @@ sed -i 's/cloud-user/ec2-user/' /etc/cloud/cloud.cfg
 %packages
 kernel
 -dracut-config-rescue
-
+selinux-policy-targeted
 grub2
 
 chrony

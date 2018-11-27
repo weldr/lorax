@@ -61,7 +61,7 @@ dracut -f -v --persistent-policy by-uuid
 %packages
 kernel
 -dracut-config-rescue
-
+selinux-policy-targeted
 grub2
 
 chrony
