@@ -31,6 +31,7 @@ rm /var/lib/systemd/random-seed
 %packages
 kernel
 -dracut-config-rescue
+selinux-policy-targeted
 grub2
 
 # NOTE lorax-composer will add the blueprint packages below here, including the final %end
