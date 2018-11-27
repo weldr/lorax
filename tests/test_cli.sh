@@ -6,11 +6,15 @@ rm -rf /var/tmp/beakerlib-*/
 export top_srcdir=`pwd`
 . ./tests/testenv.sh
 
-BLUEPRINTS_DIR=`mktemp -d '/tmp/blueprints.XXXXX'`
+BLUEPRINTS_DIR=`mktemp -d '/tmp/composer-blueprints.XXXXX'`
 cp ./tests/pylorax/blueprints/*.toml $BLUEPRINTS_DIR
 
+SHARE_DIR=`mktemp -d '/tmp/composer-share.XXXXX'`
+cp -R ./share/* $SHARE_DIR
+chmod a+rx -R $SHARE_DIR
+
 # start the lorax-composer daemon
-./src/sbin/lorax-composer --sharedir ./share/ $BLUEPRINTS_DIR &
+./src/sbin/lorax-composer --sharedir $SHARE_DIR $BLUEPRINTS_DIR &
 
 # wait for the backend to become ready
 tries=0
