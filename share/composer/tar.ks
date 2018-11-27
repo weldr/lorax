@@ -29,6 +29,6 @@ rm /var/lib/systemd/random-seed
 # NOTE Do NOT add any other sections after %packages
 %packages
 # Packages requires to support this output format go here
-
+selinux-policy-targeted
 
 # NOTE lorax-composer will add the blueprint packages below here, including the final %end

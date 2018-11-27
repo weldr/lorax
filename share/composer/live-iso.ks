@@ -347,6 +347,7 @@ kernel
 memtest86+
 syslinux
 -dracut-config-rescue
+selinux-policy-targeted
 
 # This package is needed to boot the iso on UEFI
 shim
