@@ -3,12 +3,13 @@
 # Firewall configuration
 firewall --enabled
 # Use network installation
-url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/Everything/x86_64/os/"
+url --url="http://URL-TO-BASEOS/"
+repo --name=appstream --baseurl="http://URL-TO-APPSTREAM/"
+# Network information
+network  --bootproto=dhcp --device=link --activate
 
 # Root password
-rootpw --plaintext replace-this-pw
-# Network information
-network  --bootproto=dhcp --activate
+rootpw --plaintext removethispw
 # System authorization information
 auth --useshadow --passalgo=sha512
 # System keyboard
@@ -25,16 +26,22 @@ shutdown
 timezone  US/Eastern
 # System bootloader configuration
 bootloader --location=mbr
-# Clear the Master Boot Record
-zerombr
 # Partition clearing information
-clearpart --all
+clearpart --all --initlabel
 # Disk partitioning information
-part / --fstype="ext4" --size=3000
+part / --fstype="ext4" --size=1500
+part swap --size=512
 
 %post
+# Remove root password
+passwd -d root > /dev/null
+
 # Remove random-seed
 rm /var/lib/systemd/random-seed
+
+# Clear /etc/machine-id
+rm /etc/machine-id
+touch /etc/machine-id
 %end
 
 %packages
@@ -54,9 +61,4 @@ syslinux
 # dracut needs these included
 dracut-network
 tar
-
-# Openstack support
-cloud-utils-growpart
-cloud-init
-
 %end

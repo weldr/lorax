@@ -53,13 +53,13 @@ Quickstart
 Run this to create a bootable live iso::
 
     sudo livemedia-creator --make-iso \
-    --iso=/extra/iso/boot.iso --ks=./docs/fedora-livemedia.ks
+    --iso=/extra/iso/boot.iso --ks=./docs/rhel-livemedia.ks
 
 You can run it directly from the lorax git repo like this::
 
     sudo PATH=./src/sbin/:$PATH PYTHONPATH=./src/ ./src/sbin/livemedia-creator \
     --make-iso --iso=/extra/iso/boot.iso \
-    --ks=./docs/fedora-livemedia.ks --lorax-templates=./share/
+    --ks=./docs/rhel-livemedia.ks --lorax-templates=./share/
 
 You can observe the installation using vnc. The logs will show what port was
 chosen, or you can use a specific port by passing it. eg. ``--vnc vnc:127.0.0.1:5``
@@ -202,7 +202,7 @@ the current directory or in the directory used for --logfile
 
 Example cmdline:
 
-``sudo livemedia-creator --make-iso --no-virt --ks=./fedora-livemedia.ks``
+``sudo livemedia-creator --make-iso --no-virt --ks=./rhel-livemedia.ks``
 
 .. note::
     Using no-virt to create a partitioned disk image (eg. --make-disk or
@@ -225,7 +225,7 @@ that it would work with livemedia-creator.
 
 Example cmdline:
 
-``sudo livemedia-creator --make-ami --iso=/path/to/boot.iso --ks=./docs/fedora-livemedia-ec2.ks``
+``sudo livemedia-creator --make-ami --iso=/path/to/boot.iso --ks=./docs/rhel-livemedia-ec2.ks``
 
 This will produce an ami-root.img file in the working directory.
 
@@ -297,7 +297,7 @@ The created image can be imported into libvirt using:
 
 You can also create qcow2 appliance images using ``--image-type=qcow2``, for example::
 
-    sudo livemedia-creator --make-appliance --iso=/path/to/boot.iso --ks=./docs/fedora-minimal.ks \
+    sudo livemedia-creator --make-appliance --iso=/path/to/boot.iso --ks=./docs/rhel-minimal.ks \
     --image-type=qcow2 --app-file=minimal-test.xml --image-name=minimal-test.img
 
 
@@ -310,7 +310,7 @@ no-virt modes of operation. Previously it was only available with no-virt.
 
 Kickstarts should have a single / partition with no extra mountpoints.
 
-    ``livemedia-creator --make-fsimage --iso=/path/to/boot.iso --ks=./docs/fedora-minimal.ks``
+    ``livemedia-creator --make-fsimage --iso=/path/to/boot.iso --ks=./docs/rhel-minimal.ks``
 
 You can name the output image with ``--image-name`` and set a label on the filesystem with ``--fs-label``
 
@@ -327,8 +327,8 @@ As with ``--make-fsimage`` the kickstart should be limited to a single / partiti
 
 For example::
 
-    livemedia-creator --make-tar --iso=/path/to/boot.iso --ks=./docs/fedora-minimal.ks \
-    --image-name=fedora-root.tar.xz
+    livemedia-creator --make-tar --iso=/path/to/boot.iso --ks=./docs/rhel-minimal.ks \
+    --image-name=rhel-root.tar.xz
 
 
 Live Image for PXE Boot
@@ -349,7 +349,7 @@ using Atomic installer iso with local repo included in the image can be found
 in docs/rhel-atomic-pxe-live.ks.
 
 The PXE images can also be created with ``--no-virt`` by using the example
-kickstart in docs/fedora-atomic-pxe-live-novirt.ks. This also works inside the
+kickstart in docs/rhel-atomic-pxe-live-novirt.ks. This also works inside the
 mock environment.
 
 
@@ -394,16 +394,16 @@ group.
    ``url points to the correct repo``
 
 7. Init the mock
-   ``mock -r fedora-rawhide-x86_64 --old-chroot --init``
+   ``mock -r rhel-8-x86_64 --old-chroot --init``
 
 8. Copy the kickstart inside the mock
-   ``mock -r fedora-rawhide-x86_64 --old-chroot --copyin ./fedora-minimal.ks /root/``
+   ``mock -r rhel-8-x86_64 --old-chroot --copyin ./rhel-minimal.ks /root/``
 
 9. Make a minimal iso::
 
-        mock -r fedora-rawhide-x86_64 --old-chroot --chroot -- livemedia-creator --no-virt \
+        mock -r rhel-8-x86_64 --old-chroot --chroot -- livemedia-creator --no-virt \
         --resultdir=/results/try-1 --logfile=/results/logs/try-1/try-1.log \
-        --make-iso --ks /root/fedora-minimal.ks
+        --make-iso --ks /root/rhel-minimal.ks
 
 Results will be in ./results/try-1 and logs under /results/logs/try-1/
 including anaconda logs and livemedia-creator logs. The new iso will be
@@ -448,19 +448,19 @@ group.
    ``url points to the correct repo``
 
 7. Init the mock
-   ``mock -r fedora-rawhide-x86_64 --old-chroot --init``
+   ``mock -r rhel-8-x86_64 --old-chroot --init``
 
 8. Copy the kickstart inside the mock
-   ``mock -r fedora-rawhide-x86_64 --old-chroot --copyin ./fedora-minimal.ks /root/``
+   ``mock -r rhel-8-x86_64 --old-chroot --copyin ./rhel-minimal.ks /root/``
 
 9. Copy the Anaconda boot.iso inside the mock
-   ``mock -r fedora-rawhide-x86_64 --old-chroot --copyin ./boot.iso /root/``
+   ``mock -r rhel-8-x86_64 --old-chroot --copyin ./boot.iso /root/``
 
 10. Make a minimal iso::
 
-        mock -r fedora-rawhide-x86_64 --old-chroot --chroot -- livemedia-creator \
+        mock -r rhel-8-x86_64 --old-chroot --chroot -- livemedia-creator \
         --resultdir=/results/try-1 --logfile=/results/logs/try-1/try-1.log \
-        --make-iso --ks /root/fedora-minimal.ks --iso /root/boot.iso
+        --make-iso --ks /root/rhel-minimal.ks --iso /root/boot.iso
 
 Results will be in ./results/try-1 and logs under /results/logs/try-1/
 including anaconda logs and livemedia-creator logs. The new iso will be
@@ -480,39 +480,39 @@ You need to have access to an OpenStack provider that allows image uploads, or
 setup your own using the instructions from the `RDO Project
 <https://www.rdoproject.org/Quickstart>`_.
 
-The example kickstart, fedora-openstack.ks, is only slightly different than the
-fedora-minimal.ks one.  It adds the cloud-init and cloud-utils-growpart
+The example kickstart, rhel-openstack.ks, is only slightly different than the
+rhel-minimal.ks one.  It adds the cloud-init and cloud-utils-growpart
 packages. OpenStack supports setting up the image using cloud-init, and
 cloud-utils-growpart will grow the image to fit the instance's disk size.
 
 Create a qcow2 image using the kickstart like this:
 
-    ``sudo livemedia-creator --make-disk --iso=/path/to/boot.iso --ks=/path/to/fedora-openstack.ks --image-type=qcow2``
+    ``sudo livemedia-creator --make-disk --iso=/path/to/boot.iso --ks=/path/to/rhel-openstack.ks --image-type=qcow2``
 
 .. note::
     On the RHEL7 version of lmc ``--image-type`` isn't supported. You can only create a bare partitioned disk image.
 
 Import the resulting disk image into the OpenStack system, either via the web UI, or glance on the cmdline::
 
-    glance image-create --name "fedora-openstack" --is-public true --disk-format qcow2 \
-    --container-format bare --file ./fedora-openstack.qcow2
+    glance image-create --name "rhel-openstack" --is-public true --disk-format qcow2 \
+    --container-format bare --file ./rhel-openstack.qcow2
 
 If qcow2 wasn't used then ``--disk-format`` should be set to raw.
 
 
-Docker Image Creation
----------------------
+Container Image Creation
+------------------------
 
 Use lmc to create a tarfile as described in the `TAR File Creation`_ section, but substitute the
-fedora-docker.ks example kickstart which removes the requirement for core files and the kernel.
+rhel-container.ks example kickstart which removes the requirement for core files and the kernel.
 
-You can then import the tarfile into docker like this (as root):
+You can then import the tarfile into podman or docker like this:
 
-    ``cat /var/tmp/fedora-root.tar.xz | docker import - fedora-root``
+    ``podman import /var/tmp/root.tar.xz rhel-root``
 
 And then run bash inside of it:
 
-    ``sudo docker run -i -t fedora-root /bin/bash``
+    ``podman run -i -t rhel-root /bin/bash``
 
 
 Open Container Initiative Image Creation
@@ -523,7 +523,7 @@ The OCI is a new specification that is still being worked on. You can read more 
 OCI images using the following command::
 
     sudo livemedia-creator --make-oci --oci-config /path/to/config.json --oci-runtime /path/to/runtime.json \
-    --iso=/path/to/boot.iso --ks=/path/to/fedora-minimal.ks
+    --iso=/path/to/boot.iso --ks=/path/to/rhel-minimal.ks
 
 You must provide the config.json and runtime.json files to be included in the bundle,
 their specifications can be found `on the OCI github project <https://github.com/opencontainers/specs>`_
@@ -539,7 +539,7 @@ Vagrant Image Creation
 `Vagrant <https://www.vagrantup.com/>`_ images can be created using the following command::
 
     sudo livemedia-creator --make-vagrant --vagrant-metadata /path/to/metadata.json \
-    --iso=/path/to/boot.iso --ks=/path/to/fedora-vagrant.ks
+    --iso=/path/to/boot.iso --ks=/path/to/rhel-vagrant.ks
 
 The image created is a `vagrant-libvirt
 <https://github.com/pradels/vagrant-libvirt>`_ provider image and needs to have
@@ -579,7 +579,7 @@ but it amounts to:
 Now you can run livemedia-creator with ``--virt-uefi`` to boot and install using UEFI::
 
     sudo livemedia-creator --make-disk --virt-uefi --iso=/path/to/boot.iso \
-    --ks=/path/to/fedora-minimal.ks
+    --ks=/path/to/rhel-minimal.ks
 
 Make sure that the kickstart you are using creates a /boot/efi partition by including this::
 
@@ -588,7 +588,7 @@ Make sure that the kickstart you are using creates a /boot/efi partition by incl
 .. note::
     When using the resulting image with the current version of OVMF (edk2.git-ovmf-x64-0-20151103.b1295.ge5cffca)
     it will not boot automatically because there is a problem with the fallback path.
-    You can boot it by entering the UEFI shell and running EFI/fedora/shim.efi and
+    You can boot it by entering the UEFI shell and running EFI/redhat/shim.efi and
     then using efibootmgr to setup the correct boot entry.
 
 
@@ -635,6 +635,6 @@ Development on this will take place as part of the lorax project, and on the
 anaconda-devel-list mailing list, and `on github <https://github.com/rhinstaller/lorax>`_
 
 Feedback, enhancements and bugs are welcome.  You can use `bugzilla
-<https://bugzilla.redhat.com/enter_bug.cgi?product=Fedora&component=lorax>`_ to
+<https://bugzilla.redhat.com/enter_bug.cgi?product=Red Hat Enterprise Linux 8&component=lorax>`_ to
 report bugs against the lorax component.
 

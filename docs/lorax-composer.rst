@@ -251,7 +251,7 @@ needs 3 things:
   the compose directory to the results directory.
 
 The ``partitioned-disk.ks`` is pretty similar to the example minimal kickstart
-in ``./docs/fedora-minimal.ks``. You should remove the ``url`` and ``repo``
+in ``./docs/rhel-minimal.ks``. You should remove the ``url`` and ``repo``
 commands, they will be added by the compose process. Make sure the bootloader
 packages are included in the ``%packages`` section at the end of the kickstart,
 and you will want to leave off the ``%end`` so that the compose can append the

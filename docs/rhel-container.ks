@@ -1,10 +1,8 @@
-# Minimal Disk Image
-#
-sshpw --username=root --plaintext randOmStrinGhERE
-# Firewall configuration
-firewall --enabled
+# Minimal install for containers
+
 # Use network installation
-url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/Everything/x86_64/os/"
+url --url="http://URL-TO-BASEOS/"
+repo --name=appstream --baseurl="http://URL-TO-APPSTREAM/"
 # Network information
 network  --bootproto=dhcp --device=link --activate
 
@@ -25,36 +23,23 @@ shutdown
 # System timezone
 timezone  US/Eastern
 # System bootloader configuration
-bootloader --location=mbr
+bootloader --disabled
 # Partition clearing information
 clearpart --all --initlabel
 # Disk partitioning information
-part / --fstype="ext4" --size=4000
-part swap --size=1000
+part / --fstype="ext4" --size=3000
 
 %post
-# Remove root password
-passwd -d root > /dev/null
-
 # Remove random-seed
 rm /var/lib/systemd/random-seed
+
+# Clear /etc/machine-id
+rm /etc/machine-id
+touch /etc/machine-id
 %end
 
-%packages
-@core
-kernel
-# Make sure that DNF doesn't pull in debug kernel to satisfy kmod() requires
-kernel-modules
-kernel-modules-extra
-
-memtest86+
-grub2-efi
-grub2
-shim
-syslinux
--dracut-config-rescue
-
-# dracut needs these included
-dracut-network
-tar
+%packages --nocore --instLangs en
+httpd
+-kernel
+policycoreutils
 %end

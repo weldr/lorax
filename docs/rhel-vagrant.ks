@@ -4,9 +4,10 @@
 # Firewall configuration
 firewall --enabled
 # Use network installation
-url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/Everything/x86_64/os/"
+url --url="http://URL-TO-BASEOS/"
+repo --name=appstream --baseurl="http://URL-TO-APPSTREAM/"
 # Network information
-network  --bootproto=dhcp --activate
+network  --bootproto=dhcp --device=link --activate
 
 # Root account is locked, access via sudo from vagrant user
 rootpw --lock
@@ -40,6 +41,10 @@ part swap --size=1000
 %post
 # Remove random-seed
 rm /var/lib/systemd/random-seed
+
+# Clear /etc/machine-id
+rm /etc/machine-id
+touch /etc/machine-id
 
 # Setup sudoers for Vagrant
 echo 'vagrant ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers

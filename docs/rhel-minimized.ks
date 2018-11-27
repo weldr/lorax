@@ -1,10 +1,10 @@
 # Minimal Disk Image -- Example of image-minimizer usage in %post
 #
-sshpw --username=root --plaintext randOmStrinGhERE
 # Firewall configuration
 firewall --enabled
 # Use network installation
-url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/Everything/x86_64/os/"
+url --url="http://URL-TO-BASEOS/"
+repo --name=appstream --baseurl="http://URL-TO-APPSTREAM/"
 # Network information
 network  --bootproto=dhcp --device=link --activate
 
@@ -38,6 +38,10 @@ passwd -d root > /dev/null
 
 # Remove random-seed
 rm /var/lib/systemd/random-seed
+
+# Clear /etc/machine-id
+rm /etc/machine-id
+touch /etc/machine-id
 %end
 
 %packages

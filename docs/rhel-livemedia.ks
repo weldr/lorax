@@ -10,7 +10,8 @@ timezone US/Eastern
 lang en_US.UTF-8
 # Firewall configuration
 firewall --enabled --service=mdns
-url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/Everything/x86_64/os/"
+url --url="http://URL-TO-BASEOS"
+repo --name=appstream --baseurl="http://URL-TO-APPSTREAM"
 # Network information
 network  --bootproto=dhcp --device=link --activate
 
@@ -20,7 +21,7 @@ auth --useshadow --passalgo=sha512
 selinux --enforcing
 
 # System services
-services --disabled="network,sshd" --enabled="NetworkManager,ModemManager"
+services --disabled="sshd" --enabled="NetworkManager"
 
 # livemedia-creator modifications.
 shutdown
@@ -143,7 +144,7 @@ if [ -n "\$configdone" ]; then
   exit 0
 fi
 
-# add fedora user with no passwd
+# add liveuser with no passwd
 action "Adding live user" useradd \$USERADDARGS -c "Live System User" liveuser
 passwd -d liveuser > /dev/null
 usermod -aG wheel liveuser > /dev/null
@@ -266,7 +267,8 @@ EOF
 rm -f /var/lib/rpm/__db*
 releasever=$(rpm -q --qf '%{version}\n' --whatprovides system-release)
 basearch=$(uname -i)
-rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch
+rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta
+rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
 echo "Packages within this LiveCD"
 rpm -qa
 # Note that running rpm recreates the rpm db files which aren't needed or wanted
@@ -290,22 +292,45 @@ rm /var/lib/systemd/random-seed
 # Remove the rescue kernel and image to save space
 # Installation will recreate these on the target
 rm -f /boot/*-rescue*
+
+# Remove machine-id on pre generated images
+rm -f /etc/machine-id
+touch /etc/machine-id
 %end
 
 %post
 
 cat >> /etc/rc.d/init.d/livesys << EOF
 
-
-# disable updates plugin
+# disable gnome-software automatically downloading updates
 cat >> /usr/share/glib-2.0/schemas/org.gnome.software.gschema.override << FOE
 [org.gnome.software]
 download-updates=false
 FOE
 
+# don't autostart gnome-software session service
+rm -f /etc/xdg/autostart/gnome-software-service.desktop
+
+# disable the gnome-software shell search provider
+cat >> /usr/share/gnome-shell/search-providers/org.gnome.Software-search-provider.ini << FOE
+DefaultDisabled=true
+FOE
+
 # don't run gnome-initial-setup
 mkdir ~liveuser/.config
 touch ~liveuser/.config/gnome-initial-setup-done
+
+# suppress anaconda spokes redundant with gnome-initial-setup
+cat >> /etc/sysconfig/anaconda << FOE
+[NetworkSpoke]
+visited=1
+
+[PasswordSpoke]
+visited=1
+
+[UserSpoke]
+visited=1
+FOE
 
 # make the installer show up
 if [ -f /usr/share/applications/liveinst.desktop ]; then
@@ -356,24 +381,20 @@ EOF
 %end
 
 %packages
-@anaconda-tools
 @base-x
-@core
-@firefox
 @fonts
 @guest-desktop-agents
 @hardware-support
-@libreoffice
 @multimedia
 @networkmanager-submodules
-@printing
 @workstation-product
+@gnome-desktop
+firefox
 gnome-terminal
 aajohan-comfortaa-fonts
 anaconda
 dracut-config-generic
 dracut-live
-fedora-productimg-workstation
 glibc-all-langpacks
 grub2-efi
 kernel
@@ -384,8 +405,6 @@ memtest86+
 syslinux
 -@dial-up
 -@input-methods
--@standard
 -gfs2-utils
--reiserfs-utils
 
 %end
