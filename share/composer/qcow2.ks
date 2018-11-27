@@ -33,6 +33,7 @@ touch /etc/machine-id
 %packages
 kernel
 -dracut-config-rescue
+selinux-policy-targeted
 grub2
 
 # Make sure virt guest agents are installed
