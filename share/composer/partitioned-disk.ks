@@ -33,7 +33,7 @@ touch /etc/machine-id
 %packages
 kernel
 -dracut-config-rescue
-
+selinux-policy-targeted
 grub2
 
 # NOTE lorax-composer will add the blueprint packages below here, including the final %end
