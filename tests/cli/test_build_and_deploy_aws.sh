@@ -145,10 +145,9 @@ __EOF__
     rlPhaseStartTest "Start EC2 instance"
         # generate new ssh key and import it into EC2
         KEY_NAME=composer-$UUID
-        if [ ! -f ~/.ssh/id_rsa.pub ]; then
-            rlRun -t -c "ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa"
-        fi
-        rlRun -t -c "aws ec2 import-key-pair --key-name $KEY_NAME --public-key-material file://~/.ssh/id_rsa.pub"
+        SSH_KEY_DIR=`mktemp -d /tmp/composer-ssh-keys.XXXXXX`
+        rlRun -t -c "ssh-keygen -t rsa -N '' -f $SSH_KEY_DIR/id_rsa"
+        rlRun -t -c "aws ec2 import-key-pair --key-name $KEY_NAME --public-key-material file://$SSH_KEY_DIR/id_rsa.pub"
 
         # start a new instance with selected ssh key, enable ssh
         INSTANCE_ID=`aws ec2 run-instances --image-id $AMI_ID --instance-type t2.small --key-name $KEY_NAME \
@@ -186,7 +185,7 @@ __EOF__
         fi
 
         # verify we can login into that instance and maybe some other details
-        rlRun -t -c "ssh -oStrictHostKeyChecking=no $CLOUD_USER@$IP_ADDRESS 'cat /etc/redhat-release'"
+        rlRun -t -c "ssh -oStrictHostKeyChecking=no -i $SSH_KEY_DIR/id_rsa $CLOUD_USER@$IP_ADDRESS 'cat /etc/redhat-release'"
     rlPhaseEnd
 
     rlPhaseStartCleanup
@@ -196,7 +195,7 @@ __EOF__
         rlRun -t -c "aws ec2 delete-snapshot --snapshot-id $SNAPSHOT_ID"
         rlRun -t -c "aws s3 rm s3://$AWS_BUCKET/$AMI"
         rlRun -t -c "$CLI compose delete $UUID"
-        rlRun -t -c "rm -rf $AMI containers.json"
+        rlRun -t -c "rm -rf $AMI $SSH_KEY_DIR containers.json"
     rlPhaseEnd
 
 rlJournalEnd
