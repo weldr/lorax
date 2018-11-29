@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.16
+Version:        28.14.17
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -233,6 +233,22 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu Nov 29 2018 Brian C. Lane <bcl@redhat.com> 28.14.17-1
+- Update documentation for - 28.14.17 (bcl)
+  Related: rhbz#1645189
+- lorax-composer: Install selinux-policy-targeted in images (bcl)
+  Resolves: rhbz#1645189
+- Remove setfiles from mkrootfsimage (bcl)
+  Related: rhbz#1645189
+- Remove SELinux Permissive checks (bcl)
+  Resolves: rhbz#1645189
+- New lorax documentation - 28.14.17 (bcl)
+  Related: rhbz#1639132
+- Build manpages for composer-cli and lorax-composer (bcl)
+  Resolves: rhbz#1639132
+- Add --no-system-repos to lorax-composer (bcl)
+  Resolves: rhbz#1650363
+
 * Fri Oct 12 2018 Brian C. Lane <bcl@redhat.com> 28.14.16-1
 - Fix vhd images (vponcova)
   Related: rhbz#1628648
