@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>livemedia-creator &mdash; Lorax 28.20 documentation</title>
+  <title>livemedia-creator &mdash; Lorax 28.21 documentation</title>
   
 
   
@@ -24,8 +24,7 @@
 
   
 
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -59,7 +58,7 @@
             
             
               <div class="version">
-                28.20
+                28.21
               </div>
             
           
@@ -726,8 +725,6 @@ install.  There are a couple of things to keep in mind when doing this:</p>
 host is running. Because Anaconda has expectations about the system it is
 running under you may encounter strange bugs if you try to build newer or
 older releases.</li>
-<li>Make sure selinux is set to permissive or disabled. It won’t install
-correctly with selinux set to enforcing yet.</li>
 <li>It may totally trash your host. So far I haven’t had this happen, but the
 possibility exists that a bug in Anaconda could result in it operating on
 real devices. I recommend running it in a virt or on a system that you can
@@ -743,6 +740,12 @@ the current directory or in the directory used for –logfile</p>
 –make-vagrant) will only create disks usable on the host platform (BIOS
 or UEFI). You can create BIOS partitioned disk images on UEFI by using
 virt.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">As of version 30.7 SELinux can be set to Enforcing. The current state is
+logged for debugging purposes and if there are SELinux denials they should
+be reported as a bug.</p>
 </div>
 </div>
 <div class="section" id="ami-images">
@@ -1126,7 +1129,7 @@ report bugs against the lorax component.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Red Hat, Inc..
+        &copy; Copyright 2018, Red Hat, Inc.
 
     </p>
   </div>
@@ -1145,27 +1148,27 @@ report bugs against the lorax component.</p>
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'28.20',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'28.21',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
 
   
 
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {
