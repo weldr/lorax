@@ -725,8 +725,6 @@ install.  There are a couple of things to keep in mind when doing this:</p>
 host is running. Because Anaconda has expectations about the system it is
 running under you may encounter strange bugs if you try to build newer or
 older releases.</li>
-<li>Make sure selinux is set to permissive or disabled. It won’t install
-correctly with selinux set to enforcing yet.</li>
 <li>It may totally trash your host. So far I haven’t had this happen, but the
 possibility exists that a bug in Anaconda could result in it operating on
 real devices. I recommend running it in a virt or on a system that you can
@@ -742,6 +740,12 @@ the current directory or in the directory used for –logfile</p>
 –make-vagrant) will only create disks usable on the host platform (BIOS
 or UEFI). You can create BIOS partitioned disk images on UEFI by using
 virt.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">As of version 30.7 SELinux can be set to Enforcing. The current state is
+logged for debugging purposes and if there are SELinux denials they should
+be reported as a bug.</p>
 </div>
 </div>
 <div class="section" id="ami-images">

@@ -192,10 +192,7 @@ install.  There are a couple of things to keep in mind when doing this:
    running under you may encounter strange bugs if you try to build newer or
    older releases.
 
-2. Make sure selinux is set to permissive or disabled. It won't install
-   correctly with selinux set to enforcing yet.
-
-3. It may totally trash your host. So far I haven't had this happen, but the
+2. It may totally trash your host. So far I haven't had this happen, but the
    possibility exists that a bug in Anaconda could result in it operating on
    real devices. I recommend running it in a virt or on a system that you can
    afford to lose all data from.
@@ -213,6 +210,10 @@ Example cmdline:
     or UEFI). You can create BIOS partitioned disk images on UEFI by using
     virt.
 
+.. note::
+    As of version 30.7 SELinux can be set to Enforcing. The current state is
+    logged for debugging purposes and if there are SELinux denials they should
+    be reported as a bug.
 
 AMI Images
 ----------

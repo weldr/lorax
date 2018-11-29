@@ -208,9 +208,9 @@ installation and configuration of the images.</p>
 <div class="section" id="important-things-to-note">
 <h2>Important Things To Note<a class="headerlink" href="#important-things-to-note" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>SELinux must be in Permissive mode. Anaconda requires SELinux be in permissive mode
-for image creation to work correctly. You can either edit the setting in the
-<code class="docutils literal notranslate"><span class="pre">/etc/sysconfig/selinux</span></code> file, or run <code class="docutils literal notranslate"><span class="pre">setenforce</span> <span class="pre">0</span></code> before starting lorax-composer.</li>
+<li>As of version 30.7 SELinux can be set to Enforcing. The current state is
+logged for debugging purposes and if there are SELinux denials they should
+be reported as a bug.</li>
 <li>All image types lock the root account, except for live-iso. You will need to either
 use one of the <a class="reference internal" href="#customizations">Customizations</a> methods for setting a ssh key/password, install a
 package that creates a user, or use something like <cite>cloud-init</cite> to setup access at
@@ -257,7 +257,6 @@ messages as well as extra debugging info and API requests.</p>
 <p>Some security related issues that you should be aware of before running <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code>:</p>
 <ul class="simple">
 <li>One of the API server threads needs to retain root privileges in order to run Anaconda.</li>
-<li>SELinux must be set to Permissive or disabled to allow <code class="docutils literal notranslate"><span class="pre">livemedia-creator</span></code> to run Anaconda.</li>
 <li>Only allow authorized users access to the <code class="docutils literal notranslate"><span class="pre">weldr</span></code> group and socket.</li>
 </ul>
 <p>Since Anaconda kickstarts are used there is the possibility that a user could

@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LORAX-COMPOSER" "1" "Nov 27, 2018" "28.14.17" "Lorax"
+.TH "LORAX-COMPOSER" "1" "Nov 29, 2018" "28.14.17" "Lorax"
 .SH NAME
 lorax-composer \- Lorax Composer Documentation
 .
@@ -47,9 +47,9 @@ installation and configuration of the images.
 .SH IMPORTANT THINGS TO NOTE
 .INDENT 0.0
 .IP \(bu 2
-SELinux must be in Permissive mode. Anaconda requires SELinux be in permissive mode
-for image creation to work correctly. You can either edit the setting in the
-\fB/etc/sysconfig/selinux\fP file, or run \fBsetenforce 0\fP before starting lorax\-composer.
+As of version 30.7 SELinux can be set to Enforcing. The current state is
+logged for debugging purposes and if there are SELinux denials they should
+be reported as a bug.
 .IP \(bu 2
 All image types lock the root account, except for live\-iso. You will need to either
 use one of the \fI\%Customizations\fP methods for setting a ssh key/password, install a
@@ -98,8 +98,6 @@ Some security related issues that you should be aware of before running \fBlorax
 .INDENT 0.0
 .IP \(bu 2
 One of the API server threads needs to retain root privileges in order to run Anaconda.
-.IP \(bu 2
-SELinux must be set to Permissive or disabled to allow \fBlivemedia\-creator\fP to run Anaconda.
 .IP \(bu 2
 Only allow authorized users access to the \fBweldr\fP group and socket.
 .UNINDENT
