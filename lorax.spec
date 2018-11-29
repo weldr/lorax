@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        29.20
+Version:        29.21
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -230,6 +230,13 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu Nov 29 2018 Brian C. Lane <bcl@redhat.com> 29.21-1
+- New lorax documentation - 29.21 (bcl@redhat.com)
+- lorax-composer: Install selinux-policy-targeted in images (bcl@redhat.com)
+- Remove setfiles from mkrootfsimage (bcl@redhat.com)
+- Remove SELinux Permissive checks (bcl@redhat.com)
+- Add --no-system-repos to lorax-composer (bcl@redhat.com)
+
 * Mon Oct 29 2018 Brian C. Lane <bcl@redhat.com> 29.20-1
 - New lorax documentation - 29.20 (bcl@redhat.com)
 - Add tests for ltmpl.py (bcl@redhat.com)
