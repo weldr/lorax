@@ -196,7 +196,7 @@ __EOF__
         rlRun -t -c "aws ec2 delete-snapshot --snapshot-id $SNAPSHOT_ID"
         rlRun -t -c "aws s3 rm s3://$AWS_BUCKET/$AMI"
         rlRun -t -c "$CLI compose delete $UUID"
-        rlRun -t -c "rm -rf $AMI"
+        rlRun -t -c "rm -rf $AMI containers.json"
     rlPhaseEnd
 
 rlJournalEnd
