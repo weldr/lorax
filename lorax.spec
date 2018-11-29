@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        30.6
+Version:        30.7
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -232,6 +232,38 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu Nov 29 2018 Brian C. Lane <bcl@redhat.com> 30.7-1
+- lorax-composer: Install selinux-policy-targeted in images (bcl@redhat.com)
+- Remove setfiles from mkrootfsimage (bcl@redhat.com)
+- New lorax documentation - 30.7 (bcl@redhat.com)
+- Remove SELinux Permissive checks (bcl@redhat.com)
+- Drop minor version from php package in blueprint (atodorov@redhat.com)
+- Use a temporary shared dir when testing (atodorov@redhat.com)
+- Copy blueprints used for testing to temporary directory (atodorov@redhat.com)
+- Add make targets for Jenkins (atodorov@redhat.com)
+- Add --no-system-repos to lorax-composer (bcl@redhat.com)
+- Install grubby-deprecated package for ARMv7 (javierm@redhat.com)
+- Teach test_cli.sh to execute test scripts via arguments (atodorov@redhat.com)
+- new test: build an image and deploy it on Azure (atodorov@redhat.com)
+- Fix typo in comment (atodorov@redhat.com)
+- Fix reporting of coverage results to coverall.io (bcl@redhat.com)
+- For OpenStack build image with rng-tools installed (atodorov@redhat.com)
+- Add tests for partitioned disk images (bcl@redhat.com)
+- Create a kpartx_disk_img function (bcl@redhat.com)
+- Add tests for pylorax.imgutils (bcl@redhat.com)
+- Add tests to test_creator.py (bcl@redhat.com)
+- Fix make_appliance and the libvirt.tmpl (bcl@redhat.com)
+- Add some tests for creator.py (bcl@redhat.com)
+- tests: Add executils test (bcl@redhat.com)
+- tests: Add sysutils test (bcl@redhat.com)
+- tests: Add discinfo test (bcl@redhat.com)
+- tests: Add treeinfo test (bcl@redhat.com)
+- Stop using build to run the tests, allow using podman (bcl@redhat.com)
+- new test: build and deploy an image in OpenStack (atodorov@redhat.com)
+- Fix typos in VM_NAME and cleanup command (atodorov@redhat.com)
+- new test: build and deploy images on vSphere (atodorov@redhat.com)
+- Update docs with info about ssh keys (atodorov@redhat.com)
+
 * Mon Oct 29 2018 Brian C. Lane <bcl@redhat.com> 30.6-1
 - new test: build and deploy images on AWS (atodorov@redhat.com)
 - Disable execution of new tests which need Docker privileged mode (atodorov@redhat.com)
