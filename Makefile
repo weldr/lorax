@@ -106,4 +106,8 @@ docs-in-docker:
 
 ci: check test
 
+.PHONY: ci_after_success
+ci_after_success:
+# nothing to do here, but Jenkins expects this to be present, otherwise fails
+
 .PHONY: docs
