@@ -36,6 +36,47 @@ from pylorax.base import DataHolder
 from pylorax.creator import run_creator
 from pylorax.sysutils import joinpaths
 
+def check_queues(cfg):
+    """Check to make sure the new and run queue symlinks are correct
+
+    :param cfg: Configuration settings
+    :type cfg: DataHolder
+
+    Also check all of the existing results and make sure any with WAITING
+    set in STATUS have a symlink in queue/new/
+    """
+    # Remove broken symlinks from the new and run queues
+    queue_symlinks = glob(joinpaths(cfg.composer_dir, "queue/new/*")) + \
+                     glob(joinpaths(cfg.composer_dir, "queue/run/*"))
+    for link in queue_symlinks:
+        if not os.path.isdir(os.path.realpath(link)):
+            log.info("Removing broken symlink %s", link)
+            os.unlink(link)
+
+    # Write FAILED to the STATUS of any run queue symlinks and remove them
+    for link in glob(joinpaths(cfg.composer_dir, "queue/run/*")):
+        log.info("Setting build %s to FAILED, and removing symlink from queue/run/", os.path.basename(link))
+        open(joinpaths(link, "STATUS"), "w").write("FAILED\n")
+        os.unlink(link)
+
+    # Check results STATUS messages
+    # - If STATUS is missing, set it to FAILED
+    # - RUNNING should be changed to FAILED
+    # - WAITING should have a symlink in the new queue
+    for link in glob(joinpaths(cfg.composer_dir, "results/*")):
+        if not os.path.exists(joinpaths(link, "STATUS")):
+            open(joinpaths(link, "STATUS"), "w").write("FAILED\n")
+            continue
+
+        status = open(joinpaths(link, "STATUS")).read().strip()
+        if status == "RUNNING":
+            log.info("Setting build %s to FAILED", os.path.basename(link))
+            open(joinpaths(link, "STATUS"), "w").write("FAILED\n")
+        elif status == "WAITING":
+            if not os.path.islink(joinpaths(cfg.composer_dir, "queue/new/", os.path.basename(link))):
+                log.info("Creating missing symlink to new build %s", os.path.basename(link))
+                os.symlink(link, joinpaths(cfg.composer_dir, "queue/new/", os.path.basename(link)))
+
 def start_queue_monitor(cfg, uid, gid):
     """Start the queue monitor as a mp process
 
@@ -69,7 +110,7 @@ def monitor(cfg):
     compose is finished) the symlink will be moved into ./queue/run/ and a STATUS file
     will be created in the results directory.
 
-    STATUS can contain one of: RUNNING, FINISHED, FAILED
+    STATUS can contain one of: WAITING, RUNNING, FINISHED, FAILED
 
     If the system is restarted while a compose is running it will move any old symlinks
     from ./queue/run/ to ./queue/new/ and rerun them.
@@ -78,13 +119,7 @@ def monitor(cfg):
         """Sort the queue entries by their mtime, not their names"""
         return os.stat(joinpaths(cfg.composer_dir, "queue/new", uuid)).st_mtime
 
-    # Move any symlinks in the run queue back to the new queue
-    for link in os.listdir(joinpaths(cfg.composer_dir, "queue/run")):
-        src = joinpaths(cfg.composer_dir, "queue/run", link)
-        dst = joinpaths(cfg.composer_dir, "queue/new", link)
-        os.rename(src, dst)
-        log.debug("Moved unfinished compose %s back to new state", src)
-
+    check_queues(cfg)
     while True:
         uuids = sorted(os.listdir(joinpaths(cfg.composer_dir, "queue/new")), key=queue_sort)
 
