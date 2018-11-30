@@ -178,9 +178,15 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartTest "Verify EC2 instance"
-        # verify we can login as ec2-user into that instance and maybe some other details
+        # cloud-init default config differs between RHEL and Fedora
+        # and ami.ks will create ec2-user only on RHEL
+        CLOUD_USER="ec2-user"
+        if [ -f "/etc/fedora-release" ]; then
+            CLOUD_USER="fedora"
+        fi
 
-        rlRun -t -c "ssh -oStrictHostKeyChecking=no ec2-user@$IP_ADDRESS 'cat /etc/redhat-release'"
+        # verify we can login into that instance and maybe some other details
+        rlRun -t -c "ssh -oStrictHostKeyChecking=no $CLOUD_USER@$IP_ADDRESS 'cat /etc/redhat-release'"
     rlPhaseEnd
 
     rlPhaseStartCleanup
