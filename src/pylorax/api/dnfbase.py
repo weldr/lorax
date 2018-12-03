@@ -65,6 +65,30 @@ class DNFLock(object):
         self.dbo.update_cache()
         return self._lock
 
+def check_repos(dbo):
+    """Check the enabled repos to see if only cdn.redhat.com repos are enabled.
+
+    :param dbo: A DNF Base object
+    :type dbo: dnf.Base
+    :returns: True if there are non-CDN repos enabled. False otherwise.
+    :rtype: bool
+
+    Anaconda is currently not able to handle cdn repo urls in the kickstart. lorax-composer
+    will depsolve just fine, but trying to execute a build will fail unless other
+    repos are also available (eg. a local mirror).
+
+    This checks to see if *only* CDN repos are enabled and if so returns False
+    """
+    for r in dbo.repos.iter_enabled():
+        if r.baseurl and all("cdn.redhat.com" not in u.lower() for u in r.baseurl):
+            return True
+        elif r.mirrorlist and "cdn.redhat.com" not in r.mirrorlist.lower():
+            return True
+        elif r.metalink and "cdn.redhat.com" not in r.metalink.lower():
+            return True
+
+    return False
+
 def get_base_object(conf):
     """Get the DNF object with settings from the config file
 

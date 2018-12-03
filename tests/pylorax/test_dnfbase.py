@@ -22,7 +22,8 @@ import unittest
 import configparser
 
 from pylorax.api.config import configure, make_dnf_dirs
-from pylorax.api.dnfbase import get_base_object
+from pylorax.api.dnfbase import get_base_object, check_repos
+from pylorax.api.projects import source_to_repo
 
 
 class DnfbaseNoSystemReposTest(unittest.TestCase):
@@ -110,3 +111,107 @@ class CreateDnfDirsTest(unittest.TestCase):
         make_dnf_dirs(config)
 
         self.assertTrue(os.path.exists(self.tmp_dir + '/var/tmp/composer/dnf/root'))
+
+class DnfbaseCDNTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        self.tmp_dir = tempfile.mkdtemp(prefix="lorax.test.dnfbase.")
+        conf_file = os.path.join(self.tmp_dir, 'test.conf')
+        open(conf_file, 'w').write("""[composer]
+[repos]
+use_system_repos = False
+""")
+
+        # will read the above configuration
+        config = configure(conf_file=conf_file, root_dir=self.tmp_dir)
+        make_dnf_dirs(config)
+
+        # will read composer config and store a dnf config file
+        self.dbo = get_base_object(config)
+
+        # will read the stored dnf config file
+        self.dnfconf = configparser.ConfigParser()
+        self.dnfconf.read([config.get("composer", "dnf_conf")])
+
+    @classmethod
+    def tearDownClass(self):
+        shutil.rmtree(self.tmp_dir)
+
+    def test_check_repos_no_cdn(self, check_empty=True):
+        """Test that no cdn.redhat.com returns True"""
+        repo = source_to_repo({"name": "no-cdn",
+                               "type": "yum-baseurl",
+                               "check_ssl": True,
+                               "check_gpg": True,
+                               "url": "https://repo.example.com"}, self.dbo.conf)
+        self.dbo.repos.add(repo)
+        self.assertTrue(check_repos(self.dbo))
+        del self.dbo.repos["no-cdn"]
+
+        repo = source_to_repo({"name": "no-cdn-metalink",
+                               "type": "yum-metalink",
+                               "check_ssl": True,
+                               "check_gpg": True,
+                               "url": "https://repo.example.com"}, self.dbo.conf)
+        self.dbo.repos.add(repo)
+        self.assertTrue(check_repos(self.dbo))
+        del self.dbo.repos["no-cdn-metalink"]
+
+        repo = source_to_repo({"name": "no-cdn-mirrorlist",
+                               "type": "yum-mirrorlist",
+                               "check_ssl": True,
+                               "check_gpg": True,
+                               "url": "https://repo.example.com"}, self.dbo.conf)
+        self.dbo.repos.add(repo)
+        self.assertTrue(check_repos(self.dbo))
+        del self.dbo.repos["no-cdn-mirrorlist"]
+
+        if check_empty:
+            self.assertTrue(self.dbo.repos == {})
+
+    def test_check_repos_only_cdn(self):
+        """Test that only cdn.redhat.com returns False"""
+        repo = source_to_repo({"name": "only-cdn",
+                               "type": "yum-baseurl",
+                               "check_ssl": True,
+                               "check_gpg": True,
+                               "url": "https://cdn.redhat.com"}, self.dbo.conf)
+        self.dbo.repos.add(repo)
+        self.assertFalse(check_repos(self.dbo), self.dbo.repos)
+        del self.dbo.repos["only-cdn"]
+
+        repo = source_to_repo({"name": "only-cdn-metalink",
+                               "type": "yum-metalink",
+                               "check_ssl": True,
+                               "check_gpg": True,
+                               "url": "https://cdn.redhat.com"}, self.dbo.conf)
+        self.dbo.repos.add(repo)
+        self.assertFalse(check_repos(self.dbo), self.dbo.repos)
+        del self.dbo.repos["only-cdn-metalink"]
+
+        repo = source_to_repo({"name": "only-cdn-mirrorlist",
+                               "type": "yum-mirrorlist",
+                               "check_ssl": True,
+                               "check_gpg": True,
+                               "url": "https://cdn.redhat.com"}, self.dbo.conf)
+        self.dbo.repos.add(repo)
+        self.assertFalse(check_repos(self.dbo), self.dbo.repos)
+        del self.dbo.repos["only-cdn-mirrorlist"]
+
+        self.assertTrue(self.dbo.repos == {})
+
+    def test_check_repos_with_cdn(self):
+        """Test that adding a non-cdn repo to a cdn one returns True"""
+        repo = source_to_repo({"name": "cdn",
+                               "type": "yum-baseurl",
+                               "check_ssl": True,
+                               "check_gpg": True,
+                               "url": "https://cdn.redhat.com"}, self.dbo.conf)
+        self.dbo.repos.add(repo)
+
+        # Use the no-cdn tests with a pre-populated dbo.repos
+        self.test_check_repos_no_cdn(check_empty=False)
+        del self.dbo.repos["cdn"]
+
+        self.assertTrue(self.dbo.repos == {})
+
