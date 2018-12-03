@@ -94,7 +94,7 @@ Requires: lorax = %{version}-%{release}
 Requires: qemu-kvm
 
 # Fedora edk2 builds currently only support these arches
-%ifarch %{ix86} x86_64 %{arm} aarch64
+%ifarch %{ix86} x86_64
 Requires: edk2-ovmf
 %endif
 
