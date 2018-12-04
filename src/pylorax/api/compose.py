@@ -44,6 +44,7 @@ from uuid import uuid4
 from pykickstart.parser import KickstartParser
 from pykickstart.version import makeVersion
 
+from pylorax.api.dnfbase import check_repos
 from pylorax.api.projects import projects_depsolve, projects_depsolve_with_size, dep_nevra
 from pylorax.api.projects import ProjectsError
 from pylorax.api.recipes import read_recipe_and_id
@@ -295,6 +296,11 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
 
     with gitlock.lock:
         (commit_id, recipe) = read_recipe_and_id(gitlock.repo, branch, recipe_name)
+
+    # Make sure non-CDN repos are enabled
+    with dnflock.lock_check:
+        if not check_repos(dnflock.dbo):
+            raise RuntimeError("Compose requires non-CDN repos to be enabled")
 
     # Combine modules and packages and depsolve the list
     # TODO include the version/glob in the depsolving
