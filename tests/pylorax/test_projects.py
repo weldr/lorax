@@ -395,7 +395,7 @@ class SourceTest(unittest.TestCase):
     def test_source_to_repo_gpgkey(self):
         """Test creating a dnf.Repo with a proxy"""
         repo = source_to_repo(fakerepo_gpgkey(), self.dbo.conf)
-        self.assertEqual(repo.gpgkey, fakerepo_gpgkey()["gpgkey_urls"])
+        self.assertEqual(repo.gpgkey[0], fakerepo_gpgkey()["gpgkey_urls"][0])
 
     def test_drtfr_baseurl(self):
         """Test creating a dnf .repo file from a baseurl Repo object"""
