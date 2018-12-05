@@ -83,7 +83,7 @@ name = "root"
 key = "$PUB_KEY"
 __EOF__
 
-        rlRun -t -c "$CLI blueprints push vmware.toml"
+        rlRun -t -c "$CLI blueprints push $TMP_DIR/vmware.toml"
 
         UUID=`$CLI compose start vmware vmdk`
         rlAssertEquals "exit code should be zero" $? 0
