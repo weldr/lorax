@@ -41,7 +41,7 @@ rlJournalStart
         V_NETWORK="${V_NETWORK:-CEE_VM_Network}"
         rlLogInfo "V_NETWORK=$V_NETWORK"
 
-        V_DATASTORE="${V_DATASTORE:-NFS-Synology-1-RDU}"
+        V_DATASTORE="${V_DATASTORE:-NFS-Synology-1}"
         rlLogInfo "V_DATASTORE=$V_DATASTORE"
 
         V_FOLDER="${V_FOLDER:-Composer}"
