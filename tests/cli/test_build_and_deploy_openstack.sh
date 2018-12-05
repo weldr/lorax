@@ -59,7 +59,7 @@ name = "rng-tools"
 version = "*"
 __EOF__
 
-        rlRun -t -c "$CLI blueprints push http-with-rng.toml"
+        rlRun -t -c "$CLI blueprints push $TMP_DIR/http-with-rng.toml"
 
         UUID=`$CLI compose start http-with-rng openstack`
         rlAssertEquals "exit code should be zero" $? 0
