@@ -55,11 +55,13 @@ rlJournalStart
         rlRun -t -c "pip3 install pyvmomi"
 
         TMP_DIR=`mktemp -d /tmp/composer-vmware.XXXXX`
-        SAMPLES="$TMP_DIR/pyvmomi-community-samples/samples/"
+        SAMPLES="$TMP_DIR/pyvmomi-community-samples"
         if [ ! -d "$SAMPLES" ]; then
-            rlRun -t -c "git clone https://github.com/weldr/pyvmomi-community-samples $TMP_DIR"
+            rlRun -t -c "git clone https://github.com/weldr/pyvmomi-community-samples $SAMPLES"
+            rlRun -t -v "ls -lR $TMP_DIR"
             pushd $SAMPLES && git checkout composer_testing && popd
         fi
+        SAMPLES="$SAMPLES/samples"
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
