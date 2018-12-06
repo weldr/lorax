@@ -17,13 +17,14 @@
 import logging
 log = logging.getLogger("lorax-composer")
 
-import os
 from ConfigParser import ConfigParser
 import fnmatch
 from glob import glob
+import os
 import time
 
 from yum.Errors import YumBaseError
+from pylorax.api.bisect import insort_left
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
@@ -77,6 +78,32 @@ def yaps_to_project(yaps):
             "upstream_vcs": "UPSTREAM_VCS"}
 
 
+def yaps_to_build(yaps):
+    """Extract the build details from a hawkey.Package object
+
+    :param yaps: Yum object with package details
+    :type yaps: YumAvailablePackageSqlite
+    :returns: A dict with the build details, epoch, release, arch, build_time, changelog, ...
+    :rtype: dict
+
+    metadata entries are hard-coded to {}
+
+    Note that this only returns the build dict, it does not include the name, description, etc.
+    """
+    return {"epoch":      int(yaps.epoch),
+            "release":    yaps.release,
+            "arch":       yaps.arch,
+            "build_time": api_time(yaps.buildtime),
+            "changelog":  api_changelog(yaps.returnChangelog()),
+            "build_config_ref": "BUILD_CONFIG_REF",
+            "build_env_ref":    "BUILD_ENV_REF",
+            "metadata":    {},
+            "source":      {"license":    yaps.license,
+                            "version":    yaps.version,
+                            "source_ref": "SOURCE_REF",
+                            "metadata":   {}}}
+
+
 def yaps_to_project_info(yaps):
     """Extract the details from a YumAvailablePackageSqlite object
 
@@ -87,25 +114,12 @@ def yaps_to_project_info(yaps):
 
     metadata entries are hard-coded to {}
     """
-    build = {"epoch":      int(yaps.epoch),
-             "release":    yaps.release,
-             "arch":       yaps.arch,
-             "build_time": api_time(yaps.buildtime),
-             "changelog":  api_changelog(yaps.returnChangelog()),
-             "build_config_ref": "BUILD_CONFIG_REF",
-             "build_env_ref":    "BUILD_ENV_REF",
-             "metadata":    {},
-             "source":      {"license":    yaps.license,
-                             "version":    yaps.version,
-                             "source_ref": "SOURCE_REF",
-                             "metadata":   {}}}
-
     return {"name":         yaps.name,
             "summary":      yaps.summary,
             "description":  yaps.description,
             "homepage":     yaps.url,
             "upstream_vcs": "UPSTREAM_VCS",
-            "builds":       [build]}
+            "builds":       [yaps_to_build(yaps)]}
 
 
 def tm_to_dep(tm):
@@ -170,7 +184,6 @@ def projects_list(yb):
         yb.closeRpmDB()
     return sorted(map(yaps_to_project, ybl.available), key=lambda p: p["name"].lower())
 
-
 def projects_info(yb, project_names):
     """Return details about specific projects
 
@@ -187,7 +200,25 @@ def projects_info(yb, project_names):
         raise ProjectsError("There was a problem with info for %s: %s" % (project_names, str(e)))
     finally:
         yb.closeRpmDB()
-    return sorted(map(yaps_to_project_info, ybl.available), key=lambda p: p["name"].lower())
+
+    # iterate over pkgs
+    # - if pkg.name isn't in the results yet, add pkg_to_project_info in sorted position
+    # - if pkg.name is already in results, get its builds. If the build for pkg is different
+    #   in any way (version, arch, etc.) add it to the entry's builds list. If it is the same,
+    #   skip it.
+    results = []
+    results_names = {}
+    for p in ybl.available:
+        if p.name.lower() not in results_names:
+            idx = insort_left(results, yaps_to_project_info(p), key=lambda p: p["name"].lower())
+            results_names[p.name.lower()] = idx
+        else:
+            build = yaps_to_build(p)
+            if build not in results[results_names[p.name.lower()]]["builds"]:
+                results[results_names[p.name.lower()]]["builds"].append(build)
+
+    return results
+
 
 def filterVersionGlob(pkgs, version):
     """Filter a list of yum package objects with a version glob
@@ -373,14 +404,29 @@ def modules_list(yb, module_names):
     Modules don't exist in RHEL7 so this only returns projects
     and sets the type to "rpm"
     """
-    try:
-        ybl = yb.doPackageLists(pkgnarrow="available", patterns=module_names, showdups=False)
-    except YumBaseError as e:
-        raise ProjectsError("There was a problem listing modules: %s" % str(e))
-    finally:
-        yb.closeRpmDB()
-    return sorted(map(yaps_to_module, ybl.available), key=lambda p: p["name"].lower())
+    projs = _unique_dicts(projects_info(yb, module_names), key=lambda p: p["name"].lower())
+    return list(map(yaps_to_module, projs))
 
+def _unique_dicts(lst, key):
+    """Return a new list of dicts, only including one match of key(d)
+
+    :param lst: list of dicts
+    :type lst: list
+    :param key: key function to match lst entries
+    :type key: function
+    :returns: list of the unique lst entries
+    :rtype: list
+
+    Uses key(d) to test for duplicates in the returned list, creating a
+    list of unique return values.
+    """
+    result = []
+    result_keys = []
+    for d in lst:
+        if key(d) not in result_keys:
+            result.append(d)
+            result_keys.append(key(d))
+    return result
 
 def modules_info(yb, module_names):
     """Return details about a module, including dependencies
