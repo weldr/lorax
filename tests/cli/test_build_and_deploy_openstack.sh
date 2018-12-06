@@ -94,10 +94,9 @@ __EOF__
     rlPhaseStartTest "Start VM instance"
         VM_NAME="Composer-Auto-VM-$UUID"
 
-        if [ ! -f ~/.ssh/id_rsa.pub ]; then
-            rlRun -t -c "ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa"
-        fi
-        rlRun -t -c "ansible localhost -m os_keypair -a 'name=$VM_NAME-key public_key_file=$(readlink -f ~/.ssh/id_rsa.pub)'"
+        SSH_KEY_DIR=`mktemp -d /tmp/composer-ssh-keys.XXXXXX`
+        rlRun -t -c "ssh-keygen -t rsa -N '' -f $SSH_KEY_DIR/id_rsa"
+        rlRun -t -c "ansible localhost -m os_keypair -a 'name=$VM_NAME-key public_key_file=$SSH_KEY_DIR/id_rsa.pub'"
 
         response=`ansible localhost -m os_server -a "name=$VM_NAME image=$OS_IMAGE_UUID flavor=t2.medium key_name=$VM_NAME-key auto_ip=yes"`
         rlAssert0 "VM started successfully" $?
@@ -112,7 +111,7 @@ __EOF__
 
     rlPhaseStartTest "Verify VM instance"
         # verify we can login into that instance
-        rlRun -t -c "ssh -oStrictHostKeyChecking=no cloud-user@$IP_ADDRESS 'cat /etc/redhat-release'"
+        rlRun -t -c "ssh -oStrictHostKeyChecking=no -i $SSH_KEY_DIR/id_rsa cloud-user@$IP_ADDRESS 'cat /etc/redhat-release'"
     rlPhaseEnd
 
     rlPhaseStartCleanup
@@ -120,7 +119,7 @@ __EOF__
         rlRun -t -c "ansible localhost -m os_server -a 'name=$VM_NAME state=absent'"
         rlRun -t -c "ansible localhost -m os_image -a 'name=$OS_IMAGE_NAME state=absent'"
         rlRun -t -c "$CLI compose delete $UUID"
-        rlRun -t -c "rm -rf $IMAGE http-with-rng.toml"
+        rlRun -t -c "rm -rf $IMAGE $SSH_KEY_DIR $TMP_DIR"
     rlPhaseEnd
 
 rlJournalEnd
