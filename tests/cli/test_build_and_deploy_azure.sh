@@ -93,10 +93,9 @@ rlJournalStart
     rlPhaseStartTest "Start VM instance"
         VM_NAME="Composer-Auto-VM-$UUID"
 
-        if [ ! -f ~/.ssh/id_rsa.pub ]; then
-            rlRun -t -c "ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa"
-        fi
-        SSH_PUB_KEY=`cat ~/.ssh/id_rsa.pub`
+        SSH_KEY_DIR=`mktemp -d /tmp/composer-ssh-keys.XXXXXX`
+        rlRun -t -c "ssh-keygen -t rsa -N '' -f $SSH_KEY_DIR/id_rsa"
+        SSH_PUB_KEY=`cat $SSH_KEY_DIR/id_rsa.pub`
 
         cat > azure-playbook.yaml << __EOF__
 ---
@@ -134,7 +133,7 @@ __EOF__
 
     rlPhaseStartTest "Verify VM instance"
         # verify we can login into that instance
-        rlRun -t -c "ssh -oStrictHostKeyChecking=no azure-user@$IP_ADDRESS 'cat /etc/redhat-release'"
+        rlRun -t -c "ssh -oStrictHostKeyChecking=no -i $SSH_KEY_DIR/id_rsa azure-user@$IP_ADDRESS 'cat /etc/redhat-release'"
     rlPhaseEnd
 
     rlPhaseStartCleanup
@@ -142,7 +141,7 @@ __EOF__
         rlRun -t -c "ansible localhost -m azure_rm_image -a 'resource_group=$AZURE_RESOURCE_GROUP name=$OS_IMAGE_NAME state=absent'"
         rlRun -t -c "ansible localhost -m azure_rm_storageblob -a 'resource_group=$AZURE_RESOURCE_GROUP storage_account_name=$AZURE_STORAGE_ACCOUNT container=$AZURE_STORAGE_CONTAINER blob=$IMAGE state=absent'"
         rlRun -t -c "$CLI compose delete $UUID"
-        rlRun -t -c "rm -rf $IMAGE azure-playbook.yaml"
+        rlRun -t -c "rm -rf $IMAGE $SSH_KEY_DIR azure-playbook.yaml"
     rlPhaseEnd
 
 rlJournalEnd

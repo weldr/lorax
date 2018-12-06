@@ -65,11 +65,9 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
-        if [ ! -f ~/.ssh/id_rsa.pub ]; then
-            rlRun -t -c "ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa"
-        fi
-
-        PUB_KEY=`cat ~/.ssh/id_rsa.pub`
+        SSH_KEY_DIR=`mktemp -d /tmp/composer-ssh-keys.XXXXXX`
+        rlRun -t -c "ssh-keygen -t rsa -N '' -f $SSH_KEY_DIR/id_rsa"
+        PUB_KEY=`cat $SSH_KEY_DIR/id_rsa.pub`
 
         cat > $TMP_DIR/vmware.toml << __EOF__
 name = "vmware"
@@ -143,7 +141,7 @@ __EOF__
 
     rlPhaseStartTest "Verify VM instance"
         # verify we can login into that instance
-        rlRun -t -c "ssh -oStrictHostKeyChecking=no root@$IP_ADDRESS 'cat /etc/redhat-release'"
+        rlRun -t -c "ssh -oStrictHostKeyChecking=no -i $SSH_KEY_DIR/id_rsa root@$IP_ADDRESS 'cat /etc/redhat-release'"
     rlPhaseEnd
 
     rlPhaseStartCleanup
@@ -151,7 +149,7 @@ __EOF__
         python3 $SAMPLES/destroy_vm.py -S -s $V_HOST -u $V_USERNAME -p $V_PASSWORD --uuid $INSTANCE_UUID
         rlAssert0 "VM destroyed" $?
         rlRun -t -c "$CLI compose delete $UUID"
-        rlRun -t -c "rm -rf $IMAGE $TMP_DIR"
+        rlRun -t -c "rm -rf $IMAGE $TMP_DIR $SSH_KEY_DIR"
     rlPhaseEnd
 
 rlJournalEnd
