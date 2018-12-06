@@ -110,8 +110,14 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartTest "Verify VM instance"
+        # cloud-init default config differs between RHEL and Fedora
+        CLOUD_USER="cloud-user"
+        if [ -f "/etc/fedora-release" ]; then
+            CLOUD_USER="fedora"
+        fi
+
         # verify we can login into that instance
-        rlRun -t -c "ssh -oStrictHostKeyChecking=no -i $SSH_KEY_DIR/id_rsa cloud-user@$IP_ADDRESS 'cat /etc/redhat-release'"
+        rlRun -t -c "ssh -oStrictHostKeyChecking=no -i $SSH_KEY_DIR/id_rsa $CLOUD_USER@$IP_ADDRESS 'cat /etc/redhat-release'"
     rlPhaseEnd
 
     rlPhaseStartCleanup
