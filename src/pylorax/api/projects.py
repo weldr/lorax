@@ -17,11 +17,13 @@
 import logging
 log = logging.getLogger("lorax-composer")
 
-import os
 from configparser import ConfigParser
 import dnf
 from glob import glob
+import os
 import time
+
+from pylorax.api.bisect import insort_left
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
@@ -75,6 +77,32 @@ def pkg_to_project(pkg):
             "upstream_vcs": "UPSTREAM_VCS"}
 
 
+def pkg_to_build(pkg):
+    """Extract the build details from a hawkey.Package object
+
+    :param pkg: hawkey.Package object with package details
+    :type pkg: hawkey.Package
+    :returns: A dict with the build details, epoch, release, arch, build_time, changelog, ...
+    :rtype: dict
+
+    metadata entries are hard-coded to {}
+
+    Note that this only returns the build dict, it does not include the name, description, etc.
+    """
+    return {"epoch":      pkg.epoch,
+            "release":    pkg.release,
+            "arch":       pkg.arch,
+            "build_time": api_time(pkg.buildtime),
+            "changelog":  "CHANGELOG_NEEDED",                  # XXX Not in hawkey.Package
+            "build_config_ref": "BUILD_CONFIG_REF",
+            "build_env_ref":    "BUILD_ENV_REF",
+            "metadata":    {},
+            "source":      {"license":    pkg.license,
+                            "version":    pkg.version,
+                            "source_ref": "SOURCE_REF",
+                            "metadata":   {}}}
+
+
 def pkg_to_project_info(pkg):
     """Extract the details from a hawkey.Package object
 
@@ -85,25 +113,12 @@ def pkg_to_project_info(pkg):
 
     metadata entries are hard-coded to {}
     """
-    build = {"epoch":      pkg.epoch,
-             "release":    pkg.release,
-             "arch":       pkg.arch,
-             "build_time": api_time(pkg.buildtime),
-             "changelog":  "CHANGELOG_NEEDED",                  # XXX Not in hawkey.Package
-             "build_config_ref": "BUILD_CONFIG_REF",
-             "build_env_ref":    "BUILD_ENV_REF",
-             "metadata":    {},
-             "source":      {"license":    pkg.license,
-                             "version":    pkg.version,
-                             "source_ref": "SOURCE_REF",
-                             "metadata":   {}}}
-
     return {"name":         pkg.name,
             "summary":      pkg.summary,
             "description":  pkg.description,
             "homepage":     pkg.url,
             "upstream_vcs": "UPSTREAM_VCS",
-            "builds":       [build]}
+            "builds":       [pkg_to_build(pkg)]}
 
 
 def pkg_to_dep(pkg):
@@ -180,7 +195,24 @@ def projects_info(dbo, project_names):
         pkgs = dbo.sack.query().available().filter(name__glob=project_names)
     else:
         pkgs = dbo.sack.query().available()
-    return sorted(map(pkg_to_project_info, pkgs), key=lambda p: p["name"].lower())
+
+    # iterate over pkgs
+    # - if pkg.name isn't in the results yet, add pkg_to_project_info in sorted position
+    # - if pkg.name is already in results, get its builds. If the build for pkg is different
+    #   in any way (version, arch, etc.) add it to the entry's builds list. If it is the same,
+    #   skip it.
+    results = []
+    results_names = {}
+    for p in pkgs:
+        if p.name.lower() not in results_names:
+            idx = insort_left(results, pkg_to_project_info(p), key=lambda p: p["name"].lower())
+            results_names[p.name.lower()] = idx
+        else:
+            build = pkg_to_build(p)
+            if build not in results[results_names[p.name.lower()]]["builds"]:
+                results[results_names[p.name.lower()]]["builds"].append(build)
+
+    return results
 
 def _depsolve(dbo, projects, groups):
     """Add projects to a new transaction
@@ -319,9 +351,29 @@ def modules_list(dbo, module_names):
 
     """
     # TODO - Figure out what to do with this for Fedora 'modules'
-    projs = projects_info(dbo, module_names)
-    return sorted(map(proj_to_module, projs), key=lambda p: p["name"].lower())
+    projs = _unique_dicts(projects_info(dbo, module_names), key=lambda p: p["name"].lower())
+    return list(map(proj_to_module, projs))
 
+def _unique_dicts(lst, key):
+    """Return a new list of dicts, only including one match of key(d)
+
+    :param lst: list of dicts
+    :type lst: list
+    :param key: key function to match lst entries
+    :type key: function
+    :returns: list of the unique lst entries
+    :rtype: list
+
+    Uses key(d) to test for duplicates in the returned list, creating a
+    list of unique return values.
+    """
+    result = []
+    result_keys = []
+    for d in lst:
+        if key(d) not in result_keys:
+            result.append(d)
+            result_keys.append(key(d))
+    return result
 
 def modules_info(dbo, module_names):
     """Return details about a module, including dependencies
