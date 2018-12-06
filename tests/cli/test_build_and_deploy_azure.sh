@@ -97,7 +97,8 @@ rlJournalStart
         rlRun -t -c "ssh-keygen -t rsa -N '' -f $SSH_KEY_DIR/id_rsa"
         SSH_PUB_KEY=`cat $SSH_KEY_DIR/id_rsa.pub`
 
-        cat > azure-playbook.yaml << __EOF__
+        TMP_DIR=`mktemp -d /tmp/composer-azure.XXXXX`
+        cat > $TMP_DIR/azure-playbook.yaml << __EOF__
 ---
 - hosts: localhost
   connection: local
@@ -118,7 +119,7 @@ rlJournalStart
           resource_group: $AZURE_RESOURCE_GROUP
 __EOF__
 
-        rlRun -t -c "ansible-playbook azure-playbook.yaml"
+        rlRun -t -c "ansible-playbook $TMP_DIR/azure-playbook.yaml"
 
         response=`ansible localhost -m azure_rm_virtualmachine -a  "resource_group=$AZURE_RESOURCE_GROUP name=$VM_NAME"`
         rlAssert0 "Received VM info successfully" $?
@@ -141,7 +142,7 @@ __EOF__
         rlRun -t -c "ansible localhost -m azure_rm_image -a 'resource_group=$AZURE_RESOURCE_GROUP name=$OS_IMAGE_NAME state=absent'"
         rlRun -t -c "ansible localhost -m azure_rm_storageblob -a 'resource_group=$AZURE_RESOURCE_GROUP storage_account_name=$AZURE_STORAGE_ACCOUNT container=$AZURE_STORAGE_CONTAINER blob=$IMAGE state=absent'"
         rlRun -t -c "$CLI compose delete $UUID"
-        rlRun -t -c "rm -rf $IMAGE $SSH_KEY_DIR azure-playbook.yaml"
+        rlRun -t -c "rm -rf $IMAGE $SSH_KEY_DIR $TMP_DIR"
     rlPhaseEnd
 
 rlJournalEnd
