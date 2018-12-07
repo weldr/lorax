@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        30.7
+Version:        30.8
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -232,6 +232,20 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu Dec 06 2018 Brian C. Lane <bcl@redhat.com> 30.8-1
+- lorax-composer: Handle packages with multiple builds (bcl@redhat.com)
+- lorax-composer: Check the queue and results at startup (bcl@redhat.com)
+- Teach OpenStack test to distinguish between RHEL and Fedora (atodorov@redhat.com)
+- Use full path for Azure playbook as well (atodorov@redhat.com)
+- Use a temporary dir for ssh keys during testing (atodorov@redhat.com)
+- Update V_DATASTORE b/c defaults appear to have been changed (atodorov@redhat.com)
+- Clone pyvmomi samples in the correct directory (atodorov@redhat.com)
+- Use full path when pushing toml files during testing (atodorov@redhat.com)
+- Add empty ci_after_success target for Jenkins (atodorov@redhat.com)
+- Implicitly specify ssh key directory/files for testing (atodorov@redhat.com)
+- [test] Clean up containers.json (atodorov@redhat.com)
+- Teach AWS test to distinguish between RHEL and Fedora (atodorov@redhat.com)
+
 * Thu Nov 29 2018 Brian C. Lane <bcl@redhat.com> 30.7-1
 - lorax-composer: Install selinux-policy-targeted in images (bcl@redhat.com)
 - Remove setfiles from mkrootfsimage (bcl@redhat.com)
