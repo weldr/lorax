@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.17
+Version:        28.14.18
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -233,6 +233,28 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Fri Dec 07 2018 Brian C. Lane <bcl@redhat.com> 28.14.18-1
+- New lorax documentation - 28.14.18 (bcl)
+  Related: rhbz#1656642
+- Add openstack to the image type list in the docs (dshea)
+  Related: rhbz#1628645
+- lorax-composer: Handle packages with multiple builds (bcl)
+  Resolves: rhbz#1656642
+- Adjust test_drtfr_gpgkey to pass on Fedora 28 and RHEL 8 (bcl)
+  Related: rhbz#1655876
+- Update the projects tests to use DNF Repo object (bcl)
+  Related: rhbz#1655876
+- dnf changed the type of gpgkey to a tuple (bcl)
+  Resolves: rhbz#1655876
+- lorax-composer: Add CDN repo checks to startup and compose start. (bcl)
+  Resolves: rhbz#1655623
+- lorax-composer: Check for CDN only repos (bcl)
+  Related: rhbz#1655623
+- There is no support for edk2-ovmf on arm/arm64 (bcl)
+  Resolves: rhbz#1655512
+- lorax-composer: Check the queue and results at startup (bcl)
+  Resolves: rhbz#1647985
+
 * Thu Nov 29 2018 Brian C. Lane <bcl@redhat.com> 28.14.17-1
 - Update documentation for - 28.14.17 (bcl)
   Related: rhbz#1645189
