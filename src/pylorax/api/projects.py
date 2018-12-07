@@ -182,7 +182,8 @@ def projects_list(yb):
         raise ProjectsError("There was a problem listing projects: %s" % str(e))
     finally:
         yb.closeRpmDB()
-    return sorted(map(yaps_to_project, ybl.available), key=lambda p: p["name"].lower())
+    projs = _unique_dicts(map(yaps_to_project, ybl.available), key=lambda p: p["name"].lower())
+    return sorted(projs, key=lambda p: p["name"].lower())
 
 def projects_info(yb, project_names):
     """Return details about specific projects
@@ -200,15 +201,24 @@ def projects_info(yb, project_names):
         raise ProjectsError("There was a problem with info for %s: %s" % (project_names, str(e)))
     finally:
         yb.closeRpmDB()
+    return _unique_projs(ybl.available)
 
-    # iterate over pkgs
-    # - if pkg.name isn't in the results yet, add pkg_to_project_info in sorted position
-    # - if pkg.name is already in results, get its builds. If the build for pkg is different
+def _unique_projs(projs):
+    """Return a sorted list of projects with builds combined into one project entry
+
+    :param yaps: Yum object with package details
+    :type yaps: YumAvailablePackageSqlite
+    :returns: List of project info dicts with yaps_to_project as well as epoch, version, release, etc.
+    :rtype: list of dicts
+    """
+    # iterate over ybl.available
+    # - if ybl.name isn't in the results yet, add yaps_to_project_info in sorted position
+    # - if ybl.name is already in results, get its builds. If the build for the project is different
     #   in any way (version, arch, etc.) add it to the entry's builds list. If it is the same,
     #   skip it.
     results = []
     results_names = {}
-    for p in ybl.available:
+    for p in projs:
         if p.name.lower() not in results_names:
             idx = insort_left(results, yaps_to_project_info(p), key=lambda p: p["name"].lower())
             results_names[p.name.lower()] = idx
