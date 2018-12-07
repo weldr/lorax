@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.21
+Version:        28.22
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -230,6 +230,10 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu Dec 06 2018 Brian C. Lane <bcl@redhat.com> 28.22-1
+- lorax-composer: Handle packages with multiple builds (bcl@redhat.com)
+- lorax-composer: Check the queue and results at startup (bcl@redhat.com)
+
 * Thu Nov 29 2018 Brian C. Lane <bcl@redhat.com> 28.21-1
 - Adjust tmux version in the tests to 2.8 (bcl@redhat.com)
 - New lorax documentation - 28.21 (bcl@redhat.com)
