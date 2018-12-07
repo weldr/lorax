@@ -102,7 +102,7 @@ __EOF__
         rlAssert0 "VM started successfully" $?
         rlLogInfo "$response"
 
-        IP_ADDRESS=`echo "$response" | grep '"OS-EXT-IPS:type": "floating"' -A1 | grep '"addr":' | cut -f4 -d'"'`
+        IP_ADDRESS=`echo "$response" | grep '"OS-EXT-IPS:type": "floating"' -A1| grep '"addr":' | cut -f4 -d'"' | head -n 1`
         rlLogInfo "Running instance IP_ADDRESS=$IP_ADDRESS"
 
         rlLogInfo "Waiting 60sec for instance to initialize ..."
