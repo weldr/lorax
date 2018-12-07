@@ -471,12 +471,12 @@ these are currently available via <code class="docutils literal notranslate"><sp
 lorax-composer a kickstart file needs to be added to <code class="docutils literal notranslate"><span class="pre">./share/composer/</span></code>. The
 name of the kickstart is what will be used by the <code class="docutils literal notranslate"><span class="pre">/compose/types</span></code> route, and the
 <code class="docutils literal notranslate"><span class="pre">compose_type</span></code> field of the POST to start a compose. It also needs to have
-code added to the <a class="reference internal" href="pylorax.api.html#pylorax.api.compose.compose_args" title="pylorax.api.compose.compose_args"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.compose_args()</span></code></a> function. The
+code added to the <code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.compose_args()</span></code> function. The
 <code class="docutils literal notranslate"><span class="pre">_MAP</span></code> entry in this function defines what lorax-composer will pass to
 <a class="reference internal" href="pylorax.html#pylorax.installer.novirt_install" title="pylorax.installer.novirt_install"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.installer.novirt_install()</span></code></a> when it runs the compose.  When the
 compose is finished the output files need to be copied out of the build
 directory (<code class="docutils literal notranslate"><span class="pre">/var/lib/lorax/composer/results/&lt;UUID&gt;/compose/</span></code>),
-<a class="reference internal" href="pylorax.api.html#pylorax.api.compose.move_compose_results" title="pylorax.api.compose.move_compose_results"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.move_compose_results()</span></code></a> handles this for each type.
+<code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.move_compose_results()</span></code> handles this for each type.
 You should move them instead of copying to save space.</p>
 <p>If the new output type does not have support in livemedia-creator it should be
 added there first. This will make the output available to the widest number of
@@ -488,8 +488,8 @@ via the <code class="docutils literal notranslate"><span class="pre">--make-disk
 needs 3 things:</p>
 <ul class="simple">
 <li>A <code class="docutils literal notranslate"><span class="pre">partitioned-disk.ks</span></code> file in <code class="docutils literal notranslate"><span class="pre">./share/composer/</span></code></li>
-<li>A new entry in the _MAP in <a class="reference internal" href="pylorax.api.html#pylorax.api.compose.compose_args" title="pylorax.api.compose.compose_args"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.compose_args()</span></code></a></li>
-<li>Add a bit of code to <a class="reference internal" href="pylorax.api.html#pylorax.api.compose.move_compose_results" title="pylorax.api.compose.move_compose_results"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.move_compose_results()</span></code></a> to move the disk image from
+<li>A new entry in the _MAP in <code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.compose_args()</span></code></li>
+<li>Add a bit of code to <code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.move_compose_results()</span></code> to move the disk image from
 the compose directory to the results directory.</li>
 </ul>
 <p>The <code class="docutils literal notranslate"><span class="pre">partitioned-disk.ks</span></code> is pretty similar to the example minimal kickstart

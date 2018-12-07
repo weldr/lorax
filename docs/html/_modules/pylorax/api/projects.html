@@ -173,11 +173,13 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;lorax-composer&quot;</span><span class="p">)</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">configparser</span> <span class="k">import</span> <span class="n">ConfigParser</span>
 <span class="kn">import</span> <span class="nn">dnf</span>
 <span class="kn">from</span> <span class="nn">glob</span> <span class="k">import</span> <span class="n">glob</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">pylorax.api.bisect</span> <span class="k">import</span> <span class="n">insort_left</span>
 
 <span class="n">TIME_FORMAT</span> <span class="o">=</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S&quot;</span>
 
@@ -231,6 +233,32 @@
             <span class="s2">&quot;upstream_vcs&quot;</span><span class="p">:</span> <span class="s2">&quot;UPSTREAM_VCS&quot;</span><span class="p">}</span></div>
 
 
+<div class="viewcode-block" id="pkg_to_build"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.pkg_to_build">[docs]</a><span class="k">def</span> <span class="nf">pkg_to_build</span><span class="p">(</span><span class="n">pkg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Extract the build details from a hawkey.Package object</span>
+
+<span class="sd">    :param pkg: hawkey.Package object with package details</span>
+<span class="sd">    :type pkg: hawkey.Package</span>
+<span class="sd">    :returns: A dict with the build details, epoch, release, arch, build_time, changelog, ...</span>
+<span class="sd">    :rtype: dict</span>
+
+<span class="sd">    metadata entries are hard-coded to {}</span>
+
+<span class="sd">    Note that this only returns the build dict, it does not include the name, description, etc.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;epoch&quot;</span><span class="p">:</span>      <span class="n">pkg</span><span class="o">.</span><span class="n">epoch</span><span class="p">,</span>
+            <span class="s2">&quot;release&quot;</span><span class="p">:</span>    <span class="n">pkg</span><span class="o">.</span><span class="n">release</span><span class="p">,</span>
+            <span class="s2">&quot;arch&quot;</span><span class="p">:</span>       <span class="n">pkg</span><span class="o">.</span><span class="n">arch</span><span class="p">,</span>
+            <span class="s2">&quot;build_time&quot;</span><span class="p">:</span> <span class="n">api_time</span><span class="p">(</span><span class="n">pkg</span><span class="o">.</span><span class="n">buildtime</span><span class="p">),</span>
+            <span class="s2">&quot;changelog&quot;</span><span class="p">:</span>  <span class="s2">&quot;CHANGELOG_NEEDED&quot;</span><span class="p">,</span>                  <span class="c1"># XXX Not in hawkey.Package</span>
+            <span class="s2">&quot;build_config_ref&quot;</span><span class="p">:</span> <span class="s2">&quot;BUILD_CONFIG_REF&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;build_env_ref&quot;</span><span class="p">:</span>    <span class="s2">&quot;BUILD_ENV_REF&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;metadata&quot;</span><span class="p">:</span>    <span class="p">{},</span>
+            <span class="s2">&quot;source&quot;</span><span class="p">:</span>      <span class="p">{</span><span class="s2">&quot;license&quot;</span><span class="p">:</span>    <span class="n">pkg</span><span class="o">.</span><span class="n">license</span><span class="p">,</span>
+                            <span class="s2">&quot;version&quot;</span><span class="p">:</span>    <span class="n">pkg</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+                            <span class="s2">&quot;source_ref&quot;</span><span class="p">:</span> <span class="s2">&quot;SOURCE_REF&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;metadata&quot;</span><span class="p">:</span>   <span class="p">{}}}</span></div>
+
+
 <div class="viewcode-block" id="pkg_to_project_info"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.pkg_to_project_info">[docs]</a><span class="k">def</span> <span class="nf">pkg_to_project_info</span><span class="p">(</span><span class="n">pkg</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Extract the details from a hawkey.Package object</span>
 
@@ -241,25 +269,12 @@
 
 <span class="sd">    metadata entries are hard-coded to {}</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">build</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;epoch&quot;</span><span class="p">:</span>      <span class="n">pkg</span><span class="o">.</span><span class="n">epoch</span><span class="p">,</span>
-             <span class="s2">&quot;release&quot;</span><span class="p">:</span>    <span class="n">pkg</span><span class="o">.</span><span class="n">release</span><span class="p">,</span>
-             <span class="s2">&quot;arch&quot;</span><span class="p">:</span>       <span class="n">pkg</span><span class="o">.</span><span class="n">arch</span><span class="p">,</span>
-             <span class="s2">&quot;build_time&quot;</span><span class="p">:</span> <span class="n">api_time</span><span class="p">(</span><span class="n">pkg</span><span class="o">.</span><span class="n">buildtime</span><span class="p">),</span>
-             <span class="s2">&quot;changelog&quot;</span><span class="p">:</span>  <span class="s2">&quot;CHANGELOG_NEEDED&quot;</span><span class="p">,</span>                  <span class="c1"># XXX Not in hawkey.Package</span>
-             <span class="s2">&quot;build_config_ref&quot;</span><span class="p">:</span> <span class="s2">&quot;BUILD_CONFIG_REF&quot;</span><span class="p">,</span>
-             <span class="s2">&quot;build_env_ref&quot;</span><span class="p">:</span>    <span class="s2">&quot;BUILD_ENV_REF&quot;</span><span class="p">,</span>
-             <span class="s2">&quot;metadata&quot;</span><span class="p">:</span>    <span class="p">{},</span>
-             <span class="s2">&quot;source&quot;</span><span class="p">:</span>      <span class="p">{</span><span class="s2">&quot;license&quot;</span><span class="p">:</span>    <span class="n">pkg</span><span class="o">.</span><span class="n">license</span><span class="p">,</span>
-                             <span class="s2">&quot;version&quot;</span><span class="p">:</span>    <span class="n">pkg</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
-                             <span class="s2">&quot;source_ref&quot;</span><span class="p">:</span> <span class="s2">&quot;SOURCE_REF&quot;</span><span class="p">,</span>
-                             <span class="s2">&quot;metadata&quot;</span><span class="p">:</span>   <span class="p">{}}}</span>
-
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span>         <span class="n">pkg</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="s2">&quot;summary&quot;</span><span class="p">:</span>      <span class="n">pkg</span><span class="o">.</span><span class="n">summary</span><span class="p">,</span>
             <span class="s2">&quot;description&quot;</span><span class="p">:</span>  <span class="n">pkg</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
             <span class="s2">&quot;homepage&quot;</span><span class="p">:</span>     <span class="n">pkg</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
             <span class="s2">&quot;upstream_vcs&quot;</span><span class="p">:</span> <span class="s2">&quot;UPSTREAM_VCS&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;builds&quot;</span><span class="p">:</span>       <span class="p">[</span><span class="n">build</span><span class="p">]}</span></div>
+            <span class="s2">&quot;builds&quot;</span><span class="p">:</span>       <span class="p">[</span><span class="n">pkg_to_build</span><span class="p">(</span><span class="n">pkg</span><span class="p">)]}</span></div>
 
 
 <div class="viewcode-block" id="pkg_to_dep"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.pkg_to_dep">[docs]</a><span class="k">def</span> <span class="nf">pkg_to_dep</span><span class="p">(</span><span class="n">pkg</span><span class="p">):</span>
@@ -336,7 +351,24 @@
         <span class="n">pkgs</span> <span class="o">=</span> <span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="o">.</span><span class="n">query</span><span class="p">()</span><span class="o">.</span><span class="n">available</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">name__glob</span><span class="o">=</span><span class="n">project_names</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">pkgs</span> <span class="o">=</span> <span class="n">dbo</span><span class="o">.</span><span class="n">sack</span><span class="o">.</span><span class="n">query</span><span class="p">()</span><span class="o">.</span><span class="n">available</span><span class="p">()</span>
-    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">pkg_to_project_info</span><span class="p">,</span> <span class="n">pkgs</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span></div>
+
+    <span class="c1"># iterate over pkgs</span>
+    <span class="c1"># - if pkg.name isn&#39;t in the results yet, add pkg_to_project_info in sorted position</span>
+    <span class="c1"># - if pkg.name is already in results, get its builds. If the build for pkg is different</span>
+    <span class="c1">#   in any way (version, arch, etc.) add it to the entry&#39;s builds list. If it is the same,</span>
+    <span class="c1">#   skip it.</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">results_names</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pkgs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">results_names</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">insort_left</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">pkg_to_project_info</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+            <span class="n">results_names</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">idx</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">build</span> <span class="o">=</span> <span class="n">pkg_to_build</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">build</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">results</span><span class="p">[</span><span class="n">results_names</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()]][</span><span class="s2">&quot;builds&quot;</span><span class="p">]:</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">results_names</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()]][</span><span class="s2">&quot;builds&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">build</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">results</span></div>
 
 <span class="k">def</span> <span class="nf">_depsolve</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">projects</span><span class="p">,</span> <span class="n">groups</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Add projects to a new transaction</span>
@@ -477,9 +509,29 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># TODO - Figure out what to do with this for Fedora &#39;modules&#39;</span>
-    <span class="n">projs</span> <span class="o">=</span> <span class="n">projects_info</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">module_names</span><span class="p">)</span>
-    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">proj_to_module</span><span class="p">,</span> <span class="n">projs</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span></div>
+    <span class="n">projs</span> <span class="o">=</span> <span class="n">_unique_dicts</span><span class="p">(</span><span class="n">projects_info</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">module_names</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">proj_to_module</span><span class="p">,</span> <span class="n">projs</span><span class="p">))</span></div>
 
+<span class="k">def</span> <span class="nf">_unique_dicts</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a new list of dicts, only including one match of key(d)</span>
+
+<span class="sd">    :param lst: list of dicts</span>
+<span class="sd">    :type lst: list</span>
+<span class="sd">    :param key: key function to match lst entries</span>
+<span class="sd">    :type key: function</span>
+<span class="sd">    :returns: list of the unique lst entries</span>
+<span class="sd">    :rtype: list</span>
+
+<span class="sd">    Uses key(d) to test for duplicates in the returned list, creating a</span>
+<span class="sd">    list of unique return values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">result_keys</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">key</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result_keys</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="n">result_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">result</span>
 
 <div class="viewcode-block" id="modules_info"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.projects.modules_info">[docs]</a><span class="k">def</span> <span class="nf">modules_info</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">module_names</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return details about a module, including dependencies</span>
@@ -511,7 +563,7 @@
 <span class="sd">    it ouputs baseurl and gpgkey as python lists which DNF cannot read. So do this manually with</span>
 <span class="sd">    only the attributes we care about.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">repo_str</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">%s</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">repo</span><span class="o">.</span><span class="n">id</span>
+    <span class="n">repo_str</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">%s</span><span class="s2">]</span><span class="se">\n</span><span class="s2">name = </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">repo</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">repo</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">metalink</span><span class="p">:</span>
         <span class="n">repo_str</span> <span class="o">+=</span> <span class="s2">&quot;metalink = </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">repo</span><span class="o">.</span><span class="n">metalink</span>
     <span class="k">elif</span> <span class="n">repo</span><span class="o">.</span><span class="n">mirrorlist</span><span class="p">:</span>
@@ -586,7 +638,7 @@
         <span class="n">source</span><span class="p">[</span><span class="s2">&quot;check_gpg&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">gpgkey</span><span class="p">:</span>
-        <span class="n">source</span><span class="p">[</span><span class="s2">&quot;gpgkey_urls&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">gpgkey</span>
+        <span class="n">source</span><span class="p">[</span><span class="s2">&quot;gpgkey_urls&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repo</span><span class="o">.</span><span class="n">gpgkey</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">source</span></div>
 
@@ -640,7 +692,7 @@
         <span class="n">repo</span><span class="o">.</span><span class="n">gpgcheck</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">if</span> <span class="s2">&quot;gpgkey_urls&quot;</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
-        <span class="n">repo</span><span class="o">.</span><span class="n">gpgkey</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s2">&quot;gpgkey_urls&quot;</span><span class="p">])</span>
+        <span class="n">repo</span><span class="o">.</span><span class="n">gpgkey</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s2">&quot;gpgkey_urls&quot;</span><span class="p">])</span>
 
     <span class="n">repo</span><span class="o">.</span><span class="n">enable</span><span class="p">()</span>
 
