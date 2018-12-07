@@ -28,7 +28,7 @@ from yum.packages import PackageObject
 from pylorax.sysutils import joinpaths
 from pylorax.api.config import configure, make_yum_dirs
 from pylorax.api.projects import api_time, api_changelog, yaps_to_project, yaps_to_project_info
-from pylorax.api.projects import tm_to_dep, yaps_to_module, projects_list, projects_info, projects_depsolve
+from pylorax.api.projects import tm_to_dep, proj_to_module, projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError, dep_evra, dep_nevra
 from pylorax.api.projects import repo_to_source, get_repo_sources, delete_repo_source, source_to_repo
 from pylorax.api.projects import yum_repo_to_file_repo, filterVersionGlob, projects_depsolve_with_size
@@ -140,12 +140,12 @@ class ProjectsTest(unittest.TestCase):
         tm = TM()
         self.assertEqual(tm_to_dep(tm), result)
 
-    def test_yaps_to_module(self):
+    def test_proj_to_module(self):
         result = {"name":"name",
                   "group_type":"rpm"}
 
-        y = Yaps()
-        self.assertEqual(yaps_to_module(y), result)
+        p = yaps_to_project_info(Yaps())
+        self.assertEqual(proj_to_module(p), result)
 
     def test_dep_evra(self):
         dep = {"arch": "noarch",

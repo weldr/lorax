@@ -137,17 +137,17 @@ def tm_to_dep(tm):
             "arch":     tm.arch}
 
 
-def yaps_to_module(yaps):
+def proj_to_module(proj):
     """Extract the name from a YumAvailablePackageSqlite object
 
-    :param yaps: Yum object with package details
-    :type yaps: YumAvailablePackageSqlite
+    :param proj: Project details
+    :type proj: dict
     :returns: A dict with name, and group_type
     :rtype: dict
 
     group_type is hard-coded to "rpm"
     """
-    return {"name": yaps.name,
+    return {"name": proj["name"],
             "group_type": "rpm"}
 
 
@@ -405,7 +405,7 @@ def modules_list(yb, module_names):
     and sets the type to "rpm"
     """
     projs = _unique_dicts(projects_info(yb, module_names), key=lambda p: p["name"].lower())
-    return list(map(yaps_to_module, projs))
+    return list(map(proj_to_module, projs))
 
 def _unique_dicts(lst, key):
     """Return a new list of dicts, only including one match of key(d)
