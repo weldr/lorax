@@ -428,6 +428,11 @@ def uuid_cancel(cfg, uuid):
 
     Only call this if the build status is WAITING or RUNNING
     """
+    cancel_path = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid, "CANCEL")
+    if os.path.exists(cancel_path):
+        log.info("Cancel has already been requested for %s", uuid)
+        return False
+
     # This status can change (and probably will) while it is in the middle of doing this:
     # It can move from WAITING -> RUNNING or it can move from RUNNING -> FINISHED|FAILED
 
@@ -447,15 +452,16 @@ def uuid_cancel(cfg, uuid):
             return uuid_delete(cfg, uuid)
 
     # Tell the build to stop running
-    cancel_path = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid, "CANCEL")
     open(cancel_path, "w").write("\n")
 
-    # Wait for status to move to FAILED
+    # Wait for status to move to FAILED or FINISHED
     started = time.time()
     while True:
         status = uuid_status(cfg, uuid)
         if status is None or status["queue_status"] == "FAILED":
             break
+        elif status is not None and status["queue_status"] == "FINISHED":
+            return False
 
         # Is this taking too long? Exit anyway and try to cleanup.
         if time.time() > started + (10 * 60):
