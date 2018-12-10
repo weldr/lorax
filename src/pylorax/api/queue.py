@@ -437,7 +437,7 @@ def uuid_cancel(cfg, uuid):
     # It can move from WAITING -> RUNNING or it can move from RUNNING -> FINISHED|FAILED
 
     # If it is in WAITING remove the symlink and then check to make sure it didn't show up
-    # in RUNNING
+    # in the run queue
     queue_dir = joinpaths(cfg.get("composer", "lib_dir"), "queue")
     uuid_new = joinpaths(queue_dir, "new", uuid)
     if os.path.exists(uuid_new):
@@ -448,10 +448,13 @@ def uuid_cancel(cfg, uuid):
             pass
         uuid_run = joinpaths(queue_dir, "run", uuid)
         if not os.path.exists(uuid_run):
-            # Successfully removed it before the build started
-            return uuid_delete(cfg, uuid)
+            # Make sure the build is still in the waiting state
+            status = uuid_status(cfg, uuid)
+            if status is None or status["queue_status"] == "WAITING":
+                # Successfully removed it before the build started
+                return uuid_delete(cfg, uuid)
 
-    # Tell the build to stop running
+    # At this point the build has probably started. Write to the CANCEL file.
     open(cancel_path, "w").write("\n")
 
     # Wait for status to move to FAILED or FINISHED
@@ -461,6 +464,7 @@ def uuid_cancel(cfg, uuid):
         if status is None or status["queue_status"] == "FAILED":
             break
         elif status is not None and status["queue_status"] == "FINISHED":
+            # The build finished successfully, no point in deleting it now
             return False
 
         # Is this taking too long? Exit anyway and try to cleanup.
