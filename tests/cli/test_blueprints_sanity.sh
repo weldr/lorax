@@ -21,9 +21,8 @@ rlJournalStart
         rlAssertGrep "httpd" "example-http-server.toml"
 
         # non-existing blueprint
-# enable test for https://github.com/weldr/lorax/issues/460
-#        rlRun -t -c "$CLI blueprints save non-existing-bp" 1
-#        rlAssertNotExists "non-existing-bp.toml"
+        rlRun -t -c "$CLI blueprints save non-existing-bp" 1
+        rlAssertNotExists "non-existing-bp.toml"
     rlPhaseEnd
 
     rlPhaseStartTest "blueprints push"
