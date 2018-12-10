@@ -8,10 +8,7 @@ script:
 
 after_success:
   - |
-
-        sudo docker create --name results-cont welder/lorax /bin/echo
-        sudo docker cp results-cont:/lorax/.coverage .coverage.docker
-        sudo docker rm results-cont
+        cp .test-results/.coverage ./.coverage.docker
 
         pip install coverage coveralls
         coverage combine
