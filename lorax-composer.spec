@@ -19,7 +19,7 @@ BuildRequires: python2-devel
 BuildRequires: python-sphinx yum python-mako pykickstart
 BuildRequires: python-flask python-gobject libgit2-glib python2-pytoml python-semantic_version
 
-Requires: lorax >= 19.7.16
+Requires: lorax >= 19.7.20
 Requires(pre): /usr/bin/getent
 Requires(pre): /usr/sbin/groupadd
 Requires(pre): /usr/sbin/useradd
