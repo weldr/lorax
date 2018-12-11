@@ -456,13 +456,15 @@ def calculate_disk_size(opts, ks):
     log.info("Using disk size of %sMiB", disk_size)
     return disk_size
 
-def make_image(opts, ks):
+def make_image(opts, ks, cancel_func=None):
     """
     Install to a disk image
 
     :param opts: options passed to livemedia-creator
     :type opts: argparse options
     :param str ks: Path to the kickstart to use for the installation
+    :param cancel_func: Function that returns True to cancel build
+    :type cancel_func: function
     :returns: Path of the image created
     :rtype: str
 
@@ -476,12 +478,12 @@ def make_image(opts, ks):
     disk_size = calculate_disk_size(opts, ks)
     try:
         if opts.no_virt:
-            novirt_install(opts, disk_img, disk_size)
+            novirt_install(opts, disk_img, disk_size, cancel_func=cancel_func)
         else:
             install_log = os.path.abspath(os.path.dirname(opts.logfile))+"/virt-install.log"
             log.info("install_log = %s", install_log)
 
-            virt_install(opts, install_log, disk_img, disk_size)
+            virt_install(opts, install_log, disk_img, disk_size, cancel_func=cancel_func)
     except InstallError as e:
         log.error("Install failed: %s", e)
         if not opts.keep_image and os.path.exists(disk_img):
@@ -576,11 +578,13 @@ def make_live_images(opts, work_dir, disk_img):
 
     return work_dir
 
-def run_creator(opts, callback_func=None):
+def run_creator(opts, cancel_func=None):
     """Run the image creator process
 
     :param opts: Commandline options to control the process
     :type opts: Either a DataHolder or ArgumentParser
+    :param cancel_func: Function that returns True to cancel build
+    :type cancel_func: function
     :returns: The result directory and the disk image path.
     :rtype: Tuple of str
 
@@ -639,7 +643,7 @@ def run_creator(opts, callback_func=None):
 
         # Make the image. Output of this is either a partitioned disk image or a fsimage
         try:
-            disk_img = make_image(opts, ks)
+            disk_img = make_image(opts, ks, cancel_func=cancel_func)
         except InstallError as e:
             log.error("ERROR: Image creation failed: %s", e)
             raise RuntimeError("Image creation failed: %s" % e)
@@ -658,6 +662,9 @@ def run_creator(opts, callback_func=None):
             if not make_squashfs(opts, disk_img, work_dir):
                 log.error("squashfs.img creation failed")
                 raise RuntimeError("squashfs.img creation failed")
+
+            if cancel_func():
+                raise RuntimeError("ISO creation canceled")
 
             with Mount(disk_img, opts="loop") as mount_dir:
                 result_dir = make_livecd(opts, mount_dir, work_dir)

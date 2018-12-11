@@ -137,7 +137,7 @@ class QEMUInstall(object):
     """
     def __init__(self, opts, iso, ks_paths, disk_img, img_size=2048,
                  kernel_args=None, memory=1024, vcpus=None, vnc=None, arch=None,
-                 log_check=None, virtio_host="127.0.0.1", virtio_port=6080,
+                 cancel_func=None, virtio_host="127.0.0.1", virtio_port=6080,
                  image_type=None, boot_uefi=False, ovmf_path=None):
         """
         Start the installation
@@ -153,8 +153,8 @@ class QEMUInstall(object):
         :param int vcpus: Number of virtual cpus
         :param str vnc: Arguments to pass to qemu -display
         :param str arch: Optional architecture to use in the virt
-        :param log_check: Method that returns True if the installation fails
-        :type log_check: method
+        :param cancel_func: Function that returns True if the installation fails
+        :type cancel_func: function
         :param str virtio_host: Hostname to connect virtio log to
         :param int virtio_port: Port to connect virtio log to
         :param str image_type: Type of qemu-img disk to create, or None.
@@ -243,7 +243,7 @@ class QEMUInstall(object):
         log.debug(qemu_cmd)
         try:
             execWithRedirect(qemu_cmd[0], qemu_cmd[1:], reset_lang=False, raise_err=True,
-                             callback=lambda p: not log_check())
+                             callback=lambda p: not cancel_func())
         except subprocess.CalledProcessError as e:
             log.error("Running qemu failed:")
             log.error("cmd: %s", " ".join(e.cmd))
@@ -257,27 +257,30 @@ class QEMUInstall(object):
             if boot_uefi and ovmf_path:
                 os.unlink(ovmf_vars)
 
-        if log_check():
+        if cancel_func():
             log.error("Installation error detected. See logfile for details.")
             raise InstallError("QEMUInstall failed")
         else:
             log.info("Installation finished without errors.")
 
 
-def novirt_log_check(log_check, proc):
+def novirt_cancel_check(cancel_funcs, proc):
     """
     Check to see if there has been an error in the logs
 
-    :param log_check: method to call to check for an error in the logs
+    :param cancel_funcs: list of functions to call, True from any one cancels the build
+    :type cancel_funcs: list
     :param proc: Popen object for the anaconda process
+    :type proc: subprocess.Popen
     :returns: True if the process has been terminated
 
-    The log_check method should return a True if an error has been detected.
+    The cancel_funcs functions should return a True if an error has been detected.
     When an error is detected the process is terminated and this returns True
     """
-    if log_check():
-        proc.terminate()
-        return True
+    for f in cancel_funcs:
+        if f():
+            proc.terminate()
+            return True
     return False
 
 
@@ -308,7 +311,7 @@ def anaconda_cleanup(dirinstall_path):
     return rc
 
 
-def novirt_install(opts, disk_img, disk_size):
+def novirt_install(opts, disk_img, disk_size, cancel_func=None):
     """
     Use Anaconda to install to a disk image
 
@@ -316,6 +319,8 @@ def novirt_install(opts, disk_img, disk_size):
     :type opts: argparse options
     :param str disk_img: The full path to the disk image to be created
     :param int disk_size: The size of the disk_img in MiB
+    :param cancel_func: Function that returns True to cancel build
+    :type cancel_func: function
 
     This method runs anaconda to create the image and then based on the opts
     passed creates a qemu disk image or tarfile.
@@ -365,6 +370,9 @@ def novirt_install(opts, disk_img, disk_size):
 
     log_monitor = LogMonitor(timeout=opts.timeout)
     args += ["--remotelog", "%s:%s" % (log_monitor.host, log_monitor.port)]
+    cancel_funcs = [log_monitor.server.log_check]
+    if cancel_func is not None:
+        cancel_funcs.append(cancel_func)
 
     # Make sure anaconda has the right product and release
     log.info("Running anaconda.")
@@ -372,7 +380,7 @@ def novirt_install(opts, disk_img, disk_size):
         for line in execReadlines("anaconda", args, reset_lang=False,
                                   env_add={"ANACONDA_PRODUCTNAME": opts.project,
                                            "ANACONDA_PRODUCTVERSION": opts.releasever},
-                                  callback=lambda p: not novirt_log_check(log_monitor.server.log_check, p)):
+                                  callback=lambda p: not novirt_cancel_check(cancel_funcs, p)):
             log.info(line)
 
         # Make sure the new filesystem is correctly labeled
@@ -418,10 +426,14 @@ def novirt_install(opts, disk_img, disk_size):
 
         if not opts.make_iso and not opts.make_fsimage and not opts.make_pxe_live:
             dm_name = os.path.splitext(os.path.basename(disk_img))[0]
-            dm_path = "/dev/mapper/"+dm_name
-            if os.path.exists(dm_path):
-                dm_detach(dm_path)
-                loop_detach(get_loop_name(disk_img))
+
+            # Remove device-mapper for partitions and disk
+            log.debug("Removing device-mapper setup on %s", dm_name)
+            for d in sorted(glob.glob("/dev/mapper/"+dm_name+"*"), reverse=True):
+                dm_detach(d)
+
+            log.debug("Removing loop device for %s", disk_img)
+            loop_detach("/dev/"+get_loop_name(disk_img))
 
     # qemu disk image is used by bare qcow2 images and by Vagrant
     if opts.image_type:
@@ -487,7 +499,7 @@ def novirt_install(opts, disk_img, disk_size):
         execWithRedirect("fallocate", ["--dig-holes", disk_img], raise_err=True)
 
 
-def virt_install(opts, install_log, disk_img, disk_size):
+def virt_install(opts, install_log, disk_img, disk_size, cancel_func=None):
     """
     Use qemu to install to a disk image
 
@@ -496,6 +508,8 @@ def virt_install(opts, install_log, disk_img, disk_size):
     :param str install_log: The path to write the log from qemu
     :param str disk_img: The full path to the disk image to be created
     :param int disk_size: The size of the disk_img in MiB
+    :param cancel_func: Function that returns True to cancel build
+    :type cancel_func: function
 
     This uses qemu with a boot.iso and a kickstart to create a disk
     image and then optionally, based on the opts passed, creates tarfile.
@@ -506,6 +520,9 @@ def virt_install(opts, install_log, disk_img, disk_size):
         raise InstallError("ISO is missing stage2, cannot continue")
 
     log_monitor = LogMonitor(install_log, timeout=opts.timeout)
+    cancel_funcs = [log_monitor.server.log_check]
+    if cancel_func is not None:
+        cancel_funcs.append(cancel_func)
 
     kernel_args = ""
     if opts.kernel_args:
@@ -530,7 +547,7 @@ def virt_install(opts, install_log, disk_img, disk_size):
     try:
         QEMUInstall(opts, iso_mount, opts.ks, diskimg_path, disk_size,
                     kernel_args, opts.ram, opts.vcpus, opts.vnc, opts.arch,
-                    log_check = log_monitor.server.log_check,
+                    cancel_func = lambda : any(f() for f in cancel_funcs),
                     virtio_host = log_monitor.host,
                     virtio_port = log_monitor.port,
                     image_type=opts.image_type, boot_uefi=opts.virt_uefi,
@@ -549,6 +566,8 @@ def virt_install(opts, install_log, disk_img, disk_size):
         else:
             msg = "virt_install failed on line: %s" % log_monitor.server.error_line
         raise InstallError(msg)
+    elif cancel_func():
+        raise InstallError("virt_install canceled by cancel_func")
 
     if opts.make_fsimage:
         mkfsimage_from_disk(diskimg_path, disk_img, disk_size, label=opts.fs_label)
