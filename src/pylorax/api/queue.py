@@ -245,7 +245,7 @@ def make_compose(cfg, results_dir):
             else:
                 open(joinpaths(results_dir, install_cfg.image_name), "w").write("TEST IMAGE")
         else:
-            run_creator(install_cfg, callback_func=cancel_build)
+            run_creator(install_cfg, cancel_func=cancel_build)
 
             # Extract the results of the compose into results_dir and cleanup the compose directory
             move_compose_results(install_cfg, results_dir)
