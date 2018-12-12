@@ -43,6 +43,9 @@ from pylorax.api.recipes import open_or_create_repo, commit_recipe_directory
 from pylorax.api.server import server, GitLock
 from pylorax.api.yumbase import YumLock
 
+# pylint has trouble with gevent's socket module, doesn't recognize some of its members
+# pylint: disable=no-member
+
 VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
 
 DEFAULT_USER  = "root"

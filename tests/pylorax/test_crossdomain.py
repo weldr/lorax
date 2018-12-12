@@ -20,6 +20,8 @@ from datetime import timedelta
 
 from pylorax.api.crossdomain import crossdomain
 
+# pylint has trouble with Flask's server client response objects, thinks they are tuples
+# pylint: disable=no-member
 
 server = Flask(__name__)
 

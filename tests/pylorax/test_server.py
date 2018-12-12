@@ -36,6 +36,9 @@ from pylorax.api.server import server, GitLock
 from pylorax.api.yumbase import YumLock
 from pylorax.sysutils import joinpaths
 
+# pylint has trouble with Flask's server client response objects, thinks they are tuples
+# pylint: disable=no-member
+
 # Used for testing UTF-8 input support
 UTF8_TEST_STRING = "I ｗ𝒊ll 𝟉ο𝘁 𝛠ａ𝔰ꜱ 𝘁𝒉𝝸𝚜".decode("utf-8")
 
