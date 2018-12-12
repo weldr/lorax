@@ -3,17 +3,40 @@ FROM centos:7
 COPY epel.repo /etc/yum.repos.d/
 RUN yum -y install --nogpgcheck epel-release && \
     rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-* && \
-    yum -y install make libgit2-glib tito python-pylint  \
-                    python-nose python-mako python-flask \
-                    python-coverage libselinux-python sudo \
-                    pykickstart python2-pytoml python-sphinx \
-                    python2-mock python-semantic_version \
-                    anaconda-tui python-rpmfluff && \
-    yum clean all && \
-    rm -rf /var/cache/yum
-
-RUN mkdir /lorax
-COPY . /lorax
-
-WORKDIR /lorax
-RUN make test
+    yum -y install \
+  anaconda-tui \
+  libgit2-glib \
+  libselinux-python \
+  make \
+  pykickstart \
+  python-coverage \
+  python-coveralls \
+  python-flask \
+  python-gevent \
+  python-magic \
+  python-mako \
+  python2-mock \
+  python-nose \
+  python-pocketlint \
+  python-pylint \
+  pyparted \
+  python2-pytoml \
+  python-semantic_version \
+  python-sphinx \
+  python-rpmfluff \
+  python-librepo \
+  beakerlib \
+  sudo \
+  tito \
+  rsync \
+  e2fsprogs \
+  xz-lzma-compat \
+  pbzip2 \
+  squashfs-tools \
+  qemu-img \
+  which && \
+  touch /.in-container
+RUN useradd weldr
+VOLUME /lorax-ro
+VOLUME /test-results
+WORKDIR /lorax-ro
