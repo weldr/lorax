@@ -1,13 +1,13 @@
 PYTHON ?= /usr/bin/python
 DESTDIR ?= /
+DOCKER ?= docker
 
 PKGNAME = lorax-composer
 VERSION = $(shell awk '/Version:/ { print $$2 }' $(PKGNAME).spec)
 RELEASE = $(shell awk '/Release:/ { print $$2 }' $(PKGNAME).spec | sed -e 's|%.*$$||g')
 TAG = lorax-$(VERSION)-$(RELEASE)
-PW_DIR ?= $(shell pwd)
-USER_SITE_PACKAGES ?= $(shell sudo $(PYTHON) -m site --user-site)
 
+IMAGE_RELEASE = $(shell awk -F: '/FROM/ { print $$2}' Dockerfile.test)
 
 default: all
 
@@ -35,18 +35,34 @@ check:
 	@echo "*** Running pylint ***"
 	PYTHONPATH=$(PYTHONPATH):./src/ ./tests/pylint/runpylint.py
 
-# /api/docs/ tests require we have the documentation already built
-test: docs
+test:
 	@echo "*** Running tests ***"
-	sudo mkdir -p $(USER_SITE_PACKAGES)
-	sudo cp ./tests/usercustomize.py $(USER_SITE_PACKAGES)
-	sudo COVERAGE_PROCESS_START=$(PW_DIR)/.coveragerc PYTHONPATH=$(PYTHONPATH):./src/ \
-			$(PYTHON) -m nose -v ./src/pylorax/ ./src/composer/ ./tests/pylorax/ ./tests/composer/
-	sudo rm -rf $(USER_SITE_PACKAGES)
+	PYTHONPATH=$(PYTHONPATH):./src/ $(PYTHON) -m nose -v --with-coverage --cover-erase --cover-branches \
+					--cover-package=pylorax --cover-inclusive \
+					./tests/pylorax/ ./tests/composer/
 
-	coverage combine
 	coverage report -m
 	[ -f "/usr/bin/coveralls" ] && [ -n "$(COVERALLS_REPO_TOKEN)" ] && coveralls || echo
+	
+	./tests/test_cli.sh
+
+# need `losetup`, which needs Docker to be in privileged mode (--privileged)
+# but even so fails in Travis CI
+test_images:
+	sudo -E ./tests/test_cli.sh tests/cli/test_compose_ext4-filesystem.sh \
+				    tests/cli/test_compose_partitioned-disk.sh
+
+test_aws:
+	sudo -E ./tests/test_cli.sh tests/cli/test_build_and_deploy_aws.sh
+
+test_azure:
+	sudo -E ./tests/test_cli.sh tests/cli/test_build_and_deploy_azure.sh
+
+test_openstack:
+	sudo -E ./tests/test_cli.sh tests/cli/test_build_and_deploy_openstack.sh
+
+test_vmware:
+	sudo -E ./tests/test_cli.sh tests/cli/test_build_and_deploy_vmware.sh
 
 clean:
 	-rm -rf build src/pylorax/version.py
@@ -73,9 +89,22 @@ local:
 	@rm -rf /var/tmp/$(PKGNAME)-$(VERSION)
 	@echo "The archive is in $(PKGNAME)-$(VERSION).tar.gz"
 
+test-in-copy:
+	rsync -aP --exclude=.git /lorax-ro/ /lorax/
+	make -C /lorax/ check test
+	cp /lorax/.coverage /test-results/
+
 test-in-docker:
-	sudo docker build -t welder/lorax-composer:latest -f Dockerfile.test .
+	sudo $(DOCKER) build -t welder/lorax-tests:$(IMAGE_RELEASE) -f Dockerfile.test .
+	sudo $(DOCKER) run --rm -it -v `pwd`/.test-results/:/test-results -v `pwd`:/lorax-ro:ro --security-opt label=disable welder/lorax-tests:$(IMAGE_RELEASE) make test-in-copy
+
+docs-in-docker:
+	sudo $(DOCKER) run -it --rm -v `pwd`/docs/html/:/lorax/docs/html/ --security-opt label=disable welder/lorax-tests:$(IMAGE_RELEASE) make docs
 
 ci: check test
 
 .PHONY: all install check test clean tag docs archive local
+
+.PHONY: ci_after_success
+ci_after_success:
+# nothing to do here, but Jenkins expects this to be present, otherwise fails
