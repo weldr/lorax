@@ -1,0 +1,25 @@
+#!/usr/bin/python3
+
+from contextlib import contextmanager
+from types import SimpleNamespace
+import json
+import os
+import subprocess
+import sys
+import tempfile
+
+options = SimpleNamespace(**json.loads(sys.stdin.read()))
+
+with tempfile.NamedTemporaryFile('w', suffix='.ks') as f:
+    f.write(options.kickstart)
+    f.flush()
+
+    cmd = [
+        'anaconda',
+        '-d', '--cmdline',
+        '--skippackages',
+        '--kickstart', f.name,
+        '--dirinstall', options.tree
+    ]
+
+    subprocess.run(cmd, check=True)

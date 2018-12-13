@@ -1,0 +1,44 @@
+#!/usr/bin/python3
+
+from configparser import ConfigParser
+from contextlib import contextmanager
+from types import SimpleNamespace
+import json
+import os
+import subprocess
+import sys
+
+options = SimpleNamespace(**json.loads(sys.stdin.read()))
+
+@contextmanager
+def bindmount(source, dest):
+    os.makedirs(source, 0o755, True)
+    os.makedirs(dest, 0o755, True)
+    subprocess.run(['mount', '--bind', source, dest], check=True)
+    try:
+        yield
+    finally:
+        subprocess.run(['umount', dest], check=True)
+
+
+# TODO check for existing config
+dnfconf = ConfigParser()
+for repoid, properties in options.repos.items():
+    dnfconf[repoid] = properties
+
+os.makedirs(f'{options.tree}/etc/dnf', True)
+with open(f'{options.tree}/etc/dnf/dnf.conf', 'w') as f:
+    dnfconf.write(f)
+
+
+with bindmount('/proc', f'{options.tree}/proc'), \
+     bindmount('/dev', f'{options.tree}/dev'), \
+     bindmount('/sys', f'{options.tree}/sys'):
+
+    cmd = ['dnf', '-yv',
+           f'--installroot={options.tree}',
+           '--releasever=29',
+           '--setopt=reposdir=None',     # don't use repos from the host
+           'install', 'chrony', 'firewalld'] + options.packages
+
+    subprocess.run(cmd, check=True)

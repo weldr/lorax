@@ -24,6 +24,9 @@ data_files.append(("/usr/sbin", ["src/sbin/lorax", "src/sbin/mkefiboot",
 data_files.append(("/usr/bin",  ["src/bin/image-minimizer",
                                  "src/bin/mk-s390-cdboot",
                                  "src/bin/composer-cli"]))
+data_files.append(("/usr/lib/lorax", ["src/modules/io.weldr.rpm",
+                                      "src/modules/io.weldr.anaconda",
+                                      "src/modules/io.weldr.fsimage"]))
 
 # get the version
 sys.path.insert(0, "src")

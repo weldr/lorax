@@ -1,0 +1,26 @@
+#!/usr/bin/python3
+
+from contextlib import contextmanager
+from tempfile import TemporaryDirectory
+from types import SimpleNamespace
+import json
+import os
+import subprocess
+import sys
+
+options = SimpleNamespace(**json.loads(sys.stdin.read()))
+
+@contextmanager
+def mountloop(image, path):
+    try:
+        subprocess.run(['mount', '-o', 'loop', image, path], check=True)
+        yield
+    finally:
+        subprocess.run(['umount', path], check=True)
+
+
+subprocess.run(['truncate', '--size', '2G', options.target], check=True)
+subprocess.run(['mkfs.ext4', '-F', options.target], check=True)
+
+with TemporaryDirectory() as d, mountloop(options.target, d):
+    subprocess.run(['cp', '-a', os.path.join(options.tree, '.'), d], check=True)

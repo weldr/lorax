@@ -39,6 +39,8 @@ from math import ceil
 import pytoml as toml
 import shutil
 from uuid import uuid4
+import io
+import json
 
 # Use pykickstart to calculate disk image size
 from pykickstart.parser import KickstartParser
@@ -111,6 +113,18 @@ def repo_to_ks(r, url="url"):
         cmd += '--noverifyssl'
 
     return cmd
+
+
+def repodata(repo):
+    data = {}
+    for key in [ 'name', 'baseurl', 'metalink', 'mirrorlist' ]:
+        # cast to a string here, because 'repo' contains foreign
+        # VectorString instances
+        v = getattr(repo, key)
+        if v:
+            data[key] = str(v)
+
+    return data
 
 
 def write_ks_root(f, user):
@@ -302,37 +316,36 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
     package_nver = recipe.package_nver
     projects = sorted(set(module_nver+package_nver), key=lambda p: p[0].lower())
     deps = []
-    try:
-        # This can possibly update repodata and reset the YumBase object.
-        with dnflock.lock_check:
-            (installed_size, deps) = projects_depsolve_with_size(dnflock.dbo, projects, recipe.group_names, with_core=False)
-    except ProjectsError as e:
-        log.error("start_build depsolve: %s", str(e))
-        raise RuntimeError("Problem depsolving %s: %s" % (recipe["name"], str(e)))
+    # try:
+    #     # This can possibly update repodata and reset the YumBase object.
+    #     with dnflock.lock_check:
+    #         (installed_size, deps) = projects_depsolve_with_size(dnflock.dbo, projects, recipe.group_names, with_core=False)
+    # except ProjectsError as e:
+    #     log.error("start_build depsolve: %s", str(e))
+    #     raise RuntimeError("Problem depsolving %s: %s" % (recipe["name"], str(e)))
 
-    # Read the kickstart template for this type
     ks_template_path = joinpaths(share_dir, "composer", compose_type) + ".ks"
     ks_template = open(ks_template_path, "r").read()
 
     # How much space will the packages in the default template take?
-    ks_version = makeVersion()
-    ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
-    ks.readKickstartFromString(ks_template+"\n%end\n")
-    pkgs = [(name, "*") for name in ks.handler.packages.packageList]
-    grps = [grp.name for grp in ks.handler.packages.groupList]
-    try:
-        with dnflock.lock:
-            (template_size, _) = projects_depsolve_with_size(dnflock.dbo, pkgs, grps, with_core=not ks.handler.packages.nocore)
-    except ProjectsError as e:
-        log.error("start_build depsolve: %s", str(e))
-        raise RuntimeError("Problem depsolving %s: %s" % (recipe["name"], str(e)))
-    log.debug("installed_size = %d, template_size=%d", installed_size, template_size)
+    # ks_version = makeVersion()
+    # ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+    # ks.readKickstartFromString(ks_template+"\n%end\n")
+    # pkgs = [(name, "*") for name in ks.handler.packages.packageList]
+    # grps = [grp.name for grp in ks.handler.packages.groupList]
+    # try:
+    #     with dnflock.lock:
+    #         (template_size, _) = projects_depsolve_with_size(dnflock.dbo, pkgs, grps, with_core=not ks.handler.packages.nocore)
+    # except ProjectsError as e:
+    #     log.error("start_build depsolve: %s", str(e))
+    #     raise RuntimeError("Problem depsolving %s: %s" % (recipe["name"], str(e)))
+    # log.debug("installed_size = %d, template_size=%d", installed_size, template_size)
 
     # Minimum LMC disk size is 1GiB, and anaconda bumps the estimated size up by 10% (which doesn't always work).
     # XXX BUT Anaconda has a bug, it won't execute a kickstart on a disk smaller than 3000 MB
     # XXX There is an upstream patch pending, but until then, use that as the minimum
-    installed_size = max(3e9, int((installed_size+template_size))) * 1.2
-    log.debug("/ partition size = %d", installed_size)
+    # installed_size = max(3e9, int((installed_size+template_size))) * 1.2
+    # log.debug("/ partition size = %d", installed_size)
 
     # Create the results directory
     build_id = str(uuid4())
@@ -370,29 +383,31 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
 
     # Create the final kickstart with repos and package list
     ks_path = joinpaths(results_dir, "final-kickstart.ks")
-    with open(ks_path, "w") as f:
-        ks_url = repo_to_ks(repos[0], "url")
-        log.debug("url = %s", ks_url)
-        f.write('url %s\n' % ks_url)
-        for idx, r in enumerate(repos[1:]):
-            ks_repo = repo_to_ks(r, "baseurl")
-            log.debug("repo composer-%s = %s", idx, ks_repo)
-            f.write('repo --name="composer-%s" %s\n' % (idx, ks_repo))
+    with io.StringIO() as f:
+        # ks_url = repo_to_ks(repos[0], "url")
+        # log.debug("url = %s", ks_url)
+        # f.write('url %s\n' % ks_url)
+        # for idx, r in enumerate(repos[1:]):
+        #     ks_repo = repo_to_ks(r, "baseurl")
+        #     log.debug("repo composer-%s = %s", idx, ks_repo)
+        #     f.write('repo --name="composer-%s" %s\n' % (idx, ks_repo))
 
         # Setup the disk for booting
         # TODO Add GPT and UEFI boot support
-        f.write('clearpart --all --initlabel\n')
+        # f.write('clearpart --all --initlabel\n')
 
         # Write the root partition and it's size in MB (rounded up)
-        f.write('part / --size=%d\n' % ceil(installed_size / 1024**2))
+        # f.write('part / --size=%d\n' % ceil(installed_size / 1024**2))
 
         f.write(ks_template)
 
-        for d in deps:
-            f.write(dep_nevra(d)+"\n")
+        # for d in deps:
+        #     f.write(dep_nevra(d)+"\n")
         f.write("%end\n")
 
         add_customizations(f, recipe)
+
+        ks_contents = f.getvalue()
 
     # Setup the config to pass to novirt_install
     log_dir = joinpaths(results_dir, "logs/")
@@ -404,6 +419,31 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
     os_release = flatconfig("/etc/os-release")
 
     log.debug("os_release = %s", dict(os_release.items()))
+
+    pipeline = [
+        {
+            "name": "io.weldr.rpm",
+            "options": {
+                "repos": { r.id: repodata(r) for r in repos },
+                "packages": [ 'chronyd', 'firewalld' ] + [ f'{module}-{version}' for module, version in projects ]
+            }
+        },
+        {
+            "name": "io.weldr.anaconda",
+            "options": {
+                "kickstart": ks_contents
+            }
+        },
+        {
+            "name": "io.weldr.fsimage",
+            "options": {
+                "target": os.abspath(cfg_args["image_name"])
+            }
+        }
+    ]
+
+    with open(joinpaths(results_dir, 'pipeline.json'), 'w') as f:
+        json.dump(pipeline, f)
 
     cfg_args["title"] = os_release.get("PRETTY_NAME", "")
     cfg_args["project"] = os_release.get("NAME", "")

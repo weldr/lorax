@@ -20,6 +20,7 @@ log = logging.getLogger("pylorax")
 import os
 import grp
 from glob import glob
+import json
 import multiprocessing as mp
 import pytoml as toml
 import pwd
@@ -33,7 +34,7 @@ from pylorax.api.compose import move_compose_results
 from pylorax.api.recipes import recipe_from_file
 from pylorax.api.timestamp import TS_CREATED, TS_STARTED, TS_FINISHED, write_timestamp, timestamp_dict
 from pylorax.base import DataHolder
-from pylorax.creator import run_creator
+from pylorax.creator import run_creator, run_modules
 from pylorax.sysutils import joinpaths
 
 def check_queues(cfg):
@@ -175,9 +176,9 @@ def make_compose(cfg, results_dir):
     """
 
     # Check on the ks's presence
-    ks_path = joinpaths(results_dir, "final-kickstart.ks")
-    if not os.path.exists(ks_path):
-        raise RuntimeError("Missing kickstart file at %s" % ks_path)
+    # ks_path = joinpaths(results_dir, "final-kickstart.ks")
+    # if not os.path.exists(ks_path):
+    #     raise RuntimeError("Missing kickstart file at %s" % ks_path)
 
     # The anaconda logs are copied into ./anaconda/ in this directory
     log_dir = joinpaths(results_dir, "logs/")
@@ -245,10 +246,17 @@ def make_compose(cfg, results_dir):
             else:
                 open(joinpaths(results_dir, install_cfg.image_name), "w").write("TEST IMAGE")
         else:
-            run_creator(install_cfg, callback_func=cancel_build)
+            # run_creator(install_cfg, callback_func=cancel_build)
+            with open(joinpaths(results_dir, 'pipeline.json')) as f:
+                pipeline = json.load(f)
+
+            for module in pipeline:
+                module["options"]["tree"] = os.abspath(joinpaths(results_dir, 'tree'))
+
+            run_modules(pipeline, log_dir)
 
             # Extract the results of the compose into results_dir and cleanup the compose directory
-            move_compose_results(install_cfg, results_dir)
+            # move_compose_results(install_cfg, results_dir)
     finally:
         # Make sure any remaining temporary directories are removed (eg. if there was an exception)
         for d in glob(joinpaths(cfg.tmp, "lmc-*")):

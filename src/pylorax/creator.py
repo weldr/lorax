@@ -23,6 +23,7 @@ import subprocess
 import shutil
 import hashlib
 import glob
+import json
 
 # Use Mako templates for appliance builder descriptions
 from mako.template import Template
@@ -712,3 +713,10 @@ def run_creator(opts, callback_func=None):
         result_dir = None
 
     return (result_dir, disk_img)
+
+def run_modules(config, logdir):
+    for i, module in enumerate(config, start=1):
+        options = json.dumps(module['options']).encode('utf-8')
+
+        with open(os.path.join(logdir, str(i).zfill(4) + '-' + module['name']), 'w') as log:
+            subprocess.run(['/usr/lib/lorax/' + module['name']], input=options, stdout=log, stderr=log, check=True)
