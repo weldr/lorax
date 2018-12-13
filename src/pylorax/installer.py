@@ -21,9 +21,9 @@ import glob
 import json
 from math import ceil
 import os
-import subprocess
 import shutil
 import socket
+import subprocess
 import tempfile
 
 # Use the Lorax treebuilder branch for iso creation
@@ -285,7 +285,10 @@ def novirt_cancel_check(cancel_funcs, proc):
     """
     for f in cancel_funcs:
         if f():
+            log.info("Terminating process %d", proc.pid)
             proc.terminate()
+
+            # NOTE: Have to return and allow execReadlines to call proc.communicate()
             return True
     return False
 
@@ -386,6 +389,7 @@ def novirt_install(opts, disk_img, disk_size, cancel_func=None):
         for line in execReadlines("anaconda", args, reset_lang=False,
                                   env_add={"ANACONDA_PRODUCTNAME": opts.project,
                                            "ANACONDA_PRODUCTVERSION": opts.releasever},
+                                  reset_handlers=False,
                                   callback=lambda p: not novirt_cancel_check(cancel_funcs, p)):
             log.info(line)
 
@@ -440,6 +444,12 @@ def novirt_install(opts, disk_img, disk_size, cancel_func=None):
 
             log.debug("Removing loop device for %s", disk_img)
             loop_detach("/dev/"+get_loop_name(disk_img))
+
+        # When anaconda crashes or is canceled it leaves pyanaconda.* running
+        execWithRedirect("pkill", ["-f", "pyanaconda."])
+
+        # It can also leave dbus running
+        execWithRedirect("pkill", ["-f", "anaconda-bus.conf"])
 
     # qemu disk image is used by bare qcow2 images and by Vagrant
     if opts.image_type:
