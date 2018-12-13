@@ -19,9 +19,9 @@ rlJournalStart
         UUID=`echo $UUID | cut -f 2 -d' '`
     rlPhaseEnd
 
-    rlPhaseStartTest "compose info"
+    rlPhaseStartTest "compose details"
         if [ -n "$UUID" ]; then
-            rlRun -t -c "$CLI compose info $UUID | egrep 'RUNNING|WAITING'"
+            rlRun -t -c "$CLI compose details $UUID | egrep 'RUNNING|WAITING'"
         else
             rlFail "Compose UUID is empty!"
         fi
@@ -29,7 +29,7 @@ rlJournalStart
 
     rlPhaseStartTest "compose image"
         if [ -n "$UUID" ]; then
-            until $CLI compose info $UUID | grep FINISHED; do
+            until $CLI compose details $UUID | grep FINISHED; do
                 sleep 60
                 rlLogInfo "Waiting for compose to finish ..."
             done;
