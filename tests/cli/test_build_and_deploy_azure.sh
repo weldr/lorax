@@ -48,7 +48,7 @@ rlJournalStart
         rlLogInfo "AZURE_STORAGE_CONTAINER=$AZURE_STORAGE_CONTAINER"
 
         if ! rlCheckRpm "python3-pip"; then
-            rlRun -t -c "dnf -y install python3-pip"
+            rlRun -t -c "yum -y install python3-pip"
             rlAssertRpm python3-pip
         fi
 
