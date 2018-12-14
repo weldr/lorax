@@ -477,6 +477,9 @@ def mkfsimage(fstype, rootdir, outfile, size=None, mkfsargs=None, mountargs="", 
                 copytree(rootdir, mnt, preserve)
             do_grafts(graft, mnt, preserve)
 
+            # Save information about filesystem usage
+            execWithRedirect("df", [mnt])
+
     # Make absolutely sure that the data has been written
     runcmd(["sync"])
 
