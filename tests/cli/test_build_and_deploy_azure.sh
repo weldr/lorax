@@ -47,12 +47,12 @@ rlJournalStart
         export AZURE_STORAGE_CONTAINER="${AZURE_STORAGE_CONTAINER:-composerredhat}"
         rlLogInfo "AZURE_STORAGE_CONTAINER=$AZURE_STORAGE_CONTAINER"
 
-        if ! rlCheckRpm "python3-pip"; then
-            rlRun -t -c "yum -y install python3-pip"
-            rlAssertRpm python3-pip
+        if ! rlCheckRpm "python2-pip"; then
+            rlRun -t -c "yum -y install python2-pip"
+            rlAssertRpm python2-pip
         fi
 
-        rlRun -t -c "pip3 install ansible[azure]"
+        rlRun -t -c "pip install ansible[azure]"
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"

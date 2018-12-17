@@ -32,12 +32,12 @@ rlJournalStart
         rlLogInfo "AWS_BUCKET=$AWS_BUCKET"
         rlLogInfo "AWS_REGION=$AWS_REGION"
 
-        if ! rlCheckRpm "python3-pip"; then
-            rlRun -t -c "yum -y install python3-pip"
-            rlAssertRpm python3-pip
+        if ! rlCheckRpm "python2-pip"; then
+            rlRun -t -c "yum -y install python2-pip"
+            rlAssertRpm python2-pip
         fi
 
-        rlRun -t -c "pip3 install awscli"
+        rlRun -t -c "pip install awscli"
 
         # aws configure
         [ -d ~/.aws/ ] || mkdir ~/.aws/
