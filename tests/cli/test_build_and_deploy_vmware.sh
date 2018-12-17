@@ -47,12 +47,12 @@ rlJournalStart
         V_FOLDER="${V_FOLDER:-Composer}"
         rlLogInfo "V_FOLDER=$V_FOLDER"
 
-        if ! rlCheckRpm "python3-pip"; then
-            rlRun -t -c "yum -y install python3-pip"
-            rlAssertRpm python3-pip
+        if ! rlCheckRpm "python2-pip"; then
+            rlRun -t -c "yum -y install python2-pip"
+            rlAssertRpm python2-pip
         fi
 
-        rlRun -t -c "pip3 install pyvmomi"
+        rlRun -t -c "pip install pyvmomi"
 
         TMP_DIR=`mktemp -d /tmp/composer-vmware.XXXXX`
         SAMPLES="$TMP_DIR/pyvmomi-community-samples"
@@ -105,14 +105,14 @@ __EOF__
         rlRun -t -c "$CLI compose image $UUID"
         IMAGE="$UUID-disk.vmdk"
 
-        python3 $SAMPLES/upload_file_to_datastore.py -S -s $V_HOST -u $V_USERNAME -p $V_PASSWORD \
+        python $SAMPLES/upload_file_to_datastore.py -S -s $V_HOST -u $V_USERNAME -p $V_PASSWORD \
                 -d $V_DATASTORE -l `readlink -f $IMAGE` -r $IMAGE
         rlAssert0 "Image upload successfull" $?
     rlPhaseEnd
 
     rlPhaseStartTest "Start VM instance"
         VM_NAME="Composer-Auto-VM-$UUID"
-        INSTANCE_UUID=`python3 $SAMPLES/create_vm.py -S -s $V_HOST -u $V_USERNAME -p $V_PASSWORD \
+        INSTANCE_UUID=`python $SAMPLES/create_vm.py -S -s $V_HOST -u $V_USERNAME -p $V_PASSWORD \
                         --datacenter $V_DATACENTER -c $V_CLUSTER -f $V_FOLDER -d $V_DATASTORE \
                         --portgroup $V_NETWORK -v $IMAGE -m 2048 -g rhel7_64Guest -n $VM_NAME \
                         --power-on`
@@ -128,7 +128,7 @@ __EOF__
         while [ "$IP_ADDRESS" == "None" ]; do
             rlLogInfo "IP_ADDRESS is not assigned yet ..."
             sleep 30
-            IP_ADDRESS=`python3 $SAMPLES/find_by_uuid.py -S -s $V_HOST -u $V_USERNAME -p $V_PASSWORD \
+            IP_ADDRESS=`python $SAMPLES/find_by_uuid.py -S -s $V_HOST -u $V_USERNAME -p $V_PASSWORD \
                             --uuid $INSTANCE_UUID | grep 'ip address' | tr -d ' ' | cut -f2 -d:`
         done
 
@@ -145,7 +145,7 @@ __EOF__
 
     rlPhaseStartCleanup
         # note: vmdk disk is removed when destroying the VM
-        python3 $SAMPLES/destroy_vm.py -S -s $V_HOST -u $V_USERNAME -p $V_PASSWORD --uuid $INSTANCE_UUID
+        python $SAMPLES/destroy_vm.py -S -s $V_HOST -u $V_USERNAME -p $V_PASSWORD --uuid $INSTANCE_UUID
         rlAssert0 "VM destroyed" $?
         rlRun -t -c "$CLI compose delete $UUID"
         rlRun -t -c "rm -rf $IMAGE $TMP_DIR $SSH_KEY_DIR"

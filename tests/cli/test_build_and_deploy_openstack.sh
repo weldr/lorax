@@ -35,12 +35,12 @@ rlJournalStart
             rlLogInfo "OS_PASSWORD is configured"
         fi
 
-        if ! rlCheckRpm "python3-pip"; then
-            rlRun -t -c "yum -y install python3-pip"
-            rlAssertRpm python3-pip
+        if ! rlCheckRpm "python2-pip"; then
+            rlRun -t -c "yum -y install python2-pip"
+            rlAssertRpm python2-pip
         fi
 
-        rlRun -t -c "pip3 install ansible openstacksdk"
+        rlRun -t -c "pip install ansible openstacksdk"
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
