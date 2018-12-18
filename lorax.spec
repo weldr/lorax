@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.22
+Version:        28.23
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -230,6 +230,15 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Dec 17 2018 Brian C. Lane <bcl@redhat.com> 28.23-1
+- lorax: Save information about rootfs filesystem size and usage (bcl@redhat.com)
+- Turn on signed tags when using tito. (bcl@redhat.com)
+- lorax-composer: Cancel running Anaconda process (bcl@redhat.com)
+- Add cancel_func to virt and novirt_install functions (bcl@redhat.com)
+- lorax-composer: Check for STATUS before deleting (bcl@redhat.com)
+- Check for existing CANCEL request, and exit on FINISHED (bcl@redhat.com)
+- Fix vhd images (vponcova@redhat.com)
+
 * Thu Dec 06 2018 Brian C. Lane <bcl@redhat.com> 28.22-1
 - lorax-composer: Handle packages with multiple builds (bcl@redhat.com)
 - lorax-composer: Check the queue and results at startup (bcl@redhat.com)
