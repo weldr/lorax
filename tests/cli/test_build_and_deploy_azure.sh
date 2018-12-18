@@ -52,7 +52,7 @@ rlJournalStart
             rlAssertRpm python2-pip
         fi
 
-        rlRun -t -c "pip install ansible[azure]"
+        rlRun -t -c "pip install ansible[azure] futures"
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
