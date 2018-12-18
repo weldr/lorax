@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.18
+Version:        28.14.19
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -233,6 +233,18 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Tue Dec 18 2018 Brian C. Lane <bcl@redhat.com> 28.14.19-1
+- lorax: Save information about rootfs filesystem size and usage (bcl)
+  Resolves: rhbz#1659625
+- lorax-composer: Cancel running Anaconda process (bcl)
+  Resolves: rhbz#1656691
+- Add cancel_func to virt and novirt_install functions (bcl)
+  Resolves: rhbz#1656691
+- lorax-composer: Check for STATUS before deleting (bcl)
+  Related: rhbz#1656691
+- Check for existing CANCEL request, and exit on FINISHED (bcl)
+  Related: rhbz#1656691
+
 * Fri Dec 07 2018 Brian C. Lane <bcl@redhat.com> 28.14.18-1
 - New lorax documentation - 28.14.18 (bcl)
   Related: rhbz#1656642
