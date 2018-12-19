@@ -429,6 +429,8 @@ def setup_logging(logfile, theLogger):
     f = os.path.abspath(os.path.dirname(logfile))+"/program.log"
     fh = logging.FileHandler(filename=f, mode="w")
     fh.setLevel(logging.DEBUG)
+    fmt = logging.Formatter("%(asctime)s %(levelname)s: %(message)s")
+    fh.setFormatter(fmt)
     program_log.addHandler(fh)
 
 

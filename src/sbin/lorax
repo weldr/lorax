@@ -45,6 +45,8 @@ def setup_logging(opts):
     logfile = os.path.abspath(os.path.dirname(opts.logfile))+"/dnf.log"
     fh = logging.FileHandler(filename=logfile, mode="w")
     fh.setLevel(logging.NOTSET)
+    fmt = logging.Formatter("%(asctime)s %(levelname)s: %(message)s")
+    fh.setFormatter(fmt)
     dnf_log.addHandler(fh)
 
     # Setup librepo logging

@@ -69,6 +69,8 @@ def setup_logging(logfile):
     logfile = os.path.abspath(os.path.dirname(logfile))+"/program.log"
     fh = logging.FileHandler(filename=logfile)
     fh.setLevel(logging.DEBUG)
+    fmt = logging.Formatter("%(asctime)s %(levelname)s: %(message)s")
+    fh.setFormatter(fmt)
     program_log.addHandler(fh)
 
     # Server request logging
@@ -83,6 +85,8 @@ def setup_logging(logfile):
     logfile = os.path.abspath(os.path.dirname(logfile))+"/dnf.log"
     fh = logging.FileHandler(filename=logfile)
     fh.setLevel(logging.DEBUG)
+    fmt = logging.Formatter("%(asctime)s %(levelname)s: %(message)s")
+    fh.setFormatter(fmt)
     dnf_log.addHandler(fh)
 
 
