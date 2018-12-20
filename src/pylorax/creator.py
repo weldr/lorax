@@ -663,7 +663,7 @@ def run_creator(opts, cancel_func=None):
                 log.error("squashfs.img creation failed")
                 raise RuntimeError("squashfs.img creation failed")
 
-            if cancel_func():
+            if cancel_func and cancel_func():
                 raise RuntimeError("ISO creation canceled")
 
             with Mount(disk_img, opts="loop") as mount_dir:
