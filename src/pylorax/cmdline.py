@@ -103,8 +103,8 @@ def lorax_parser(dracut_default=""):
                           metavar="[repo]", help="Names of repos to enable")
     optional.add_argument("--disablerepo", action="append", default=[], dest="disablerepos",
                           metavar="[repo]", help="Names of repos to disable")
-    optional.add_argument("--rootfs-size", type=int, default=2,
-                          help="Size of root filesystem in GiB. Defaults to 2.")
+    optional.add_argument("--rootfs-size", type=int, default=3,
+                          help="Size of root filesystem in GiB. Defaults to 3.")
     optional.add_argument("--noverifyssl", action="store_true", default=False,
                           help="Do not verify SSL certificates")
 
