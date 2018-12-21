@@ -22,7 +22,11 @@ import tempfile
 import unittest
 
 import pylorax.api.recipes as recipes
+from pylorax.api.compose import add_customizations
 from pylorax.sysutils import joinpaths
+
+from pykickstart.parser import KickstartParser
+from pykickstart.version import makeVersion
 
 class BasicRecipeTest(unittest.TestCase):
     @classmethod
@@ -351,3 +355,215 @@ class GetRevisionFromTagTests(unittest.TestCase):
     def test_02_invalid_tag_missing_revision_string(self):
         revision = recipes.get_revision_from_tag('branch/filename/mybranch')
         self.assertIsNone(revision)
+
+class CustomizationsTests(unittest.TestCase):
+    @staticmethod
+    def _blueprint_to_ks(blueprint_data):
+        recipe_obj = recipes.recipe_from_toml(blueprint_data)
+        ks = KickstartParser(makeVersion())
+
+        # write out the customization data, and parse the resulting kickstart
+        with tempfile.NamedTemporaryFile(prefix="lorax.test.customizations", mode="w") as f:
+            add_customizations(f, recipe_obj)
+            f.flush()
+            ks.readKickstart(f.name)
+
+        return ks
+
+    @staticmethod
+    def _find_user(ks, username):
+        for user in ks.handler.user.userList:
+            if user.name == username:
+                return user
+        else:
+            return None
+
+    @staticmethod
+    def _find_sshkey(ks, username):
+        for key in ks.handler.sshkey.sshUserList:
+            if key.username == username:
+                return key
+        else:
+            return None
+
+    @staticmethod
+    def _find_group(ks, groupname):
+        for group in ks.handler.group.groupList:
+            if group.name == groupname:
+                return group
+        else:
+            return None
+
+    def test_hostname(self):
+        blueprint_data = """name = "test-hostname"
+description = "test recipe"
+version = "0.0.1"
+
+[customizations]
+hostname = "testy.example.com"
+"""
+        ks = self._blueprint_to_ks(blueprint_data)
+        self.assertEqual(ks.handler.network.hostname, "testy.example.com")
+
+    def test_hostname_list(self):
+        """Test that the hostname still works when using [[customizations]] instead of [customizations]"""
+
+        blueprint_data = """name = "test-hostname-list"
+description = "test recipe"
+version = "0.0.1"
+
+[[customizations]]
+hostname = "testy.example.com"
+"""
+        ks = self._blueprint_to_ks(blueprint_data)
+        self.assertEqual(ks.handler.network.hostname, "testy.example.com")
+
+    def test_user(self):
+        blueprint_data = """name = "test-user"
+description = "test recipe"
+version = "0.0.1"
+
+[[customizations.user]]
+name = "admin"
+description = "Widget admin account"
+password = "$6$CHO2$3rN8eviE2t50lmVyBYihTgVRHcaecmeCk31LeOUleVK/R/aeWVHVZDi26zAH.o0ywBKH9Tc0/wm7sW/q39uyd1"
+home = "/srv/widget/"
+shell = "/usr/bin/bash"
+groups = ["widget", "users", "students"]
+uid = 1200
+
+[[customizations.user]]
+name = "bart"
+key = "SSH KEY FOR BART"
+groups = ["students"]
+"""
+
+        ks = self._blueprint_to_ks(blueprint_data)
+
+        admin = self._find_user(ks, "admin")
+        self.assertIsNotNone(admin)
+        self.assertEqual(admin.name, "admin")
+        self.assertEqual(admin.password, "$6$CHO2$3rN8eviE2t50lmVyBYihTgVRHcaecmeCk31LeOUleVK/R/aeWVHVZDi26zAH.o0ywBKH9Tc0/wm7sW/q39uyd1")
+        self.assertEqual(admin.homedir, "/srv/widget/")
+        self.assertEqual(admin.shell, "/usr/bin/bash")
+        # order is unimportant, so use a set instead of comparing lists directly
+        self.assertEqual(set(admin.groups), {"widget", "users", "students"})
+        self.assertEqual(admin.uid, 1200)
+
+        bart = self._find_user(ks, "bart")
+        self.assertIsNotNone(bart)
+        self.assertEqual(bart.name, "bart")
+        self.assertEqual(bart.groups, ["students"])
+
+        bartkey = self._find_sshkey(ks, "bart")
+        self.assertIsNotNone(bartkey)
+        self.assertEqual(bartkey.username, "bart")
+        self.assertEqual(bartkey.key, "SSH KEY FOR BART")
+
+    def test_group(self):
+        blueprint_data = """name = "test-group"
+description = "test recipe"
+version = "0.0.1"
+
+[[customizations.group]]
+name = "widget"
+
+[[customizations.group]]
+name = "students"
+"""
+
+        ks = self._blueprint_to_ks(blueprint_data)
+
+        widget = self._find_group(ks, "widget")
+        self.assertIsNotNone(widget)
+
+        students = self._find_group(ks, "students")
+        self.assertIsNotNone(students)
+
+    def test_full(self):
+        blueprint_data = """name = "custom-base"
+description = "A base system with customizations"
+version = "0.0.1"
+modules = []
+groups = []
+
+[[packages]]
+name = "bash"
+version = "4.4.*"
+
+[[customizations]]
+hostname = "custom-base"
+
+[[customizations.sshkey]]
+user = "root"
+key = "ssh-rsa"
+
+[[customizations.user]]
+name = "widget"
+description = "Widget process user account"
+home = "/srv/widget/"
+shell = "/usr/bin/false"
+groups = ["dialout", "users"]
+
+[[customizations.user]]
+name = "admin"
+description = "Widget admin account"
+password = ""
+home = "/srv/widget/"
+shell = "/usr/bin/bash"
+groups = ["widget", "users", "students"]
+uid = 1200
+
+[[customizations.user]]
+name = "plain"
+password = "password"
+
+[[customizations.user]]
+name = "bart"
+key = ""
+groups = ["students"]
+
+[[customizations.group]]
+name = "widget"
+
+[[customizations.group]]
+name = "students"
+"""
+        ks = self._blueprint_to_ks(blueprint_data)
+
+        self.assertEqual(ks.handler.network.hostname, "custom-base")
+
+        rootkey = self._find_sshkey(ks, "root")
+        self.assertIsNotNone(rootkey)
+        self.assertEqual(rootkey.username, "root")
+        self.assertEqual(rootkey.key, "ssh-rsa")
+
+        widget = self._find_user(ks, "widget")
+        self.assertIsNotNone(widget)
+        self.assertEqual(widget.name, "widget")
+        self.assertEqual(widget.homedir, "/srv/widget/")
+        self.assertEqual(widget.shell, "/usr/bin/false")
+        self.assertEqual(set(widget.groups), {"dialout", "users"})
+
+        admin = self._find_user(ks, "admin")
+        self.assertIsNotNone(admin)
+        self.assertEqual(admin.name, "admin")
+        self.assertEqual(admin.password, "")
+        self.assertEqual(admin.homedir, "/srv/widget/")
+        self.assertEqual(admin.shell, "/usr/bin/bash")
+        self.assertEqual(set(admin.groups), {"widget", "users", "students"})
+        self.assertEqual(admin.uid, 1200)
+
+        plain = self._find_user(ks, "plain")
+        self.assertIsNotNone(plain)
+        self.assertEqual(plain.name, "plain")
+        self.assertEqual(plain.password, "password")
+
+        # widget does not appear as a separate group line, since a widget
+        # group is created for the widget user
+        widgetGroup = self._find_group(ks, "widget")
+        self.assertIsNone(widgetGroup)
+
+        studentsGroup = self._find_group(ks, "students")
+        self.assertIsNotNone(studentsGroup)
+        self.assertEqual(studentsGroup.name, "students")
