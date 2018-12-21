@@ -233,6 +233,10 @@ def add_customizations(f, recipe):
         return
     customizations = recipe["customizations"]
 
+    # allow customizations to be incorrectly specified as [[customizations]] instead of [customizations]
+    if isinstance(customizations, list):
+        customizations = customizations[0]
+
     if "hostname" in customizations:
         f.write("network --hostname=%s\n" % customizations["hostname"])
 
