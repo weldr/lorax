@@ -63,6 +63,14 @@ aws_secret_access_key = $AWS_SECRET_ACCESS_KEY
 __EOF__
         fi
 
+        rlLogInfo "**** server date"
+        rlRun -t -c "date"
+        rlRun -t -c "date -u +%a,\ %e\ %b\ %Y\ %T\ %Z"
+        rlLogInfo "****** amazon date"
+        rlRun -t -c "curl http://s3.amazonaws.com -v 2>&1 | grep -E -i -w '< Date:'"
+        rlRun -t -c "aws s3 ls s3://$AWS_BUCKET"
+        rlLogInfo "***** end debug ****"
+
         # make sure bucket exists
         rlRun -t -c "aws s3 mb s3://$AWS_BUCKET"
 
@@ -92,6 +100,14 @@ __EOF__
         rlRun -t -c "$CLI compose image $UUID"
 
         AMI="$UUID-disk.ami"
+
+        rlLogInfo "**** server date"
+        rlRun -t -c "date"
+        rlRun -t -c "date -u +%a,\ %e\ %b\ %Y\ %T\ %Z"
+        rlLogInfo "****** amazon date"
+        rlRun -t -c "curl http://s3.amazonaws.com -v 2>&1 | grep -E -i -w '< Date:'"
+        rlRun -t -c "aws s3 ls s3://$AWS_BUCKET"
+        rlLogInfo "***** end debug ****"
 
         # upload to S3
         rlRun -t -c "aws s3 cp $AMI s3://$AWS_BUCKET"
