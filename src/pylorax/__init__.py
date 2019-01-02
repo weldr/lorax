@@ -64,9 +64,9 @@ DRACUT_DEFAULT = ["--xz", "--install", "/.buildstamp", "--no-early-microcode", "
 DEFAULT_PLATFORM_ID = "platform:f30"
 
 class ArchData(DataHolder):
-    lib64_arches = ("x86_64", "ppc64", "ppc64le", "s390x", "ia64", "aarch64")
+    lib64_arches = ("x86_64", "ppc64le", "s390x", "ia64", "aarch64")
     bcj_arch = dict(i386="x86", x86_64="x86",
-                    ppc="powerpc", ppc64="powerpc", ppc64le="powerpc",
+                    ppc64le="powerpc",
                     arm="arm", armhfp="arm")
 
     def __init__(self, buildarch):

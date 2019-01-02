@@ -6,7 +6,7 @@ remove usr/share/i18n
 
 ## not required packages installed as dependencies
 ## perl is needed on s390x
-## perl needed for powerpc-utils and fbset on PPC
+## perl needed for powerpc-utils
 ## perl is needed by /usr/bin/rxe_cfg from libibverbs
 
 ## no sound support, thanks
@@ -256,8 +256,8 @@ removefrom ncurses /usr/bin/captoinfo /usr/bin/infocmp /usr/bin/infotocap
 removefrom ncurses /usr/bin/reset /usr/bin/tabs /usr/bin/tic /usr/bin/toe
 removefrom ncurses /usr/bin/tput /usr/bin/tset
 removefrom ncurses-libs /usr/${libdir}/libform*
-## libmenu.so is needed by lp_diag binary from ppc64-diag which is a PowerPc specific package
-%if basearch not in ("ppc", "ppc64", "ppc64le"):
+## libmenu.so is needed by lp_diag binary from ppc64-diag which is a PowerPC specific package
+%if basearch not in ("ppc64le"):
     removefrom ncurses-libs /usr/${libdir}/libmenu*
 %endif
 removefrom ncurses-libs /usr/${libdir}/libpanel.* /usr/${libdir}/libtic*
