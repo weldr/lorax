@@ -140,8 +140,6 @@ class QEMUInstall(object):
                  "i386":    "qemu-system-i386",
                  "arm":     "qemu-system-arm",
                  "aarch64": "qemu-system-aarch64",
-                 "ppc":     "qemu-system-ppc",
-                 "ppc64":   "qemu-system-ppc64",
                  "ppc64le":   "qemu-system-ppc64"
                 }
 
