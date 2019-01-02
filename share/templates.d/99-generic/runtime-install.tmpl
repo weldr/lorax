@@ -182,10 +182,7 @@ installpkg gdisk hexedit sg3_utils
 installpkg notification-daemon
 
 ## Docker enabled boot.iso
-# Not all arches currently have docker
-%if basearch not in ("ppc", "ppc64", "s390"):
-    installpkg docker-anaconda-addon
-%endif
+installpkg docker-anaconda-addon
 
 ## actually install all the requested packages
 run_pkg_transaction
