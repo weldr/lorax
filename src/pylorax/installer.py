@@ -141,7 +141,8 @@ class QEMUInstall(object):
                  "arm":     "qemu-system-arm",
                  "aarch64": "qemu-system-aarch64",
                  "ppc":     "qemu-system-ppc",
-                 "ppc64":   "qemu-system-ppc64"
+                 "ppc64":   "qemu-system-ppc64",
+                 "ppc64le":   "qemu-system-ppc64"
                 }
 
     def __init__(self, opts, iso, ks_paths, disk_img, img_size=2048,
