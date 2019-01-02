@@ -37,7 +37,6 @@ class CreatorTest(unittest.TestCase):
     def squashfs_args_test(self):
         """Test squashfs_args results"""
         test_arches = {"x86_64": ("xz", ["-Xbcj", "x86"]),
-                       "ppc64": ("xz", ["-Xbcj", "powerpc"]),
                        "ppc64le": ("xz", ["-Xbcj", "powerpc"]),
                        "s390x": ("xz", []),
                        "ia64": ("xz", []),
