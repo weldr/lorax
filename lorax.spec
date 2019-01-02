@@ -62,7 +62,7 @@ Requires:       hfsplus-tools
 Requires:       syslinux >= 6.02-4
 %endif
 
-%ifarch ppc ppc64 ppc64le
+%ifarch ppc64le
 Requires:       grub2
 Requires:       grub2-tools
 %endif
