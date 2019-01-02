@@ -60,10 +60,6 @@ else:
 
 DRACUT_DEFAULT = ["--xz", "--install", "/.buildstamp", "--no-early-microcode", "--add", "fips"]
 
-# List of drivers to remove on ppc64 arch to keep initrd < 32MiB
-REMOVE_PPC64_DRIVERS = "floppy scsi_debug nouveau radeon cirrus mgag200"
-REMOVE_PPC64_MODULES = "drm plymouth"
-
 # Used for DNF conf.module_platform_id
 DEFAULT_PLATFORM_ID = "platform:f30"
 
@@ -350,14 +346,6 @@ class Lorax(BaseLoraxClass):
                 dracut_args += arg.split(" ", 1)
 
         anaconda_args = dracut_args + ["--add", "anaconda pollcdrom qemu qemu-net"]
-
-        # ppc64 cannot boot an initrd > 32MiB so remove some drivers
-        if self.arch.basearch in ("ppc64", "ppc64le"):
-            dracut_args.extend(["--omit-drivers", REMOVE_PPC64_DRIVERS])
-
-            # Only omit dracut modules from the initrd so that they're kept for
-            # upgrade.img
-            anaconda_args.extend(["--omit", REMOVE_PPC64_MODULES])
 
         logger.info("dracut args = %s", dracut_args)
         logger.info("anaconda args = %s", anaconda_args)
