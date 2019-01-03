@@ -37,6 +37,7 @@ rlJournalStart
             rlAssertRpm python2-pip
         fi
 
+        rlRun -t -c "pip install --upgrade pip setuptools"
         rlRun -t -c "pip install awscli"
 
         # aws configure

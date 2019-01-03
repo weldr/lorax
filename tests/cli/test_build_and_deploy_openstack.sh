@@ -40,6 +40,7 @@ rlJournalStart
             rlAssertRpm python2-pip
         fi
 
+        rlRun -t -c "pip install --upgrade pip setuptools"
         rlRun -t -c "pip install ansible openstacksdk 'dogpile.cache>=0.6.2,<0.7.0'"
     rlPhaseEnd
 
