@@ -115,6 +115,13 @@ def repo_to_ks(r, url="url"):
     if not r.sslverify:
         cmd += '--noverifyssl'
 
+    if r.sslcacert:
+        cmd += ' --sslcacert="%s"' % r.sslcacert
+    if r.sslclientcert:
+        cmd += ' --sslclientcert="%s"' % r.sslclientcert
+    if r.sslclientkey:
+        cmd += ' --sslclientkey="%s"' % r.sslclientkey
+
     return cmd
 
 

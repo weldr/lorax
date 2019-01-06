@@ -48,7 +48,7 @@ Requires:       kpartx
 # Python modules
 Requires:       libselinux-python3
 Requires:       python3-mako
-Requires:       python3-kickstart
+Requires:       python3-kickstart >= 3.16.4
 Requires:       python3-dnf >= 3.2.0
 Requires:       python3-librepo
 
