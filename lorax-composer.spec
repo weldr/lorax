@@ -33,6 +33,7 @@ Requires: python-gevent
 Requires: anaconda-tui
 Requires: qemu-img
 Requires: tar
+Requires: pykickstart >= 1.99.66.20
 
 %{?systemd_requires}
 BuildRequires: systemd
