@@ -159,6 +159,9 @@ html_static_path = ['_static']
 # using the given strftime format.
 #html_last_updated_fmt = '%b %d, %Y'
 
+# Turn off smartquotes, it mangles dashes in the docstrings
+smartquotes = False
+
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
 #html_use_smartypants = True
