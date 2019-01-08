@@ -690,7 +690,9 @@ POST `/api/v0/compose`
 ^^^^^^^^^^^^^^^^^^^^^^
 
   Start a compose. The content type should be 'application/json' and the body of the POST
-  should look like this::
+  should look like this
+  
+  Example::
 
       {
         "blueprint_name": "http-server",
@@ -700,8 +702,10 @@ POST `/api/v0/compose`
 
   Pass it the name of the blueprint, the type of output (from '/api/v0/compose/types'), and the
   blueprint branch to use. 'branch' is optional and will default to master. It will create a new
-  build and add it to the queue. It returns the build uuid and a status if it succeeds::
+  build and add it to the queue. It returns the build uuid and a status if it succeeds
 
+  Example::
+  
       {
         "build_id": "e6fa6db4-9c81-4b70-870f-a697ca405cdf",
         "status": true
@@ -711,6 +715,8 @@ POST `/api/v0/compose`
 ^^^^^^^^^^^^^^^^^^^^^^^
 
   Returns the list of supported output types that are valid for use with 'POST /api/v0/compose'
+
+  Example::
 
       {
         "types": [
