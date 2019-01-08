@@ -174,7 +174,7 @@ class QEMUInstall(object):
         if not os.path.exists("/usr/bin/"+qemu_cmd[0]):
             raise InstallError("%s does not exist, cannot run qemu" % qemu_cmd[0])
 
-        qemu_cmd += ["-nodefconfig"]
+        qemu_cmd += ["-no-user-config"]
         qemu_cmd += ["-m", str(memory)]
         if vcpus:
             qemu_cmd += ["-smp", str(vcpus)]
