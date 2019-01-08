@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        29.23
+Version:        29.24
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -230,6 +230,16 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Tue Jan 08 2019 Brian C. Lane <bcl@redhat.com> 29.24-1
+- Remove unneeded else from for/else loop. It confuses pylint (bcl@redhat.com)
+- Turn off pylint warning about docstring with backslash (bcl@redhat.com)
+- Turn off smartquotes in Sphinx documentation (bcl@redhat.com)
+- fixes #543 qemu -nodefconfig deprecated (afm404@gmail.com)
+- fix spinx build warnings (afm404@gmail.com)
+- Allow customizations to be specified as a toml list (dshea@redhat.com)
+- Revert "lorax-composer: Cancel running Anaconda process" (bcl@redhat.com)
+- Make sure cancel_func is not None (bcl@redhat.com)
+
 * Mon Dec 17 2018 Brian C. Lane <bcl@redhat.com> 29.23-1
 - lorax: Save information about rootfs filesystem size and usage (bcl@redhat.com)
 - Turn on signed tags when using tito. (bcl@redhat.com)
