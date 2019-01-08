@@ -94,7 +94,7 @@ class LoraxRpmCallback(dnf.callback.TransactionProgress):
         self._last_ts = None
 
     def progress(self, package, action, ti_done, ti_total, ts_done, ts_total):
-        if action == dnf.transaction.PKG_INSTALL:
+        if action == dnf.transaction.PKG_INSTALL:  # pylint: disable=no-member
             # do not report same package twice
             if self._last_ts == ts_done:
                 return
@@ -102,7 +102,7 @@ class LoraxRpmCallback(dnf.callback.TransactionProgress):
 
             msg = '(%d/%d) %s' % (ts_done, ts_total, package)
             logger.info(msg)
-        elif action == dnf.transaction.TRANS_POST:
+        elif action == dnf.transaction.TRANS_POST:  # pylint: disable=no-member
             msg = "Performing post-installation setup tasks"
             logger.info(msg)
 
