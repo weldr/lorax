@@ -375,24 +375,21 @@ class CustomizationsTests(unittest.TestCase):
         for user in ks.handler.user.userList:
             if user.name == username:
                 return user
-        else:
-            return None
+        return None
 
     @staticmethod
     def _find_sshkey(ks, username):
         for key in ks.handler.sshkey.sshUserList:
             if key.username == username:
                 return key
-        else:
-            return None
+        return None
 
     @staticmethod
     def _find_group(ks, groupname):
         for group in ks.handler.group.groupList:
             if group.name == groupname:
                 return group
-        else:
-            return None
+        return None
 
     def test_hostname(self):
         blueprint_data = """name = "test-hostname"
