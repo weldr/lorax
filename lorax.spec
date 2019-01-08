@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        30.9
+Version:        30.10
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -232,6 +232,25 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Tue Jan 08 2019 Brian C. Lane <bcl@redhat.com> 30.10-1
+- Remove unneeded else from for/else loop. It confuses pylint (bcl@redhat.com)
+- Turn off pylint warning about docstring with backslash (bcl@redhat.com)
+- Turn off smartquotes in Sphinx documentation (bcl@redhat.com)
+- fixes #543 qemu -nodefconfig deprecated (afm404@gmail.com)
+- fix spinx build warnings (afm404@gmail.com)
+- Revert "lorax-composer: Cancel running Anaconda process" (bcl@redhat.com)
+- set inst.stage2 for ppc64le image (rhbz#1577587) (dan@danny.cz)
+- Allow customizations to be specified as a toml list (dshea@redhat.com)
+- Make sure cancel_func is not None (bcl@redhat.com)
+- drop ppc/ppc64 from tests (dan@danny.cz)
+- drop ppc/ppc64 from spec (dan@danny.cz)
+- all supported arches have docker (dan@danny.cz)
+- drop big endian ppc/ppc64 support (dan@danny.cz)
+- add qemu command mapping for ppc64le (dan@danny.cz)
+- don't reduce initrd size on ppc64/ppc64le (dan@danny.cz)
+- fbset has been retired (dan@danny.cz)
+- Add timestamps to program.log and dnf.log (bcl@redhat.com)
+
 * Mon Dec 17 2018 Brian C. Lane <bcl@redhat.com> 30.9-1
 - lorax: Save information about rootfs filesystem size and usage (bcl@redhat.com)
 - Turn on signed tags when using tito. (bcl@redhat.com)
