@@ -12,9 +12,6 @@ LORAXDIR="usr/share/lorax/"
 ## with '_', which means we won't need any udev escapes.
 isolabel = ''.join(ch if ch.isalnum() else '_' for ch in isolabel)
 
-## Anaconda finds the CDROM device automatically
-rootarg = ""
-
 from os.path import basename
 %>
 
@@ -50,7 +47,7 @@ install /usr/lib/grub/powerpc-ieee1275/*.lst ${GRUBDIR}/powerpc-ieee1275
 install ${configdir}/grub.cfg.in     ${GRUBDIR}/grub.cfg
 replace @PRODUCT@ '${product.name}'  ${GRUBDIR}/grub.cfg
 replace @VERSION@ ${product.version} ${GRUBDIR}/grub.cfg
-replace @ROOT@    "${rootarg}"       ${GRUBDIR}/grub.cfg
+replace @ROOT@ 'inst.stage2=hd:LABEL=${isolabel|udev}' ${GRUBDIR}/grub.cfg
 
 install ${configdir}/mapping ${BOOTDIR}
 
