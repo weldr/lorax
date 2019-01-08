@@ -694,6 +694,7 @@ class LoraxTemplateRunner(object):
         else:
             logger.debug("removefrom %s: no files to remove!", cmd)
 
+    # pylint: disable=anomalous-backslash-in-string
     def removekmod(self, *globs):
         '''
         removekmod GLOB [GLOB...] [--allbut] KEEPGLOB [KEEPGLOB...]
