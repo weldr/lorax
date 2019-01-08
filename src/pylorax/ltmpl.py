@@ -121,6 +121,7 @@ class LoraxTemplateRunner(object):
     * Parsing procedure is roughly:
       1. Mako template expansion (on the whole file)
       2. For each line of the result,
+      
         a. Whitespace splitting (using shlex.split())
         b. Brace expansion (using brace_expand())
         c. If the first token is the name of a function, call that function
@@ -264,6 +265,7 @@ class LoraxTemplateRunner(object):
           If DEST doesn't exist, SRC will be copied to a file with that name,
           assuming the rest of the path exists.
           This is pretty much like how the 'cp' command works.
+          
           Examples:
             install usr/share/myconfig/grub.conf /boot
             install /usr/share/myconfig/grub.conf.in /boot/grub.conf
@@ -319,6 +321,7 @@ class LoraxTemplateRunner(object):
         '''
         mkdir DIR [DIR ...]
           Create the named DIR(s). Will create leading directories as needed.
+          
           Example:
             mkdir /images
         '''
@@ -332,6 +335,7 @@ class LoraxTemplateRunner(object):
         replace PATTERN REPLACEMENT FILEGLOB [FILEGLOB ...]
           Find-and-replace the given PATTERN (Python-style regex) with the given
           REPLACEMENT string for each of the files listed.
+          
           Example:
             replace @VERSION@ ${product.version} /boot/grub.conf /boot/isolinux.cfg
         '''
@@ -349,7 +353,9 @@ class LoraxTemplateRunner(object):
           Append STRING (followed by a newline character) to FILE.
           Python character escape sequences ('\\n', '\\t', etc.) will be
           converted to the appropriate characters.
+          
           Examples:
+          
             append /etc/depmod.d/dd.conf "search updates built-in"
             append /etc/resolv.conf ""
         '''
@@ -362,6 +368,7 @@ class LoraxTemplateRunner(object):
           Add an item to the treeinfo data store.
           The given SECTION will have a new item added where
           KEY = ARG ARG ...
+          
           Example:
             treeinfo images-${kernel.arch} boot.iso images/boot.iso
         '''
@@ -462,6 +469,7 @@ class LoraxTemplateRunner(object):
         '''
         log MESSAGE
           Emit the given log message. Be sure to put it in quotes!
+          
           Example:
             log "Reticulating splines, please wait..."
         '''
@@ -485,7 +493,7 @@ class LoraxTemplateRunner(object):
             (this should be replaced with a "find" function)
             runcmd find ${root} -name "*.pyo" -type f -delete
             %for f in find(root, name="*.pyo"):
-                remove ${f}
+            remove ${f}
             %endfor
         '''
         cmd = cmdlist
@@ -580,6 +588,7 @@ class LoraxTemplateRunner(object):
         '''
         removepkg PKGGLOB [PKGGLOB...]
           Delete the named package(s).
+          
           IMPLEMENTATION NOTES:
             RPM scriptlets (%preun/%postun) are *not* run.
             Files are deleted, but directories are left behind.
@@ -644,6 +653,7 @@ class LoraxTemplateRunner(object):
           (or packages) named.
           If '--allbut' is used, all the files from the given package(s) will
           be removed *except* the ones which match the file globs.
+          
           Examples:
             removefrom usbutils /usr/bin/*
             removefrom xfsprogs --allbut /sbin/*
@@ -688,7 +698,7 @@ class LoraxTemplateRunner(object):
           to search and one KEEPGLOB to keep. The KEEPGLOB is expanded to be *KEEPGLOB*
           so that it will match anywhere in the path.
 
-          This only removes files from under /lib/modules/*/kernel/
+          This only removes files from under /lib/modules/\*/kernel/
 
           Examples:
             removekmod sound drivers/media drivers/hwmon drivers/video
@@ -737,6 +747,7 @@ class LoraxTemplateRunner(object):
         '''
         createaddrsize INITRD_ADDRESS INITRD ADDRSIZE
           Create the initrd.addrsize file required in LPAR boot process.
+          
           Examples:
             createaddrsize ${INITRD_ADDRESS} ${outroot}/${BOOTDIR}/initrd.img ${outroot}/${BOOTDIR}/initrd.addrsize
         '''
@@ -749,6 +760,7 @@ class LoraxTemplateRunner(object):
         '''
         systemctl [enable|disable|mask] UNIT [UNIT...]
           Enable, disable, or mask the given systemd units.
+          
           Examples:
             systemctl disable lvm2-monitor.service
             systemctl mask fedora-storage-init.service fedora-configure.service
