@@ -457,7 +457,7 @@ def mkfsimage(fstype, rootdir, outfile, size=None, mkfsargs=None, mountargs="", 
     '''Generic filesystem image creation function.
     fstype should be a filesystem type - "mkfs.${fstype}" must exist.
     graft should be a dict: {"some/path/in/image": "local/file/or/dir"};
-      if the path ends with a '/' it's assumed to be a directory.
+    if the path ends with a '/' it's assumed to be a directory.
     Will raise CalledProcessError if something goes wrong.'''
     mkfsargs = mkfsargs or []
     graft = graft or {}
