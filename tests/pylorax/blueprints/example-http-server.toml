@@ -20,7 +20,7 @@ version = "7.2.*"
 
 [[packages]]
 name = "tmux"
-version = "2.7"
+version = "2.8"
 
 [[packages]]
 name = "openssh-server"
