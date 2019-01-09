@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.19
+Version:        28.14.20
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -233,6 +233,14 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Tue Jan 08 2019 Brian C. Lane <bcl@redhat.com> 28.14.20-1
+- Revert "lorax-composer: Cancel running Anaconda process" (bcl)
+  Related: rhbz#1656691
+- Make sure cancel_func is not None (bcl)
+  Related: rhbz#1656691
+- Increase boot.iso rootfs to 3GiB (bcl)
+  Resolves: rhbz#1661169
+
 * Tue Dec 18 2018 Brian C. Lane <bcl@redhat.com> 28.14.19-1
 - lorax: Save information about rootfs filesystem size and usage (bcl)
   Resolves: rhbz#1659625
