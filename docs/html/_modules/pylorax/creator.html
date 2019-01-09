@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.creator &mdash; Lorax 28.14.17 documentation</title>
+  <title>pylorax.creator &mdash; Lorax 28.14.21 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                28.14.17
+                28.14.21
               </div>
             
           
@@ -612,13 +612,15 @@
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using disk size of </span><span class="si">%s</span><span class="s2">MiB&quot;</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">disk_size</span></div>
 
-<div class="viewcode-block" id="make_image"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.make_image">[docs]</a><span class="k">def</span> <span class="nf">make_image</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">):</span>
+<div class="viewcode-block" id="make_image"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.make_image">[docs]</a><span class="k">def</span> <span class="nf">make_image</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Install to a disk image</span>
 
 <span class="sd">    :param opts: options passed to livemedia-creator</span>
 <span class="sd">    :type opts: argparse options</span>
 <span class="sd">    :param str ks: Path to the kickstart to use for the installation</span>
+<span class="sd">    :param cancel_func: Function that returns True to cancel build</span>
+<span class="sd">    :type cancel_func: function</span>
 <span class="sd">    :returns: Path of the image created</span>
 <span class="sd">    :rtype: str</span>
 
@@ -632,12 +634,12 @@
     <span class="n">disk_size</span> <span class="o">=</span> <span class="n">calculate_disk_size</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">no_virt</span><span class="p">:</span>
-            <span class="n">novirt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">)</span>
+            <span class="n">novirt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="n">cancel_func</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">install_log</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">logfile</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;/virt-install.log&quot;</span>
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;install_log = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">install_log</span><span class="p">)</span>
 
-            <span class="n">virt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">install_log</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">)</span>
+            <span class="n">virt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">install_log</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="n">cancel_func</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">InstallError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Install failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">keep_image</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">disk_img</span><span class="p">):</span>
@@ -732,11 +734,13 @@
 
     <span class="k">return</span> <span class="n">work_dir</span></div>
 
-<div class="viewcode-block" id="run_creator"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.run_creator">[docs]</a><span class="k">def</span> <span class="nf">run_creator</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">callback_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="run_creator"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.run_creator">[docs]</a><span class="k">def</span> <span class="nf">run_creator</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Run the image creator process</span>
 
 <span class="sd">    :param opts: Commandline options to control the process</span>
 <span class="sd">    :type opts: Either a DataHolder or ArgumentParser</span>
+<span class="sd">    :param cancel_func: Function that returns True to cancel build</span>
+<span class="sd">    :type cancel_func: function</span>
 <span class="sd">    :returns: The result directory and the disk image path.</span>
 <span class="sd">    :rtype: Tuple of str</span>
 
@@ -795,7 +799,7 @@
 
         <span class="c1"># Make the image. Output of this is either a partitioned disk image or a fsimage</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">disk_img</span> <span class="o">=</span> <span class="n">make_image</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">)</span>
+            <span class="n">disk_img</span> <span class="o">=</span> <span class="n">make_image</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="n">cancel_func</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">InstallError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;ERROR: Image creation failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Image creation failed: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
@@ -814,6 +818,9 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">make_squashfs</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">work_dir</span><span class="p">):</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;squashfs.img creation failed&quot;</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;squashfs.img creation failed&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">cancel_func</span> <span class="ow">and</span> <span class="n">cancel_func</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;ISO creation canceled&quot;</span><span class="p">)</span>
 
             <span class="k">with</span> <span class="n">Mount</span><span class="p">(</span><span class="n">disk_img</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="s2">&quot;loop&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mount_dir</span><span class="p">:</span>
                 <span class="n">result_dir</span> <span class="o">=</span> <span class="n">make_livecd</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">mount_dir</span><span class="p">,</span> <span class="n">work_dir</span><span class="p">)</span>
@@ -904,7 +911,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'../../',
-              VERSION:'28.14.17',
+              VERSION:'28.14.21',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',

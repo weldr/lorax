@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LIVEMEDIA-CREATOR" "1" "Dec 07, 2018" "28.14.17" "Lorax"
+.TH "LIVEMEDIA-CREATOR" "1" "Jan 09, 2019" "28.14.21" "Lorax"
 .SH NAME
 livemedia-creator \- Live Media Creator Documentation
 .
@@ -233,7 +233,7 @@ Default: "Linux"
 .B\-\-releasever
 substituted for @VERSION@ in bootloader config files
 .sp
-Default: "28"
+Default: "8"
 .TP
 .B\-\-volid
 volume id
@@ -397,7 +397,7 @@ Run this to create a bootable live iso:
 .nf
 .ft C
 sudo livemedia\-creator \-\-make\-iso \e
-\-\-iso=/extra/iso/boot.iso \-\-ks=./docs/fedora\-livemedia.ks
+\-\-iso=/extra/iso/boot.iso \-\-ks=./docs/rhel\-livemedia.ks
 .ft P
 .fi
 .UNINDENT
@@ -411,7 +411,7 @@ You can run it directly from the lorax git repo like this:
 .ft C
 sudo PATH=./src/sbin/:$PATH PYTHONPATH=./src/ ./src/sbin/livemedia\-creator \e
 \-\-make\-iso \-\-iso=/extra/iso/boot.iso \e
-\-\-ks=./docs/fedora\-livemedia.ks \-\-lorax\-templates=./share/
+\-\-ks=./docs/rhel\-livemedia.ks \-\-lorax\-templates=./share/
 .ft P
 .fi
 .UNINDENT
@@ -584,7 +584,7 @@ the current directory or in the directory used for \-\-logfile
 .sp
 Example cmdline:
 .sp
-\fBsudo livemedia\-creator \-\-make\-iso \-\-no\-virt \-\-ks=./fedora\-livemedia.ks\fP
+\fBsudo livemedia\-creator \-\-make\-iso \-\-no\-virt \-\-ks=./rhel\-livemedia.ks\fP
 .sp
 \fBNOTE:\fP
 .INDENT 0.0
@@ -613,7 +613,7 @@ that it would work with livemedia\-creator.
 .sp
 Example cmdline:
 .sp
-\fBsudo livemedia\-creator \-\-make\-ami \-\-iso=/path/to/boot.iso \-\-ks=./docs/fedora\-livemedia\-ec2.ks\fP
+\fBsudo livemedia\-creator \-\-make\-ami \-\-iso=/path/to/boot.iso \-\-ks=./docs/rhel\-livemedia\-ec2.ks\fP
 .sp
 This will produce an ami\-root.img file in the working directory.
 .sp
@@ -697,7 +697,7 @@ You can also create qcow2 appliance images using \fB\-\-image\-type=qcow2\fP, fo
 .sp
 .nf
 .ft C
-sudo livemedia\-creator \-\-make\-appliance \-\-iso=/path/to/boot.iso \-\-ks=./docs/fedora\-minimal.ks \e
+sudo livemedia\-creator \-\-make\-appliance \-\-iso=/path/to/boot.iso \-\-ks=./docs/rhel\-minimal.ks \e
 \-\-image\-type=qcow2 \-\-app\-file=minimal\-test.xml \-\-image\-name=minimal\-test.img
 .ft P
 .fi
@@ -712,7 +712,7 @@ no\-virt modes of operation. Previously it was only available with no\-virt.
 Kickstarts should have a single / partition with no extra mountpoints.
 .INDENT 0.0
 .INDENT 3.5
-\fBlivemedia\-creator \-\-make\-fsimage \-\-iso=/path/to/boot.iso \-\-ks=./docs/fedora\-minimal.ks\fP
+\fBlivemedia\-creator \-\-make\-fsimage \-\-iso=/path/to/boot.iso \-\-ks=./docs/rhel\-minimal.ks\fP
 .UNINDENT
 .UNINDENT
 .sp
@@ -732,8 +732,8 @@ For example:
 .sp
 .nf
 .ft C
-livemedia\-creator \-\-make\-tar \-\-iso=/path/to/boot.iso \-\-ks=./docs/fedora\-minimal.ks \e
-\-\-image\-name=fedora\-root.tar.xz
+livemedia\-creator \-\-make\-tar \-\-iso=/path/to/boot.iso \-\-ks=./docs/rhel\-minimal.ks \e
+\-\-image\-name=rhel\-root.tar.xz
 .ft P
 .fi
 .UNINDENT
@@ -752,7 +752,7 @@ using Atomic installer iso with local repo included in the image can be found
 in docs/rhel\-atomic\-pxe\-live.ks.
 .sp
 The PXE images can also be created with \fB\-\-no\-virt\fP by using the example
-kickstart in docs/fedora\-atomic\-pxe\-live\-novirt.ks. This also works inside the
+kickstart in docs/rhel\-atomic\-pxe\-live\-novirt.ks. This also works inside the
 mock environment.
 .SH USING MOCK AND --NO-VIRT TO CREATE IMAGES
 .sp
@@ -809,10 +809,10 @@ Make sure tar and dracut\-network are in the %packages section and that the
 \fBurl points to the correct repo\fP
 .IP 7. 3
 Init the mock
-\fBmock \-r fedora\-rawhide\-x86_64 \-\-old\-chroot \-\-init\fP
+\fBmock \-r rhel\-8\-x86_64 \-\-old\-chroot \-\-init\fP
 .IP 8. 3
 Copy the kickstart inside the mock
-\fBmock \-r fedora\-rawhide\-x86_64 \-\-old\-chroot \-\-copyin ./fedora\-minimal.ks /root/\fP
+\fBmock \-r rhel\-8\-x86_64 \-\-old\-chroot \-\-copyin ./rhel\-minimal.ks /root/\fP
 .IP 9. 3
 Make a minimal iso:
 .INDENT 3.0
@@ -820,9 +820,9 @@ Make a minimal iso:
 .sp
 .nf
 .ft C
-mock \-r fedora\-rawhide\-x86_64 \-\-old\-chroot \-\-chroot \-\- livemedia\-creator \-\-no\-virt \e
+mock \-r rhel\-8\-x86_64 \-\-old\-chroot \-\-chroot \-\- livemedia\-creator \-\-no\-virt \e
 \-\-resultdir=/results/try\-1 \-\-logfile=/results/logs/try\-1/try\-1.log \e
-\-\-make\-iso \-\-ks /root/fedora\-minimal.ks
+\-\-make\-iso \-\-ks /root/rhel\-minimal.ks
 .ft P
 .fi
 .UNINDENT
@@ -880,13 +880,13 @@ Make sure tar and dracut\-network are in the %packages section and that the
 \fBurl points to the correct repo\fP
 .IP 7. 3
 Init the mock
-\fBmock \-r fedora\-rawhide\-x86_64 \-\-old\-chroot \-\-init\fP
+\fBmock \-r rhel\-8\-x86_64 \-\-old\-chroot \-\-init\fP
 .IP 8. 3
 Copy the kickstart inside the mock
-\fBmock \-r fedora\-rawhide\-x86_64 \-\-old\-chroot \-\-copyin ./fedora\-minimal.ks /root/\fP
+\fBmock \-r rhel\-8\-x86_64 \-\-old\-chroot \-\-copyin ./rhel\-minimal.ks /root/\fP
 .IP 9. 3
 Copy the Anaconda boot.iso inside the mock
-\fBmock \-r fedora\-rawhide\-x86_64 \-\-old\-chroot \-\-copyin ./boot.iso /root/\fP
+\fBmock \-r rhel\-8\-x86_64 \-\-old\-chroot \-\-copyin ./boot.iso /root/\fP
 .IP 10. 3
 Make a minimal iso:
 .INDENT 3.0
@@ -894,9 +894,9 @@ Make a minimal iso:
 .sp
 .nf
 .ft C
-mock \-r fedora\-rawhide\-x86_64 \-\-old\-chroot \-\-chroot \-\- livemedia\-creator \e
+mock \-r rhel\-8\-x86_64 \-\-old\-chroot \-\-chroot \-\- livemedia\-creator \e
 \-\-resultdir=/results/try\-1 \-\-logfile=/results/logs/try\-1/try\-1.log \e
-\-\-make\-iso \-\-ks /root/fedora\-minimal.ks \-\-iso /root/boot.iso
+\-\-make\-iso \-\-ks /root/rhel\-minimal.ks \-\-iso /root/boot.iso
 .ft P
 .fi
 .UNINDENT
@@ -917,15 +917,15 @@ create images for importing into glance, OpenStack\(aqs image storage component.
 You need to have access to an OpenStack provider that allows image uploads, or
 setup your own using the instructions from the \fI\%RDO Project\fP\&.
 .sp
-The example kickstart, fedora\-openstack.ks, is only slightly different than the
-fedora\-minimal.ks one.  It adds the cloud\-init and cloud\-utils\-growpart
+The example kickstart, rhel\-openstack.ks, is only slightly different than the
+rhel\-minimal.ks one.  It adds the cloud\-init and cloud\-utils\-growpart
 packages. OpenStack supports setting up the image using cloud\-init, and
 cloud\-utils\-growpart will grow the image to fit the instance\(aqs disk size.
 .sp
 Create a qcow2 image using the kickstart like this:
 .INDENT 0.0
 .INDENT 3.5
-\fBsudo livemedia\-creator \-\-make\-disk \-\-iso=/path/to/boot.iso \-\-ks=/path/to/fedora\-openstack.ks \-\-image\-type=qcow2\fP
+\fBsudo livemedia\-creator \-\-make\-disk \-\-iso=/path/to/boot.iso \-\-ks=/path/to/rhel\-openstack.ks \-\-image\-type=qcow2\fP
 .UNINDENT
 .UNINDENT
 .sp
@@ -942,30 +942,30 @@ Import the resulting disk image into the OpenStack system, either via the web UI
 .sp
 .nf
 .ft C
-glance image\-create \-\-name "fedora\-openstack" \-\-is\-public true \-\-disk\-format qcow2 \e
-\-\-container\-format bare \-\-file ./fedora\-openstack.qcow2
+glance image\-create \-\-name "rhel\-openstack" \-\-is\-public true \-\-disk\-format qcow2 \e
+\-\-container\-format bare \-\-file ./rhel\-openstack.qcow2
 .ft P
 .fi
 .UNINDENT
 .UNINDENT
 .sp
 If qcow2 wasn\(aqt used then \fB\-\-disk\-format\fP should be set to raw.
-.SH DOCKER IMAGE CREATION
+.SH CONTAINER IMAGE CREATION
 .sp
 Use lmc to create a tarfile as described in the \fI\%TAR File Creation\fP section, but substitute the
-fedora\-docker.ks example kickstart which removes the requirement for core files and the kernel.
+rhel\-container.ks example kickstart which removes the requirement for core files and the kernel.
 .sp
-You can then import the tarfile into docker like this (as root):
+You can then import the tarfile into podman or docker like this:
 .INDENT 0.0
 .INDENT 3.5
-\fBcat /var/tmp/fedora\-root.tar.xz | docker import \- fedora\-root\fP
+\fBpodman import /var/tmp/root.tar.xz rhel\-root\fP
 .UNINDENT
 .UNINDENT
 .sp
 And then run bash inside of it:
 .INDENT 0.0
 .INDENT 3.5
-\fBsudo docker run \-i \-t fedora\-root /bin/bash\fP
+\fBpodman run \-i \-t rhel\-root /bin/bash\fP
 .UNINDENT
 .UNINDENT
 .SH OPEN CONTAINER INITIATIVE IMAGE CREATION
@@ -979,7 +979,7 @@ OCI images using the following command:
 .nf
 .ft C
 sudo livemedia\-creator \-\-make\-oci \-\-oci\-config /path/to/config.json \-\-oci\-runtime /path/to/runtime.json \e
-\-\-iso=/path/to/boot.iso \-\-ks=/path/to/fedora\-minimal.ks
+\-\-iso=/path/to/boot.iso \-\-ks=/path/to/rhel\-minimal.ks
 .ft P
 .fi
 .UNINDENT
@@ -1000,7 +1000,7 @@ partitioned disk images.
 .nf
 .ft C
 sudo livemedia\-creator \-\-make\-vagrant \-\-vagrant\-metadata /path/to/metadata.json \e
-\-\-iso=/path/to/boot.iso \-\-ks=/path/to/fedora\-vagrant.ks
+\-\-iso=/path/to/boot.iso \-\-ks=/path/to/rhel\-vagrant.ks
 .ft P
 .fi
 .UNINDENT
@@ -1046,7 +1046,7 @@ Now you can run livemedia\-creator with \fB\-\-virt\-uefi\fP to boot and install
 .nf
 .ft C
 sudo livemedia\-creator \-\-make\-disk \-\-virt\-uefi \-\-iso=/path/to/boot.iso \e
-\-\-ks=/path/to/fedora\-minimal.ks
+\-\-ks=/path/to/rhel\-minimal.ks
 .ft P
 .fi
 .UNINDENT
@@ -1069,7 +1069,7 @@ part /boot/efi \-\-fstype="efi" \-\-size=500
 .INDENT 3.5
 When using the resulting image with the current version of OVMF (edk2.git\-ovmf\-x64\-0\-20151103.b1295.ge5cffca)
 it will not boot automatically because there is a problem with the fallback path.
-You can boot it by entering the UEFI shell and running EFI/fedora/shim.efi and
+You can boot it by entering the UEFI shell and running EFI/redhat/shim.efi and
 then using efibootmgr to setup the correct boot entry.
 .UNINDENT
 .UNINDENT

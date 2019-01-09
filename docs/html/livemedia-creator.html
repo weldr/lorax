@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>livemedia-creator &mdash; Lorax 28.14.17 documentation</title>
+  <title>livemedia-creator &mdash; Lorax 28.14.21 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                28.14.17
+                28.14.21
               </div>
             
           
@@ -111,7 +111,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#using-mock-and-no-virt-to-create-images">Using Mock and –no-virt to Create Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#using-mock-and-qemu-to-create-images">Using Mock and qemu to Create Images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#openstack-image-creation">OpenStack Image Creation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#docker-image-creation">Docker Image Creation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#container-image-creation">Container Image Creation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#open-container-initiative-image-creation">Open Container Initiative Image Creation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#vagrant-image-creation">Vagrant Image Creation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#creating-uefi-disk-images-with-virt">Creating UEFI disk images with virt</a></li>
@@ -382,7 +382,7 @@ you have the anaconda-tui package installed.</p>
 <tr><td class="option-group">
 <kbd>--releasever</kbd></td>
 <td><p class="first">substituted for &#64;VERSION&#64; in bootloader config files</p>
-<p class="last">Default: “28”</p>
+<p class="last">Default: “8”</p>
 </td></tr>
 <tr><td class="option-group">
 <kbd>--volid</kbd></td>
@@ -591,13 +591,13 @@ you have the anaconda-tui package installed.</p>
 <h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
 <p>Run this to create a bootable live iso:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">iso</span> \
-<span class="o">--</span><span class="n">iso</span><span class="o">=/</span><span class="n">extra</span><span class="o">/</span><span class="n">iso</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span><span class="o">=./</span><span class="n">docs</span><span class="o">/</span><span class="n">fedora</span><span class="o">-</span><span class="n">livemedia</span><span class="o">.</span><span class="n">ks</span>
+<span class="o">--</span><span class="n">iso</span><span class="o">=/</span><span class="n">extra</span><span class="o">/</span><span class="n">iso</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span><span class="o">=./</span><span class="n">docs</span><span class="o">/</span><span class="n">rhel</span><span class="o">-</span><span class="n">livemedia</span><span class="o">.</span><span class="n">ks</span>
 </pre></div>
 </div>
 <p>You can run it directly from the lorax git repo like this:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sudo PATH=./src/sbin/:$PATH PYTHONPATH=./src/ ./src/sbin/livemedia-creator \
 --make-iso --iso=/extra/iso/boot.iso \
---ks=./docs/fedora-livemedia.ks --lorax-templates=./share/
+--ks=./docs/rhel-livemedia.ks --lorax-templates=./share/
 </pre></div>
 </div>
 <p>You can observe the installation using vnc. The logs will show what port was
@@ -733,7 +733,7 @@ afford to lose all data from.</li>
 <p>The logs from anaconda will be placed in an ./anaconda/ directory in either
 the current directory or in the directory used for –logfile</p>
 <p>Example cmdline:</p>
-<p><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">livemedia-creator</span> <span class="pre">--make-iso</span> <span class="pre">--no-virt</span> <span class="pre">--ks=./fedora-livemedia.ks</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">livemedia-creator</span> <span class="pre">--make-iso</span> <span class="pre">--no-virt</span> <span class="pre">--ks=./rhel-livemedia.ks</span></code></p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Using no-virt to create a partitioned disk image (eg. –make-disk or
@@ -755,7 +755,7 @@ kickstart file. All of the work to customize the image is handled by the kicksta
 The example currently included was modified from the cloud-kickstarts version so
 that it would work with livemedia-creator.</p>
 <p>Example cmdline:</p>
-<p><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">livemedia-creator</span> <span class="pre">--make-ami</span> <span class="pre">--iso=/path/to/boot.iso</span> <span class="pre">--ks=./docs/fedora-livemedia-ec2.ks</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">livemedia-creator</span> <span class="pre">--make-ami</span> <span class="pre">--iso=/path/to/boot.iso</span> <span class="pre">--ks=./docs/rhel-livemedia-ec2.ks</span></code></p>
 <p>This will produce an ami-root.img file in the working directory.</p>
 <p>At this time I have not tested the image with EC2. Feedback would be welcome.</p>
 </div>
@@ -809,7 +809,7 @@ from <code class="docutils literal notranslate"><span class="pre">--releasever</
 <blockquote>
 <div><code class="docutils literal notranslate"><span class="pre">virt-image</span> <span class="pre">appliance.xml</span></code></div></blockquote>
 <p>You can also create qcow2 appliance images using <code class="docutils literal notranslate"><span class="pre">--image-type=qcow2</span></code>, for example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">appliance</span> <span class="o">--</span><span class="n">iso</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span><span class="o">=./</span><span class="n">docs</span><span class="o">/</span><span class="n">fedora</span><span class="o">-</span><span class="n">minimal</span><span class="o">.</span><span class="n">ks</span> \
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">appliance</span> <span class="o">--</span><span class="n">iso</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span><span class="o">=./</span><span class="n">docs</span><span class="o">/</span><span class="n">rhel</span><span class="o">-</span><span class="n">minimal</span><span class="o">.</span><span class="n">ks</span> \
 <span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="nb">type</span><span class="o">=</span><span class="n">qcow2</span> <span class="o">--</span><span class="n">app</span><span class="o">-</span><span class="n">file</span><span class="o">=</span><span class="n">minimal</span><span class="o">-</span><span class="n">test</span><span class="o">.</span><span class="n">xml</span> <span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="n">name</span><span class="o">=</span><span class="n">minimal</span><span class="o">-</span><span class="n">test</span><span class="o">.</span><span class="n">img</span>
 </pre></div>
 </div>
@@ -821,7 +821,7 @@ the <code class="docutils literal notranslate"><span class="pre">--make-fsimage<
 no-virt modes of operation. Previously it was only available with no-virt.</p>
 <p>Kickstarts should have a single / partition with no extra mountpoints.</p>
 <blockquote>
-<div><code class="docutils literal notranslate"><span class="pre">livemedia-creator</span> <span class="pre">--make-fsimage</span> <span class="pre">--iso=/path/to/boot.iso</span> <span class="pre">--ks=./docs/fedora-minimal.ks</span></code></div></blockquote>
+<div><code class="docutils literal notranslate"><span class="pre">livemedia-creator</span> <span class="pre">--make-fsimage</span> <span class="pre">--iso=/path/to/boot.iso</span> <span class="pre">--ks=./docs/rhel-minimal.ks</span></code></div></blockquote>
 <p>You can name the output image with <code class="docutils literal notranslate"><span class="pre">--image-name</span></code> and set a label on the filesystem with <code class="docutils literal notranslate"><span class="pre">--fs-label</span></code></p>
 </div>
 <div class="section" id="tar-file-creation">
@@ -832,8 +832,8 @@ default it is compressed using xz, but this can be changed using the
 no-virt install methods.</p>
 <p>As with <code class="docutils literal notranslate"><span class="pre">--make-fsimage</span></code> the kickstart should be limited to a single / partition.</p>
 <p>For example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">tar</span> <span class="o">--</span><span class="n">iso</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span><span class="o">=./</span><span class="n">docs</span><span class="o">/</span><span class="n">fedora</span><span class="o">-</span><span class="n">minimal</span><span class="o">.</span><span class="n">ks</span> \
-<span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="n">name</span><span class="o">=</span><span class="n">fedora</span><span class="o">-</span><span class="n">root</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">xz</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">tar</span> <span class="o">--</span><span class="n">iso</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span><span class="o">=./</span><span class="n">docs</span><span class="o">/</span><span class="n">rhel</span><span class="o">-</span><span class="n">minimal</span><span class="o">.</span><span class="n">ks</span> \
+<span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="n">name</span><span class="o">=</span><span class="n">rhel</span><span class="o">-</span><span class="n">root</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">xz</span>
 </pre></div>
 </div>
 </div>
@@ -851,7 +851,7 @@ for installations of Atomic Host.  Example kickstart for such an installation
 using Atomic installer iso with local repo included in the image can be found
 in docs/rhel-atomic-pxe-live.ks.</p>
 <p>The PXE images can also be created with <code class="docutils literal notranslate"><span class="pre">--no-virt</span></code> by using the example
-kickstart in docs/fedora-atomic-pxe-live-novirt.ks. This also works inside the
+kickstart in docs/rhel-atomic-pxe-live-novirt.ks. This also works inside the
 mock environment.</p>
 </div>
 <div class="section" id="using-mock-and-no-virt-to-create-images">
@@ -895,15 +895,15 @@ group.</p>
 <code class="docutils literal notranslate"><span class="pre">url</span> <span class="pre">points</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">correct</span> <span class="pre">repo</span></code></p>
 </li>
 <li><p class="first">Init the mock
-<code class="docutils literal notranslate"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">fedora-rawhide-x86_64</span> <span class="pre">--old-chroot</span> <span class="pre">--init</span></code></p>
+<code class="docutils literal notranslate"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">rhel-8-x86_64</span> <span class="pre">--old-chroot</span> <span class="pre">--init</span></code></p>
 </li>
 <li><p class="first">Copy the kickstart inside the mock
-<code class="docutils literal notranslate"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">fedora-rawhide-x86_64</span> <span class="pre">--old-chroot</span> <span class="pre">--copyin</span> <span class="pre">./fedora-minimal.ks</span> <span class="pre">/root/</span></code></p>
+<code class="docutils literal notranslate"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">rhel-8-x86_64</span> <span class="pre">--old-chroot</span> <span class="pre">--copyin</span> <span class="pre">./rhel-minimal.ks</span> <span class="pre">/root/</span></code></p>
 </li>
 <li><p class="first">Make a minimal iso:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mock</span> <span class="o">-</span><span class="n">r</span> <span class="n">fedora</span><span class="o">-</span><span class="n">rawhide</span><span class="o">-</span><span class="n">x86_64</span> <span class="o">--</span><span class="n">old</span><span class="o">-</span><span class="n">chroot</span> <span class="o">--</span><span class="n">chroot</span> <span class="o">--</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">virt</span> \
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mock</span> <span class="o">-</span><span class="n">r</span> <span class="n">rhel</span><span class="o">-</span><span class="mi">8</span><span class="o">-</span><span class="n">x86_64</span> <span class="o">--</span><span class="n">old</span><span class="o">-</span><span class="n">chroot</span> <span class="o">--</span><span class="n">chroot</span> <span class="o">--</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">virt</span> \
 <span class="o">--</span><span class="n">resultdir</span><span class="o">=/</span><span class="n">results</span><span class="o">/</span><span class="k">try</span><span class="o">-</span><span class="mi">1</span> <span class="o">--</span><span class="n">logfile</span><span class="o">=/</span><span class="n">results</span><span class="o">/</span><span class="n">logs</span><span class="o">/</span><span class="k">try</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="k">try</span><span class="o">-</span><span class="mf">1.</span><span class="n">log</span> \
-<span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">fedora</span><span class="o">-</span><span class="n">minimal</span><span class="o">.</span><span class="n">ks</span>
+<span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">rhel</span><span class="o">-</span><span class="n">minimal</span><span class="o">.</span><span class="n">ks</span>
 </pre></div>
 </div>
 </li>
@@ -949,18 +949,18 @@ group.</p>
 <code class="docutils literal notranslate"><span class="pre">url</span> <span class="pre">points</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">correct</span> <span class="pre">repo</span></code></p>
 </li>
 <li><p class="first">Init the mock
-<code class="docutils literal notranslate"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">fedora-rawhide-x86_64</span> <span class="pre">--old-chroot</span> <span class="pre">--init</span></code></p>
+<code class="docutils literal notranslate"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">rhel-8-x86_64</span> <span class="pre">--old-chroot</span> <span class="pre">--init</span></code></p>
 </li>
 <li><p class="first">Copy the kickstart inside the mock
-<code class="docutils literal notranslate"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">fedora-rawhide-x86_64</span> <span class="pre">--old-chroot</span> <span class="pre">--copyin</span> <span class="pre">./fedora-minimal.ks</span> <span class="pre">/root/</span></code></p>
+<code class="docutils literal notranslate"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">rhel-8-x86_64</span> <span class="pre">--old-chroot</span> <span class="pre">--copyin</span> <span class="pre">./rhel-minimal.ks</span> <span class="pre">/root/</span></code></p>
 </li>
 <li><p class="first">Copy the Anaconda boot.iso inside the mock
-<code class="docutils literal notranslate"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">fedora-rawhide-x86_64</span> <span class="pre">--old-chroot</span> <span class="pre">--copyin</span> <span class="pre">./boot.iso</span> <span class="pre">/root/</span></code></p>
+<code class="docutils literal notranslate"><span class="pre">mock</span> <span class="pre">-r</span> <span class="pre">rhel-8-x86_64</span> <span class="pre">--old-chroot</span> <span class="pre">--copyin</span> <span class="pre">./boot.iso</span> <span class="pre">/root/</span></code></p>
 </li>
 <li><p class="first">Make a minimal iso:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mock</span> <span class="o">-</span><span class="n">r</span> <span class="n">fedora</span><span class="o">-</span><span class="n">rawhide</span><span class="o">-</span><span class="n">x86_64</span> <span class="o">--</span><span class="n">old</span><span class="o">-</span><span class="n">chroot</span> <span class="o">--</span><span class="n">chroot</span> <span class="o">--</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> \
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mock</span> <span class="o">-</span><span class="n">r</span> <span class="n">rhel</span><span class="o">-</span><span class="mi">8</span><span class="o">-</span><span class="n">x86_64</span> <span class="o">--</span><span class="n">old</span><span class="o">-</span><span class="n">chroot</span> <span class="o">--</span><span class="n">chroot</span> <span class="o">--</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> \
 <span class="o">--</span><span class="n">resultdir</span><span class="o">=/</span><span class="n">results</span><span class="o">/</span><span class="k">try</span><span class="o">-</span><span class="mi">1</span> <span class="o">--</span><span class="n">logfile</span><span class="o">=/</span><span class="n">results</span><span class="o">/</span><span class="n">logs</span><span class="o">/</span><span class="k">try</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="k">try</span><span class="o">-</span><span class="mf">1.</span><span class="n">log</span> \
-<span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">fedora</span><span class="o">-</span><span class="n">minimal</span><span class="o">.</span><span class="n">ks</span> <span class="o">--</span><span class="n">iso</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span>
+<span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">rhel</span><span class="o">-</span><span class="n">minimal</span><span class="o">.</span><span class="n">ks</span> <span class="o">--</span><span class="n">iso</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span>
 </pre></div>
 </div>
 </li>
@@ -978,34 +978,34 @@ add <code class="docutils literal notranslate"><span class="pre">mknod</span> <s
 create images for importing into glance, OpenStack’s image storage component.
 You need to have access to an OpenStack provider that allows image uploads, or
 setup your own using the instructions from the <a class="reference external" href="https://www.rdoproject.org/Quickstart">RDO Project</a>.</p>
-<p>The example kickstart, fedora-openstack.ks, is only slightly different than the
-fedora-minimal.ks one.  It adds the cloud-init and cloud-utils-growpart
+<p>The example kickstart, rhel-openstack.ks, is only slightly different than the
+rhel-minimal.ks one.  It adds the cloud-init and cloud-utils-growpart
 packages. OpenStack supports setting up the image using cloud-init, and
 cloud-utils-growpart will grow the image to fit the instance’s disk size.</p>
 <p>Create a qcow2 image using the kickstart like this:</p>
 <blockquote>
-<div><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">livemedia-creator</span> <span class="pre">--make-disk</span> <span class="pre">--iso=/path/to/boot.iso</span> <span class="pre">--ks=/path/to/fedora-openstack.ks</span> <span class="pre">--image-type=qcow2</span></code></div></blockquote>
+<div><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">livemedia-creator</span> <span class="pre">--make-disk</span> <span class="pre">--iso=/path/to/boot.iso</span> <span class="pre">--ks=/path/to/rhel-openstack.ks</span> <span class="pre">--image-type=qcow2</span></code></div></blockquote>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">On the RHEL7 version of lmc <code class="docutils literal notranslate"><span class="pre">--image-type</span></code> isn’t supported. You can only create a bare partitioned disk image.</p>
 </div>
 <p>Import the resulting disk image into the OpenStack system, either via the web UI, or glance on the cmdline:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">glance</span> <span class="n">image</span><span class="o">-</span><span class="n">create</span> <span class="o">--</span><span class="n">name</span> <span class="s2">&quot;fedora-openstack&quot;</span> <span class="o">--</span><span class="ow">is</span><span class="o">-</span><span class="n">public</span> <span class="n">true</span> <span class="o">--</span><span class="n">disk</span><span class="o">-</span><span class="nb">format</span> <span class="n">qcow2</span> \
-<span class="o">--</span><span class="n">container</span><span class="o">-</span><span class="nb">format</span> <span class="n">bare</span> <span class="o">--</span><span class="n">file</span> <span class="o">./</span><span class="n">fedora</span><span class="o">-</span><span class="n">openstack</span><span class="o">.</span><span class="n">qcow2</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">glance</span> <span class="n">image</span><span class="o">-</span><span class="n">create</span> <span class="o">--</span><span class="n">name</span> <span class="s2">&quot;rhel-openstack&quot;</span> <span class="o">--</span><span class="ow">is</span><span class="o">-</span><span class="n">public</span> <span class="n">true</span> <span class="o">--</span><span class="n">disk</span><span class="o">-</span><span class="nb">format</span> <span class="n">qcow2</span> \
+<span class="o">--</span><span class="n">container</span><span class="o">-</span><span class="nb">format</span> <span class="n">bare</span> <span class="o">--</span><span class="n">file</span> <span class="o">./</span><span class="n">rhel</span><span class="o">-</span><span class="n">openstack</span><span class="o">.</span><span class="n">qcow2</span>
 </pre></div>
 </div>
 <p>If qcow2 wasn’t used then <code class="docutils literal notranslate"><span class="pre">--disk-format</span></code> should be set to raw.</p>
 </div>
-<div class="section" id="docker-image-creation">
-<h2>Docker Image Creation<a class="headerlink" href="#docker-image-creation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="container-image-creation">
+<h2>Container Image Creation<a class="headerlink" href="#container-image-creation" title="Permalink to this headline">¶</a></h2>
 <p>Use lmc to create a tarfile as described in the <a class="reference internal" href="#tar-file-creation">TAR File Creation</a> section, but substitute the
-fedora-docker.ks example kickstart which removes the requirement for core files and the kernel.</p>
-<p>You can then import the tarfile into docker like this (as root):</p>
+rhel-container.ks example kickstart which removes the requirement for core files and the kernel.</p>
+<p>You can then import the tarfile into podman or docker like this:</p>
 <blockquote>
-<div><code class="docutils literal notranslate"><span class="pre">cat</span> <span class="pre">/var/tmp/fedora-root.tar.xz</span> <span class="pre">|</span> <span class="pre">docker</span> <span class="pre">import</span> <span class="pre">-</span> <span class="pre">fedora-root</span></code></div></blockquote>
+<div><code class="docutils literal notranslate"><span class="pre">podman</span> <span class="pre">import</span> <span class="pre">/var/tmp/root.tar.xz</span> <span class="pre">rhel-root</span></code></div></blockquote>
 <p>And then run bash inside of it:</p>
 <blockquote>
-<div><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">docker</span> <span class="pre">run</span> <span class="pre">-i</span> <span class="pre">-t</span> <span class="pre">fedora-root</span> <span class="pre">/bin/bash</span></code></div></blockquote>
+<div><code class="docutils literal notranslate"><span class="pre">podman</span> <span class="pre">run</span> <span class="pre">-i</span> <span class="pre">-t</span> <span class="pre">rhel-root</span> <span class="pre">/bin/bash</span></code></div></blockquote>
 </div>
 <div class="section" id="open-container-initiative-image-creation">
 <h2>Open Container Initiative Image Creation<a class="headerlink" href="#open-container-initiative-image-creation" title="Permalink to this headline">¶</a></h2>
@@ -1013,7 +1013,7 @@ fedora-docker.ks example kickstart which removes the requirement for core files 
 <a class="reference external" href="https://www.opencontainers.org/">the Open Container Initiative website</a>. You can create
 OCI images using the following command:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">oci</span> <span class="o">--</span><span class="n">oci</span><span class="o">-</span><span class="n">config</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">config</span><span class="o">.</span><span class="n">json</span> <span class="o">--</span><span class="n">oci</span><span class="o">-</span><span class="n">runtime</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">runtime</span><span class="o">.</span><span class="n">json</span> \
-<span class="o">--</span><span class="n">iso</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">fedora</span><span class="o">-</span><span class="n">minimal</span><span class="o">.</span><span class="n">ks</span>
+<span class="o">--</span><span class="n">iso</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">rhel</span><span class="o">-</span><span class="n">minimal</span><span class="o">.</span><span class="n">ks</span>
 </pre></div>
 </div>
 <p>You must provide the config.json and runtime.json files to be included in the bundle,
@@ -1026,7 +1026,7 @@ partitioned disk images.</p>
 <h2>Vagrant Image Creation<a class="headerlink" href="#vagrant-image-creation" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://www.vagrantup.com/">Vagrant</a> images can be created using the following command:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">vagrant</span> <span class="o">--</span><span class="n">vagrant</span><span class="o">-</span><span class="n">metadata</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">metadata</span><span class="o">.</span><span class="n">json</span> \
-<span class="o">--</span><span class="n">iso</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">fedora</span><span class="o">-</span><span class="n">vagrant</span><span class="o">.</span><span class="n">ks</span>
+<span class="o">--</span><span class="n">iso</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span> <span class="o">--</span><span class="n">ks</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">rhel</span><span class="o">-</span><span class="n">vagrant</span><span class="o">.</span><span class="n">ks</span>
 </pre></div>
 </div>
 <p>The image created is a <a class="reference external" href="https://github.com/pradels/vagrant-libvirt">vagrant-libvirt</a> provider image and needs to have
@@ -1057,7 +1057,7 @@ in /etc/yum.repos.d/</li>
 </ol>
 <p>Now you can run livemedia-creator with <code class="docutils literal notranslate"><span class="pre">--virt-uefi</span></code> to boot and install using UEFI:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">disk</span> <span class="o">--</span><span class="n">virt</span><span class="o">-</span><span class="n">uefi</span> <span class="o">--</span><span class="n">iso</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span> \
-<span class="o">--</span><span class="n">ks</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">fedora</span><span class="o">-</span><span class="n">minimal</span><span class="o">.</span><span class="n">ks</span>
+<span class="o">--</span><span class="n">ks</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">rhel</span><span class="o">-</span><span class="n">minimal</span><span class="o">.</span><span class="n">ks</span>
 </pre></div>
 </div>
 <p>Make sure that the kickstart you are using creates a /boot/efi partition by including this:</p>
@@ -1068,7 +1068,7 @@ in /etc/yum.repos.d/</li>
 <p class="first admonition-title">Note</p>
 <p class="last">When using the resulting image with the current version of OVMF (edk2.git-ovmf-x64-0-20151103.b1295.ge5cffca)
 it will not boot automatically because there is a problem with the fallback path.
-You can boot it by entering the UEFI shell and running EFI/fedora/shim.efi and
+You can boot it by entering the UEFI shell and running EFI/redhat/shim.efi and
 then using efibootmgr to setup the correct boot entry.</p>
 </div>
 </div>
@@ -1104,7 +1104,7 @@ running <code class="docutils literal notranslate"><span class="pre">anaconda-cl
 <h2>Hacking<a class="headerlink" href="#hacking" title="Permalink to this headline">¶</a></h2>
 <p>Development on this will take place as part of the lorax project, and on the
 anaconda-devel-list mailing list, and <a class="reference external" href="https://github.com/rhinstaller/lorax">on github</a></p>
-<p>Feedback, enhancements and bugs are welcome.  You can use <a class="reference external" href="https://bugzilla.redhat.com/enter_bug.cgi?product=Fedora&amp;component=lorax">bugzilla</a> to
+<p>Feedback, enhancements and bugs are welcome.  You can use <a class="reference external" href="https://bugzilla.redhat.com/enter_bug.cgi?product=RedHatEnterpriseLinux8&amp;component=lorax">bugzilla</a> to
 report bugs against the lorax component.</p>
 </div>
 </div>
@@ -1153,7 +1153,7 @@ report bugs against the lorax component.</p>
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'./',
-              VERSION:'28.14.17',
+              VERSION:'28.14.21',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',

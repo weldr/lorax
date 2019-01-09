@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax package &mdash; Lorax 28.14.17 documentation</title>
+  <title>pylorax package &mdash; Lorax 28.14.21 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                28.14.17
+                28.14.21
               </div>
             
           
@@ -428,7 +428,7 @@ this. Everything else should be a nop.</p>
 
 <dl class="function">
 <dt id="pylorax.creator.make_image">
-<code class="descclassname">pylorax.creator.</code><code class="descname">make_image</code><span class="sig-paren">(</span><em>opts</em>, <em>ks</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#make_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.make_image" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pylorax.creator.</code><code class="descname">make_image</code><span class="sig-paren">(</span><em>opts</em>, <em>ks</em>, <em>cancel_func=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#make_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.make_image" title="Permalink to this definition">¶</a></dt>
 <dd><p>Install to a disk image</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -437,6 +437,7 @@ this. Everything else should be a nop.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>opts</strong> (<em>argparse options</em>) – options passed to livemedia-creator</li>
 <li><strong>ks</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to the kickstart to use for the installation</li>
+<li><strong>cancel_func</strong> (<em>function</em>) – Function that returns True to cancel build</li>
 </ul>
 </td>
 </tr>
@@ -588,17 +589,23 @@ type img_mount: imgutils.PartitionMount</p>
 
 <dl class="function">
 <dt id="pylorax.creator.run_creator">
-<code class="descclassname">pylorax.creator.</code><code class="descname">run_creator</code><span class="sig-paren">(</span><em>opts</em>, <em>callback_func=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#run_creator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.run_creator" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pylorax.creator.</code><code class="descname">run_creator</code><span class="sig-paren">(</span><em>opts</em>, <em>cancel_func=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/creator.html#run_creator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.creator.run_creator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the image creator process</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>opts</strong> (<em>Either a DataHolder</em><em> or </em><em>ArgumentParser</em>) – Commandline options to control the process</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>opts</strong> (<em>Either a DataHolder</em><em> or </em><em>ArgumentParser</em>) – Commandline options to control the process</li>
+<li><strong>cancel_func</strong> (<em>function</em>) – Function that returns True to cancel build</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The result directory and the disk image path.</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The result directory and the disk image path.</p>
+</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Tuple of str</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Tuple of str</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1143,7 +1150,7 @@ raises CalledProcessError if umount fails.</p>
 
 <dl class="class">
 <dt id="pylorax.installer.QEMUInstall">
-<em class="property">class </em><code class="descclassname">pylorax.installer.</code><code class="descname">QEMUInstall</code><span class="sig-paren">(</span><em>opts</em>, <em>iso</em>, <em>ks_paths</em>, <em>disk_img</em>, <em>img_size=2048</em>, <em>kernel_args=None</em>, <em>memory=1024</em>, <em>vcpus=None</em>, <em>vnc=None</em>, <em>arch=None</em>, <em>log_check=None</em>, <em>virtio_host='127.0.0.1'</em>, <em>virtio_port=6080</em>, <em>image_type=None</em>, <em>boot_uefi=False</em>, <em>ovmf_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/installer.html#QEMUInstall"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.QEMUInstall" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pylorax.installer.</code><code class="descname">QEMUInstall</code><span class="sig-paren">(</span><em>opts</em>, <em>iso</em>, <em>ks_paths</em>, <em>disk_img</em>, <em>img_size=2048</em>, <em>kernel_args=None</em>, <em>memory=1024</em>, <em>vcpus=None</em>, <em>vnc=None</em>, <em>arch=None</em>, <em>cancel_func=None</em>, <em>virtio_host='127.0.0.1'</em>, <em>virtio_port=6080</em>, <em>image_type=None</em>, <em>boot_uefi=False</em>, <em>ovmf_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/installer.html#QEMUInstall"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.QEMUInstall" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Run qemu using an iso and a kickstart</p>
 </dd></dl>
@@ -1241,8 +1248,31 @@ cpio archive.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="pylorax.installer.novirt_cancel_check">
+<code class="descclassname">pylorax.installer.</code><code class="descname">novirt_cancel_check</code><span class="sig-paren">(</span><em>cancel_funcs</em>, <em>proc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/installer.html#novirt_cancel_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.novirt_cancel_check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check to see if there has been an error in the logs</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cancel_funcs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – list of functions to call, True from any one cancels the build</li>
+<li><strong>proc</strong> (<a class="reference external" href="https://docs.python.org/3/library/subprocess.html#subprocess.Popen" title="(in Python v3.7)"><em>subprocess.Popen</em></a>) – Popen object for the anaconda process</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True if the process has been terminated</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The cancel_funcs functions should return a True if an error has been detected.
+When an error is detected the process is terminated and this returns True</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="pylorax.installer.novirt_install">
-<code class="descclassname">pylorax.installer.</code><code class="descname">novirt_install</code><span class="sig-paren">(</span><em>opts</em>, <em>disk_img</em>, <em>disk_size</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/installer.html#novirt_install"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.novirt_install" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pylorax.installer.</code><code class="descname">novirt_install</code><span class="sig-paren">(</span><em>opts</em>, <em>disk_img</em>, <em>disk_size</em>, <em>cancel_func=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/installer.html#novirt_install"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.novirt_install" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use Anaconda to install to a disk image</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1252,6 +1282,7 @@ cpio archive.</p>
 <li><strong>opts</strong> (<em>argparse options</em>) – options passed to livemedia-creator</li>
 <li><strong>disk_img</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The full path to the disk image to be created</li>
 <li><strong>disk_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The size of the disk_img in MiB</li>
+<li><strong>cancel_func</strong> (<em>function</em>) – Function that returns True to cancel build</li>
 </ul>
 </td>
 </tr>
@@ -1259,29 +1290,6 @@ cpio archive.</p>
 </table>
 <p>This method runs anaconda to create the image and then based on the opts
 passed creates a qemu disk image or tarfile.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="pylorax.installer.novirt_log_check">
-<code class="descclassname">pylorax.installer.</code><code class="descname">novirt_log_check</code><span class="sig-paren">(</span><em>log_check</em>, <em>proc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/installer.html#novirt_log_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.novirt_log_check" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check to see if there has been an error in the logs</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>log_check</strong> – method to call to check for an error in the logs</li>
-<li><strong>proc</strong> – Popen object for the anaconda process</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True if the process has been terminated</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p>The log_check method should return a True if an error has been detected.
-When an error is detected the process is terminated and this returns True</p>
 </dd></dl>
 
 <dl class="function">
@@ -1306,7 +1314,7 @@ metadata file are set correctly. All other values are left untouched.</p>
 
 <dl class="function">
 <dt id="pylorax.installer.virt_install">
-<code class="descclassname">pylorax.installer.</code><code class="descname">virt_install</code><span class="sig-paren">(</span><em>opts</em>, <em>install_log</em>, <em>disk_img</em>, <em>disk_size</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/installer.html#virt_install"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.virt_install" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pylorax.installer.</code><code class="descname">virt_install</code><span class="sig-paren">(</span><em>opts</em>, <em>install_log</em>, <em>disk_img</em>, <em>disk_size</em>, <em>cancel_func=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/installer.html#virt_install"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.installer.virt_install" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use qemu to install to a disk image</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1317,6 +1325,7 @@ metadata file are set correctly. All other values are left untouched.</p>
 <li><strong>install_log</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The path to write the log from qemu</li>
 <li><strong>disk_img</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The full path to the disk image to be created</li>
 <li><strong>disk_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The size of the disk_img in MiB</li>
+<li><strong>cancel_func</strong> (<em>function</em>) – Function that returns True to cancel build</li>
 </ul>
 </td>
 </tr>
@@ -2217,7 +2226,7 @@ lowest numbered directory entry is returned.</p>
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'./',
-              VERSION:'28.14.17',
+              VERSION:'28.14.21',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
