@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.20
+Version:        28.14.22
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -233,6 +233,28 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Fri Jan 11 2019 Brian C. Lane <bcl@redhat.com> 28.14.22-1
+- Report an error if the blueprint doesn't exist (bcl)
+  Related: rhbz#1653934
+- tmux is version 2.8 on Fedora 28 (atodorov)
+  Related: rhbz#1653934
+- Disable pylint no-member errors for 2 dnf constants (atodorov)
+  Related: rhbz#1653934
+- Backport cloud image tests to RHEL 8 (atodorov)
+  Related: rhbz#1653934
+
+* Thu Jan 10 2019 Brian C. Lane <bcl@redhat.com> 28.14.21-1
+- Remove unneeded else from for/else loop. It confuses pylint (bcl)
+  Related: rhbz#1664485
+- Allow customizations to be specified as a toml list (dshea)
+  Resolves: rhbz#1664485
+- New lorax documentation - 28.14.21 (bcl)
+  Related: rhbz#1650295
+- Update the example livemedia-creator kickstarts for RHEL8 (bcl)
+  Resolves: rhbz#1650295
+- Change default releasever to 8 (bcl)
+  Related: rhbz#1650295
+
 * Tue Jan 08 2019 Brian C. Lane <bcl@redhat.com> 28.14.20-1
 - Revert "lorax-composer: Cancel running Anaconda process" (bcl)
   Related: rhbz#1656691
