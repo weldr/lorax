@@ -389,7 +389,7 @@ def novirt_install(opts, disk_img, disk_size, cancel_func=None):
             log.info(line)
 
         # Make sure the new filesystem is correctly labeled
-        setfiles_args = ["-e", "/proc", "-e", "/sys", "-e", "/dev",
+        setfiles_args = ["-e", "/proc", "-e", "/sys",
                          "/etc/selinux/targeted/contexts/files/file_contexts", "/"]
 
         if "--dirinstall" in args:
