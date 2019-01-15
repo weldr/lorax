@@ -67,6 +67,7 @@ test_vmware:
 
 clean_cloud_envs:
 	sudo -E ./tests/cleanup/remove_old_objects_aws.sh
+	sudo -E ./tests/cleanup/remove_old_objects_openstack.sh
 
 clean:
 	-rm -rf build src/pylorax/version.py
