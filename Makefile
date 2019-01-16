@@ -65,6 +65,9 @@ test_openstack:
 test_vmware:
 	sudo -E ./tests/test_cli.sh tests/cli/test_build_and_deploy_vmware.sh
 
+clean_cloud_envs:
+	sudo -E ./tests/cleanup/remove_old_objects_aws.sh
+
 clean:
 	-rm -rf build src/pylorax/version.py
 	-rm -rf build src/composer/version.py
