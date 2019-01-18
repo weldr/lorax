@@ -10,7 +10,8 @@ data_files = [("/etc/lorax", ["etc/lorax.conf"]),
               ("/etc/lorax", ["etc/composer.conf"]),
               ("/usr/lib/systemd/system", ["systemd/lorax-composer.service",
                                            "systemd/lorax-composer.socket"]),
-              ("/usr/lib/tmpfiles.d/", ["systemd/lorax-composer.conf"])]
+              ("/usr/lib/tmpfiles.d/", ["systemd/lorax-composer.conf",
+                                        "systemd/lorax.conf"])]
 
 # shared files
 for root, dnames, fnames in os.walk("share"):

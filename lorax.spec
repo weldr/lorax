@@ -205,6 +205,7 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %config(noreplace) %{_sysconfdir}/lorax/lorax.conf
 %dir %{_datadir}/lorax
 %{_mandir}/man1/*.1*
+%{_tmpfilesdir}/lorax.conf
 
 %files lmc-virt
 
