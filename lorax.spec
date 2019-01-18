@@ -117,6 +117,7 @@ rm -f $RPM_BUILD_ROOT/%{_tmpfilesdir}/lorax-composer.conf
 %{_datadir}/lorax/*
 %exclude %{_datadir}/lorax/composer
 %{_mandir}/man1/*.1*
+%{_tmpfilesdir}/lorax.conf
 
 %changelog
 * Wed Aug 15 2018 Brian C. Lane <bcl@redhat.com> 19.7.19-1

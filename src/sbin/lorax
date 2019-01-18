@@ -30,6 +30,9 @@ pylorax_log = logging.getLogger("pylorax")
 yum_log = logging.getLogger("yum")
 
 
+import atexit
+import fcntl
+from glob import glob
 import sys
 import os
 import shutil
@@ -45,6 +48,42 @@ import pylorax
 from pylorax import DRACUT_DEFAULT
 
 VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), pylorax.vernum)
+
+def exit_handler(tempdir):
+    """Handle cleanup of tmpdir, if it still exists
+    """
+    if not tempdir:
+        return
+    if os.path.exists(tempdir):
+        log.info("Cleaning up tempdir - %s", tempdir)
+        shutil.rmtree(tempdir)
+
+
+def remove_tempdirs():
+    """Delete all unlocked tempdirs under tempfile.gettempdir
+
+    When lorax crashes it can leave behind tempdirs, which cannot be cleaned up by
+    systemd-tmpfiles (SELinux restricts a complete cleanup).
+
+    So we lock them while in use and cleanup all the ones that are not locked
+    when lorax starts.
+    """
+    for d in glob(os.path.join(tempfile.gettempdir(), "lorax.*")):
+        if not os.path.isdir(d):
+            continue
+        try:
+            dir_fd = os.open(d, os.O_RDONLY|os.O_DIRECTORY)
+            fcntl.flock(dir_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except IOError:
+            # lock failed, skip this directory
+            os.close(dir_fd)
+            continue
+
+        # Lock succeeded, remove the directory
+        log.info("Removing old tempdir %s", d)
+        shutil.rmtree(d)
+        os.close(dir_fd)
+
 
 def setup_logging(opts):
     # Setup logging to console and to logfile
@@ -134,7 +173,7 @@ def main(args):
             action="store_false", default=True, dest="doupgrade")
     optional.add_option("--logfile", default="./lorax.log",
             help="Path to logfile")
-    optional.add_option("--tmp", default="/var/tmp",
+    optional.add_option("--tmp", default="/var/tmp/lorax",
             help="Top level temporary directory" )
     optional.add_option("--add-template", dest="add_templates",
             action="append", help="Additional template for runtime image",
@@ -196,16 +235,30 @@ def main(args):
     setup_logging(opts)
 
     log.info("Lorax %s", pylorax.vernum)
+
+    if not os.path.exists(opts.tmp):
+        os.makedirs(opts.tmp)
+
     tempfile.tempdir = opts.tmp
 
+    # Remove any orphaned lorax tempdirs
+    remove_tempdirs()
+
     # create the temporary directory for lorax
-    tempdir = tempfile.mkdtemp(prefix="lorax.", dir=tempfile.gettempdir())
+    tempdir = tempfile.mkdtemp(prefix="lorax.")
+
+    # register an exit handler to cleanup the temporary directory
+    atexit.register(exit_handler, tempdir)
 
     # create the yumbase object
     installtree = os.path.join(tempdir, "installtree")
     os.mkdir(installtree)
     yumtempdir = os.path.join(tempdir, "yum")
     os.mkdir(yumtempdir)
+
+    # Obtain an exclusive lock on the tempdir
+    dir_fd = os.open(tempdir, os.O_RDONLY|os.O_DIRECTORY)
+    fcntl.flock(dir_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
 
     yb = get_yum_base_object(installtree, opts.source, opts.mirrorlist,
                              opts.repo_files,
@@ -245,6 +298,9 @@ def main(args):
               add_arch_template_vars=parsed_add_arch_template_vars,
               remove_temp=True,
               user_dracut_args=opts.dracut_args)
+
+    # Release the lock on the tempdir
+    os.close(dir_fd)
 
 
 def get_yum_base_object(installroot, repositories, mirrorlists=None, repo_files=None,
