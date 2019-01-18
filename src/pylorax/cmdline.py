@@ -75,12 +75,12 @@ def lorax_parser(dracut_default=""):
                         action="store_false", default=True, dest="doupgrade")
     optional.add_argument("--logfile", default="./lorax.log", type=os.path.abspath,
                         help="Path to logfile")
-    optional.add_argument("--tmp", default="/var/tmp",
+    optional.add_argument("--tmp", default="/var/tmp/lorax",
                         help="Top level temporary directory" )
     optional.add_argument("--cachedir", default=None, type=os.path.abspath,
                         help="DNF cache directory. Default is a temporary dir.")
     optional.add_argument("--workdir", default=None, type=os.path.abspath,
-                        help="Work directory, overrides --tmp. Default is a temporary dir under /var/tmp")
+                        help="Work directory, overrides --tmp. Default is a temporary dir under /var/tmp/lorax")
     optional.add_argument("--force", default=False, action="store_true",
                         help="Run even when the destination directory exists")
     optional.add_argument("--add-template", dest="add_templates",
