@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.24
+Version:        28.25
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -230,6 +230,10 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Fri Jan 18 2019 Brian C. Lane <bcl@redhat.com> 28.25-1
+- Don't exclude /dev from the `setfiles` in `novirt_install` (awilliam@redhat.com)
+- dracut-fips is no longer a subpackage, it is included in dracut.  (bcl@redhat.com)
+
 * Tue Jan 08 2019 Brian C. Lane <bcl@redhat.com> 28.24-1
 - Remove unneeded else from for/else loop. It confuses pylint (bcl@redhat.com)
 - Turn off pylint warning about docstring with backslash (bcl@redhat.com)
