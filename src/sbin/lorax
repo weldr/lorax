@@ -24,6 +24,9 @@ log = logging.getLogger("lorax")
 dnf_log = logging.getLogger("dnf")
 
 
+import atexit
+import fcntl
+from glob import glob
 import sys
 import os
 import tempfile
@@ -36,6 +39,42 @@ import pylorax
 from pylorax import DRACUT_DEFAULT, log_selinux_state
 from pylorax.cmdline import lorax_parser
 from pylorax.dnfbase import get_dnf_base_object
+
+def exit_handler(tempdir):
+    """Handle cleanup of tmpdir, if it still exists
+    """
+    if not tempdir:
+        return
+    if os.path.exists(tempdir):
+        log.info("Cleaning up tempdir - %s", tempdir)
+        shutil.rmtree(tempdir)
+
+
+def remove_tempdirs():
+    """Delete all unlocked tempdirs under tempfile.gettempdir
+
+    When lorax crashes it can leave behind tempdirs, which cannot be cleaned up by
+    systemd-tmpfiles (SELinux restricts a complete cleanup).
+
+    So we lock them while in use and cleanup all the ones that are not locked
+    when lorax starts.
+    """
+    for d in glob(os.path.join(tempfile.gettempdir(), "lorax.*")):
+        if not os.path.isdir(d):
+            continue
+        try:
+            dir_fd = os.open(d, os.O_RDONLY|os.O_DIRECTORY|os.O_CLOEXEC)
+            fcntl.flock(dir_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            # lock failed, skip this directory
+            os.close(dir_fd)
+            continue
+
+        # Lock succeeded, remove the directory
+        log.info("Removing old tempdir %s", d)
+        shutil.rmtree(d)
+        os.close(dir_fd)
+
 
 def setup_logging(opts):
     pylorax.setup_logging(opts.logfile, log)
@@ -78,14 +117,27 @@ def main():
     log_selinux_state()
 
     if not opts.workdir:
+        if not os.path.exists(opts.tmp):
+            os.makedirs(opts.tmp)
+
         tempfile.tempdir = opts.tmp
 
+        # Remove any orphaned lorax tempdirs
+        remove_tempdirs()
+
         # create the temporary directory for lorax
-        tempdir = tempfile.mkdtemp(prefix="lorax.", dir=tempfile.gettempdir())
+        tempdir = tempfile.mkdtemp(prefix="lorax.")
+
+        # register an exit handler to cleanup the temporary directory
+        atexit.register(exit_handler, tempdir)
     else:
+        # NOTE: workdir is not cleaned up on exit
         tempdir = opts.workdir
         if not os.path.exists(tempdir):
             os.makedirs(tempdir)
+
+        # Remove any orphaned lorax tempdirs
+        remove_tempdirs()
 
     installtree = os.path.join(tempdir, "installtree")
     if not os.path.exists(installtree):
@@ -94,6 +146,10 @@ def main():
     if not os.path.exists(dnftempdir):
         os.mkdir(dnftempdir)
 
+    # Obtain an exclusive lock on the tempdir
+    dir_fd = os.open(tempdir, os.O_RDONLY|os.O_DIRECTORY|os.O_CLOEXEC)
+    fcntl.flock(dir_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
     dnfbase = get_dnf_base_object(installtree, opts.source, opts.mirrorlist, opts.repos,
                                   opts.enablerepos, opts.disablerepos,
                                   dnftempdir, opts.proxy, opts.version, opts.cachedir,
@@ -101,9 +157,8 @@ def main():
                                   opts.dnfplugins)
 
     if dnfbase is None:
+        os.close(dir_fd)
         print("error: unable to create the dnf base object", file=sys.stderr)
-        if not opts.workdir:
-            shutil.rmtree(tempdir)
         sys.exit(1)
 
     parsed_add_template_vars = {}
@@ -145,6 +200,9 @@ def main():
               remove_temp=True, verify=opts.verify,
               user_dracut_args=opts.dracut_args,
               squashfs_only=opts.squashfs_only)
+
+    # Release the lock on the tempdir
+    os.close(dir_fd)
 
 if __name__ == "__main__":
     main()
