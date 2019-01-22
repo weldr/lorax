@@ -376,7 +376,6 @@ dracut-config-generic
 dracut-live
 fedora-productimg-workstation
 glibc-all-langpacks
-grub2-efi
 kernel
 # Make sure that DNF doesn't pull in debug kernel to satisfy kmod() requires
 kernel-modules
@@ -388,5 +387,14 @@ syslinux
 -@standard
 -gfs2-utils
 -reiserfs-utils
+
+# This package is needed to boot the iso on UEFI
+shim
+shim-ia32
+grub2
+grub2-efi
+grub2-efi-*-cdboot
+grub2-efi-ia32
+efibootmgr
 
 %end
