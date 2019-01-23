@@ -578,6 +578,47 @@ def make_live_images(opts, work_dir, disk_img):
 
     return work_dir
 
+def check_kickstart(ks, opts):
+    """Check the parsed kickstart object for errors
+
+    :param ks: Parsed Kickstart object
+    :type ks: pykickstart.parser.KickstartParser
+    :param opts: Commandline options to control the process
+    :type opts: Either a DataHolder or ArgumentParser
+    :returns: List of error strings or empty list
+    :rtype: list
+    """
+    errors = []
+    if opts.no_virt and ks.handler.method.method not in ("url", "nfs") \
+       and not ks.handler.ostreesetup.seen:
+        errors.append("Only url, nfs and ostreesetup install methods are currently supported."
+                      "Please fix your kickstart file." )
+
+    if ks.handler.repo.seen and ks.handler.method.method != "url":
+        errors.append("repo can only be used with the url install method. Add url to your "
+                      "kickstart file.")
+
+    if ks.handler.method.method in ("url", "nfs") and not ks.handler.network.seen:
+        errors.append("The kickstart must activate networking if "
+                      "the url or nfs install method is used.")
+
+    if ks.handler.displaymode.displayMode is not None:
+        errors.append("The kickstart must not set a display mode (text, cmdline, "
+                      "graphical), this will interfere with livemedia-creator.")
+
+    if opts.make_fsimage or (opts.make_pxe_live and opts.no_virt):
+        # Make sure the kickstart isn't using autopart and only has a / mountpoint
+        part_ok = not any(p for p in ks.handler.partition.partitions
+                             if p.mountpoint not in ["/", "swap"])
+        if not part_ok or ks.handler.autopart.seen:
+            errors.append("Filesystem images must use a single / part, not autopart or "
+                          "multiple partitions. swap is allowed but not used.")
+
+    if not opts.no_virt and ks.handler.reboot.action != KS_SHUTDOWN:
+        errors.append("The kickstart must include shutdown when using virt installation.")
+
+    return errors
+
 def run_creator(opts, cancel_func=None):
     """Run the image creator process
 
@@ -612,31 +653,8 @@ def run_creator(opts, cancel_func=None):
         if not opts.ks:
             raise RuntimeError("Image creation requires a kickstart file")
 
-        errors = []
-        if opts.no_virt and ks.handler.method.method not in ("url", "nfs") \
-           and not ks.handler.ostreesetup.seen:
-            errors.append("Only url, nfs and ostreesetup install methods are currently supported."
-                          "Please fix your kickstart file." )
-
-        if ks.handler.method.method in ("url", "nfs") and not ks.handler.network.seen:
-            errors.append("The kickstart must activate networking if "
-                          "the url or nfs install method is used.")
-
-        if ks.handler.displaymode.displayMode is not None:
-            errors.append("The kickstart must not set a display mode (text, cmdline, "
-                          "graphical), this will interfere with livemedia-creator.")
-
-        if opts.make_fsimage or (opts.make_pxe_live and opts.no_virt):
-            # Make sure the kickstart isn't using autopart and only has a / mountpoint
-            part_ok = not any(p for p in ks.handler.partition.partitions
-                                 if p.mountpoint not in ["/", "swap"])
-            if not part_ok or ks.handler.autopart.seen:
-                errors.append("Filesystem images must use a single / part, not autopart or "
-                              "multiple partitions. swap is allowed but not used.")
-
-        if not opts.no_virt and ks.handler.reboot.action != KS_SHUTDOWN:
-            errors.append("The kickstart must include shutdown when using virt installation.")
-
+        # Check the kickstart for problems
+        errors = check_kickstart(ks, opts)
         if errors:
             list(log.error(e) for e in errors)
             raise RuntimeError("\n".join(errors))
