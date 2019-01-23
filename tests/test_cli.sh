@@ -28,6 +28,7 @@ until curl -m 15 --unix-socket /run/weldr/api.socket http://localhost:4000/api/s
 done;
 
 
+export BEAKERLIB_JOURNAL=0
 if [ -z "$*" ]; then
     # invoke cli/ tests which can be executed without special preparation
     ./tests/cli/test_blueprints_sanity.sh
