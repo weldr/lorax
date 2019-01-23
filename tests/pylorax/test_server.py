@@ -160,7 +160,7 @@ class ServerTestCase(unittest.TestCase):
                                    "name":"example-http-server",
                                    "packages": [{"name":"openssh-server", "version": "7.*"},
                                                 {"name": "rsync", "version": "3.1.*"},
-                                                {"name": "tmux", "version": "2.8"}],
+                                                {"name": "tmux", "version": "*"}],
                                    "groups": [],
                                    "version": "0.0.1"}]}
         resp = self.server.get("/api/v0/blueprints/info/example-http-server")
@@ -187,7 +187,7 @@ class ServerTestCase(unittest.TestCase):
                                    "name":"example-http-server",
                                    "packages": [{"name":"openssh-server", "version": "7.*"},
                                                 {"name": "rsync", "version": "3.1.*"},
-                                                {"name": "tmux", "version": "2.8"}],
+                                                {"name": "tmux", "version": "*"}],
                                    "groups": [],
                                    "version": "0.0.1"},
                                  ]}
