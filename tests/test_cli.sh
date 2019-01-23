@@ -29,6 +29,7 @@ done;
 
 
 export BEAKERLIB_JOURNAL=0
+export PATH="/usr/local/bin:$PATH"
 if [ -z "$*" ]; then
     # invoke cli/ tests which can be executed without special preparation
     ./tests/cli/test_blueprints_sanity.sh
