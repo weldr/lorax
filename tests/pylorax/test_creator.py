@@ -19,11 +19,15 @@ import tempfile
 import unittest
 import xml.etree.ElementTree as ET
 
+# For kickstart check tests
+from pykickstart.parser import KickstartParser
+from pykickstart.version import makeVersion
+
 from ..lib import get_file_magic
 from pylorax import find_templates
 from pylorax.base import DataHolder
 from pylorax.creator import FakeDNF, create_pxe_config, make_appliance, make_squashfs, squashfs_args
-from pylorax.creator import get_arch, find_ostree_root
+from pylorax.creator import get_arch, find_ostree_root, check_kickstart
 from pylorax.executils import runcmd
 from pylorax.imgutils import mksparse
 from pylorax.sysutils import joinpaths
@@ -136,6 +140,108 @@ class CreatorTest(unittest.TestCase):
             ostree_path = "ostree/boot.1/apu/c8f294c479fc948375a001f06bc524d02900d32c6a1a72061a1dc281e9e93e41/0"
             os.makedirs(joinpaths(work_dir, ostree_path))
             self.assertEqual(find_ostree_root(work_dir), ostree_path)
+
+    def good_ks_novirt_test(self):
+        """Test a good kickstart with novirt"""
+        opts = DataHolder(no_virt=True, make_fsimage=False, make_pxe_live=False)
+        ks_version = makeVersion()
+        ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+        ks.readKickstartFromString("url --url=http://dl.fedoraproject.com\n"
+                                   "network --bootproto=dhcp --activate\n"
+                                   "repo --name=other --baseurl=http://dl.fedoraproject.com\n"
+                                   "part / --size=4096\n"
+                                   "shutdown\n")
+        self.assertEqual(check_kickstart(ks, opts), [])
+
+    def good_ks_virt_test(self):
+        """Test a good kickstart with virt"""
+        opts = DataHolder(no_virt=False, make_fsimage=False, make_pxe_live=False)
+        ks_version = makeVersion()
+        ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+        ks.readKickstartFromString("url --url=http://dl.fedoraproject.com\n"
+                                   "network --bootproto=dhcp --activate\n"
+                                   "repo --name=other --baseurl=http://dl.fedoraproject.com\n"
+                                   "part / --size=4096\n"
+                                   "shutdown\n")
+        self.assertEqual(check_kickstart(ks, opts), [])
+
+    def nomethod_novirt_test(self):
+        """Test a kickstart with repo and no url"""
+        opts = DataHolder(no_virt=True, make_fsimage=False, make_pxe_live=False)
+        ks_version = makeVersion()
+        ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+        ks.readKickstartFromString("network --bootproto=dhcp --activate\n"
+                                   "repo --name=other --baseurl=http://dl.fedoraproject.com\n"
+                                   "part / --size=4096\n"
+                                   "shutdown\n")
+        errors = check_kickstart(ks, opts)
+        self.assertTrue("Only url, nfs and ostreesetup" in errors[0])
+        self.assertTrue("repo can only be used with the url" in errors[1])
+
+    def no_network_test(self):
+        """Test a kickstart with missing network command"""
+        opts = DataHolder(no_virt=True, make_fsimage=False, make_pxe_live=False)
+        ks_version = makeVersion()
+        ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+        ks.readKickstartFromString("url --url=http://dl.fedoraproject.com\n"
+                                   "part / --size=4096\n"
+                                   "shutdown\n")
+        errors = check_kickstart(ks, opts)
+        self.assertTrue("The kickstart must activate networking" in errors[0])
+
+    def displaymode_test(self):
+        """Test a kickstart with displaymode set"""
+        opts = DataHolder(no_virt=True, make_fsimage=False, make_pxe_live=False)
+        ks_version = makeVersion()
+        ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+        ks.readKickstartFromString("url --url=http://dl.fedoraproject.com\n"
+                                   "network --bootproto=dhcp --activate\n"
+                                   "repo --name=other --baseurl=http://dl.fedoraproject.com\n"
+                                   "part / --size=4096\n"
+                                   "shutdown\n"
+                                   "graphical\n")
+        errors = check_kickstart(ks, opts)
+        self.assertTrue("must not set a display mode" in errors[0])
+
+    def autopart_test(self):
+        """Test a kickstart with autopart"""
+        opts = DataHolder(no_virt=True, make_fsimage=True, make_pxe_live=False)
+        ks_version = makeVersion()
+        ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+        ks.readKickstartFromString("url --url=http://dl.fedoraproject.com\n"
+                                   "network --bootproto=dhcp --activate\n"
+                                   "repo --name=other --baseurl=http://dl.fedoraproject.com\n"
+                                   "autopart\n"
+                                   "shutdown\n")
+        errors = check_kickstart(ks, opts)
+        self.assertTrue("Filesystem images must use a single" in errors[0])
+
+    def boot_part_test(self):
+        """Test a kickstart with a boot partition"""
+        opts = DataHolder(no_virt=True, make_fsimage=True, make_pxe_live=False)
+        ks_version = makeVersion()
+        ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+        ks.readKickstartFromString("url --url=http://dl.fedoraproject.com\n"
+                                   "network --bootproto=dhcp --activate\n"
+                                   "repo --name=other --baseurl=http://dl.fedoraproject.com\n"
+                                   "part / --size=4096\n"
+                                   "part /boot --size=1024\n"
+                                   "shutdown\n")
+        errors = check_kickstart(ks, opts)
+        self.assertTrue("Filesystem images must use a single" in errors[0])
+
+    def shutdown_virt_test(self):
+        """Test a kickstart with reboot instead of shutdown"""
+        opts = DataHolder(no_virt=False, make_fsimage=True, make_pxe_live=False)
+        ks_version = makeVersion()
+        ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+        ks.readKickstartFromString("url --url=http://dl.fedoraproject.com\n"
+                                   "network --bootproto=dhcp --activate\n"
+                                   "repo --name=other --baseurl=http://dl.fedoraproject.com\n"
+                                   "part / --size=4096\n"
+                                   "reboot\n")
+        errors = check_kickstart(ks, opts)
+        self.assertTrue("must include shutdown when using virt" in errors[0])
 
     @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
     def boot_over_root_test(self):
