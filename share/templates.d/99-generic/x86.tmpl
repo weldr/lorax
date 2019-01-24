@@ -119,6 +119,7 @@ runcmd xorrisofs -o ${outroot}/images/boot.iso \
        -boot-load-size 4 -boot-info-table -no-emul-boot \
        ${efiargs} -R -J -V '${isolabel}' \
        -graft-points \
+       .discinfo=${outroot}/.discinfo \
        ${STAGE2IMG}=${outroot}/${STAGE2IMG} \
        ${BOOTDIR}=${outroot}/${BOOTDIR} \
        ${KERNELDIR}=${outroot}/${KERNELDIR} \

@@ -87,6 +87,7 @@ treeinfo ${basearch} platforms ${platforms}
 runcmd xorrisofs -o ${outroot}/images/boot.iso \
        ${efiargs} -R -J -V '${isolabel}' \
        -graft-points \
+       .discinfo=${outroot}/.discinfo \
        ${KERNELDIR}=${outroot}/${KERNELDIR} \
        ${STAGE2IMG}=${outroot}/${STAGE2IMG} \
        ${efigraft} ${filegraft}

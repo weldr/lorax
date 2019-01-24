@@ -72,6 +72,7 @@ runcmd xorrisofs -o ${outroot}/images/boot.iso \
        -b ${BOOTDIR}/cdboot.img -c ${BOOTDIR}/boot.cat \
        -boot-load-size 4 -no-emul-boot \
        -R -J -V '${isolabel}' -graft-points \
+       .discinfo=${outroot}/.discinfo \
        ${BOOTDIR}=${outroot}/${BOOTDIR} \
        ${filegraft}
 treeinfo images-${basearch} boot.iso images/boot.iso

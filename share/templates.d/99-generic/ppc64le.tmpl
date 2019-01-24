@@ -88,6 +88,7 @@ runcmd xorrisofs -v -U -J -R \
         -hfs-volid ${product.version} \
         -chrp-boot -map ${inroot}/${configdir}/mapping \
         -no-desktop -allow-multidot -graft-points \
+        .discinfo=${outroot}/.discinfo \
         ${BOOTDIR}=${outroot}/${BOOTDIR} \
         ${GRUBDIR}=${outroot}/${GRUBDIR} \
         ${STAGE2IMG}=${outroot}/${STAGE2IMG} ${filegraft}
