@@ -179,6 +179,18 @@ class ProjectsTest(unittest.TestCase):
         with self.assertRaises(ProjectsError):
             projects_depsolve(self.dbo, [("nada-package", "*.*")], [])
 
+    def test_shim_depsolve(self):
+        """Test that requesting shim pulls in shim-*"""
+        deps = projects_depsolve(self.dbo, [("shim", "*")], [])
+        self.assertTrue(len(deps) > 0)
+        self.assertTrue(any(True for dep in deps if "shim-" in dep["name"]))
+
+    def test_cdbootglob_depsolve(self):
+        """Test that requesting grub2-efi-*-cdboot pulls in a cdboot package"""
+        deps = projects_depsolve(self.dbo, [("grub2-efi-*-cdboot", "*")], [])
+        self.assertTrue(len(deps) > 0)
+        self.assertTrue(any(True for dep in deps if "-cdboot" in dep["name"]))
+
     def test_modules_list_all(self):
         modules = modules_list(self.dbo, None)
 
