@@ -1,7 +1,7 @@
 [lorax-1]
 name=Lorax test repo 1
 failovermethod=priority
-baseurl=file:///tmp/lorax-empty-repo/
+baseurl=file:///tmp/lorax-empty-repo-1/
 enabled=1
 metadata_expire=7d
 repo_gpgcheck=0
@@ -13,7 +13,7 @@ skip_if_unavailable=False
 [lorax-2]
 name=Lorax test repo 2
 failovermethod=priority
-baseurl=file:///tmp/lorax-empty-repo/
+baseurl=file:///tmp/lorax-empty-repo-2/
 enabled=1
 metadata_expire=7d
 repo_gpgcheck=0
@@ -25,7 +25,7 @@ skip_if_unavailable=False
 [lorax-3]
 name=Lorax test repo 3
 failovermethod=priority
-baseurl=file:///tmp/lorax-empty-repo/
+baseurl=file:///tmp/lorax-empty-repo-3/
 enabled=1
 metadata_expire=7d
 repo_gpgcheck=0
@@ -37,7 +37,7 @@ skip_if_unavailable=False
 [lorax-4]
 name=Lorax test repo 4
 failovermethod=priority
-baseurl=file:///tmp/lorax-empty-repo/
+baseurl=file:///tmp/lorax-empty-repo-4/
 enabled=1
 metadata_expire=7d
 repo_gpgcheck=0

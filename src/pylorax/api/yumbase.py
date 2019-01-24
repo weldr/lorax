@@ -173,6 +173,32 @@ def get_base_object(conf):
         if any(map(lambda pattern: fnmatchcase(name, pattern), enabled_repos)):     # pylint: disable=cell-var-from-loop
             yb.getReposFromConfigFile(repo_file)
 
+    # Remove any duplicate repo entries. These can cause problems with Anaconda, which will fail
+    # with space problems.
+    repos = list(r.id for r in yb.repos.listEnabled())
+    seen = {"baseurl": [], "mirrorlist": [], "metalink": []}
+    for source_name in repos:
+        remove = False
+        repo = yb.repos.getRepo(source_name)
+        if repo.baseurl:
+            if repo.baseurl[0] in seen["baseurl"]:
+                log.info("Removing duplicate repo: %s baseurl=%s", source_name, repo.baseurl[0])
+                remove = True
+            else:
+                seen["baseurl"].append(repo.baseurl[0])
+        elif repo.mirrorlist:
+            if repo.mirrorlist in seen["mirrorlist"]:
+                log.info("Removing duplicate repo: %s mirrorlist=%s", source_name, repo.mirrorlist)
+                remove = True
+            else:
+                seen["mirrorlist"].append(repo.mirrorlist)
+
+        if remove:
+            yb.repos.delete(source_name)
+
+    # delete doesn't remove it from the cache used by listEnabled so we have to force it
+    yb.repos._cache_enabled_repos = None
+
     # Update the metadata from the enabled repos to speed up later operations
     log.info("Updating yum repository metadata")
     update_metadata(yb)

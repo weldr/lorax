@@ -1,7 +1,7 @@
-[other-repo]
-name=Other repo
+[single-repo-duplicate]
+name=single-repo-duplicate
 failovermethod=priority
-baseurl=file:///tmp/lorax-other-empty-repo/
+baseurl=file:///tmp/lorax-empty-repo/
 enabled=1
 metadata_expire=7d
 repo_gpgcheck=0
