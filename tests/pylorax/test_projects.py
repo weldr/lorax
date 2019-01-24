@@ -229,6 +229,18 @@ class ProjectsTest(unittest.TestCase):
         self.assertTrue("python" in [dep["name"] for dep in deps])
         self.assertTrue("python-blivet" not in [dep["name"] for dep in deps])
 
+    def test_shim_depsolve(self):
+        """Test that requesting shim pulls in shim-*"""
+        deps = projects_depsolve(self.yb, [("shim", "*")], [])
+        self.assertTrue(len(deps) > 0)
+        self.assertTrue(any(True for dep in deps if "shim-" in dep["name"]))
+
+    def test_cdbootglob_depsolve(self):
+        """Test that requesting grub2-efi-*-cdboot pulls in a cdboot package"""
+        deps = projects_depsolve(self.yb, [("grub2-efi-*-cdboot", "*")], [])
+        self.assertTrue(len(deps) > 0)
+        self.assertTrue(any(True for dep in deps if "-cdboot" in dep["name"]))
+
     def test_projects_filterVersionGlob(self):
         """Test the filterVersionGlob function"""
         pkgs = [NewPackageObject("foopkg", "0", "1.1.5", "el7", "x86_64"),
