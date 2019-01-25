@@ -24,6 +24,9 @@ rlJournalStart
             rlLogInfo "OS_PASSWORD is configured"
         fi
 
+        export OS_PROJECT_NAME="${OS_PROJECT_NAME:-$OS_USERNAME}"
+        rlLogInfo "OS_PROJECT_NAME=$OS_PROJECT_NAME"
+
         # VMs older than HOURS_LIMIT will be deleted
         HOURS_LIMIT="${HOURS_LIMIT:-24}"
         export TIMESTAMP=`date -u -d "$HOURS_LIMIT hours ago" '+%FT%T'`

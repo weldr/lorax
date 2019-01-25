@@ -26,8 +26,8 @@ rlJournalStart
             rlLogInfo "OS_USERNAME=$OS_USERNAME"
         fi
 
-        export OS_TENANT_NAME="${OS_TENANT_NAME:-$OS_USERNAME}"
-        rlLogInfo "OS_TENANT_NAME=$OS_TENANT_NAME"
+        export OS_PROJECT_NAME="${OS_PROJECT_NAME:-$OS_USERNAME}"
+        rlLogInfo "OS_PROJECT_NAME=$OS_PROJECT_NAME"
 
         if [ -z "$OS_PASSWORD" ]; then
             rlFail "OS_PASSWORD is empty!"
