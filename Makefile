@@ -66,8 +66,12 @@ test_vmware:
 	sudo -E ./tests/test_cli.sh tests/cli/test_build_and_deploy_vmware.sh
 
 clean_cloud_envs:
+	# clean beakerlib logs from previous executions
+	sudo rm -rf /var/tmp/beakerlib-*/
 	sudo -E ./tests/cleanup/remove_old_objects_aws.sh
 	sudo -E ./tests/cleanup/remove_old_objects_openstack.sh
+	# make sure all cleanup scripts finished successfully
+	sudo sh -c 'grep RESULT_STRING /var/tmp/beakerlib-*/TestResults | grep -v PASS && exit 1 || exit 0'
 
 clean:
 	-rm -rf build src/pylorax/version.py
