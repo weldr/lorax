@@ -45,6 +45,8 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
+        rlAssertEquals "SELinux operates in enforcing mode" "$(getenforce)" "Enforcing"
+
         # workaround for https://bugzilla.redhat.com/show_bug.cgi?id=1639326
         cat > $TMP_DIR/http-with-rng.toml << __EOF__
 name = "http-with-rng"
