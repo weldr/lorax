@@ -52,6 +52,8 @@ rlJournalStart
             rlAssertRpm python2-pip
         fi
 
+        rlRun -t -c "yum -y remove python*-requests python*-dateutil pyOpenSSL"
+
         rlRun -t -c "pip install --upgrade pip setuptools"
         rlRun -t -c "pip install ansible[azure] futures"
     rlPhaseEnd
