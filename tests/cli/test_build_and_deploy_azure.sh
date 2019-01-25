@@ -57,6 +57,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
+        rlAssertEquals "SELinux operates in enforcing mode" "$(getenforce)" "Enforcing"
         UUID=`$CLI compose start example-http-server vhd`
         rlAssertEquals "exit code should be zero" $? 0
 
