@@ -70,6 +70,7 @@ clean_cloud_envs:
 	sudo rm -rf /var/tmp/beakerlib-*/
 	sudo -E ./tests/cleanup/remove_old_objects_aws.sh
 	sudo -E ./tests/cleanup/remove_old_objects_openstack.sh
+	sudo -E ./tests/cleanup/remove_old_objects_azure.sh
 	# make sure all cleanup scripts finished successfully
 	sudo sh -c 'grep RESULT_STRING /var/tmp/beakerlib-*/TestResults | grep -v PASS && exit 1 || exit 0'
 
