@@ -10,6 +10,7 @@
 . /usr/share/beakerlib/beakerlib.sh
 
 CLI="./src/bin/composer-cli"
+VENV=`mktemp -d /tmp/ansible.venv.XXX`
 
 
 rlJournalStart
@@ -35,13 +36,15 @@ rlJournalStart
             rlLogInfo "OS_PASSWORD is configured"
         fi
 
-        if ! rlCheckRpm "python2-pip"; then
-            rlRun -t -c "yum -y install python2-pip"
-            rlAssertRpm python2-pip
-        fi
+        rlRun -t -c "yum -y install python2-pip python-virtualenv"
+        rlAssertRpm python2-pip
+        rlAssertRpm python-virtualenv
+        rlRun -t -c "virtualenv $VENV"
+
+        source $VENV/bin/activate
 
         rlRun -t -c "pip install --upgrade pip setuptools"
-        rlRun -t -c "pip install ansible openstacksdk 'dogpile.cache>=0.6.2,<0.7.0'"
+        rlRun -t -c "pip install ansible openstacksdk"
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
@@ -128,7 +131,8 @@ __EOF__
         rlRun -t -c "ansible localhost -m os_server -a 'name=$VM_NAME state=absent'"
         rlRun -t -c "ansible localhost -m os_image -a 'name=$OS_IMAGE_NAME state=absent'"
         rlRun -t -c "$CLI compose delete $UUID"
-        rlRun -t -c "rm -rf $IMAGE $SSH_KEY_DIR $TMP_DIR"
+        deactivate
+        rlRun -t -c "rm -rf $IMAGE $SSH_KEY_DIR $TMP_DIR $VENV"
     rlPhaseEnd
 
 rlJournalEnd
