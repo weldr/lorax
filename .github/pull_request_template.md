@@ -9,7 +9,7 @@
 - [ ] `*-aws-runtest` PASS
 - [ ] `*-azure-runtest` PASS
 - [ ] `*-images-runtest` PASS
-- [ ] `*-openshift-runtest` PASS
+- [ ] `*-openstack-runtest` PASS
 - [ ] `*-vmware-runtest` PASS
 
 --- Jenkins commands ---
