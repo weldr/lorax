@@ -7,7 +7,6 @@ Version:        29.27
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
-Group:          Applications/System
 License:        GPLv2+
 URL:            https://github.com/weldr/lorax
 # To generate Source0 do:
