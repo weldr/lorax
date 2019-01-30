@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.22
+Version:        28.14.23
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -234,6 +234,19 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Wed Jan 30 2019 Brian C. Lane <bcl@redhat.com> 28.14.23-1
+- lorax: Move default tmp dir to /var/tmp/lorax (bcl)
+  Resolves: rhbz#1668408
+- Expand parameters as separate words (jstodola)
+  Related: rhbz#1653934
+- Add /usr/local/bin to PATH for tests (atodorov) (atodorov)
+- Do not generate journal.xml from beakerlib (atodorov)
+  Related: rhbz#1653934
+- Use any tmux version (atodorov)
+  Related: rhbz#1653934
+- Make test scripts executable with chmod +x (atodorov)
+  Related: rhbz#1653934
+
 * Fri Jan 11 2019 Brian C. Lane <bcl@redhat.com> 28.14.22-1
 - Report an error if the blueprint doesn't exist (bcl)
   Related: rhbz#1653934
