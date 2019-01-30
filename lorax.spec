@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        30.12
+Version:        30.13
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -234,6 +234,21 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Wed Jan 30 2019 Brian C. Lane <bcl@redhat.com> 30.13-1
+- Remove duplicate repositories from the sources list (bcl@redhat.com)
+- Copy .discinfo to the boot.iso (bcl@redhat.com)
+- Clarify the ks repo only error message (bcl@redhat.com)
+- fedora-livemedia.ks: Add packages needed to boot livecd on UEFI systems (bcl@redhat.com)
+- Use xorrisofs instead of mkisofs (bcl@redhat.com)
+- lorax: Move default tmp dir to /var/tmp/lorax (bcl@redhat.com)
+- Export OS_PROJECT_NAME variable in openstack scripts (jstodola@redhat.com)
+- Collect results from all cleanup scripts (jstodola@redhat.com)
+- Typo in PR template (atodorov@redhat.com)
+- Expand parameters as separate words (jstodola@redhat.com)
+- Add PR template with instructions for repo members (atodorov@redhat.com)
+- Add script for removing old artifacts from OpenStack (jstodola@redhat.com)
+- Add script for removing old artifacts from AWS (jstodola@redhat.com)
+
 * Fri Jan 18 2019 Brian C. Lane <bcl@redhat.com> 30.12-1
 - Don't exclude /dev from the `setfiles` in `novirt_install` (awilliam@redhat.com)
 
