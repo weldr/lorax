@@ -87,9 +87,14 @@ class ServerTestCase(unittest.TestCase):
             self.rawhide = True
 
         # dnf repo baseurl has to point to an absolute directory, so we use /tmp/lorax-empty-repo/ in the files
-        # and create an empty repository
-        os.makedirs("/tmp/lorax-empty-repo/")
-        os.system("createrepo_c /tmp/lorax-empty-repo/")
+        # and create an empty repository. We now remove duplicate repo entries so we need a number of them.
+        for d in ["/tmp/lorax-empty-repo/", "/tmp/lorax-other-empty-repo/", "/tmp/lorax-empty-repo-1/",
+                  "/tmp/lorax-empty-repo-2/", "/tmp/lorax-empty-repo-3/", "/tmp/lorax-empty-repo-4/"]:
+            os.makedirs(d)
+            rc = os.system("createrepo_c %s" % d)
+            if rc != 0:
+                shutil.rmtree(d)
+                raise RuntimeError("Problem running createrepo_c, is it installed")
 
         server.config["DNFLOCK"] = DNFLock(server.config["COMPOSER_CFG"])
 
@@ -118,7 +123,9 @@ class ServerTestCase(unittest.TestCase):
     @classmethod
     def tearDownClass(self):
         shutil.rmtree(server.config["REPO_DIR"])
-        shutil.rmtree("/tmp/lorax-empty-repo/")
+        # Clean up the empty repos
+        for repo_dir in glob("/tmp/lorax-*empty-repo*"):
+            shutil.rmtree(repo_dir)
 
     def test_01_status(self):
         """Test the /api/status route"""
@@ -560,15 +567,20 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/projects/source/list")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
+        print(data["sources"])
         # Make sure it lists some common sources
         for r in ["lorax-1", "lorax-2", "lorax-3", "lorax-4", "other-repo", "single-repo"]:
             self.assertTrue(r in data["sources"] )
+
+        # Make sure the duplicate repo is not listed
+        self.assertFalse("single-repo-duplicate" in data["sources"])
 
     def test_projects_source_00_info(self):
         """Test /api/v0/projects/source/info"""
         resp = self.server.get("/api/v0/projects/source/info/single-repo")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
+        print(data["sources"])
         sources = data["sources"]
         self.assertTrue("single-repo" in sources)
 
