@@ -121,6 +121,38 @@ def get_base_object(conf):
             shutil.copy2(repo_file, repodir)
     dbo.read_all_repos()
 
+    # Remove any duplicate repo entries. These can cause problems with Anaconda, which will fail
+    # with space problems.
+    repos = sorted(list(r.id for r in dbo.repos.iter_enabled()))
+    seen = {"baseurl": [], "mirrorlist": [], "metalink": []}
+    for source_name in repos:
+        remove = False
+        repo = dbo.repos.get(source_name, None)
+        if repo is None:
+            log.warning("repo %s vanished while removing duplicates", source_name)
+            continue
+        if repo.baseurl:
+            if repo.baseurl[0] in seen["baseurl"]:
+                log.info("Removing duplicate repo: %s baseurl=%s", source_name, repo.baseurl[0])
+                remove = True
+            else:
+                seen["baseurl"].append(repo.baseurl[0])
+        elif repo.mirrorlist:
+            if repo.mirrorlist in seen["mirrorlist"]:
+                log.info("Removing duplicate repo: %s mirrorlist=%s", source_name, repo.mirrorlist)
+                remove = True
+            else:
+                seen["mirrorlist"].append(repo.mirrorlist)
+        elif repo.metalink:
+            if repo.metalink in seen["metalink"]:
+                log.info("Removing duplicate repo: %s metalink=%s", source_name, repo.metalink)
+                remove = True
+            else:
+                seen["metalink"].append(repo.metalink)
+
+        if remove:
+            del dbo.repos[source_name]
+
     # Update the metadata from the enabled repos to speed up later operations
     log.info("Updating repository metadata")
     try:
