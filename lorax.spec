@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        29.25
+Version:        29.26
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -231,6 +231,10 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Wed Jan 30 2019 Brian C. Lane <bcl@redhat.com> 29.26-1
+- Remove duplicate repositories from the sources list (bcl@redhat.com)
+- lorax: Move default tmp dir to /var/tmp/lorax (bcl@redhat.com)
+
 * Fri Jan 18 2019 Brian C. Lane <bcl@redhat.com> 29.25-1
 - Don't exclude /dev from the `setfiles` in `novirt_install` (awilliam@redhat.com)
 - dracut-fips is no longer a subpackage, it is included in dracut.  (bcl@redhat.com)
