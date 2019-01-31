@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        30.13
+Version:        30.14
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -233,6 +233,10 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu Jan 31 2019 Brian C. Lane <bcl@redhat.com> 30.14-1
+- xorrisofs is provided by the xorriso package (bcl@redhat.com)
+- Remove obsolete Group tag (ignatenkobrain@fedoraproject.org)
+
 * Wed Jan 30 2019 Brian C. Lane <bcl@redhat.com> 30.13-1
 - Remove duplicate repositories from the sources list (bcl@redhat.com)
 - Copy .discinfo to the boot.iso (bcl@redhat.com)
