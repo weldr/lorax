@@ -98,6 +98,8 @@ rlJournalStart
         rlRun -t -c "ssh-keygen -t rsa -N '' -f $SSH_KEY_DIR/id_rsa"
         SSH_PUB_KEY=`cat $SSH_KEY_DIR/id_rsa.pub`
 
+        now=$(date -u '+%FT%T')
+
         TMP_DIR=`mktemp -d /tmp/composer-azure.XXXXX`
         cat > $TMP_DIR/azure-playbook.yaml << __EOF__
 ---
@@ -118,6 +120,8 @@ rlJournalStart
         image:
           name: $OS_IMAGE_NAME
           resource_group: $AZURE_RESOURCE_GROUP
+        tags:
+          "first_seen": "$now"
 __EOF__
 
         rlRun -t -c "ansible-playbook $TMP_DIR/azure-playbook.yaml"
