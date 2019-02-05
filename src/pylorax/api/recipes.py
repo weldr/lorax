@@ -47,7 +47,7 @@ class Recipe(dict):
     and adds a .filename property to return the recipe's filename,
     and a .toml() function to return the recipe as a TOML string.
     """
-    def __init__(self, name, description, version, modules, packages, groups, customizations=None):
+    def __init__(self, name, description, version, modules, packages, groups, customizations=None, gitrepos=None):
         # Check that version is empty or semver compatible
         if version:
             semver.Version(version)
@@ -59,17 +59,28 @@ class Recipe(dict):
             packages = sorted(packages, key=lambda p: p["name"].lower())
         if groups is not None:
             groups = sorted(groups, key=lambda g: g["name"].lower())
+
+        # Only support [[repos.git]] for now
+        if gitrepos is not None:
+            repos = {"git": sorted(gitrepos, key=lambda g: g["repo"].lower())}
+        else:
+            repos = None
         dict.__init__(self, name=name,
                             description=description,
                             version=version,
                             modules=modules,
                             packages=packages,
                             groups=groups,
-                            customizations=customizations)
+                            customizations=customizations,
+                            repos=repos)
 
         # We don't want customizations=None to show up in the TOML so remove it
         if customizations is None:
             del self["customizations"]
+
+        # Don't include empty repos or repos.git
+        if repos is None or not repos["git"]:
+            del self["repos"]
 
     @property
     def package_names(self):
@@ -168,9 +179,13 @@ class Recipe(dict):
             customizations = self["customizations"]
         else:
             customizations = None
+        if "repos" in self and "git" in self["repos"]:
+            gitrepos = self["repos"]["git"]
+        else:
+            gitrepos = None
 
         return Recipe(self["name"], self["description"], self["version"],
-                      new_modules, new_packages, new_groups, customizations)
+                      new_modules, new_packages, new_groups, customizations, gitrepos)
 
 class RecipeModule(dict):
     def __init__(self, name, version):
@@ -182,6 +197,54 @@ class RecipePackage(RecipeModule):
 class RecipeGroup(dict):
     def __init__(self, name):
         dict.__init__(self, name=name)
+
+def NewRecipeGit(toml_dict):
+    """Create a RecipeGit object from fields in a TOML dict
+
+    :param rpmname: Name of the rpm to create, also used as the prefix name in the tar archive
+    :type rpmname: str
+    :param rpmversion: Version of the rpm, eg. "1.0.0"
+    :type rpmversion: str
+    :param rpmrelease: Release of the rpm, eg. "1"
+    :type rpmrelease: str
+    :param summary: Summary string for the rpm
+    :type summary: str
+    :param repo: URL of the get repo to clone and create the archive from
+    :type repo: str
+    :param ref: Git reference to check out. eg. origin/branch-name, git tag, or git commit hash
+    :type ref: str
+    :param destination: Path to install the / of the git repo at when installing the rpm
+    :type destination: str
+    :returns: A populated RecipeGit object
+    :rtype: RecipeGit
+
+    The TOML should look like this::
+
+        [[repos.git]]
+        rpmname="server-config"
+        rpmversion="1.0"
+        rpmrelease="1"
+        summary="Setup files for server deployment"
+        repo="PATH OF GIT REPO TO CLONE"
+        ref="v1.0"
+        destination="/opt/server/"
+
+    Note that the repo path supports anything that git supports, file://, https://, http://
+
+    Currently there is no support for authentication
+    """
+    return RecipeGit(toml_dict.get("rpmname"),
+                     toml_dict.get("rpmversion"),
+                     toml_dict.get("rpmrelease"),
+                     toml_dict.get("summary", ""),
+                     toml_dict.get("repo"),
+                     toml_dict.get("ref"),
+                     toml_dict.get("destination"))
+
+class RecipeGit(dict):
+    def __init__(self, rpmname, rpmversion, rpmrelease, summary, repo, ref, destination):
+        dict.__init__(self, rpmname=rpmname, rpmversion=rpmversion, rpmrelease=rpmrelease,
+                      summary=summary, repo=repo, ref=ref, destination=destination)
 
 def recipe_from_file(recipe_path):
     """Return a recipe file as a Recipe object
@@ -230,6 +293,10 @@ def recipe_from_dict(recipe_dict):
             groups = [RecipeGroup(g.get("name")) for g in recipe_dict["groups"]]
         else:
             groups = []
+        if recipe_dict.get("repos") and recipe_dict.get("repos").get("git"):
+            gitrepos = [NewRecipeGit(r) for r in recipe_dict["repos"]["git"]]
+        else:
+            gitrepos = []
         name = recipe_dict["name"]
         description = recipe_dict["description"]
         version = recipe_dict.get("version", None)
@@ -237,7 +304,7 @@ def recipe_from_dict(recipe_dict):
     except KeyError as e:
         raise RecipeError("There was a problem parsing the recipe: %s" % str(e))
 
-    return Recipe(name, description, version, modules, packages, groups, customizations)
+    return Recipe(name, description, version, modules, packages, groups, customizations, gitrepos)
 
 def gfile(path):
     """Convert a string path to GFile for use with Git"""
