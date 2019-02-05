@@ -122,6 +122,7 @@ rlJournalStart
           resource_group: $AZURE_RESOURCE_GROUP
         tags:
           "first_seen": "$now"
+        storage_account_name: $AZURE_STORAGE_ACCOUNT
 __EOF__
 
         rlRun -t -c "ansible-playbook $TMP_DIR/azure-playbook.yaml"
