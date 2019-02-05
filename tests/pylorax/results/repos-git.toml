@@ -1,0 +1,12 @@
+name = "http-server"
+description = "An example http server with PHP and MySQL support."
+version = "0.0.1"
+
+[[repos.git]]
+rpmname="server-config-files"
+rpmversion="1.0"
+rpmrelease="1"
+summary="Setup files for server deployment"
+repo="https://github.com/bcl/server-config-files"
+ref="v3.0"
+destination="/srv/config/"
