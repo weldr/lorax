@@ -65,6 +65,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Compose start"
+        rlAssertEquals "SELinux operates in enforcing mode" "$(getenforce)" "Enforcing"
         SSH_KEY_DIR=`mktemp -d /tmp/composer-ssh-keys.XXXXXX`
         rlRun -t -c "ssh-keygen -t rsa -N '' -f $SSH_KEY_DIR/id_rsa"
         PUB_KEY=`cat $SSH_KEY_DIR/id_rsa.pub`
