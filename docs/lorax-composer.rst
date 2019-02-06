@@ -252,6 +252,14 @@ To create an rpm named ``server-config-1.0-1.noarch.rpm`` you would add this to 
     ref="v1.0"
     destination="/opt/server/"
 
+* rpmname: Name of the rpm to create, also used as the prefix name in the tar archive
+* rpmversion: Version of the rpm, eg. "1.0.0"
+* rpmrelease: Release of the rpm, eg. "1"
+* summary: Summary string for the rpm
+* repo: URL of the get repo to clone and create the archive from
+* ref: Git reference to check out. eg. origin/branch-name, git tag, or git commit hash
+* destination: Path to install the / of the git repo at when installing the rpm
+
 An rpm will be created with the contents of the git repository referenced, with the files
 being installed under ``/opt/server/`` in this case.
 
