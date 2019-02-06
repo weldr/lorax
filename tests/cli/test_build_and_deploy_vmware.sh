@@ -1,5 +1,5 @@
 #!/bin/bash
-# Note: execute this file from the project root directory
+# Note: Execute this file from the project root directory
 
 #####
 #
@@ -64,7 +64,7 @@ rlJournalStart
         SAMPLES="$SAMPLES/samples"
     rlPhaseEnd
 
-    rlPhaseStartTest "compose start"
+    rlPhaseStartTest "Compose start"
         SSH_KEY_DIR=`mktemp -d /tmp/composer-ssh-keys.XXXXXX`
         rlRun -t -c "ssh-keygen -t rsa -N '' -f $SSH_KEY_DIR/id_rsa"
         PUB_KEY=`cat $SSH_KEY_DIR/id_rsa.pub`
@@ -85,13 +85,13 @@ __EOF__
 
         rlRun -t -c "$CLI blueprints push $TMP_DIR/vmware.toml"
 
-        UUID=`$CLI compose start vmware vmdk`
+        UUID=`$CLI Compose start vmware vmdk`
         rlAssertEquals "exit code should be zero" $? 0
 
         UUID=`echo $UUID | cut -f 2 -d' '`
     rlPhaseEnd
 
-    rlPhaseStartTest "compose finished"
+    rlPhaseStartTest "Compose finished"
         if [ -n "$UUID" ]; then
             until $CLI compose details $UUID | grep FINISHED; do
                 rlLogInfo "Waiting for compose to finish ..."
@@ -102,13 +102,13 @@ __EOF__
         fi
     rlPhaseEnd
 
-    rlPhaseStartTest "Upload vmdk image in vCenter"
+    rlPhaseStartTest "Upload VMDK image in vCenter"
         rlRun -t -c "$CLI compose image $UUID"
         IMAGE="$UUID-disk.vmdk"
 
         python $SAMPLES/upload_file_to_datastore.py -S -s $V_HOST -u $V_USERNAME -p $V_PASSWORD \
                 -d $V_DATASTORE -l `readlink -f $IMAGE` -r $IMAGE
-        rlAssert0 "Image upload successfull" $?
+        rlAssert0 "Image upload successful" $?
     rlPhaseEnd
 
     rlPhaseStartTest "Start VM instance"
@@ -124,7 +124,7 @@ __EOF__
             rlLogInfo "INSTANCE_UUID=$INSTANCE_UUID"
         fi
 
-        # wait for instance to become running and had assigned a public IP
+        # Wait for instance to become running and had assigned a public IP
         IP_ADDRESS="None"
         while [ "$IP_ADDRESS" == "None" ]; do
             rlLogInfo "IP_ADDRESS is not assigned yet ..."
@@ -140,12 +140,12 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartTest "Verify VM instance"
-        # verify we can login into that instance
+        # Verify we can login into that instance
         rlRun -t -c "ssh -oStrictHostKeyChecking=no -i $SSH_KEY_DIR/id_rsa root@$IP_ADDRESS 'cat /etc/redhat-release'"
     rlPhaseEnd
 
     rlPhaseStartCleanup
-        # note: vmdk disk is removed when destroying the VM
+        # Note: VMDK disk is removed when destroying the VM
         python $SAMPLES/destroy_vm.py -S -s $V_HOST -u $V_USERNAME -p $V_PASSWORD --uuid $INSTANCE_UUID
         rlAssert0 "VM destroyed" $?
         rlRun -t -c "$CLI compose delete $UUID"

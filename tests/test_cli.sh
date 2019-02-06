@@ -1,5 +1,5 @@
 #!/bin/bash
-# Note: execute this file from the project root directory
+# Note: Execute this file from the project root directory
 
 # setup
 rm -rf /var/tmp/beakerlib-*/
@@ -13,10 +13,10 @@ SHARE_DIR=`mktemp -d '/tmp/composer-share.XXXXX'`
 cp -R ./share/* $SHARE_DIR
 chmod a+rx -R $SHARE_DIR
 
-# start the lorax-composer daemon
+# Start the lorax-composer daemon
 ./src/sbin/lorax-composer --sharedir $SHARE_DIR $BLUEPRINTS_DIR &
 
-# wait for the backend to become ready
+# Wait for the backend to become ready
 tries=0
 until curl -m 15 --unix-socket /run/weldr/api.socket http://localhost:4000/api/status | grep 'db_supported.*true'; do
     tries=$((tries + 1))
@@ -29,11 +29,11 @@ done;
 
 
 if [ -z "$*" ]; then
-    # invoke cli/ tests which can be executed without special preparation
+    # Invoke cli/ tests which can be executed without special preparation
     ./tests/cli/test_blueprints_sanity.sh
     ./tests/cli/test_compose_sanity.sh
 else
-    # execute other cli tests which need more adjustments in the calling environment
+    # Execute other cli tests which need more adjustments in the calling environment
     # or can't be executed inside Travis CI
     for TEST in "$*"; do
         ./$TEST
@@ -45,8 +45,8 @@ fi
 pkill -9 lorax-composer
 rm -f /run/weldr/api.socket
 
-# look for failures
+# Look for failures
 grep RESULT_STRING /var/tmp/beakerlib-*/TestResults | grep -v PASS && exit 1
 
-# explicit return code for Makefile
+# Explicit return code for Makefile
 exit 0
