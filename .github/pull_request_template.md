@@ -11,6 +11,8 @@
 - [ ] `*-images-runtest` PASS
 - [ ] `*-openstack-runtest` PASS
 - [ ] `*-vmware-runtest` PASS
+- [ ] For `rhel8-*` and `rhel7-*` branches commit log references an approved
+  bug in Bugzilla. Do not merge if the bug doesn't have the 3 ACKs set to `+`!
 
 --- Jenkins commands ---
 
