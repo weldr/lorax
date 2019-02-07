@@ -24,8 +24,8 @@ import tarfile
 import tempfile
 import unittest
 
-from pylorax.api.gitrpm import GitArchiveTarball, make_git_rpm
-
+from pylorax.api.gitrpm import GitArchiveTarball, make_git_rpm, create_gitrpm_repo
+from pylorax.sysutils import joinpaths
 
 def _setup_git_repo(self):
     """Setup a git repo in a tmpdir, storing details into self
@@ -261,3 +261,35 @@ class GitRpmTest(unittest.TestCase):
             self._check_rpm(git_repo["repos"]["git"][0], rpm_dir, rpm_file, "second")
         finally:
             shutil.rmtree(rpm_dir)
+
+    def gitrpm_repo_test(self):
+        """Test creating a dnf repo of the git rpms"""
+        recipe = toml.loads("""
+            [[repos.git]]
+            rpmname="repo-test-alpha"
+            rpmversion="1.1.0"
+            rpmrelease="1"
+            summary="Testing the git rpm code"
+            repo="file://%s"
+            ref="v1.1.0"
+            destination="/srv/testing-alpha/"
+
+            [[repos.git]]
+            rpmname="repo-test-beta"
+            rpmversion="1.0.0"
+            rpmrelease="1"
+            summary="Testing the git rpm code"
+            repo="file://%s"
+            ref="v1.0.0"
+            destination="/srv/testing-beta/"
+        """ % (self.repodir, self.repodir))
+        try:
+            temp_dir = tempfile.mkdtemp(prefix="git-rpm-test.")
+            repo_dir = create_gitrpm_repo(temp_dir, recipe)
+
+            self.assertTrue(len(repo_dir) > 0)
+            self.assertTrue(os.path.exists(joinpaths(repo_dir, "repo-test-alpha-1.1.0-1.noarch.rpm")))
+            self.assertTrue(os.path.exists(joinpaths(repo_dir, "repo-test-beta-1.0.0-1.noarch.rpm")))
+
+        finally:
+            shutil.rmtree(temp_dir)
