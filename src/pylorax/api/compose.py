@@ -45,6 +45,7 @@ from pykickstart.parser import KickstartParser
 from pykickstart.version import makeVersion
 
 from pylorax import ArchData, find_templates, get_buildarch
+from pylorax.api.gitrpm import create_gitrpm_repo
 from pylorax.api.projects import projects_depsolve, projects_depsolve_with_size, dep_nevra
 from pylorax.api.projects import ProjectsError
 from pylorax.api.recipes import read_recipe_and_id
@@ -421,6 +422,9 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
     if not repos:
         raise RuntimeError("No enabled repos, canceling build.")
 
+    # Create the git rpms, if any, and return the path to the repo under results_dir
+    gitrpm_repo = create_gitrpm_repo(results_dir, recipe)
+
     # Create the final kickstart with repos and package list
     ks_path = joinpaths(results_dir, "final-kickstart.ks")
     with open(ks_path, "w") as f:
@@ -431,6 +435,10 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
             ks_repo = repo_to_ks(r, "baseurl")
             log.debug("repo composer-%s = %s", idx, ks_repo)
             f.write('repo --name="composer-%s" %s\n' % (idx, ks_repo))
+
+        if gitrpm_repo:
+            log.debug("repo gitrpms = %s", gitrpm_repo)
+            f.write('repo --name="gitrpms" --baseurl="file://%s"\n' % gitrpm_repo)
 
         # Setup the disk for booting
         # TODO Add GPT and UEFI boot support
@@ -443,6 +451,12 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
 
         for d in deps:
             f.write(dep_nevra(d)+"\n")
+
+        # Include the rpms from the gitrpm repo directory
+        if gitrpm_repo:
+            for rpm in glob(os.path.join(gitrpm_repo, "*.rpm")):
+                f.write(os.path.basename(rpm)[:-4]+"\n")
+
         f.write("%end\n")
 
         add_customizations(f, recipe)

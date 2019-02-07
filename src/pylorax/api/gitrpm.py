@@ -29,6 +29,7 @@ import subprocess
 import tempfile
 import time
 
+from pylorax.sysutils import joinpaths
 
 def get_repo_description(gitRepo):
     """ Return a description including the git repo and reference
@@ -56,26 +57,26 @@ class GitArchiveTarball:
         The result is in RPMNAME.tar.xz under the sourcesDir
         """
         # Clone the repository into a temporary location
-        cmd = ["git", "clone", self._gitRepo["repo"], os.path.join(sourcesDir, "gitrepo")]
+        cmd = ["git", "clone", self._gitRepo["repo"], joinpaths(sourcesDir, "gitrepo")]
         log.debug(cmd)
         subprocess.check_call(cmd)
 
         oldcwd = os.getcwd()
         try:
-            os.chdir(os.path.join(sourcesDir, "gitrepo"))
+            os.chdir(joinpaths(sourcesDir, "gitrepo"))
 
             # Configure archive to create a .tar.xz
             cmd = ["git", "config", "tar.tar.xz.command", "xz -c"]
             log.debug(cmd)
             subprocess.check_call(cmd)
 
-            cmd = ["git", "archive", "--prefix", self._gitRepo["rpmname"] + "/", "-o", os.path.join(sourcesDir, self.sourceName), self._gitRepo["ref"]]
+            cmd = ["git", "archive", "--prefix", self._gitRepo["rpmname"] + "/", "-o", joinpaths(sourcesDir, self.sourceName), self._gitRepo["ref"]]
             log.debug(cmd)
             subprocess.check_call(cmd)
         finally:
             # Cleanup even if there was an error
             os.chdir(oldcwd)
-            shutil.rmtree(os.path.join(sourcesDir, "gitrepo"))
+            shutil.rmtree(joinpaths(sourcesDir, "gitrepo"))
 
 class GitRpmBuild(SimpleRpmBuild):
     """Build an rpm containing files from a git repository"""
@@ -91,7 +92,7 @@ class GitRpmBuild(SimpleRpmBuild):
         """
         if not self._base_dir:
             self._base_dir = tempfile.mkdtemp(prefix="lorax-git-rpm.")
-        return os.path.join(self._base_dir, "rpmbuild")
+        return joinpaths(self._base_dir, "rpmbuild")
 
     def cleanup_tmpdir(self):
         """Remove the temporary directory and all of its contents
@@ -169,3 +170,33 @@ def make_git_rpm(gitRepo, dest):
         gitRpm.cleanup_tmpdir()
 
     return os.path.basename(rpmfile)
+
+# Create the git rpms, if any, and return the path to the repo under results_dir
+def create_gitrpm_repo(results_dir, recipe):
+    """Create a dnf repository with the rpms from the recipe
+
+    :param results_dir: Path to create the repository under
+    :type results_dir: str
+    :param recipe: The recipe to get the repos.git entries from
+    :type recipe: Recipe
+    :returns: Path to the dnf repository or ""
+    :rtype: str
+
+    This function creates a dnf repository directory at results_dir+"repo/",
+    creates rpms for all of the repos.git entries in the recipe, runs createrepo_c
+    on the dnf repository so that Anaconda can use it, and returns the path to the
+    repository to the caller.
+    """
+    if "repos" not in recipe or "git" not in recipe["repos"]:
+        return ""
+
+    gitrepo = joinpaths(results_dir, "repo/")
+    if not os.path.exists(gitrepo):
+        os.makedirs(gitrepo)
+    for r in recipe["repos"]["git"]:
+        make_git_rpm(r, gitrepo)
+    cmd = ["createrepo_c", gitrepo]
+    log.debug(cmd)
+    subprocess.check_call(cmd)
+
+    return gitrepo
