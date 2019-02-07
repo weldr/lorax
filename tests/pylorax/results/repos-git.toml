@@ -2,6 +2,14 @@ name = "http-server"
 description = "An example http server with PHP and MySQL support."
 version = "0.0.1"
 
+[[modules]]
+name = "httpd"
+version = "2.4.*"
+
+[[modules]]
+name = "php"
+version = "5.4.*"
+
 [[repos.git]]
 rpmname="server-config-files"
 rpmversion="1.0"
