@@ -14,8 +14,6 @@ url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/Ever
 # Network information
 network  --bootproto=dhcp --device=link --activate
 
-# System authorization information
-auth --useshadow --passalgo=sha512
 # SELinux configuration
 selinux --enforcing
 
