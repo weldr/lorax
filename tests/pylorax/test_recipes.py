@@ -40,13 +40,13 @@ class BasicRecipeTest(unittest.TestCase):
                          ("custom-base.toml", "custom-base.dict"),
                          ("repos-git.toml", "repos-git.dict")]
         results_path = "./tests/pylorax/results/"
-        self.input_toml = []
+        self.input_toml = {}
         for (recipe_toml, recipe_dict) in input_recipes:
             with open(joinpaths(results_path, recipe_toml)) as f_toml:
                 with open(joinpaths(results_path, recipe_dict)) as f_dict:
                     # XXX Warning, can run arbitrary code
                     result_dict = eval(f_dict.read())
-                self.input_toml.append((f_toml.read(), result_dict))
+                self.input_toml[recipe_toml] = (f_toml.read(), result_dict)
 
         self.old_modules = [recipes.RecipeModule("toml", "2.1"),
                             recipes.RecipeModule("bash", "5.*"),
@@ -80,7 +80,7 @@ class BasicRecipeTest(unittest.TestCase):
 
     def toml_to_recipe_test(self):
         """Test converting the TOML string to a Recipe object"""
-        for (toml_str, recipe_dict) in self.input_toml:
+        for (toml_str, recipe_dict) in self.input_toml.values():
             result = recipes.recipe_from_toml(toml_str)
             self.assertEqual(result, recipe_dict)
 
@@ -96,7 +96,7 @@ class BasicRecipeTest(unittest.TestCase):
         """Test converting a Recipe object to a TOML string"""
         # In order to avoid problems from matching strings we convert to TOML and
         # then back so compare the Recipes.
-        for (toml_str, _recipe_dict) in self.input_toml:
+        for (toml_str, _recipe_dict) in self.input_toml.values():
             # This is tested in toml_to_recipe
             recipe_1 = recipes.recipe_from_toml(toml_str)
             # Convert the Recipe to TOML and then back to a Recipe
@@ -159,6 +159,34 @@ class BasicRecipeTest(unittest.TestCase):
                    'old': {'Module': {'name': 'httpd', 'version': '3.7.*'}}},
                   {'new': {'Package': {'name': 'git', 'version': '2.13.*'}}, 'old': None}]
         self.assertEqual(recipes.recipe_diff(old_recipe, new_recipe), result)
+
+    def recipe_freeze_test(self):
+        """Test the recipe freeze() function"""
+        # Use the repos-git.toml test, it only has http and php in it
+        deps = [{"arch": "x86_64",
+                 "epoch": 0,
+                 "name": "httpd",
+                 "release": "1.el7",
+                 "version": "2.4.11"},
+                {"arch": "x86_64",
+                 "epoch": 0,
+                 "name": "php",
+                 "release": "1.el7",
+                 "version": "5.4.2"}]
+        result = recipes.recipe_from_toml(self.input_toml["repos-git.toml"][0])
+        self.assertEqual(result, self.input_toml["repos-git.toml"][1])
+
+        # Freeze the recipe with our fake deps
+        frozen = result.freeze(deps)
+        self.assertTrue(frozen is not None)
+        http_module = recipes.find_name("httpd", frozen["modules"])
+        self.assertTrue(http_module is not None)
+        self.assertEqual(http_module["version"], "2.4.11-1.el7.x86_64")
+
+        php_module = recipes.find_name("php", frozen["modules"])
+        self.assertTrue(php_module is not None)
+        self.assertEqual(php_module["version"], "5.4.2-1.el7.x86_64")
+
 
 class GitRecipesTest(unittest.TestCase):
     @classmethod
