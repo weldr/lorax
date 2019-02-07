@@ -15,8 +15,6 @@ repo --name=appstream --baseurl="http://URL-TO-APPSTREAM"
 # Network information
 network  --bootproto=dhcp --device=link --activate
 
-# System authorization information
-auth --useshadow --passalgo=sha512
 # SELinux configuration
 selinux --enforcing
 

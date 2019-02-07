@@ -8,8 +8,6 @@ network  --bootproto=dhcp --device=link --activate
 
 # Root password
 rootpw --plaintext removethispw
-# System authorization information
-auth --useshadow --passalgo=sha512
 # System keyboard
 keyboard --xlayouts=us --vckeymap=us
 # System language
