@@ -148,6 +148,10 @@ Requires: python3-gevent
 Requires: anaconda-tui
 Requires: qemu-img
 Requires: tar
+Requires: python3-rpmfluff
+Requires: git
+Requires: xz
+Requires: createrepo_c
 
 %{?systemd_requires}
 BuildRequires: systemd
