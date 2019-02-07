@@ -7,8 +7,6 @@ url --url="http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/Ever
 rootpw --plaintext replace-this-pw
 # Network information
 network  --bootproto=dhcp --activate
-# System authorization information
-auth --useshadow --passalgo=sha512
 # System keyboard
 keyboard --xlayouts=us --vckeymap=us
 # System language
