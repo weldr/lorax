@@ -65,9 +65,9 @@ rlJournalStart
       name: "{{item.id}}"
       state: absent
     loop: "{{openstack_servers}}"
-    when: item.created < lookup('env','TIMESTAMP')
+    when: item.created < lookup('env','TIMESTAMP') and (item.metadata.Tag is not defined or item.metadata.Tag != "keep_me")
     loop_control:
-      label: "{{item.name}} (id: {{item.id}} created: {{item.created}})"
+      label: "{{item.name}} (id: {{item.id}} created: {{item.created}} metadata: {{item.metadata}})"
 __EOF__
 
         rlLogInfo "Removing VMs created before $TIMESTAMP"
