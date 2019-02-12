@@ -203,7 +203,8 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %dir %{_sysconfdir}/lorax
 %config(noreplace) %{_sysconfdir}/lorax/lorax.conf
 %dir %{_datadir}/lorax
-%{_mandir}/man1/*.1*
+%{_mandir}/man1/lorax.1*
+%{_mandir}/man1/livemedia-creator.1*
 %{_tmpfilesdir}/lorax.conf
 
 %files lmc-virt
@@ -226,11 +227,13 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %dir %attr(0771, root, weldr) %{_sharedstatedir}/lorax/composer/
 %dir %attr(0771, root, weldr) %{_sharedstatedir}/lorax/composer/blueprints/
 %attr(0771, weldr, weldr) %{_sharedstatedir}/lorax/composer/blueprints/*
+%{_mandir}/man1/lorax-composer.1*
 
 %files -n composer-cli
 %{_bindir}/composer-cli
 %{python3_sitelib}/composer/*
 %{_sysconfdir}/bash_completion.d/composer-cli
+%{_mandir}/man1/composer-cli.1*
 
 %changelog
 * Thu Jan 31 2019 Brian C. Lane <bcl@redhat.com> 30.14-1
