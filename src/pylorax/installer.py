@@ -382,7 +382,8 @@ def novirt_install(opts, disk_img, disk_size, cancel_func=None):
     # Make sure anaconda has the right product and release
     log.info("Running anaconda.")
     try:
-        for line in execReadlines("anaconda", args, reset_lang=False,
+        unshare_args = [ "--pid", "--kill-child", "--mount", "--propagation", "unchanged", "anaconda" ] + args
+        for line in execReadlines("unshare", unshare_args, reset_lang=False,
                                   env_add={"ANACONDA_PRODUCTNAME": opts.project,
                                            "ANACONDA_PRODUCTVERSION": opts.releasever},
                                   callback=lambda p: not novirt_cancel_check(cancel_funcs, p)):
