@@ -39,8 +39,6 @@ replace @PRODUCT@ '${product.name}'  ${GRUBDIR}/grub.cfg
 replace @VERSION@ ${product.version} ${GRUBDIR}/grub.cfg
 replace @ROOT@ 'inst.stage2=hd:LABEL=${isolabel|udev}' ${GRUBDIR}/grub.cfg
 
-install ${configdir}/mapping ${BOOTDIR}
-
 ## Install kernel and bootloader config (in separate places for each arch)
 %for kernel in kernels:
     <%
@@ -82,12 +80,11 @@ install ${configdir}/mapping ${BOOTDIR}
 ## make boot.iso
 runcmd xorrisofs -v -U -J -R \
         -o ${outroot}/images/boot.iso \
-        -part -hfs -r -l -sysid PPC \
+        -r -l -sysid PPC \
         -A "${product.name} ${product.version}" -V '${isolabel}' \
         -volset "${product.version}" -volset-size 1 -volset-seqno 1 \
-        -hfs-volid ${product.version} \
-        -chrp-boot -map ${inroot}/${configdir}/mapping \
-        -no-desktop -allow-multidot -graft-points \
+        -chrp-boot \
+        -graft-points \
         .discinfo=${outroot}/.discinfo \
         ${BOOTDIR}=${outroot}/${BOOTDIR} \
         ${GRUBDIR}=${outroot}/${GRUBDIR} \
