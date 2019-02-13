@@ -20,6 +20,8 @@ shutdown
 timezone  US/Eastern
 # System bootloader configuration
 bootloader --location=mbr
+# Add platform specific partitions
+reqpart
 
 %post
 # Remove random-seed
@@ -34,7 +36,6 @@ touch /etc/machine-id
 kernel
 -dracut-config-rescue
 selinux-policy-targeted
-grub2
 
 # Make sure virt guest agents are installed
 qemu-guest-agent
