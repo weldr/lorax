@@ -23,6 +23,8 @@ shutdown
 timezone  US/Eastern
 # System bootloader configuration
 bootloader --location=mbr --append="no_timer_check console=ttyS0,115200n8 console=tty1 net.ifnames=0"
+# Add platform specific partitions
+reqpart
 
 # Basic services
 services --enabled=sshd,chronyd,cloud-init
@@ -43,7 +45,6 @@ sed -i 's/cloud-user/ec2-user/' /etc/cloud/cloud.cfg
 kernel
 -dracut-config-rescue
 selinux-policy-targeted
-grub2
 
 chrony
 
