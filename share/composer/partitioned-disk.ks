@@ -20,6 +20,8 @@ shutdown
 timezone  US/Eastern
 # System bootloader configuration
 bootloader --location=mbr
+# Add platform specific partitions
+reqpart
 
 %post
 # Remove random-seed
@@ -34,6 +36,5 @@ touch /etc/machine-id
 kernel
 -dracut-config-rescue
 selinux-policy-targeted
-grub2
 
 # NOTE lorax-composer will add the blueprint packages below here, including the final %end

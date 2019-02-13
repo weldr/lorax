@@ -20,6 +20,8 @@ shutdown
 timezone  US/Eastern
 # System bootloader configuration
 bootloader --location=mbr --append="no_timer_check console=ttyS0,115200n8 console=tty1 net.ifnames=0"
+# Add platform specific partitions
+reqpart
 
 # Start sshd and cloud-init at boot time
 services --enabled=sshd,cloud-init,cloud-init-local,cloud-config,cloud-final
@@ -37,7 +39,6 @@ touch /etc/machine-id
 kernel
 -dracut-config-rescue
 selinux-policy-targeted
-grub2
 
 # Make sure virt guest agents are installed
 qemu-guest-agent

@@ -20,6 +20,8 @@ shutdown
 timezone  US/Eastern
 # System bootloader configuration
 bootloader --location=mbr
+# Add platform specific partitions
+reqpart
 
 # Basic services
 services --enabled=sshd,chronyd,vmtoolsd
@@ -37,7 +39,6 @@ touch /etc/machine-id
 kernel
 -dracut-config-rescue
 selinux-policy-targeted
-grub2
 
 chrony
 open-vm-tools
