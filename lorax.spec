@@ -136,7 +136,7 @@ Requires: libgit2
 Requires: libgit2-glib
 Requires: python3-flask
 Requires: python3-gevent
-Requires: anaconda-tui
+Requires: anaconda-tui >= 29.19-1
 Requires: qemu-img
 Requires: tar
 
