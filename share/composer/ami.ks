@@ -1,8 +1,5 @@
 # Lorax Composer AMI output kickstart template
 
-# Add a separate /boot partition
-part /boot --size=1024
-
 # Firewall configuration
 firewall --enabled
 
@@ -24,7 +21,7 @@ timezone  US/Eastern
 # System bootloader configuration
 bootloader --location=mbr --append="no_timer_check console=ttyS0,115200n8 console=tty1 net.ifnames=0"
 # Add platform specific partitions
-reqpart
+reqpart --add-boot
 
 # Basic services
 services --enabled=sshd,chronyd,cloud-init

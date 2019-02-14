@@ -21,7 +21,7 @@ timezone  US/Eastern
 # System bootloader configuration
 bootloader --location=mbr
 # Add platform specific partitions
-reqpart
+reqpart --add-boot
 
 # Basic services
 services --enabled=sshd,chronyd,vmtoolsd
