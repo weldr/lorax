@@ -27,6 +27,7 @@ from ..lib import get_file_magic
 from pylorax import find_templates
 from pylorax.base import DataHolder
 from pylorax.creator import FakeDNF, create_pxe_config, make_appliance, make_squashfs, squashfs_args
+from pylorax.creator import calculate_disk_size
 from pylorax.creator import get_arch, find_ostree_root, check_kickstart
 from pylorax.executils import runcmd
 from pylorax.imgutils import mksparse
@@ -243,6 +244,71 @@ class CreatorTest(unittest.TestCase):
                                    "reboot\n")
         errors = check_kickstart(ks, opts)
         self.assertTrue("must include shutdown when using virt" in errors[0])
+
+    def disk_size_simple_test(self):
+        """Test calculating the disk size with a simple / partition"""
+        opts = DataHolder(no_virt=True, make_fsimage=False, make_iso=False, make_pxe_live=False)
+        ks_version = makeVersion()
+        ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+        ks.readKickstartFromString("url --url=http://dl.fedoraproject.com\n"
+                                   "network --bootproto=dhcp --activate\n"
+                                   "repo --name=other --baseurl=http://dl.fedoraproject.com\n"
+                                   "part / --size=4096\n"
+                                   "shutdown\n")
+        self.assertEqual(calculate_disk_size(opts, ks), 4098)
+
+    def disk_size_boot_test(self):
+        """Test calculating the disk size with / and /boot partitions"""
+        opts = DataHolder(no_virt=True, make_fsimage=False, make_iso=False, make_pxe_live=False)
+        ks_version = makeVersion()
+        ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+        ks.readKickstartFromString("url --url=http://dl.fedoraproject.com\n"
+                                   "network --bootproto=dhcp --activate\n"
+                                   "repo --name=other --baseurl=http://dl.fedoraproject.com\n"
+                                   "part / --size=4096\n"
+                                   "part /boot --size=512\n"
+                                   "shutdown\n")
+        self.assertEqual(calculate_disk_size(opts, ks), 4610)
+
+    def disk_size_boot_fsimage_test(self):
+        """Test calculating the disk size with / and /boot partitions on a fsimage"""
+        opts = DataHolder(no_virt=True, make_fsimage=True, make_iso=False, make_pxe_live=False)
+        ks_version = makeVersion()
+        ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+        ks.readKickstartFromString("url --url=http://dl.fedoraproject.com\n"
+                                   "network --bootproto=dhcp --activate\n"
+                                   "repo --name=other --baseurl=http://dl.fedoraproject.com\n"
+                                   "part / --size=4096\n"
+                                   "part /boot --size=512\n"
+                                   "shutdown\n")
+        self.assertEqual(calculate_disk_size(opts, ks), 4098)
+
+    def disk_size_reqpart_test(self):
+        """Test calculating the disk size with reqpart and a / partition"""
+        opts = DataHolder(no_virt=True, make_fsimage=False, make_iso=False, make_pxe_live=False)
+        ks_version = makeVersion()
+        ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+        ks.readKickstartFromString("url --url=http://dl.fedoraproject.com\n"
+                                   "network --bootproto=dhcp --activate\n"
+                                   "repo --name=other --baseurl=http://dl.fedoraproject.com\n"
+                                   "part / --size=4096\n"
+                                   "reqpart\n"
+                                   "shutdown\n")
+        self.assertEqual(calculate_disk_size(opts, ks), 4598)
+
+    def disk_size_reqpart_boot_test(self):
+        """Test calculating the disk size with reqpart --add-boot and a / partition"""
+        opts = DataHolder(no_virt=True, make_fsimage=False, make_iso=False, make_pxe_live=False)
+        ks_version = makeVersion()
+        ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+        ks.readKickstartFromString("url --url=http://dl.fedoraproject.com\n"
+                                   "network --bootproto=dhcp --activate\n"
+                                   "repo --name=other --baseurl=http://dl.fedoraproject.com\n"
+                                   "part / --size=4096\n"
+                                   "reqpart --add-boot\n"
+                                   "shutdown\n")
+        self.assertEqual(calculate_disk_size(opts, ks), 5622)
+
 
     @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
     def boot_over_root_test(self):

@@ -445,6 +445,8 @@ def calculate_disk_size(opts, ks):
     :param str ks: Path to the kickstart to use for the installation
     :returns: Disk size in MiB
     :rtype: int
+
+    Also takes into account the use of reqpart or reqpart --add-boot
     """
     # Disk size for a filesystem image should only be the size of /
     # to prevent surprises when using the same kickstart for different installations.
@@ -453,6 +455,17 @@ def calculate_disk_size(opts, ks):
         disk_size = 2 + sum(p.size for p in unique_partitions.values() if p.mountpoint == "/")
     else:
         disk_size = 2 + sum(p.size for p in unique_partitions.values())
+
+        # reqpart can add 1M, 2M, 200M based on platform. Add 500M to be sure
+        if ks.handler.reqpart.seen:
+            log.info("Adding 500M for reqpart")
+            disk_size += 500
+
+            # It can also request adding /boot which is 1G
+            if ks.handler.reqpart.addBoot:
+                log.info("Adding 1024M for reqpart --addboot")
+                disk_size += 1024
+
     log.info("Using disk size of %sMiB", disk_size)
     return disk_size
 
