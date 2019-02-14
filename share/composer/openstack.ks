@@ -21,7 +21,7 @@ timezone  US/Eastern
 # System bootloader configuration
 bootloader --location=mbr --append="no_timer_check console=ttyS0,115200n8 console=tty1 net.ifnames=0"
 # Add platform specific partitions
-reqpart
+reqpart --add-boot
 
 # Start sshd and cloud-init at boot time
 services --enabled=sshd,cloud-init,cloud-init-local,cloud-config,cloud-final
