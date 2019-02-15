@@ -104,11 +104,11 @@ __EOF__
         rlRun -t -c "ssh-keygen -t rsa -N '' -f $SSH_KEY_DIR/id_rsa"
         rlRun -t -c "ansible localhost -m os_keypair -a 'name=$VM_NAME-key public_key_file=$SSH_KEY_DIR/id_rsa.pub'"
 
-        response=`ansible localhost -m os_server -a "name=$VM_NAME image=$OS_IMAGE_UUID flavor=t2.medium key_name=$VM_NAME-key auto_ip=yes"`
+        response=`ansible localhost -m os_server -a "name=$VM_NAME image=$OS_IMAGE_UUID network=provider_net_cci_2 flavor=ci.m1.medium.ephemeral key_name=$VM_NAME-key auto_ip=yes"`
         rlAssert0 "VM started successfully" $?
         rlLogInfo "$response"
 
-        IP_ADDRESS=`echo "$response" | grep '"OS-EXT-IPS:type": "floating"' -A1| grep '"addr":' | cut -f4 -d'"' | head -n 1`
+        IP_ADDRESS=`echo "$response" | grep '"OS-EXT-IPS:type": "fixed"' -A1| grep '"addr":' | cut -f4 -d'"' | head -n 1`
         rlLogInfo "Running instance IP_ADDRESS=$IP_ADDRESS"
 
         rlLogInfo "Waiting 60sec for instance to initialize ..."
