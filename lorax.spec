@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        30.14
+Version:        30.15
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -236,6 +236,21 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Fri Feb 15 2019 Brian C. Lane <bcl@redhat.com> 30.15-1
+- Remove 3G minimum from lorax-composer (bcl@redhat.com)
+- drop Apple/HFS bits from the templates (#602) (dan@danny.cz)
+- Move manpages into the correct subpackages (bcl@redhat.com)
+- installer: Run anaconda in a mount and pid namespace (lars@karlitski.net)
+- Run as root/weldr by default. (clumens@redhat.com)
+- Pass ssl certificate options to anaconda (lars@karlitski.net)
+- Drop auth from the kickstart examples (bcl@redhat.com)
+- Keep OpenStack VMs with Tag keep_me (atodorov@redhat.com)
+- Make sure compose build tests run with SELinux in enforcing mode (jikortus@redhat.com)
+- Update with instructions about commit log referencing Bugzilla (atodorov@redhat.com)
+- Add script for removing old artifacts from Azure (jstodola@redhat.com)
+- Use existing storage account (jstodola@redhat.com)
+- Record date/time of VM creation (jstodola@redhat.com)
+
 * Thu Jan 31 2019 Brian C. Lane <bcl@redhat.com> 30.14-1
 - xorrisofs is provided by the xorriso package (bcl@redhat.com)
 - Remove obsolete Group tag (ignatenkobrain@fedoraproject.org)
