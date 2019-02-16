@@ -103,19 +103,13 @@ def rexists(pathname, root=""):
         return True
     return False
 
-# TODO: operate inside an actual chroot for safety? Not that RPM bothers..
-class LoraxTemplateRunner(object):
+class TemplateRunner(object):
     '''
     This class parses and executes Lorax templates. Sample usage:
 
       # install a bunch of packages
       runner = LoraxTemplateRunner(inroot=rundir, outroot=rundir, dbo=dnf_obj)
       runner.run("install-packages.ltmpl")
-
-      # modify a runtime dir
-      runner = LoraxTemplateRunner(inroot=rundir, outroot=newrun)
-      runner.run("runtime-transmogrify.ltmpl")
-
     NOTES:
 
     * Parsing procedure is roughly:
@@ -128,6 +122,75 @@ class LoraxTemplateRunner(object):
 
     * Parsing and execution are *separate* passes - so you can't use the result
       of a command in an %if statement (or any other control statements)!
+    '''
+    def __init__(self, fatalerrors=True, templatedir=None, defaults=None, builtins=None):
+        self.fatalerrors = fatalerrors
+        self.templatedir = templatedir or "/usr/share/lorax"
+        self.templatefile = None
+        self.builtins = builtins or {}
+        self.defaults = defaults or {}
+
+
+    def run(self, templatefile, **variables):
+        for k,v in list(self.defaults.items()) + list(self.builtins.items()):
+            variables.setdefault(k,v)
+        logger.debug("executing %s with variables=%s", templatefile, variables)
+        self.templatefile = templatefile
+        t = LoraxTemplate(directories=[self.templatedir])
+        commands = t.parse(templatefile, variables)
+        self._run(commands)
+
+
+    def _run(self, parsed_template):
+        logger.info("running %s", self.templatefile)
+        for (num, line) in enumerate(parsed_template,1):
+            logger.debug("template line %i: %s", num, " ".join(line))
+            skiperror = False
+            (cmd, args) = (line[0], line[1:])
+            # Following Makefile convention, if the command is prefixed with
+            # a dash ('-'), we'll ignore any errors on that line.
+            if cmd.startswith('-'):
+                cmd = cmd[1:]
+                skiperror = True
+            try:
+                # grab the method named in cmd and pass it the given arguments
+                f = getattr(self, cmd, None)
+                if cmd[0] == '_' or cmd == 'run' or not isinstance(f, collections.Callable):
+                    raise ValueError("unknown command %s" % cmd)
+                f(*args)
+            except Exception: # pylint: disable=broad-except
+                if skiperror:
+                    logger.debug("ignoring error")
+                    continue
+                logger.error("template command error in %s:", self.templatefile)
+                logger.error("  %s", " ".join(line))
+                # format the exception traceback
+                exclines = traceback.format_exception(*sys.exc_info())
+                # skip the bit about "ltmpl.py, in _run()" - we know that
+                exclines.pop(1)
+                # log the "ErrorType: this is what happened" line
+                logger.error("  %s", exclines[-1].strip())
+                # and log the entire traceback to the debug log
+                for _line in ''.join(exclines).splitlines():
+                    logger.debug("  %s", _line)
+                if self.fatalerrors:
+                    raise
+
+
+# TODO: operate inside an actual chroot for safety? Not that RPM bothers..
+class LoraxTemplateRunner(TemplateRunner):
+    '''
+    This class parses and executes Lorax templates. Sample usage:
+
+      # install a bunch of packages
+      runner = LoraxTemplateRunner(inroot=rundir, outroot=rundir, dbo=dnf_obj)
+      runner.run("install-packages.ltmpl")
+
+      # modify a runtime dir
+      runner = LoraxTemplateRunner(inroot=rundir, outroot=newrun)
+      runner.run("runtime-transmogrify.ltmpl")
+
+    NOTES:
 
     * Commands that run external programs (e.g. systemctl) currently use
       the *host*'s copy of that program, which may cause problems if there's a
@@ -151,14 +214,11 @@ class LoraxTemplateRunner(object):
         self.inroot = inroot
         self.outroot = outroot
         self.dbo = dbo
-        self.fatalerrors = fatalerrors
-        self.templatedir = templatedir or "/usr/share/lorax"
-        self.templatefile = None
-        # some builtin methods
-        self.builtins = DataHolder(exists=lambda p: rexists(p, root=inroot),
-                                   glob=lambda g: list(rglob(g, root=inroot)))
-        self.defaults = defaults or {}
+        builtins = DataHolder(exists=lambda p: rexists(p, root=inroot),
+                              glob=lambda g: list(rglob(g, root=inroot)))
         self.results = DataHolder(treeinfo=dict()) # just treeinfo for now
+
+        super(LoraxTemplateRunner, self).__init__(fatalerrors, templatedir, defaults, builtins)
         # TODO: set up custom logger with a filter to add line info
 
     def _out(self, path):
@@ -209,52 +269,6 @@ class LoraxTemplateRunner(object):
             for pkg in debug_pkgs:
                 f.write("%s\n" % pkg)
 
-
-    def run(self, templatefile, **variables):
-        for k,v in list(self.defaults.items()) + list(self.builtins.items()):
-            variables.setdefault(k,v)
-        logger.debug("executing %s with variables=%s", templatefile, variables)
-        self.templatefile = templatefile
-        t = LoraxTemplate(directories=[self.templatedir])
-        commands = t.parse(templatefile, variables)
-        self._run(commands)
-
-
-    def _run(self, parsed_template):
-        logger.info("running %s", self.templatefile)
-        for (num, line) in enumerate(parsed_template,1):
-            logger.debug("template line %i: %s", num, " ".join(line))
-            skiperror = False
-            (cmd, args) = (line[0], line[1:])
-            # Following Makefile convention, if the command is prefixed with
-            # a dash ('-'), we'll ignore any errors on that line.
-            if cmd.startswith('-'):
-                cmd = cmd[1:]
-                skiperror = True
-            try:
-                # grab the method named in cmd and pass it the given arguments
-                f = getattr(self, cmd, None)
-                if cmd[0] == '_' or cmd == 'run' or not isinstance(f, collections.Callable):
-                    raise ValueError("unknown command %s" % cmd)
-                f(*args)
-            except Exception: # pylint: disable=broad-except
-                if skiperror:
-                    logger.debug("ignoring error")
-                    continue
-                logger.error("template command error in %s:", self.templatefile)
-                logger.error("  %s", " ".join(line))
-                # format the exception traceback
-                exclines = traceback.format_exception(*sys.exc_info())
-                # skip the bit about "ltmpl.py, in _run()" - we know that
-                exclines.pop(1)
-                # log the "ErrorType: this is what happened" line
-                logger.error("  " + exclines[-1].strip())
-                # and log the entire traceback to the debug log
-                for _line in ''.join(exclines).splitlines():
-                    logger.debug("  " + _line)
-                if self.fatalerrors:
-                    raise
-
     def install(self, srcglob, dest):
         '''
         install SRC DEST
@@ -265,6 +279,7 @@ class LoraxTemplateRunner(object):
           If DEST doesn't exist, SRC will be copied to a file with that name,
           assuming the rest of the path exists.
           This is pretty much like how the 'cp' command works.
+
           Examples:
             install usr/share/myconfig/grub.conf /boot
             install /usr/share/myconfig/grub.conf.in /boot/grub.conf
@@ -320,6 +335,7 @@ class LoraxTemplateRunner(object):
         '''
         mkdir DIR [DIR ...]
           Create the named DIR(s). Will create leading directories as needed.
+
           Example:
             mkdir /images
         '''
@@ -333,6 +349,7 @@ class LoraxTemplateRunner(object):
         replace PATTERN REPLACEMENT FILEGLOB [FILEGLOB ...]
           Find-and-replace the given PATTERN (Python-style regex) with the given
           REPLACEMENT string for each of the files listed.
+
           Example:
             replace @VERSION@ ${product.version} /boot/grub.conf /boot/isolinux.cfg
         '''
@@ -350,7 +367,9 @@ class LoraxTemplateRunner(object):
           Append STRING (followed by a newline character) to FILE.
           Python character escape sequences ('\\n', '\\t', etc.) will be
           converted to the appropriate characters.
+
           Examples:
+
             append /etc/depmod.d/dd.conf "search updates built-in"
             append /etc/resolv.conf ""
         '''
@@ -363,6 +382,7 @@ class LoraxTemplateRunner(object):
           Add an item to the treeinfo data store.
           The given SECTION will have a new item added where
           KEY = ARG ARG ...
+
           Example:
             treeinfo images-${kernel.arch} boot.iso images/boot.iso
         '''
@@ -463,6 +483,7 @@ class LoraxTemplateRunner(object):
         '''
         log MESSAGE
           Emit the given log message. Be sure to put it in quotes!
+
           Example:
             log "Reticulating splines, please wait..."
         '''
@@ -581,6 +602,7 @@ class LoraxTemplateRunner(object):
         '''
         removepkg PKGGLOB [PKGGLOB...]
           Delete the named package(s).
+
           IMPLEMENTATION NOTES:
             RPM scriptlets (%preun/%postun) are *not* run.
             Files are deleted, but directories are left behind.
@@ -645,6 +667,7 @@ class LoraxTemplateRunner(object):
           (or packages) named.
           If '--allbut' is used, all the files from the given package(s) will
           be removed *except* the ones which match the file globs.
+
           Examples:
             removefrom usbutils /usr/bin/*
             removefrom xfsprogs --allbut /sbin/*
@@ -738,6 +761,7 @@ class LoraxTemplateRunner(object):
         '''
         createaddrsize INITRD_ADDRESS INITRD ADDRSIZE
           Create the initrd.addrsize file required in LPAR boot process.
+
           Examples:
             createaddrsize ${INITRD_ADDRESS} ${outroot}/${BOOTDIR}/initrd.img ${outroot}/${BOOTDIR}/initrd.addrsize
         '''
@@ -750,6 +774,7 @@ class LoraxTemplateRunner(object):
         '''
         systemctl [enable|disable|mask] UNIT [UNIT...]
           Enable, disable, or mask the given systemd units.
+
           Examples:
             systemctl disable lvm2-monitor.service
             systemctl mask fedora-storage-init.service fedora-configure.service
