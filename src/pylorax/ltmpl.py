@@ -794,3 +794,84 @@ class LoraxTemplateRunner(TemplateRunner):
                 runcmd(cmd)
             except CalledProcessError:
                 pass
+
+class LiveTemplateRunner(TemplateRunner):
+    """
+    This class parses and executes a limited Lorax template. Sample usage:
+
+      # install a bunch of packages
+      runner = LiveTemplateRunner(dbo, templatedir, defaults)
+      runner.run("live-install.tmpl")
+
+      It is meant to be used with the live-install.tmpl which lists the per-arch
+      pacages needed to build the live-iso output.
+    """
+    def __init__(self, dbo, fatalerrors=True, templatedir=None, defaults=None):
+        self.dbo = dbo
+        self.pkgs = []
+
+        super(LiveTemplateRunner, self).__init__(fatalerrors, templatedir, defaults)
+
+    def installpkg(self, *pkgs):
+        '''
+        installpkg [--required|--optional] [--except PKGGLOB [--except PKGGLOB ...]] PKGGLOB [PKGGLOB ...]
+          Request installation of all packages matching the given globs.
+          Note that this is just a *request* - nothing is *actually* installed
+          until the 'run_pkg_transaction' command is given.
+
+          --required is now the default. If the PKGGLOB can be missing pass --optional
+        '''
+        if pkgs[0] == '--optional':
+            pkgs = pkgs[1:]
+            required = False
+        elif pkgs[0] == '--required':
+            pkgs = pkgs[1:]
+            required = True
+        else:
+            required = True
+
+        excludes = []
+        while '--except' in pkgs:
+            idx = pkgs.index('--except')
+            if len(pkgs) == idx+1:
+                raise ValueError("installpkg needs an argument after --except")
+
+            excludes.append(pkgs[idx+1])
+            pkgs = pkgs[:idx] + pkgs[idx+2:]
+
+        errors = False
+        for p in pkgs:
+            try:
+                # Start by using Subject to generate a package query, which will
+                # give us a query object similar to what dbo.install would select,
+                # minus the handling for multilib. This query may contain
+                # multiple arches. Pull the package names out of that, filter any
+                # that match the excludes patterns, and pass those names back to
+                # dbo.install to do the actual, arch and version and multilib
+                # aware, package selction.
+
+                # dnf queries don't have a concept of negative globs which is why
+                # the filtering is done the hard way.
+
+                pkgnames = [pkg for pkg in dnf.subject.Subject(p).get_best_query(self.dbo.sack).filter(latest=True)]
+                if not pkgnames:
+                    raise dnf.exceptions.PackageNotFoundError("no package matched", p)
+
+                # Apply excludes to the name only
+                for exclude in excludes:
+                    pkgnames = [pkg for pkg in pkgnames if not fnmatch.fnmatch(pkg.name, exclude)]
+
+                # Convert to a sorted NVR list for installation
+                pkgnvrs = sorted(["{}-{}-{}".format(pkg.name, pkg.version, pkg.release) for pkg in pkgnames])
+
+                # If the request is a glob, expand it in the log
+                if any(g for g in ['*','?','.'] if g in p):
+                    logger.info("installpkg: %s expands to %s", p, ",".join(pkgnvrs))
+
+                self.pkgs.extend(pkgnvrs)
+            except Exception as e: # pylint: disable=broad-except
+                logger.error("installpkg %s failed: %s", p, str(e))
+                errors = True
+
+        if errors and required:
+            raise Exception("Required installpkg failed.")
