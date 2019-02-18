@@ -34,5 +34,9 @@ rlJournalStart
         fi
     rlPhaseEnd
 
+    rlPhaseStartCleanup
+        rlRun -t -c "$CLI compose delete $UUID"
+    rlPhaseEnd
+
 rlJournalEnd
 rlJournalPrintText
