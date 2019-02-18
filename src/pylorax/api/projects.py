@@ -370,11 +370,11 @@ def _unique_dicts(lst, key):
     list of unique return values.
     """
     result = []
-    result_keys = []
+    result_keys = set()
     for d in lst:
         if key(d) not in result_keys:
             result.append(d)
-            result_keys.append(key(d))
+            result_keys.add(key(d))
     return result
 
 def modules_info(dbo, module_names):
