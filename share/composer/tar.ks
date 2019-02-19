@@ -28,6 +28,9 @@ rm /var/lib/systemd/random-seed
 # Clear /etc/machine-id
 rm /etc/machine-id
 touch /etc/machine-id
+
+# Remove the rescue kernel and image to save space
+rm -f /boot/*-rescue*
 %end
 
 # NOTE Do NOT add any other sections after %packages
