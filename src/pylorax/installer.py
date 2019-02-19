@@ -572,7 +572,7 @@ def virt_install(opts, install_log, disk_img, disk_size, cancel_func=None):
         else:
             msg = "virt_install failed on line: %s" % log_monitor.server.error_line
         raise InstallError(msg)
-    elif cancel_func():
+    elif cancel_func and cancel_func():
         raise InstallError("virt_install canceled by cancel_func")
 
     if opts.make_fsimage:
