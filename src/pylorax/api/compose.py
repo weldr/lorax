@@ -44,12 +44,15 @@ from uuid import uuid4
 from pykickstart.parser import KickstartParser
 from pykickstart.version import makeVersion
 
+from pylorax import ArchData, find_templates, get_buildarch
 from pylorax.api.dnfbase import check_repos
 from pylorax.api.projects import projects_depsolve, projects_depsolve_with_size, dep_nevra
 from pylorax.api.projects import ProjectsError
 from pylorax.api.recipes import read_recipe_and_id
 from pylorax.api.timestamp import TS_CREATED, write_timestamp
+from pylorax.base import DataHolder
 from pylorax.imgutils import default_image_name
+from pylorax.ltmpl import LiveTemplateRunner
 from pylorax.sysutils import joinpaths, flatconfig
 
 
@@ -277,6 +280,40 @@ def add_customizations(f, recipe):
     if not wrote_rootpw:
         f.write('rootpw --lock\n')
 
+
+def get_extra_pkgs(dbo, share_dir, compose_type):
+    """Return extra packages needed for the output type
+
+    :param dbo: dnf base object
+    :type dbo: dnf.Base
+    :param share_dir: Path to the top level share directory
+    :type share_dir: str
+    :param compose_type: The type of output to create from the recipe
+    :type compose_type: str
+    :returns: List of package names (name only, not NEVRA)
+    :rtype: list
+
+    Currently this is only needed by live-iso, it reads ./live/live-install.tmpl and
+    processes only the installpkg lines. It lists the packages needed to complete creation of the
+    iso using the templates such as x86.tmpl
+
+    Keep in mind that the live-install.tmpl is shared between livemedia-creator and lorax-composer,
+    even though the results are applied differently.
+    """
+    if compose_type != "live-iso":
+        return []
+
+    # get the arch information to pass to the runner
+    arch = ArchData(get_buildarch(dbo))
+    defaults = DataHolder(basearch=arch.basearch)
+    templatedir = joinpaths(find_templates(share_dir), "live")
+    runner = LiveTemplateRunner(dbo, templatedir=templatedir, defaults=defaults)
+    runner.run("live-install.tmpl")
+    log.debug("extra pkgs = %s", runner.pkgs)
+
+    return runner.pkgnames
+
+
 def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_mode=0):
     """ Start the build
 
@@ -298,6 +335,11 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
     if compose_type not in compose_types(share_dir):
         raise RuntimeError("Invalid compose type (%s), must be one of %s" % (compose_type, compose_types(share_dir)))
 
+    # Some image types (live-iso) need extra packages for composer to execute the output template
+    with dnflock.lock:
+        extra_pkgs = get_extra_pkgs(dnflock.dbo, share_dir, compose_type)
+    log.debug("Extra packages needed for %s: %s", compose_type, extra_pkgs)
+
     with gitlock.lock:
         (commit_id, recipe) = read_recipe_and_id(gitlock.repo, branch, recipe_name)
 
@@ -307,11 +349,13 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
             raise RuntimeError("Compose requires non-CDN repos to be enabled")
 
     # Combine modules and packages and depsolve the list
-    # TODO include the version/glob in the depsolving
     module_nver = recipe.module_nver
     package_nver = recipe.package_nver
+    package_nver.extend([(name, '*') for name in extra_pkgs])
+
     projects = sorted(set(module_nver+package_nver), key=lambda p: p[0].lower())
     deps = []
+    log.info("depsolving %s", recipe["name"])
     try:
         # This can possibly update repodata and reset the YumBase object.
         with dnflock.lock_check:

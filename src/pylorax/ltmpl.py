@@ -809,6 +809,7 @@ class LiveTemplateRunner(TemplateRunner):
     def __init__(self, dbo, fatalerrors=True, templatedir=None, defaults=None):
         self.dbo = dbo
         self.pkgs = []
+        self.pkgnames = []
 
         super(LiveTemplateRunner, self).__init__(fatalerrors, templatedir, defaults)
 
@@ -869,6 +870,7 @@ class LiveTemplateRunner(TemplateRunner):
                     logger.info("installpkg: %s expands to %s", p, ",".join(pkgnvrs))
 
                 self.pkgs.extend(pkgnvrs)
+                self.pkgnames.extend([pkg.name for pkg in pkgnames])
             except Exception as e: # pylint: disable=broad-except
                 logger.error("installpkg %s failed: %s", p, str(e))
                 errors = True
