@@ -33,11 +33,13 @@ rm /var/lib/systemd/random-seed
 # Clear /etc/machine-id
 rm /etc/machine-id
 touch /etc/machine-id
+
+# Remove the rescue kernel and image to save space
+rm -f /boot/*-rescue*
 %end
 
 %packages
 kernel
--dracut-config-rescue
 selinux-policy-targeted
 
 # Make sure virt guest agents are installed
