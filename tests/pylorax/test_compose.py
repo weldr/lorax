@@ -15,9 +15,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from io import StringIO
+import os
+import shutil
+import tempfile
 import unittest
 
-from pylorax.api.compose import add_customizations
+from pylorax import get_buildarch
+from pylorax.api.compose import add_customizations, get_extra_pkgs
+from pylorax.api.config import configure, make_dnf_dirs
+from pylorax.api.dnfbase import get_base_object
 from pylorax.api.recipes import recipe_from_toml
 
 BASE_RECIPE = """name = "test-cases"
@@ -223,3 +229,41 @@ class CustomizationsTestCase(unittest.TestCase):
         self.assertCustomization(ROOT_PLAIN_KEY, 'rootpw --plaintext "plainpassword"')
         self.assertCustomization(ROOT_PLAIN_KEY, 'sshkey --user root "A SSH KEY FOR THE USER"')
         self.assertNotCustomization(ROOT_PLAIN_KEY, "rootpw --lock")
+
+
+class ExtraPkgsTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        self.tmp_dir = tempfile.mkdtemp(prefix="lorax.test.repo.")
+        self.config = configure(root_dir=self.tmp_dir, test_config=True)
+        make_dnf_dirs(self.config, os.getuid(), os.getgid())
+        self.dbo = get_base_object(self.config)
+
+    @classmethod
+    def tearDownClass(self):
+        shutil.rmtree(self.tmp_dir)
+
+    def test_live_install(self):
+        """Check that live-install.tmpl is parsed correctly"""
+        # A package for each arch to test for
+        arch_pkg = {
+            "aarch64":  "shim-aa64",
+            "arm":      "grub2-efi-arm-cdboot",
+            "armhfp":   "grub2-efi-arm-cdboot",
+            "x86_64":   "shim-x64",
+            "i386":     "memtest86+",
+            "ppc64le":  "powerpc-utils",
+            "s390x":    "s390utils-base"
+        }
+
+        extra_pkgs = get_extra_pkgs(self.dbo, "./share/", "live-iso")
+        self.assertTrue(len(extra_pkgs) > 0)
+
+        # Results depend on arch
+        arch = get_buildarch(self.dbo)
+        self.assertTrue(arch_pkg[arch] in extra_pkgs)
+
+    def test_other_install(self):
+        """Test that non-live doesn't parse live-install.tmpl"""
+        extra_pkgs = get_extra_pkgs(self.dbo, "./share/", "qcow2")
+        self.assertEqual(extra_pkgs, [])

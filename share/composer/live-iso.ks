@@ -351,22 +351,9 @@ EOF
 # Packages requires to support this output format go here
 isomd5sum
 kernel
-memtest86+
-syslinux
--dracut-config-rescue
 dracut-config-generic
 dracut-live
-generic-logos
+system-logos
 selinux-policy-targeted
-
-# This package is needed to boot the iso on UEFI
-shim
-shim-ia32
-grub2
-grub2-efi
-grub2-efi-*-cdboot
-grub2-efi-ia32
-efibootmgr
-
 
 # NOTE lorax-composer will add the blueprint packages below here, including the final %end%packages
