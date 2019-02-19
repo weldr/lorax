@@ -34,6 +34,9 @@ rm /var/lib/systemd/random-seed
 rm /etc/machine-id
 touch /etc/machine-id
 
+# Remove the rescue kernel and image to save space
+rm -f /boot/*-rescue*
+
 # This file is required by waagent in RHEL, but compatible with NetworkManager
 cat > /etc/sysconfig/network-scripts/ifcfg-eth0 << EOF
 DEVICE=eth0
@@ -59,7 +62,6 @@ dracut -f -v --persistent-policy by-uuid
 
 %packages
 kernel
--dracut-config-rescue
 selinux-policy-targeted
 
 chrony

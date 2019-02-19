@@ -36,11 +36,13 @@ touch /etc/machine-id
 
 # tell cloud-init to create the ec2-user account
 sed -i 's/cloud-user/ec2-user/' /etc/cloud/cloud.cfg
+
+# Remove the rescue kernel and image to save space
+rm -f /boot/*-rescue*
 %end
 
 %packages
 kernel
--dracut-config-rescue
 selinux-policy-targeted
 
 chrony
