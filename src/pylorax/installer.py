@@ -248,7 +248,7 @@ class QEMUInstall(object):
         log.debug(qemu_cmd)
         try:
             execWithRedirect(qemu_cmd[0], qemu_cmd[1:], reset_lang=False, raise_err=True,
-                             callback=lambda p: not cancel_func())
+                             callback=lambda p: not (cancel_func and cancel_func()))
         except subprocess.CalledProcessError as e:
             log.error("Running qemu failed:")
             log.error("cmd: %s", " ".join(e.cmd))
@@ -262,7 +262,7 @@ class QEMUInstall(object):
             if boot_uefi and ovmf_path:
                 os.unlink(ovmf_vars)
 
-        if cancel_func():
+        if cancel_func and cancel_func():
             log.error("Installation error detected. See logfile for details.")
             raise InstallError("QEMUInstall failed")
         else:
