@@ -28,7 +28,7 @@ from pylorax.api.projects import api_time, api_changelog, pkg_to_project, pkg_to
 from pylorax.api.projects import proj_to_module, projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError, dep_evra, dep_nevra
 from pylorax.api.projects import repo_to_source, get_repo_sources, delete_repo_source, source_to_repo
-from pylorax.api.projects import dnf_repo_to_file_repo
+from pylorax.api.projects import dnf_repo_to_file_repo, _unique_dicts
 from pylorax.api.dnfbase import get_base_object
 
 class Package(object):
@@ -201,6 +201,21 @@ class ProjectsTest(unittest.TestCase):
         self.assertTrue("autoconf" in names)            # mandatory package
         self.assertTrue("ctags" in names)               # default package
         self.assertFalse("cmake" in names)              # optional package
+
+class MehTest(unittest.TestCase):
+    def test_unique_dicts(self):
+        lst = [
+            { "name": "foo" },
+            { "name": "bar" },
+            { "name": "bar" },
+            { "name": "baz" }
+        ]
+        expected = [
+            { "name": "foo" },
+            { "name": "bar" },
+            { "name": "baz" }
+        ]
+        self.assertEqual(_unique_dicts(lst, key=lambda d: d["name"]), expected)
 
 
 class ConfigureTest(unittest.TestCase):
