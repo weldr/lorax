@@ -162,10 +162,10 @@ class ProjectsTest(unittest.TestCase):
 
     def test_projects_depsolve_version(self):
         """Test that depsolving with a partial wildcard version works"""
-        deps = projects_depsolve(self.dbo, [("bash", "4.*")], [])
+        deps = projects_depsolve(self.dbo, [("bash", "5.*")], [])
         self.assertEqual(deps[1]["name"], "bash")
 
-        deps = projects_depsolve(self.dbo, [("bash", "4.4.*")], [])
+        deps = projects_depsolve(self.dbo, [("bash", "5.0.*")], [])
         self.assertEqual(deps[1]["name"], "bash")
 
     def test_projects_depsolve_oldversion(self):

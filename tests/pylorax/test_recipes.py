@@ -48,7 +48,7 @@ class BasicRecipeTest(unittest.TestCase):
                 self.input_toml.append((f_toml.read(), result_dict))
 
         self.old_modules = [recipes.RecipeModule("toml", "2.1"),
-                            recipes.RecipeModule("bash", "4.*"),
+                            recipes.RecipeModule("bash", "5.*"),
                             recipes.RecipeModule("httpd", "3.7.*")]
         self.old_packages = [recipes.RecipePackage("python", "2.7.*"),
                              recipes.RecipePackage("parted", "3.2")]
@@ -65,7 +65,7 @@ class BasicRecipeTest(unittest.TestCase):
         self.modules_result = [{"new": {"Modules": {"version": "2.8.1", "name": "openssh"}},
                                 "old": None},
                                {"new": None,
-                                "old": {"Modules": {"name": "bash", "version": "4.*"}}},
+                                "old": {"Modules": {"name": "bash", "version": "5.*"}}},
                                {"new": {"Modules": {"version": "3.8.*", "name": "httpd"}},
                                 "old": {"Modules": {"version": "3.7.*", "name": "httpd"}}}]
         self.packages_result = [{"new": {"Packages": {"name": "git", "version": "2.13.*"}}, "old": None}]
@@ -153,7 +153,7 @@ class BasicRecipeTest(unittest.TestCase):
         new_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.3.1", self.new_modules, self.new_packages, [])
         result = [{'new': {'Version': '0.3.1'}, 'old': {'Version': '0.1.1'}},
                   {'new': {'Module': {'name': 'openssh', 'version': '2.8.1'}}, 'old': None},
-                  {'new': None, 'old': {'Module': {'name': 'bash', 'version': '4.*'}}},
+                  {'new': None, 'old': {'Module': {'name': 'bash', 'version': '5.*'}}},
                   {'new': {'Module': {'name': 'httpd', 'version': '3.8.*'}},
                    'old': {'Module': {'name': 'httpd', 'version': '3.7.*'}}},
                   {'new': {'Package': {'name': 'git', 'version': '2.13.*'}}, 'old': None}]
@@ -486,7 +486,7 @@ groups = []
 
 [[packages]]
 name = "bash"
-version = "4.4.*"
+version = "5.0.*"
 
 [[customizations]]
 hostname = "custom-base"
