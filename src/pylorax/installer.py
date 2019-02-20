@@ -18,6 +18,7 @@ import logging
 log = logging.getLogger("pylorax")
 
 import os
+import glob
 import shutil
 import sys
 import subprocess
@@ -116,7 +117,7 @@ class VirtualInstall( object ):
     """
     def __init__( self, iso, ks_paths, disk_img, img_size=2, 
                   kernel_args=None, memory=1024, vnc=None, arch=None,
-                  log_check=None, virtio_host="127.0.0.1", virtio_port=6080,
+                  cancel_func=None, virtio_host="127.0.0.1", virtio_port=6080,
                   qcow2=False, boot_uefi=False, ovmf_path=None):
         """
         Start the installation
@@ -211,14 +212,14 @@ class VirtualInstall( object ):
         # TODO: If vnc has been passed, we should look up the port and print that
         # for the user at this point
 
-        while dom.isActive() and not log_check():
+        while dom.isActive() and not (cancel_func and cancel_func()):
             sys.stdout.write(".")
             sys.stdout.flush()
             sleep(10)
         print
 
-        if log_check():
-            log.info( "Installation error detected. See logfile." )
+        if cancel_func and cancel_func():
+            log.info( "Installation error or cancel detected. See logfile." )
         else:
             log.info( "Install finished. Or at least virt shut down." )
 
@@ -234,7 +235,8 @@ class VirtualInstall( object ):
         # Undefine the virt, UEFI installs need to have --nvram passed
         subprocess.call(["virsh", "undefine", self.virt_name, "--nvram"])
 
-def novirt_install(opts, disk_img, disk_size, repo_url, callback_func=None):
+
+def novirt_install(opts, disk_img, disk_size, repo_url, cancel_func=None):
     """
     Use Anaconda to install to a disk image
     """
@@ -282,10 +284,14 @@ def novirt_install(opts, disk_img, disk_size, repo_url, callback_func=None):
         # Create the sparse image
         mksparse(disk_img, disk_size * 1024**3)
 
+    cancel_funcs = []
+    if cancel_func is not None:
+        cancel_funcs.append(cancel_func)
+
     # Make sure anaconda has the right product and release
     os.environ["ANACONDA_PRODUCTNAME"] = opts.project
     os.environ["ANACONDA_PRODUCTVERSION"] = opts.releasever
-    rc = execWithRedirect("anaconda", args, callback_func=callback_func)
+    rc = execWithRedirect("anaconda", args, callback_func=lambda : any(f() for f in cancel_funcs))
 
     # Move the anaconda logs over to a log directory
     log_dir = os.path.abspath(os.path.dirname(opts.logfile))
@@ -306,10 +312,13 @@ def novirt_install(opts, disk_img, disk_size, repo_url, callback_func=None):
 
         if disk_img:
             dm_name = os.path.splitext(os.path.basename(disk_img))[0]
-            dm_path = "/dev/mapper/"+dm_name
-            if os.path.exists(dm_path):
-                dm_detach(dm_path)
-                loop_detach(get_loop_name(disk_img))
+
+            log.debug("Removing device-mapper setup on %s", dm_name)
+            for d in sorted(glob.glob("/dev/mapper/"+dm_name+"*"), reverse=True):
+                dm_detach(d)
+
+            log.debug("Removing loop device for %s", disk_img)
+            loop_detach("/dev/"+get_loop_name(disk_img))
 
     if selinux_enforcing:
         selinux.security_setenforce(1)
@@ -342,7 +351,7 @@ def novirt_install(opts, disk_img, disk_size, repo_url, callback_func=None):
         execWithRedirect("mv", ["-f", qcow2_img, disk_img], raise_err=True)
 
 
-def virt_install(opts, install_log, disk_img, disk_size):
+def virt_install(opts, install_log, disk_img, disk_size, cancel_func=None):
     """
     Use virt-install to install to a disk image
 
@@ -352,6 +361,9 @@ def virt_install(opts, install_log, disk_img, disk_size):
     """
     iso_mount = IsoMountpoint(opts.iso, opts.location)
     log_monitor = LogMonitor(install_log)
+    cancel_funcs = [log_monitor.server.log_check]
+    if cancel_func is not None:
+        cancel_funcs.append(cancel_func)
 
     kernel_args = ""
     if opts.kernel_args:
@@ -375,7 +387,7 @@ def virt_install(opts, install_log, disk_img, disk_size):
     try:
         virt = VirtualInstall(iso_mount, opts.ks, diskimg_path, disk_size,
                                kernel_args, opts.ram, opts.vnc, opts.arch,
-                               log_check = log_monitor.server.log_check,
+                               cancel_func = lambda : any(f() for f in cancel_funcs),
                                virtio_host = log_monitor.host,
                                virtio_port = log_monitor.port,
                                qcow2=opts.qcow2, boot_uefi=opts.virt_uefi,
@@ -391,7 +403,9 @@ def virt_install(opts, install_log, disk_img, disk_size):
         iso_mount.umount()
 
     if log_monitor.server.log_check():
-        raise InstallError("virt_install failed")
+        raise InstallError("virt_install failed. See logfile.")
+    elif cancel_func and cancel_func():
+        raise InstallError("virt_install canceled by cancel_func")
 
     if opts.make_fsimage:
         mkdiskfsimage(diskimg_path, disk_img, label=opts.fs_label)
