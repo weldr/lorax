@@ -405,7 +405,7 @@ def make_squashfs(disk_img, work_dir, compression="xz"):
     remove(joinpaths(work_dir, "runtime"))
 
 
-def make_image(opts, ks, callback_func=None):
+def make_image(opts, ks, cancel_func=None):
     """
     Install to an image
 
@@ -423,12 +423,12 @@ def make_image(opts, ks, callback_func=None):
 
     try:
         if opts.no_virt:
-            novirt_install(opts, disk_img, disk_size, ks.handler.method.url, callback_func=callback_func)
+            novirt_install(opts, disk_img, disk_size, ks.handler.method.url, cancel_func=cancel_func)
         else:
             install_log = os.path.abspath(os.path.dirname(opts.logfile))+"/virt-install.log"
             log.info("install_log = %s", install_log)
 
-            virt_install(opts, install_log, disk_img, disk_size)
+            virt_install(opts, install_log, disk_img, disk_size, cancel_func=cancel_func)
     except InstallError as e:
         log.error("Install failed: %s", e)
         if not opts.keep_image:
@@ -489,7 +489,7 @@ def make_live_images(opts, work_dir, root_dir, rootfs_image=None, size=None):
 
     return work_dir
 
-def run_creator(opts, callback_func=None):
+def run_creator(opts, cancel_func=None):
     """Run the image creator process
 
     :param opts: Commandline options to control the process
@@ -537,7 +537,10 @@ def run_creator(opts, callback_func=None):
 
         # Make the image. Output of this is either a partitioned disk image or a fsimage
         # Can also fail with InstallError
-        disk_img = make_image(opts, ks, callback_func=callback_func)
+        disk_img = make_image(opts, ks, cancel_func=cancel_func)
+
+        if cancel_func and cancel_func():
+            raise RuntimeError("image creation canceled")
 
     # Only create the disk image, return that now
     if opts.image_only:
@@ -552,6 +555,10 @@ def run_creator(opts, callback_func=None):
             disk_img = opts.fs_image or disk_img
 
             make_squashfs(disk_img, work_dir)
+
+            if cancel_func and cancel_func():
+                raise RuntimeError("ISO creation canceled")
+
             with Mount(disk_img, opts="loop") as mount_dir:
                 result_dir = make_livecd(opts, mount_dir, work_dir)
         else:
