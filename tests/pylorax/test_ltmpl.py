@@ -111,11 +111,11 @@ class LoraxTemplateRunnerTestCase(unittest.TestCase):
         makeFakeRPM(self.repo1_dir, "fake-milhouse", 0, "1.0.0", "1")
         makeFakeRPM(self.repo1_dir, "fake-bart", 2, "1.13.0", "6")
         makeFakeRPM(self.repo1_dir, "fake-homer", 0, "0.4.0", "2")
-        makeFakeRPM(self.repo1_dir, "lots-of-files", 0, "0.1.1", 1,
+        makeFakeRPM(self.repo1_dir, "lots-of-files", 0, "0.1.1", "1",
                     ["/lorax-files/file-one.txt",
                      "/lorax-files/file-two.txt",
                      "/lorax-files/file-three.txt"])
-        makeFakeRPM(self.repo1_dir, "known-path", 0, "0.1.8", 1, ["/known-path/file-one.txt"])
+        makeFakeRPM(self.repo1_dir, "known-path", 0, "0.1.8", "1", ["/known-path/file-one.txt"])
         os.system("createrepo_c " + self.repo1_dir)
 
         self.repo2_dir = tempfile.mkdtemp(prefix="lorax.test.repo.")
