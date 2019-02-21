@@ -48,9 +48,10 @@ test:
 # need `losetup`, which needs Docker to be in privileged mode (--privileged)
 # but even so fails in Travis CI
 test_images:
-	sudo -E ./tests/test_cli.sh tests/cli/test_compose_ext4-filesystem.sh \
+	sudo -E ./tests/test_cli.sh tests/cli/test_compose_ext4-filesystem.sh  \
 				    tests/cli/test_compose_partitioned-disk.sh \
-				    tests/cli/test_compose_tar.sh
+				    tests/cli/test_compose_tar.sh              \
+				    tests/cli/test_compose_qcow2.sh
 
 test_aws:
 	sudo -E ./tests/test_cli.sh tests/cli/test_build_and_deploy_aws.sh
