@@ -353,29 +353,7 @@ def modules_list(dbo, module_names):
 
     """
     # TODO - Figure out what to do with this for Fedora 'modules'
-    projs = _unique_dicts(projects_info(dbo, module_names), key=lambda p: p["name"].lower())
-    return list(map(proj_to_module, projs))
-
-def _unique_dicts(lst, key):
-    """Return a new list of dicts, only including one match of key(d)
-
-    :param lst: list of dicts
-    :type lst: list
-    :param key: key function to match lst entries
-    :type key: function
-    :returns: list of the unique lst entries
-    :rtype: list
-
-    Uses key(d) to test for duplicates in the returned list, creating a
-    list of unique return values.
-    """
-    result = []
-    result_keys = []
-    for d in lst:
-        if key(d) not in result_keys:
-            result.append(d)
-            result_keys.append(key(d))
-    return result
+    return list(map(proj_to_module, projects_info(dbo, module_names)))
 
 def modules_info(dbo, module_names):
     """Return details about a module, including dependencies
