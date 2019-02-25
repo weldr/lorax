@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.7.19
+Version:        19.7.20
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -120,6 +120,15 @@ rm -f $RPM_BUILD_ROOT/%{_tmpfilesdir}/lorax-composer.conf
 %{_tmpfilesdir}/lorax.conf
 
 %changelog
+* Mon Feb 25 2019 Brian C. Lane <bcl@redhat.com> 19.7.20-1
+- Add cancel_func to virt and novirt_install functions (bcl)
+  Resolves: rhbz#1659129
+- lorax: Move default tmp dir to /var/tmp/lorax (bcl)
+  Resolves: rhbz#1668520
+- New cli test covering basic compose commands (atodorov) (atodorov)
+- Execute bash tests for composer-cli (atodorov) (atodorov)
+- Add pylint testing (bcl) (bcl)
+
 * Wed Aug 15 2018 Brian C. Lane <bcl@redhat.com> 19.7.19-1
 - Add documentation for --dracut-arg to lorax.1 (bcl)
   Related: rhbz#1452220
