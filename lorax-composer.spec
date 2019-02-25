@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.27
+Version:        19.7.28
 Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
@@ -122,6 +122,70 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Feb 25 2019 Brian C. Lane <bcl@redhat.com> 19.7.28-1
+- lorax-composer: Check for STATUS before deleting (bcl)
+  Related: rhbz#1659129
+- Check for existing CANCEL request, and exit on FINISHED (bcl)
+  Related: rhbz#1659129
+- Add cancel_func to virt and novirt_install functions (bcl)
+  Resolves: rhbz#1659129
+- Remove duplicate repositories from the sources list (bcl)
+  Resolves: rhbz#1664128
+- Remove unneeded else from for/else loop. It confuses pylint (bcl)
+  Related: rhbz#1666517
+- Allow customizations to be specified as a toml list (dshea)
+  Resolves: rhbz#1666517
+- Make sure compose build tests run with SELinux in enforcing mode (jikortus)
+  Related: rhbz#1654795
+- Add tests for metapackages and package name globs (bcl)
+  Related: rhbz#1641601
+- Upgrade pip & setuptools b/c they are rather old (atodorov) (atodorov)
+- Workaround openstacksdk dependency issue (atodorov) (atodorov)
+- On Python 2 Azure needs the futures module (atodorov) (atodorov)
+- On RHEL 7 we have Python 2, not Python 3 (atodorov) (atodorov)
+- On RHEL 7 we have yum instead of dnf (atodorov) (atodorov)
+- On RHEL 7 `compose info` is `compose details` (atodorov) (atodorov)
+- Report an error if the blueprint doesn't exist (bcl) (bcl)
+- Build the HTML docs before running tests (atodorov) (atodorov)
+- Disable pylint errors with Flask and gevent (bcl) (bcl)
+- Backport cloud image tests from master (atodorov) (atodorov)
+- Fix compose_args for openstack image (bcl)
+  Related: rhbz#1656105
+- Fix compose_args for vmdk image (bcl)
+  Related: rhbz#1656105
+- Fix compose_args for vhd image (bcl)
+  Related: rhbz#1656105
+- Fix compose_args for ami image (bcl)
+  Related: rhbz#1656105
+- Update projects list to return only the unique projects (bcl)
+  Related: rhbz#1657055
+- Change yaps_to_module to proj_to_module (bcl)
+  Related: rhbz#1657055
+- lorax-composer: Handle packages with multiple builds (bcl)
+  Resolves: rhbz#1657055
+- lorax-composer: Check the queue and results at startup (bcl)
+  Resolves: rhbz#1657054
+- Add an openstack image type (bcl)
+  Resolves: rhbz#1656105
+- Replace /etc/machine-id with an empty file (dshea)
+  Related: rhbz#1656105
+- Add virt guest agents to the qcow2 compose (dshea)
+  Resolves: rhbz#1656105
+- Add a vmdk compose type. (dshea)
+  Resolves: rhbz#1656105
+- Add a vhd compose type for Azure images (dshea)
+  Resolves: rhbz#1656105
+- Add an ami compose type for AWS images (dshea)
+  Resolves: rhbz#1656105
+- Remove --fstype from the generated part line (dshea)
+  Related: rhbz#1656105
+- lorax-composer: Install selinux-policy-targeted in images (bcl)
+  Resolves: rhbz#1654795
+- Remove setfiles from mkrootfsimage (bcl)
+  Resolves: rhbz#1654795
+- Remove SELinux Permissive checks (bcl)
+  Resolves: rhbz#1654795
+
 * Mon Oct 22 2018 Brian C. Lane <bcl@redhat.com> 19.7.27-1
 - Use matchPackageNames instead of searchNames (bcl)
   Resolves: rhbz#1641601
