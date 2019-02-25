@@ -110,6 +110,7 @@ test-in-copy:
 
 test-in-docker:
 	sudo $(DOCKER) build -t welder/lorax-tests:$(IMAGE_RELEASE) -f Dockerfile.test .
+	@mkdir -p `pwd`/.test-results
 	sudo $(DOCKER) run --rm -it -v `pwd`/.test-results/:/test-results -v `pwd`:/lorax-ro:ro --security-opt label=disable welder/lorax-tests:$(IMAGE_RELEASE) make test-in-copy
 
 docs-in-docker:
