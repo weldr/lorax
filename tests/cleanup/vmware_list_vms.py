@@ -7,7 +7,7 @@ import getpass
 import ssl
 
 from pyVim import connect
-from pyVmomi import vim
+from pyVmomi import vim             # pylint: disable=no-name-in-module
 
 
 def setup_args():
@@ -46,7 +46,7 @@ def main():
                                                 user=args.username,
                                                 pwd=args.password,
                                                 sslContext=sslContext)
-    except:
+    except Exception:
         print("Unable to connect to %s" % args.host)
         return 1
 
