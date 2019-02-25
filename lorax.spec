@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        30.15
+Version:        30.16
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -236,6 +236,27 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Mon Feb 25 2019 Brian C. Lane <bcl@redhat.com> 30.16-1
+- Fix pylint problems with vmware_list_vms.py (bcl@redhat.com)
+- Makefile: Make the .test-results directory (bcl@redhat.com)
+- Add a ppc64le template for live iso creation (bcl@redhat.com)
+- Move the package requirements for live-iso setup out of the template (bcl@redhat.com)
+- Remove exclusions from lorax-composer templates (bcl@redhat.com)
+- Add LiveTemplateRunner to parse per-arch live-iso package requirements (bcl@redhat.com)
+- Move the run part of LoraxTemplateRunner into new TemplateRunner class (bcl@redhat.com)
+- lorax-composer: Use reqpart --add-boot for partitioned disk templates (bcl@redhat.com)
+- livemedia-creator: Add support for reqpart kickstart command (bcl@redhat.com)
+- Make the lorax-composer ks templates more generic (bcl@redhat.com)
+- Add script for removing old artifacts from VMware (jstodola@redhat.com)
+- tests: Fix makeFakeRPM calls (bcl@redhat.com)
+- Drop _unique_dicts function (bcl@redhat.com)
+- Update bash to 5.0.* (bcl@redhat.com)
+- Add some extra cancel_func protection to QEMUInstall (bcl@redhat.com)
+- Remove unsupported anaconda-docker-addon (#619) (jkonecny@redhat.com)
+- installer: make sure cancel_func has a value (#612) (yuvalt@gmail.com)
+- New test: Verify tar images with Docker and systemd-nspawn (atodorov@otb.bg)
+- Update OpenStack flavor and network settings in tests (atodorov@redhat.com)
+
 * Fri Feb 15 2019 Brian C. Lane <bcl@redhat.com> 30.15-1
 - Remove 3G minimum from lorax-composer (bcl@redhat.com)
 - drop Apple/HFS bits from the templates (#602) (dan@danny.cz)
