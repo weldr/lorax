@@ -201,7 +201,8 @@ DELETE `/api/v0/blueprints/delete/<blueprint_name>`
 
   Delete a blueprint. The blueprint is deleted from the branch, and will no longer
   be listed by the `list` route. A blueprint can be undeleted using the `undo` route
-  to revert to a previous commit.
+  to revert to a previous commit. This will also delete the workspace copy of the
+  blueprint.
 
   The response will be a status response with `status` set to true, or an
   error response with it set to false and an error message included.
@@ -1212,6 +1213,7 @@ def v0_api(api):
 
         try:
             with api.config["GITLOCK"].lock:
+                workspace_delete(api.config["GITLOCK"].repo, branch, blueprint_name)
                 delete_recipe(api.config["GITLOCK"].repo, branch, blueprint_name)
         except Exception as e:
             log.error("(v0_blueprints_delete) %s", str(e))
