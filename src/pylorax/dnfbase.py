@@ -26,7 +26,8 @@ from pylorax.sysutils import flatconfig
 def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
                         enablerepos=None, disablerepos=None,
                         tempdir="/var/tmp", proxy=None, releasever="29",
-                        cachedir=None, logdir=None, sslverify=True, dnfplugins=None):
+                        cachedir=None, logdir=None, sslverify=True, dnfplugins=None,
+                        forcearch=None):
     """ Create a dnf Base object and setup the repositories and installroot
 
         :param string installroot: Full path to the installroot
@@ -39,6 +40,7 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
         :param string releasever: Release version to pass to dnf
         :param string cachedir: Directory to use for caching packages
         :param bool noverifyssl: Set to True to ignore the CA of ssl certs. eg. use self-signed ssl for https repos.
+        :param string forcearch: Force particular architecture.
 
         If tempdir is not set /var/tmp is used.
         If cachedir is None a dnf.cache directory is created inside tmpdir
@@ -100,6 +102,10 @@ def get_dnf_base_object(installroot, sources, mirrorlists=None, repos=None,
 
     if sslverify == False:
         conf.sslverify = False
+
+    if forcearch:
+        conf.ignorearch = True
+        conf.arch = forcearch
 
     # DNF 3.2 needs to have module_platform_id set, otherwise depsolve won't work correctly
     if not os.path.exists("/etc/os-release"):

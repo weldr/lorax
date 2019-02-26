@@ -154,7 +154,7 @@ def main():
                                   opts.enablerepos, opts.disablerepos,
                                   dnftempdir, opts.proxy, opts.version, opts.cachedir,
                                   os.path.dirname(opts.logfile), not opts.noverifyssl,
-                                  opts.dnfplugins)
+                                  opts.dnfplugins, opts.forcearch)
 
     if dnfbase is None:
         os.close(dir_fd)
