@@ -370,6 +370,25 @@ class ServerTestCase(unittest.TestCase):
 
     def test_10_blueprints_delete(self):
         """Test DELETE /api/v0/blueprints/delete/<blueprint_name>"""
+
+        # Push a new workspace blueprint first
+        test_blueprint = {"description": "An example GlusterFS server with samba, ws version",
+                       "name":"example-glusterfs",
+                       "version": "1.4.0",
+                       "modules":[{"name":"glusterfs", "version":"5.*"},
+                                  {"name":"glusterfs-cli", "version":"5.*"}],
+                       "packages":[{"name":"samba", "version":"4.*.*"},
+                                   {"name":"tmux", "version":"2.8"}],
+                       "groups": []}
+        resp = self.server.post("/api/v0/blueprints/workspace",
+                                data=json.dumps(test_blueprint),
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+        # Make sure the workspace file is present
+        self.assertEqual(os.path.exists(joinpaths(self.repo_dir, "git/workspace/master/example-glusterfs.toml")), True)
+
+        # This should delete the git blueprint and the workspace copy
         resp = self.server.delete("/api/v0/blueprints/delete/example-glusterfs")
         data = json.loads(resp.data)
         self.assertEqual(data, {"status":True})
@@ -380,6 +399,9 @@ class ServerTestCase(unittest.TestCase):
         self.assertNotEqual(data, None)
         blueprints = data.get("blueprints")
         self.assertEqual("example-glusterfs" in blueprints, False)
+
+        # Make sure the workspace file is gone
+        self.assertEqual(os.path.exists(joinpaths(self.repo_dir, "git/workspace/master/example-glusterfs.toml")), False)
 
     def test_11_blueprints_undo(self):
         """Test POST /api/v0/blueprints/undo/<blueprint_name>/<commit>"""
