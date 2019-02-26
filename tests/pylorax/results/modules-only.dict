@@ -1,1 +1,0 @@
-{'description': u'An example http server with PHP and MySQL support.', 'packages': [], 'modules': [{'version': u'2.4.*', 'name': u'httpd'}, {'version': u'5.4', 'name': u'mod_auth_kerb'}, {'version': u'2.4.*', 'name': u'mod_ssl'}, {'version': u'5.4.*', 'name': u'php'}, {'version': u'5.4.*', 'name': u'php-mysql'}], 'version': u'0.0.1', 'name': u'http-server'}
