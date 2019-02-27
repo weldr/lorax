@@ -13,6 +13,10 @@ SHARE_DIR=`mktemp -d '/tmp/composer-share.XXXXX'`
 cp -R ./share/* $SHARE_DIR
 chmod a+rx -R $SHARE_DIR
 
+# explicitly enable sshd for live-iso b/c it is disabled by default
+# due to security concerns (no root password required)
+sed -i 's/^services.*/services --disabled="network" --enabled="NetworkManager,sshd"/' $SHARE_DIR/composer/live-iso.ks
+
 # start the lorax-composer daemon
 ./src/sbin/lorax-composer --sharedir $SHARE_DIR $BLUEPRINTS_DIR &
 
