@@ -52,7 +52,8 @@ test_images:
 	sudo -E ./tests/test_cli.sh tests/cli/test_compose_ext4-filesystem.sh  \
 				    tests/cli/test_compose_partitioned-disk.sh \
 				    tests/cli/test_compose_tar.sh              \
-				    tests/cli/test_compose_qcow2.sh
+				    tests/cli/test_compose_qcow2.sh            \
+				    tests/cli/test_compose_live-iso.sh
 
 test_aws:
 	sudo -E ./tests/test_cli.sh tests/cli/test_build_and_deploy_aws.sh
