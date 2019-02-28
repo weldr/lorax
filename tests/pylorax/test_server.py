@@ -206,13 +206,11 @@ class ServerTestCase(unittest.TestCase):
 
     def test_03_blueprints_info_none(self):
         """Test the /api/v0/blueprints/info route with an unknown blueprint"""
-        info_dict_3 = {"changes":[],
-                       "errors":[{"id": UNKNOWN_BLUEPRINT, "msg": "missing-blueprint: No commits for missing-blueprint.toml on the master branch."}],
-                       "blueprints":[]
-                      }
         resp = self.server.get("/api/v0/blueprints/info/missing-blueprint")
         data = json.loads(resp.data)
-        self.assertEqual(data, info_dict_3)
+        self.assertNotEqual(data, None)
+        self.assertTrue(len(data["errors"]) > 0)
+        self.assertEqual(data["errors"][0]["id"], "UnknownBlueprint")
 
     def test_04_blueprints_changes(self):
         """Test the /api/v0/blueprints/changes route"""
@@ -402,6 +400,21 @@ class ServerTestCase(unittest.TestCase):
 
         # Make sure the workspace file is gone
         self.assertEqual(os.path.exists(joinpaths(self.repo_dir, "git/workspace/master/example-glusterfs.toml")), False)
+
+    # This has to run after the above test
+    def test_10_blueprints_delete_2(self):
+        """Test running a compose with the deleted blueprint"""
+        # Trying to start a compose with a deleted blueprint should fail
+        test_compose = {"blueprint_name": "example-glusterfs",
+                        "compose_type": "tar",
+                        "branch": "master"}
+
+        resp = self.server.post("/api/v0/compose?test=2",
+                                data=json.dumps(test_compose),
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["status"], False, "Compose of deleted blueprint did not fail: %s" % data)
 
     def test_11_blueprints_undo(self):
         """Test POST /api/v0/blueprints/undo/<blueprint_name>/<commit>"""
@@ -1398,6 +1411,71 @@ class ServerTestCase(unittest.TestCase):
         """Test the compose/log input character checking"""
         resp = self.server.get("/api/v0/compose/log/" + UTF8_TEST_STRING)
         self.assertInputError(resp)
+
+    # A series of tests for dealing with deleted blueprints
+    def test_deleted_bp_00_setup(self):
+        """Setup a deleted blueprint for use in the tests"""
+        # Start by creating a new blueprint for this series of tests and then
+        # deleting it.
+        test_blueprint = {"description": "A blueprint that has been deleted",
+                       "name":"deleted-blueprint",
+                       "version": "0.0.1",
+                       "modules":[{"name":"glusterfs", "version":"5.*"},
+                                  {"name":"glusterfs-cli", "version":"5.*"}],
+                       "packages":[{"name":"samba", "version":"4.*.*"},
+                                   {"name":"tmux", "version":"2.8"}],
+                       "groups": []}
+
+        resp = self.server.post("/api/v0/blueprints/new",
+                                data=json.dumps(test_blueprint),
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+        resp = self.server.delete("/api/v0/blueprints/delete/deleted-blueprint")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+    def test_deleted_bp_01_show(self):
+        """Test blueprint show with deleted blueprint"""
+        resp = self.server.get("/api/v0/blueprints/info/deleted-blueprint")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertTrue(len(data["errors"]) > 0)
+        self.assertEqual(data["errors"][0]["id"], "UnknownBlueprint")
+
+    def test_deleted_bp_02_depsolve(self):
+        """Test blueprint depsolve with deleted blueprint"""
+        resp = self.server.get("/api/v0/blueprints/depsolve/deleted-blueprint")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertTrue(len(data["errors"]) > 0)
+        self.assertEqual(data["errors"][0]["id"], "UnknownBlueprint")
+
+    def test_deleted_bp_03_diff(self):
+        """Test blueprint diff with deleted blueprint"""
+        resp = self.server.get("/api/v0/blueprints/diff/deleted-blueprint/NEWEST/WORKSPACE")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertTrue(len(data["errors"]) > 0)
+        self.assertEqual(data["status"], False)
+        self.assertEqual(data["errors"][0]["id"], "UnknownBlueprint")
+
+    def test_deleted_bp_04_freeze(self):
+        """Test blueprint freeze with deleted blueprint"""
+        resp = self.server.get("/api/v0/blueprints/freeze/deleted-blueprint")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertTrue(len(data["errors"]) > 0)
+        self.assertEqual(data["errors"][0]["id"], "UnknownBlueprint")
+
+    def test_deleted_bp_05_tag(self):
+        """Test blueprint tag with deleted blueprint"""
+        resp = self.server.post("/api/v0/blueprints/tag/deleted-blueprint")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertTrue(len(data["errors"]) > 0)
+        self.assertEqual(data["errors"][0]["id"], "UnknownBlueprint")
 
 @contextmanager
 def in_tempdir(prefix='tmp'):

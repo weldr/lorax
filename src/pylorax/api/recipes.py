@@ -408,6 +408,9 @@ def read_recipe_commit(repo, branch, recipe_name, commit=None):
     If no commit is passed the master:filename is returned, otherwise it will be
     commit:filename
     """
+    if not repo_file_exists(repo, branch, recipe_filename(recipe_name)):
+        raise RecipeFileError("Unknown blueprint")
+
     (_, recipe_toml) = read_commit(repo, branch, recipe_filename(recipe_name), commit)
     return recipe_from_toml(recipe_toml)
 
@@ -631,6 +634,9 @@ def tag_recipe_commit(repo, branch, recipe_name):
 
     Uses tag_file_commit()
     """
+    if not repo_file_exists(repo, branch, recipe_filename(recipe_name)):
+        raise RecipeFileError("Unknown blueprint")
+
     return tag_file_commit(repo, branch, recipe_filename(recipe_name))
 
 def tag_file_commit(repo, branch, filename):
@@ -920,3 +926,21 @@ def recipe_diff(old_recipe, new_recipe):
     diffs.extend(diff_items("Group", old_recipe["groups"], new_recipe["groups"]))
 
     return diffs
+
+def repo_file_exists(repo, branch, filename):
+    """Return True if the filename exists on the branch
+
+    :param repo: Open repository
+    :type repo: Git.Repository
+    :param branch: Branch name
+    :type branch: str
+    :param filename: Filename to check
+    :type filename: str
+    :returns: True if the filename exists on the HEAD of the branch, False otherwise.
+    :rtype: bool
+    """
+    commit = head_commit(repo, branch).get_id().to_string()
+    commit_id = Git.OId.new_from_string(commit)
+    commit_obj = repo.lookup(commit_id, Git.Commit)
+    tree = commit_obj.get_tree()
+    return tree.get_by_name(filename) is not None
