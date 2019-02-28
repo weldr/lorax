@@ -8,6 +8,13 @@ function setup_tests {
     # explicitly enable sshd for live-iso b/c it is disabled by default
     # due to security concerns (no root password required)
     sed -i.orig 's/^services.*/services --disabled="network" --enabled="NetworkManager,sshd"/' $1/composer/live-iso.ks
+    # explicitly enable logging in with empty passwords via ssh, because
+    # the default sshd setting for PermitEmptyPasswords is 'no'
+    awk -i inplace "
+        /%post/ && FLAG != 2 {FLAG=1}
+        /%end/ && FLAG == 1 {print \"sed -i 's/.*PermitEmptyPasswords.*/PermitEmptyPasswords yes/' /etc/ssh/sshd_config\"; FLAG=2}
+        {print}" \
+        $1/composer/live-iso.ks
 }
 
 function teardown_tests {
