@@ -73,8 +73,9 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartTest "Verify VM instance"
-        # verify we can login into that instance
-        rlRun -t -c "ssh -oStrictHostKeyChecking=no -i $SSH_KEY_DIR/id_rsa -p 2222 root@localhost 'cat /etc/redhat-release'"
+        # verify we can login into that instance and root account is disabled
+        . ./tests/cli/lib/root_account.sh
+        check_root_account $CLOUD_USER $IP_ADDRESS "-i $SSH_KEY_DIR/id_rsa -p 2222"
     rlPhaseEnd
 
     rlPhaseStartCleanup
