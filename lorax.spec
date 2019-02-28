@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        29.26
+Version:        29.27
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -231,6 +231,11 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu Feb 28 2019 Brian C. Lane <bcl@redhat.com> 29.27-1
+- Add some extra cancel_func protection to QEMUInstall (bcl@redhat.com)
+- installer: make sure cancel_func has a value (#612) (yuvalt@gmail.com)
+  Resolves: rhbz#1683825
+
 * Wed Jan 30 2019 Brian C. Lane <bcl@redhat.com> 29.26-1
 - Remove duplicate repositories from the sources list (bcl@redhat.com)
 - lorax: Move default tmp dir to /var/tmp/lorax (bcl@redhat.com)
