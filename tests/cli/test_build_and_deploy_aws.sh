@@ -186,8 +186,9 @@ __EOF__
             CLOUD_USER="fedora"
         fi
 
-        # verify we can login into that instance and maybe some other details
-        rlRun -t -c "ssh -oStrictHostKeyChecking=no -i $SSH_KEY_DIR/id_rsa $CLOUD_USER@$IP_ADDRESS 'cat /etc/redhat-release'"
+        # verify we can login into that instance and root account is disabled
+        . ./tests/cli/lib/root_account.sh
+        check_root_account $CLOUD_USER $IP_ADDRESS "-i $SSH_KEY_DIR/id_rsa"
     rlPhaseEnd
 
     rlPhaseStartCleanup
