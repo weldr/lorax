@@ -1007,7 +1007,7 @@ from pylorax.api.queue import queue_status, build_status, uuid_delete, uuid_stat
 from pylorax.api.queue import uuid_tar, uuid_image, uuid_cancel, uuid_log
 from pylorax.api.recipes import RecipeError, list_branch_files, read_recipe_commit, recipe_filename, list_commits
 from pylorax.api.recipes import recipe_from_dict, recipe_from_toml, commit_recipe, delete_recipe, revert_recipe
-from pylorax.api.recipes import tag_recipe_commit, recipe_diff
+from pylorax.api.recipes import tag_recipe_commit, recipe_diff, RecipeFileError
 from pylorax.api.regexes import VALID_API_STRING
 from pylorax.api.workspace import workspace_read, workspace_write, workspace_delete
 
@@ -1028,12 +1028,21 @@ def take_limits(iterable, offset, limit):
     return iterable[offset:][:limit]
 
 def blueprint_exists(api, branch, blueprint_name):
+    """Return True if the blueprint exists
+
+    :param api: flask object
+    :type api: Flask
+    :param branch: Branch name
+    :type branch: str
+    :param recipe_name: Recipe name to read
+    :type recipe_name: str
+    """
     try:
         with api.config["GITLOCK"].lock:
             read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
 
         return True
-    except RecipeError:
+    except (RecipeError, RecipeFileError):
         return False
 
 def v0_api(api):
@@ -1092,6 +1101,10 @@ def v0_api(api):
             try:
                 with api.config["GITLOCK"].lock:
                     git_blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
+            except RecipeFileError as e:
+                # Adding an exception would be redundant, skip it
+                git_blueprint = None
+                log.error("(v0_blueprints_info) %s", str(e))
             except Exception as e:
                 git_blueprint = None
                 exceptions.append(str(e))
@@ -1150,20 +1163,19 @@ def v0_api(api):
         errors = []
         for blueprint_name in [n.strip() for n in blueprint_names.split(",")]:
             filename = recipe_filename(blueprint_name)
-
-            if not blueprint_exists(api, branch, blueprint_name):
-                errors.append({"id": UNKNOWN_BLUEPRINT, "msg": "Unknown blueprint name: %s" % blueprint_name})
-                continue
-
             try:
                 with api.config["GITLOCK"].lock:
                     commits = list_commits(api.config["GITLOCK"].repo, branch, filename)
-                    limited_commits = take_limits(list_commits(api.config["GITLOCK"].repo, branch, filename), offset, limit)
             except Exception as e:
                 errors.append({"id": BLUEPRINTS_ERROR, "msg": "%s: %s" % (blueprint_name, str(e))})
                 log.error("(v0_blueprints_changes) %s", str(e))
             else:
-                blueprints.append({"name":blueprint_name, "changes":limited_commits, "total":len(commits)})
+                if commits:
+                    limited_commits = take_limits(commits, offset, limit)
+                    blueprints.append({"name":blueprint_name, "changes":limited_commits, "total":len(commits)})
+                else:
+                    # no commits means there is no blueprint in the branch
+                    errors.append({"id": UNKNOWN_BLUEPRINT, "msg": "%s" % blueprint_name})
 
         blueprints = sorted(blueprints, key=lambda r: r["name"].lower())
 
@@ -1312,6 +1324,9 @@ def v0_api(api):
         try:
             with api.config["GITLOCK"].lock:
                 tag_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
+        except RecipeFileError as e:
+            log.error("(v0_blueprints_tag) %s", str(e))
+            return jsonify(status=False, errors=[{"id": UNKNOWN_BLUEPRINT, "msg": str(e)}]), 400
         except Exception as e:
             log.error("(v0_blueprints_tag) %s", str(e))
             return jsonify(status=False, errors=[{"id": BLUEPRINTS_ERROR, "msg": str(e)}]), 400
@@ -1335,6 +1350,9 @@ def v0_api(api):
         branch = request.args.get("branch", "master")
         if VALID_API_STRING.match(branch) is None:
             return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
+
+        if not blueprint_exists(api, branch, blueprint_name):
+            return jsonify(status=False, errors=[{"id": UNKNOWN_BLUEPRINT, "msg": "Unknown blueprint name: %s" % blueprint_name}])
 
         try:
             if from_commit == "NEWEST":
@@ -1402,6 +1420,9 @@ def v0_api(api):
                 try:
                     with api.config["GITLOCK"].lock:
                         blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
+                except RecipeFileError as e:
+                    # adding an error here would be redundant, skip it
+                    log.error("(v0_blueprints_freeze) %s", str(e))
                 except Exception as e:
                     errors.append({"id": BLUEPRINTS_ERROR, "msg": "%s: %s" % (blueprint_name, str(e))})
                     log.error("(v0_blueprints_freeze) %s", str(e))
@@ -1462,6 +1483,9 @@ def v0_api(api):
                 try:
                     with api.config["GITLOCK"].lock:
                         blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
+                except RecipeFileError as e:
+                    # adding an error here would be redundant, skip it
+                    log.error("(v0_blueprints_depsolve) %s", str(e))
                 except Exception as e:
                     errors.append({"id": BLUEPRINTS_ERROR, "msg": "%s: %s" % (blueprint_name, str(e))})
                     log.error("(v0_blueprints_depsolve) %s", str(e))
@@ -1793,6 +1817,9 @@ def v0_api(api):
 
         if VALID_API_STRING.match(blueprint_name) is None:
             errors.append({"id": INVALID_CHARS, "msg": "Invalid characters in API path"})
+
+        if not blueprint_exists(api, branch, blueprint_name):
+            errors.append({"id": UNKNOWN_BLUEPRINT, "msg": "Unknown blueprint name: %s" % blueprint_name})
 
         if errors:
             return jsonify(status=False, errors=errors), 400
