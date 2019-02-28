@@ -51,7 +51,8 @@ rlJournalStart
 
     rlPhaseStartTest "Verify VM instance"
         # verify we can login into that instance *WITHOUT* a password
-        rlRun -t -c "ssh -oStrictHostKeyChecking=no -p 2222 root@localhost 'cat /etc/redhat-release'"
+        . ./tests/cli/lib/root_account.sh
+        ROOT_ACCOUNT_LOCKED=0 check_root_account root localhost "-p 2222"
     rlPhaseEnd
 
     rlPhaseStartCleanup
