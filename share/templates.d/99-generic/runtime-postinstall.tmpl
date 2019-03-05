@@ -107,6 +107,7 @@ append etc/depmod.d/dd.conf "search updates built-in"
 
 ## create multipath.conf so multipath gets auto-started
 append etc/multipath.conf "defaults {\n\tfind_multipaths yes\n\tuser_friendly_names yes\n}\n"
+append etc/multipath.conf "blacklist_exceptions {\n\tproperty \"(SCSI_IDENT_|ID_WWN)\"\n}\n"
 
 ## make lvm auto-activate
 remove etc/lvm/archive/*
