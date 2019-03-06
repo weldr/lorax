@@ -94,7 +94,7 @@ local:
 
 test-in-copy:
 	rsync -aP --exclude=.git /lorax-ro/ /lorax/
-	make -C /lorax/ check test
+	make -C /lorax/ ci
 	cp /lorax/.coverage /test-results/
 
 test-in-docker:
