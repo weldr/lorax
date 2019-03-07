@@ -169,10 +169,16 @@ for selecting optional packages.
 Customizations
 ~~~~~~~~~~~~~~
 
-The ``[[customizations]]`` section can be used to configure the hostname of the final image. eg.::
+The ``[customizations]`` section can be used to configure the hostname,
+language, and timezone of the final image. eg.::
 
-    [[customizations]]
+    [customizations]
     hostname = "baseimage"
+    timezone = "US/Eastern"
+
+These are all optional and may be left out to use the defaults.
+
+The values supported by ``timezone`` can be listed by running ``timedatectl list-timezones``.
 
 
 [customizations.kernel]
@@ -228,6 +234,70 @@ Add a group to the image. ``name`` is required and ``gid`` is optional::
     [[customizations.group]]
     name = "widget"
     gid = 1130
+
+
+[customizations.locale]
+*************************
+
+Customize the locale settings for the system::
+
+    [[customizations.locale]]
+    language = "en_US.UTF-8"
+    keyboard = "us"
+
+The values supported by ``language`` can be listed by running ``localectl list-locales`` from
+the command line.
+
+The values supported by ``keyboard`` can be listed by running ``localectl list-keymaps`` from
+the command line.
+
+
+[customizations.firewall]
+*************************
+
+By default the firewall blocks all access except for services that enable their ports explicitly,
+like ``sshd``. This command can be used to open other ports or services. Ports are configured using
+the port:protocol format::
+
+    [customizations.firewall.ports]
+    enabled = ["80:tcp", "imap:tcp", "53:tcp", "53:udp"]
+    disabled = ["23:tcp", "mysql:tcp"]
+
+Numeric ports, or their names from ``/etc/services`` can be used in the ``ports`` enabled/disabled lists.
+
+If the distribution uses ``firewalld`` you can specify services listed by ``firewall-cmd --get-services``
+in a ``customizations.firewall.services`` section::
+
+    [customizations.firewall.services]
+    enabled = ["ftp", "ntp", "dhcp"]
+
+Note that these  are different from the names in ``/etc/services``, and only ``enabled`` is supported.
+
+Both are optional, if they are not used leave them out or set them to an empty list ``[]``. If you
+only want the default firewall setup this section can be omitted from the blueprint.
+
+
+[customizations.services]
+*************************
+
+This section can be used to control which services are enabled at boot time. Some image types
+already have services enabled or disabled in order for the image to work correctly, and cannot
+be overridden. eg. ``ami`` requires ``sshd``, ``chronyd``, and ``cloud-init``. Without them the image will
+not boot.
+
+The service names are systemd service units. On RHEL7 only ``.service`` units can be
+enabled or disabled. Other releases may specify any systemd unit file, eg. ``cockpit.socket``
+
+    [customizations.services]
+    enabled = ["sshd", "cockpit.socket", "httpd"]
+    disabled = ["postfix", "telnetd"]
+
+.. warning::
+
+    The service must be installed, otherwise systemd will fail when trying to enable or disable
+    the nonexistant service.
+
+    TODO -- Confirm this is still true and if not, on which releases
 
 
 Adding Output Types
