@@ -11,7 +11,7 @@
 
 . /usr/share/beakerlib/beakerlib.sh
 
-CLI="./src/bin/composer-cli"
+CLI="${CLI:-./src/bin/composer-cli}"
 
 
 rlJournalStart
