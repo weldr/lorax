@@ -9,7 +9,8 @@
 
 . /usr/share/beakerlib/beakerlib.sh
 
-CLI="./src/bin/composer-cli"
+
+CLI="${CLI:-./src/bin/composer-cli}"
 VENV=`mktemp -d /tmp/ansible.venv.XXX`
 
 
