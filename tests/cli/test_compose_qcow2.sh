@@ -9,7 +9,7 @@
 
 . /usr/share/beakerlib/beakerlib.sh
 
-CLI="./src/bin/composer-cli"
+CLI="${CLI:-./src/bin/composer-cli}"
 QEMU="/usr/bin/qemu-kvm"
 
 rlJournalStart

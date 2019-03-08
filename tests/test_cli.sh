@@ -3,22 +3,37 @@
 
 # setup
 rm -rf /var/tmp/beakerlib-*/
-export top_srcdir=`pwd`
-. ./tests/testenv.sh
 
-BLUEPRINTS_DIR=`mktemp -d '/tmp/composer-blueprints.XXXXX'`
-cp ./tests/pylorax/blueprints/*.toml $BLUEPRINTS_DIR
+function setup_tests {
+    # explicitly enable sshd for live-iso b/c it is disabled by default
+    # due to security concerns (no root password required)
+    sed -i.orig 's/^services.*/services --disabled="network" --enabled="NetworkManager,sshd"/' $1/composer/live-iso.ks
+}
 
-SHARE_DIR=`mktemp -d '/tmp/composer-share.XXXXX'`
-cp -R ./share/* $SHARE_DIR
-chmod a+rx -R $SHARE_DIR
+function teardown_tests {
+    mv $1/composer/live-iso.ks.orig $1/composer/live-iso.ks
+}
 
-# explicitly enable sshd for live-iso b/c it is disabled by default
-# due to security concerns (no root password required)
-sed -i 's/^services.*/services --disabled="network" --enabled="NetworkManager,sshd"/' $SHARE_DIR/composer/live-iso.ks
+if [ -z "$CLI" ]; then
+    export top_srcdir=`pwd`
+    . ./tests/testenv.sh
 
-# start the lorax-composer daemon
-./src/sbin/lorax-composer --sharedir $SHARE_DIR $BLUEPRINTS_DIR &
+    BLUEPRINTS_DIR=`mktemp -d '/tmp/composer-blueprints.XXXXX'`
+    cp ./tests/pylorax/blueprints/*.toml $BLUEPRINTS_DIR
+
+    SHARE_DIR=`mktemp -d '/tmp/composer-share.XXXXX'`
+    cp -R ./share/* $SHARE_DIR
+    chmod a+rx -R $SHARE_DIR
+
+    setup_tests $SHARE_DIR
+    # start the lorax-composer daemon
+    ./src/sbin/lorax-composer --sharedir $SHARE_DIR $BLUEPRINTS_DIR &
+else
+    SHARE_DIR="/usr/share/lorax"
+    setup_tests $SHARE_DIR
+    systemctl restart lorax-composer
+fi
+
 
 # wait for the backend to become ready
 tries=0
@@ -45,9 +60,19 @@ else
 fi
 
 
-# Stop lorax-composer and remove /run/weldr/api.socket
-pkill -9 lorax-composer
-rm -f /run/weldr/api.socket
+if [ -z "$CLI" ]; then
+    # stop lorax-composer and remove /run/weldr/api.socket
+    # only if running against source
+    pkill -9 lorax-composer
+    rm -f /run/weldr/api.socket
+    teardown_tests $SHARE_DIR
+else
+    systemctl stop lorax-composer
+    teardown_tests $SHARE_DIR
+    # start lorax-composer again so we can continue with manual or other kinds
+    # of testing on the same system
+    systemctl start lorax-composer
+fi
 
 # look for failures
 grep RESULT_STRING /var/tmp/beakerlib-*/TestResults | grep -v PASS && exit 1
