@@ -28,6 +28,7 @@ import unittest
 
 from flask import json
 import pytoml as toml
+
 from pylorax.api.config import configure, make_dnf_dirs, make_queue_dirs
 from pylorax.api.errors import *                               # pylint: disable=wildcard-import
 from pylorax.api.queue import start_queue_monitor
@@ -38,6 +39,19 @@ from pylorax.sysutils import joinpaths
 
 # Used for testing UTF-8 input support
 UTF8_TEST_STRING = "I ｗ𝒊ll 𝟉ο𝘁 𝛠ａ𝔰ꜱ 𝘁𝒉𝝸𝚜"
+
+
+# HELPER CONSTANTS.
+HTTP_GLOB = {"name":"httpd", "version":"2.4.*"}
+MODSSL_GLOB = {"name":"mod_ssl", "version":"2.4.*"}
+PHP_GLOB = {"name":"php", "version":"7.*"}
+PHPMYSQL_GLOB = {"name": "php-mysqlnd", "version":"7.*"}
+OPENSSH_GLOB = {"name":"openssh-server", "version": "7.*"}
+RSYNC_GLOB = {"name": "rsync", "version": "3.1.*"}
+SAMBA_GLOB = {"name": "samba", "version": "4.*.*"}
+TMUX_GLOB = {"name": "tmux", "version": "*"}
+GLUSTERFS_GLOB = {"name": "glusterfs", "version": "*"}
+GLUSTERFSFUSE_GLOB = {"name": "glusterfs-fuse", "version": "*"}
 
 def get_system_repo():
     """Get an enabled system repo from /etc/yum.repos.d/*repo
@@ -153,14 +167,14 @@ class ServerTestCase(unittest.TestCase):
         info_dict_1 = {"changes":[{"changed":False, "name":"example-http-server"}],
                        "errors":[],
                        "blueprints":[{"description":"An example http server with PHP and MySQL support.",
-                                   "modules":[{"name":"httpd", "version":"2.4.*"},
-                                              {"name":"mod_ssl", "version":"2.4.*"},
-                                              {"name":"php", "version":"7.2.*"},
-                                              {"name": "php-mysqlnd", "version":"7.2.*"}],
+                                   "modules":[HTTP_GLOB,
+                                              MODSSL_GLOB,
+                                              PHP_GLOB,
+                                              PHPMYSQL_GLOB],
                                    "name":"example-http-server",
-                                   "packages": [{"name":"openssh-server", "version": "7.*"},
-                                                {"name": "rsync", "version": "3.1.*"},
-                                                {"name": "tmux", "version": "*"}],
+                                   "packages": [OPENSSH_GLOB,
+                                                RSYNC_GLOB,
+                                                TMUX_GLOB],
                                    "groups": [],
                                    "version": "0.0.1"}]}
         resp = self.server.get("/api/v0/blueprints/info/example-http-server")
@@ -173,21 +187,21 @@ class ServerTestCase(unittest.TestCase):
                                   {"changed":False, "name":"example-http-server"}],
                        "errors":[],
                        "blueprints":[{"description": "An example GlusterFS server with samba",
-                                   "modules":[{"name":"glusterfs", "version":"4.0.*"},
-                                              {"name":"glusterfs-fuse", "version":"4.0.*"}],
+                                   "modules":[GLUSTERFS_GLOB,
+                                              GLUSTERFSFUSE_GLOB],
                                    "name":"example-glusterfs",
-                                   "packages":[{"name":"samba", "version":"4.*.*"}],
+                                   "packages":[SAMBA_GLOB],
                                    "groups": [],
                                    "version": "0.0.1"},
                                   {"description":"An example http server with PHP and MySQL support.",
-                                   "modules":[{"name":"httpd", "version":"2.4.*"},
-                                              {"name":"mod_ssl", "version":"2.4.*"},
-                                              {"name":"php", "version":"7.2.*"},
-                                              {"name": "php-mysqlnd", "version":"7.2.*"}],
+                                   "modules":[HTTP_GLOB,
+                                              MODSSL_GLOB,
+                                              PHP_GLOB,
+                                              PHPMYSQL_GLOB],
                                    "name":"example-http-server",
-                                   "packages": [{"name":"openssh-server", "version": "7.*"},
-                                                {"name": "rsync", "version": "3.1.*"},
-                                                {"name": "tmux", "version": "*"}],
+                                   "packages": [OPENSSH_GLOB,
+                                                RSYNC_GLOB,
+                                                TMUX_GLOB],
                                    "groups": [],
                                    "version": "0.0.1"},
                                  ]}
@@ -236,10 +250,10 @@ class ServerTestCase(unittest.TestCase):
         test_blueprint = {"description": "An example GlusterFS server with samba",
                        "name":"example-glusterfs",
                        "version": "0.2.0",
-                       "modules":[{"name":"glusterfs", "version":"4.0.*"},
-                                  {"name":"glusterfs-fuse", "version":"4.0.*"}],
-                       "packages":[{"name":"samba", "version":"4.*.*"},
-                                   {"name":"tmux", "version":"2.8"}],
+                       "modules":[GLUSTERFS_GLOB,
+                                  GLUSTERFSFUSE_GLOB],
+                       "packages":[SAMBA_GLOB,
+                                   TMUX_GLOB],
                        "groups": []}
 
         resp = self.server.post("/api/v0/blueprints/new",
@@ -287,10 +301,10 @@ class ServerTestCase(unittest.TestCase):
         test_blueprint = {"description": "An example GlusterFS server with samba, ws version",
                        "name":"example-glusterfs",
                        "version": "0.3.0",
-                       "modules":[{"name":"glusterfs", "version":"4.0.*"},
-                                  {"name":"glusterfs-fuse", "version":"4.0.*"}],
-                       "packages":[{"name":"samba", "version":"4.*.*"},
-                                   {"name":"tmux", "version":"2.8"}],
+                       "modules":[GLUSTERFS_GLOB,
+                                  GLUSTERFSFUSE_GLOB],
+                       "packages":[SAMBA_GLOB,
+                                   TMUX_GLOB],
                        "groups": []}
 
         resp = self.server.post("/api/v0/blueprints/workspace",
@@ -314,10 +328,10 @@ class ServerTestCase(unittest.TestCase):
         test_blueprint = {"description": "An example GlusterFS server with samba, ws version",
                        "name":"example-glusterfs",
                        "version": "0.4.0",
-                       "modules":[{"name":"glusterfs", "version":"4.0.*"},
-                                  {"name":"glusterfs-fuse", "version":"4.0.*"}],
-                       "packages":[{"name":"samba", "version":"4.*.*"},
-                                   {"name":"tmux", "version":"2.8"}],
+                       "modules":[GLUSTERFS_GLOB,
+                                  GLUSTERFSFUSE_GLOB],
+                       "packages":[SAMBA_GLOB,
+                                   TMUX_GLOB],
                        "groups": []}
 
         resp = self.server.post("/api/v0/blueprints/workspace",
@@ -364,10 +378,10 @@ class ServerTestCase(unittest.TestCase):
         test_blueprint = {"description": "An example GlusterFS server with samba, ws version",
                        "name":"example-glusterfs",
                        "version": "1.4.0",
-                       "modules":[{"name":"glusterfs", "version":"4.0.*"},
-                                  {"name":"glusterfs-cli", "version":"4.0.*"}],
-                       "packages":[{"name":"samba", "version":"4.*.*"},
-                                   {"name":"tmux", "version":"2.8"}],
+                       "modules":[GLUSTERFS_GLOB,
+                                  GLUSTERFSFUSE_GLOB],
+                       "packages":[SAMBA_GLOB,
+                                   TMUX_GLOB],
                        "groups": []}
         resp = self.server.post("/api/v0/blueprints/workspace",
                                 data=json.dumps(test_blueprint),
@@ -483,10 +497,10 @@ class ServerTestCase(unittest.TestCase):
         test_blueprint = {"description": "An example GlusterFS server with samba, ws version",
                        "name":"example-glusterfs",
                        "version": "0.3.0",
-                       "modules":[{"name":"glusterfs", "version":"4.0.*"},
-                                  {"name":"glusterfs-fuse", "version":"4.0.*"}],
-                       "packages":[{"name":"samba", "version":"4.*.*"},
-                                   {"name":"tmux", "version":"2.8"}]}
+                       "modules":[GLUSTERFS_GLOB,
+                                  GLUSTERFSFUSE_GLOB],
+                       "packages":[SAMBA_GLOB,
+                                   TMUX_GLOB]}
 
         resp = self.server.post("/api/v0/blueprints/workspace",
                                 data=json.dumps(test_blueprint),
@@ -502,7 +516,7 @@ class ServerTestCase(unittest.TestCase):
                              "old": {"Description": "An example GlusterFS server with samba"}},
                             {"new": {"Version": "0.3.0"},
                              "old": {"Version": "0.0.1"}},
-                            {"new": {"Package": {"version": "2.8", "name": "tmux"}},
+                            {"new": {"Package": TMUX_GLOB},
                              "old": None}]}
         self.assertEqual(data, result)
 
@@ -760,10 +774,10 @@ class ServerTestCase(unittest.TestCase):
         test_blueprint = {"description": "An example GlusterFS server with samba",
                        "name":"example-glusterfs",
                        "version": "0.2.0",
-                       "modules":[{"name":"glusterfs", "version":"4.0.*"},
-                                  {"name":"glusterfs-fuse", "version":"4.0.*"}],
-                       "packages":[{"name":"samba", "version":"4.*.*"},
-                                   {"name":"tmux", "version":"2.8"}],
+                       "modules":[GLUSTERFS_GLOB,
+                                  GLUSTERFSFUSE_GLOB],
+                       "packages":[SAMBA_GLOB,
+                                   TMUX_GLOB],
                        "groups": []}
 
         resp = self.server.post("/api/v0/blueprints/new?branch=test",
@@ -1283,10 +1297,10 @@ class ServerTestCase(unittest.TestCase):
         test_blueprint = {"description": "An example GlusterFS server with samba",
                        "name":UTF8_TEST_STRING,
                        "version": "0.2.0",
-                       "modules":[{"name":"glusterfs", "version":"3.*.*"},
-                                  {"name":"glusterfs-cli", "version":"3.*.*"}],
-                       "packages":[{"name":"samba", "version":"4.*.*"},
-                                   {"name":"tmux", "version":"1.8"}],
+                       "modules":[GLUSTERFS_GLOB,
+                                  GLUSTERFSFUSE_GLOB],
+                       "packages":[SAMBA_GLOB,
+                                   TMUX_GLOB],
                        "groups": []}
 
         resp = self.server.post("/api/v0/blueprints/new",
@@ -1313,10 +1327,10 @@ class ServerTestCase(unittest.TestCase):
         test_blueprint = {"description": "An example GlusterFS server with samba, ws version",
                        "name":UTF8_TEST_STRING,
                        "version": "0.3.0",
-                       "modules":[{"name":"glusterfs", "version":"3.*.*"},
-                                  {"name":"glusterfs-cli", "version":"3.*.*"}],
-                       "packages":[{"name":"samba", "version":"4.*.*"},
-                                   {"name":"tmux", "version":"1.8"}],
+                       "modules":[GLUSTERFS_GLOB,
+                                  GLUSTERFSFUSE_GLOB],
+                       "packages":[SAMBA_GLOB,
+                                   TMUX_GLOB],
                        "groups": []}
 
         resp = self.server.post("/api/v0/blueprints/workspace",
@@ -1465,10 +1479,10 @@ class ServerTestCase(unittest.TestCase):
         test_blueprint = {"description": "A blueprint that has been deleted",
                        "name":"deleted-blueprint",
                        "version": "0.0.1",
-                       "modules":[{"name":"glusterfs", "version":"4.0.*"},
-                                  {"name":"glusterfs-cli", "version":"4.0.*"}],
-                       "packages":[{"name":"samba", "version":"4.*.*"},
-                                   {"name":"tmux", "version":"2.8"}],
+                       "modules":[GLUSTERFS_GLOB,
+                                  GLUSTERFSFUSE_GLOB],
+                       "packages":[SAMBA_GLOB,
+                                   TMUX_GLOB],
                        "groups": []}
 
         resp = self.server.post("/api/v0/blueprints/new",
