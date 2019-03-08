@@ -1,4 +1,4 @@
-FROM registry.fedoraproject.org/fedora:rawhide
+FROM registry.fedoraproject.org/fedora:30
 RUN  dnf -y install \
   anaconda-tui \
   libgit2-glib \
