@@ -24,7 +24,7 @@ import tarfile
 import tempfile
 import unittest
 
-from pylorax.api.gitrpm import GitArchiveTarball, make_git_rpm, create_gitrpm_repo
+from pylorax.api.gitrpm import GitArchiveTarball, GitRpmBuild, make_git_rpm, create_gitrpm_repo
 from pylorax.sysutils import joinpaths
 
 def _setup_git_repo(self):
@@ -175,6 +175,38 @@ class GitArchiveTest(unittest.TestCase):
         archive = GitArchiveTarball(git_repo["repos"]["git"][0])
         self._check_tar(archive, "git-rpm-test/", "second")
 
+    def git_fail_repo_test(self):
+        """Test creating an archive from a bad url"""
+        git_repo = toml.loads("""
+            [[repos.git]]
+            rpmname="git-rpm-test"
+            rpmversion="1.0.0"
+            rpmrelease="1"
+            summary="Testing the git rpm code"
+            repo="file://%s"
+            ref="v1.1.0"
+            destination="/srv/testing-rpm/"
+        """ % ("/tmp/no-repo-here/"))
+        with self.assertRaises(RuntimeError):
+            archive = GitArchiveTarball(git_repo["repos"]["git"][0])
+            self._check_tar(archive, "git-rpm-test/", None)
+
+    def git_fail_ref_test(self):
+        """Test creating an archive from a bad ref"""
+        git_repo = toml.loads("""
+            [[repos.git]]
+            rpmname="git-rpm-test"
+            rpmversion="1.0.0"
+            rpmrelease="1"
+            summary="Testing the git rpm code"
+            repo="file://%s"
+            ref="0297617d7b8baa263a69ae7dc901bbbcefd0eaa4"
+            destination="/srv/testing-rpm/"
+        """ % (self.repodir))
+        with self.assertRaises(RuntimeError):
+            archive = GitArchiveTarball(git_repo["repos"]["git"][0])
+            self._check_tar(archive, "git-rpm-test/", None)
+
 
 class GitRpmTest(unittest.TestCase):
     @classmethod
@@ -293,3 +325,19 @@ class GitRpmTest(unittest.TestCase):
 
         finally:
             shutil.rmtree(temp_dir)
+
+
+class GitRpmBuildTest(unittest.TestCase):
+    def get_base_dir_test(self):
+        """Make sure base_dir is created"""
+        gitRpm = GitRpmBuild("rpmtest", "1.0.0", "1", ["noarch"])
+        base_dir = gitRpm.get_base_dir()
+        self.assertTrue("lorax-git-rpm" in base_dir)
+        gitRpm.cleanup_tmpdir()
+
+    def short_base_dir_test(self):
+        """Make sure cleanup of an unusually short base_dir fails"""
+        gitRpm = GitRpmBuild("rpmtest", "1.0.0", "1", ["noarch"])
+        gitRpm._base_dir = "/aa/"
+        with self.assertRaises(RuntimeError):
+            gitRpm.cleanup_tmpdir()
