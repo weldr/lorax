@@ -19,94 +19,18 @@ import pytoml as toml
 import rpm
 import shutil
 import stat
-import subprocess
 import tarfile
 import tempfile
 import unittest
 
+from ..lib import create_git_repo
 from pylorax.api.gitrpm import GitArchiveTarball, GitRpmBuild, make_git_rpm, create_gitrpm_repo
 from pylorax.sysutils import joinpaths
-
-def _setup_git_repo(self):
-    """Setup a git repo in a tmpdir, storing details into self
-
-    Call this from setUpClass()
-    """
-    self.repodir = tempfile.mkdtemp(prefix="git-rpm-test.")
-    # Create a local git repo in a temporary directory, populate it with files.
-    cmd = ["git", "init", self.repodir]
-    subprocess.check_call(cmd)
-
-    oldcwd = os.getcwd()
-    os.chdir(self.repodir)
-    cmd = ["git", "config", "user.email", "test@testing.localhost"]
-    subprocess.check_call(cmd)
-
-    # Hold the expected file paths for the tests
-    self.test_results = {"first": [], "second": [], "branch": []}
-    # Add some files
-    results_path = "./tests/pylorax/results/"
-    for f in ["full-recipe.toml", "minimal.toml", "modules-only.toml"]:
-        shutil.copy2(os.path.join(oldcwd, results_path, f), self.repodir)
-        self.test_results["first"].append(f)
-
-    cmd = ["git", "add", "*.toml"]
-    subprocess.check_call(cmd)
-    cmd = ["git", "commit", "-m", "first files"]
-    subprocess.check_call(cmd)
-    cmd = ["git", "tag", "v1.0.0"]
-    subprocess.check_call(cmd)
-
-    # Get the commit hash
-    cmd = ["git", "log", "--pretty=%H"]
-    self.first_commit = subprocess.check_output(cmd).decode("UTF-8").strip()
-
-    # 2nd commit adds to 1st commit
-    self.test_results["second"] = self.test_results["first"].copy()
-
-    # Add some more files
-    os.makedirs(os.path.join(self.repodir, "only-bps/"))
-    for f in ["packages-only.toml", "groups-only.toml"]:
-        shutil.copy2(os.path.join(oldcwd, results_path, f), os.path.join(self.repodir, "only-bps/"))
-        self.test_results["second"].append(os.path.join("only-bps/", f))
-    self.test_results["second"] = sorted(self.test_results["second"])
-
-    cmd = ["git", "add", "*.toml"]
-    subprocess.check_call(cmd)
-    cmd = ["git", "commit", "-m", "second files"]
-    subprocess.check_call(cmd)
-    cmd = ["git", "tag", "v1.1.0"]
-    subprocess.check_call(cmd)
-
-    # Make a branch for some other files
-    cmd = ["git", "checkout", "-b", "custom-branch"]
-    subprocess.check_call(cmd)
-
-    # 3nd commit adds to 2nd commit
-    self.test_results["branch"] = self.test_results["second"].copy()
-
-    # Add some files to the new branch
-    for f in ["custom-base.toml", "repos-git.toml"]:
-        shutil.copy2(os.path.join(oldcwd, results_path, f), self.repodir)
-        self.test_results["branch"].append(f)
-    self.test_results["branch"] = sorted(self.test_results["branch"])
-
-    cmd = ["git", "add", "*.toml"]
-    subprocess.check_call(cmd)
-    cmd = ["git", "commit", "-m", "branch files"]
-    subprocess.check_call(cmd)
-
-    os.chdir(oldcwd)
-
 
 class GitArchiveTest(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        self.repodir = None
-        self.first_commit = None
-        self.test_results = {}
-
-        _setup_git_repo(self)
+        (self.repodir, self.test_results, self.first_commit) = create_git_repo()
 
     @classmethod
     def tearDownClass(self):
@@ -211,11 +135,7 @@ class GitArchiveTest(unittest.TestCase):
 class GitRpmTest(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        self.repodir = None
-        self.first_commit = None
-        self.test_results = {}
-
-        _setup_git_repo(self)
+        (self.repodir, self.test_results, self.first_commit) = create_git_repo()
 
     @classmethod
     def tearDownClass(self):
