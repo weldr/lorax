@@ -1,0 +1,18 @@
+name = "example-append"
+description = "An example using kernel append customization"
+version = "0.0.1"
+
+[[packages]]
+name = "tmux"
+version = "2.8"
+
+[[packages]]
+name = "openssh-server"
+version = "7.*"
+
+[[packages]]
+name = "rsync"
+version = "3.1.*"
+
+[customizations.kernel]
+append = "nosmt=force"
