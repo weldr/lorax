@@ -20,10 +20,12 @@ import tempfile
 import unittest
 
 from pylorax import get_buildarch
-from pylorax.api.compose import add_customizations, get_extra_pkgs
+from pylorax.api.compose import add_customizations, compose_types, get_extra_pkgs
+from pylorax.api.compose import bootloader_append, customize_ks_template
 from pylorax.api.config import configure, make_dnf_dirs
 from pylorax.api.dnfbase import get_base_object
 from pylorax.api.recipes import recipe_from_toml
+from pylorax.sysutils import joinpaths
 
 BASE_RECIPE = """name = "test-cases"
 description = "Used for testing"
@@ -228,6 +230,61 @@ class CustomizationsTestCase(unittest.TestCase):
         self.assertCustomization(ROOT_PLAIN_KEY, 'rootpw --plaintext "plainpassword"')
         self.assertCustomization(ROOT_PLAIN_KEY, 'sshkey --user root "A SSH KEY FOR THE USER"')
         self.assertNotCustomization(ROOT_PLAIN_KEY, "rootpw --lock")
+
+    def test_bootloader_append(self):
+        """Test bootloader_append function"""
+
+        self.assertEqual(bootloader_append("", "nosmt=force"), 'bootloader --append="nosmt=force" --location=none')
+        self.assertEqual(bootloader_append("", "nosmt=force console=ttyS0,115200n8"),
+                         'bootloader --append="nosmt=force console=ttyS0,115200n8" --location=none')
+        self.assertEqual(bootloader_append("bootloader --location=none", "nosmt=force"),
+                         'bootloader --append="nosmt=force" --location=none')
+        self.assertEqual(bootloader_append("bootloader --location=none", "console=ttyS0,115200n8 nosmt=force"),
+                         'bootloader --append="console=ttyS0,115200n8 nosmt=force" --location=none')
+        self.assertEqual(bootloader_append('bootloader --append="no_timer_check console=ttyS0,115200n8" --location=mbr', "nosmt=force"),
+                         'bootloader --append="no_timer_check console=ttyS0,115200n8 nosmt=force" --location=mbr')
+        self.assertEqual(bootloader_append('bootloader --append="console=tty1" --location=mbr --password="BADPASSWORD"', "nosmt=force"),
+                         'bootloader --append="console=tty1 nosmt=force" --location=mbr --password="BADPASSWORD"')
+
+    def _checkBootloader(self, result, append_str):
+        """Find the bootloader line and make sure append_str is in it"""
+
+        for line in result.splitlines():
+            if line.startswith("bootloader") and append_str in line:
+                return True
+        return False
+
+    def test_customize_ks_template(self):
+        """Test that [customizations.kernel] works correctly"""
+        blueprint_data = """name = "test-kernel"
+description = "test recipe"
+version = "0.0.1"
+
+[customizations.kernel]
+append="nosmt=force"
+"""
+        recipe = recipe_from_toml(blueprint_data)
+
+        # Test against a kickstart without bootloader
+        result = customize_ks_template("firewall --enabled\n", recipe)
+        self.assertTrue(self._checkBootloader(result, "nosmt=force"))
+
+        # Test against all of the available templates
+        share_dir = "./share/"
+        errors = []
+        for compose_type in compose_types(share_dir):
+            # Read the kickstart template for this type
+            ks_template_path = joinpaths(share_dir, "composer", compose_type) + ".ks"
+            ks_template = open(ks_template_path, "r").read()
+            result = customize_ks_template(ks_template, recipe)
+            if not self._checkBootloader(result, "nosmt=force"):
+                errors.append(("compose_type %s failed" % compose_type, result))
+
+        # Print the bad results
+        for e, r in errors:
+            print("%s:\n%s\n\n" % (e, r))
+
+        self.assertEqual(errors, [])
 
 
 class ExtraPkgsTest(unittest.TestCase):

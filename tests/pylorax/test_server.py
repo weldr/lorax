@@ -134,9 +134,9 @@ class ServerTestCase(unittest.TestCase):
 
     def test_02_blueprints_list(self):
         """Test the /api/v0/blueprints/list route"""
-        list_dict = {"blueprints":["example-atlas", "example-custom-base", "example-development",
+        list_dict = {"blueprints":["example-append", "example-atlas", "example-custom-base", "example-development",
                                    "example-glusterfs", "example-http-server", "example-jboss",
-                                   "example-kubernetes"], "limit":20, "offset":0, "total":7}
+                                   "example-kubernetes"], "limit":20, "offset":0, "total":8}
         resp = self.server.get("/api/v0/blueprints/list")
         data = json.loads(resp.data)
         self.assertEqual(data, list_dict)
@@ -1183,6 +1183,53 @@ class ServerTestCase(unittest.TestCase):
         ids = [e["id"] for e in data["uuids"]]
         self.assertIn(build_id_fail, ids, "Failed build not listed by /compose/status status filter")
         self.assertNotIn(build_id_success, "Finished build listed by /compose/status status filter")
+
+    def test_compose_14_kernel_append(self):
+        """Test the /api/v0/compose with kernel append customization"""
+        test_compose = {"blueprint_name": "example-append",
+                        "compose_type": "tar",
+                        "branch": "master"}
+
+        resp = self.server.post("/api/v0/compose?test=2",
+                                data=json.dumps(test_compose),
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["status"], True, "Failed to start test compose: %s" % data)
+
+        build_id = data["build_id"]
+
+        # Is it in the queue list (either new or run is fine, based on timing)
+        resp = self.server.get("/api/v0/compose/queue")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        ids = [e["id"] for e in data["new"] + data["run"]]
+        self.assertEqual(build_id in ids, True, "Failed to add build to the queue")
+
+        # Wait for it to start
+        self.assertEqual(self.wait_for_status(build_id, ["RUNNING"]), True, "Failed to start test compose")
+
+        # Wait for it to finish
+        self.assertEqual(self.wait_for_status(build_id, ["FINISHED"]), True, "Failed to finish test compose")
+
+        resp = self.server.get("/api/v0/compose/info/%s" % build_id)
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(data["queue_status"], "FINISHED", "Build not in FINISHED state")
+
+        # Examine the final-kickstart.ks for the customizations
+        # A bit kludgy since it examines the filesystem directly, but that's better than unpacking the metadata
+        final_ks = open(joinpaths(self.repo_dir, "var/lib/lorax/composer/results/", build_id, "final-kickstart.ks")).read()
+
+        # Check for the expected customizations in the kickstart
+        # nosmt=force should be in the bootloader line, find it and check it
+        bootloader_line = ""
+        for line in final_ks.splitlines():
+            if line.startswith("bootloader"):
+                bootloader_line = line
+                break
+        self.assertNotEqual(bootloader_line, "", "No bootloader line found")
+        self.assertTrue("nosmt=force" in bootloader_line)
 
     def assertInputError(self, resp):
         """Check all the conditions for a successful input check error result"""
