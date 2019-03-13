@@ -11,6 +11,7 @@ RUN  dnf -y install \
   python3-gevent \
   python3-magic \
   python3-mako \
+  python3-mock \
   python3-nose \
   python3-pocketlint \
   python3-pylint \
@@ -18,6 +19,7 @@ RUN  dnf -y install \
   python3-pytoml \
   python3-semantic_version \
   python3-sphinx \
+  python3-sphinx_rtd_theme \
   python3-rpmfluff \
   python3-librepo \
   python3-pyvmomi \
