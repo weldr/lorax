@@ -6,11 +6,11 @@ GRUBDIR="boot/grub"
 STAGE2IMG="images/install.img"
 LORAXDIR="usr/share/lorax/"
 
-## NOTE: yaboot freaks out and stops parsing its config if it sees a '\',
-## so we can't use the udev escape sequences in the root arg.
-## Instead we'll just replace any non-ASCII characters in the isolabel
-## with '_', which means we won't need any udev escapes.
-isolabel = ''.join(ch if ch.isalnum() else '_' for ch in isolabel)
+## Don't allow spaces or escape characters in the iso label
+def valid_label(ch):
+    return ch.isalnum() or ch == '_'
+
+isolabel = ''.join(ch if valid_label(ch) else '-' for ch in isolabel)
 
 from os.path import basename
 %>
