@@ -1,4 +1,4 @@
-# Copyright (C) 2018 Red Hat, Inc.
+# Copyright (C) 2018-2019 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@ log = logging.getLogger("lorax-composer")
 
 import os
 from glob import glob
+from io import StringIO
 from math import ceil
 import pytoml as toml
 import shutil
@@ -112,6 +113,62 @@ def repo_to_ks(r, url="url"):
         cmd += '--noverifyssl'
 
     return cmd
+
+
+def bootloader_append(line, kernel_append):
+    """ Insert the kernel_append string into the --append argument
+
+    :param line: The bootloader ... line
+    :type line: str
+    :param kernel_append: The arguments to append to the --append section
+    :type kernel_append: str
+
+    Using pykickstart to process the line is the best way to make sure it
+    is parsed correctly, and re-assembled for inclusion into the final kickstart
+    """
+    ks_version = makeVersion()
+    ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+    ks.readKickstartFromString(line)
+
+    if ks.handler.bootloader.appendLine:
+        ks.handler.bootloader.appendLine += " %s" % kernel_append
+    else:
+        ks.handler.bootloader.appendLine = kernel_append
+
+    # Converting back to a string includes a comment, return just the bootloader line
+    return str(ks.handler.bootloader).splitlines()[-1]
+
+
+def customize_ks_template(ks_template, recipe):
+    """ Customize the kickstart template and return it
+
+    :param ks_template: The kickstart template
+    :type ks_template: str
+    :param recipe:
+    :type recipe: Recipe object
+
+    Apply customizations.kernel.append to the bootloader argument in the template.
+    Add bootloader line if it is missing.
+    """
+    if "customizations" not in recipe or \
+       "kernel" not in recipe["customizations"] or \
+       "append" not in recipe["customizations"]["kernel"]:
+        return ks_template
+    kernel_append = recipe["customizations"]["kernel"]["append"]
+    found_bootloader = False
+    output = StringIO()
+    for line in ks_template.splitlines():
+        if not line.startswith("bootloader"):
+            print(line, file=output)
+            continue
+        found_bootloader = True
+        log.debug("Found bootloader line: %s", line)
+        print(bootloader_append(line, kernel_append), file=output)
+
+    if found_bootloader:
+        return output.getvalue()
+    else:
+        return 'bootloader --append="%s" --location=none' % kernel_append + output.getvalue()
 
 
 def write_ks_root(f, user):
@@ -396,12 +453,14 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
         # Write the root partition and it's size in MB (rounded up)
         f.write('part / --size=%d\n' % ceil(installed_size / 1024**2))
 
-        f.write(ks_template)
+        # Some customizations modify the template before writing it
+        f.write(customize_ks_template(ks_template, recipe))
 
         for d in deps:
             f.write(dep_nevra(d)+"\n")
         f.write("%end\n")
 
+        # Other customizations can be appended to the kickstart
         add_customizations(f, recipe)
 
     # Setup the config to pass to novirt_install
