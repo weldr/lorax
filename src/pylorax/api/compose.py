@@ -149,6 +149,21 @@ def bootloader_append(line, kernel_append):
     return str(ks.handler.bootloader).splitlines()[-1]
 
 
+def get_kernel_append(recipe):
+    """Return the customizations.kernel append value
+
+    :param recipe:
+    :type recipe: Recipe object
+    :returns: append value or empty string
+    :rtype: str
+    """
+    if "customizations" not in recipe or \
+       "kernel" not in recipe["customizations"] or \
+       "append" not in recipe["customizations"]["kernel"]:
+        return ""
+    return recipe["customizations"]["kernel"]["append"]
+
+
 def customize_ks_template(ks_template, recipe):
     """ Customize the kickstart template and return it
 
@@ -160,11 +175,9 @@ def customize_ks_template(ks_template, recipe):
     Apply customizations.kernel.append to the bootloader argument in the template.
     Add bootloader line if it is missing.
     """
-    if "customizations" not in recipe or \
-       "kernel" not in recipe["customizations"] or \
-       "append" not in recipe["customizations"]["kernel"]:
+    kernel_append = get_kernel_append(recipe)
+    if not kernel_append:
         return ks_template
-    kernel_append = recipe["customizations"]["kernel"]["append"]
     found_bootloader = False
     output = StringIO()
     for line in ks_template.splitlines():
@@ -535,6 +548,7 @@ def start_build(cfg, dnflock, gitlock, branch, recipe_name, compose_type, test_m
     cfg_args["project"] = os_release.get("NAME", "")
     cfg_args["releasever"] = os_release.get("VERSION_ID", "")
     cfg_args["volid"] = ""
+    cfg_args["extra_boot_args"] = get_kernel_append(recipe)
 
     cfg_args.update({
         "compression":      "xz",
