@@ -341,7 +341,8 @@ def make_livecd(opts, mount_dir, work_dir):
     tb = TreeBuilder(product=product, arch=arch, domacboot=opts.domacboot,
                      inroot=mount_dir, outroot=work_dir,
                      runtime=RUNTIME, isolabel=isolabel,
-                     templatedir=joinpaths(opts.lorax_templates,"live/"))
+                     templatedir=joinpaths(opts.lorax_templates,"live/"),
+                     extra_boot_args=opts.extra_boot_args)
     log.info( "Rebuilding initrds" )
     if not opts.dracut_args:
         dracut_args = DRACUT_DEFAULT

@@ -1,4 +1,4 @@
-<%page args="configdir, KERNELDIR, efiarch32, efiarch64, isolabel"/>
+<%page args="configdir, KERNELDIR, efiarch32, efiarch64, isolabel, extra_boot_args"/>
 <%
 from string import lower
 EFIBOOTDIR="EFI/BOOT"
@@ -53,6 +53,7 @@ ${make_efiboot("images/efiboot.img")}
     replace @KERNELPATH@ /${kdir}/vmlinuz ${eficonf}
     replace @INITRDPATH@ /${kdir}/initrd.img ${eficonf}
     replace @ISOLABEL@ '${isolabel}' ${eficonf}
+    replace @EXTRA@ '${extra_boot_args}' ${eficonf}
     %if disk:
         replace @ROOT@ root=live:LABEL=ANACONDA ${eficonf}
     %else:

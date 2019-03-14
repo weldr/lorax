@@ -6,12 +6,12 @@ echo -e "\nWelcome to the @PRODUCT@ @VERSION@ installer!\n\n"
 for BITS in 32 64; do
   if [ -d "/ppc/ppc${BITS}" ]; then
     menuentry "Start @PRODUCT@ @VERSION@ (${BITS}-bit kernel)"  $BITS --class fedora --class gnu-linux --class gnu --class os {
-      linux /ppc/ppc${2}/vmlinuz @ROOT@ ro rd.live.image quiet
+      linux /ppc/ppc${2}/vmlinuz @ROOT@ @EXTRA@ ro rd.live.image quiet
       initrd /ppc/ppc${2}/initrd.img
     }
 
     menuentry "Test this media & start @PRODUCT@ @VERSION@  (${BITS}-bit kernel)" $BITS --class fedora --class gnu-linux --class  gnu --class os {
-      linux /ppc/ppc${2}/vmlinuz @ROOT@ rd.live.image rd.live.check ro quiet
+      linux /ppc/ppc${2}/vmlinuz @ROOT@ @EXTRA@ rd.live.image rd.live.check ro quiet
       initrd /ppc/ppc${2}/initrd.img
       }
 
