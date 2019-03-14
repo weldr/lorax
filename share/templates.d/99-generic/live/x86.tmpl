@@ -1,4 +1,4 @@
-<%page args="kernels, runtime_img, basearch, inroot, outroot, product, isolabel"/>
+<%page args="kernels, runtime_img, basearch, inroot, outroot, product, isolabel, extra_boot_args"/>
 <%
 configdir="tmp/config_files/x86"
 SYSLINUXDIR="usr/share/syslinux"
@@ -48,6 +48,7 @@ install boot/memtest* ${BOOTDIR}/memtest
 replace @VERSION@ ${product.version} ${BOOTDIR}/grub.conf ${BOOTDIR}/isolinux.cfg ${BOOTDIR}/*.msg
 replace @PRODUCT@ '${product.name}'  ${BOOTDIR}/grub.conf ${BOOTDIR}/isolinux.cfg ${BOOTDIR}/*.msg
 replace @ROOT@ 'root=live:CDLABEL=${isolabel|udev}' ${BOOTDIR}/isolinux.cfg
+replace @EXTRA@ '${extra_boot_args}' ${BOOTDIR}/isolinux.cfg
 
 ## install kernels
 mkdir ${KERNELDIR}
@@ -91,7 +92,7 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
         treeinfo images-${basearch} ${img|basename} ${img}
     %endfor
     <% efihybrid = "--uefi --mac" if domacboot else "--uefi" %>
-    <%include file="efi.tmpl" args="configdir=configdir, KERNELDIR=KERNELDIR, efiarch32=efiarch32, efiarch64=efiarch64, isolabel=isolabel"/>
+    <%include file="efi.tmpl" args="configdir=configdir, KERNELDIR=KERNELDIR, efiarch32=efiarch32, efiarch64=efiarch64, isolabel=isolabel, extra_boot_args=extra_boot_args"/>
 %endif
 
 # Create optional product.img and updates.img
