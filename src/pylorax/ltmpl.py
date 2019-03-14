@@ -69,11 +69,17 @@ class LoraxTemplate(object):
         # mako template now returns unicode strings
         lines = map(lambda line: line.encode("utf8"), lines)
 
-        # split with shlex and perform brace expansion
-        lines = map(split_and_expand, lines)
-
-        self.lines = lines
-        return lines
+        # split with shlex and perform brace expansion. This can fail, so we unroll the loop
+        # for better error reporting.
+        expanded_lines = []
+        try:
+            for line in lines:
+                expanded_lines.append(split_and_expand(line))
+        except Exception as e:
+            logger.error('shlex error processing "%s": %s', line, str(e))
+            raise
+        self.lines = expanded_lines
+        return expanded_lines
 
 def split_and_expand(line):
     return [exp for word in shlex.split(line) for exp in brace_expand(word)]
