@@ -199,6 +199,9 @@ def lmc_parser(dracut_default=""):
     parser.add_argument("--nomacboot", action="store_false",
                         dest="domacboot")
 
+    parser.add_argument("--extra-boot-args", default="", dest="extra_boot_args",
+                        help="Extra arguments to add to the bootloader kernel cmdline in the templates")
+
     image_group = parser.add_argument_group("disk/fs image arguments")
     image_group.add_argument("--disk-image", type=os.path.abspath,
                              help="Path to existing disk image to use for creating final image.")
