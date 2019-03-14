@@ -1,4 +1,4 @@
-<%page args="kernels, runtime_img, runtime_base, basearch, outroot"/>
+<%page args="kernels, runtime_img, runtime_base, basearch, outroot, extra_boot_args"/>
 <%
 configdir="tmp/config_files/s390"
 BOOTDIR="images"
@@ -21,6 +21,7 @@ install ${configdir}/generic.ins .
 
 ## configure bootloader
 replace @INITRD_LOAD_ADDRESS@ ${INITRD_ADDRESS} generic.ins
+replace @EXTRA@ ${extra_boot_args} generic.prm
 
 ## install kernel
 installkernel images-${basearch} ${kernel.path} ${KERNELDIR}/kernel.img

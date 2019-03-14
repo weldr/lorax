@@ -173,7 +173,8 @@ class RuntimeBuilder(object):
 class TreeBuilder(object):
     '''Builds the arch-specific boot images.
     inroot should be the installtree root (the newly-built runtime dir)'''
-    def __init__(self, product, arch, inroot, outroot, runtime, isolabel, domacboot=False, doupgrade=True, templatedir=None, add_templates=None, add_template_vars=None, workdir=None):
+    def __init__(self, product, arch, inroot, outroot, runtime, isolabel, domacboot=False, doupgrade=True,
+                 templatedir=None, add_templates=None, add_template_vars=None, workdir=None, extra_boot_args=""):
 
         # NOTE: if you pass an arg named "runtime" to a mako template it'll
         # clobber some mako internal variables - hence "runtime_img".
@@ -182,7 +183,7 @@ class TreeBuilder(object):
                                inroot=inroot, outroot=outroot,
                                basearch=arch.basearch, libdir=arch.libdir,
                                isolabel=isolabel, udev=udev_escape, domacboot=domacboot, doupgrade=doupgrade,
-                               workdir=workdir)
+                               workdir=workdir, extra_boot_args=extra_boot_args)
         self._runner = LoraxTemplateRunner(inroot, outroot, templatedir=templatedir)
         self._runner.defaults = self.vars
         self.add_templates = add_templates or []
