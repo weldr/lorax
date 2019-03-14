@@ -1107,6 +1107,12 @@ class ServerTestCase(unittest.TestCase):
         self.assertTrue("network --hostname=" in final_ks)
         self.assertTrue("sshkey --user root" in final_ks)
 
+        # Examine the config.toml to make sure it has an empty extra_boot_args
+        cfg_path = joinpaths(self.repo_dir, "var/lib/lorax/composer/results/", build_id, "config.toml")
+        cfg_dict = toml.loads(open(cfg_path, "r").read())
+        self.assertTrue("extra_boot_args" in cfg_dict)
+        self.assertEqual(cfg_dict["extra_boot_args"], "")
+
         # Delete the finished build
         # Test the /api/v0/compose/delete/<uuid> route
         resp = self.server.delete("/api/v0/compose/delete/%s" % build_id)
@@ -1259,6 +1265,12 @@ class ServerTestCase(unittest.TestCase):
                 break
         self.assertNotEqual(bootloader_line, "", "No bootloader line found")
         self.assertTrue("nosmt=force" in bootloader_line)
+
+        # Examine the config.toml to make sure it was written there as well
+        cfg_path = joinpaths(self.repo_dir, "var/lib/lorax/composer/results/", build_id, "config.toml")
+        cfg_dict = toml.loads(open(cfg_path, "r").read())
+        self.assertTrue("extra_boot_args" in cfg_dict)
+        self.assertEqual(cfg_dict["extra_boot_args"], "nosmt=force")
 
     def assertInputError(self, resp):
         """Check all the conditions for a successful input check error result"""
