@@ -1,4 +1,4 @@
-<%page args="kernels, runtime_img, basearch, libdir, inroot, outroot, product, isolabel"/>
+<%page args="kernels, runtime_img, basearch, libdir, inroot, outroot, product, isolabel, extra_boot_args"/>
 <%
 configdir="tmp/config_files/ppc"
 BOOTDIR="ppc"
@@ -46,6 +46,7 @@ install ${configdir}/grub.cfg.in     ${GRUBDIR}/grub.cfg
 replace @PRODUCT@ '${product.name}'  ${GRUBDIR}/grub.cfg
 replace @VERSION@ ${product.version} ${GRUBDIR}/grub.cfg
 replace @ROOT@ 'root=live:CDLABEL=${isolabel|udev}' ${GRUBDIR}/grub.cfg
+replace @EXTRA@ '${extra_boot_args}' ${GRUBDIR}/grub.cfg
 
 ## Install kernel and bootloader config (in separate places for each arch)
 %for kernel in kernels:

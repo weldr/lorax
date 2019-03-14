@@ -1,4 +1,4 @@
-<%page args="kernels, runtime_img, basearch, inroot, outroot, product, isolabel"/>
+<%page args="kernels, runtime_img, basearch, inroot, outroot, product, isolabel, extra_boot_args"/>
 <%
 configdir="tmp/config_files/aarch64"
 PXEBOOTDIR="images/pxeboot"
@@ -53,7 +53,7 @@ mkdir ${KERNELDIR}
         %>
         treeinfo images-${basearch} ${img|basename} ${img}
     %endfor
-    <%include file="efi.tmpl" args="configdir=configdir, KERNELDIR=KERNELDIR, efiarch32=efiarch32, efiarch64=efiarch64, isolabel=isolabel"/>
+    <%include file="efi.tmpl" args="configdir=configdir, KERNELDIR=KERNELDIR, efiarch32=efiarch32, efiarch64=efiarch64, isolabel=isolabel, extra_boot_args=extra_boot_args"/>
 %endif
 
 # Create optional product.img and updates.img
