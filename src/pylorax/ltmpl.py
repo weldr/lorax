@@ -67,10 +67,16 @@ class LoraxTemplate(object):
         # remove comments
         lines = [line for line in lines if not line.startswith("#")]
 
-        # split with shlex and perform brace expansion
-        lines = [split_and_expand(line) for line in lines]
-
-        return lines
+        # split with shlex and perform brace expansion. This can fail, so we unroll the loop
+        # for better error reporting.
+        expanded_lines = []
+        try:
+            for line in lines:
+                expanded_lines.append(split_and_expand(line))
+        except Exception as e:
+            logger.error('shlex error processing "%s": %s', line, str(e))
+            raise
+        return expanded_lines
 
 def split_and_expand(line):
     return [exp for word in shlex.split(line) for exp in brace_expand(word)]
