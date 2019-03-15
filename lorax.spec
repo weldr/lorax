@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        30.16
+Version:        31.0
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -240,6 +240,25 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Fri Mar 15 2019 Brian C. Lane <bcl@redhat.com> 31.0-1
+- Add tests using repos.git in blueprints (bcl@redhat.com)
+- Move git repo creation into tests/lib.py (bcl@redhat.com)
+- rpmgit: catch potential errors while running git (bcl@redhat.com)
+- tests: Add test for Recipe.freeze() function (bcl@redhat.com)
+- Add repos.git support to lorax-composer builds (bcl@redhat.com)
+- Add pylorax.api.gitrpm module and tests (bcl@redhat.com)
+- Add support for [[repos.git]] section to blueprints (bcl@redhat.com)
+- Update ppc64le isolabel to match x86_64 logic (bcl@redhat.com)
+- Add blacklist_exceptions to multipath.conf (bcl@redhat.com)
+- tests: Add python3-mock and python3-sphinx_rtd_theme (bcl@redhat.com)
+- Use make ci inside test-in-copy target (atodorov@redhat.com)
+- Allow overriding $CLI outside test scripts (atodorov@redhat.com)
+- tests: Make it easier to update version globs (bcl@redhat.com)
+- New test: Build live-iso and boot with KVM (atodorov@redhat.com)
+- lorax-composer: Return UnknownBlueprint errors when using deleted blueprints (bcl@redhat.com)
+- lorax-composer: Delete workspace copy when deleting blueprint (bcl@redhat.com)
+- New test: Build qcow2 compose and test it with QEMU-KVM (atodorov@redhat.com)
+
 * Mon Feb 25 2019 Brian C. Lane <bcl@redhat.com> 30.16-1
 - Fix pylint problems with vmware_list_vms.py (bcl@redhat.com)
 - Makefile: Make the .test-results directory (bcl@redhat.com)
