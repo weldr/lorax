@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        30.16
+Version:        30.17
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -236,6 +236,11 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Fri Mar 15 2019 Brian C. Lane <bcl@redhat.com> 30.17-1
+- tests: Make it easier to update version globs (bcl@redhat.com)
+- Update ppc64le isolabel to match x86_64 logic (bcl@redhat.com)
+- Add blacklist_exceptions to multipath.conf (bcl@redhat.com)
+
 * Mon Feb 25 2019 Brian C. Lane <bcl@redhat.com> 30.16-1
 - Fix pylint problems with vmware_list_vms.py (bcl@redhat.com)
 - Makefile: Make the .test-results directory (bcl@redhat.com)
