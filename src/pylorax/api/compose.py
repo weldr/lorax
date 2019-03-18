@@ -30,6 +30,7 @@ compose_args should have a name matching the kickstart, and it should set the no
 parameters needed to generate the desired output. Other types should be set to False.
 
 """
+from __future__ import print_function
 import logging
 log = logging.getLogger("lorax-composer")
 
@@ -180,11 +181,11 @@ def customize_ks_template(ks_template, recipe):
     output = StringIO()
     for line in ks_template.splitlines():
         if not line.startswith("bootloader"):
-            print(line, file=output)
+            print(line.decode("utf-8"), file=output)
             continue
         found_bootloader = True
         log.debug("Found bootloader line: %s", line)
-        print(bootloader_append(line, kernel_append), file=output)
+        print(bootloader_append(line, kernel_append).decode("utf-8"), file=output)
 
     if found_bootloader:
         return output.getvalue()
