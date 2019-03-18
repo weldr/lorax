@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.7.20
+Version:        19.7.21
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -120,6 +120,14 @@ rm -f $RPM_BUILD_ROOT/%{_tmpfilesdir}/lorax-composer.conf
 %{_tmpfilesdir}/lorax.conf
 
 %changelog
+* Mon Mar 18 2019 Brian C. Lane <bcl@redhat.com> 19.7.21-1
+- Do not include /usr/bin/delv (bcl)
+  Resolves: rhbz#1688767
+- Remove SELinux Permissive checks (bcl)
+  Resolves: rhbz#1654795
+- Remove lorax-composer tests (bcl)
+  Resolves: rhbz#1679798
+
 * Mon Feb 25 2019 Brian C. Lane <bcl@redhat.com> 19.7.20-1
 - Add cancel_func to virt and novirt_install functions (bcl)
   Resolves: rhbz#1659129
