@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.28
+Version:        19.7.29
 Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
@@ -122,6 +122,28 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Tue Mar 19 2019 Brian C. Lane <bcl@redhat.com> 19.7.29-1
+- Allow overriding $CLI outside test scripts (atodorov)
+  Related: rhbz#1687595
+- Use make ci inside test-in-copy target (atodorov)
+  Related: rhbz#1687595
+- New test: Build live-iso and boot with KVM (atodorov)
+  Related: rhbz#1656105
+- New test: Build qcow2 compose and test it with QEMU-KVM (atodorov)
+  Related: rhbz#1656105
+- New test: Verify tar images with Docker and systemd-nspawn (atodorov)
+  Related: rhbz#1656105
+- Update OpenStack flavor and network settings in tests (atodorov)
+  Related: rhbz#1656105
+- Install ansible and openstacksdk inside virtualenv (atodorov)
+  Related: rhbz#1656105
+- Remove python-requests, python-dateutil and pyOpenSSL (atodorov)
+  Related: rhbz#1656105
+- Add /usr/local/bin to PATH for tests (atodorov) (atodorov)
+- Do not generate journal.xml from beakerlib (atodorov)
+  Related: rhbz#1656105
+- Expand parameters as separate words (jstodola) (jstodola)
+
 * Mon Feb 25 2019 Brian C. Lane <bcl@redhat.com> 19.7.28-1
 - lorax-composer: Check for STATUS before deleting (bcl)
   Related: rhbz#1659129
