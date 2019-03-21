@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.23
+Version:        28.14.24
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -234,6 +234,62 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu Mar 21 2019 Brian C. Lane <bcl@redhat.com> 28.14.24-1
+- Add a ppc64le template for live iso creation (bcl)
+  Related: rhbz#1673744
+- Move the package requirements for live-iso setup out of the template (bcl)
+  Resolves: rhbz#1673744
+- Remove exclusions from lorax-composer templates (bcl)
+  Related: rhbz#1673744
+- Add LiveTemplateRunner to parse per-arch live-iso package requirements (bcl)
+  Related: rhbz#1673744
+- Move the run part of LoraxTemplateRunner into new TemplateRunner class (bcl)
+  Related: rhbz#1673744
+- lorax-composer: Use reqpart --add-boot for partitioned disk templates (bcl)
+  Related: rhbz#1673744
+- livemedia-creator: Add support for reqpart kickstart command (bcl)
+  Related: rhbz#1673744
+- Fix make_appliance and the libvirt.tmpl (bcl)
+  Related: rhbz#1673744
+- Add get_file_magic to tests/lib.py (bcl)
+  Related: rhbz#1673744
+- Clarify the ks repo only error message (bcl)
+  Related: rhbz#1673744
+- Add tests to test_creator.py (bcl)
+  Related: rhbz#1673744
+- Add some tests for creator.py (bcl)
+  Related: rhbz#1673744
+- Make the lorax-composer ks templates more generic (bcl)
+  Related: rhbz#1673744
+- Add some extra cancel_func protection to QEMUInstall (bcl)
+  Related: rhbz#1684316
+- installer: make sure cancel_func has a value (yuvalt)
+  Resolves: rhbz#1684316
+- Update VMware datastore location to unblock tests (chrobert)
+  Related: rhbz#1678937
+- Allow overriding $CLI outside test scripts (atodorov)
+  Related: rhbz#1678937
+- Use make ci inside test-in-copy target (atodorov)
+  Related: rhbz#1678937
+- New test: Build live-iso and boot with KVM (atodorov)
+  Related: rhbz#1653934
+- New test: Build qcow2 compose and test it with QEMU-KVM (atodorov)
+  Related: rhbz#1653934
+- Removed remnants of fedora branding. (47631017+jakub-vavra)
+  Resolves: rhbz#1672583
+- Drop auth from the kickstart examples (bcl)
+  Resolves: rhbz#1672583
+- New test: Verify tar images with Docker and systemd-nspawn (atodorov)
+  Related: rhbz#1653934
+- Update OpenStack flavor and network settings in tests (atodorov)
+  Related: rhbz#1653934
+- Use existing storage account (jstodola)
+  Related: rhbz#1653934
+- Record date/time of VM creation (jstodola)
+  Related: rhbz#1653934
+- Make sure compose build tests run with SELinux in enforcing mode (jikortus)
+  Related: rhbz#1645189
+
 * Wed Jan 30 2019 Brian C. Lane <bcl@redhat.com> 28.14.23-1
 - lorax: Move default tmp dir to /var/tmp/lorax (bcl)
   Resolves: rhbz#1668408
