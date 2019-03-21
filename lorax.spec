@@ -27,6 +27,7 @@ Requires:       dosfstools
 Requires:       e2fsprogs
 Requires:       findutils
 Requires:       gawk
+Requires:       xorriso
 Requires:       genisoimage
 Requires:       glib2
 Requires:       glibc
