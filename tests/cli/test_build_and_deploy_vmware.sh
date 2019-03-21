@@ -1,5 +1,5 @@
 #!/bin/bash
-# Note: execute this file from the project root directory
+# Note: Execute this file from the project root directory
 
 #####
 #
@@ -64,7 +64,7 @@ rlJournalStart
         SAMPLES="$SAMPLES/samples"
     rlPhaseEnd
 
-    rlPhaseStartTest "compose start"
+    rlPhaseStartTest "Compose start"
         rlAssertEquals "SELinux operates in enforcing mode" "$(getenforce)" "Enforcing"
         SSH_KEY_DIR=`mktemp -d /tmp/composer-ssh-keys.XXXXXX`
         rlRun -t -c "ssh-keygen -t rsa -N '' -f $SSH_KEY_DIR/id_rsa"
@@ -92,7 +92,7 @@ __EOF__
         UUID=`echo $UUID | cut -f 2 -d' '`
     rlPhaseEnd
 
-    rlPhaseStartTest "compose finished"
+    rlPhaseStartTest "Compose finished"
         if [ -n "$UUID" ]; then
             until $CLI compose details $UUID | grep FINISHED; do
                 rlLogInfo "Waiting for compose to finish ..."
@@ -109,7 +109,7 @@ __EOF__
 
         python $SAMPLES/upload_file_to_datastore.py -S -s $V_HOST -u $V_USERNAME -p $V_PASSWORD \
                 -d $V_DATASTORE -l `readlink -f $IMAGE` -r $IMAGE
-        rlAssert0 "Image upload successfull" $?
+        rlAssert0 "Image upload successful" $?
     rlPhaseEnd
 
     rlPhaseStartTest "Start VM instance"
@@ -125,7 +125,7 @@ __EOF__
             rlLogInfo "INSTANCE_UUID=$INSTANCE_UUID"
         fi
 
-        # wait for instance to become running and had assigned a public IP
+        # Wait for instance to become running and had assigned a public IP
         IP_ADDRESS="None"
         while [ "$IP_ADDRESS" == "None" ]; do
             rlLogInfo "IP_ADDRESS is not assigned yet ..."
@@ -141,12 +141,12 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartTest "Verify VM instance"
-        # verify we can login into that instance
+        # Verify we can login into that instance
         rlRun -t -c "ssh -oStrictHostKeyChecking=no -i $SSH_KEY_DIR/id_rsa root@$IP_ADDRESS 'cat /etc/redhat-release'"
     rlPhaseEnd
 
     rlPhaseStartCleanup
-        # note: vmdk disk is removed when destroying the VM
+        # note: VMDK disk is removed when destroying the VM
         python $SAMPLES/destroy_vm.py -S -s $V_HOST -u $V_USERNAME -p $V_PASSWORD --uuid $INSTANCE_UUID
         rlAssert0 "VM destroyed" $?
         rlRun -t -c "$CLI compose delete $UUID"
