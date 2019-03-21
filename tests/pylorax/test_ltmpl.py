@@ -58,6 +58,11 @@ class LoraxTemplateTestCase(unittest.TestCase):
     def setUpClass(self):
         self.templates = LoraxTemplate(["./tests/pylorax/templates/"])
 
+    def test_parse_missing_quote(self):
+        """Test parsing a template with missing quote"""
+        with self.assertRaises(Exception):
+            self.templates.parse("parse-missing-quote.tmpl", {"basearch": "x86_64"})
+
     def test_parse_template_x86_64(self):
         """Test LoraxTemplate.parse() with basearch set to x86_64"""
         commands = self.templates.parse("parse-test.tmpl", {"basearch": "x86_64"})
