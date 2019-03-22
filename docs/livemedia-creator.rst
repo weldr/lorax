@@ -579,18 +579,10 @@ Creating UEFI disk images with virt
 
 Partitioned disk images can only be created for the same platform as the host system (BIOS or
 UEFI). You can use virt to create BIOS images on UEFI systems, and it is also possible
-to create UEFI images on BIOS systems using OVMF. You first need to setup your system with
-the OVMF firmware. The details can be `found here linux-kvm OVMF page <http://www.linux-kvm.org/page/OVMF>`_
-but it amounts to:
+to create UEFI images on BIOS systems using OVMF firmware and qemu.
 
-1. Download the firmware.repo from `Gerd Hoffmann <https://www.kraxel.org/repos/>`_ and install it
-   in /etc/yum.repos.d/
-
-2. Install the edk2.git-ovmf-x64 package
-
-3. Copy /usr/share/edk2.git/ovmf-x64/OVMF_CODE-pure-efi.fd to /usr/share/OVMF/OVMF_CODE.fd
-
-4. Copy /usr/share/edk2.git/ovmf-x64/OVMF_VARS-pure-efi.fd to /usr/share/OVMF/OVMF_VARS.fd
+Install the lorax-lmc-virt package, this will install qemu and the OVMF
+firmware files.
 
 Now you can run livemedia-creator with ``--virt-uefi`` to boot and install using UEFI::
 
@@ -601,11 +593,10 @@ Make sure that the kickstart you are using creates a /boot/efi partition by incl
 
     part /boot/efi --fstype="efi" --size=500
 
+Or use ``reqpart`` in the kickstart and Anaconda will create the required partitions.
+
 .. note::
-    When using the resulting image with the current version of OVMF (edk2.git-ovmf-x64-0-20151103.b1295.ge5cffca)
-    it will not boot automatically because there is a problem with the fallback path.
-    You can boot it by entering the UEFI shell and running EFI/fedora/shim.efi and
-    then using efibootmgr to setup the correct boot entry.
+    The --virt-uefi method is currently only supported on the x86_64 architecture.
 
 
 Debugging problems
