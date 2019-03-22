@@ -214,7 +214,7 @@ class QEMUInstall(object):
         else:
             display_args = opts.vnc
         log.info("qemu %s", display_args)
-        qemu_cmd += ["-nographic", "-display", display_args ]
+        qemu_cmd += ["-nographic", "-monitor", "none", "-serial", "null", "-display", display_args ]
 
         # Setup virtio networking
         qemu_cmd += ["-netdev", "user,id=n1", "-device", "virtio-net-pci,netdev=n1"]
