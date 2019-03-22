@@ -226,7 +226,7 @@ class QEMUInstall(object):
         else:
             display_args = opts.vnc
         log.info("qemu %s", display_args)
-        qemu_cmd += ["-nographic", "-display", display_args ]
+        qemu_cmd += ["-nographic", "-monitor", "none", "-serial", "null", "-display", display_args ]
 
         # Setup the virtio log port
         qemu_cmd += ["-device", "virtio-serial-pci,id=virtio-serial0"]
