@@ -172,7 +172,11 @@ class QEMUInstall(object):
             qemu_cmd += ["-smp", str(vcpus)]
 
         if not opts.no_kvm and os.path.exists("/dev/kvm"):
-            qemu_cmd += ["--machine", "accel=kvm"]
+            qemu_cmd += ["-machine", "accel=kvm"]
+
+        if boot_uefi:
+            qemu_cmd += ["-machine", "q35,smm=on"]
+            qemu_cmd += ["-global", "driver=cfi.pflash01,property=secure,value=on"]
 
         # Copy the initrd from the iso, create a cpio archive of the kickstart files
         # and append it to the temporary initrd.
@@ -228,14 +232,17 @@ class QEMUInstall(object):
         # Pass through rng from host
         if opts.with_rng != "none":
             qemu_cmd += ["-object", "rng-random,id=virtio-rng0,filename=%s" % opts.with_rng]
-            qemu_cmd += ["-device", "virtio-rng-pci,rng=virtio-rng0,id=rng0,bus=pci.0,addr=0x9"]
+            if boot_uefi:
+                qemu_cmd += ["-device", "virtio-rng-pci,rng=virtio-rng0,id=rng0,bus=pcie.0,addr=0x9"]
+            else:
+                qemu_cmd += ["-device", "virtio-rng-pci,rng=virtio-rng0,id=rng0,bus=pci.0,addr=0x9"]
 
         if boot_uefi and ovmf_path:
-            qemu_cmd += ["-drive", "file=%s/OVMF_CODE.fd,if=pflash,format=raw,unit=0,readonly=on" % ovmf_path]
+            qemu_cmd += ["-drive", "file=%s/OVMF_CODE.secboot.fd,if=pflash,format=raw,unit=0,readonly=on" % ovmf_path]
 
-            # Make a copy of the OVMF_VARS.fd for this run
+            # Make a copy of the OVMF_VARS.secboot.fd for this run
             ovmf_vars = tempfile.mktemp(prefix="lmc-OVMF_VARS-", suffix=".fd")
-            shutil.copy2(joinpaths(ovmf_path, "/OVMF_VARS.fd"), ovmf_vars)
+            shutil.copy2(joinpaths(ovmf_path, "/OVMF_VARS.secboot.fd"), ovmf_vars)
 
             qemu_cmd += ["-drive", "file=%s,if=pflash,format=raw,unit=1" % ovmf_vars]
 
