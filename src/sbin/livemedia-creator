@@ -137,9 +137,9 @@ def main():
     if opts.virt_uefi and not os.path.isdir(opts.ovmf_path):
         errors.append("The OVMF firmware is missing from %s" % opts.ovmf_path)
     elif opts.virt_uefi and os.path.isdir(opts.ovmf_path):
-        for f in ["OVMF_CODE.fd", "OVMF_VARS.fd"]:
+        for f in ["OVMF_CODE.secboot.fd", "OVMF_VARS.secboot.fd"]:
             if not os.path.exists(joinpaths(opts.ovmf_path, f)):
-                errors.append("OVMF firmware file %s is missing from %s" % (f, opts.ovmf_path))
+                errors.append("OVMF secure boot firmware file %s is missing from %s" % (f, opts.ovmf_path))
 
     if os.getuid() != 0:
         errors.append("You need to run this as root")
