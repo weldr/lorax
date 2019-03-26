@@ -13,14 +13,11 @@ WRAPPER_DATA="usr/"+libdir+"/kernel-wrapper"
 
 prepboot = ""
 
-## NOTE: yaboot freaks out and stops parsing its config if it sees a '\',
-## so we can't use the udev escape sequences in the root arg.
-## Instead we'll just replace any non-ASCII characters in the isolabel
-## with '_', which means we won't need any udev escapes.
-isolabel = ''.join(ch if ch.isalnum() else '_' for ch in isolabel)
+## Don't allow spaces or escape characters in the iso label
+def valid_label(ch):
+    return ch.isalnum() or ch == '_'
 
-## Anaconda finds the CDROM device automatically
-rootarg = ""
+isolabel = ''.join(ch if valid_label(ch) else '-' for ch in isolabel)
 %>
 
 mkdir ${LIVEDIR}
@@ -48,7 +45,7 @@ install /usr/lib/grub/powerpc-ieee1275/*.lst ${GRUBDIR}/powerpc-ieee1275
 install ${configdir}/grub.cfg.in     ${GRUBDIR}/grub.cfg
 replace @PRODUCT@ '${product.name}'  ${GRUBDIR}/grub.cfg
 replace @VERSION@ ${product.version} ${GRUBDIR}/grub.cfg
-replace @ROOT@    "${rootarg}"       ${GRUBDIR}/grub.cfg
+replace @ROOT@ 'inst.stage2=hd:LABEL=${isolabel|udev}' ${GRUBDIR}/grub.cfg
 
 ## copy mapping and magic files needed for isos
 install ${configdir}/mapping ${BOOTDIR}
