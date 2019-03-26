@@ -3,6 +3,7 @@ DESTDIR ?= /
 PREFIX ?= /usr
 mandir ?= $(PREFIX)/share/man
 DOCKER ?= docker
+DOCS_VERSION ?= next
 
 PKGNAME = lorax
 VERSION = $(shell awk '/Version:/ { print $$2 }' $(PKGNAME).spec)
@@ -88,6 +89,10 @@ tag:
 docs:
 	$(MAKE) -C docs apidoc html man
 
+# This is needed to reset the ownership of the new docs files after they are created in a container
+set-docs-owner:
+	chown -R $(LOCAL_UID):$(LOCAL_GID) docs/
+
 archive:
 	@git archive --format=tar --prefix=$(PKGNAME)-$(VERSION)/ $(TAG) > $(PKGNAME)-$(VERSION).tar
 	@gzip $(PKGNAME)-$(VERSION).tar
@@ -116,7 +121,11 @@ test-in-docker:
 	sudo $(DOCKER) run --rm -it -v `pwd`/.test-results/:/test-results -v `pwd`:/lorax-ro:ro --security-opt label=disable welder/lorax-tests:$(IMAGE_RELEASE) make test-in-copy
 
 docs-in-docker:
-	sudo $(DOCKER) run -it --rm -v `pwd`/docs/html/:/lorax/docs/html/ --security-opt label=disable welder/lorax-tests:$(IMAGE_RELEASE) make docs
+	sudo $(DOCKER) run -it --rm -v `pwd`:/lorax-ro:ro \
+		-v `pwd`/docs/:/lorax-ro/docs/ \
+		--env LORAX_VERSION=$(DOCS_VERSION) \
+		--env LOCAL_UID=`id -u` --env LOCAL_GID=`id -g` \
+		--security-opt label=disable welder/lorax-tests:$(IMAGE_RELEASE) make docs set-docs-owner
 
 ci: check test
 

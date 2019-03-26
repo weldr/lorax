@@ -19,6 +19,7 @@ RUN  dnf -y install \
   python3-pytoml \
   python3-semantic_version \
   python3-sphinx \
+  python3-sphinx-argparse \
   python3-sphinx_rtd_theme \
   python3-rpmfluff \
   python3-librepo \
