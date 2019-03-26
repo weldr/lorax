@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.7.21
+Version:        19.7.22
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -120,6 +120,16 @@ rm -f $RPM_BUILD_ROOT/%{_tmpfilesdir}/lorax-composer.conf
 %{_tmpfilesdir}/lorax.conf
 
 %changelog
+* Tue Mar 26 2019 Brian C. Lane <bcl@redhat.com> 19.7.22-1
+- Improve logging for template syntax errors (bcl)
+  Related: rhbz#1689314
+- Add extra boot args to the livemedia-creator iso templates (bcl)
+  Resolves: rhbz#1689314
+- Use hd:LABEL= for inst.stage2 on ppc (bcl)
+  Resolves: rhbz#1402328
+- Don't remove chmem and lsmem from install.img (bcl)
+  Resolves: rhbz#1511358
+
 * Mon Mar 18 2019 Brian C. Lane <bcl@redhat.com> 19.7.21-1
 - Do not include /usr/bin/delv (bcl)
   Resolves: rhbz#1688767
