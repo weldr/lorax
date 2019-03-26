@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        31.0
+Version:        31.1
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -240,6 +240,18 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Tue Mar 26 2019 Brian C. Lane <bcl@redhat.com> 31.1-1
+- qemu wasn't restoring the terminal if it was terminated early (bcl@redhat.com)
+- Switch the --virt-uefi method to use SecureBoot (bcl@redhat.com)
+- pylorax.ltmpl: Add a test for missing quotes (bcl@redhat.com)
+- Don't remove chmem and lsmem from install.img (bcl@redhat.com)
+- lorax-composer: pass customization.kernel append to extra_boot_args (bcl@redhat.com)
+- Improve logging for template syntax errors (bcl@redhat.com)
+- Add extra boot args to the livemedia-creator iso templates (bcl@redhat.com)
+- lorax-composer: Add the ability to append to the kernel command-line (bcl@redhat.com)
+- Add checks for disabled root account (jikortus@redhat.com)
+- Update datastore for VMware testing (chrobert@redhat.com)
+
 * Fri Mar 15 2019 Brian C. Lane <bcl@redhat.com> 31.0-1
 - Add tests using repos.git in blueprints (bcl@redhat.com)
 - Move git repo creation into tests/lib.py (bcl@redhat.com)
