@@ -56,19 +56,32 @@ copyright = u'2018, Red Hat, Inc.'      # pylint: disable=redefined-builtin
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
+# Pass in LORAX_VERSION to set a specific version
+# Set LORAX_VERSION=next to bump it to the next release
 def read_version():
-    """Read version from $LORAX_VERSION or ../lorax.spec"""
+    """Read version from $LORAX_VERSION or ../lorax.spec, or bump the version from lorax.spec"""
     # This allows the .spec version to be overridded. eg. when documenting an upcoming release
-    if "LORAX_VERSION" in os.environ:
+    if "LORAX_VERSION" in os.environ and "next" not in os.environ["LORAX_VERSION"]:
         return os.environ["LORAX_VERSION"]
 
+    doc_version = None
     import re
     version_re = re.compile(r"Version:\s+(.*)")
     with open("../lorax.spec", "rt") as f:
         for line in f:
             m = version_re.match(line)
             if m:
-                return m.group(1)
+                doc_version = m.group(1)
+    if not doc_version:
+        raise RuntimeError("Failed to find current version")
+
+    # Make it easier to generate docs for the next release
+    if "next" in os.environ["LORAX_VERSION"]:
+        fields = doc_version.split(".")
+        fields[-1] = str(int(fields[-1]) + 1)
+        doc_version = ".".join(fields)
+
+    return doc_version
 
 #
 # The short X.Y version.
