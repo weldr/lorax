@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.treebuilder &mdash; Lorax 30.7 documentation</title>
+  <title>pylorax.treebuilder &mdash; Lorax 31.1 documentation</title>
   
 
   
@@ -17,32 +17,34 @@
   
 
   
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
-
-  
-  <script src="../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -56,7 +58,7 @@
             
             
               <div class="version">
-                30.7
+                31.1
               </div>
             
           
@@ -191,8 +193,6 @@
 <span class="n">templatemap</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;i386&#39;</span><span class="p">:</span>    <span class="s1">&#39;x86.tmpl&#39;</span><span class="p">,</span>
     <span class="s1">&#39;x86_64&#39;</span><span class="p">:</span>  <span class="s1">&#39;x86.tmpl&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;ppc&#39;</span><span class="p">:</span>     <span class="s1">&#39;ppc.tmpl&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;ppc64&#39;</span><span class="p">:</span>   <span class="s1">&#39;ppc.tmpl&#39;</span><span class="p">,</span>
     <span class="s1">&#39;ppc64le&#39;</span><span class="p">:</span> <span class="s1">&#39;ppc64le.tmpl&#39;</span><span class="p">,</span>
     <span class="s1">&#39;s390&#39;</span><span class="p">:</span>    <span class="s1">&#39;s390.tmpl&#39;</span><span class="p">,</span>
     <span class="s1">&#39;s390x&#39;</span><span class="p">:</span>   <span class="s1">&#39;s390.tmpl&#39;</span><span class="p">,</span>
@@ -403,7 +403,8 @@
 <div class="viewcode-block" id="TreeBuilder"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.TreeBuilder">[docs]</a><span class="k">class</span> <span class="nc">TreeBuilder</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Builds the arch-specific boot images.</span>
 <span class="sd">    inroot should be the installtree root (the newly-built runtime dir)&#39;&#39;&#39;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">inroot</span><span class="p">,</span> <span class="n">outroot</span><span class="p">,</span> <span class="n">runtime</span><span class="p">,</span> <span class="n">isolabel</span><span class="p">,</span> <span class="n">domacboot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">doupgrade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">templatedir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">add_templates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">add_template_vars</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">workdir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">inroot</span><span class="p">,</span> <span class="n">outroot</span><span class="p">,</span> <span class="n">runtime</span><span class="p">,</span> <span class="n">isolabel</span><span class="p">,</span> <span class="n">domacboot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">doupgrade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">templatedir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">add_templates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">add_template_vars</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">workdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extra_boot_args</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
 
         <span class="c1"># NOTE: if you pass an arg named &quot;runtime&quot; to a mako template it&#39;ll</span>
         <span class="c1"># clobber some mako internal variables - hence &quot;runtime_img&quot;.</span>
@@ -412,7 +413,8 @@
                                <span class="n">inroot</span><span class="o">=</span><span class="n">inroot</span><span class="p">,</span> <span class="n">outroot</span><span class="o">=</span><span class="n">outroot</span><span class="p">,</span>
                                <span class="n">basearch</span><span class="o">=</span><span class="n">arch</span><span class="o">.</span><span class="n">basearch</span><span class="p">,</span> <span class="n">libdir</span><span class="o">=</span><span class="n">arch</span><span class="o">.</span><span class="n">libdir</span><span class="p">,</span>
                                <span class="n">isolabel</span><span class="o">=</span><span class="n">isolabel</span><span class="p">,</span> <span class="n">udev</span><span class="o">=</span><span class="n">udev_escape</span><span class="p">,</span> <span class="n">domacboot</span><span class="o">=</span><span class="n">domacboot</span><span class="p">,</span> <span class="n">doupgrade</span><span class="o">=</span><span class="n">doupgrade</span><span class="p">,</span>
-                               <span class="n">workdir</span><span class="o">=</span><span class="n">workdir</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="n">string_lower</span><span class="p">)</span>
+                               <span class="n">workdir</span><span class="o">=</span><span class="n">workdir</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="n">string_lower</span><span class="p">,</span>
+                               <span class="n">extra_boot_args</span><span class="o">=</span><span class="n">extra_boot_args</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span> <span class="o">=</span> <span class="n">LoraxTemplateRunner</span><span class="p">(</span><span class="n">inroot</span><span class="p">,</span> <span class="n">outroot</span><span class="p">,</span> <span class="n">templatedir</span><span class="o">=</span><span class="n">templatedir</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">defaults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_templates</span> <span class="o">=</span> <span class="n">add_templates</span> <span class="ow">or</span> <span class="p">[]</span>
@@ -461,12 +463,6 @@
                     <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">initrd</span><span class="p">,</span> <span class="n">initrd</span> <span class="o">+</span> <span class="n">backup</span><span class="p">)</span>
             <span class="n">cmd</span> <span class="o">=</span> <span class="n">dracut</span> <span class="o">+</span> <span class="p">[</span><span class="n">outfile</span><span class="p">,</span> <span class="n">kernel</span><span class="o">.</span><span class="n">version</span><span class="p">]</span>
             <span class="n">runcmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">inroot</span><span class="p">)</span>
-
-            <span class="c1"># ppc64 cannot boot images &gt; 32MiB, check size and warn</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">arch</span><span class="o">.</span><span class="n">basearch</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;ppc64&quot;</span><span class="p">,</span> <span class="s2">&quot;ppc64le&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">outfile</span><span class="p">):</span>
-                <span class="n">st</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">st_size</span> <span class="o">&gt;</span> <span class="mi">32</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">:</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;ppc64 initrd </span><span class="si">%s</span><span class="s2"> is &gt; 32MiB&quot;</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
 
         <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">inroot</span><span class="p">,</span><span class="s2">&quot;/proc/modules&quot;</span><span class="p">))</span></div>
 
@@ -592,35 +588,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../',
-              VERSION:'30.7',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

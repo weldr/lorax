@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.checkparams &mdash; Lorax 31.1 documentation</title>
+  <title>pylorax.api.bisect &mdash; Lorax 31.1 documentation</title>
   
 
   
@@ -140,7 +140,7 @@
         
           <li><a href="../../pylorax.html">pylorax</a> &raquo;</li>
         
-      <li>pylorax.api.checkparams</li>
+      <li>pylorax.api.bisect</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -155,9 +155,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for pylorax.api.checkparams</h1><div class="highlight"><pre>
+  <h1>Source code for pylorax.api.bisect</h1><div class="highlight"><pre>
 <span></span><span class="c1">#</span>
-<span class="c1"># Copyright (C) 2018  Red Hat, Inc.</span>
+<span class="c1"># Copyright (C) 2018 Red Hat, Inc.</span>
 <span class="c1">#</span>
 <span class="c1"># This program is free software; you can redistribute it and/or modify</span>
 <span class="c1"># it under the terms of the GNU General Public License as published by</span>
@@ -172,34 +172,39 @@
 <span class="c1"># You should have received a copy of the GNU General Public License</span>
 <span class="c1"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 <span class="c1">#</span>
+<div class="viewcode-block" id="insort_left"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.bisect.insort_left">[docs]</a><span class="k">def</span> <span class="nf">insort_left</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lo</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">hi</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Insert item x in list a, and keep it sorted assuming a is sorted.</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;lorax-composer&quot;</span><span class="p">)</span>
+<span class="sd">    :param a: sorted list</span>
+<span class="sd">    :type a: list</span>
+<span class="sd">    :param x: item to insert into the list</span>
+<span class="sd">    :type x: object</span>
+<span class="sd">    :param key: Function to use to compare items in the list</span>
+<span class="sd">    :type key: function</span>
+<span class="sd">    :returns: index where the item was inserted</span>
+<span class="sd">    :rtype: int</span>
 
-<span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">jsonify</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">update_wrapper</span>
+<span class="sd">    If x is already in a, insert it to the left of the leftmost x.</span>
+<span class="sd">    Optional args lo (default 0) and hi (default len(a)) bound the</span>
+<span class="sd">    slice of a to be searched.</span>
 
-<span class="c1"># A decorator for checking the parameters provided to the API route implementing</span>
-<span class="c1"># functions.  The tuples parameter is a list of tuples.  Each tuple is the string</span>
-<span class="c1"># name of a parameter (&quot;blueprint_name&quot;, not blueprint_name), the value it&#39;s set</span>
-<span class="c1"># to by flask if the caller did not provide it, and a message to be returned to</span>
-<span class="c1"># the user.</span>
-<span class="c1">#</span>
-<span class="c1"># If the parameter is set to its default, the error message is returned.  Otherwise,</span>
-<span class="c1"># the decorated function is called and its return value is returned.</span>
-<div class="viewcode-block" id="checkparams"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.checkparams.checkparams">[docs]</a><span class="k">def</span> <span class="nf">checkparams</span><span class="p">(</span><span class="n">tuples</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
-        <span class="k">def</span> <span class="nf">wrapped_function</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">tuples</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">==</span> <span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
-                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;(</span><span class="si">%s</span><span class="s2">) </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">tup</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-                    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[</span><span class="n">tup</span><span class="p">[</span><span class="mi">2</span><span class="p">]]),</span> <span class="mi">400</span>
+<span class="sd">    This is a modified version of bisect.insort_left that can use a</span>
+<span class="sd">    function for the compare, and returns the index position where it</span>
+<span class="sd">    was inserted.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">i</span>
 
-            <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">update_wrapper</span><span class="p">(</span><span class="n">wrapped_function</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">decorator</span></div>
+    <span class="k">if</span> <span class="n">lo</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;lo must be non-negative&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">hi</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">hi</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">lo</span> <span class="o">&lt;</span> <span class="n">hi</span><span class="p">:</span>
+        <span class="n">mid</span> <span class="o">=</span> <span class="p">(</span><span class="n">lo</span><span class="o">+</span><span class="n">hi</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span>
+        <span class="k">if</span> <span class="n">key</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">mid</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">key</span><span class="p">(</span><span class="n">x</span><span class="p">):</span> <span class="n">lo</span> <span class="o">=</span> <span class="n">mid</span><span class="o">+</span><span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">mid</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">lo</span></div>
 </pre></div>
 
            </div>

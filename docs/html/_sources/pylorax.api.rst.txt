@@ -4,6 +4,14 @@ pylorax.api package
 Submodules
 ----------
 
+pylorax.api.bisect module
+-------------------------
+
+.. automodule:: pylorax.api.bisect
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 pylorax.api.checkparams module
 ------------------------------
 
@@ -56,6 +64,14 @@ pylorax.api.errors module
 -------------------------
 
 .. automodule:: pylorax.api.errors
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pylorax.api.gitrpm module
+-------------------------
+
+.. automodule:: pylorax.api.gitrpm
     :members:
     :undoc-members:
     :show-inheritance:

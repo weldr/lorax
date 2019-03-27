@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LIVEMEDIA-CREATOR" "1" "Nov 13, 2018" "30.7" "Lorax"
+.TH "LIVEMEDIA-CREATOR" "1" "Mar 27, 2019" "31.1" "Lorax"
 .SH NAME
 livemedia-creator \- Live Media Creator Documentation
 .
@@ -86,6 +86,7 @@ usage: livemedia\-creator [\-h]
                          [\-\-logfile LOGFILE]
                          [\-\-lorax\-templates LORAX_TEMPLATES] [\-\-tmp TMP]
                          [\-\-resultdir RESULT_DIR] [\-\-macboot] [\-\-nomacboot]
+                         [\-\-extra\-boot\-args EXTRA_BOOT_ARGS]
                          [\-\-disk\-image DISK_IMAGE] [\-\-keep\-image]
                          [\-\-fs\-image FS_IMAGE] [\-\-image\-name IMAGE_NAME]
                          [\-\-fs\-label FS_LABEL] [\-\-image\-type IMAGE_TYPE]
@@ -219,6 +220,11 @@ Default: True
 .TP
 .B\-\-nomacboot
 Default: True
+.TP
+.B\-\-extra\-boot\-args
+Extra arguments to add to the bootloader kernel cmdline in the templates
+.sp
+Default: ""
 .TP
 .B\-\-title
 Substituted for @TITLE@ in bootloader config files
@@ -1044,20 +1050,10 @@ use of partitioned disk images and qcow2.
 .sp
 Partitioned disk images can only be created for the same platform as the host system (BIOS or
 UEFI). You can use virt to create BIOS images on UEFI systems, and it is also possible
-to create UEFI images on BIOS systems using OVMF. You first need to setup your system with
-the OVMF firmware. The details can be \fI\%found here linux\-kvm OVMF page\fP
-but it amounts to:
-.INDENT 0.0
-.IP 1. 3
-Download the firmware.repo from \fI\%Gerd Hoffmann\fP and install it
-in /etc/yum.repos.d/
-.IP 2. 3
-Install the edk2.git\-ovmf\-x64 package
-.IP 3. 3
-Copy /usr/share/edk2.git/ovmf\-x64/OVMF_CODE\-pure\-efi.fd to /usr/share/OVMF/OVMF_CODE.fd
-.IP 4. 3
-Copy /usr/share/edk2.git/ovmf\-x64/OVMF_VARS\-pure\-efi.fd to /usr/share/OVMF/OVMF_VARS.fd
-.UNINDENT
+to create UEFI images on BIOS systems using OVMF firmware and qemu.
+.sp
+Install the lorax\-lmc\-virt package, this will install qemu and the OVMF
+firmware files.
 .sp
 Now you can run livemedia\-creator with \fB\-\-virt\-uefi\fP to boot and install using UEFI:
 .INDENT 0.0
@@ -1084,13 +1080,12 @@ part /boot/efi \-\-fstype="efi" \-\-size=500
 .UNINDENT
 .UNINDENT
 .sp
+Or use \fBreqpart\fP in the kickstart and Anaconda will create the required partitions.
+.sp
 \fBNOTE:\fP
 .INDENT 0.0
 .INDENT 3.5
-When using the resulting image with the current version of OVMF (edk2.git\-ovmf\-x64\-0\-20151103.b1295.ge5cffca)
-it will not boot automatically because there is a problem with the fallback path.
-You can boot it by entering the UEFI shell and running EFI/fedora/shim.efi and
-then using efibootmgr to setup the correct boot entry.
+The \-\-virt\-uefi method is currently only supported on the x86_64 architecture.
 .UNINDENT
 .UNINDENT
 .SH DEBUGGING PROBLEMS

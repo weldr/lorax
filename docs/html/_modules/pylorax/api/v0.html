@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.v0 &mdash; Lorax 30.7 documentation</title>
+  <title>pylorax.api.v0 &mdash; Lorax 31.1 documentation</title>
   
 
   
@@ -17,32 +17,34 @@
   
 
   
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
-
-  
-  <script src="../../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -56,7 +58,7 @@
             
             
               <div class="version">
-                30.7
+                31.1
               </div>
             
           
@@ -357,7 +359,8 @@
 
 <span class="sd">  Delete a blueprint. The blueprint is deleted from the branch, and will no longer</span>
 <span class="sd">  be listed by the `list` route. A blueprint can be undeleted using the `undo` route</span>
-<span class="sd">  to revert to a previous commit.</span>
+<span class="sd">  to revert to a previous commit. This will also delete the workspace copy of the</span>
+<span class="sd">  blueprint.</span>
 
 <span class="sd">  The response will be a status response with `status` set to true, or an</span>
 <span class="sd">  error response with it set to false and an error message included.</span>
@@ -846,7 +849,9 @@
 <span class="sd">^^^^^^^^^^^^^^^^^^^^^^</span>
 
 <span class="sd">  Start a compose. The content type should be &#39;application/json&#39; and the body of the POST</span>
-<span class="sd">  should look like this::</span>
+<span class="sd">  should look like this</span>
+<span class="sd">  </span>
+<span class="sd">  Example::</span>
 
 <span class="sd">      {</span>
 <span class="sd">        &quot;blueprint_name&quot;: &quot;http-server&quot;,</span>
@@ -856,8 +861,10 @@
 
 <span class="sd">  Pass it the name of the blueprint, the type of output (from &#39;/api/v0/compose/types&#39;), and the</span>
 <span class="sd">  blueprint branch to use. &#39;branch&#39; is optional and will default to master. It will create a new</span>
-<span class="sd">  build and add it to the queue. It returns the build uuid and a status if it succeeds::</span>
+<span class="sd">  build and add it to the queue. It returns the build uuid and a status if it succeeds</span>
 
+<span class="sd">  Example::</span>
+<span class="sd">  </span>
 <span class="sd">      {</span>
 <span class="sd">        &quot;build_id&quot;: &quot;e6fa6db4-9c81-4b70-870f-a697ca405cdf&quot;,</span>
 <span class="sd">        &quot;status&quot;: true</span>
@@ -867,6 +874,8 @@
 <span class="sd">^^^^^^^^^^^^^^^^^^^^^^^</span>
 
 <span class="sd">  Returns the list of supported output types that are valid for use with &#39;POST /api/v0/compose&#39;</span>
+
+<span class="sd">  Example::</span>
 
 <span class="sd">      {</span>
 <span class="sd">        &quot;types&quot;: [</span>
@@ -1156,7 +1165,7 @@
 <span class="kn">from</span> <span class="nn">pylorax.api.queue</span> <span class="k">import</span> <span class="n">uuid_tar</span><span class="p">,</span> <span class="n">uuid_image</span><span class="p">,</span> <span class="n">uuid_cancel</span><span class="p">,</span> <span class="n">uuid_log</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="k">import</span> <span class="n">RecipeError</span><span class="p">,</span> <span class="n">list_branch_files</span><span class="p">,</span> <span class="n">read_recipe_commit</span><span class="p">,</span> <span class="n">recipe_filename</span><span class="p">,</span> <span class="n">list_commits</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="k">import</span> <span class="n">recipe_from_dict</span><span class="p">,</span> <span class="n">recipe_from_toml</span><span class="p">,</span> <span class="n">commit_recipe</span><span class="p">,</span> <span class="n">delete_recipe</span><span class="p">,</span> <span class="n">revert_recipe</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="k">import</span> <span class="n">tag_recipe_commit</span><span class="p">,</span> <span class="n">recipe_diff</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="k">import</span> <span class="n">tag_recipe_commit</span><span class="p">,</span> <span class="n">recipe_diff</span><span class="p">,</span> <span class="n">RecipeFileError</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.regexes</span> <span class="k">import</span> <span class="n">VALID_API_STRING</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.workspace</span> <span class="k">import</span> <span class="n">workspace_read</span><span class="p">,</span> <span class="n">workspace_write</span><span class="p">,</span> <span class="n">workspace_delete</span>
 
@@ -1177,12 +1186,21 @@
     <span class="k">return</span> <span class="n">iterable</span><span class="p">[</span><span class="n">offset</span><span class="p">:][:</span><span class="n">limit</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="blueprint_exists"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.v0.blueprint_exists">[docs]</a><span class="k">def</span> <span class="nf">blueprint_exists</span><span class="p">(</span><span class="n">api</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">blueprint_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return True if the blueprint exists</span>
+
+<span class="sd">    :param api: flask object</span>
+<span class="sd">    :type api: Flask</span>
+<span class="sd">    :param branch: Branch name</span>
+<span class="sd">    :type branch: str</span>
+<span class="sd">    :param recipe_name: Recipe name to read</span>
+<span class="sd">    :type recipe_name: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
             <span class="n">read_recipe_commit</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">blueprint_name</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="kc">True</span>
-    <span class="k">except</span> <span class="n">RecipeError</span><span class="p">:</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">RecipeError</span><span class="p">,</span> <span class="n">RecipeFileError</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="v0_api"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.v0.v0_api">[docs]</a><span class="k">def</span> <span class="nf">v0_api</span><span class="p">(</span><span class="n">api</span><span class="p">):</span>
@@ -1241,6 +1259,10 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
                     <span class="n">git_blueprint</span> <span class="o">=</span> <span class="n">read_recipe_commit</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">blueprint_name</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">RecipeFileError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="c1"># Adding an exception would be redundant, skip it</span>
+                <span class="n">git_blueprint</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;(v0_blueprints_info) </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">git_blueprint</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">exceptions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
@@ -1299,20 +1321,19 @@
         <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">blueprint_name</span> <span class="ow">in</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">blueprint_names</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]:</span>
             <span class="n">filename</span> <span class="o">=</span> <span class="n">recipe_filename</span><span class="p">(</span><span class="n">blueprint_name</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">blueprint_exists</span><span class="p">(</span><span class="n">api</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">blueprint_name</span><span class="p">):</span>
-                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">UNKNOWN_BLUEPRINT</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;Unknown blueprint name: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">blueprint_name</span><span class="p">})</span>
-                <span class="k">continue</span>
-
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
                     <span class="n">commits</span> <span class="o">=</span> <span class="n">list_commits</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-                    <span class="n">limited_commits</span> <span class="o">=</span> <span class="n">take_limits</span><span class="p">(</span><span class="n">list_commits</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span> <span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">BLUEPRINTS_ERROR</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">blueprint_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))})</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;(v0_blueprints_changes) </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">blueprints</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="n">blueprint_name</span><span class="p">,</span> <span class="s2">&quot;changes&quot;</span><span class="p">:</span><span class="n">limited_commits</span><span class="p">,</span> <span class="s2">&quot;total&quot;</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">commits</span><span class="p">)})</span>
+                <span class="k">if</span> <span class="n">commits</span><span class="p">:</span>
+                    <span class="n">limited_commits</span> <span class="o">=</span> <span class="n">take_limits</span><span class="p">(</span><span class="n">commits</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+                    <span class="n">blueprints</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="n">blueprint_name</span><span class="p">,</span> <span class="s2">&quot;changes&quot;</span><span class="p">:</span><span class="n">limited_commits</span><span class="p">,</span> <span class="s2">&quot;total&quot;</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">commits</span><span class="p">)})</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># no commits means there is no blueprint in the branch</span>
+                    <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">UNKNOWN_BLUEPRINT</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">blueprint_name</span><span class="p">})</span>
 
         <span class="n">blueprints</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">blueprints</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
 
@@ -1362,6 +1383,7 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="n">workspace_delete</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">blueprint_name</span><span class="p">)</span>
                 <span class="n">delete_recipe</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">blueprint_name</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;(v0_blueprints_delete) </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
@@ -1460,6 +1482,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
                 <span class="n">tag_recipe_commit</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">blueprint_name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">RecipeFileError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;(v0_blueprints_tag) </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">UNKNOWN_BLUEPRINT</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}]),</span> <span class="mi">400</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;(v0_blueprints_tag) </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
             <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">BLUEPRINTS_ERROR</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}]),</span> <span class="mi">400</span>
@@ -1483,6 +1508,9 @@
         <span class="n">branch</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;branch&quot;</span><span class="p">,</span> <span class="s2">&quot;master&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">VALID_API_STRING</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">branch</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">INVALID_CHARS</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid characters in branch argument&quot;</span><span class="p">}]),</span> <span class="mi">400</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">blueprint_exists</span><span class="p">(</span><span class="n">api</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">blueprint_name</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">UNKNOWN_BLUEPRINT</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;Unknown blueprint name: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">blueprint_name</span><span class="p">}])</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">from_commit</span> <span class="o">==</span> <span class="s2">&quot;NEWEST&quot;</span><span class="p">:</span>
@@ -1550,6 +1578,9 @@
                 <span class="k">try</span><span class="p">:</span>
                     <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
                         <span class="n">blueprint</span> <span class="o">=</span> <span class="n">read_recipe_commit</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">blueprint_name</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">RecipeFileError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="c1"># adding an error here would be redundant, skip it</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;(v0_blueprints_freeze) </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">BLUEPRINTS_ERROR</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">blueprint_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))})</span>
                     <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;(v0_blueprints_freeze) </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
@@ -1610,6 +1641,9 @@
                 <span class="k">try</span><span class="p">:</span>
                     <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
                         <span class="n">blueprint</span> <span class="o">=</span> <span class="n">read_recipe_commit</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">blueprint_name</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">RecipeFileError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="c1"># adding an error here would be redundant, skip it</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;(v0_blueprints_depsolve) </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">BLUEPRINTS_ERROR</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">blueprint_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))})</span>
                     <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;(v0_blueprints_depsolve) </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
@@ -1942,6 +1976,9 @@
         <span class="k">if</span> <span class="n">VALID_API_STRING</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">blueprint_name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">INVALID_CHARS</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid characters in API path&quot;</span><span class="p">})</span>
 
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">blueprint_exists</span><span class="p">(</span><span class="n">api</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">blueprint_name</span><span class="p">):</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">UNKNOWN_BLUEPRINT</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;Unknown blueprint name: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">blueprint_name</span><span class="p">})</span>
+
         <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="n">errors</span><span class="p">),</span> <span class="mi">400</span>
 
@@ -2234,35 +2271,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../../',
-              VERSION:'30.7',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

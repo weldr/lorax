@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LORAX-COMPOSER" "1" "Nov 13, 2018" "30.7" "Lorax"
+.TH "LORAX-COMPOSER" "1" "Mar 27, 2019" "31.1" "Lorax"
 .SH NAME
 lorax-composer \- Lorax Composer Documentation
 .
@@ -128,6 +128,7 @@ usage: lorax\-composer [\-h] [\-\-socket SOCKET] [\-\-user USER] [\-\-group GROU
                       [\-\-log LOG] [\-\-mockfiles MOCKFILES]
                       [\-\-sharedir SHAREDIR] [\-V] [\-c CONFIG]
                       [\-\-releasever STRING] [\-\-tmp TMP] [\-\-proxy PROXY]
+                      [\-\-no\-system\-repos]
                       BLUEPRINTS
 .ft P
 .fi
@@ -150,7 +151,7 @@ Default: "/run/weldr/api.socket"
 .B\-\-user
 User to use for reduced permissions
 .sp
-Default: "weldr"
+Default: "root"
 .TP
 .B\-\-group
 Group to set ownership of the socket to
@@ -190,6 +191,11 @@ Default: "/var/tmp"
 .TP
 .B\-\-proxy
 Set proxy for DNF, overrides configuration file setting.
+.TP
+.B\-\-no\-system\-repos
+Do not copy over system repos from /etc/yum.repos.d/ at startup
+.sp
+Default: False
 .UNINDENT
 .SH HOW IT WORKS
 .sp
@@ -283,6 +289,23 @@ hostname = "baseimage"
 .fi
 .UNINDENT
 .UNINDENT
+.SS [customizations.kernel]
+.sp
+This allows you to append arguments to the bootloader\(aqs kernel commandline. This will not have any
+effect on \fBtar\fP or \fBext4\-filesystem\fP images since they do not include a bootloader.
+.sp
+For example:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+[customizations.kernel]
+append = "nosmt=force"
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
 .SS [[customizations.sshkey]]
 .sp
 Set an existing user\(aqs ssh key in the final image:
@@ -355,6 +378,58 @@ gid = 1130
 .fi
 .UNINDENT
 .UNINDENT
+.SS [[repos.git]]
+.sp
+The \fB[[repos.git]]\fP entries are used to add files from a \fIgit repository<https://git\-scm.com/>\fP
+repository to the created image. The repository is cloned, the specified \fBref\fP is checked out
+and an rpm is created to install the files to a \fBdestination\fP path. The rpm includes a summary
+with the details of the repository and reference used to create it. The rpm is also included in the
+image build metadata.
+.sp
+To create an rpm named \fBserver\-config\-1.0\-1.noarch.rpm\fP you would add this to your blueprint:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+[[repos.git]]
+rpmname="server\-config"
+rpmversion="1.0"
+rpmrelease="1"
+summary="Setup files for server deployment"
+repo="PATH OF GIT REPO TO CLONE"
+ref="v1.0"
+destination="/opt/server/"
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+rpmname: Name of the rpm to create, also used as the prefix name in the tar archive
+.IP \(bu 2
+rpmversion: Version of the rpm, eg. "1.0.0"
+.IP \(bu 2
+rpmrelease: Release of the rpm, eg. "1"
+.IP \(bu 2
+summary: Summary string for the rpm
+.IP \(bu 2
+repo: URL of the get repo to clone and create the archive from
+.IP \(bu 2
+ref: Git reference to check out. eg. origin/branch\-name, git tag, or git commit hash
+.IP \(bu 2
+destination: Path to install the / of the git repo at when installing the rpm
+.UNINDENT
+.sp
+An rpm will be created with the contents of the git repository referenced, with the files
+being installed under \fB/opt/server/\fP in this case.
+.sp
+\fBref\fP can be any valid git reference for use with \fBgit archive\fP\&. eg. to use the head
+of a branch set it to \fBorigin/branch\-name\fP, a tag name, or a commit hash.
+.sp
+Note that the repository is cloned in full each time a build is started, so pointing to a
+repository with a large amount of history may take a while to clone and use a significant
+amount of disk space. The clone is temporary and is removed once the rpm is created.
 .SH ADDING OUTPUT TYPES
 .sp
 \fBlivemedia\-creator\fP supports a large number of output types, and only some of

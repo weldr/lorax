@@ -181,6 +181,18 @@ The ``[[customizations]]`` section can be used to configure the hostname of the 
     hostname = "baseimage"
 
 
+[customizations.kernel]
+***********************
+
+This allows you to append arguments to the bootloader's kernel commandline. This will not have any
+effect on ``tar`` or ``ext4-filesystem`` images since they do not include a bootloader.
+
+For example::
+
+    [customizations.kernel]
+    append = "nosmt=force"
+
+
 [[customizations.sshkey]]
 *************************
 
@@ -230,6 +242,45 @@ Add a group to the image. ``name`` is required and ``gid`` is optional::
     [[customizations.group]]
     name = "widget"
     gid = 1130
+
+
+[[repos.git]]
+~~~~~~~~~~~~~
+
+The ``[[repos.git]]`` entries are used to add files from a `git repository<https://git-scm.com/>`
+repository to the created image. The repository is cloned, the specified ``ref`` is checked out
+and an rpm is created to install the files to a ``destination`` path. The rpm includes a summary
+with the details of the repository and reference used to create it. The rpm is also included in the
+image build metadata.
+
+To create an rpm named ``server-config-1.0-1.noarch.rpm`` you would add this to your blueprint::
+
+    [[repos.git]]
+    rpmname="server-config"
+    rpmversion="1.0"
+    rpmrelease="1"
+    summary="Setup files for server deployment"
+    repo="PATH OF GIT REPO TO CLONE"
+    ref="v1.0"
+    destination="/opt/server/"
+
+* rpmname: Name of the rpm to create, also used as the prefix name in the tar archive
+* rpmversion: Version of the rpm, eg. "1.0.0"
+* rpmrelease: Release of the rpm, eg. "1"
+* summary: Summary string for the rpm
+* repo: URL of the get repo to clone and create the archive from
+* ref: Git reference to check out. eg. origin/branch-name, git tag, or git commit hash
+* destination: Path to install the / of the git repo at when installing the rpm
+
+An rpm will be created with the contents of the git repository referenced, with the files
+being installed under ``/opt/server/`` in this case.
+
+``ref`` can be any valid git reference for use with ``git archive``. eg. to use the head
+of a branch set it to ``origin/branch-name``, a tag name, or a commit hash.
+
+Note that the repository is cloned in full each time a build is started, so pointing to a
+repository with a large amount of history may take a while to clone and use a significant
+amount of disk space. The clone is temporary and is removed once the rpm is created.
 
 
 Adding Output Types

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.imgutils &mdash; Lorax 30.7 documentation</title>
+  <title>pylorax.imgutils &mdash; Lorax 31.1 documentation</title>
   
 
   
@@ -17,32 +17,34 @@
   
 
   
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
-
-  
-  <script src="../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -56,7 +58,7 @@
             
             
               <div class="version">
-                30.7
+                31.1
               </div>
             
           
@@ -267,20 +269,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">fssize</span> <span class="o">=</span> <span class="kc">None</span>       <span class="c1"># Let mkext4img figure out the needed size</span>
 
-    <span class="n">mkext4img</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">fssize</span><span class="p">)</span>
-    <span class="c1"># Reset selinux context on new rootfs</span>
-    <span class="k">with</span> <span class="n">LoopDev</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span> <span class="k">as</span> <span class="n">loopdev</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">Mount</span><span class="p">(</span><span class="n">loopdev</span><span class="p">)</span> <span class="k">as</span> <span class="n">mnt</span><span class="p">:</span>
-            <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span> <span class="s2">&quot;setfiles&quot;</span><span class="p">,</span> <span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="s2">&quot;/proc&quot;</span><span class="p">,</span> <span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="s2">&quot;/sys&quot;</span><span class="p">,</span> <span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="s2">&quot;/dev&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="s2">&quot;/install&quot;</span><span class="p">,</span> <span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="s2">&quot;/ostree&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;/etc/selinux/targeted/contexts/files/file_contexts&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">]</span>
-            <span class="n">root</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">mnt</span><span class="p">,</span> <span class="n">sysroot</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">))</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">runcmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
-            <span class="k">except</span> <span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;setfiles exited with a non-zero return code (</span><span class="si">%d</span><span class="s2">) which may &quot;</span>
-                             <span class="s2">&quot;be caused by running without SELinux in Permissive mode.&quot;</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">returncode</span><span class="p">)</span>
-                <span class="k">raise</span></div>
+    <span class="n">mkext4img</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">fssize</span><span class="p">)</span></div>
 
 
 <span class="c1">######## Utility functions ###############################################</span>
@@ -626,7 +615,7 @@
     <span class="sd">&#39;&#39;&#39;Generic filesystem image creation function.</span>
 <span class="sd">    fstype should be a filesystem type - &quot;mkfs.${fstype}&quot; must exist.</span>
 <span class="sd">    graft should be a dict: {&quot;some/path/in/image&quot;: &quot;local/file/or/dir&quot;};</span>
-<span class="sd">      if the path ends with a &#39;/&#39; it&#39;s assumed to be a directory.</span>
+<span class="sd">    if the path ends with a &#39;/&#39; it&#39;s assumed to be a directory.</span>
 <span class="sd">    Will raise CalledProcessError if something goes wrong.&#39;&#39;&#39;</span>
     <span class="n">mkfsargs</span> <span class="o">=</span> <span class="n">mkfsargs</span> <span class="ow">or</span> <span class="p">[]</span>
     <span class="n">graft</span> <span class="o">=</span> <span class="n">graft</span> <span class="ow">or</span> <span class="p">{}</span>
@@ -645,6 +634,9 @@
             <span class="k">if</span> <span class="n">rootdir</span><span class="p">:</span>
                 <span class="n">copytree</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="n">mnt</span><span class="p">,</span> <span class="n">preserve</span><span class="p">)</span>
             <span class="n">do_grafts</span><span class="p">(</span><span class="n">graft</span><span class="p">,</span> <span class="n">mnt</span><span class="p">,</span> <span class="n">preserve</span><span class="p">)</span>
+
+            <span class="c1"># Save information about filesystem usage</span>
+            <span class="n">execWithRedirect</span><span class="p">(</span><span class="s2">&quot;df&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">mnt</span><span class="p">])</span>
 
     <span class="c1"># Make absolutely sure that the data has been written</span>
     <span class="n">runcmd</span><span class="p">([</span><span class="s2">&quot;sync&quot;</span><span class="p">])</span></div>
@@ -736,35 +728,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../',
-              VERSION:'30.7',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

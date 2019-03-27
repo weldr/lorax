@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.installer &mdash; Lorax 30.7 documentation</title>
+  <title>pylorax.installer &mdash; Lorax 31.1 documentation</title>
   
 
   
@@ -17,32 +17,34 @@
   
 
   
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
-
-  
-  <script src="../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -56,7 +58,7 @@
             
             
               <div class="version">
-                30.7
+                31.1
               </div>
             
           
@@ -296,13 +298,12 @@
                  <span class="s2">&quot;i386&quot;</span><span class="p">:</span>    <span class="s2">&quot;qemu-system-i386&quot;</span><span class="p">,</span>
                  <span class="s2">&quot;arm&quot;</span><span class="p">:</span>     <span class="s2">&quot;qemu-system-arm&quot;</span><span class="p">,</span>
                  <span class="s2">&quot;aarch64&quot;</span><span class="p">:</span> <span class="s2">&quot;qemu-system-aarch64&quot;</span><span class="p">,</span>
-                 <span class="s2">&quot;ppc&quot;</span><span class="p">:</span>     <span class="s2">&quot;qemu-system-ppc&quot;</span><span class="p">,</span>
-                 <span class="s2">&quot;ppc64&quot;</span><span class="p">:</span>   <span class="s2">&quot;qemu-system-ppc64&quot;</span>
+                 <span class="s2">&quot;ppc64le&quot;</span><span class="p">:</span> <span class="s2">&quot;qemu-system-ppc64&quot;</span>
                 <span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="n">iso</span><span class="p">,</span> <span class="n">ks_paths</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">img_size</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span>
                  <span class="n">kernel_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">memory</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">vcpus</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vnc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">log_check</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">virtio_host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">virtio_port</span><span class="o">=</span><span class="mi">6080</span><span class="p">,</span>
+                 <span class="n">cancel_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">virtio_host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">virtio_port</span><span class="o">=</span><span class="mi">6080</span><span class="p">,</span>
                  <span class="n">image_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">boot_uefi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ovmf_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start the installation</span>
@@ -318,8 +319,8 @@
 <span class="sd">        :param int vcpus: Number of virtual cpus</span>
 <span class="sd">        :param str vnc: Arguments to pass to qemu -display</span>
 <span class="sd">        :param str arch: Optional architecture to use in the virt</span>
-<span class="sd">        :param log_check: Method that returns True if the installation fails</span>
-<span class="sd">        :type log_check: method</span>
+<span class="sd">        :param cancel_func: Function that returns True if the installation fails</span>
+<span class="sd">        :type cancel_func: function</span>
 <span class="sd">        :param str virtio_host: Hostname to connect virtio log to</span>
 <span class="sd">        :param int virtio_port: Port to connect virtio log to</span>
 <span class="sd">        :param str image_type: Type of qemu-img disk to create, or None.</span>
@@ -331,13 +332,17 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;/usr/bin/&quot;</span><span class="o">+</span><span class="n">qemu_cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
             <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> does not exist, cannot run qemu&quot;</span> <span class="o">%</span> <span class="n">qemu_cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
-        <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-nodefconfig&quot;</span><span class="p">]</span>
+        <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-no-user-config&quot;</span><span class="p">]</span>
         <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">memory</span><span class="p">)]</span>
         <span class="k">if</span> <span class="n">vcpus</span><span class="p">:</span>
             <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-smp&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">vcpus</span><span class="p">)]</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">no_kvm</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;/dev/kvm&quot;</span><span class="p">):</span>
-            <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;--machine&quot;</span><span class="p">,</span> <span class="s2">&quot;accel=kvm&quot;</span><span class="p">]</span>
+            <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-machine&quot;</span><span class="p">,</span> <span class="s2">&quot;accel=kvm&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">boot_uefi</span><span class="p">:</span>
+            <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-machine&quot;</span><span class="p">,</span> <span class="s2">&quot;q35,smm=on&quot;</span><span class="p">]</span>
+            <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-global&quot;</span><span class="p">,</span> <span class="s2">&quot;driver=cfi.pflash01,property=secure,value=on&quot;</span><span class="p">]</span>
 
         <span class="c1"># Copy the initrd from the iso, create a cpio archive of the kickstart files</span>
         <span class="c1"># and append it to the temporary initrd.</span>
@@ -379,7 +384,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">display_args</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">vnc</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;qemu </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">display_args</span><span class="p">)</span>
-        <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-nographic&quot;</span><span class="p">,</span> <span class="s2">&quot;-display&quot;</span><span class="p">,</span> <span class="n">display_args</span> <span class="p">]</span>
+        <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-nographic&quot;</span><span class="p">,</span> <span class="s2">&quot;-monitor&quot;</span><span class="p">,</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;-serial&quot;</span><span class="p">,</span> <span class="s2">&quot;null&quot;</span><span class="p">,</span> <span class="s2">&quot;-display&quot;</span><span class="p">,</span> <span class="n">display_args</span> <span class="p">]</span>
 
         <span class="c1"># Setup the virtio log port</span>
         <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-device&quot;</span><span class="p">,</span> <span class="s2">&quot;virtio-serial-pci,id=virtio-serial0&quot;</span><span class="p">]</span>
@@ -387,17 +392,20 @@
                                 <span class="s2">&quot;,id=channel0,name=org.fedoraproject.anaconda.log.0&quot;</span><span class="p">]</span>
         <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-chardev&quot;</span><span class="p">,</span> <span class="s2">&quot;socket,id=charchannel0,host=</span><span class="si">%s</span><span class="s2">,port=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">virtio_host</span><span class="p">,</span> <span class="n">virtio_port</span><span class="p">)]</span>
 
-        <span class="c1"># PAss through rng from host</span>
+        <span class="c1"># Pass through rng from host</span>
         <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">with_rng</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
             <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-object&quot;</span><span class="p">,</span> <span class="s2">&quot;rng-random,id=virtio-rng0,filename=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">opts</span><span class="o">.</span><span class="n">with_rng</span><span class="p">]</span>
-            <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-device&quot;</span><span class="p">,</span> <span class="s2">&quot;virtio-rng-pci,rng=virtio-rng0,id=rng0,bus=pci.0,addr=0x9&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">boot_uefi</span><span class="p">:</span>
+                <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-device&quot;</span><span class="p">,</span> <span class="s2">&quot;virtio-rng-pci,rng=virtio-rng0,id=rng0,bus=pcie.0,addr=0x9&quot;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-device&quot;</span><span class="p">,</span> <span class="s2">&quot;virtio-rng-pci,rng=virtio-rng0,id=rng0,bus=pci.0,addr=0x9&quot;</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">boot_uefi</span> <span class="ow">and</span> <span class="n">ovmf_path</span><span class="p">:</span>
-            <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-drive&quot;</span><span class="p">,</span> <span class="s2">&quot;file=</span><span class="si">%s</span><span class="s2">/OVMF_CODE.fd,if=pflash,format=raw,unit=0,readonly=on&quot;</span> <span class="o">%</span> <span class="n">ovmf_path</span><span class="p">]</span>
+            <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-drive&quot;</span><span class="p">,</span> <span class="s2">&quot;file=</span><span class="si">%s</span><span class="s2">/OVMF_CODE.secboot.fd,if=pflash,format=raw,unit=0,readonly=on&quot;</span> <span class="o">%</span> <span class="n">ovmf_path</span><span class="p">]</span>
 
-            <span class="c1"># Make a copy of the OVMF_VARS.fd for this run</span>
+            <span class="c1"># Make a copy of the OVMF_VARS.secboot.fd for this run</span>
             <span class="n">ovmf_vars</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mktemp</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;lmc-OVMF_VARS-&quot;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.fd&quot;</span><span class="p">)</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">ovmf_path</span><span class="p">,</span> <span class="s2">&quot;/OVMF_VARS.fd&quot;</span><span class="p">),</span> <span class="n">ovmf_vars</span><span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">ovmf_path</span><span class="p">,</span> <span class="s2">&quot;/OVMF_VARS.secboot.fd&quot;</span><span class="p">),</span> <span class="n">ovmf_vars</span><span class="p">)</span>
 
             <span class="n">qemu_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-drive&quot;</span><span class="p">,</span> <span class="s2">&quot;file=</span><span class="si">%s</span><span class="s2">,if=pflash,format=raw,unit=1&quot;</span> <span class="o">%</span> <span class="n">ovmf_vars</span><span class="p">]</span>
 
@@ -405,7 +413,7 @@
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">qemu_cmd</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">execWithRedirect</span><span class="p">(</span><span class="n">qemu_cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">qemu_cmd</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">reset_lang</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">raise_err</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                             <span class="n">callback</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="ow">not</span> <span class="n">log_check</span><span class="p">())</span>
+                             <span class="n">callback</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="ow">not</span> <span class="p">(</span><span class="n">cancel_func</span> <span class="ow">and</span> <span class="n">cancel_func</span><span class="p">()))</span>
         <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Running qemu failed:&quot;</span><span class="p">)</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;cmd: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">cmd</span><span class="p">))</span>
@@ -419,27 +427,30 @@
             <span class="k">if</span> <span class="n">boot_uefi</span> <span class="ow">and</span> <span class="n">ovmf_path</span><span class="p">:</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">ovmf_vars</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">log_check</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">cancel_func</span> <span class="ow">and</span> <span class="n">cancel_func</span><span class="p">():</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Installation error detected. See logfile for details.&quot;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s2">&quot;QEMUInstall failed&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Installation finished without errors.&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="novirt_log_check"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.novirt_log_check">[docs]</a><span class="k">def</span> <span class="nf">novirt_log_check</span><span class="p">(</span><span class="n">log_check</span><span class="p">,</span> <span class="n">proc</span><span class="p">):</span>
+<div class="viewcode-block" id="novirt_cancel_check"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.novirt_cancel_check">[docs]</a><span class="k">def</span> <span class="nf">novirt_cancel_check</span><span class="p">(</span><span class="n">cancel_funcs</span><span class="p">,</span> <span class="n">proc</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check to see if there has been an error in the logs</span>
 
-<span class="sd">    :param log_check: method to call to check for an error in the logs</span>
+<span class="sd">    :param cancel_funcs: list of functions to call, True from any one cancels the build</span>
+<span class="sd">    :type cancel_funcs: list</span>
 <span class="sd">    :param proc: Popen object for the anaconda process</span>
+<span class="sd">    :type proc: subprocess.Popen</span>
 <span class="sd">    :returns: True if the process has been terminated</span>
 
-<span class="sd">    The log_check method should return a True if an error has been detected.</span>
+<span class="sd">    The cancel_funcs functions should return a True if an error has been detected.</span>
 <span class="sd">    When an error is detected the process is terminated and this returns True</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">log_check</span><span class="p">():</span>
-        <span class="n">proc</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
-        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">cancel_funcs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">f</span><span class="p">():</span>
+            <span class="n">proc</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">True</span>
     <span class="k">return</span> <span class="kc">False</span></div>
 
 
@@ -470,7 +481,7 @@
     <span class="k">return</span> <span class="n">rc</span></div>
 
 
-<div class="viewcode-block" id="novirt_install"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.novirt_install">[docs]</a><span class="k">def</span> <span class="nf">novirt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">):</span>
+<div class="viewcode-block" id="novirt_install"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.novirt_install">[docs]</a><span class="k">def</span> <span class="nf">novirt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Use Anaconda to install to a disk image</span>
 
@@ -478,6 +489,8 @@
 <span class="sd">    :type opts: argparse options</span>
 <span class="sd">    :param str disk_img: The full path to the disk image to be created</span>
 <span class="sd">    :param int disk_size: The size of the disk_img in MiB</span>
+<span class="sd">    :param cancel_func: Function that returns True to cancel build</span>
+<span class="sd">    :type cancel_func: function</span>
 
 <span class="sd">    This method runs anaconda to create the image and then based on the opts</span>
 <span class="sd">    passed creates a qemu disk image or tarfile.</span>
@@ -527,18 +540,22 @@
 
     <span class="n">log_monitor</span> <span class="o">=</span> <span class="n">LogMonitor</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
     <span class="n">args</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;--remotelog&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">log_monitor</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">port</span><span class="p">)]</span>
+    <span class="n">cancel_funcs</span> <span class="o">=</span> <span class="p">[</span><span class="n">log_monitor</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">log_check</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">cancel_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">cancel_funcs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cancel_func</span><span class="p">)</span>
 
     <span class="c1"># Make sure anaconda has the right product and release</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Running anaconda.&quot;</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">execReadlines</span><span class="p">(</span><span class="s2">&quot;anaconda&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">reset_lang</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">unshare_args</span> <span class="o">=</span> <span class="p">[</span> <span class="s2">&quot;--pid&quot;</span><span class="p">,</span> <span class="s2">&quot;--kill-child&quot;</span><span class="p">,</span> <span class="s2">&quot;--mount&quot;</span><span class="p">,</span> <span class="s2">&quot;--propagation&quot;</span><span class="p">,</span> <span class="s2">&quot;unchanged&quot;</span><span class="p">,</span> <span class="s2">&quot;anaconda&quot;</span> <span class="p">]</span> <span class="o">+</span> <span class="n">args</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">execReadlines</span><span class="p">(</span><span class="s2">&quot;unshare&quot;</span><span class="p">,</span> <span class="n">unshare_args</span><span class="p">,</span> <span class="n">reset_lang</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                   <span class="n">env_add</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;ANACONDA_PRODUCTNAME&quot;</span><span class="p">:</span> <span class="n">opts</span><span class="o">.</span><span class="n">project</span><span class="p">,</span>
                                            <span class="s2">&quot;ANACONDA_PRODUCTVERSION&quot;</span><span class="p">:</span> <span class="n">opts</span><span class="o">.</span><span class="n">releasever</span><span class="p">},</span>
-                                  <span class="n">callback</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="ow">not</span> <span class="n">novirt_log_check</span><span class="p">(</span><span class="n">log_monitor</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">log_check</span><span class="p">,</span> <span class="n">p</span><span class="p">)):</span>
+                                  <span class="n">callback</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="ow">not</span> <span class="n">novirt_cancel_check</span><span class="p">(</span><span class="n">cancel_funcs</span><span class="p">,</span> <span class="n">p</span><span class="p">)):</span>
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
         <span class="c1"># Make sure the new filesystem is correctly labeled</span>
-        <span class="n">setfiles_args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="s2">&quot;/proc&quot;</span><span class="p">,</span> <span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="s2">&quot;/sys&quot;</span><span class="p">,</span> <span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="s2">&quot;/dev&quot;</span><span class="p">,</span>
+        <span class="n">setfiles_args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="s2">&quot;/proc&quot;</span><span class="p">,</span> <span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="s2">&quot;/sys&quot;</span><span class="p">,</span>
                          <span class="s2">&quot;/etc/selinux/targeted/contexts/files/file_contexts&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="s2">&quot;--dirinstall&quot;</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
@@ -580,10 +597,14 @@
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_iso</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_fsimage</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_pxe_live</span><span class="p">:</span>
             <span class="n">dm_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">disk_img</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">dm_path</span> <span class="o">=</span> <span class="s2">&quot;/dev/mapper/&quot;</span><span class="o">+</span><span class="n">dm_name</span>
-            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dm_path</span><span class="p">):</span>
-                <span class="n">dm_detach</span><span class="p">(</span><span class="n">dm_path</span><span class="p">)</span>
-                <span class="n">loop_detach</span><span class="p">(</span><span class="n">get_loop_name</span><span class="p">(</span><span class="n">disk_img</span><span class="p">))</span>
+
+            <span class="c1"># Remove device-mapper for partitions and disk</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Removing device-mapper setup on </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dm_name</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;/dev/mapper/&quot;</span><span class="o">+</span><span class="n">dm_name</span><span class="o">+</span><span class="s2">&quot;*&quot;</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                <span class="n">dm_detach</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Removing loop device for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">)</span>
+            <span class="n">loop_detach</span><span class="p">(</span><span class="s2">&quot;/dev/&quot;</span><span class="o">+</span><span class="n">get_loop_name</span><span class="p">(</span><span class="n">disk_img</span><span class="p">))</span>
 
     <span class="c1"># qemu disk image is used by bare qcow2 images and by Vagrant</span>
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">image_type</span><span class="p">:</span>
@@ -649,7 +670,7 @@
         <span class="n">execWithRedirect</span><span class="p">(</span><span class="s2">&quot;fallocate&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;--dig-holes&quot;</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">],</span> <span class="n">raise_err</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="virt_install"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.virt_install">[docs]</a><span class="k">def</span> <span class="nf">virt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">install_log</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">):</span>
+<div class="viewcode-block" id="virt_install"><a class="viewcode-back" href="../../pylorax.html#pylorax.installer.virt_install">[docs]</a><span class="k">def</span> <span class="nf">virt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">install_log</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Use qemu to install to a disk image</span>
 
@@ -658,6 +679,8 @@
 <span class="sd">    :param str install_log: The path to write the log from qemu</span>
 <span class="sd">    :param str disk_img: The full path to the disk image to be created</span>
 <span class="sd">    :param int disk_size: The size of the disk_img in MiB</span>
+<span class="sd">    :param cancel_func: Function that returns True to cancel build</span>
+<span class="sd">    :type cancel_func: function</span>
 
 <span class="sd">    This uses qemu with a boot.iso and a kickstart to create a disk</span>
 <span class="sd">    image and then optionally, based on the opts passed, creates tarfile.</span>
@@ -668,6 +691,9 @@
         <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s2">&quot;ISO is missing stage2, cannot continue&quot;</span><span class="p">)</span>
 
     <span class="n">log_monitor</span> <span class="o">=</span> <span class="n">LogMonitor</span><span class="p">(</span><span class="n">install_log</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+    <span class="n">cancel_funcs</span> <span class="o">=</span> <span class="p">[</span><span class="n">log_monitor</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">log_check</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">cancel_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">cancel_funcs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cancel_func</span><span class="p">)</span>
 
     <span class="n">kernel_args</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">kernel_args</span><span class="p">:</span>
@@ -692,7 +718,7 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">QEMUInstall</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">iso_mount</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">ks</span><span class="p">,</span> <span class="n">diskimg_path</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span>
                     <span class="n">kernel_args</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">ram</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">vcpus</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">vnc</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">arch</span><span class="p">,</span>
-                    <span class="n">log_check</span> <span class="o">=</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">log_check</span><span class="p">,</span>
+                    <span class="n">cancel_func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="p">:</span> <span class="nb">any</span><span class="p">(</span><span class="n">f</span><span class="p">()</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">cancel_funcs</span><span class="p">),</span>
                     <span class="n">virtio_host</span> <span class="o">=</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
                     <span class="n">virtio_port</span> <span class="o">=</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
                     <span class="n">image_type</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">image_type</span><span class="p">,</span> <span class="n">boot_uefi</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">virt_uefi</span><span class="p">,</span>
@@ -711,6 +737,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;virt_install failed on line: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">log_monitor</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">error_line</span>
         <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">cancel_func</span> <span class="ow">and</span> <span class="n">cancel_func</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="n">InstallError</span><span class="p">(</span><span class="s2">&quot;virt_install canceled by cancel_func&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_fsimage</span><span class="p">:</span>
         <span class="n">mkfsimage_from_disk</span><span class="p">(</span><span class="n">diskimg_path</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">fs_label</span><span class="p">)</span>
@@ -796,35 +824,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../',
-              VERSION:'30.7',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>
