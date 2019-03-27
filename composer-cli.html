@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>composer-cli &mdash; Lorax 30.5 documentation</title>
+  <title>composer-cli &mdash; Lorax 31.1 documentation</title>
   
 
   
@@ -17,35 +17,36 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Product and Updates Images" href="product-images.html" />
     <link rel="prev" title="lorax-composer" href="lorax-composer.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -59,7 +60,7 @@
             
             
               <div class="version">
-                30.5
+                31.1
               </div>
             
           
@@ -169,21 +170,19 @@
             
   <div class="section" id="composer-cli">
 <h1>composer-cli<a class="headerlink" href="#composer-cli" title="Permalink to this headline">¶</a></h1>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Authors:</th><td class="field-body">Brian C. Lane &lt;<a class="reference external" href="mailto:bcl&#37;&#52;&#48;redhat&#46;com">bcl<span>&#64;</span>redhat<span>&#46;</span>com</a>&gt;</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Authors</dt>
+<dd class="field-odd"><p>Brian C. Lane &lt;<a class="reference external" href="mailto:bcl&#37;&#52;&#48;redhat&#46;com">bcl<span>&#64;</span>redhat<span>&#46;</span>com</a>&gt;</p>
+</dd>
+</dl>
 <p><code class="docutils literal notranslate"><span class="pre">composer-cli</span></code> is used to interact with the <code class="docutils literal notranslate"><span class="pre">lorax-composer</span></code> API server, managing blueprints, exploring available packages, and building new images.</p>
 <p>It requires <a class="reference external" href="lorax-composer.html">lorax-composer</a> to be installed on the
 local system, and the user running it needs to be a member of the <code class="docutils literal notranslate"><span class="pre">weldr</span></code>
 group. They do not need to be root, but all of the <a class="reference external" href="lorax-composer.html#security">security precautions</a> apply.</p>
 <div class="section" id="composer-cli-cmdline-arguments">
 <h2>composer-cli cmdline arguments<a class="headerlink" href="#composer-cli-cmdline-arguments" title="Permalink to this headline">¶</a></h2>
-<p>Lorax Composer commandline tool</p>
+<p><p>Lorax Composer commandline tool</p>
+</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">composer</span><span class="o">-</span><span class="n">cli</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">j</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SOCKET</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span> <span class="n">LOG</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">APIVER</span><span class="p">]</span>
                     <span class="p">[</span><span class="o">--</span><span class="n">test</span> <span class="n">TESTMODE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span>
                     <span class="o">...</span>
@@ -191,124 +190,110 @@ group. They do not need to be root, but all of the <a class="reference external"
 </div>
 <div class="section" id="Positional Arguments">
 <h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
-<table class="docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group">
-<kbd>args</kbd></td>
-<td></td></tr>
-</tbody>
-</table>
+<dl class="option-list">
+<dt><kbd>args</kbd></dt>
+<dd></dd>
+</dl>
 </div>
 <div class="section" id="Named Arguments">
 <h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
-<table class="docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group">
-<kbd>-j, --json</kbd></td>
-<td><p class="first">Output the raw JSON response instead of the normal output.</p>
-<p class="last">Default: False</p>
-</td></tr>
-<tr><td class="option-group">
-<kbd>-s, --socket</kbd></td>
-<td><p class="first">Path to the socket file to listen on</p>
-<p class="last">Default: “/run/weldr/api.socket”</p>
-</td></tr>
-<tr><td class="option-group">
-<kbd>--log</kbd></td>
-<td>Path to logfile (./composer-cli.log)</td></tr>
-<tr><td class="option-group">
-<kbd>-a, --api</kbd></td>
-<td><p class="first">API Version to use</p>
-<p class="last">Default: “0”</p>
-</td></tr>
-<tr><td class="option-group">
-<kbd>--test</kbd></td>
-<td><p class="first">Pass test mode to compose. 1=Mock compose with fail. 2=Mock compose with finished.</p>
-<p class="last">Default: 0</p>
-</td></tr>
-<tr><td class="option-group">
-<kbd>-V</kbd></td>
-<td><p class="first">show program’s version number and exit</p>
-<p class="last">Default: False</p>
-</td></tr>
-</tbody>
-</table>
+<dl class="option-list">
+<dt><kbd>-j, --json</kbd></dt>
+<dd><p>Output the raw JSON response instead of the normal output.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>-s, --socket</kbd></dt>
+<dd><p>Path to the socket file to listen on</p>
+<p>Default: &quot;/run/weldr/api.socket&quot;</p>
+</dd>
+<dt><kbd>--log</kbd></dt>
+<dd><p>Path to logfile (./composer-cli.log)</p>
+</dd>
+<dt><kbd>-a, --api</kbd></dt>
+<dd><p>API Version to use</p>
+<p>Default: &quot;0&quot;</p>
+</dd>
+<dt><kbd>--test</kbd></dt>
+<dd><p>Pass test mode to compose. 1=Mock compose with fail. 2=Mock compose with finished.</p>
+<p>Default: 0</p>
+</dd>
+<dt><kbd>-V</kbd></dt>
+<dd><p>show program's version number and exit</p>
+<p>Default: False</p>
+</dd>
+</dl>
 </div>
-<p><dl class="docutils">
-<dt>compose start &lt;BLUEPRINT&gt; &lt;TYPE&gt;</dt>
-<dd>Start a compose using the selected blueprint and output type.</dd>
-<dt>compose types</dt>
-<dd>List the supported output types.</dd>
-<dt>compose status</dt>
-<dd>List the status of all running and finished composes.</dd>
-<dt>compose list [waiting|running|finished|failed]</dt>
-<dd>List basic information about composes.</dd>
-<dt>compose log &lt;UUID&gt; [&lt;SIZE&gt;]</dt>
-<dd>Show the last SIZE kB of the compose log.</dd>
-<dt>compose cancel &lt;UUID&gt;</dt>
-<dd>Cancel a running compose and delete any intermediate results.</dd>
-<dt>compose delete &lt;UUID,…&gt;</dt>
-<dd>Delete the listed compose results.</dd>
-<dt>compose info &lt;UUID&gt;</dt>
-<dd>Show detailed information on the compose.</dd>
-<dt>compose metadata &lt;UUID&gt;</dt>
-<dd>Download the metadata use to create the compose to &lt;uuid&gt;-metadata.tar</dd>
-<dt>compose logs &lt;UUID&gt;</dt>
-<dd>Download the compose logs to &lt;uuid&gt;-logs.tar</dd>
-<dt>compose results &lt;UUID&gt;</dt>
-<dd>Download all of the compose results; metadata, logs, and image to &lt;uuid&gt;.tar</dd>
-<dt>compose image &lt;UUID&gt;</dt>
-<dd>Download the output image from the compose. Filename depends on the type.</dd>
-<dt>blueprints list</dt>
-<dd>List the names of the available blueprints.</dd>
-<dt>blueprints show &lt;BLUEPRINT,…&gt;</dt>
-<dd>Display the blueprint in TOML format.</dd>
-<dt>blueprints changes &lt;BLUEPRINT,…&gt;</dt>
-<dd>Display the changes for each blueprint.</dd>
-<dt>blueprints diff &lt;BLUEPRINT&gt; &lt;FROM-COMMIT&gt; &lt;TO-COMMIT&gt;</dt>
-<dd>Display the differences between 2 versions of a blueprint.
+<p><dl class="simple">
+<dt>compose start &lt;BLUEPRINT&gt; &lt;TYPE&gt;</dt><dd><p>Start a compose using the selected blueprint and output type.</p>
+</dd>
+<dt>compose types</dt><dd><p>List the supported output types.</p>
+</dd>
+<dt>compose status</dt><dd><p>List the status of all running and finished composes.</p>
+</dd>
+<dt>compose list [waiting|running|finished|failed]</dt><dd><p>List basic information about composes.</p>
+</dd>
+<dt>compose log &lt;UUID&gt; [&lt;SIZE&gt;]</dt><dd><p>Show the last SIZE kB of the compose log.</p>
+</dd>
+<dt>compose cancel &lt;UUID&gt;</dt><dd><p>Cancel a running compose and delete any intermediate results.</p>
+</dd>
+<dt>compose delete &lt;UUID,...&gt;</dt><dd><p>Delete the listed compose results.</p>
+</dd>
+<dt>compose info &lt;UUID&gt;</dt><dd><p>Show detailed information on the compose.</p>
+</dd>
+<dt>compose metadata &lt;UUID&gt;</dt><dd><p>Download the metadata use to create the compose to &lt;uuid&gt;-metadata.tar</p>
+</dd>
+<dt>compose logs &lt;UUID&gt;</dt><dd><p>Download the compose logs to &lt;uuid&gt;-logs.tar</p>
+</dd>
+<dt>compose results &lt;UUID&gt;</dt><dd><p>Download all of the compose results; metadata, logs, and image to &lt;uuid&gt;.tar</p>
+</dd>
+<dt>compose image &lt;UUID&gt;</dt><dd><p>Download the output image from the compose. Filename depends on the type.</p>
+</dd>
+<dt>blueprints list</dt><dd><p>List the names of the available blueprints.</p>
+</dd>
+<dt>blueprints show &lt;BLUEPRINT,...&gt;</dt><dd><p>Display the blueprint in TOML format.</p>
+</dd>
+<dt>blueprints changes &lt;BLUEPRINT,...&gt;</dt><dd><p>Display the changes for each blueprint.</p>
+</dd>
+<dt>blueprints diff &lt;BLUEPRINT&gt; &lt;FROM-COMMIT&gt; &lt;TO-COMMIT&gt;</dt><dd><p>Display the differences between 2 versions of a blueprint.
 FROM-COMMIT can be a commit hash or NEWEST
-TO-COMMIT  can be a commit hash, NEWEST, or WORKSPACE</dd>
-<dt>blueprints save &lt;BLUEPRINT,…&gt;</dt>
-<dd>Save the blueprint to a file, &lt;BLUEPRINT&gt;.toml</dd>
-<dt>blueprints delete &lt;BLUEPRINT&gt;</dt>
-<dd>Delete a blueprint from the server</dd>
-<dt>blueprints depsolve &lt;BLUEPRINT,…&gt;</dt>
-<dd>Display the packages needed to install the blueprint.</dd>
-<dt>blueprints push &lt;BLUEPRINT&gt;</dt>
-<dd>Push a blueprint TOML file to the server.</dd>
-<dt>blueprints freeze &lt;BLUEPRINT,…&gt;</dt>
-<dd>Display the frozen blueprint’s modules and packages.</dd>
-<dt>blueprints freeze show &lt;BLUEPRINT,…&gt;</dt>
-<dd>Display the frozen blueprint in TOML format.</dd>
-<dt>blueprints freeze save &lt;BLUEPRINT,…&gt;</dt>
-<dd>Save the frozen blueprint to a file, &lt;blueprint-name&gt;.frozen.toml.</dd>
-<dt>blueprints tag &lt;BLUEPRINT&gt;</dt>
-<dd>Tag the most recent blueprint commit as a release.</dd>
-<dt>blueprints undo &lt;BLUEPRINT&gt; &lt;COMMIT&gt;</dt>
-<dd>Undo changes to a blueprint by reverting to the selected commit.</dd>
-<dt>blueprints workspace &lt;BLUEPRINT&gt;</dt>
-<dd>Push the blueprint TOML to the temporary workspace storage.</dd>
-<dt>modules list</dt>
-<dd>List the available modules.</dd>
-<dt>projects list</dt>
-<dd>List the available projects.</dd>
-<dt>projects info &lt;PROJECT,…&gt;</dt>
-<dd>Show details about the listed projects.</dd>
-<dt>sources list</dt>
-<dd>List the available sources</dd>
-<dt>sources info &lt;SOURCE-NAME,…&gt;</dt>
-<dd>Details about the source.</dd>
-<dt>sources add &lt;SOURCE.TOML&gt;</dt>
-<dd>Add a package source to the server.</dd>
-<dt>sources change &lt;SOURCE.TOML&gt;</dt>
-<dd>Change an existing source</dd>
-<dt>sources delete &lt;SOURCE-NAME&gt;</dt>
-<dd>Delete a package source.</dd>
+TO-COMMIT  can be a commit hash, NEWEST, or WORKSPACE</p>
+</dd>
+<dt>blueprints save &lt;BLUEPRINT,...&gt;</dt><dd><p>Save the blueprint to a file, &lt;BLUEPRINT&gt;.toml</p>
+</dd>
+<dt>blueprints delete &lt;BLUEPRINT&gt;</dt><dd><p>Delete a blueprint from the server</p>
+</dd>
+<dt>blueprints depsolve &lt;BLUEPRINT,...&gt;</dt><dd><p>Display the packages needed to install the blueprint.</p>
+</dd>
+<dt>blueprints push &lt;BLUEPRINT&gt;</dt><dd><p>Push a blueprint TOML file to the server.</p>
+</dd>
+<dt>blueprints freeze &lt;BLUEPRINT,...&gt;</dt><dd><p>Display the frozen blueprint's modules and packages.</p>
+</dd>
+<dt>blueprints freeze show &lt;BLUEPRINT,...&gt;</dt><dd><p>Display the frozen blueprint in TOML format.</p>
+</dd>
+<dt>blueprints freeze save &lt;BLUEPRINT,...&gt;</dt><dd><p>Save the frozen blueprint to a file, &lt;blueprint-name&gt;.frozen.toml.</p>
+</dd>
+<dt>blueprints tag &lt;BLUEPRINT&gt;</dt><dd><p>Tag the most recent blueprint commit as a release.</p>
+</dd>
+<dt>blueprints undo &lt;BLUEPRINT&gt; &lt;COMMIT&gt;</dt><dd><p>Undo changes to a blueprint by reverting to the selected commit.</p>
+</dd>
+<dt>blueprints workspace &lt;BLUEPRINT&gt;</dt><dd><p>Push the blueprint TOML to the temporary workspace storage.</p>
+</dd>
+<dt>modules list</dt><dd><p>List the available modules.</p>
+</dd>
+<dt>projects list</dt><dd><p>List the available projects.</p>
+</dd>
+<dt>projects info &lt;PROJECT,...&gt;</dt><dd><p>Show details about the listed projects.</p>
+</dd>
+<dt>sources list</dt><dd><p>List the available sources</p>
+</dd>
+<dt>sources info &lt;SOURCE-NAME,...&gt;</dt><dd><p>Details about the source.</p>
+</dd>
+<dt>sources add &lt;SOURCE.TOML&gt;</dt><dd><p>Add a package source to the server.</p>
+</dd>
+<dt>sources change &lt;SOURCE.TOML&gt;</dt><dd><p>Change an existing source</p>
+</dd>
+<dt>sources delete &lt;SOURCE-NAME&gt;</dt><dd><p>Delete a package source.</p>
+</dd>
 </dl>
 <p>status show                         Show API server status.</p>
 </p>
@@ -330,8 +315,8 @@ saved by viewing the changelog - <code class="docutils literal notranslate"><spa
 <span class="pre">compose</span> <span class="pre">start</span> <span class="pre">http-server</span> <span class="pre">qcow2</span></code>. It will print a UUID that you can use to
 keep track of the build. You can also cancel the build if needed.</p>
 <p>The available types of images is displayed by <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">compose</span> <span class="pre">types</span></code>.
-Currently this consists of: ami, ext4-filesystem, live-iso, partitioned-disk,
-qcow2, tar, vhd, vmdk</p>
+Currently this consists of: ami, ext4-filesystem, live-iso, openstack,
+partitioned-disk, qcow2, tar, vhd, vmdk</p>
 </div>
 <div class="section" id="monitor-the-build-status">
 <h2>Monitor the build status<a class="headerlink" href="#monitor-the-build-status" title="Permalink to this headline">¶</a></h2>
@@ -362,7 +347,7 @@ save the qcow2 image as <code class="docutils literal notranslate"><span class="
         <a href="product-images.html" class="btn btn-neutral float-right" title="Product and Updates Images" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="lorax-composer.html" class="btn btn-neutral" title="lorax-composer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="lorax-composer.html" class="btn btn-neutral float-left" title="lorax-composer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -371,7 +356,7 @@ save the qcow2 image as <code class="docutils literal notranslate"><span class="
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Red Hat, Inc..
+        &copy; Copyright 2018, Red Hat, Inc.
 
     </p>
   </div>
@@ -388,35 +373,16 @@ save the qcow2 image as <code class="docutils literal notranslate"><span class="
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'30.5',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

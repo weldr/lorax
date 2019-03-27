@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.creator &mdash; Lorax 30.5 documentation</title>
+  <title>pylorax.creator &mdash; Lorax 31.1 documentation</title>
   
 
   
@@ -17,33 +17,34 @@
   
 
   
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
-
-  
-  <script src="../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -57,7 +58,7 @@
             
             
               <div class="version">
-                30.5
+                31.1
               </div>
             
           
@@ -312,7 +313,7 @@
 
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Calculating SHA256 checksum of </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">)</span>
     <span class="n">sha256</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">()</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">disk_img</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">disk_img</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
@@ -512,7 +513,8 @@
     <span class="n">tb</span> <span class="o">=</span> <span class="n">TreeBuilder</span><span class="p">(</span><span class="n">product</span><span class="o">=</span><span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="n">arch</span><span class="p">,</span> <span class="n">domacboot</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">domacboot</span><span class="p">,</span>
                      <span class="n">inroot</span><span class="o">=</span><span class="n">mount_dir</span><span class="p">,</span> <span class="n">outroot</span><span class="o">=</span><span class="n">work_dir</span><span class="p">,</span>
                      <span class="n">runtime</span><span class="o">=</span><span class="n">RUNTIME</span><span class="p">,</span> <span class="n">isolabel</span><span class="o">=</span><span class="n">isolabel</span><span class="p">,</span>
-                     <span class="n">templatedir</span><span class="o">=</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">lorax_templates</span><span class="p">,</span><span class="s2">&quot;live/&quot;</span><span class="p">))</span>
+                     <span class="n">templatedir</span><span class="o">=</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">lorax_templates</span><span class="p">,</span><span class="s2">&quot;live/&quot;</span><span class="p">),</span>
+                     <span class="n">extra_boot_args</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">extra_boot_args</span><span class="p">)</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Rebuilding initrds&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">dracut_args</span><span class="p">:</span>
         <span class="n">dracut_args</span> <span class="o">=</span> <span class="n">DRACUT_DEFAULT</span>
@@ -602,6 +604,8 @@
 <span class="sd">    :param str ks: Path to the kickstart to use for the installation</span>
 <span class="sd">    :returns: Disk size in MiB</span>
 <span class="sd">    :rtype: int</span>
+
+<span class="sd">    Also takes into account the use of reqpart or reqpart --add-boot</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Disk size for a filesystem image should only be the size of /</span>
     <span class="c1"># to prevent surprises when using the same kickstart for different installations.</span>
@@ -610,16 +614,29 @@
         <span class="n">disk_size</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">size</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">unique_partitions</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">mountpoint</span> <span class="o">==</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">disk_size</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">size</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">unique_partitions</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+        <span class="c1"># reqpart can add 1M, 2M, 200M based on platform. Add 500M to be sure</span>
+        <span class="k">if</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">reqpart</span><span class="o">.</span><span class="n">seen</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Adding 500M for reqpart&quot;</span><span class="p">)</span>
+            <span class="n">disk_size</span> <span class="o">+=</span> <span class="mi">500</span>
+
+            <span class="c1"># It can also request adding /boot which is 1G</span>
+            <span class="k">if</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">reqpart</span><span class="o">.</span><span class="n">addBoot</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Adding 1024M for reqpart --addboot&quot;</span><span class="p">)</span>
+                <span class="n">disk_size</span> <span class="o">+=</span> <span class="mi">1024</span>
+
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using disk size of </span><span class="si">%s</span><span class="s2">MiB&quot;</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">disk_size</span></div>
 
-<div class="viewcode-block" id="make_image"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.make_image">[docs]</a><span class="k">def</span> <span class="nf">make_image</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">):</span>
+<div class="viewcode-block" id="make_image"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.make_image">[docs]</a><span class="k">def</span> <span class="nf">make_image</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Install to a disk image</span>
 
 <span class="sd">    :param opts: options passed to livemedia-creator</span>
 <span class="sd">    :type opts: argparse options</span>
 <span class="sd">    :param str ks: Path to the kickstart to use for the installation</span>
+<span class="sd">    :param cancel_func: Function that returns True to cancel build</span>
+<span class="sd">    :type cancel_func: function</span>
 <span class="sd">    :returns: Path of the image created</span>
 <span class="sd">    :rtype: str</span>
 
@@ -633,12 +650,12 @@
     <span class="n">disk_size</span> <span class="o">=</span> <span class="n">calculate_disk_size</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">no_virt</span><span class="p">:</span>
-            <span class="n">novirt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">)</span>
+            <span class="n">novirt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="n">cancel_func</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">install_log</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">logfile</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;/virt-install.log&quot;</span>
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;install_log = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">install_log</span><span class="p">)</span>
 
-            <span class="n">virt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">install_log</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">)</span>
+            <span class="n">virt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">install_log</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="n">cancel_func</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">InstallError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Install failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">keep_image</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">disk_img</span><span class="p">):</span>
@@ -733,11 +750,54 @@
 
     <span class="k">return</span> <span class="n">work_dir</span></div>
 
-<div class="viewcode-block" id="run_creator"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.run_creator">[docs]</a><span class="k">def</span> <span class="nf">run_creator</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">callback_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="check_kickstart"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.check_kickstart">[docs]</a><span class="k">def</span> <span class="nf">check_kickstart</span><span class="p">(</span><span class="n">ks</span><span class="p">,</span> <span class="n">opts</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check the parsed kickstart object for errors</span>
+
+<span class="sd">    :param ks: Parsed Kickstart object</span>
+<span class="sd">    :type ks: pykickstart.parser.KickstartParser</span>
+<span class="sd">    :param opts: Commandline options to control the process</span>
+<span class="sd">    :type opts: Either a DataHolder or ArgumentParser</span>
+<span class="sd">    :returns: List of error strings or empty list</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">no_virt</span> <span class="ow">and</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;url&quot;</span><span class="p">,</span> <span class="s2">&quot;nfs&quot;</span><span class="p">)</span> \
+       <span class="ow">and</span> <span class="ow">not</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">ostreesetup</span><span class="o">.</span><span class="n">seen</span><span class="p">:</span>
+        <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Only url, nfs and ostreesetup install methods are currently supported.&quot;</span>
+                      <span class="s2">&quot;Please fix your kickstart file.&quot;</span> <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">seen</span> <span class="ow">and</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">method</span> <span class="o">!=</span> <span class="s2">&quot;url&quot;</span><span class="p">:</span>
+        <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;repo can only be used with the url install method. Add url to your &quot;</span>
+                      <span class="s2">&quot;kickstart file.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">method</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;url&quot;</span><span class="p">,</span> <span class="s2">&quot;nfs&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">seen</span><span class="p">:</span>
+        <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;The kickstart must activate networking if &quot;</span>
+                      <span class="s2">&quot;the url or nfs install method is used.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">displaymode</span><span class="o">.</span><span class="n">displayMode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;The kickstart must not set a display mode (text, cmdline, &quot;</span>
+                      <span class="s2">&quot;graphical), this will interfere with livemedia-creator.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_fsimage</span> <span class="ow">or</span> <span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">make_pxe_live</span> <span class="ow">and</span> <span class="n">opts</span><span class="o">.</span><span class="n">no_virt</span><span class="p">):</span>
+        <span class="c1"># Make sure the kickstart isn&#39;t using autopart and only has a / mountpoint</span>
+        <span class="n">part_ok</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">partition</span><span class="o">.</span><span class="n">partitions</span>
+                             <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">mountpoint</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;swap&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">part_ok</span> <span class="ow">or</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">autopart</span><span class="o">.</span><span class="n">seen</span><span class="p">:</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Filesystem images must use a single / part, not autopart or &quot;</span>
+                          <span class="s2">&quot;multiple partitions. swap is allowed but not used.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">no_virt</span> <span class="ow">and</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">reboot</span><span class="o">.</span><span class="n">action</span> <span class="o">!=</span> <span class="n">KS_SHUTDOWN</span><span class="p">:</span>
+        <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;The kickstart must include shutdown when using virt installation.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">errors</span></div>
+
+<div class="viewcode-block" id="run_creator"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.run_creator">[docs]</a><span class="k">def</span> <span class="nf">run_creator</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Run the image creator process</span>
 
 <span class="sd">    :param opts: Commandline options to control the process</span>
 <span class="sd">    :type opts: Either a DataHolder or ArgumentParser</span>
+<span class="sd">    :param cancel_func: Function that returns True to cancel build</span>
+<span class="sd">    :type cancel_func: function</span>
 <span class="sd">    :returns: The result directory and the disk image path.</span>
 <span class="sd">    :rtype: Tuple of str</span>
 
@@ -765,38 +825,15 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">ks</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Image creation requires a kickstart file&quot;</span><span class="p">)</span>
 
-        <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">no_virt</span> <span class="ow">and</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;url&quot;</span><span class="p">,</span> <span class="s2">&quot;nfs&quot;</span><span class="p">)</span> \
-           <span class="ow">and</span> <span class="ow">not</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">ostreesetup</span><span class="o">.</span><span class="n">seen</span><span class="p">:</span>
-            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Only url, nfs and ostreesetup install methods are currently supported.&quot;</span>
-                          <span class="s2">&quot;Please fix your kickstart file.&quot;</span> <span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">method</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;url&quot;</span><span class="p">,</span> <span class="s2">&quot;nfs&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">seen</span><span class="p">:</span>
-            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;The kickstart must activate networking if &quot;</span>
-                          <span class="s2">&quot;the url or nfs install method is used.&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">displaymode</span><span class="o">.</span><span class="n">displayMode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;The kickstart must not set a display mode (text, cmdline, &quot;</span>
-                          <span class="s2">&quot;graphical), this will interfere with livemedia-creator.&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_fsimage</span> <span class="ow">or</span> <span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">make_pxe_live</span> <span class="ow">and</span> <span class="n">opts</span><span class="o">.</span><span class="n">no_virt</span><span class="p">):</span>
-            <span class="c1"># Make sure the kickstart isn&#39;t using autopart and only has a / mountpoint</span>
-            <span class="n">part_ok</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">partition</span><span class="o">.</span><span class="n">partitions</span>
-                                 <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">mountpoint</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;swap&quot;</span><span class="p">])</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">part_ok</span> <span class="ow">or</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">autopart</span><span class="o">.</span><span class="n">seen</span><span class="p">:</span>
-                <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Filesystem images must use a single / part, not autopart or &quot;</span>
-                              <span class="s2">&quot;multiple partitions. swap is allowed but not used.&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">no_virt</span> <span class="ow">and</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">reboot</span><span class="o">.</span><span class="n">action</span> <span class="o">!=</span> <span class="n">KS_SHUTDOWN</span><span class="p">:</span>
-            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;The kickstart must include shutdown when using virt installation.&quot;</span><span class="p">)</span>
-
+        <span class="c1"># Check the kickstart for problems</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="n">check_kickstart</span><span class="p">(</span><span class="n">ks</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
             <span class="nb">list</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">errors</span><span class="p">))</span>
 
         <span class="c1"># Make the image. Output of this is either a partitioned disk image or a fsimage</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">disk_img</span> <span class="o">=</span> <span class="n">make_image</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">)</span>
+            <span class="n">disk_img</span> <span class="o">=</span> <span class="n">make_image</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="n">cancel_func</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">InstallError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;ERROR: Image creation failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Image creation failed: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
@@ -815,6 +852,9 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">make_squashfs</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">work_dir</span><span class="p">):</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;squashfs.img creation failed&quot;</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;squashfs.img creation failed&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">cancel_func</span> <span class="ow">and</span> <span class="n">cancel_func</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;ISO creation canceled&quot;</span><span class="p">)</span>
 
             <span class="k">with</span> <span class="n">Mount</span><span class="p">(</span><span class="n">disk_img</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="s2">&quot;loop&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mount_dir</span><span class="p">:</span>
                 <span class="n">result_dir</span> <span class="o">=</span> <span class="n">make_livecd</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">mount_dir</span><span class="p">,</span> <span class="n">work_dir</span><span class="p">)</span>
@@ -881,7 +921,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Red Hat, Inc..
+        &copy; Copyright 2018, Red Hat, Inc.
 
     </p>
   </div>
@@ -898,35 +938,16 @@
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'30.5',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

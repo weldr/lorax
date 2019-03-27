@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.queue &mdash; Lorax 30.5 documentation</title>
+  <title>pylorax.api.queue &mdash; Lorax 31.1 documentation</title>
   
 
   
@@ -17,33 +17,34 @@
   
 
   
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
-
-  
-  <script src="../../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -57,7 +58,7 @@
             
             
               <div class="version">
-                30.5
+                31.1
               </div>
             
           
@@ -193,6 +194,47 @@
 <span class="kn">from</span> <span class="nn">pylorax.creator</span> <span class="k">import</span> <span class="n">run_creator</span>
 <span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span>
 
+<div class="viewcode-block" id="check_queues"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.check_queues">[docs]</a><span class="k">def</span> <span class="nf">check_queues</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check to make sure the new and run queue symlinks are correct</span>
+
+<span class="sd">    :param cfg: Configuration settings</span>
+<span class="sd">    :type cfg: DataHolder</span>
+
+<span class="sd">    Also check all of the existing results and make sure any with WAITING</span>
+<span class="sd">    set in STATUS have a symlink in queue/new/</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Remove broken symlinks from the new and run queues</span>
+    <span class="n">queue_symlinks</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">composer_dir</span><span class="p">,</span> <span class="s2">&quot;queue/new/*&quot;</span><span class="p">))</span> <span class="o">+</span> \
+                     <span class="n">glob</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">composer_dir</span><span class="p">,</span> <span class="s2">&quot;queue/run/*&quot;</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">queue_symlinks</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">link</span><span class="p">)):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Removing broken symlink </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">link</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">link</span><span class="p">)</span>
+
+    <span class="c1"># Write FAILED to the STATUS of any run queue symlinks and remove them</span>
+    <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">composer_dir</span><span class="p">,</span> <span class="s2">&quot;queue/run/*&quot;</span><span class="p">)):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Setting build </span><span class="si">%s</span><span class="s2"> to FAILED, and removing symlink from queue/run/&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">link</span><span class="p">))</span>
+        <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">link</span><span class="p">,</span> <span class="s2">&quot;STATUS&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;FAILED</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">link</span><span class="p">)</span>
+
+    <span class="c1"># Check results STATUS messages</span>
+    <span class="c1"># - If STATUS is missing, set it to FAILED</span>
+    <span class="c1"># - RUNNING should be changed to FAILED</span>
+    <span class="c1"># - WAITING should have a symlink in the new queue</span>
+    <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">composer_dir</span><span class="p">,</span> <span class="s2">&quot;results/*&quot;</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">link</span><span class="p">,</span> <span class="s2">&quot;STATUS&quot;</span><span class="p">)):</span>
+            <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">link</span><span class="p">,</span> <span class="s2">&quot;STATUS&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;FAILED</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="n">status</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">link</span><span class="p">,</span> <span class="s2">&quot;STATUS&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;RUNNING&quot;</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Setting build </span><span class="si">%s</span><span class="s2"> to FAILED&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">link</span><span class="p">))</span>
+            <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">link</span><span class="p">,</span> <span class="s2">&quot;STATUS&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;FAILED</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;WAITING&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">composer_dir</span><span class="p">,</span> <span class="s2">&quot;queue/new/&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">link</span><span class="p">))):</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating missing symlink to new build </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">link</span><span class="p">))</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">link</span><span class="p">,</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">composer_dir</span><span class="p">,</span> <span class="s2">&quot;queue/new/&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">link</span><span class="p">)))</span></div>
+
 <div class="viewcode-block" id="start_queue_monitor"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.start_queue_monitor">[docs]</a><span class="k">def</span> <span class="nf">start_queue_monitor</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uid</span><span class="p">,</span> <span class="n">gid</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Start the queue monitor as a mp process</span>
 
@@ -226,7 +268,7 @@
 <span class="sd">    compose is finished) the symlink will be moved into ./queue/run/ and a STATUS file</span>
 <span class="sd">    will be created in the results directory.</span>
 
-<span class="sd">    STATUS can contain one of: RUNNING, FINISHED, FAILED</span>
+<span class="sd">    STATUS can contain one of: WAITING, RUNNING, FINISHED, FAILED</span>
 
 <span class="sd">    If the system is restarted while a compose is running it will move any old symlinks</span>
 <span class="sd">    from ./queue/run/ to ./queue/new/ and rerun them.</span>
@@ -235,13 +277,7 @@
         <span class="sd">&quot;&quot;&quot;Sort the queue entries by their mtime, not their names&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">composer_dir</span><span class="p">,</span> <span class="s2">&quot;queue/new&quot;</span><span class="p">,</span> <span class="n">uuid</span><span class="p">))</span><span class="o">.</span><span class="n">st_mtime</span>
 
-    <span class="c1"># Move any symlinks in the run queue back to the new queue</span>
-    <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">composer_dir</span><span class="p">,</span> <span class="s2">&quot;queue/run&quot;</span><span class="p">)):</span>
-        <span class="n">src</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">composer_dir</span><span class="p">,</span> <span class="s2">&quot;queue/run&quot;</span><span class="p">,</span> <span class="n">link</span><span class="p">)</span>
-        <span class="n">dst</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">composer_dir</span><span class="p">,</span> <span class="s2">&quot;queue/new&quot;</span><span class="p">,</span> <span class="n">link</span><span class="p">)</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Moved unfinished compose </span><span class="si">%s</span><span class="s2"> back to new state&quot;</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span>
-
+    <span class="n">check_queues</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">uuids</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">composer_dir</span><span class="p">,</span> <span class="s2">&quot;queue/new&quot;</span><span class="p">)),</span> <span class="n">key</span><span class="o">=</span><span class="n">queue_sort</span><span class="p">)</span>
 
@@ -367,7 +403,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="n">install_cfg</span><span class="o">.</span><span class="n">image_name</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;TEST IMAGE&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">run_creator</span><span class="p">(</span><span class="n">install_cfg</span><span class="p">,</span> <span class="n">callback_func</span><span class="o">=</span><span class="n">cancel_build</span><span class="p">)</span>
+            <span class="n">run_creator</span><span class="p">(</span><span class="n">install_cfg</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="n">cancel_build</span><span class="p">)</span>
 
             <span class="c1"># Extract the results of the compose into results_dir and cleanup the compose directory</span>
             <span class="n">move_compose_results</span><span class="p">(</span><span class="n">install_cfg</span><span class="p">,</span> <span class="n">results_dir</span><span class="p">)</span>
@@ -550,11 +586,16 @@
 
 <span class="sd">    Only call this if the build status is WAITING or RUNNING</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cancel_path</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;lib_dir&quot;</span><span class="p">),</span> <span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="s2">&quot;CANCEL&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cancel_path</span><span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Cancel has already been requested for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
     <span class="c1"># This status can change (and probably will) while it is in the middle of doing this:</span>
     <span class="c1"># It can move from WAITING -&gt; RUNNING or it can move from RUNNING -&gt; FINISHED|FAILED</span>
 
     <span class="c1"># If it is in WAITING remove the symlink and then check to make sure it didn&#39;t show up</span>
-    <span class="c1"># in RUNNING</span>
+    <span class="c1"># in the run queue</span>
     <span class="n">queue_dir</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;lib_dir&quot;</span><span class="p">),</span> <span class="s2">&quot;queue&quot;</span><span class="p">)</span>
     <span class="n">uuid_new</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">queue_dir</span><span class="p">,</span> <span class="s2">&quot;new&quot;</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">uuid_new</span><span class="p">):</span>
@@ -565,19 +606,24 @@
             <span class="k">pass</span>
         <span class="n">uuid_run</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">queue_dir</span><span class="p">,</span> <span class="s2">&quot;run&quot;</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">uuid_run</span><span class="p">):</span>
-            <span class="c1"># Successfully removed it before the build started</span>
-            <span class="k">return</span> <span class="n">uuid_delete</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
+            <span class="c1"># Make sure the build is still in the waiting state</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">uuid_status</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">status</span><span class="p">[</span><span class="s2">&quot;queue_status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;WAITING&quot;</span><span class="p">:</span>
+                <span class="c1"># Successfully removed it before the build started</span>
+                <span class="k">return</span> <span class="n">uuid_delete</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
 
-    <span class="c1"># Tell the build to stop running</span>
-    <span class="n">cancel_path</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;lib_dir&quot;</span><span class="p">),</span> <span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="s2">&quot;CANCEL&quot;</span><span class="p">)</span>
+    <span class="c1"># At this point the build has probably started. Write to the CANCEL file.</span>
     <span class="nb">open</span><span class="p">(</span><span class="n">cancel_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="c1"># Wait for status to move to FAILED</span>
+    <span class="c1"># Wait for status to move to FAILED or FINISHED</span>
     <span class="n">started</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">status</span> <span class="o">=</span> <span class="n">uuid_status</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">status</span><span class="p">[</span><span class="s2">&quot;queue_status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;FAILED&quot;</span><span class="p">:</span>
             <span class="k">break</span>
+        <span class="k">elif</span> <span class="n">status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">status</span><span class="p">[</span><span class="s2">&quot;queue_status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;FINISHED&quot;</span><span class="p">:</span>
+            <span class="c1"># The build finished successfully, no point in deleting it now</span>
+            <span class="k">return</span> <span class="kc">False</span>
 
         <span class="c1"># Is this taking too long? Exit anyway and try to cleanup.</span>
         <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">started</span> <span class="o">+</span> <span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="mi">60</span><span class="p">):</span>
@@ -797,7 +843,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Red Hat, Inc..
+        &copy; Copyright 2018, Red Hat, Inc.
 
     </p>
   </div>
@@ -814,35 +860,16 @@
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../../',
-            VERSION:'30.5',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../../_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-  
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

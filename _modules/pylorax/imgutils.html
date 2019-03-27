@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.imgutils &mdash; Lorax 30.5 documentation</title>
+  <title>pylorax.imgutils &mdash; Lorax 31.1 documentation</title>
   
 
   
@@ -17,33 +17,34 @@
   
 
   
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
-
-  
-  <script src="../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -57,7 +58,7 @@
             
             
               <div class="version">
-                30.5
+                31.1
               </div>
             
           
@@ -157,7 +158,7 @@
   <h1>Source code for pylorax.imgutils</h1><div class="highlight"><pre>
 <span></span><span class="c1"># imgutils.py - utility functions/classes for building disk images</span>
 <span class="c1">#</span>
-<span class="c1"># Copyright (C) 2011-2015 Red Hat, Inc.</span>
+<span class="c1"># Copyright (C) 2011-2018 Red Hat, Inc.</span>
 <span class="c1">#</span>
 <span class="c1"># This program is free software; you can redistribute it and/or modify</span>
 <span class="c1"># it under the terms of the GNU General Public License as published by</span>
@@ -268,20 +269,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">fssize</span> <span class="o">=</span> <span class="kc">None</span>       <span class="c1"># Let mkext4img figure out the needed size</span>
 
-    <span class="n">mkext4img</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">fssize</span><span class="p">)</span>
-    <span class="c1"># Reset selinux context on new rootfs</span>
-    <span class="k">with</span> <span class="n">LoopDev</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span> <span class="k">as</span> <span class="n">loopdev</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">Mount</span><span class="p">(</span><span class="n">loopdev</span><span class="p">)</span> <span class="k">as</span> <span class="n">mnt</span><span class="p">:</span>
-            <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span> <span class="s2">&quot;setfiles&quot;</span><span class="p">,</span> <span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="s2">&quot;/proc&quot;</span><span class="p">,</span> <span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="s2">&quot;/sys&quot;</span><span class="p">,</span> <span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="s2">&quot;/dev&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="s2">&quot;/install&quot;</span><span class="p">,</span> <span class="s2">&quot;-e&quot;</span><span class="p">,</span> <span class="s2">&quot;/ostree&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;/etc/selinux/targeted/contexts/files/file_contexts&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">]</span>
-            <span class="n">root</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">mnt</span><span class="p">,</span> <span class="n">sysroot</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">))</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">runcmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
-            <span class="k">except</span> <span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;setfiles exited with a non-zero return code (</span><span class="si">%d</span><span class="s2">) which may &quot;</span>
-                             <span class="s2">&quot;be caused by running without SELinux in Permissive mode.&quot;</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">returncode</span><span class="p">)</span>
-                <span class="k">raise</span></div>
+    <span class="n">mkext4img</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">fssize</span><span class="p">)</span></div>
 
 
 <span class="c1">######## Utility functions ###############################################</span>
@@ -526,6 +514,31 @@
     <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">tracebk</span><span class="p">):</span>
         <span class="n">umount</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mnt</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="kpartx_disk_img"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.kpartx_disk_img">[docs]</a><span class="k">def</span> <span class="nf">kpartx_disk_img</span><span class="p">(</span><span class="n">disk_img</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Attach a disk image&#39;s partitions to /dev/loopX using kpartx</span>
+
+<span class="sd">    :param disk_img: The full path to a partitioned disk image</span>
+<span class="sd">    :type disk_img: str</span>
+<span class="sd">    :returns: list of (loopXpN, size)</span>
+<span class="sd">    :rtype: list of tuples</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Example kpartx output</span>
+    <span class="c1"># kpartx -p p -v -a /tmp/diskV2DiCW.im</span>
+    <span class="c1"># add map loop2p1 (253:2): 0 3481600 linear /dev/loop2 2048</span>
+    <span class="c1"># add map loop2p2 (253:3): 0 614400 linear /dev/loop2 3483648</span>
+    <span class="n">kpartx_output</span> <span class="o">=</span> <span class="n">runcmd_output</span><span class="p">([</span><span class="s2">&quot;kpartx&quot;</span><span class="p">,</span> <span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;-a&quot;</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">])</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">kpartx_output</span><span class="p">)</span>
+
+    <span class="c1"># list of (deviceName, sizeInBytes)</span>
+    <span class="n">loop_devices</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">kpartx_output</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+        <span class="c1"># add map loop2p3 (253:4): 0 7139328 linear /dev/loop2 528384</span>
+        <span class="c1"># 3rd element is size in 512 byte blocks</span>
+        <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;add map &quot;</span><span class="p">):</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">8</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">loop_devices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span><span class="o">*</span><span class="mi">512</span><span class="p">)</span> <span class="p">)</span>
+    <span class="k">return</span> <span class="n">loop_devices</span></div>
+
 <div class="viewcode-block" id="PartitionMount"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.PartitionMount">[docs]</a><span class="k">class</span> <span class="nc">PartitionMount</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Mount a partitioned image file using kpartx &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">mount_ok</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">submount</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -557,21 +570,8 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_ok</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mount_ok</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">mount_dir</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">mount_dir</span><span class="o">+</span><span class="s2">&quot;/etc/passwd&quot;</span><span class="p">)</span>
 
-        <span class="c1"># Example kpartx output</span>
-        <span class="c1"># kpartx -p p -v -a /tmp/diskV2DiCW.im</span>
-        <span class="c1"># add map loop2p1 (253:2): 0 3481600 linear /dev/loop2 2048</span>
-        <span class="c1"># add map loop2p2 (253:3): 0 614400 linear /dev/loop2 3483648</span>
-        <span class="n">kpartx_output</span> <span class="o">=</span> <span class="n">runcmd_output</span><span class="p">([</span><span class="s2">&quot;kpartx&quot;</span><span class="p">,</span> <span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;-a&quot;</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">disk_img</span><span class="p">])</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">kpartx_output</span><span class="p">)</span>
-
         <span class="c1"># list of (deviceName, sizeInBytes)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">loop_devices</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">kpartx_output</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
-            <span class="c1"># add map loop2p3 (253:4): 0 7139328 linear /dev/loop2 528384</span>
-            <span class="c1"># 3rd element is size in 512 byte blocks</span>
-            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;add map &quot;</span><span class="p">):</span>
-                <span class="n">fields</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">8</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">loop_devices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span><span class="o">*</span><span class="mi">512</span><span class="p">)</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loop_devices</span> <span class="o">=</span> <span class="n">kpartx_disk_img</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">disk_img</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Mount the device selected by mount_ok, if possible</span>
@@ -615,7 +615,7 @@
     <span class="sd">&#39;&#39;&#39;Generic filesystem image creation function.</span>
 <span class="sd">    fstype should be a filesystem type - &quot;mkfs.${fstype}&quot; must exist.</span>
 <span class="sd">    graft should be a dict: {&quot;some/path/in/image&quot;: &quot;local/file/or/dir&quot;};</span>
-<span class="sd">      if the path ends with a &#39;/&#39; it&#39;s assumed to be a directory.</span>
+<span class="sd">    if the path ends with a &#39;/&#39; it&#39;s assumed to be a directory.</span>
 <span class="sd">    Will raise CalledProcessError if something goes wrong.&#39;&#39;&#39;</span>
     <span class="n">mkfsargs</span> <span class="o">=</span> <span class="n">mkfsargs</span> <span class="ow">or</span> <span class="p">[]</span>
     <span class="n">graft</span> <span class="o">=</span> <span class="n">graft</span> <span class="ow">or</span> <span class="p">{}</span>
@@ -634,6 +634,9 @@
             <span class="k">if</span> <span class="n">rootdir</span><span class="p">:</span>
                 <span class="n">copytree</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="n">mnt</span><span class="p">,</span> <span class="n">preserve</span><span class="p">)</span>
             <span class="n">do_grafts</span><span class="p">(</span><span class="n">graft</span><span class="p">,</span> <span class="n">mnt</span><span class="p">,</span> <span class="n">preserve</span><span class="p">)</span>
+
+            <span class="c1"># Save information about filesystem usage</span>
+            <span class="n">execWithRedirect</span><span class="p">(</span><span class="s2">&quot;df&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">mnt</span><span class="p">])</span>
 
     <span class="c1"># Make absolutely sure that the data has been written</span>
     <span class="n">runcmd</span><span class="p">([</span><span class="s2">&quot;sync&quot;</span><span class="p">])</span></div>
@@ -708,7 +711,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Red Hat, Inc..
+        &copy; Copyright 2018, Red Hat, Inc.
 
     </p>
   </div>
@@ -725,35 +728,16 @@
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'30.5',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

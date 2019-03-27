@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.dnfbase &mdash; Lorax 30.5 documentation</title>
+  <title>pylorax.api.dnfbase &mdash; Lorax 31.1 documentation</title>
   
 
   
@@ -17,33 +17,34 @@
   
 
   
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
-
-  
-  <script src="../../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -57,7 +58,7 @@
             
             
               <div class="version">
-                30.5
+                31.1
               </div>
             
           
@@ -293,6 +294,38 @@
             <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">repo_file</span><span class="p">,</span> <span class="n">repodir</span><span class="p">)</span>
     <span class="n">dbo</span><span class="o">.</span><span class="n">read_all_repos</span><span class="p">()</span>
 
+    <span class="c1"># Remove any duplicate repo entries. These can cause problems with Anaconda, which will fail</span>
+    <span class="c1"># with space problems.</span>
+    <span class="n">repos</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">dbo</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">iter_enabled</span><span class="p">()))</span>
+    <span class="n">seen</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;baseurl&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;mirrorlist&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;metalink&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+    <span class="k">for</span> <span class="n">source_name</span> <span class="ow">in</span> <span class="n">repos</span><span class="p">:</span>
+        <span class="n">remove</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">repo</span> <span class="o">=</span> <span class="n">dbo</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">source_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">repo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;repo </span><span class="si">%s</span><span class="s2"> vanished while removing duplicates&quot;</span><span class="p">,</span> <span class="n">source_name</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">baseurl</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">baseurl</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">[</span><span class="s2">&quot;baseurl&quot;</span><span class="p">]:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Removing duplicate repo: </span><span class="si">%s</span><span class="s2"> baseurl=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">source_name</span><span class="p">,</span> <span class="n">repo</span><span class="o">.</span><span class="n">baseurl</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">remove</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">seen</span><span class="p">[</span><span class="s2">&quot;baseurl&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">repo</span><span class="o">.</span><span class="n">baseurl</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">repo</span><span class="o">.</span><span class="n">mirrorlist</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">mirrorlist</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">[</span><span class="s2">&quot;mirrorlist&quot;</span><span class="p">]:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Removing duplicate repo: </span><span class="si">%s</span><span class="s2"> mirrorlist=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">source_name</span><span class="p">,</span> <span class="n">repo</span><span class="o">.</span><span class="n">mirrorlist</span><span class="p">)</span>
+                <span class="n">remove</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">seen</span><span class="p">[</span><span class="s2">&quot;mirrorlist&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">repo</span><span class="o">.</span><span class="n">mirrorlist</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">repo</span><span class="o">.</span><span class="n">metalink</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">metalink</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">[</span><span class="s2">&quot;metalink&quot;</span><span class="p">]:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Removing duplicate repo: </span><span class="si">%s</span><span class="s2"> metalink=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">source_name</span><span class="p">,</span> <span class="n">repo</span><span class="o">.</span><span class="n">metalink</span><span class="p">)</span>
+                <span class="n">remove</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">seen</span><span class="p">[</span><span class="s2">&quot;metalink&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">repo</span><span class="o">.</span><span class="n">metalink</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">remove</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">dbo</span><span class="o">.</span><span class="n">repos</span><span class="p">[</span><span class="n">source_name</span><span class="p">]</span>
+
     <span class="c1"># Update the metadata from the enabled repos to speed up later operations</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Updating repository metadata&quot;</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
@@ -316,7 +349,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Red Hat, Inc..
+        &copy; Copyright 2018, Red Hat, Inc.
 
     </p>
   </div>
@@ -333,35 +366,16 @@
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../../',
-            VERSION:'30.5',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../../_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-  
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

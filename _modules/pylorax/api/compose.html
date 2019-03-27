@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.compose &mdash; Lorax 30.5 documentation</title>
+  <title>pylorax.api.compose &mdash; Lorax 31.1 documentation</title>
   
 
   
@@ -17,33 +17,34 @@
   
 
   
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
-
-  
-  <script src="../../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -57,7 +58,7 @@
             
             
               <div class="version">
-                30.5
+                31.1
               </div>
             
           
@@ -155,7 +156,7 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pylorax.api.compose</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Copyright (C) 2018 Red Hat, Inc.</span>
+<span></span><span class="c1"># Copyright (C) 2018-2019 Red Hat, Inc.</span>
 <span class="c1">#</span>
 <span class="c1"># This program is free software; you can redistribute it and/or modify</span>
 <span class="c1"># it under the terms of the GNU General Public License as published by</span>
@@ -192,6 +193,7 @@
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">glob</span> <span class="k">import</span> <span class="n">glob</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="k">import</span> <span class="n">StringIO</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="n">ceil</span>
 <span class="kn">import</span> <span class="nn">pytoml</span> <span class="k">as</span> <span class="nn">toml</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
@@ -201,11 +203,15 @@
 <span class="kn">from</span> <span class="nn">pykickstart.parser</span> <span class="k">import</span> <span class="n">KickstartParser</span>
 <span class="kn">from</span> <span class="nn">pykickstart.version</span> <span class="k">import</span> <span class="n">makeVersion</span>
 
+<span class="kn">from</span> <span class="nn">pylorax</span> <span class="k">import</span> <span class="n">ArchData</span><span class="p">,</span> <span class="n">find_templates</span><span class="p">,</span> <span class="n">get_buildarch</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.gitrpm</span> <span class="k">import</span> <span class="n">create_gitrpm_repo</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="k">import</span> <span class="n">projects_depsolve</span><span class="p">,</span> <span class="n">projects_depsolve_with_size</span><span class="p">,</span> <span class="n">dep_nevra</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.projects</span> <span class="k">import</span> <span class="n">ProjectsError</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="k">import</span> <span class="n">read_recipe_and_id</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.timestamp</span> <span class="k">import</span> <span class="n">TS_CREATED</span><span class="p">,</span> <span class="n">write_timestamp</span>
+<span class="kn">from</span> <span class="nn">pylorax.base</span> <span class="k">import</span> <span class="n">DataHolder</span>
 <span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="k">import</span> <span class="n">default_image_name</span>
+<span class="kn">from</span> <span class="nn">pylorax.ltmpl</span> <span class="k">import</span> <span class="n">LiveTemplateRunner</span>
 <span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span><span class="p">,</span> <span class="n">flatconfig</span>
 
 
@@ -267,7 +273,83 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="o">.</span><span class="n">sslverify</span><span class="p">:</span>
         <span class="n">cmd</span> <span class="o">+=</span> <span class="s1">&#39;--noverifyssl&#39;</span>
 
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">sslcacert</span><span class="p">:</span>
+        <span class="n">cmd</span> <span class="o">+=</span> <span class="s1">&#39; --sslcacert=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">r</span><span class="o">.</span><span class="n">sslcacert</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">sslclientcert</span><span class="p">:</span>
+        <span class="n">cmd</span> <span class="o">+=</span> <span class="s1">&#39; --sslclientcert=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">r</span><span class="o">.</span><span class="n">sslclientcert</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">sslclientkey</span><span class="p">:</span>
+        <span class="n">cmd</span> <span class="o">+=</span> <span class="s1">&#39; --sslclientkey=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">r</span><span class="o">.</span><span class="n">sslclientkey</span>
+
     <span class="k">return</span> <span class="n">cmd</span></div>
+
+
+<div class="viewcode-block" id="bootloader_append"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.bootloader_append">[docs]</a><span class="k">def</span> <span class="nf">bootloader_append</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">kernel_append</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Insert the kernel_append string into the --append argument</span>
+
+<span class="sd">    :param line: The bootloader ... line</span>
+<span class="sd">    :type line: str</span>
+<span class="sd">    :param kernel_append: The arguments to append to the --append section</span>
+<span class="sd">    :type kernel_append: str</span>
+
+<span class="sd">    Using pykickstart to process the line is the best way to make sure it</span>
+<span class="sd">    is parsed correctly, and re-assembled for inclusion into the final kickstart</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ks_version</span> <span class="o">=</span> <span class="n">makeVersion</span><span class="p">()</span>
+    <span class="n">ks</span> <span class="o">=</span> <span class="n">KickstartParser</span><span class="p">(</span><span class="n">ks_version</span><span class="p">,</span> <span class="n">errorsAreFatal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">missingIncludeIsFatal</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ks</span><span class="o">.</span><span class="n">readKickstartFromString</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">bootloader</span><span class="o">.</span><span class="n">appendLine</span><span class="p">:</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">bootloader</span><span class="o">.</span><span class="n">appendLine</span> <span class="o">+=</span> <span class="s2">&quot; </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">kernel_append</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">bootloader</span><span class="o">.</span><span class="n">appendLine</span> <span class="o">=</span> <span class="n">kernel_append</span>
+
+    <span class="c1"># Converting back to a string includes a comment, return just the bootloader line</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">bootloader</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_kernel_append"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.get_kernel_append">[docs]</a><span class="k">def</span> <span class="nf">get_kernel_append</span><span class="p">(</span><span class="n">recipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the customizations.kernel append value</span>
+
+<span class="sd">    :param recipe:</span>
+<span class="sd">    :type recipe: Recipe object</span>
+<span class="sd">    :returns: append value or empty string</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;customizations&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span> <span class="ow">or</span> \
+       <span class="s2">&quot;kernel&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">]</span> <span class="ow">or</span> \
+       <span class="s2">&quot;append&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="s2">&quot;kernel&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="s2">&quot;kernel&quot;</span><span class="p">][</span><span class="s2">&quot;append&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="customize_ks_template"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.customize_ks_template">[docs]</a><span class="k">def</span> <span class="nf">customize_ks_template</span><span class="p">(</span><span class="n">ks_template</span><span class="p">,</span> <span class="n">recipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Customize the kickstart template and return it</span>
+
+<span class="sd">    :param ks_template: The kickstart template</span>
+<span class="sd">    :type ks_template: str</span>
+<span class="sd">    :param recipe:</span>
+<span class="sd">    :type recipe: Recipe object</span>
+
+<span class="sd">    Apply customizations.kernel.append to the bootloader argument in the template.</span>
+<span class="sd">    Add bootloader line if it is missing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">kernel_append</span> <span class="o">=</span> <span class="n">get_kernel_append</span><span class="p">(</span><span class="n">recipe</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">kernel_append</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ks_template</span>
+    <span class="n">found_bootloader</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">ks_template</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;bootloader&quot;</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">found_bootloader</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found bootloader line: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">bootloader_append</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">kernel_append</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">found_bootloader</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">output</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;bootloader --append=&quot;</span><span class="si">%s</span><span class="s1">&quot; --location=none&#39;</span> <span class="o">%</span> <span class="n">kernel_append</span> <span class="o">+</span> <span class="n">output</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="write_ks_root"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.write_ks_root">[docs]</a><span class="k">def</span> <span class="nf">write_ks_root</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
@@ -388,6 +470,10 @@
         <span class="k">return</span>
     <span class="n">customizations</span> <span class="o">=</span> <span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">]</span>
 
+    <span class="c1"># allow customizations to be incorrectly specified as [[customizations]] instead of [customizations]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">customizations</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">customizations</span> <span class="o">=</span> <span class="n">customizations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
     <span class="k">if</span> <span class="s2">&quot;hostname&quot;</span> <span class="ow">in</span> <span class="n">customizations</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;network --hostname=</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">customizations</span><span class="p">[</span><span class="s2">&quot;hostname&quot;</span><span class="p">])</span>
 
@@ -429,6 +515,40 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">wrote_rootpw</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;rootpw --lock</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="get_extra_pkgs"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.get_extra_pkgs">[docs]</a><span class="k">def</span> <span class="nf">get_extra_pkgs</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">share_dir</span><span class="p">,</span> <span class="n">compose_type</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return extra packages needed for the output type</span>
+
+<span class="sd">    :param dbo: dnf base object</span>
+<span class="sd">    :type dbo: dnf.Base</span>
+<span class="sd">    :param share_dir: Path to the top level share directory</span>
+<span class="sd">    :type share_dir: str</span>
+<span class="sd">    :param compose_type: The type of output to create from the recipe</span>
+<span class="sd">    :type compose_type: str</span>
+<span class="sd">    :returns: List of package names (name only, not NEVRA)</span>
+<span class="sd">    :rtype: list</span>
+
+<span class="sd">    Currently this is only needed by live-iso, it reads ./live/live-install.tmpl and</span>
+<span class="sd">    processes only the installpkg lines. It lists the packages needed to complete creation of the</span>
+<span class="sd">    iso using the templates such as x86.tmpl</span>
+
+<span class="sd">    Keep in mind that the live-install.tmpl is shared between livemedia-creator and lorax-composer,</span>
+<span class="sd">    even though the results are applied differently.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">compose_type</span> <span class="o">!=</span> <span class="s2">&quot;live-iso&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="c1"># get the arch information to pass to the runner</span>
+    <span class="n">arch</span> <span class="o">=</span> <span class="n">ArchData</span><span class="p">(</span><span class="n">get_buildarch</span><span class="p">(</span><span class="n">dbo</span><span class="p">))</span>
+    <span class="n">defaults</span> <span class="o">=</span> <span class="n">DataHolder</span><span class="p">(</span><span class="n">basearch</span><span class="o">=</span><span class="n">arch</span><span class="o">.</span><span class="n">basearch</span><span class="p">)</span>
+    <span class="n">templatedir</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">find_templates</span><span class="p">(</span><span class="n">share_dir</span><span class="p">),</span> <span class="s2">&quot;live&quot;</span><span class="p">)</span>
+    <span class="n">runner</span> <span class="o">=</span> <span class="n">LiveTemplateRunner</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">templatedir</span><span class="o">=</span><span class="n">templatedir</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="n">defaults</span><span class="p">)</span>
+    <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;live-install.tmpl&quot;</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;extra pkgs = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">runner</span><span class="o">.</span><span class="n">pkgs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">runner</span><span class="o">.</span><span class="n">pkgnames</span></div>
+
+
 <div class="viewcode-block" id="start_build"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.start_build">[docs]</a><span class="k">def</span> <span class="nf">start_build</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">dnflock</span><span class="p">,</span> <span class="n">gitlock</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">,</span> <span class="n">compose_type</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Start the build</span>
 
@@ -450,15 +570,22 @@
     <span class="k">if</span> <span class="n">compose_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">compose_types</span><span class="p">(</span><span class="n">share_dir</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Invalid compose type (</span><span class="si">%s</span><span class="s2">), must be one of </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">compose_type</span><span class="p">,</span> <span class="n">compose_types</span><span class="p">(</span><span class="n">share_dir</span><span class="p">)))</span>
 
+    <span class="c1"># Some image types (live-iso) need extra packages for composer to execute the output template</span>
+    <span class="k">with</span> <span class="n">dnflock</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+        <span class="n">extra_pkgs</span> <span class="o">=</span> <span class="n">get_extra_pkgs</span><span class="p">(</span><span class="n">dnflock</span><span class="o">.</span><span class="n">dbo</span><span class="p">,</span> <span class="n">share_dir</span><span class="p">,</span> <span class="n">compose_type</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Extra packages needed for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">compose_type</span><span class="p">,</span> <span class="n">extra_pkgs</span><span class="p">)</span>
+
     <span class="k">with</span> <span class="n">gitlock</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
         <span class="p">(</span><span class="n">commit_id</span><span class="p">,</span> <span class="n">recipe</span><span class="p">)</span> <span class="o">=</span> <span class="n">read_recipe_and_id</span><span class="p">(</span><span class="n">gitlock</span><span class="o">.</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_name</span><span class="p">)</span>
 
     <span class="c1"># Combine modules and packages and depsolve the list</span>
-    <span class="c1"># TODO include the version/glob in the depsolving</span>
     <span class="n">module_nver</span> <span class="o">=</span> <span class="n">recipe</span><span class="o">.</span><span class="n">module_nver</span>
     <span class="n">package_nver</span> <span class="o">=</span> <span class="n">recipe</span><span class="o">.</span><span class="n">package_nver</span>
+    <span class="n">package_nver</span><span class="o">.</span><span class="n">extend</span><span class="p">([(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">extra_pkgs</span><span class="p">])</span>
+
     <span class="n">projects</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">module_nver</span><span class="o">+</span><span class="n">package_nver</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
     <span class="n">deps</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;depsolving </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># This can possibly update repodata and reset the YumBase object.</span>
         <span class="k">with</span> <span class="n">dnflock</span><span class="o">.</span><span class="n">lock_check</span><span class="p">:</span>
@@ -486,9 +613,7 @@
     <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;installed_size = </span><span class="si">%d</span><span class="s2">, template_size=</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">installed_size</span><span class="p">,</span> <span class="n">template_size</span><span class="p">)</span>
 
     <span class="c1"># Minimum LMC disk size is 1GiB, and anaconda bumps the estimated size up by 10% (which doesn&#39;t always work).</span>
-    <span class="c1"># XXX BUT Anaconda has a bug, it won&#39;t execute a kickstart on a disk smaller than 3000 MB</span>
-    <span class="c1"># XXX There is an upstream patch pending, but until then, use that as the minimum</span>
-    <span class="n">installed_size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">3e9</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="n">installed_size</span><span class="o">+</span><span class="n">template_size</span><span class="p">)))</span> <span class="o">*</span> <span class="mf">1.2</span>
+    <span class="n">installed_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">installed_size</span><span class="o">+</span><span class="n">template_size</span><span class="p">))</span> <span class="o">*</span> <span class="mf">1.2</span>
     <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;/ partition size = </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">installed_size</span><span class="p">)</span>
 
     <span class="c1"># Create the results directory</span>
@@ -525,6 +650,9 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">repos</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No enabled repos, canceling build.&quot;</span><span class="p">)</span>
 
+    <span class="c1"># Create the git rpms, if any, and return the path to the repo under results_dir</span>
+    <span class="n">gitrpm_repo</span> <span class="o">=</span> <span class="n">create_gitrpm_repo</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="n">recipe</span><span class="p">)</span>
+
     <span class="c1"># Create the final kickstart with repos and package list</span>
     <span class="n">ks_path</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="s2">&quot;final-kickstart.ks&quot;</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ks_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -536,6 +664,10 @@
             <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;repo composer-</span><span class="si">%s</span><span class="s2"> = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">ks_repo</span><span class="p">)</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;repo --name=&quot;composer-</span><span class="si">%s</span><span class="s1">&quot; </span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">ks_repo</span><span class="p">))</span>
 
+        <span class="k">if</span> <span class="n">gitrpm_repo</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;repo gitrpms = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">gitrpm_repo</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;repo --name=&quot;gitrpms&quot; --baseurl=&quot;file://</span><span class="si">%s</span><span class="s1">&quot;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">gitrpm_repo</span><span class="p">)</span>
+
         <span class="c1"># Setup the disk for booting</span>
         <span class="c1"># TODO Add GPT and UEFI boot support</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;clearpart --all --initlabel</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -543,12 +675,20 @@
         <span class="c1"># Write the root partition and it&#39;s size in MB (rounded up)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;part / --size=</span><span class="si">%d</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">ceil</span><span class="p">(</span><span class="n">installed_size</span> <span class="o">/</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
 
-        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ks_template</span><span class="p">)</span>
+        <span class="c1"># Some customizations modify the template before writing it</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">customize_ks_template</span><span class="p">(</span><span class="n">ks_template</span><span class="p">,</span> <span class="n">recipe</span><span class="p">))</span>
 
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">deps</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">dep_nevra</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Include the rpms from the gitrpm repo directory</span>
+        <span class="k">if</span> <span class="n">gitrpm_repo</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">rpm</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gitrpm_repo</span><span class="p">,</span> <span class="s2">&quot;*.rpm&quot;</span><span class="p">)):</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">rpm</span><span class="p">)[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%e</span><span class="s2">nd</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
+        <span class="c1"># Other customizations can be appended to the kickstart</span>
         <span class="n">add_customizations</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">recipe</span><span class="p">)</span>
 
     <span class="c1"># Setup the config to pass to novirt_install</span>
@@ -566,6 +706,7 @@
     <span class="n">cfg_args</span><span class="p">[</span><span class="s2">&quot;project&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os_release</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
     <span class="n">cfg_args</span><span class="p">[</span><span class="s2">&quot;releasever&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os_release</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;VERSION_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
     <span class="n">cfg_args</span><span class="p">[</span><span class="s2">&quot;volid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">cfg_args</span><span class="p">[</span><span class="s2">&quot;extra_boot_args&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_kernel_append</span><span class="p">(</span><span class="n">recipe</span><span class="p">)</span>
 
     <span class="n">cfg_args</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
         <span class="s2">&quot;compression&quot;</span><span class="p">:</span>      <span class="s2">&quot;xz&quot;</span><span class="p">,</span>
@@ -844,7 +985,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Red Hat, Inc..
+        &copy; Copyright 2018, Red Hat, Inc.
 
     </p>
   </div>
@@ -861,35 +1002,16 @@
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../../',
-            VERSION:'30.5',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../../_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-  
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

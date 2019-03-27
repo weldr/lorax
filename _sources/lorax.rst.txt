@@ -137,7 +137,7 @@ on the architecture that the iso is being created for. They are also stored in
 configuration template files, configuration variable substitution, treeinfo
 metadata (via the :func:`treeinfo <pylorax.ltmpl.LoraxTemplateRunner.treeinfo>`
 template command). Kernel and initrd are copied from the installroot to their
-final locations and then mkisofs is run to create the boot.iso
+final locations and then xorrisofs is run to create the boot.iso
 
 
 Custom Templates
