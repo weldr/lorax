@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.24
+Version:        28.14.25
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -234,6 +234,24 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Wed Mar 27 2019 Brian C. Lane <bcl@redhat.com> 28.14.25-1
+- New lorax documentation - 28.14.25 (bcl)
+  Related: rhbz#1687743
+- lorax-composer: pass customization.kernel append to extra_boot_args (bcl)
+  Resolves: rhbz#1687743
+- Improve logging for template syntax errors (bcl)
+  Related: rhbz#1687743
+- Add extra boot args to the livemedia-creator iso templates (bcl)
+  Related: rhbz#1687743
+- lorax-composer: Add the ability to append to the kernel command-line (bcl)
+  Related: rhbz#1687743
+- lorax-composer: Return UnknownBlueprint errors when using deleted blueprints (bcl)
+  Resolves: rhbz#1683441
+- lorax-composer: Delete workspace copy when deleting blueprint (bcl)
+  Related: rhbz#1683441
+- Remove 3G minimum from lorax-composer (bcl)
+  Resolves: rhbz#1677741
+
 * Thu Mar 21 2019 Brian C. Lane <bcl@redhat.com> 28.14.24-1
 - Add a ppc64le template for live iso creation (bcl)
   Related: rhbz#1673744
