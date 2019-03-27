@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>lorax-composer &mdash; Lorax 28.14.21 documentation</title>
+  <title>lorax-composer &mdash; Lorax 28.14.25 documentation</title>
   
 
   
@@ -24,7 +24,8 @@
 
   
 
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -58,7 +59,7 @@
             
             
               <div class="version">
-                28.14.21
+                28.14.25
               </div>
             
           
@@ -104,6 +105,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#packages-and-modules">[[packages]] and [[modules]]</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groups">[[groups]]</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#customizations">Customizations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#customizations-kernel">[customizations.kernel]</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#customizations-sshkey">[[customizations.sshkey]]</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#customizations-user">[[customizations.user]]</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#customizations-group">[[customizations.group]]</a></li>
@@ -424,6 +426,16 @@ for selecting optional packages.</p>
 <span class="n">hostname</span> <span class="o">=</span> <span class="s2">&quot;baseimage&quot;</span>
 </pre></div>
 </div>
+<div class="section" id="customizations-kernel">
+<h4>[customizations.kernel]<a class="headerlink" href="#customizations-kernel" title="Permalink to this headline">¶</a></h4>
+<p>This allows you to append arguments to the bootloader’s kernel commandline. This will not have any
+effect on <code class="docutils literal notranslate"><span class="pre">tar</span></code> or <code class="docutils literal notranslate"><span class="pre">ext4-filesystem</span></code> images since they do not include a bootloader.</p>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">customizations</span><span class="o">.</span><span class="n">kernel</span><span class="p">]</span>
+<span class="n">append</span> <span class="o">=</span> <span class="s2">&quot;nosmt=force&quot;</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="customizations-sshkey">
 <h4>[[customizations.sshkey]]<a class="headerlink" href="#customizations-sshkey" title="Permalink to this headline">¶</a></h4>
 <p>Set an existing user’s ssh key in the final image:</p>
@@ -609,7 +621,7 @@ sources from <code class="docutils literal notranslate"><span class="pre">/etc/y
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Red Hat, Inc.
+        &copy; Copyright 2018, Red Hat, Inc..
 
     </p>
   </div>
@@ -628,27 +640,27 @@ sources from <code class="docutils literal notranslate"><span class="pre">/etc/y
 
   
 
-    
-    
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'28.14.21',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-    
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'28.14.25',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
 
   
 
-  <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
 
   <script type="text/javascript">
       jQuery(function () {

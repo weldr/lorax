@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.recipes &mdash; Lorax 28.14.21 documentation</title>
+  <title>pylorax.api.recipes &mdash; Lorax 28.14.25 documentation</title>
   
 
   
@@ -24,7 +24,8 @@
 
   
 
-  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -56,7 +57,7 @@
             
             
               <div class="version">
-                28.14.21
+                28.14.25
               </div>
             
           
@@ -155,7 +156,7 @@
             
   <h1>Source code for pylorax.api.recipes</h1><div class="highlight"><pre>
 <span></span><span class="c1">#</span>
-<span class="c1"># Copyright (C) 2017  Red Hat, Inc.</span>
+<span class="c1"># Copyright (C) 2017-2019  Red Hat, Inc.</span>
 <span class="c1">#</span>
 <span class="c1"># This program is free software; you can redistribute it and/or modify</span>
 <span class="c1"># it under the terms of the GNU General Public License as published by</span>
@@ -564,6 +565,9 @@
 <span class="sd">    If no commit is passed the master:filename is returned, otherwise it will be</span>
 <span class="sd">    commit:filename</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">repo_file_exists</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_filename</span><span class="p">(</span><span class="n">recipe_name</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="n">RecipeFileError</span><span class="p">(</span><span class="s2">&quot;Unknown blueprint&quot;</span><span class="p">)</span>
+
     <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">recipe_toml</span><span class="p">)</span> <span class="o">=</span> <span class="n">read_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_filename</span><span class="p">(</span><span class="n">recipe_name</span><span class="p">),</span> <span class="n">commit</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">recipe_from_toml</span><span class="p">(</span><span class="n">recipe_toml</span><span class="p">)</span></div>
 
@@ -787,6 +791,9 @@
 
 <span class="sd">    Uses tag_file_commit()</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">repo_file_exists</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_filename</span><span class="p">(</span><span class="n">recipe_name</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="n">RecipeFileError</span><span class="p">(</span><span class="s2">&quot;Unknown blueprint&quot;</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">tag_file_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">recipe_filename</span><span class="p">(</span><span class="n">recipe_name</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="tag_file_commit"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.tag_file_commit">[docs]</a><span class="k">def</span> <span class="nf">tag_file_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
@@ -1076,6 +1083,24 @@
     <span class="n">diffs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">diff_items</span><span class="p">(</span><span class="s2">&quot;Group&quot;</span><span class="p">,</span> <span class="n">old_recipe</span><span class="p">[</span><span class="s2">&quot;groups&quot;</span><span class="p">],</span> <span class="n">new_recipe</span><span class="p">[</span><span class="s2">&quot;groups&quot;</span><span class="p">]))</span>
 
     <span class="k">return</span> <span class="n">diffs</span></div>
+
+<div class="viewcode-block" id="repo_file_exists"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.repo_file_exists">[docs]</a><span class="k">def</span> <span class="nf">repo_file_exists</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return True if the filename exists on the branch</span>
+
+<span class="sd">    :param repo: Open repository</span>
+<span class="sd">    :type repo: Git.Repository</span>
+<span class="sd">    :param branch: Branch name</span>
+<span class="sd">    :type branch: str</span>
+<span class="sd">    :param filename: Filename to check</span>
+<span class="sd">    :type filename: str</span>
+<span class="sd">    :returns: True if the filename exists on the HEAD of the branch, False otherwise.</span>
+<span class="sd">    :rtype: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">commit</span> <span class="o">=</span> <span class="n">head_commit</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">branch</span><span class="p">)</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
+    <span class="n">commit_id</span> <span class="o">=</span> <span class="n">Git</span><span class="o">.</span><span class="n">OId</span><span class="o">.</span><span class="n">new_from_string</span><span class="p">(</span><span class="n">commit</span><span class="p">)</span>
+    <span class="n">commit_obj</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">commit_id</span><span class="p">,</span> <span class="n">Git</span><span class="o">.</span><span class="n">Commit</span><span class="p">)</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">commit_obj</span><span class="o">.</span><span class="n">get_tree</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">tree</span><span class="o">.</span><span class="n">get_by_name</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
 </pre></div>
 
            </div>
@@ -1088,7 +1113,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Red Hat, Inc.
+        &copy; Copyright 2018, Red Hat, Inc..
 
     </p>
   </div>
@@ -1107,27 +1132,27 @@
 
   
 
-    
-    
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../../',
-              VERSION:'28.14.21',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'28.14.25',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
 
   
 
-  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
 
   <script type="text/javascript">
       jQuery(function () {

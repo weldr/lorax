@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.dnfhelper &mdash; Lorax 28.14.21 documentation</title>
+  <title>pylorax.dnfhelper &mdash; Lorax 28.14.25 documentation</title>
   
 
   
@@ -24,7 +24,8 @@
 
   
 
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -56,7 +57,7 @@
             
             
               <div class="version">
-                28.14.21
+                28.14.25
               </div>
             
           
@@ -250,7 +251,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_ts</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="LoraxRpmCallback.progress"><a class="viewcode-back" href="../../pylorax.html#pylorax.dnfhelper.LoraxRpmCallback.progress">[docs]</a>    <span class="k">def</span> <span class="nf">progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">package</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">ti_done</span><span class="p">,</span> <span class="n">ti_total</span><span class="p">,</span> <span class="n">ts_done</span><span class="p">,</span> <span class="n">ts_total</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="n">dnf</span><span class="o">.</span><span class="n">transaction</span><span class="o">.</span><span class="n">PKG_INSTALL</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="n">dnf</span><span class="o">.</span><span class="n">transaction</span><span class="o">.</span><span class="n">PKG_INSTALL</span><span class="p">:</span>  <span class="c1"># pylint: disable=no-member</span>
             <span class="c1"># do not report same package twice</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_ts</span> <span class="o">==</span> <span class="n">ts_done</span><span class="p">:</span>
                 <span class="k">return</span>
@@ -258,7 +259,7 @@
 
             <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;(</span><span class="si">%d</span><span class="s1">/</span><span class="si">%d</span><span class="s1">) </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ts_done</span><span class="p">,</span> <span class="n">ts_total</span><span class="p">,</span> <span class="n">package</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="n">dnf</span><span class="o">.</span><span class="n">transaction</span><span class="o">.</span><span class="n">TRANS_POST</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="n">dnf</span><span class="o">.</span><span class="n">transaction</span><span class="o">.</span><span class="n">TRANS_POST</span><span class="p">:</span>  <span class="c1"># pylint: disable=no-member</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Performing post-installation setup tasks&quot;</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 
@@ -276,7 +277,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Red Hat, Inc.
+        &copy; Copyright 2018, Red Hat, Inc..
 
     </p>
   </div>
@@ -295,27 +296,27 @@
 
   
 
-    
-    
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../',
-              VERSION:'28.14.21',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-    
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'28.14.25',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
 
   
 
-  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
 
   <script type="text/javascript">
       jQuery(function () {

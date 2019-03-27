@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>livemedia-creator &mdash; Lorax 28.14.21 documentation</title>
+  <title>livemedia-creator &mdash; Lorax 28.14.25 documentation</title>
   
 
   
@@ -24,7 +24,8 @@
 
   
 
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -58,7 +59,7 @@
             
             
               <div class="version">
-                28.14.21
+                28.14.25
               </div>
             
           
@@ -230,6 +231,7 @@ you have the anaconda-tui package installed.</p>
                          <span class="p">[</span><span class="o">--</span><span class="n">logfile</span> <span class="n">LOGFILE</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">lorax</span><span class="o">-</span><span class="n">templates</span> <span class="n">LORAX_TEMPLATES</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tmp</span> <span class="n">TMP</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">resultdir</span> <span class="n">RESULT_DIR</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">macboot</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">nomacboot</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">extra</span><span class="o">-</span><span class="n">boot</span><span class="o">-</span><span class="n">args</span> <span class="n">EXTRA_BOOT_ARGS</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">disk</span><span class="o">-</span><span class="n">image</span> <span class="n">DISK_IMAGE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">keep</span><span class="o">-</span><span class="n">image</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">fs</span><span class="o">-</span><span class="n">image</span> <span class="n">FS_IMAGE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="n">name</span> <span class="n">IMAGE_NAME</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">fs</span><span class="o">-</span><span class="n">label</span> <span class="n">FS_LABEL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="nb">type</span> <span class="n">IMAGE_TYPE</span><span class="p">]</span>
@@ -369,6 +371,12 @@ you have the anaconda-tui package installed.</p>
 <tr><td class="option-group">
 <kbd>--nomacboot</kbd></td>
 <td>Default: True</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--extra-boot-args</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Extra arguments to add to the bootloader kernel cmdline in the templates</p>
+<p class="last">Default: “”</p>
+</td></tr>
 <tr><td class="option-group">
 <kbd>--title</kbd></td>
 <td><p class="first">Substituted for &#64;TITLE&#64; in bootloader config files</p>
@@ -1129,7 +1137,7 @@ report bugs against the lorax component.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Red Hat, Inc.
+        &copy; Copyright 2018, Red Hat, Inc..
 
     </p>
   </div>
@@ -1148,27 +1156,27 @@ report bugs against the lorax component.</p>
 
   
 
-    
-    
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'28.14.21',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-    
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'28.14.25',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
 
   
 
-  <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
 
   <script type="text/javascript">
       jQuery(function () {

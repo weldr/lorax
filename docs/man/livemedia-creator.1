@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LIVEMEDIA-CREATOR" "1" "Jan 09, 2019" "28.14.21" "Lorax"
+.TH "LIVEMEDIA-CREATOR" "1" "Mar 27, 2019" "28.14.25" "Lorax"
 .SH NAME
 livemedia-creator \- Live Media Creator Documentation
 .
@@ -86,6 +86,7 @@ usage: livemedia\-creator [\-h]
                          [\-\-logfile LOGFILE]
                          [\-\-lorax\-templates LORAX_TEMPLATES] [\-\-tmp TMP]
                          [\-\-resultdir RESULT_DIR] [\-\-macboot] [\-\-nomacboot]
+                         [\-\-extra\-boot\-args EXTRA_BOOT_ARGS]
                          [\-\-disk\-image DISK_IMAGE] [\-\-keep\-image]
                          [\-\-fs\-image FS_IMAGE] [\-\-image\-name IMAGE_NAME]
                          [\-\-fs\-label FS_LABEL] [\-\-image\-type IMAGE_TYPE]
@@ -219,6 +220,11 @@ Default: True
 .TP
 .B\-\-nomacboot
 Default: True
+.TP
+.B\-\-extra\-boot\-args
+Extra arguments to add to the bootloader kernel cmdline in the templates
+.sp
+Default: ""
 .TP
 .B\-\-title
 Substituted for @TITLE@ in bootloader config files

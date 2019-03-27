@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LORAX-COMPOSER" "1" "Jan 09, 2019" "28.14.21" "Lorax"
+.TH "LORAX-COMPOSER" "1" "Mar 27, 2019" "28.14.25" "Lorax"
 .SH NAME
 lorax-composer \- Lorax Composer Documentation
 .
@@ -276,6 +276,23 @@ The \fB[[customizations]]\fP section can be used to configure the hostname of th
 .ft C
 [[customizations]]
 hostname = "baseimage"
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SS [customizations.kernel]
+.sp
+This allows you to append arguments to the bootloader\(aqs kernel commandline. This will not have any
+effect on \fBtar\fP or \fBext4\-filesystem\fP images since they do not include a bootloader.
+.sp
+For example:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+[customizations.kernel]
+append = "nosmt=force"
 .ft P
 .fi
 .UNINDENT

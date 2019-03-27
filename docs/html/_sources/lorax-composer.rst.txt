@@ -175,6 +175,18 @@ The ``[[customizations]]`` section can be used to configure the hostname of the 
     hostname = "baseimage"
 
 
+[customizations.kernel]
+***********************
+
+This allows you to append arguments to the bootloader's kernel commandline. This will not have any
+effect on ``tar`` or ``ext4-filesystem`` images since they do not include a bootloader.
+
+For example::
+
+    [customizations.kernel]
+    append = "nosmt=force"
+
+
 [[customizations.sshkey]]
 *************************
 
