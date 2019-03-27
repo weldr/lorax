@@ -27,7 +27,7 @@ rlJournalStart
 
     rlPhaseStartTest "compose finished"
         if [ -n "$UUID" ]; then
-            until $CLI compose info $UUID | grep FINISHED; do
+            until $CLI compose details $UUID | grep FINISHED; do
                 sleep 10
                 rlLogInfo "Waiting for compose to finish ..."
             done;
