@@ -290,23 +290,16 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 - Use make ci inside test-in-copy target (atodorov)
   Related: rhbz#1678937
 - New test: Build live-iso and boot with KVM (atodorov)
-  Related: rhbz#1653934
 - New test: Build qcow2 compose and test it with QEMU-KVM (atodorov)
-  Related: rhbz#1653934
 - Removed remnants of fedora branding. (47631017+jakub-vavra)
   Resolves: rhbz#1672583
 - Drop auth from the kickstart examples (bcl)
   Resolves: rhbz#1672583
 - New test: Verify tar images with Docker and systemd-nspawn (atodorov)
-  Related: rhbz#1653934
 - Update OpenStack flavor and network settings in tests (atodorov)
-  Related: rhbz#1653934
 - Use existing storage account (jstodola)
-  Related: rhbz#1653934
 - Record date/time of VM creation (jstodola)
-  Related: rhbz#1653934
 - Make sure compose build tests run with SELinux in enforcing mode (jikortus)
-  Related: rhbz#1645189
 
 * Wed Jan 30 2019 Brian C. Lane <bcl@redhat.com> 28.14.23-1
 - lorax: Move default tmp dir to /var/tmp/lorax (bcl)
