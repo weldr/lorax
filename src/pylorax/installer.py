@@ -311,7 +311,7 @@ def anaconda_cleanup(dirinstall_path):
     return rc
 
 
-def novirt_install(opts, disk_img, disk_size, cancel_func=None):
+def novirt_install(opts, disk_img, disk_size, cancel_func=None, tar_img=None):
     """
     Use Anaconda to install to a disk image
 
@@ -321,6 +321,7 @@ def novirt_install(opts, disk_img, disk_size, cancel_func=None):
     :param int disk_size: The size of the disk_img in MiB
     :param cancel_func: Function that returns True to cancel build
     :type cancel_func: function
+    :param str tar_img: For make_tar_disk, the path to final tarball to be created
 
     This method runs anaconda to create the image and then based on the opts
     passed creates a qemu disk image or tarfile.
@@ -498,8 +499,20 @@ def novirt_install(opts, disk_img, disk_size, cancel_func=None):
         # For raw disk images, use fallocate to deallocate unused space
         execWithRedirect("fallocate", ["--dig-holes", disk_img], raise_err=True)
 
+    # For make_tar_disk, wrap the result in a tar file, and remove the original disk image.
+    if opts.make_tar_disk:
+        compress_args = []
+        for arg in opts.compress_args:
+            compress_args += arg.split(" ", 1)
 
-def virt_install(opts, install_log, disk_img, disk_size, cancel_func=None):
+        rc = mktar(disk_img, tar_img, opts.compression, compress_args, selinux=False)
+
+        if rc:
+            raise InstallError("novirt_install mktar failed: rc=%s" % rc)
+
+        os.unlink(disk_img)
+
+def virt_install(opts, install_log, disk_img, disk_size, cancel_func=None, tar_img=None):
     """
     Use qemu to install to a disk image
 
@@ -510,6 +523,7 @@ def virt_install(opts, install_log, disk_img, disk_size, cancel_func=None):
     :param int disk_size: The size of the disk_img in MiB
     :param cancel_func: Function that returns True to cancel build
     :type cancel_func: function
+    :param str tar_img: For make_tar_disk, the path to final tarball to be created
 
     This uses qemu with a boot.iso and a kickstart to create a disk
     image and then optionally, based on the opts passed, creates tarfile.
@@ -624,3 +638,16 @@ def virt_install(opts, install_log, disk_img, disk_size, cancel_func=None):
         if rc:
             raise InstallError("virt_install failed")
         shutil.rmtree(vagrant_dir)
+
+    # For make_tar_disk, wrap the result in a tar file, and remove the original disk image.
+    if opts.make_tar_disk:
+        compress_args = []
+        for arg in opts.compress_args:
+            compress_args += arg.split(" ", 1)
+
+        rc = mktar(disk_img, tar_img, opts.compression, compress_args, selinux=False)
+
+        if rc:
+            raise InstallError("virt_install mktar failed: rc=%s" % rc)
+
+        os.unlink(disk_img)

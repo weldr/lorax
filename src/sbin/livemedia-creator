@@ -99,8 +99,12 @@ def main():
         errors.append("The appliance template (%s) doesn't "
                       "exist" % opts.app_template)
 
-    if opts.image_name and os.path.exists(joinpaths(opts.result_dir, opts.image_name)):
-        errors.append("The disk image to be created should not exist.")
+    if opts.make_tar_disk:
+        if opts.tar_disk_name and os.path.exists(joinpaths(opts.result_dir, opts.tar_disk_name)):
+            errors.append("The disk image to be created should not exist.")
+    else:
+        if opts.image_name and os.path.exists(joinpaths(opts.result_dir, opts.image_name)):
+            errors.append("The disk image to be created should not exist.")
 
     # Vagrant creates a qcow2 inside a tar, turn on qcow2
     if opts.make_vagrant:
@@ -171,6 +175,14 @@ def main():
     elif opts.make_vagrant:
         if not opts.image_name:
             opts.image_name = default_image_name(opts.compression, "vagrant.tar")
+        if opts.compression == "xz" and not opts.compress_args:
+            opts.compress_args = ["-9"]
+    elif opts.make_tar_disk:
+        opts.make_disk = True
+        if not opts.image_name:
+            opts.image_name = "root.img"
+        if not opts.tar_disk_name:
+            opts.tar_disk_name = default_image_name(opts.compression, "root.tar")
         if opts.compression == "xz" and not opts.compress_args:
             opts.compress_args = ["-9"]
 

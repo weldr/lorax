@@ -144,6 +144,8 @@ def lmc_parser(dracut_default=""):
                         help="Build an ami image")
     action.add_argument("--make-tar", action="store_true",
                         help="Build a tar of the root filesystem")
+    action.add_argument("--make-tar-disk", action="store_true",
+                        help="Build a tar of a partitioned disk image")
     action.add_argument("--make-pxe-live", action="store_true",
                         help="Build a live pxe boot squashfs image")
     action.add_argument("--make-ostree-live", action="store_true",
@@ -211,6 +213,8 @@ def lmc_parser(dracut_default=""):
                              help="Path to existing filesystem image to use for creating final image.")
     image_group.add_argument("--image-name", default=None,
                              help="Name of output file to create. Used for tar, fs and disk image. Default is a random name.")
+    image_group.add_argument("--tar-disk-name", default=None,
+                             help="Name of the archive member for make-tar-disk.")
     image_group.add_argument("--fs-label", default="Anaconda",
                              help="Label to set on fsimage, default is 'Anaconda'")
     image_group.add_argument("--image-size-align", type=int, default=0,
