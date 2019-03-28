@@ -247,7 +247,7 @@ class CreatorTest(unittest.TestCase):
 
     def disk_size_simple_test(self):
         """Test calculating the disk size with a simple / partition"""
-        opts = DataHolder(no_virt=True, make_fsimage=False, make_iso=False, make_pxe_live=False)
+        opts = DataHolder(no_virt=True, make_fsimage=False, make_iso=False, make_pxe_live=False, image_size_align=0)
         ks_version = makeVersion()
         ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
         ks.readKickstartFromString("url --url=http://dl.fedoraproject.com\n"
@@ -259,7 +259,7 @@ class CreatorTest(unittest.TestCase):
 
     def disk_size_boot_test(self):
         """Test calculating the disk size with / and /boot partitions"""
-        opts = DataHolder(no_virt=True, make_fsimage=False, make_iso=False, make_pxe_live=False)
+        opts = DataHolder(no_virt=True, make_fsimage=False, make_iso=False, make_pxe_live=False, image_size_align=0)
         ks_version = makeVersion()
         ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
         ks.readKickstartFromString("url --url=http://dl.fedoraproject.com\n"
@@ -272,7 +272,7 @@ class CreatorTest(unittest.TestCase):
 
     def disk_size_boot_fsimage_test(self):
         """Test calculating the disk size with / and /boot partitions on a fsimage"""
-        opts = DataHolder(no_virt=True, make_fsimage=True, make_iso=False, make_pxe_live=False)
+        opts = DataHolder(no_virt=True, make_fsimage=True, make_iso=False, make_pxe_live=False, image_size_align=0)
         ks_version = makeVersion()
         ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
         ks.readKickstartFromString("url --url=http://dl.fedoraproject.com\n"
@@ -285,7 +285,7 @@ class CreatorTest(unittest.TestCase):
 
     def disk_size_reqpart_test(self):
         """Test calculating the disk size with reqpart and a / partition"""
-        opts = DataHolder(no_virt=True, make_fsimage=False, make_iso=False, make_pxe_live=False)
+        opts = DataHolder(no_virt=True, make_fsimage=False, make_iso=False, make_pxe_live=False, image_size_align=0)
         ks_version = makeVersion()
         ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
         ks.readKickstartFromString("url --url=http://dl.fedoraproject.com\n"
@@ -298,7 +298,7 @@ class CreatorTest(unittest.TestCase):
 
     def disk_size_reqpart_boot_test(self):
         """Test calculating the disk size with reqpart --add-boot and a / partition"""
-        opts = DataHolder(no_virt=True, make_fsimage=False, make_iso=False, make_pxe_live=False)
+        opts = DataHolder(no_virt=True, make_fsimage=False, make_iso=False, make_pxe_live=False, image_size_align=0)
         ks_version = makeVersion()
         ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
         ks.readKickstartFromString("url --url=http://dl.fedoraproject.com\n"
@@ -309,6 +309,17 @@ class CreatorTest(unittest.TestCase):
                                    "shutdown\n")
         self.assertEqual(calculate_disk_size(opts, ks), 5622)
 
+    def disk_size_align_test(self):
+        """Test aligning the disk size"""
+        opts = DataHolder(no_virt=True, make_fsimage=False, make_iso=False, make_pxe_live=False, image_size_align=1024)
+        ks_version = makeVersion()
+        ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+        ks.readKickstartFromString("url --url=http://dl.fedoraproject.com\n"
+                                   "network --bootproto=dhcp --activate\n"
+                                   "repo --name=other --baseurl=http://dl.fedoraproject.com\n"
+                                   "part / --size=4096\n"
+                                   "shutdown\n")
+        self.assertEqual(calculate_disk_size(opts, ks), 5120)
 
     @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
     def boot_over_root_test(self):
