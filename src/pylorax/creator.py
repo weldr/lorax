@@ -487,28 +487,49 @@ def make_image(opts, ks, cancel_func=None):
 
     Use qemu+boot.iso or anaconda to install to a disk image.
     """
-    if opts.image_name:
+
+    # For make_tar_disk, opts.image_name is the name of the final tarball.
+    # Use opts.tar_disk_name as the name of the disk image
+    if opts.make_tar_disk:
+        disk_img = joinpaths(opts.result_dir, opts.tar_disk_name)
+    elif opts.image_name:
         disk_img = joinpaths(opts.result_dir, opts.image_name)
     else:
         disk_img = tempfile.mktemp(prefix="lmc-disk-", suffix=".img", dir=opts.result_dir)
     log.info("disk_img = %s", disk_img)
     disk_size = calculate_disk_size(opts, ks)
+
+    # For make_tar_disk, pass a second path parameter for the final tarball
+    # not the final output file.
+    if opts.make_tar_disk:
+        tar_img = joinpaths(opts.result_dir, opts.image_name)
+    else:
+        tar_img = None
+
     try:
         if opts.no_virt:
-            novirt_install(opts, disk_img, disk_size, cancel_func=cancel_func)
+            novirt_install(opts, disk_img, disk_size, cancel_func=cancel_func, tar_img=tar_img)
         else:
             install_log = os.path.abspath(os.path.dirname(opts.logfile))+"/virt-install.log"
             log.info("install_log = %s", install_log)
 
-            virt_install(opts, install_log, disk_img, disk_size, cancel_func=cancel_func)
+            virt_install(opts, install_log, disk_img, disk_size, cancel_func=cancel_func, tar_img=tar_img)
     except InstallError as e:
         log.error("Install failed: %s", e)
-        if not opts.keep_image and os.path.exists(disk_img):
-            log.info("Removing bad disk image")
-            os.unlink(disk_img)
+        if not opts.keep_image:
+            if os.path.exists(disk_img):
+                log.info("Removing bad disk image")
+                os.unlink(disk_img)
+            if tar_img and os.path.exists(tar_img):
+                log.info("Removing bad tar file")
+                os.unlink(tar_img)
         raise
 
     log.info("Disk Image install successful")
+
+    if opts.make_tar_disk:
+        return tar_img
+
     return disk_img
 
 
