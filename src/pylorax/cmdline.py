@@ -213,6 +213,8 @@ def lmc_parser(dracut_default=""):
                              help="Name of output file to create. Used for tar, fs and disk image. Default is a random name.")
     image_group.add_argument("--fs-label", default="Anaconda",
                              help="Label to set on fsimage, default is 'Anaconda'")
+    image_group.add_argument("--image-size-align", type=int, default=0,
+                             help="Create a disk image with a size that is a multiple of this value in MiB.")
     image_group.add_argument("--image-type", default=None,
                              help="Create an image with qemu-img. See qemu-img --help for supported formats.")
     image_group.add_argument("--qemu-arg", action="append", dest="qemu_args", default=[],
