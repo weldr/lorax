@@ -14,7 +14,15 @@ def valid_label(ch):
 
 isolabel = ''.join(ch if valid_label(ch) else '-' for ch in isolabel)
 
+import os
 from os.path import basename
+from pylorax.sysutils import joinpaths
+
+# Test the runtime_img, if it is > 4GiB we need to set -iso-level to 3
+if os.stat(joinpaths(inroot, runtime_img)).st_size >= 4*1024**3:
+    isoargs = "-iso-level 3"
+else:
+    isoargs = ""
 %>
 
 mkdir ${LIVEDIR}
@@ -104,7 +112,7 @@ hardlink ${KERNELDIR}/initrd.img ${BOOTDIR}
 %endfor
 
 ## make boot.iso
-runcmd xorrisofs -o ${outroot}/images/boot.iso \
+runcmd xorrisofs ${isoargs} -o ${outroot}/images/boot.iso \
        -isohybrid-mbr /usr/share/syslinux/isohdpfx.bin \
        -b ${BOOTDIR}/isolinux.bin -c ${BOOTDIR}/boot.cat \
        -boot-load-size 4 -boot-info-table -no-emul-boot \

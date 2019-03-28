@@ -12,7 +12,15 @@ def valid_label(ch):
 
 isolabel = ''.join(ch if valid_label(ch) else '-' for ch in isolabel)
 
+import os
 from os.path import basename
+from pylorax.sysutils import joinpaths
+
+# Test the runtime_img, if it is > 4GiB we need to set -iso-level to 3
+if os.stat(joinpaths(inroot, runtime_img)).st_size >= 4*1024**3:
+    isoargs = "-iso-level 3"
+else:
+    isoargs = ""
 %>
 
 mkdir images
@@ -78,7 +86,7 @@ replace @ROOT@ 'inst.stage2=hd:LABEL=${isolabel|udev}' ${GRUBDIR}/grub.cfg
 %endfor
 
 ## make boot.iso
-runcmd xorrisofs -v -U -J -R \
+runcmd xorrisofs -v -U -J -R ${isoargs} \
         -o ${outroot}/images/boot.iso \
         -r -l -sysid PPC \
         -A "${product.name} ${product.version}" -V '${isolabel}' \
