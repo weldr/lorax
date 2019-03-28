@@ -467,6 +467,9 @@ def calculate_disk_size(opts, ks):
                 log.info("Adding 1024M for reqpart --addboot")
                 disk_size += 1024
 
+    if opts.image_size_align:
+        disk_size += opts.image_size_align - (disk_size % opts.image_size_align)
+
     log.info("Using disk size of %sMiB", disk_size)
     return disk_size
 
