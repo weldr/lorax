@@ -1,4 +1,4 @@
-<%page args="kernels, runtime_img, runtime_base, basearch, outroot, arch"/>
+<%page args="kernels, runtime_img, runtime_base, basearch, inroot, outroot, arch"/>
 <%
 configdir="tmp/config_files/uboot"
 PXEBOOTDIR="images/pxeboot"
@@ -12,7 +12,15 @@ LORAXDIR="usr/share/lorax/"
 platforms = ""
 delimiter = ''
 
+import os
 from os.path import basename
+from pylorax.sysutils import joinpaths
+
+# Test the runtime_img, if it is > 4GiB we need to set -iso-level to 3
+if os.stat(joinpaths(inroot, runtime_img)).st_size >= 4*1024**3:
+    isoargs = "-iso-level 3"
+else:
+    isoargs = ""
 %>
 
 mkdir images
@@ -84,7 +92,7 @@ treeinfo ${basearch} platforms ${platforms}
 
 %if exists("boot/efi/EFI/*/gcdarm.efi"):
 ## make boot.iso
-runcmd xorrisofs -o ${outroot}/images/boot.iso \
+runcmd xorrisofs ${isoargs} -o ${outroot}/images/boot.iso \
        ${efiargs} -R -J -V '${isolabel}' \
        -graft-points \
        .discinfo=${outroot}/.discinfo \

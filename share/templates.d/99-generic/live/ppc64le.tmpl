@@ -12,7 +12,15 @@ LORAXDIR="usr/share/lorax/"
 ## with '_', which means we won't need any udev escapes.
 isolabel = ''.join(ch if ch.isalnum() else '_' for ch in isolabel)
 
+import os
 from os.path import basename
+from pylorax.sysutils import joinpaths
+
+# Test the runtime_img, if it is > 4GiB we need to set -iso-level to 3
+if os.stat(joinpaths(inroot, runtime_img)).st_size >= 4*1024**3:
+    isoargs = "-iso-level 3"
+else:
+    isoargs = ""
 %>
 
 mkdir ${LIVEDIR}
@@ -72,7 +80,7 @@ replace @EXTRA@ '${extra_boot_args}' ${GRUBDIR}/grub.cfg
 %endfor
 
 ## make boot.iso
-runcmd xorrisofs -v -U -J -R \
+runcmd xorrisofs -v -U -J -R ${isoargs} \
         -o ${outroot}/images/boot.iso \
         -r -l -sysid PPC \
         -A "${product.name} ${product.version}" -V '${isolabel}' \
