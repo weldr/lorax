@@ -157,6 +157,9 @@ class GitRpmTest(unittest.TestCase):
         files = sorted(f.name for f in rpm.files(hdr) if stat.S_ISREG(f.mode))
         self.assertEqual(files, [os.path.join(repo["destination"], f) for f in self.test_results[test_name]])
 
+        # / should never be included in the rpm, doing so conflicts with the filesystem package
+        self.assertFalse(any(True for f in files if f == "/"))
+
     def git_branch_test(self):
         """Test creating an rpm from a git branch"""
         git_repo = toml.loads("""
@@ -245,6 +248,25 @@ class GitRpmTest(unittest.TestCase):
 
         finally:
             shutil.rmtree(temp_dir)
+
+    def git_root_test(self):
+        """Test creating an rpm with / as the destination """
+        git_repo = toml.loads("""
+            [[repos.git]]
+            rpmname="git-rpm-test"
+            rpmversion="1.0.0"
+            rpmrelease="1"
+            summary="Testing the git rpm code"
+            repo="file://%s"
+            ref="v1.1.0"
+            destination="/"
+        """ % (self.repodir))
+        try:
+            rpm_dir = tempfile.mkdtemp(prefix="git-rpm-test.")
+            rpm_file = make_git_rpm(git_repo["repos"]["git"][0], rpm_dir)
+            self._check_rpm(git_repo["repos"]["git"][0], rpm_dir, rpm_file, "second")
+        finally:
+            shutil.rmtree(rpm_dir)
 
 
 class GitRpmBuildTest(unittest.TestCase):

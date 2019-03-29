@@ -94,9 +94,13 @@ def create_git_repo():
     for f in ["packages-only.toml", "groups-only.toml"]:
         shutil.copy2(os.path.join(oldcwd, results_path, f), os.path.join(repodir, "only-bps/"))
         test_results["second"].append(os.path.join("only-bps/", f))
+
+    # Add a dotfile as well
+    open(os.path.join(repodir, "only-bps/.bpsrc"), "w").write("dotfile test\n")
+    test_results["second"].append("only-bps/.bpsrc")
     test_results["second"] = sorted(test_results["second"])
 
-    cmd = ["git", "add", "*.toml"]
+    cmd = ["git", "add", "*.toml", "only-bps/.bpsrc"]
     subprocess.check_call(cmd)
     cmd = ["git", "commit", "-m", "second files"]
     subprocess.check_call(cmd)
