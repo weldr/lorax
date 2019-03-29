@@ -17,6 +17,7 @@
 import glob
 import os
 import parted
+import tarfile
 import tempfile
 import unittest
 
@@ -153,6 +154,17 @@ class ImgUtilsTest(unittest.TestCase):
                     self.assertTrue(os.path.exists(disk_img.name))
                     file_details = get_file_magic(disk_img.name)
                     self.assertTrue(magic in file_details, (compression, magic, file_details))
+
+    def mktar_single_file_test(self):
+        with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img,\
+                tempfile.NamedTemporaryFile(prefix="lorax.test.input.") as input_file:
+            mktar(input_file.name, disk_img.name, compression=None)
+
+            self.assertTrue(os.path.exists(disk_img.name))
+            self.assertTrue(tarfile.is_tarfile(disk_img.name))
+
+            with tarfile.TarFile(disk_img.name) as t:
+                self.assertEqual(t.getnames(), [os.path.basename(input_file.name)])
 
     def mksquashfs_test(self):
         """Test mksquashfs function"""
