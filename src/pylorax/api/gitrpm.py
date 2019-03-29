@@ -134,10 +134,17 @@ class GitRpmBuild(SimpleRpmBuild):
         sourceIndex = self.add_source(GitArchiveTarball(gitRepo))
         self.section_build += "tar -xvf %s\n" % self.sources[sourceIndex].sourceName
         dest = os.path.normpath(gitRepo["destination"])
+        # Prevent double slash root
+        if dest == "/":
+            dest = ""
         self.create_parent_dirs(dest)
-        self.section_install += "cp -r %s $RPM_BUILD_ROOT/%s\n" % (gitRepo["rpmname"], dest)
+        self.section_install += "cp -r %s/. $RPM_BUILD_ROOT/%s\n" % (gitRepo["rpmname"], dest)
         sub = self.get_subpackage(None)
-        sub.section_files += "%s/" % dest
+        if not dest:
+            # / is special, we don't want to include / itself, just what's under it
+            sub.section_files += "/*\n"
+        else:
+            sub.section_files += "%s/\n" % dest
 
 def make_git_rpm(gitRepo, dest):
     """ Create an rpm from the specified git repo
