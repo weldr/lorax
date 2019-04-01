@@ -41,8 +41,8 @@ keep track of the build. You can also cancel the build if needed.
 
 <<<<<<< HEAD
 The available types of images is displayed by ``composer-cli compose types``.
-Currently this consists of: ami, ext4-filesystem, google, live-iso, openstack,
-partitioned-disk, qcow2, tar, vhd, vmdk
+Currently this consists of: ami, ext4-filesystem, google, hyper-v, live-iso,
+openstack, partitioned-disk, qcow2, tar, vhd, vmdk
 
 Monitor the build status
 ------------------------
