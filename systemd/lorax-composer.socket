@@ -1,5 +1,6 @@
 [Unit]
 Description=lorax-composer socket activation
+Documentation=man:lorax-composer(1),https://weldr.io/lorax/lorax-composer.html
 
 [Socket]
 ListenStream=/run/weldr/api.socket
