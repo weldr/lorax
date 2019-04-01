@@ -2,6 +2,7 @@
 Description=Lorax Image Composer API Server
 After=network-online.target
 Wants=network-online.target
+Documentation=man:lorax-composer(1),https://weldr.io/lorax/lorax-composer.html
 
 [Service]
 User=root
