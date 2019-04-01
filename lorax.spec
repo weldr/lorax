@@ -4,7 +4,7 @@
 
 Name:           lorax
 Version:        28.14.23
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
@@ -15,6 +15,12 @@ URL:            https://github.com/weldr/lorax
 # git checkout -b archive-branch lorax-%%{version}-%%{release}
 # tito build --tgz
 Source0:        %{name}-%{version}.tar.gz
+Patch0001:      0001-installer-make-sure-cancel_func-has-a-value-612.patch
+Patch0002:      0002-Add-some-extra-cancel_func-protection-to-QEMUInstall.patch
+Patch0003:      0003-lorax-composer-Add-the-ability-to-append-to-the-kern.patch
+Patch0004:      0004-Add-extra-boot-args-to-the-livemedia-creator-iso-tem.patch
+Patch0005:      0005-Improve-logging-for-template-syntax-errors.patch
+Patch0006:      0006-lorax-composer-pass-customization.kernel-append-to-e.patch
 
 BuildRequires:  python3-devel
 
@@ -234,6 +240,34 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Apr 01 2019 Brian C. Lane <bcl@redhat.com> 28.14.23-2
+- lorax-composer: pass customization.kernel append to extra_boot_args (bcl)
+  Resolves: rhbz#1690068
+- Improve logging for template syntax errors (bcl)
+  Related: rhbz#1690068
+- Add extra boot args to the livemedia-creator iso templates (bcl)
+  Related: rhbz#1690068
+- lorax-composer: Add the ability to append to the kernel command-line (bcl)
+  Related: rhbz#1690068
+- Add some extra cancel_func protection to QEMUInstall (bcl)
+  Related: rhbz#1690507
+- installer: make sure cancel_func has a value (yuvalt)
+  Resolves: rhbz#1690507
+
+* Mon Apr 01 2019 Brian C. Lane <bcl@redhat.com> 28.14.23-2
+- lorax-composer: pass customization.kernel append to extra_boot_args (bcl)
+  Resolves: rhbz#1690068
+- Improve logging for template syntax errors (bcl)
+  Related: rhbz#1690068
+- Add extra boot args to the livemedia-creator iso templates (bcl)
+  Related: rhbz#1690068
+- lorax-composer: Add the ability to append to the kernel command-line (bcl)
+  Related: rhbz#1690068
+- Add some extra cancel_func protection to QEMUInstall (bcl)
+  Related: rhbz#1690507
+- installer: make sure cancel_func has a value (yuvalt)
+  Resolves: rhbz#1690507
+
 * Wed Jan 30 2019 Brian C. Lane <bcl@redhat.com> 28.14.23-1
 - lorax: Move default tmp dir to /var/tmp/lorax (bcl)
   Resolves: rhbz#1668408
