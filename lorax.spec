@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        31.1
+Version:        31.2
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -240,6 +240,13 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Mon Apr 01 2019 Brian C. Lane <bcl@redhat.com> 31.2-1
+- Add documentation references to lorax-composer service files (bcl@redhat.com)
+- Add more tests for gitrpm.py (bcl@redhat.com)
+- lorax-composer: Fix installing files from [[repos.git]] to / (bcl@redhat.com)
+- New lorax documentation - 31.1 (bcl@redhat.com)
+- Make it easier to generate docs for the next release (bcl@redhat.com)
+
 * Tue Mar 26 2019 Brian C. Lane <bcl@redhat.com> 31.1-1
 - qemu wasn't restoring the terminal if it was terminated early (bcl@redhat.com)
 - Switch the --virt-uefi method to use SecureBoot (bcl@redhat.com)
