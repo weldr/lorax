@@ -42,3 +42,9 @@ def get_file_magic(filename):
     finally:
         ms.close()
     return details
+
+def this_is_rhel():
+    """Check to see if the tests are running on RHEL
+    """
+    release = open("/etc/system-release", "r").read()
+    return "Red Hat Enterprise Linux" in release

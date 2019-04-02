@@ -22,6 +22,7 @@ import tempfile
 import time
 import unittest
 
+from ..lib import this_is_rhel
 from pylorax.sysutils import joinpaths
 from pylorax.api.config import configure, make_dnf_dirs
 from pylorax.api.projects import api_time, api_changelog, pkg_to_project, pkg_to_project_info, pkg_to_dep
@@ -196,7 +197,11 @@ class ProjectsTest(unittest.TestCase):
         self.assertEqual(modules[0]["dependencies"][0]["name"], "basesystem")
 
     def test_groups_depsolve(self):
-        deps = projects_depsolve(self.dbo, [], ["c-development"])
+        if this_is_rhel():
+            group_names = ["development"]
+        else:
+            group_names = ["c-development"]
+        deps = projects_depsolve(self.dbo, [], group_names)
         names = [grp["name"] for grp in deps]
         self.assertTrue("autoconf" in names)            # mandatory package
         self.assertTrue("ctags" in names)               # default package
