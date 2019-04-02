@@ -9,7 +9,7 @@ CLI="${CLI:-./src/bin/composer-cli}"
 rlJournalStart
     rlPhaseStartTest "compose types"
         rlAssertEquals "lists all supported types" \
-                "`$CLI compose types | sort | xargs`" "ami ext4-filesystem google live-iso openstack partitioned-disk qcow2 tar vhd vmdk"
+                "`$CLI compose types | sort | xargs`" "alibaba ami ext4-filesystem google live-iso openstack partitioned-disk qcow2 tar vhd vmdk"
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
