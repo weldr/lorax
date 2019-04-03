@@ -19,7 +19,7 @@ shutdown
 # System timezone
 timezone --ntpservers metadata.google.internal UTC
 # System bootloader configuration
-bootloader --location=mbr --append="ttyS0,38400n8d"
+bootloader --location=mbr --append="console=ttyS0,38400n8d"
 # Add platform specific partitions
 reqpart --add-boot
 
