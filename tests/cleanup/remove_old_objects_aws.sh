@@ -1,5 +1,6 @@
 #!/bin/bash
 # Script removes virtual machines, AMIs, volumes, snapshots, key pairs and S3 objects older than HOURS_LIMIT (24 hours by default) from Amazon EC2/S3
+# Instances, Volumes, Snapshots, AMIs and s3 objects with the "keep_me" tag will not be affected
 
 . /usr/share/beakerlib/beakerlib.sh
 
@@ -78,7 +79,7 @@ for region in $regions; do
       region: "$region"
       state: absent
     loop: "{{vms_facts.instances}}"
-    when: item.launch_time < lookup('env','TIMESTAMP')
+    when: (item.launch_time < lookup('env','TIMESTAMP')) and (item.tags['keep_me'] is not defined)
     loop_control:
       label: "{{item.instance_id}}"
 __EOF__
@@ -110,7 +111,7 @@ __EOF__
       state: absent
       delete_snapshot: True
     loop: "{{ami_facts.images}}"
-    when: item.creation_date < lookup('env','TIMESTAMP')
+    when: (item.creation_date < lookup('env','TIMESTAMP')) and (item.tags['keep_me'] is not defined)
     loop_control:
       label: "{{item.image_id}}"
 __EOF__
@@ -138,8 +139,8 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartTest "Delete old volumes in region $region"
-        # get a list of unused ("available") volumes older than $TIMESTAMP
-        volumes_to_delete=$(aws ec2 describe-volumes --region="$region" --query "Volumes[?CreateTime<\`$TIMESTAMP\`] | [?State==\`available\`].[VolumeId,CreateTime]" --output text)
+        # get a list of unused ("available") volumes older than $TIMESTAMP and not having the tag "keep_me"
+        volumes_to_delete=$(aws ec2 describe-volumes --region="$region" --query "Volumes[?CreateTime<\`$TIMESTAMP\`] | [?!(Tags[?Key==\`keep_me\`])] | [?State==\`available\`].[VolumeId,CreateTime]" --output text)
 
         while read volume_id creation_time; do
             if [ -n "$volume_id" ]; then
@@ -150,8 +151,8 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartTest "Delete old snapshots in region $region"
-        # get a list of snapshots older than $TIMESTAMP and owned by our account
-        snapshots_to_delete=$(aws ec2 describe-snapshots --region="$region" --owner-ids "$account_id" --query "Snapshots[?StartTime<\`$TIMESTAMP\`].[SnapshotId,StartTime]" --output text)
+        # get a list of snapshots older than $TIMESTAMP and owned by our account and not having the tag "keep_me"
+        snapshots_to_delete=$(aws ec2 describe-snapshots --region="$region" --owner-ids "$account_id" --query "Snapshots[?StartTime<\`$TIMESTAMP\`] |[?!(Tags[?Key==\`keep_me\`])].[SnapshotId,StartTime]" --output text)
 
         while read snapshot_id start_time; do
             if [ -n "$snapshot_id" ]; then
@@ -169,8 +170,12 @@ done
         while read date_f time_f size_f filename_f; do
             creation_date=`date -u -d "$date_f $time_f" '+%FT%T'`
             if [ "$creation_date" \< "$TIMESTAMP" ]; then
-	        rlLogInfo "Removing old file $filename_f created $date_f $time_f"
-	        rlRun -t -c "aws s3 rm s3://${AWS_BUCKET}/${filename_f}"
+                # find and delete s3 objects without the "keep_me" tag
+                keep=$(aws s3api get-object-tagging --bucket ${AWS_BUCKET} --key ${filename_f} --output text | cut -f2 | grep "^keep_me$")
+                if [ -n "$keep" ]; then
+                    rlLogInfo "Removing old file $filename_f created $date_f $time_f"
+                    rlRun -t -c "aws s3 rm s3://${AWS_BUCKET}/${filename_f}"
+                fi
             fi
         done <<< "$all_objects"
     rlPhaseEnd
