@@ -73,22 +73,23 @@ class BlueprintsTest(unittest.TestCase):
         self.assertTrue("example-http-server" in output)
         self.assertTrue("Recipe example-http-server, version 0.0.1 saved." in output)
 
+    # NOTE: Order of these 3 is important, delete needs to come after save, before push and these 3
     @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Test requires a running API server")
     def test_save_0(self):
-        """blueprints save"""
-        blueprints_save("/run/weldr/api.socket", 0, ["example-http-server"], show_json=False)
+        """blueprints save example-development"""
+        blueprints_save("/run/weldr/api.socket", 0, ["example-development"], show_json=False)
         self.assertTrue(os.path.exists("example-http-server.toml"))
 
     @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Test requires a running API server")
     def test_save_1(self):
-        """blueprints push"""
-        rc = blueprints_push("/run/weldr/api.socket", 0, ["example-http-server.toml"], show_json=False)
+        """blueprints delete example-development"""
+        rc = blueprints_delete("/run/weldr/api.socket", 0, ["example-development"], show_json=False)
         self.assertTrue(rc == 0)
 
     @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Test requires a running API server")
-    def test_delete(self):
-        """blueprints delete"""
-        rc = blueprints_delete("/run/weldr/api.socket", 0, ["example-development"], show_json=False)
+    def test_save_2(self):
+        """blueprints push example-development"""
+        rc = blueprints_push("/run/weldr/api.socket", 0, ["example-development.toml"], show_json=False)
         self.assertTrue(rc == 0)
 
     @unittest.skipUnless(os.path.exists("/run/weldr/api.socket"), "Test requires a running API server")

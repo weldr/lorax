@@ -7,5 +7,5 @@ metadata_expire=7d
 repo_gpgcheck=0
 type=rpm
 gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-single-repo-test
 skip_if_unavailable=False
