@@ -72,6 +72,18 @@ def get_system_repo():
     # Failed to find one, fall back to using base
     return "base"
 
+
+def docs_path():
+    """Helper that points to where documentation should be.
+
+    They may not be installed, so in that case the doc test should be skipped
+    """
+    try:
+        return os.path.abspath(joinpaths(os.path.dirname(__file__), "../../../docs/html"))
+    except IndexError:
+        return "/usr/share/doc/lorax/html"
+
+
 class ServerTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(self):
@@ -804,11 +816,13 @@ class ServerTestCase(unittest.TestCase):
         self.assertRegex(response.data.decode("utf-8"), r"Lorax [\d.]+ documentation")
         self.assertRegex(response.data.decode("utf-8"), r"Copyright \d+, Red Hat, Inc.")
 
+    @unittest.skipUnless(os.path.exists(docs_path()), "Test requires a running API server")
     def test_api_docs(self):
         """Test the /api/docs/"""
         resp = self.server.get("/api/docs/")
         self.assert_documentation(resp)
 
+    @unittest.skipUnless(os.path.exists(docs_path()), "Test requires a running API server")
     def test_api_docs_with_existing_path(self):
         """Test the /api/docs/modules.html"""
         resp = self.server.get("/api/docs/modules.html")
