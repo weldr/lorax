@@ -118,9 +118,9 @@ class ServerTestCase(unittest.TestCase):
 
         make_dnf_dirs(server.config["COMPOSER_CFG"], os.getuid(), os.getgid())
 
-        # copy over the test dnf repositories
+        # copy over the test_server dnf repositories
         dnf_repo_dir = server.config["COMPOSER_CFG"].get("composer", "repo_dir")
-        for f in glob("./tests/pylorax/repos/*.repo"):
+        for f in glob("./tests/pylorax/repos/server-*.repo"):
             shutil.copy2(f, dnf_repo_dir)
 
         # Modify fedora vs. rawhide tests when running on rawhide
