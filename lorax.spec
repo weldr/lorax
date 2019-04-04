@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        19.7.22
+Version:        19.7.23
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -120,6 +120,10 @@ rm -f $RPM_BUILD_ROOT/%{_tmpfilesdir}/lorax-composer.conf
 %{_tmpfilesdir}/lorax.conf
 
 %changelog
+* Thu Apr 04 2019 Brian C. Lane <bcl@redhat.com> 19.7.23-1
+- lorax: Install redhat-release-eula (bcl)
+  Resolves: rhbz#1696335
+
 * Tue Mar 26 2019 Brian C. Lane <bcl@redhat.com> 19.7.22-1
 - Improve logging for template syntax errors (bcl)
   Related: rhbz#1689314
