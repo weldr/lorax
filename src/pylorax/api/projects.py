@@ -553,7 +553,7 @@ def get_source_ids(source_path):
     if not os.path.exists(source_path):
         return []
 
-    cfg = ConfigParser()
+    cfg = ConfigParser(strict=False)
     cfg.read(source_path)
     return cfg.sections()
 
@@ -587,7 +587,7 @@ def delete_repo_source(source_glob, source_name):
     found = False
     for f in glob(source_glob):
         try:
-            cfg = ConfigParser()
+            cfg = ConfigParser(strict=False)
             cfg.read(f)
             if source_name in cfg.sections():
                 found = True
