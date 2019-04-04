@@ -4,7 +4,7 @@
 
 Name:           lorax
 Version:        28.14.23
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
@@ -21,6 +21,7 @@ Patch0003:      0003-lorax-composer-Add-the-ability-to-append-to-the-kern.patch
 Patch0004:      0004-Add-extra-boot-args-to-the-livemedia-creator-iso-tem.patch
 Patch0005:      0005-Improve-logging-for-template-syntax-errors.patch
 Patch0006:      0006-lorax-composer-pass-customization.kernel-append-to-e.patch
+Patch0007:      0007-Pass-ssl-certificate-options-to-anaconda.patch
 
 BuildRequires:  python3-devel
 
@@ -240,6 +241,10 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu Apr 04 2019 Brian C. Lane <bcl@redhat.com> 28.14.23-3
+- Pass ssl certificate options to anaconda (lars)
+  Resolves: rhbz#1663950
+
 * Mon Apr 01 2019 Brian C. Lane <bcl@redhat.com> 28.14.23-2
 - lorax-composer: pass customization.kernel append to extra_boot_args (bcl)
   Resolves: rhbz#1690068
