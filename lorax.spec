@@ -243,7 +243,7 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %changelog
 * Thu Apr 04 2019 Brian C. Lane <bcl@redhat.com> 28.14.23-3
 - Pass ssl certificate options to anaconda (lars)
-  Resolves: rhbz#1663950
+  Resolves: rhbz#1693801
 
 * Mon Apr 01 2019 Brian C. Lane <bcl@redhat.com> 28.14.23-2
 - lorax-composer: pass customization.kernel append to extra_boot_args (bcl)
