@@ -172,7 +172,7 @@ done
             if [ "$creation_date" \< "$TIMESTAMP" ]; then
                 # find and delete s3 objects without the "keep_me" tag
                 keep=$(aws s3api get-object-tagging --bucket ${AWS_BUCKET} --key ${filename_f} --output text | cut -f2 | grep "^keep_me$")
-                if [ -n "$keep" ]; then
+                if [ -z "$keep" ]; then
                     rlLogInfo "Removing old file $filename_f created $date_f $time_f"
                     rlRun -t -c "aws s3 rm s3://${AWS_BUCKET}/${filename_f}"
                 fi
