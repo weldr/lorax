@@ -265,7 +265,6 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 - Pass ssl certificate options to anaconda (lars)
   Resolves: rhbz#1663950
 - Add checks for disabled root account (jikortus)
-  Related: rhbz#1626122
 - Fixup lorax.spec bugs (bcl)
   Related: rhbz#1678937
 
