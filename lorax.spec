@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.25
+Version:        28.14.26
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -234,6 +234,41 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Fri Apr 05 2019 Brian C. Lane <bcl@redhat.com> 28.14.26-1
+- Only use repos with valid urls for test_server.py (bcl)
+  Related: rhbz#1678937
+- Use strict=False when reading repo files (bcl)
+  Related: rhbz#1678937
+- tests: Skip docs if not installed (bcl)
+  Related: rhbz#1678937
+- tests: Make sure example-development is present for delete test (bcl)
+  Related: rhbz#1678937
+- tests: Make it easier to update version globs (bcl)
+  Related: rhbz#1678937
+- tests: Select the group to use based on the release (bcl)
+  Related: rhbz#1678937
+- Add requirements-test.txt (bcl)
+  Related: rhbz#1678937
+- Fix the google cloud boot console settings (dshea)
+  Related: rhbz#1689140
+- Add a compose type for alibaba. (dshea)
+  Resolves: rhbz#1689140
+- Add a compose check for google cloud images. (dshea)
+  Related: rhbz#1689140
+- Add a compose type for Google Compute Engine (dshea) (dshea)
+- Add a new output type, tar-disk. (dshea)
+  Related: rhbz#1689140
+- Support compressing single files. (dshea)
+  Related: rhbz#1689140
+- Add an option to align the image size to a multiplier. (dshea)
+  Related: rhbz#1689140
+- Pass ssl certificate options to anaconda (lars)
+  Resolves: rhbz#1663950
+- Add checks for disabled root account (jikortus)
+  Related: rhbz#1626122
+- Fixup lorax.spec bugs (bcl)
+  Related: rhbz#1678937
+
 * Wed Mar 27 2019 Brian C. Lane <bcl@redhat.com> 28.14.25-1
 - New lorax documentation - 28.14.25 (bcl)
   Related: rhbz#1687743
