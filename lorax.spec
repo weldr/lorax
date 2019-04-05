@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        30.17
+Version:        30.18
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -236,6 +236,15 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Fri Apr 05 2019 Brian C. Lane <bcl@redhat.com> 30.18-1
+- lorax-composer: pass customization.kernel append to extra_boot_args (bcl@redhat.com)
+- Improve logging for template syntax errors (bcl@redhat.com)
+- Add extra boot args to the livemedia-creator iso templates (bcl@redhat.com)
+- lorax-composer: Add the ability to append to the kernel command-line (bcl@redhat.com)
+- Add -iso-level 3 when the install.img is > 4GiB (bcl@redhat.com)
+- qemu wasn't restoring the terminal if it was terminated early (bcl@redhat.com)
+- Switch the --virt-uefi method to use SecureBoot (bcl@redhat.com)
+
 * Fri Mar 15 2019 Brian C. Lane <bcl@redhat.com> 30.17-1
 - tests: Make it easier to update version globs (bcl@redhat.com)
 - Update ppc64le isolabel to match x86_64 logic (bcl@redhat.com)
