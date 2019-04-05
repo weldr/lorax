@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        31.2
+Version:        31.3
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -240,6 +240,20 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Fri Apr 05 2019 Brian C. Lane <bcl@redhat.com> 31.3-1
+- Add -iso-level 3 when the install.img is > 4GiB (bcl@redhat.com)
+- Correct "recipes" use to "blueprints" in composer-cli description (kwalker@redhat.com)
+- Fix keeping files on Amazon s3 (jstodola@redhat.com)
+- Allow to keep objects in AWS (jstodola@redhat.com)
+- Fix the google cloud boot console settings (dshea@redhat.com)
+- Add a compose type for alibaba. (dshea@redhat.com)
+- Add a new compose type for Hyper-V (dshea@redhat.com)
+- Add a compose check for google cloud images. (dshea@redhat.com)
+- Add a compose type for Google Compute Engine (dshea@redhat.com)
+- Add a new output type, tar-disk. (dshea@redhat.com)
+- Support compressing single files. (dshea@redhat.com)
+- Add an option to align the image size to a multiplier. (dshea@redhat.com)
+
 * Mon Apr 01 2019 Brian C. Lane <bcl@redhat.com> 31.2-1
 - Add documentation references to lorax-composer service files (bcl@redhat.com)
 - Add more tests for gitrpm.py (bcl@redhat.com)
