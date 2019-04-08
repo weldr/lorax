@@ -36,6 +36,11 @@ rlJournalStart
 
             rlRun -t -c "$CLI compose image $UUID"
             rlAssertExists "$UUID-root.tar.xz"
+
+            # because this path is listed in the documentation
+            rlAssertExists    "/var/lib/lorax/composer/results/$UUID/"
+            rlAssertExists    "/var/lib/lorax/composer/results/$UUID/root.tar.xz"
+            rlAssertNotDiffer "/var/lib/lorax/composer/results/$UUID/root.tar.xz" "$UUID-root.tar.xz"
         else
             rlFail "Compose UUID is empty!"
         fi
