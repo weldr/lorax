@@ -4,7 +4,7 @@
 
 Name:           lorax
 Version:        28.14.23
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
@@ -22,6 +22,9 @@ Patch0004:      0004-Add-extra-boot-args-to-the-livemedia-creator-iso-tem.patch
 Patch0005:      0005-Improve-logging-for-template-syntax-errors.patch
 Patch0006:      0006-lorax-composer-pass-customization.kernel-append-to-e.patch
 Patch0007:      0007-Pass-ssl-certificate-options-to-anaconda.patch
+Patch0008:      0008-Revert-lorax-composer-Check-for-CDN-only-repos.patch
+Patch0009:      0009-Revert-lorax-composer-Add-CDN-repo-checks-to-startup.patch
+
 
 BuildRequires:  python3-devel
 
@@ -241,6 +244,14 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Apr 08 2019 Brian C. Lane <bcl@redhat.com> 28.14.23-4
+- Revert "lorax-composer: Add CDN repo checks to startup and compose start." (bcl)
+  Related: rhbz#1693801
+- Revert "lorax-composer: Check for CDN only repos" (bcl)
+  Related: rhbz#1693801
+- Fix bz# for ssl cert patch (bcl)
+  Resolves: rhbz#1693801
+
 * Thu Apr 04 2019 Brian C. Lane <bcl@redhat.com> 28.14.23-3
 - Pass ssl certificate options to anaconda (lars)
   Resolves: rhbz#1693801
