@@ -83,6 +83,9 @@ version = "*"
 [[customizations.user]]
 name = "root"
 key = "$PUB_KEY"
+
+[customizations.kernel]
+append = "custom_cmdline_arg"
 __EOF__
 
         rlRun -t -c "$CLI blueprints push $TMP_DIR/vmware.toml"
