@@ -75,7 +75,7 @@ __EOF__
     rlPhaseStartTest "Verify VM instance"
         # verify we can login into that instance and root account is disabled
         . ./tests/cli/lib/root_account.sh
-        check_root_account $CLOUD_USER $IP_ADDRESS "-i $SSH_KEY_DIR/id_rsa -p 2222"
+        check_root_account root localhost "-i $SSH_KEY_DIR/id_rsa -p 2222"
     rlPhaseEnd
 
     rlPhaseStartCleanup

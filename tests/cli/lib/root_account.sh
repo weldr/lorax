@@ -10,6 +10,7 @@ check_root_account() {
     local ssh_opts="-o StrictHostKeyChecking=no $3"
     local user="$1"
     local machine="$2"
+    ROOT_ACCOUNT_LOCKED=${ROOT_ACCOUNT_LOCKED:-1}
     if [[ "$user" == "" || "$machine" == "" ]]; then
         rlFail "check_root_account: Missing user or machine parameter."
         return 1
@@ -28,7 +29,7 @@ check_root_account() {
             0 "audit.log contains entry about unsuccessful root login"
         # We modify the default sshd settings on live ISO, so we can only check the default empty password setting
         # outside of live ISO
-        rlRun -t -c "ssh $ssh_opts ${user}@${machine} 'grep -E \"^[[:blank:]]*PermitEmptyPasswords[[:blank:]]*yes\" /etc/ssh/sshd_config'" 1 \
+        rlRun -t -c "ssh $ssh_opts ${user}@${machine} 'sudo grep -E \"^[[:blank:]]*PermitEmptyPasswords[[:blank:]]*yes\" /etc/ssh/sshd_config'" 1 \
             "Login with empty passwords is disabled in sshd config file"
     fi
     rlRun -t -c "ssh $ssh_opts ${user}@${machine} 'cat /etc/redhat-release'"
