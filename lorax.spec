@@ -4,7 +4,7 @@
 
 Name:           lorax
 Version:        28.14.23
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
@@ -244,6 +244,10 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Apr 08 2019 Brian C. Lane <bcl@redhat.com> 28.14.23-5
+- Update anaconda-tui requirement for lorax-composer (bcl)
+- Related: rhbz#1693801
+
 * Mon Apr 08 2019 Brian C. Lane <bcl@redhat.com> 28.14.23-4
 - Revert "lorax-composer: Add CDN repo checks to startup and compose start." (bcl)
   Related: rhbz#1693801
