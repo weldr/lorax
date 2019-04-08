@@ -8,6 +8,7 @@ verify_image() {
     SSH_OPTS="-o StrictHostKeyChecking=no $3"
     rlLogInfo "verify_image: SSH_OPTS:'$SSH_OPTS' SSH_USER:'$SSH_USER' SSH_MACHINE: '$SSH_MACHINE'"
     check_root_account "$@"
+    check_kernel_cmdline "$@"
 }
 
 check_root_account() {
@@ -42,3 +43,8 @@ check_root_account() {
     rlRun -t -c "ssh $SSH_OPTS ${SSH_USER}@${SSH_MACHINE} 'cat /etc/redhat-release'"
 }
 
+# verify that a kernel command line argument was passed from the blueprint (this is added to the blueprint in ../test_cli.sh)
+check_kernel_cmdline() {
+    rlRun -t -c "ssh $SSH_OPTS ${SSH_USER}@${SSH_MACHINE} 'grep custom_cmdline_arg /proc/cmdline'" 0 \
+        "System booted from the image contains specified parameter on kernel command line"
+}
