@@ -65,6 +65,10 @@ version = "*"
 [[modules]]
 name = "rng-tools"
 version = "*"
+
+[customizations.kernel]
+append = "custom_cmdline_arg"
+
 __EOF__
 
         rlRun -t -c "$CLI blueprints push $TMP_DIR/http-with-rng.toml"

@@ -15,6 +15,14 @@ function setup_tests {
         /%post/ && FLAG != 2 {FLAG=1}
         /%end/ && FLAG == 1 {print \"sed -i 's/.*PermitEmptyPasswords.*/PermitEmptyPasswords yes/' /etc/ssh/sshd_config\"; FLAG=2}
         {print}" $1/composer/live-iso.ks)" > $1/composer/live-iso.ks
+
+    # append a section with additional option on kernel command line to example-http-server blueprint
+    # which is used for building of most of the images
+    cat >> $BLUEPRINTS_DIR/example-http-server.toml << __EOF__
+
+[customizations.kernel]
+append = "custom_cmdline_arg"
+__EOF__
 }
 
 function teardown_tests {
