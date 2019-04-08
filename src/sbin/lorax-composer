@@ -38,7 +38,7 @@ from pylorax import vernum, log_selinux_state
 from pylorax.api.cmdline import lorax_composer_parser
 from pylorax.api.config import configure, make_dnf_dirs, make_queue_dirs
 from pylorax.api.compose import test_templates
-from pylorax.api.dnfbase import DNFLock, check_repos
+from pylorax.api.dnfbase import DNFLock
 from pylorax.api.queue import start_queue_monitor
 from pylorax.api.recipes import open_or_create_repo, commit_recipe_directory
 from pylorax.api.server import server, GitLock
@@ -256,8 +256,6 @@ if __name__ == '__main__':
     # Depsolve the templates and make a note of the failures for /api/status to report
     with server.config["DNFLOCK"].lock:
         server.config["TEMPLATE_ERRORS"] = test_templates(server.config["DNFLOCK"].dbo, server.config["COMPOSER_CFG"].get("composer", "share_dir"))
-        if not check_repos(server.config["DNFLOCK"].dbo):
-            server.config["TEMPLATE_ERRORS"].append("Compose needs non-CDN repos enabled. Anaconda will fail to run.")
 
     # Setup access to the git repo
     server.config["REPO_DIR"] = opts.BLUEPRINTS
