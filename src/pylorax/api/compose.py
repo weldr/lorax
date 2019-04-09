@@ -80,7 +80,7 @@ def test_templates(dbo, share_dir):
         pkgs = [(name, "*") for name in ks.handler.packages.packageList]
         grps = [grp.name for grp in ks.handler.packages.groupList]
         try:
-            _ = projects_depsolve(dbo, pkgs, grps)
+            projects_depsolve(dbo, pkgs, grps)
         except ProjectsError as e:
             template_errors.append("Error depsolving %s: %s" % (compose_type, str(e)))
 
@@ -164,6 +164,44 @@ def get_kernel_append(recipe):
     return recipe["customizations"]["kernel"]["append"]
 
 
+def timezone_cmd(line, settings):
+    """ Update the timezone line with the settings
+
+    :param line: The timezone ... line
+    :type line: str
+    :param settings: A dict with timezone and/or ntpservers list
+    :type settings: dict
+
+    Using pykickstart to process the line is the best way to make sure it
+    is parsed correctly, and re-assembled for inclusion into the final kickstart
+    """
+    ks_version = makeVersion()
+    ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+    ks.readKickstartFromString(line)
+
+    if "timezone" in settings:
+        ks.handler.timezone.timezone = settings["timezone"]
+    if "ntpservers" in settings:
+        ks.handler.timezone.ntpservers = settings["ntpservers"]
+
+    # Converting back to a string includes a comment, return just the timezone line
+    return str(ks.handler.timezone).splitlines()[-1]
+
+
+def get_timezone_settings(recipe):
+    """Return the customizations.timezone dict
+
+    :param recipe:
+    :type recipe: Recipe object
+    :returns: append value or empty string
+    :rtype: dict
+    """
+    if "customizations" not in recipe or \
+       "timezone" not in recipe["customizations"]:
+        return {}
+    return recipe["customizations"]["timezone"]
+
+
 def customize_ks_template(ks_template, recipe):
     """ Customize the kickstart template and return it
 
@@ -172,26 +210,60 @@ def customize_ks_template(ks_template, recipe):
     :param recipe:
     :type recipe: Recipe object
 
+    Apply customizations to existing template commands, or add defaults for ones that are
+    missing and required.
+
     Apply customizations.kernel.append to the bootloader argument in the template.
     Add bootloader line if it is missing.
+
+    Add default timezone if needed. It does NOT replace an existing timezone entry
     """
-    kernel_append = get_kernel_append(recipe)
-    if not kernel_append:
-        return ks_template
-    found_bootloader = False
+    # Commands to be modified [NEW-COMMAND-FUNC, NEW-VALUE, DEFAULT, REPLACE]
+    # The function is called with a kickstart command string and the value to replace
+    # The value is specific to the command, and is understood by the function
+    # The default is a complete kickstart command string, suitable for writing to the template
+    # If REPLACE is False it will not change an existing entry only add a missing one
+    commands = {"bootloader": [bootloader_append,
+                               get_kernel_append(recipe),
+                               'bootloader --location=none', True],
+                "timezone":   [timezone_cmd,
+                               get_timezone_settings(recipe),
+                               'timezone UTC', False],
+               }
+    found = {}
+
     output = StringIO()
     for line in ks_template.splitlines():
-        if not line.startswith("bootloader"):
+        for cmd in commands:
+            (new_command, value, default, replace) = commands[cmd]
+            if line.startswith(cmd):
+                found[cmd] = True
+                if value and replace:
+                    log.debug("Replacing %s with %s", cmd, value)
+                    print(new_command(line, value), file=output)
+                else:
+                    log.debug("Skipping %s", cmd)
+                    print(line, file=output)
+                break
+        else:
+            # No matches, write the line as-is
             print(line, file=output)
-            continue
-        found_bootloader = True
-        log.debug("Found bootloader line: %s", line)
-        print(bootloader_append(line, kernel_append), file=output)
 
-    if found_bootloader:
-        return output.getvalue()
-    else:
-        return 'bootloader --append="%s" --location=none' % kernel_append + output.getvalue()
+    # Write out defaults for the ones not found
+    # These must go FIRST because the template still needs to have the packages added
+    defaults = StringIO()
+    for cmd in commands:
+        if cmd in found:
+            continue
+        (new_command, value, default, _) = commands[cmd]
+        if value and default:
+            log.debug("Setting %s to use %s", cmd, value)
+            print(new_command(default, value), file=defaults)
+        elif default:
+            log.debug("Setting %s to %s", cmd, default)
+            print(default, file=defaults)
+
+    return defaults.getvalue() + output.getvalue()
 
 
 def write_ks_root(f, user):
