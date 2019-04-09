@@ -16,8 +16,6 @@ selinux --enforcing
 logging --level=info
 # Shutdown after installation
 shutdown
-# System timezone
-timezone  US/Eastern
 # System bootloader configuration (unpartitioned fs image doesn't use a bootloader)
 bootloader --location=none
 

@@ -18,7 +18,8 @@ from StringIO import StringIO
 import unittest
 
 from pylorax.api.compose import add_customizations, compose_types
-from pylorax.api.compose import bootloader_append, customize_ks_template
+from pylorax.api.compose import timezone_cmd, get_timezone_settings
+from pylorax.api.compose import get_kernel_append, bootloader_append, customize_ks_template
 from pylorax.api.recipes import recipe_from_toml
 from pylorax.sysutils import joinpaths
 
@@ -30,6 +31,10 @@ version = "0.0.1"
 
 HOSTNAME = BASE_RECIPE + """[customizations]
 hostname = "testhostname"
+"""
+
+TIMEZONE = BASE_RECIPE + """[customizations]
+timezone = "US/Samoa"
 """
 
 SSHKEY = BASE_RECIPE + """[[customizations.sshkey]]
@@ -204,6 +209,22 @@ class CustomizationsTestCase(unittest.TestCase):
         self.assertCustomization(ROOT_PLAIN_KEY, 'sshkey --user root "A SSH KEY FOR THE USER"')
         self.assertNotCustomization(ROOT_PLAIN_KEY, "rootpw --lock")
 
+    def test_get_kernel_append(self):
+        """Test get_kernel_append function"""
+        blueprint_data = """name = "test-kernel"
+description = "test recipe"
+version = "0.0.1"
+"""
+        blueprint2_data = blueprint_data + """
+[customizations.kernel]
+append="nosmt=force"
+"""
+        recipe = recipe_from_toml(blueprint_data)
+        self.assertEqual(get_kernel_append(recipe), "")
+
+        recipe = recipe_from_toml(blueprint2_data)
+        self.assertEqual(get_kernel_append(recipe), "nosmt=force")
+
     def test_bootloader_append(self):
         """Test bootloader_append function"""
 
@@ -219,19 +240,148 @@ class CustomizationsTestCase(unittest.TestCase):
         self.assertEqual(bootloader_append('bootloader --append="console=tty1" --location=mbr --password="BADPASSWORD"', "nosmt=force"),
                          'bootloader --append="console=tty1 nosmt=force" --location=mbr --password="BADPASSWORD"')
 
-    def _checkBootloader(self, result, append_str):
-        """Find the bootloader line and make sure append_str is in it"""
+    def test_get_timezone_settings(self):
+        """Test get_timezone_settings function"""
+        blueprint_data = """name = "test-kernel"
+description = "test recipe"
+version = "0.0.1"
+"""
+        blueprint2_data = blueprint_data + """
+[customizations.timezone]
+timezone = "US/Samoa"
+"""
+        blueprint3_data = blueprint_data + """
+[customizations.timezone]
+ntpservers = ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"]
+"""
+        blueprint4_data = blueprint_data + """
+[customizations.timezone]
+timezone = "US/Samoa"
+ntpservers = ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"]
+"""
+        recipe = recipe_from_toml(blueprint_data)
+        self.assertEqual(get_timezone_settings(recipe), {})
 
+        recipe = recipe_from_toml(blueprint2_data)
+        self.assertEqual(get_timezone_settings(recipe), {"timezone": "US/Samoa"})
+
+        recipe = recipe_from_toml(blueprint3_data)
+        self.assertEqual(get_timezone_settings(recipe),
+                         {"ntpservers": ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"]})
+
+        recipe = recipe_from_toml(blueprint4_data)
+        self.assertEqual(get_timezone_settings(recipe),
+                         {"timezone": "US/Samoa",
+                          "ntpservers": ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"]})
+
+    def test_timezone_cmd(self):
+        """Test timezone_cmd function"""
+
+        self.assertEqual(timezone_cmd("timezone UTC", {}), 'timezone UTC')
+        self.assertEqual(timezone_cmd("timezone FOO", {"timezone": "US/Samoa"}),
+                         'timezone US/Samoa')
+        self.assertEqual(timezone_cmd("timezone FOO",
+            {"timezone": "US/Samoa", "ntpservers": ["0.ntp.org", "1.ntp.org"]}),
+                         'timezone US/Samoa --ntpservers=0.ntp.org,1.ntp.org')
+
+        self.assertEqual(timezone_cmd("timezone --ntpservers=a,b,c FOO",
+            {"timezone": "US/Samoa", "ntpservers": ["0.pool.ntp.org", "1.pool.ntp.org"]}),
+                         'timezone US/Samoa --ntpservers=0.pool.ntp.org,1.pool.ntp.org')
+
+    def _checkBootloader(self, result, append_str, line_limit=0):
+        """Find the bootloader line and make sure append_str is in it"""
+        # Optionally check to make sure the change is at the top of the template
+        line_num = 0
         for line in result.splitlines():
             if line.startswith("bootloader") and append_str in line:
-                return True
+                if line_limit == 0 or line_num < line_limit:
+                    return True
+                else:
+                    print("FAILED: bootloader not in the first %d lines of the output" % line_limit)
+                    return False
+            line_num += 1
         return False
 
-    def _checkTemplates(self, recipe):
-        """Apply the recipe to all the templates"""
+    def _checkTimezone(self, result, settings, line_limit=0):
+        """Find the timezone line and make sure it is as expected"""
+        # Optionally check to make sure the change is at the top of the template
+        line_num = 0
+        for line in result.splitlines():
+            if line.startswith("timezone"):
+                if settings["timezone"] in line and all([True for n in settings["ntpservers"] if n in line]):
+                    if line_limit == 0 or line_num < line_limit:
+                        return True
+                    else:
+                        print("FAILED: timezone not in the first %d lines of the output" % line_limit)
+                        return False
+                else:
+                    print("FAILED: %s not matching %s" % (settings, line))
+            line_num += 1
+        return False
+
+    def test_template_defaults(self):
+        """Test that customize_ks_template includes defaults correctly"""
+        blueprint_data = """name = "test-kernel"
+description = "test recipe"
+version = "0.0.1"
+
+[[packages]]
+name = "lorax"
+version = "*"
+"""
+        recipe = recipe_from_toml(blueprint_data)
+
+        # Make sure that a kickstart with no bootloader and no timezone has them added
+        result = customize_ks_template("firewall --enabled\n", recipe)
+        print(result)
+        self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("bootloader")]), 1)
+        self.assertTrue(self._checkBootloader(result, "none", line_limit=2))
+        self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("timezone")]), 1)
+        self.assertTrue(self._checkTimezone(result, {"timezone": "UTC", "ntpservers": []}, line_limit=2))
+
+        # Make sure that a kickstart with a bootloader, and no timezone has timezone added to the top
+        result = customize_ks_template("firewall --enabled\nbootloader --location=mbr\n", recipe)
+        print(result)
+        self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("bootloader")]), 1)
+        self.assertTrue(self._checkBootloader(result, "mbr"))
+        self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("timezone")]), 1)
+        self.assertTrue(self._checkTimezone(result, {"timezone": "UTC", "ntpservers": []}, line_limit=1))
+
+        # Make sure that a kickstart with a bootloader and timezone has neither added
+        result = customize_ks_template("firewall --enabled\nbootloader --location=mbr\ntimezone US/Samoa\n", recipe)
+        print(result)
+        self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("bootloader")]), 1)
+        self.assertTrue(self._checkBootloader(result, "mbr"))
+        self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("timezone")]), 1)
+        self.assertTrue(self._checkTimezone(result, {"timezone": "US/Samoa", "ntpservers": []}))
+
+    def test_customize_ks_template(self):
+        """Test that customize_ks_template works correctly"""
+        blueprint_data = """name = "test-kernel"
+description = "test recipe"
+version = "0.0.1"
+
+[customizations.kernel]
+append="nosmt=force"
+
+[customizations.timezone]
+timezone = "US/Samoa"
+ntpservers = ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"]
+"""
+        tz_dict = {"timezone": "US/Samoa", "ntpservers": ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"]}
+        recipe = recipe_from_toml(blueprint_data)
+
         # Test against a kickstart without bootloader
         result = customize_ks_template("firewall --enabled\n", recipe)
+        self.assertTrue(self._checkBootloader(result, "nosmt=force", line_limit=2))
+        self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("bootloader")]), 1)
+        self.assertTrue(self._checkTimezone(result, tz_dict, line_limit=2))
+        self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("timezone")]), 1)
+
+        # Test against a kickstart with a bootloader line
+        result = customize_ks_template("firewall --enabled\nbootloader --location=mbr\n", recipe)
         self.assertTrue(self._checkBootloader(result, "nosmt=force"))
+        self.assertTrue(self._checkTimezone(result, tz_dict, line_limit=2))
 
         # Test against all of the available templates
         share_dir = "./share/"
@@ -242,37 +392,23 @@ class CustomizationsTestCase(unittest.TestCase):
             ks_template = open(ks_template_path, "r").read()
             result = customize_ks_template(ks_template, recipe)
             if not self._checkBootloader(result, "nosmt=force"):
-                errors.append(("compose_type %s failed" % compose_type, result))
+                errors.append(("bootloader for compose_type %s failed" % compose_type, result))
+            if sum([1 for l in result.splitlines() if l.startswith("bootloader")]) != 1:
+                errors.append(("bootloader for compose_type %s failed: More than 1 entry" % compose_type, result))
+
+
+            # google images should retain their timezone settings
+            if compose_type == "google":
+                if self._checkTimezone(result, tz_dict):
+                    errors.append(("timezone for compose_type %s failed" % compose_type, result))
+            elif not self._checkTimezone(result, tz_dict, line_limit=2):
+                # None of the templates have a timezone to modify, it should be placed at the top
+                errors.append(("timezone for compose_type %s failed" % compose_type, result))
+            if sum([1 for l in result.splitlines() if l.startswith("timezone")]) != 1:
+                errors.append(("timezone for compose_type %s failed: More than 1 entry" % compose_type, result))
 
         # Print the bad results
         for e, r in errors:
             print("%s:\n%s\n\n" % (e, r))
 
         self.assertEqual(errors, [])
-
-    def test_customize_ks_template(self):
-        """Test that [customizations.kernel] works correctly"""
-        blueprint_data = """name = "test-kernel"
-description = "test recipe"
-version = "0.0.1"
-
-[customizations.kernel]
-append="nosmt=force"
-"""
-        recipe = recipe_from_toml(blueprint_data)
-        self._checkTemplates(recipe)
-
-    def test_customize_list(self):
-        """Test that [customizations.kernel] works correctly with [[customizations]] error"""
-        blueprint_data = """name = "test-kernel"
-description = "test recipe"
-version = "0.0.1"
-
-[[customizations]]
-hostname = "testing"
-
-[customizations.kernel]
-append="nosmt=force"
-"""
-        recipe = recipe_from_toml(blueprint_data)
-        self._checkTemplates(recipe)
