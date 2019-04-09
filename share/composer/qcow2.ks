@@ -16,8 +16,6 @@ selinux --enforcing
 logging --level=info
 # Shutdown after installation
 shutdown
-# System timezone
-timezone  US/Eastern
 # System bootloader configuration
 bootloader --location=mbr
 # Add platform specific partitions

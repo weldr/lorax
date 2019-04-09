@@ -16,8 +16,6 @@ selinux --enforcing
 logging --level=info
 # Shutdown after installation
 shutdown
-# System timezone
-timezone  US/Eastern
 # System bootloader configuration (tar doesn't need a bootloader)
 bootloader --location=none
 
