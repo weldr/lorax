@@ -21,8 +21,6 @@ logging --level=info
 shutdown
 # System services
 services --disabled="network,sshd" --enabled="NetworkManager"
-# System timezone
-timezone  US/Eastern
 # System bootloader configuration
 bootloader --location=mbr
 # Clear the Master Boot Record
