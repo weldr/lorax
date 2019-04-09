@@ -22,7 +22,7 @@ import tempfile
 import unittest
 
 import pylorax.api.recipes as recipes
-from pylorax.api.compose import add_customizations
+from pylorax.api.compose import add_customizations, customize_ks_template
 from pylorax.sysutils import joinpaths
 
 from pykickstart.parser import KickstartParser
@@ -393,6 +393,7 @@ class CustomizationsTests(unittest.TestCase):
 
         # write out the customization data, and parse the resulting kickstart
         with tempfile.NamedTemporaryFile(prefix="lorax.test.customizations", mode="w") as f:
+            f.write(customize_ks_template("", recipe_obj))
             add_customizations(f, recipe_obj)
             f.flush()
             ks.readKickstart(f.name)
@@ -443,6 +444,30 @@ hostname = "testy.example.com"
 """
         ks = self._blueprint_to_ks(blueprint_data)
         self.assertEqual(ks.handler.network.hostname, "testy.example.com")
+
+    def test_timezone(self):
+        blueprint_data = """name = "test-timezone"
+description = "test recipe"
+version = "0.0.1"
+
+[customizations.timezone]
+timezone = "US/Samoa"
+"""
+        ks = self._blueprint_to_ks(blueprint_data)
+        self.assertEqual(ks.handler.timezone.timezone, "US/Samoa")
+
+    def test_timezone_ntpservers(self):
+        blueprint_data = """name = "test-ntpservers"
+description = "test recipe"
+version = "0.0.1"
+
+[customizations.timezone]
+timezone = "US/Samoa"
+ntpservers = ["1.north-america.pool.ntp.org"]
+"""
+        ks = self._blueprint_to_ks(blueprint_data)
+        self.assertEqual(ks.handler.timezone.timezone, "US/Samoa")
+        self.assertEqual(ks.handler.timezone.ntpservers, ["1.north-america.pool.ntp.org"])
 
     def test_user(self):
         blueprint_data = """name = "test-user"
@@ -554,6 +579,10 @@ name = "widget"
 
 [[customizations.group]]
 name = "students"
+
+[customizations.timezone]
+timezone = "US/Samoa"
+ntpservers = ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"]
 """
         ks = self._blueprint_to_ks(blueprint_data)
 
@@ -593,3 +622,6 @@ name = "students"
         studentsGroup = self._find_group(ks, "students")
         self.assertIsNotNone(studentsGroup)
         self.assertEqual(studentsGroup.name, "students")
+
+        self.assertEqual(ks.handler.timezone.timezone, "US/Samoa")
+        self.assertEqual(ks.handler.timezone.ntpservers, ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"])
