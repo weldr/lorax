@@ -175,16 +175,12 @@ for selecting optional packages.
 Customizations
 ~~~~~~~~~~~~~~
 
-The ``[customizations]`` section can be used to configure the hostname,
-language, and timezone of the final image. eg.::
+The ``[customizations]`` section can be used to configure the hostname of the final image. eg.::
 
     [customizations]
     hostname = "baseimage"
-    timezone = "US/Eastern"
 
-These are all optional and may be left out to use the defaults.
-
-The values supported by ``timezone`` can be listed by running ``timedatectl list-timezones``.
+This is optional and may be left out to use the defaults.
 
 
 [customizations.kernel]
@@ -250,45 +246,26 @@ Add a group to the image. ``name`` is required and ``gid`` is optional::
     gid = 1130
 
 
-[[repos.git]]
-~~~~~~~~~~~~~
+[customizations.timezone]
+*************************
 
-The ``[[repos.git]]`` entries are used to add files from a `git repository<https://git-scm.com/>`
-repository to the created image. The repository is cloned, the specified ``ref`` is checked out
-and an rpm is created to install the files to a ``destination`` path. The rpm includes a summary
-with the details of the repository and reference used to create it. The rpm is also included in the
-image build metadata.
+Customizing the timezone and the NTP servers to use for the system::
 
-To create an rpm named ``server-config-1.0-1.noarch.rpm`` you would add this to your blueprint::
+    [customizations.timezone]
+    timezone = "US/Eastern"
+    ntpservers = ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"]
 
-    [[repos.git]]
-    rpmname="server-config"
-    rpmversion="1.0"
-    rpmrelease="1"
-    summary="Setup files for server deployment"
-    repo="PATH OF GIT REPO TO CLONE"
-    ref="v1.0"
-    destination="/opt/server/"
+The values supported by ``timezone`` can be listed by running ``timedatectl list-timezones``.
 
-* rpmname: Name of the rpm to create, also used as the prefix name in the tar archive
-* rpmversion: Version of the rpm, eg. "1.0.0"
-* rpmrelease: Release of the rpm, eg. "1"
-* summary: Summary string for the rpm
-* repo: URL of the get repo to clone and create the archive from
-* ref: Git reference to check out. eg. origin/branch-name, git tag, or git commit hash
-* destination: Path to install the / of the git repo at when installing the rpm
+If no timezone is setup the system will default to using `UTC`. The ntp servers are also
+optional and will default to using the distribution defaults which are fine for most uses.
 
-An rpm will be created with the contents of the git repository referenced, with the files
-being installed under ``/opt/server/`` in this case.
+In some image types there are already NTP servers setup, eg. Google cloud image, and they
+cannot be overridden because they are required to boot in the selected environment. But the
+timezone will be updated to the one selected in the blueprint.
 
-``ref`` can be any valid git reference for use with ``git archive``. eg. to use the head
-of a branch set it to ``origin/branch-name``, a tag name, or a commit hash.
 
-Note that the repository is cloned in full each time a build is started, so pointing to a
-repository with a large amount of history may take a while to clone and use a significant
-amount of disk space. The clone is temporary and is removed once the rpm is created.
-
-[customizations.locale]
+[[customizations.locale]]
 *************************
 
 Customize the locale settings for the system::
@@ -302,6 +279,10 @@ the command line.
 
 The values supported by ``keyboard`` can be listed by running ``localectl list-keymaps`` from
 the command line.
+
+Multiple locale and keyboard sections can be used. The first one becomes the
+primary, and the others are added as secondary. One or the other of ``language``
+or ``keyboard`` must be included (or both).
 
 
 [customizations.firewall]
@@ -350,6 +331,45 @@ enabled or disabled. Other releases may specify any systemd unit file, eg. ``coc
     the nonexistant service.
 
     TODO -- Confirm this is still true and if not, on which releases
+
+
+[[repos.git]]
+~~~~~~~~~~~~~
+
+The ``[[repos.git]]`` entries are used to add files from a `git repository<https://git-scm.com/>`
+repository to the created image. The repository is cloned, the specified ``ref`` is checked out
+and an rpm is created to install the files to a ``destination`` path. The rpm includes a summary
+with the details of the repository and reference used to create it. The rpm is also included in the
+image build metadata.
+
+To create an rpm named ``server-config-1.0-1.noarch.rpm`` you would add this to your blueprint::
+
+    [[repos.git]]
+    rpmname="server-config"
+    rpmversion="1.0"
+    rpmrelease="1"
+    summary="Setup files for server deployment"
+    repo="PATH OF GIT REPO TO CLONE"
+    ref="v1.0"
+    destination="/opt/server/"
+
+* rpmname: Name of the rpm to create, also used as the prefix name in the tar archive
+* rpmversion: Version of the rpm, eg. "1.0.0"
+* rpmrelease: Release of the rpm, eg. "1"
+* summary: Summary string for the rpm
+* repo: URL of the get repo to clone and create the archive from
+* ref: Git reference to check out. eg. origin/branch-name, git tag, or git commit hash
+* destination: Path to install the / of the git repo at when installing the rpm
+
+An rpm will be created with the contents of the git repository referenced, with the files
+being installed under ``/opt/server/`` in this case.
+
+``ref`` can be any valid git reference for use with ``git archive``. eg. to use the head
+of a branch set it to ``origin/branch-name``, a tag name, or a commit hash.
+
+Note that the repository is cloned in full each time a build is started, so pointing to a
+repository with a large amount of history may take a while to clone and use a significant
+amount of disk space. The clone is temporary and is removed once the rpm is created.
 
 
 Adding Output Types
