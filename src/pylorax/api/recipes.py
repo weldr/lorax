@@ -234,6 +234,12 @@ def recipe_from_dict(recipe_dict):
         description = recipe_dict["description"]
         version = recipe_dict.get("version", None)
         customizations = recipe_dict.get("customizations", None)
+
+        # [customizations] was incorrectly documented at first, so we have to support using it
+        # as [[customizations]] by grabbing the first element.
+        if isinstance(customizations, list):
+            customizations = customizations[0]
+
     except KeyError as e:
         raise RecipeError("There was a problem parsing the recipe: %s" % str(e))
 
