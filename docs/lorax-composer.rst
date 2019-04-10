@@ -172,16 +172,12 @@ for selecting optional packages.
 Customizations
 ~~~~~~~~~~~~~~
 
-The ``[customizations]`` section can be used to configure the hostname,
-language, and timezone of the final image. eg.::
+The ``[customizations]`` section can be used to configure the hostname of the final image. eg.::
 
     [customizations]
     hostname = "baseimage"
-    timezone = "US/Eastern"
 
-These are all optional and may be left out to use the defaults.
-
-The values supported by ``timezone`` can be listed by running ``timedatectl list-timezones``.
+This is optional and may be left out to use the defaults.
 
 
 [customizations.kernel]
@@ -239,8 +235,26 @@ Add a group to the image. ``name`` is required and ``gid`` is optional::
     gid = 1130
 
 
-[customizations.locale]
+[customizations.timezone]
 *************************
+
+Customizing the timezone and the NTP servers to use for the system::
+
+    [customizations.timezone]
+    timezone = "US/Eastern"
+    ntpservers = ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"]
+
+The values supported by ``timezone`` can be listed by running ``timedatectl list-timezones``.
+
+If no timezone is setup the system will default to using `UTC`. The ntp servers are also
+optional and will default to using the distribution defaults which are fine for most uses.
+
+In some image types there are already NTP servers setup, eg. Google cloud image, and they
+cannot be overridden because they are required to boot in the selected environment. But the
+timezone will be updated to the one selected in the blueprint.
+
+
+[[customizations.locale]]
 
 Customize the locale settings for the system::
 
@@ -253,6 +267,10 @@ the command line.
 
 The values supported by ``keyboard`` can be listed by running ``localectl list-keymaps`` from
 the command line.
+
+Multiple locale and keyboard sections can be used. The first one becomes the
+primary, and the others are added as secondary. One or the other of ``language``
+or ``keyboard`` must be included (or both).
 
 
 [customizations.firewall]
