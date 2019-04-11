@@ -34,7 +34,7 @@ version = "0.0.1"
 modules = []
 groups = []
 
-[[modules]]
+[[packages]]
 name = "beakerlib"
 version = "*"
 __EOF__
