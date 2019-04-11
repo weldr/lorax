@@ -74,7 +74,7 @@ name = "vmware"
 description = "HTTP image for vmware"
 version = "0.0.1"
 
-[[modules]]
+[[packages]]
 name = "httpd"
 version = "*"
 

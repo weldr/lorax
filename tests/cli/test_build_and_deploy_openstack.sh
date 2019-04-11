@@ -52,11 +52,11 @@ name = "http-with-rng"
 description = "HTTP image for OpenStack with rng-tools"
 version = "0.0.1"
 
-[[modules]]
+[[packages]]
 name = "httpd"
 version = "*"
 
-[[modules]]
+[[packages]]
 name = "rng-tools"
 version = "*"
 __EOF__
