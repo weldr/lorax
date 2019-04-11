@@ -31,7 +31,7 @@ name = "with-ssh"
 description = "HTTP image with SSH"
 version = "0.0.1"
 
-[[modules]]
+[[packages]]
 name = "httpd"
 version = "*"
 
