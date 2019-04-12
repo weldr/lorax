@@ -1,0 +1,11 @@
+#!/bin/sh -e
+# This is the expected entry point for Cockpit CI; will be called without
+# arguments but with an appropriate $TEST_OS, and optionally $TEST_SCENARIO
+
+make vm
+
+if [ -n "$TEST_SCENARIO" ]; then
+  test/check-cloud TestCloud.test_$TEST_SCENARIO
+else
+  test/check-cli
+fi

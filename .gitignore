@@ -1,4 +1,5 @@
 *.pyc
+*.rpm
 src/pylorax/version.py*
 _build/
 tests/pylint/.pylint.d/
@@ -7,3 +8,7 @@ __pycache__/
 pylint-log
 .pytest_cache/
 .test-results/
+/lorax-*.tar.gz
+/bots
+/test/images
+/tmp
