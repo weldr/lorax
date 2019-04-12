@@ -265,24 +265,24 @@ cannot be overridden because they are required to boot in the selected environme
 timezone will be updated to the one selected in the blueprint.
 
 
-[[customizations.locale]]
-*************************
+[customizations.locale]
+***********************
 
 Customize the locale settings for the system::
 
-    [[customizations.locale]]
-    language = "en_US.UTF-8"
+    [customizations.locale]
+    languages = ["en_US.UTF-8"]
     keyboard = "us"
 
-The values supported by ``language`` can be listed by running ``localectl list-locales`` from
+The values supported by ``languages`` can be listed by running ``localectl list-locales`` from
 the command line.
 
 The values supported by ``keyboard`` can be listed by running ``localectl list-keymaps`` from
 the command line.
 
-Multiple locale and keyboard sections can be used. The first one becomes the
-primary, and the others are added as secondary. One or the other of ``language``
-or ``keyboard`` must be included (or both).
+Multiple languages can be added. The first one becomes the
+primary, and the others are added as secondary. One or the other of ``languages``
+or ``keyboard`` must be included (or both) in the section.
 
 
 [customizations.firewall]
