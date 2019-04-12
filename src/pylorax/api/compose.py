@@ -201,6 +201,85 @@ def get_timezone_settings(recipe):
     return recipe["customizations"]["timezone"]
 
 
+def lang_cmd(line, languages):
+    """ Update the lang line with the languages
+
+    :param line: The lang ... line
+    :type line: str
+    :param settings: The list of languages
+    :type settings: list
+
+    Using pykickstart to process the line is the best way to make sure it
+    is parsed correctly, and re-assembled for inclusion into the final kickstart
+    """
+    ks_version = makeVersion()
+    ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+    ks.readKickstartFromString(line)
+
+    if languages:
+        ks.handler.lang.lang = languages[0]
+
+        if len(languages) > 1:
+            ks.handler.lang.addsupport = languages[1:]
+
+    # Converting back to a string includes a comment, return just the lang line
+    return str(ks.handler.lang).splitlines()[-1]
+
+
+def get_languages(recipe):
+    """Return the customizations.locale.languages list
+
+    :param recipe: The recipe
+    :type recipe: Recipe object
+    :returns: list of language strings
+    :rtype: list
+    """
+    if "customizations" not in recipe or \
+       "locale" not in recipe["customizations"] or \
+       "languages" not in recipe["customizations"]["locale"]:
+        return []
+    return recipe["customizations"]["locale"]["languages"]
+
+
+def keyboard_cmd(line, layout):
+    """ Update the keyboard line with the layout
+
+    :param line: The keyboard ... line
+    :type line: str
+    :param settings: The keyboard layout
+    :type settings: str
+
+    Using pykickstart to process the line is the best way to make sure it
+    is parsed correctly, and re-assembled for inclusion into the final kickstart
+    """
+    ks_version = makeVersion()
+    ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+    ks.readKickstartFromString(line)
+
+    if layout:
+        ks.handler.keyboard.keyboard = layout
+        ks.handler.keyboard.vc_keymap = ""
+        ks.handler.keyboard.x_layouts = []
+
+    # Converting back to a string includes a comment, return just the keyboard line
+    return str(ks.handler.keyboard).splitlines()[-1]
+
+
+def get_keyboard_layout(recipe):
+    """Return the customizations.locale.keyboard list
+
+    :param recipe: The recipe
+    :type recipe: Recipe object
+    :returns: The keyboard layout string
+    :rtype: str
+    """
+    if "customizations" not in recipe or \
+       "locale" not in recipe["customizations"] or \
+       "keyboard" not in recipe["customizations"]["locale"]:
+        return []
+    return recipe["customizations"]["locale"]["keyboard"]
+
+
 def customize_ks_template(ks_template, recipe):
     """ Customize the kickstart template and return it
 
@@ -228,6 +307,12 @@ def customize_ks_template(ks_template, recipe):
                 "timezone":   [timezone_cmd,
                                get_timezone_settings(recipe),
                                'timezone UTC', False],
+                "lang":       [lang_cmd,
+                               get_languages(recipe),
+                               'lang en_US.UTF-8', True],
+                "keyboard":   [keyboard_cmd,
+                               get_keyboard_layout(recipe),
+                               'keyboard --xlayouts us --vckeymap us', True],
                }
     found = {}
 
