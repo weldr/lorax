@@ -9,6 +9,7 @@ firewall --enabled
 # NOTE: The root account is locked by default
 # Network information
 network  --bootproto=dhcp --onboot=on --activate
+# NOTE: keyboard and lang can be replaced by blueprint customizations.locale settings
 # System keyboard
 keyboard --xlayouts=us --vckeymap=us
 # System language

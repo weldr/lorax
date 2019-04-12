@@ -440,6 +440,60 @@ ntpservers = ["1.north-america.pool.ntp.org"]
         self.assertEqual(ks.handler.timezone.timezone, "US/Samoa")
         self.assertEqual(ks.handler.timezone.ntpservers, ["1.north-america.pool.ntp.org"])
 
+    def test_locale_languages(self):
+        blueprint_data = """name = "test-locale"
+description = "test recipe"
+version = "0.0.1"
+"""
+        blueprint2_data = blueprint_data + """
+[customizations.locale]
+languages = ["en_CA.utf8"]
+"""
+        blueprint3_data = blueprint_data + """
+[customizations.locale]
+languages = ["en_CA.utf8", "en_HK.utf8"]
+"""
+        ks = self._blueprint_to_ks(blueprint2_data)
+        self.assertEqual(ks.handler.lang.lang, "en_CA.utf8")
+        self.assertEqual(ks.handler.lang.addsupport, [])
+
+        ks = self._blueprint_to_ks(blueprint3_data)
+        self.assertEqual(ks.handler.lang.lang, "en_CA.utf8")
+        self.assertEqual(ks.handler.lang.addsupport, ["en_HK.utf8"])
+
+    def test_locale_keyboard(self):
+        blueprint_data = """name = "test-locale"
+description = "test recipe"
+version = "0.0.1"
+"""
+        blueprint2_data = blueprint_data + """
+[customizations.locale]
+keyboard = "us"
+"""
+        blueprint3_data = blueprint_data + """
+[customizations.locale]
+keyboard = "de (dvorak)"
+"""
+        ks = self._blueprint_to_ks(blueprint2_data)
+        self.assertEqual(ks.handler.keyboard.keyboard, "us")
+
+        ks = self._blueprint_to_ks(blueprint3_data)
+        self.assertEqual(ks.handler.keyboard.keyboard, "de (dvorak)")
+
+    def test_locale(self):
+        blueprint_data = """name = "test-locale"
+description = "test recipe"
+version = "0.0.1"
+
+[customizations.locale]
+keyboard = "de (dvorak)"
+languages = ["en_CA.utf8", "en_HK.utf8"]
+"""
+        ks = self._blueprint_to_ks(blueprint_data)
+        self.assertEqual(ks.handler.keyboard.keyboard, "de (dvorak)")
+        self.assertEqual(ks.handler.lang.lang, "en_CA.utf8")
+        self.assertEqual(ks.handler.lang.addsupport, ["en_HK.utf8"])
+
     def test_user(self):
         blueprint_data = """name = "test-user"
 description = "test recipe"
