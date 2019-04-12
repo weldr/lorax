@@ -19,6 +19,7 @@ import unittest
 
 from pylorax.api.compose import add_customizations, compose_types
 from pylorax.api.compose import timezone_cmd, get_timezone_settings
+from pylorax.api.compose import lang_cmd, get_languages, keyboard_cmd, get_keyboard_layout
 from pylorax.api.compose import get_kernel_append, bootloader_append, customize_ks_template
 from pylorax.api.recipes import recipe_from_toml
 from pylorax.sysutils import joinpaths
@@ -288,6 +289,78 @@ ntpservers = ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"]
             {"timezone": "US/Samoa", "ntpservers": ["0.pool.ntp.org", "1.pool.ntp.org"]}),
                          'timezone US/Samoa --ntpservers=0.pool.ntp.org,1.pool.ntp.org')
 
+    def test_get_languages(self):
+        """Test get_languages function"""
+        blueprint_data = """name = "test-locale"
+description = "test recipe"
+version = "0.0.1"
+        """
+        blueprint2_data = blueprint_data + """
+[customizations.locale]
+languages = ["en_CA.utf8", "en_HK.utf8"]
+"""
+        blueprint3_data = blueprint_data + """
+[customizations.locale]
+keyboard = "de (dvorak)"
+languages = ["en_CA.utf8", "en_HK.utf8"]
+"""
+        recipe = recipe_from_toml(blueprint_data)
+        self.assertEqual(get_languages(recipe), [])
+
+        recipe = recipe_from_toml(blueprint2_data)
+        self.assertEqual(get_languages(recipe), ["en_CA.utf8", "en_HK.utf8"])
+
+        recipe = recipe_from_toml(blueprint3_data)
+        self.assertEqual(get_languages(recipe), ["en_CA.utf8", "en_HK.utf8"])
+
+    def test_lang_cmd(self):
+        """Test lang_cmd function"""
+
+        self.assertEqual(lang_cmd("lang en_CA.utf8", {}), 'lang en_CA.utf8')
+        self.assertEqual(lang_cmd("lang en_US.utf8", ["en_HK.utf8"]),
+                         'lang en_HK.utf8')
+        self.assertEqual(lang_cmd("lang en_US.utf8", ["en_CA.utf8", "en_HK.utf8"]),
+                         'lang en_CA.utf8 --addsupport=en_HK.utf8')
+
+        self.assertEqual(lang_cmd("lang --addsupport en_US.utf8 en_CA.utf8",
+                         ["en_CA.utf8", "en_HK.utf8", "en_GB.utf8"]),
+                         'lang en_CA.utf8 --addsupport=en_HK.utf8,en_GB.utf8')
+
+    def test_get_keyboard_layout(self):
+        """Test get_keyboard_layout function"""
+        blueprint_data = """name = "test-locale"
+description = "test recipe"
+version = "0.0.1"
+        """
+        blueprint2_data = blueprint_data + """
+[customizations.locale]
+keyboard = "de (dvorak)"
+"""
+        blueprint3_data = blueprint_data + """
+[customizations.locale]
+keyboard = "de (dvorak)"
+languages = ["en_CA.utf8", "en_HK.utf8"]
+"""
+        recipe = recipe_from_toml(blueprint_data)
+        self.assertEqual(get_keyboard_layout(recipe), [])
+
+        recipe = recipe_from_toml(blueprint2_data)
+        self.assertEqual(get_keyboard_layout(recipe), "de (dvorak)")
+
+        recipe = recipe_from_toml(blueprint3_data)
+        self.assertEqual(get_keyboard_layout(recipe), "de (dvorak)")
+
+    def test_keyboard_cmd(self):
+        """Test lang_cmd function"""
+
+        self.assertEqual(keyboard_cmd("keyboard us", {}), "keyboard 'us'")
+        self.assertEqual(keyboard_cmd("keyboard us", "de (dvorak)"),
+                         "keyboard 'de (dvorak)'")
+
+        self.assertEqual(keyboard_cmd("keyboard --vckeymap=us --xlayouts=us,gb",
+                         "de (dvorak)"),
+                         "keyboard 'de (dvorak)'")
+
     def _checkBootloader(self, result, append_str, line_limit=0):
         """Find the bootloader line and make sure append_str is in it"""
         # Optionally check to make sure the change is at the top of the template
@@ -316,6 +389,40 @@ ntpservers = ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"]
                         return False
                 else:
                     print("FAILED: %s not matching %s" % (settings, line))
+            line_num += 1
+        return False
+
+    def _checkLang(self, result, locales, line_limit=0):
+        """Find the lang line and make sure it is as expected"""
+        # Optionally check to make sure the change is at the top of the template
+        line_num = 0
+        for line in result.splitlines():
+            if line.startswith("lang"):
+                if all([True for n in locales if n in line]):
+                    if line_limit == 0 or line_num < line_limit:
+                        return True
+                    else:
+                        print("FAILED: lang not in the first %d lines of the output" % line_limit)
+                        return False
+                else:
+                    print("FAILED: %s not matching %s" % (locales, line))
+            line_num += 1
+        return False
+
+    def _checkKeyboard(self, result, layout, line_limit=0):
+        """Find the keyboard line and make sure it is as expected"""
+        # Optionally check to make sure the change is at the top of the template
+        line_num = 0
+        for line in result.splitlines():
+            if line.startswith("keyboard"):
+                if layout in line:
+                    if line_limit == 0 or line_num < line_limit:
+                        return True
+                    else:
+                        print("FAILED: keyboard not in the first %d lines of the output" % line_limit)
+                        return False
+                else:
+                    print("FAILED: %s not matching %s" % (layout, line))
             line_num += 1
         return False
 
@@ -367,6 +474,10 @@ append="nosmt=force"
 [customizations.timezone]
 timezone = "US/Samoa"
 ntpservers = ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"]
+
+[customizations.locale]
+keyboard = "de (dvorak)"
+languages = ["en_CA.utf8", "en_HK.utf8"]
 """
         tz_dict = {"timezone": "US/Samoa", "ntpservers": ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"]}
         recipe = recipe_from_toml(blueprint_data)
@@ -377,6 +488,10 @@ ntpservers = ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"]
         self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("bootloader")]), 1)
         self.assertTrue(self._checkTimezone(result, tz_dict, line_limit=2))
         self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("timezone")]), 1)
+        self.assertTrue(self._checkLang(result, ["en_CA.utf8", "en_HK.utf8"], line_limit=4))
+        self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("lang")]), 1)
+        self.assertTrue(self._checkKeyboard(result, "de (dvorak)", line_limit=4))
+        self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("keyboard")]), 1)
 
         # Test against a kickstart with a bootloader line
         result = customize_ks_template("firewall --enabled\nbootloader --location=mbr\n", recipe)
@@ -406,6 +521,16 @@ ntpservers = ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"]
                 errors.append(("timezone for compose_type %s failed" % compose_type, result))
             if sum([1 for l in result.splitlines() if l.startswith("timezone")]) != 1:
                 errors.append(("timezone for compose_type %s failed: More than 1 entry" % compose_type, result))
+
+            if not self._checkLang(result, ["en_CA.utf8", "en_HK.utf8"]):
+                errors.append(("lang for compose_type %s failed" % compose_type, result))
+            if sum([1 for l in result.splitlines() if l.startswith("lang")]) != 1:
+                errors.append(("lang for compose_type %s failed: More than 1 entry" % compose_type, result))
+
+            if not self._checkKeyboard(result, "de (dvorak)"):
+                errors.append(("keyboard for compose_type %s failed" % compose_type, result))
+            if sum([1 for l in result.splitlines() if l.startswith("keyboard")]) != 1:
+                errors.append(("keyboard for compose_type %s failed: More than 1 entry" % compose_type, result))
 
         # Print the bad results
         for e, r in errors:
