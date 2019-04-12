@@ -11,6 +11,7 @@ firewall --enabled
 network  --bootproto=dhcp --onboot=on --activate
 # System authorization information
 auth --useshadow --enablemd5
+# NOTE: keyboard and lang can be replaced by blueprint customizations.locale settings
 # System keyboard
 keyboard --xlayouts=us --vckeymap=us
 # System language
