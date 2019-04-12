@@ -22,6 +22,10 @@ class LoraxLintConfig(PocketLintConfig):
         retval.remove("pocketlint.checkers.markup")
         return retval
 
+    @property
+    def ignoreNames(self):
+        return { "bots", "rpmbuild" }
+
 if __name__ == "__main__":
     conf = LoraxLintConfig()
     linter = PocketLinter(conf)

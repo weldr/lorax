@@ -70,7 +70,7 @@ else
     # execute other cli tests which need more adjustments in the calling environment
     # or can't be executed inside Travis CI
     for TEST in "$@"; do
-        ./$TEST
+        $TEST
     done
 fi
 

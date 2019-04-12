@@ -1,0 +1,21 @@
+#!/usr/bin/python3
+
+import composertest
+
+
+class TestCloud(composertest.ComposerTestCase):
+    def test_aws(self):
+        self.runCliTest("/tests/cli/test_build_and_deploy_aws.sh")
+
+    def test_azure(self):
+        self.runCliTest("/tests/cli/test_build_and_deploy_azure.sh")
+
+    def test_openstack(self):
+        self.runCliTest("/tests/cli/test_build_and_deploy_openstack.sh")
+
+    def test_vmware(self):
+        self.runCliTest("/tests/cli/test_build_and_deploy_vmware.sh")
+
+
+if __name__ == '__main__':
+    composertest.main()

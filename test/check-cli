@@ -1,0 +1,32 @@
+#!/usr/bin/python3
+
+import composertest
+
+
+class TestSanity(composertest.ComposerTestCase):
+    def test_blueprint_sanity(self):
+        self.runCliTest("/tests/cli/test_blueprints_sanity.sh")
+
+    def test_compose_sanity(self):
+        self.runCliTest("/tests/cli/test_compose_sanity.sh")
+
+
+class TestImages(composertest.ComposerTestCase):
+    def test_ext4_filesystem(self):
+        self.runCliTest("/tests/cli/test_compose_ext4-filesystem.sh")
+
+    def test_partitioned_disk(self):
+        self.runCliTest("/tests/cli/test_compose_partitioned-disk.sh")
+
+    def test_tar(self):
+        self.runCliTest("/tests/cli/test_compose_tar.sh")
+
+    def test_qcow2(self):
+        self.runCliTest("/tests/cli/test_compose_qcow2.sh")
+
+    def test_live_iso(self):
+        self.runCliTest("/tests/cli/test_compose_live-iso.sh")
+
+
+if __name__ == '__main__':
+    composertest.main()
