@@ -281,6 +281,53 @@ def get_keyboard_layout(recipe):
     return recipe["customizations"]["locale"]["keyboard"]
 
 
+def firewall_cmd(line, settings):
+    """ Update the firewall line with the new ports and services
+
+    :param line: The firewall ... line
+    :type line: str
+    :param settings: A dict with the list of services and ports to enable and disable
+    :type settings: dict
+
+    Using pykickstart to process the line is the best way to make sure it
+    is parsed correctly, and re-assembled for inclusion into the final kickstart
+    """
+    ks_version = makeVersion()
+    ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+    ks.readKickstartFromString(line)
+
+    # Do not override firewall --disabled
+    if ks.handler.firewall.enabled != False and settings:
+        ks.handler.firewall.ports = settings["ports"]
+        ks.handler.firewall.services = settings["enabled"]
+        ks.handler.firewall.remove_services = settings["disabled"]
+
+    # Converting back to a string includes a comment, return just the keyboard line
+    return str(ks.handler.firewall).splitlines()[-1]
+
+
+def get_firewall_settings(recipe):
+    """Return the customizations.firewall settings
+
+    :param recipe: The recipe
+    :type recipe: Recipe object
+    :returns: A dict of settings
+    :rtype: dict
+    """
+    settings = {"ports": [], "enabled": [], "disabled": []}
+
+    if "customizations" not in recipe or \
+       "firewall" not in recipe["customizations"]:
+        return settings
+
+    settings["ports"] = recipe["customizations"]["firewall"].get("ports", [])
+
+    if "services" in recipe["customizations"]["firewall"]:
+        settings["enabled"] = recipe["customizations"]["firewall"]["services"].get("enabled", [])
+        settings["disabled"] = recipe["customizations"]["firewall"]["services"].get("disabled", [])
+    return settings
+
+
 def customize_ks_template(ks_template, recipe):
     """ Customize the kickstart template and return it
 
@@ -314,6 +361,9 @@ def customize_ks_template(ks_template, recipe):
                 "keyboard":   [keyboard_cmd,
                                get_keyboard_layout(recipe),
                                'keyboard --xlayouts us --vckeymap us', True],
+                "firewall":   [firewall_cmd,
+                               get_firewall_settings(recipe),
+                               'firewall --enabled', True],
                }
     found = {}
 
