@@ -84,9 +84,11 @@ def in_tempdir(prefix='tmp'):
     oldcwd = os.getcwd()
     tmpdir = tempfile.mkdtemp(prefix=prefix)
     os.chdir(tmpdir)
-    yield
-    os.chdir(oldcwd)
-    shutil.rmtree(tmpdir)
+    try:
+        yield
+    finally:
+        os.chdir(oldcwd)
+        shutil.rmtree(tmpdir)
 
 def makeFakeRPM(repo_dir, name, epoch, version, release, files=None):
     """Make a fake rpm file in repo_dir"""
