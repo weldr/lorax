@@ -281,9 +281,8 @@ By default the firewall blocks all access except for services that enable their 
 like ``sshd``. This command can be used to open other ports or services. Ports are configured using
 the port:protocol format::
 
-    [customizations.firewall.ports]
-    enabled = ["80:tcp", "imap:tcp", "53:tcp", "53:udp"]
-    disabled = ["23:tcp", "mysql:tcp"]
+    [customizations.firewall]
+    ports = ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"]
 
 Numeric ports, or their names from ``/etc/services`` can be used in the ``ports`` enabled/disabled lists.
 
@@ -292,12 +291,15 @@ in a ``customizations.firewall.services`` section::
 
     [customizations.firewall.services]
     enabled = ["ftp", "ntp", "dhcp"]
+    disabled = ["telnet"]
 
 Note that these  are different from the names in ``/etc/services``, and only ``enabled`` is supported.
 
 Both are optional, if they are not used leave them out or set them to an empty list ``[]``. If you
 only want the default firewall setup this section can be omitted from the blueprint.
 
+NOTE: The ``Google`` and ``OpenStack`` templates explicitly disable the firewall for their environment.
+This cannot be overridden by the blueprint.
 
 [customizations.services]
 *************************
