@@ -23,6 +23,7 @@ from pylorax import get_buildarch
 from pylorax.api.compose import add_customizations, compose_types, get_extra_pkgs
 from pylorax.api.compose import timezone_cmd, get_timezone_settings
 from pylorax.api.compose import lang_cmd, get_languages, keyboard_cmd, get_keyboard_layout
+from pylorax.api.compose import firewall_cmd, get_firewall_settings
 from pylorax.api.compose import get_kernel_append, bootloader_append, customize_ks_template
 from pylorax.api.config import configure, make_dnf_dirs
 from pylorax.api.dnfbase import get_base_object
@@ -388,6 +389,65 @@ languages = ["en_CA.utf8", "en_HK.utf8"]
                          "de (dvorak)"),
                          "keyboard 'de (dvorak)'")
 
+    def test_get_firewall_settings(self):
+        """Test get_firewall_settings function"""
+        blueprint_data = """name = "test-firewall"
+description = "test recipe"
+version = "0.0.1"
+        """
+        firewall_ports = """
+[customizations.firewall]
+ports = ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"]
+"""
+        firewall_services = """
+[customizations.firewall.services]
+enabled = ["ftp", "ntp", "dhcp"]
+disabled = ["telnet"]
+"""
+        blueprint2_data = blueprint_data + firewall_ports
+        blueprint3_data = blueprint_data + firewall_services
+        blueprint4_data = blueprint_data + firewall_ports + firewall_services
+
+        recipe = recipe_from_toml(blueprint_data)
+        self.assertEqual(get_firewall_settings(recipe), {'ports': [], 'enabled': [], 'disabled': []})
+
+        recipe = recipe_from_toml(blueprint2_data)
+        self.assertEqual(get_firewall_settings(recipe),
+                {"ports": ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"],
+                 "enabled": [], "disabled": []})
+
+        recipe = recipe_from_toml(blueprint3_data)
+        self.assertEqual(get_firewall_settings(recipe),
+                {"ports": [],
+                 "enabled": ["ftp", "ntp", "dhcp"], "disabled": ["telnet"]})
+
+        recipe = recipe_from_toml(blueprint4_data)
+        self.assertEqual(get_firewall_settings(recipe),
+                {"ports": ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"],
+                 "enabled": ["ftp", "ntp", "dhcp"], "disabled": ["telnet"]})
+
+    def test_firewall_cmd(self):
+        """Test firewall_cmd function"""
+
+        self.assertEqual(firewall_cmd("firewall --enabled", {}), "firewall --enabled")
+        self.assertEqual(firewall_cmd("firewall --enabled",
+                         {"ports": ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"],
+                         "enabled": [], "disabled": []}),
+                         "firewall --enabled --port=22:tcp,80:tcp,imap:tcp,53:tcp,53:udp")
+        self.assertEqual(firewall_cmd("firewall --enabled",
+                         {"ports": ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"],
+                         "enabled": ["ftp", "ntp", "dhcp"], "disabled": []}),
+                         "firewall --enabled --port=22:tcp,80:tcp,imap:tcp,53:tcp,53:udp --service=ftp,ntp,dhcp")
+        self.assertEqual(firewall_cmd("firewall --enabled",
+                         {"ports": ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"],
+                         "enabled": ["ftp", "ntp", "dhcp"], "disabled": ["telnet"]}),
+                         "firewall --enabled --port=22:tcp,80:tcp,imap:tcp,53:tcp,53:udp --service=ftp,ntp,dhcp --remove-service=telnet")
+        # Make sure that --disabled overrides setting ports and services
+        self.assertEqual(firewall_cmd("firewall --disabled",
+                         {"ports": ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"],
+                         "enabled": ["ftp", "ntp", "dhcp"], "disabled": ["telnet"]}),
+                         "firewall --disabled")
+
     def _checkBootloader(self, result, append_str, line_limit=0):
         """Find the bootloader line and make sure append_str is in it"""
         # Optionally check to make sure the change is at the top of the template
@@ -453,6 +513,28 @@ languages = ["en_CA.utf8", "en_HK.utf8"]
             line_num += 1
         return False
 
+    def _checkFirewall(self, result, settings, line_limit=0):
+        """Find the firewall line and make sure it is as expected"""
+        # Optionally check to make sure the change is at the top of the template
+        line_num = 0
+        for line in result.splitlines():
+            if line.startswith("firewall"):
+                # First layout is used twice, so total count should be n+1
+                ports = all([bool(p in line) for p in settings["ports"]])
+                enabled = all([bool(e in line) for e in settings["enabled"]])
+                disabled = all([bool(d in line) for d in settings["disabled"]])
+
+                if ports and enabled and disabled:
+                    if line_limit == 0 or line_num < line_limit:
+                        return True
+                    else:
+                        print("FAILED: firewall not in the first %d lines of the output" % line_limit)
+                        return False
+                else:
+                    print("FAILED: %s not matching %s" % (settings, line))
+            line_num += 1
+        return False
+
     def test_template_defaults(self):
         """Test that customize_ks_template includes defaults correctly"""
         blueprint_data = """name = "test-kernel"
@@ -505,6 +587,13 @@ ntpservers = ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"]
 [customizations.locale]
 keyboard = "de (dvorak)"
 languages = ["en_CA.utf8", "en_HK.utf8"]
+
+[customizations.firewall]
+ports = ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"]
+
+[customizations.firewall.services]
+enabled = ["ftp", "ntp", "dhcp"]
+disabled = ["telnet"]
 """
         tz_dict = {"timezone": "US/Samoa", "ntpservers": ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"]}
         recipe = recipe_from_toml(blueprint_data)
@@ -519,6 +608,10 @@ languages = ["en_CA.utf8", "en_HK.utf8"]
         self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("lang")]), 1)
         self.assertTrue(self._checkKeyboard(result, "de (dvorak)", line_limit=4))
         self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("keyboard")]), 1)
+        self.assertTrue(self._checkFirewall(result,
+                        {"ports": ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"],
+                         "enabled": ["ftp", "ntp", "dhcp"], "disabled": ["telnet"]}, line_limit=6))
+        self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("firewall")]), 1)
 
         # Test against a kickstart with a bootloader line
         result = customize_ks_template("firewall --enabled\nbootloader --location=mbr\n", recipe)
@@ -558,6 +651,18 @@ languages = ["en_CA.utf8", "en_HK.utf8"]
                 errors.append(("keyboard for compose_type %s failed" % compose_type, result))
             if sum([1 for l in result.splitlines() if l.startswith("keyboard")]) != 1:
                 errors.append(("keyboard for compose_type %s failed: More than 1 entry" % compose_type, result))
+
+            # google and openstack templates requires the firewall to be disabled
+            if compose_type == "google" or compose_type == "openstack":
+                if not self._checkFirewall(result, {'ports': [], 'enabled': [], 'disabled': []}):
+                    errors.append(("firewall for compose_type %s failed" % compose_type, result))
+            else:
+                if not self._checkFirewall(result,
+                               {"ports": ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"],
+                                "enabled": ["ftp", "ntp", "dhcp"], "disabled": ["telnet"]}):
+                    errors.append(("firewall for compose_type %s failed" % compose_type, result))
+            if sum([1 for l in result.splitlines() if l.startswith("firewall")]) != 1:
+                errors.append(("firewall for compose_type %s failed: More than 1 entry" % compose_type, result))
 
         # Print the bad results
         for e, r in errors:
