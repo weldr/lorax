@@ -494,6 +494,56 @@ languages = ["en_CA.utf8", "en_HK.utf8"]
         self.assertEqual(ks.handler.lang.lang, "en_CA.utf8")
         self.assertEqual(ks.handler.lang.addsupport, ["en_HK.utf8"])
 
+    def test_firewall_ports(self):
+        blueprint_data = """name = "test-firewall"
+description = "test recipe"
+version = "0.0.1"
+"""
+        blueprint2_data = blueprint_data + """
+[customizations.firewall]
+ports = ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"]
+"""
+        ks = self._blueprint_to_ks(blueprint_data)
+        self.assertEqual(ks.handler.firewall.ports, [])
+        self.assertEqual(ks.handler.firewall.services, [])
+        self.assertEqual(ks.handler.firewall.remove_services, [])
+
+        ks = self._blueprint_to_ks(blueprint2_data)
+        self.assertEqual(ks.handler.firewall.ports, ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"])
+        self.assertEqual(ks.handler.firewall.services, [])
+        self.assertEqual(ks.handler.firewall.remove_services, [])
+
+    def test_firewall_services(self):
+        blueprint_data = """name = "test-firewall"
+description = "test recipe"
+version = "0.0.1"
+
+[customizations.firewall.services]
+enabled = ["ftp", "ntp", "dhcp"]
+disabled = ["telnet"]
+"""
+        ks = self._blueprint_to_ks(blueprint_data)
+        self.assertEqual(ks.handler.firewall.ports, [])
+        self.assertEqual(ks.handler.firewall.services, ["ftp", "ntp", "dhcp"])
+        self.assertEqual(ks.handler.firewall.remove_services, ["telnet"])
+
+    def test_firewall(self):
+        blueprint_data = """name = "test-firewall"
+description = "test recipe"
+version = "0.0.1"
+
+[customizations.firewall]
+ports = ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"]
+
+[customizations.firewall.services]
+enabled = ["ftp", "ntp", "dhcp"]
+disabled = ["telnet"]
+"""
+        ks = self._blueprint_to_ks(blueprint_data)
+        self.assertEqual(ks.handler.firewall.ports, ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"])
+        self.assertEqual(ks.handler.firewall.services, ["ftp", "ntp", "dhcp"])
+        self.assertEqual(ks.handler.firewall.remove_services, ["telnet"])
+
     def test_user(self):
         blueprint_data = """name = "test-user"
 description = "test recipe"
