@@ -21,6 +21,7 @@ from pylorax.api.compose import add_customizations, compose_types
 from pylorax.api.compose import timezone_cmd, get_timezone_settings
 from pylorax.api.compose import lang_cmd, get_languages, keyboard_cmd, get_keyboard_layout
 from pylorax.api.compose import firewall_cmd, get_firewall_settings
+from pylorax.api.compose import services_cmd, get_services, get_default_services
 from pylorax.api.compose import get_kernel_append, bootloader_append, customize_ks_template
 from pylorax.api.recipes import recipe_from_toml
 from pylorax.sysutils import joinpaths
@@ -421,6 +422,89 @@ disabled = ["telnet"]
                          "enabled": ["ftp", "ntp", "dhcp"], "disabled": ["telnet"]}),
                          "firewall --disabled")
 
+    def test_get_services(self):
+        """Test get_services function"""
+        blueprint_data = """name = "test-services"
+description = "test recipe"
+version = "0.0.1"
+[customizations.services]
+        """
+        enable_services = """
+enabled = ["sshd", "cockpit.socket", "httpd"]
+        """
+        disable_services = """
+disabled = ["postfix", "telnetd"]
+        """
+        blueprint2_data = blueprint_data + enable_services
+        blueprint3_data = blueprint_data + disable_services
+        blueprint4_data = blueprint_data + enable_services + disable_services
+
+        recipe = recipe_from_toml(blueprint_data)
+        self.assertEqual(get_services(recipe), {'enabled': [], 'disabled': []})
+
+        recipe = recipe_from_toml(blueprint2_data)
+        self.assertEqual(get_services(recipe),
+                {"enabled": ["cockpit.socket", "httpd", "sshd"], "disabled": []})
+
+        recipe = recipe_from_toml(blueprint3_data)
+        self.assertEqual(get_services(recipe),
+                {"enabled": [], "disabled": ["postfix", "telnetd"]})
+
+        recipe = recipe_from_toml(blueprint4_data)
+        self.assertEqual(get_services(recipe),
+                {"enabled": ["cockpit.socket", "httpd", "sshd"], "disabled": ["postfix", "telnetd"]})
+
+    def test_services_cmd(self):
+        """Test services_cmd function"""
+
+        self.assertEqual(services_cmd("", {"enabled": [], "disabled": []}), "")
+        self.assertEqual(services_cmd("", {"enabled": ["cockpit.socket", "httpd", "sshd"], "disabled": []}),
+                         'services --enabled="cockpit.socket,httpd,sshd"')
+        self.assertEqual(services_cmd("", {"enabled": [], "disabled": ["postfix", "telnetd"]}),
+                         'services --disabled="postfix,telnetd"')
+        self.assertEqual(services_cmd("", {"enabled": ["cockpit.socket", "httpd", "sshd"],
+                                           "disabled": ["postfix", "telnetd"]}),
+                         'services --disabled="postfix,telnetd" --enabled="cockpit.socket,httpd,sshd"')
+        self.assertEqual(services_cmd("services --enabled=pop3", {"enabled": ["cockpit.socket", "httpd", "sshd"],
+                                           "disabled": ["postfix", "telnetd"]}),
+                         'services --disabled="postfix,telnetd" --enabled="cockpit.socket,httpd,pop3,sshd"')
+        self.assertEqual(services_cmd("services --disabled=imapd", {"enabled": ["cockpit.socket", "httpd", "sshd"],
+                                           "disabled": ["postfix", "telnetd"]}),
+                         'services --disabled="imapd,postfix,telnetd" --enabled="cockpit.socket,httpd,sshd"')
+        self.assertEqual(services_cmd("services --enabled=pop3 --disabled=imapd", {"enabled": ["cockpit.socket", "httpd", "sshd"],
+                                           "disabled": ["postfix", "telnetd"]}),
+                         'services --disabled="imapd,postfix,telnetd" --enabled="cockpit.socket,httpd,pop3,sshd"')
+
+    def test_get_default_services(self):
+        """Test get_default_services function"""
+        blueprint_data = """name = "test-services"
+description = "test recipe"
+version = "0.0.1"
+
+[customizations.services]
+        """
+        enable_services = """
+enabled = ["sshd", "cockpit.socket", "httpd"]
+        """
+        disable_services = """
+disabled = ["postfix", "telnetd"]
+        """
+        blueprint2_data = blueprint_data + enable_services
+        blueprint3_data = blueprint_data + disable_services
+        blueprint4_data = blueprint_data + enable_services + disable_services
+
+        recipe = recipe_from_toml(blueprint_data)
+        self.assertEqual(get_default_services(recipe), "")
+
+        recipe = recipe_from_toml(blueprint2_data)
+        self.assertEqual(get_default_services(recipe), "services")
+
+        recipe = recipe_from_toml(blueprint3_data)
+        self.assertEqual(get_default_services(recipe), "services")
+
+        recipe = recipe_from_toml(blueprint4_data)
+        self.assertEqual(get_default_services(recipe), "services")
+
     def _checkBootloader(self, result, append_str, line_limit=0):
         """Find the bootloader line and make sure append_str is in it"""
         # Optionally check to make sure the change is at the top of the template
@@ -508,6 +592,27 @@ disabled = ["telnet"]
             line_num += 1
         return False
 
+    def _checkServices(self, result, settings, line_limit=0):
+        """Find the services line and make sure it is as expected"""
+        # Optionally check to make sure the change is at the top of the template
+        line_num = 0
+        for line in result.splitlines():
+            if line.startswith("services"):
+                # First layout is used twice, so total count should be n+1
+                enabled = all([bool(e in line) for e in settings["enabled"]])
+                disabled = all([bool(d in line) for d in settings["disabled"]])
+
+                if enabled and disabled:
+                    if line_limit == 0 or line_num < line_limit:
+                        return True
+                    else:
+                        print("FAILED: services not in the first %d lines of the output" % line_limit)
+                        return False
+                else:
+                    print("FAILED: %s not matching %s" % (settings, line))
+            line_num += 1
+        return False
+
     def test_template_defaults(self):
         """Test that customize_ks_template includes defaults correctly"""
         blueprint_data = """name = "test-kernel"
@@ -527,6 +632,7 @@ version = "*"
         self.assertTrue(self._checkBootloader(result, "none", line_limit=2))
         self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("timezone")]), 1)
         self.assertTrue(self._checkTimezone(result, {"timezone": "UTC", "ntpservers": []}, line_limit=2))
+        self.assertTrue("services" not in result)
 
         # Make sure that a kickstart with a bootloader, and no timezone has timezone added to the top
         result = customize_ks_template("firewall --enabled\nbootloader --location=mbr\n", recipe)
@@ -535,6 +641,7 @@ version = "*"
         self.assertTrue(self._checkBootloader(result, "mbr"))
         self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("timezone")]), 1)
         self.assertTrue(self._checkTimezone(result, {"timezone": "UTC", "ntpservers": []}, line_limit=1))
+        self.assertTrue("services" not in result)
 
         # Make sure that a kickstart with a bootloader and timezone has neither added
         result = customize_ks_template("firewall --enabled\nbootloader --location=mbr\ntimezone US/Samoa\n", recipe)
@@ -543,6 +650,7 @@ version = "*"
         self.assertTrue(self._checkBootloader(result, "mbr"))
         self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("timezone")]), 1)
         self.assertTrue(self._checkTimezone(result, {"timezone": "US/Samoa", "ntpservers": []}))
+        self.assertTrue("services" not in result)
 
     def test_customize_ks_template(self):
         """Test that customize_ks_template works correctly"""
@@ -567,6 +675,10 @@ ports = ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"]
 [customizations.firewall.services]
 enabled = ["ftp", "ntp", "dhcp"]
 disabled = ["telnet"]
+
+[customizations.services]
+enabled = ["sshd", "cockpit.socket", "httpd"]
+disabled = ["postfix", "telnetd"]
 """
         tz_dict = {"timezone": "US/Samoa", "ntpservers": ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"]}
         recipe = recipe_from_toml(blueprint_data)
@@ -585,6 +697,10 @@ disabled = ["telnet"]
                         {"ports": ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"],
                          "enabled": ["ftp", "ntp", "dhcp"], "disabled": ["telnet"]}, line_limit=6))
         self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("firewall")]), 1)
+        self.assertTrue(self._checkServices(result,
+                        {"enabled": ["cockpit.socket", "httpd", "sshd"], "disabled": ["postfix", "telnetd"]},
+                        line_limit=8))
+        self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("services")]), 1)
 
         # Test against a kickstart with a bootloader line
         result = customize_ks_template("firewall --enabled\nbootloader --location=mbr\n", recipe)
@@ -636,6 +752,13 @@ disabled = ["telnet"]
                     errors.append(("firewall for compose_type %s failed" % compose_type, result))
             if sum([1 for l in result.splitlines() if l.startswith("firewall")]) != 1:
                 errors.append(("firewall for compose_type %s failed: More than 1 entry" % compose_type, result))
+
+            if not self._checkServices(result,
+                                       {"enabled": ["cockpit.socket", "httpd", "sshd"],
+                                        "disabled": ["postfix", "telnetd"]}):
+                errors.append(("services for compose_type %s failed" % compose_type, result))
+            if sum([1 for l in result.splitlines() if l.startswith("services")]) != 1:
+                errors.append(("services for compose_type %s failed: More than 1 entry" % compose_type, result))
 
         # Print the bad results
         for e, r in errors:
