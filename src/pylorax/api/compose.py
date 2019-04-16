@@ -334,6 +334,76 @@ def get_firewall_settings(recipe):
     return settings
 
 
+def services_cmd(line, settings):
+    """ Update the services line with additional services to enable/disable
+
+    :param line: The services ... line
+    :type line: str
+    :param settings: A dict with the list of services to enable and disable
+    :type settings: dict
+
+    Using pykickstart to process the line is the best way to make sure it
+    is parsed correctly, and re-assembled for inclusion into the final kickstart
+    """
+    # Empty services and no additional settings, return an empty string
+    if not line and not settings["enabled"] and not settings["disabled"]:
+        return ""
+
+    ks_version = makeVersion()
+    ks = KickstartParser(ks_version, errorsAreFatal=False, missingIncludeIsFatal=False)
+
+    # Allow passing in a 'default' so that the enable/disable may be applied to it, without
+    # parsing it and emitting a kickstart error message
+    if line != "services":
+        ks.readKickstartFromString(line)
+
+    # Add to any existing services, removing any duplicates
+    ks.handler.services.enabled = sorted(set(settings["enabled"] + ks.handler.services.enabled))
+    ks.handler.services.disabled = sorted(set(settings["disabled"] + ks.handler.services.disabled))
+
+    # Converting back to a string includes a comment, return just the keyboard line
+    return str(ks.handler.services).splitlines()[-1]
+
+
+def get_services(recipe):
+    """Return the customizations.services settings
+
+    :param recipe: The recipe
+    :type recipe: Recipe object
+    :returns: A dict of settings
+    :rtype: dict
+    """
+    settings = {"enabled": [], "disabled": []}
+
+    if "customizations" not in recipe or \
+       "services" not in recipe["customizations"]:
+        return settings
+
+    settings["enabled"] = sorted(recipe["customizations"]["services"].get("enabled", []))
+    settings["disabled"] = sorted(recipe["customizations"]["services"].get("disabled", []))
+    return settings
+
+
+def get_default_services(recipe):
+    """Get the default string for services, based on recipe
+    :param recipe: The recipe
+
+    :type recipe: Recipe object
+    :returns: string with "services" or ""
+    :rtype: str
+
+    When no services have been selected we don't need to add anything to the kickstart
+    so return an empty string. Otherwise return "services" which will be updated with
+    the settings.
+    """
+    services = get_services(recipe)
+
+    if services["enabled"] or services["disabled"]:
+        return "services"
+    else:
+        return ""
+
+
 def customize_ks_template(ks_template, recipe):
     """ Customize the kickstart template and return it
 
@@ -370,6 +440,9 @@ def customize_ks_template(ks_template, recipe):
                 "firewall":   [firewall_cmd,
                                get_firewall_settings(recipe),
                                'firewall --enabled', True],
+                "services":   [services_cmd,
+                               get_services(recipe),
+                               get_default_services(recipe), True]
                }
     found = {}
 
