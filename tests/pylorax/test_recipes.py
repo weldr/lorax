@@ -544,6 +544,19 @@ disabled = ["telnet"]
         self.assertEqual(ks.handler.firewall.services, ["ftp", "ntp", "dhcp"])
         self.assertEqual(ks.handler.firewall.remove_services, ["telnet"])
 
+    def test_services(self):
+        blueprint_data = """name = "test-services"
+description = "test recipe"
+version = "0.0.1"
+
+[customizations.services]
+enabled = ["sshd", "cockpit.socket", "httpd"]
+disabled = ["postfix", "telnetd"]
+"""
+        ks = self._blueprint_to_ks(blueprint_data)
+        self.assertEqual(sorted(ks.handler.services.enabled), ["cockpit.socket", "httpd", "sshd"])
+        self.assertEqual(sorted(ks.handler.services.disabled), ["postfix", "telnetd"])
+
     def test_user(self):
         blueprint_data = """name = "test-user"
 description = "test recipe"
