@@ -39,7 +39,7 @@ check:
 
 test:
 	@echo "*** Running tests ***"
-	PYTHONPATH=$(PYTHONPATH):./src/ $(PYTHON) -m nose -v --with-coverage --cover-erase --cover-branches \
+	PYTHONPATH=$(PYTHONPATH):./tests/rpmfluff/:./src/ $(PYTHON) -m nose -v --with-coverage --cover-erase --cover-branches \
 					--cover-package=pylorax --cover-inclusive \
 					./tests/pylorax/ ./tests/composer/
 
