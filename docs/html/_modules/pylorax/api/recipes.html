@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.recipes &mdash; Lorax 31.1 documentation</title>
+  <title>pylorax.api.recipes &mdash; Lorax 31.4 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                31.1
+                31.4
               </div>
             
           
@@ -459,6 +459,12 @@
         <span class="n">description</span> <span class="o">=</span> <span class="n">recipe_dict</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span>
         <span class="n">version</span> <span class="o">=</span> <span class="n">recipe_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;version&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">customizations</span> <span class="o">=</span> <span class="n">recipe_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;customizations&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># [customizations] was incorrectly documented at first, so we have to support using it</span>
+        <span class="c1"># as [[customizations]] by grabbing the first element.</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">customizations</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">customizations</span> <span class="o">=</span> <span class="n">customizations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
     <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">RecipeError</span><span class="p">(</span><span class="s2">&quot;There was a problem parsing the recipe: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
 

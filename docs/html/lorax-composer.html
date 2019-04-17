@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>lorax-composer &mdash; Lorax 31.1 documentation</title>
+  <title>lorax-composer &mdash; Lorax 31.4 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                31.1
+                31.4
               </div>
             
           
@@ -110,6 +110,10 @@
 <li class="toctree-l4"><a class="reference internal" href="#customizations-sshkey">[[customizations.sshkey]]</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#customizations-user">[[customizations.user]]</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#customizations-group">[[customizations.group]]</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#customizations-timezone">[customizations.timezone]</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#customizations-locale">[customizations.locale]</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#customizations-firewall">[customizations.firewall]</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#customizations-services">[customizations.services]</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#repos-git">[[repos.git]]</a></li>
@@ -409,11 +413,12 @@ for selecting optional packages.</p>
 </div>
 <div class="section" id="customizations">
 <h3>Customizations<a class="headerlink" href="#customizations" title="Permalink to this headline">¶</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">[[customizations]]</span></code> section can be used to configure the hostname of the final image. eg.:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="n">customizations</span><span class="p">]]</span>
+<p>The <code class="docutils literal notranslate"><span class="pre">[customizations]</span></code> section can be used to configure the hostname of the final image. eg.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">customizations</span><span class="p">]</span>
 <span class="n">hostname</span> <span class="o">=</span> <span class="s2">&quot;baseimage&quot;</span>
 </pre></div>
 </div>
+<p>This is optional and may be left out to use the defaults.</p>
 <div class="section" id="customizations-kernel">
 <h4>[customizations.kernel]<a class="headerlink" href="#customizations-kernel" title="Permalink to this headline">¶</a></h4>
 <p>This allows you to append arguments to the bootloader's kernel commandline. This will not have any
@@ -467,6 +472,78 @@ an encrypted password. Otherwise it will be treated as a plain text password.</p
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="n">customizations</span><span class="o">.</span><span class="n">group</span><span class="p">]]</span>
 <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;widget&quot;</span>
 <span class="n">gid</span> <span class="o">=</span> <span class="mi">1130</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="customizations-timezone">
+<h4>[customizations.timezone]<a class="headerlink" href="#customizations-timezone" title="Permalink to this headline">¶</a></h4>
+<p>Customizing the timezone and the NTP servers to use for the system:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">customizations</span><span class="o">.</span><span class="n">timezone</span><span class="p">]</span>
+<span class="n">timezone</span> <span class="o">=</span> <span class="s2">&quot;US/Eastern&quot;</span>
+<span class="n">ntpservers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;0.north-america.pool.ntp.org&quot;</span><span class="p">,</span> <span class="s2">&quot;1.north-america.pool.ntp.org&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The values supported by <code class="docutils literal notranslate"><span class="pre">timezone</span></code> can be listed by running <code class="docutils literal notranslate"><span class="pre">timedatectl</span> <span class="pre">list-timezones</span></code>.</p>
+<p>If no timezone is setup the system will default to using <cite>UTC</cite>. The ntp servers are also
+optional and will default to using the distribution defaults which are fine for most uses.</p>
+<p>In some image types there are already NTP servers setup, eg. Google cloud image, and they
+cannot be overridden because they are required to boot in the selected environment. But the
+timezone will be updated to the one selected in the blueprint.</p>
+</div>
+<div class="section" id="customizations-locale">
+<h4>[customizations.locale]<a class="headerlink" href="#customizations-locale" title="Permalink to this headline">¶</a></h4>
+<p>Customize the locale settings for the system:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">customizations</span><span class="o">.</span><span class="n">locale</span><span class="p">]</span>
+<span class="n">languages</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;en_US.UTF-8&quot;</span><span class="p">]</span>
+<span class="n">keyboard</span> <span class="o">=</span> <span class="s2">&quot;us&quot;</span>
+</pre></div>
+</div>
+<p>The values supported by <code class="docutils literal notranslate"><span class="pre">languages</span></code> can be listed by running <code class="docutils literal notranslate"><span class="pre">localectl</span> <span class="pre">list-locales</span></code> from
+the command line.</p>
+<p>The values supported by <code class="docutils literal notranslate"><span class="pre">keyboard</span></code> can be listed by running <code class="docutils literal notranslate"><span class="pre">localectl</span> <span class="pre">list-keymaps</span></code> from
+the command line.</p>
+<p>Multiple languages can be added. The first one becomes the
+primary, and the others are added as secondary. One or the other of <code class="docutils literal notranslate"><span class="pre">languages</span></code>
+or <code class="docutils literal notranslate"><span class="pre">keyboard</span></code> must be included (or both) in the section.</p>
+</div>
+<div class="section" id="customizations-firewall">
+<h4>[customizations.firewall]<a class="headerlink" href="#customizations-firewall" title="Permalink to this headline">¶</a></h4>
+<p>By default the firewall blocks all access except for services that enable their ports explicitly,
+like <code class="docutils literal notranslate"><span class="pre">sshd</span></code>. This command can be used to open other ports or services. Ports are configured using
+the port:protocol format:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">customizations</span><span class="o">.</span><span class="n">firewall</span><span class="p">]</span>
+<span class="n">ports</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;22:tcp&quot;</span><span class="p">,</span> <span class="s2">&quot;80:tcp&quot;</span><span class="p">,</span> <span class="s2">&quot;imap:tcp&quot;</span><span class="p">,</span> <span class="s2">&quot;53:tcp&quot;</span><span class="p">,</span> <span class="s2">&quot;53:udp&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Numeric ports, or their names from <code class="docutils literal notranslate"><span class="pre">/etc/services</span></code> can be used in the <code class="docutils literal notranslate"><span class="pre">ports</span></code> enabled/disabled lists.</p>
+<p>The blueprint settings extend any existing settings in the image templates, so if <code class="docutils literal notranslate"><span class="pre">sshd</span></code> is
+already enabled it will extend the list of ports with the ones listed by the blueprint.</p>
+<p>If the distribution uses <code class="docutils literal notranslate"><span class="pre">firewalld</span></code> you can specify services listed by <code class="docutils literal notranslate"><span class="pre">firewall-cmd</span> <span class="pre">--get-services</span></code>
+in a <code class="docutils literal notranslate"><span class="pre">customizations.firewall.services</span></code> section:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">customizations</span><span class="o">.</span><span class="n">firewall</span><span class="o">.</span><span class="n">services</span><span class="p">]</span>
+<span class="n">enabled</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ftp&quot;</span><span class="p">,</span> <span class="s2">&quot;ntp&quot;</span><span class="p">,</span> <span class="s2">&quot;dhcp&quot;</span><span class="p">]</span>
+<span class="n">disabled</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;telnet&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Remember that the <code class="docutils literal notranslate"><span class="pre">firewall.services</span></code> are different from the names in <code class="docutils literal notranslate"><span class="pre">/etc/services</span></code>.</p>
+<p>Both are optional, if they are not used leave them out or set them to an empty list <code class="docutils literal notranslate"><span class="pre">[]</span></code>. If you
+only want the default firewall setup this section can be omitted from the blueprint.</p>
+<p>NOTE: The <code class="docutils literal notranslate"><span class="pre">Google</span></code> and <code class="docutils literal notranslate"><span class="pre">OpenStack</span></code> templates explicitly disable the firewall for their environment.
+This cannot be overridden by the blueprint.</p>
+</div>
+<div class="section" id="customizations-services">
+<h4>[customizations.services]<a class="headerlink" href="#customizations-services" title="Permalink to this headline">¶</a></h4>
+<p>This section can be used to control which services are enabled at boot time.
+Some image types already have services enabled or disabled in order for the
+image to work correctly, and cannot be overridden. eg. <code class="docutils literal notranslate"><span class="pre">ami</span></code> requires
+<code class="docutils literal notranslate"><span class="pre">sshd</span></code>, <code class="docutils literal notranslate"><span class="pre">chronyd</span></code>, and <code class="docutils literal notranslate"><span class="pre">cloud-init</span></code>. Without them the image will not
+boot. Blueprint services are added to, not replacing, the list already in the
+templates, if any.</p>
+<p>The service names are systemd service units. You may specify any systemd unit
+file accepted by <code class="docutils literal notranslate"><span class="pre">systemctl</span> <span class="pre">enable</span></code> eg. <code class="docutils literal notranslate"><span class="pre">cockpit.socket</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">customizations</span><span class="o">.</span><span class="n">services</span><span class="p">]</span>
+<span class="n">enabled</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sshd&quot;</span><span class="p">,</span> <span class="s2">&quot;cockpit.socket&quot;</span><span class="p">,</span> <span class="s2">&quot;httpd&quot;</span><span class="p">]</span>
+<span class="n">disabled</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;postfix&quot;</span><span class="p">,</span> <span class="s2">&quot;telnetd&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>

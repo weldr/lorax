@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.gitrpm &mdash; Lorax 31.1 documentation</title>
+  <title>pylorax.api.gitrpm &mdash; Lorax 31.4 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                31.1
+                31.4
               </div>
             
           
@@ -292,10 +292,17 @@
         <span class="n">sourceIndex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_source</span><span class="p">(</span><span class="n">GitArchiveTarball</span><span class="p">(</span><span class="n">gitRepo</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">section_build</span> <span class="o">+=</span> <span class="s2">&quot;tar -xvf </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">sourceIndex</span><span class="p">]</span><span class="o">.</span><span class="n">sourceName</span>
         <span class="n">dest</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">gitRepo</span><span class="p">[</span><span class="s2">&quot;destination&quot;</span><span class="p">])</span>
+        <span class="c1"># Prevent double slash root</span>
+        <span class="k">if</span> <span class="n">dest</span> <span class="o">==</span> <span class="s2">&quot;/&quot;</span><span class="p">:</span>
+            <span class="n">dest</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">create_parent_dirs</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">section_install</span> <span class="o">+=</span> <span class="s2">&quot;cp -r </span><span class="si">%s</span><span class="s2"> $RPM_BUILD_ROOT/</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">gitRepo</span><span class="p">[</span><span class="s2">&quot;rpmname&quot;</span><span class="p">],</span> <span class="n">dest</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">section_install</span> <span class="o">+=</span> <span class="s2">&quot;cp -r </span><span class="si">%s</span><span class="s2">/. $RPM_BUILD_ROOT/</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">gitRepo</span><span class="p">[</span><span class="s2">&quot;rpmname&quot;</span><span class="p">],</span> <span class="n">dest</span><span class="p">)</span>
         <span class="n">sub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subpackage</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-        <span class="n">sub</span><span class="o">.</span><span class="n">section_files</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/&quot;</span> <span class="o">%</span> <span class="n">dest</span></div></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dest</span><span class="p">:</span>
+            <span class="c1"># / is special, we don&#39;t want to include / itself, just what&#39;s under it</span>
+            <span class="n">sub</span><span class="o">.</span><span class="n">section_files</span> <span class="o">+=</span> <span class="s2">&quot;/*</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sub</span><span class="o">.</span><span class="n">section_files</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">dest</span></div></div>
 
 <div class="viewcode-block" id="make_git_rpm"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.gitrpm.make_git_rpm">[docs]</a><span class="k">def</span> <span class="nf">make_git_rpm</span><span class="p">(</span><span class="n">gitRepo</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Create an rpm from the specified git repo</span>

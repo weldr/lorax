@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>livemedia-creator &mdash; Lorax 31.1 documentation</title>
+  <title>livemedia-creator &mdash; Lorax 31.4 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                31.1
+                31.4
               </div>
             
           
@@ -226,7 +226,7 @@ you have the anaconda-tui package installed.</p>
 <p><p>Create Live Install Media</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
-                         <span class="p">(</span><span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">iso</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">disk</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">fsimage</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">appliance</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">ami</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">tar</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">pxe</span><span class="o">-</span><span class="n">live</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">ostree</span><span class="o">-</span><span class="n">live</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">oci</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">vagrant</span><span class="p">)</span>
+                         <span class="p">(</span><span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">iso</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">disk</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">fsimage</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">appliance</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">ami</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">tar</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">tar</span><span class="o">-</span><span class="n">disk</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">pxe</span><span class="o">-</span><span class="n">live</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">ostree</span><span class="o">-</span><span class="n">live</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">oci</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">vagrant</span><span class="p">)</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">iso</span> <span class="n">ISO</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">iso</span><span class="o">-</span><span class="n">only</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">iso</span><span class="o">-</span><span class="n">name</span> <span class="n">ISO_NAME</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">ks</span> <span class="n">KS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="n">only</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">virt</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span> <span class="n">PROXY</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">anaconda</span><span class="o">-</span><span class="n">arg</span> <span class="n">ANACONDA_ARGS</span><span class="p">]</span>
@@ -237,9 +237,11 @@ you have the anaconda-tui package installed.</p>
                          <span class="p">[</span><span class="o">--</span><span class="n">extra</span><span class="o">-</span><span class="n">boot</span><span class="o">-</span><span class="n">args</span> <span class="n">EXTRA_BOOT_ARGS</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">disk</span><span class="o">-</span><span class="n">image</span> <span class="n">DISK_IMAGE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">keep</span><span class="o">-</span><span class="n">image</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">fs</span><span class="o">-</span><span class="n">image</span> <span class="n">FS_IMAGE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="n">name</span> <span class="n">IMAGE_NAME</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">fs</span><span class="o">-</span><span class="n">label</span> <span class="n">FS_LABEL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="nb">type</span> <span class="n">IMAGE_TYPE</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">qemu</span><span class="o">-</span><span class="n">arg</span> <span class="n">QEMU_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">qcow2</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">qcow2</span><span class="o">-</span><span class="n">arg</span> <span class="n">QEMU_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="n">COMPRESSION</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">tar</span><span class="o">-</span><span class="n">disk</span><span class="o">-</span><span class="n">name</span> <span class="n">TAR_DISK_NAME</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">fs</span><span class="o">-</span><span class="n">label</span> <span class="n">FS_LABEL</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="n">size</span><span class="o">-</span><span class="n">align</span> <span class="n">IMAGE_SIZE_ALIGN</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="nb">type</span> <span class="n">IMAGE_TYPE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">qemu</span><span class="o">-</span><span class="n">arg</span> <span class="n">QEMU_ARGS</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">qcow2</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">qcow2</span><span class="o">-</span><span class="n">arg</span> <span class="n">QEMU_ARGS</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="n">COMPRESSION</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">compress</span><span class="o">-</span><span class="n">arg</span> <span class="n">COMPRESS_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">app</span><span class="o">-</span><span class="n">name</span> <span class="n">APP_NAME</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">app</span><span class="o">-</span><span class="n">template</span> <span class="n">APP_TEMPLATE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">app</span><span class="o">-</span><span class="n">file</span> <span class="n">APP_FILE</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">ram</span> <span class="n">MEMORY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">vcpus</span> <span class="n">VCPUS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">vnc</span> <span class="n">VNC</span><span class="p">]</span>
@@ -281,6 +283,10 @@ you have the anaconda-tui package installed.</p>
 </dd>
 <dt><kbd>--make-tar</kbd></dt>
 <dd><p>Build a tar of the root filesystem</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--make-tar-disk</kbd></dt>
+<dd><p>Build a tar of a partitioned disk image</p>
 <p>Default: False</p>
 </dd>
 <dt><kbd>--make-pxe-live</kbd></dt>
@@ -398,9 +404,16 @@ you have the anaconda-tui package installed.</p>
 <dt><kbd>--image-name</kbd></dt>
 <dd><p>Name of output file to create. Used for tar, fs and disk image. Default is a random name.</p>
 </dd>
+<dt><kbd>--tar-disk-name</kbd></dt>
+<dd><p>Name of the archive member for make-tar-disk.</p>
+</dd>
 <dt><kbd>--fs-label</kbd></dt>
 <dd><p>Label to set on fsimage, default is 'Anaconda'</p>
 <p>Default: &quot;Anaconda&quot;</p>
+</dd>
+<dt><kbd>--image-size-align</kbd></dt>
+<dd><p>Create a disk image with a size that is a multiple of this value in MiB.</p>
+<p>Default: 0</p>
 </dd>
 <dt><kbd>--image-type</kbd></dt>
 <dd><p>Create an image with qemu-img. See qemu-img --help for supported formats.</p>
