@@ -315,24 +315,19 @@ This cannot be overridden by the blueprint.
 [customizations.services]
 *************************
 
-This section can be used to control which services are enabled at boot time. Some image types
-already have services enabled or disabled in order for the image to work correctly, and cannot
-be overridden. eg. ``ami`` requires ``sshd``, ``chronyd``, and ``cloud-init``. Without them the image will
-not boot.
+This section can be used to control which services are enabled at boot time.
+Some image types already have services enabled or disabled in order for the
+image to work correctly, and cannot be overridden. eg. ``ami`` requires
+``sshd``, ``chronyd``, and ``cloud-init``. Without them the image will not
+boot. Blueprint services are added to, not replacing, the list already in the
+templates, if any.
 
-The service names are systemd service units. On RHEL7 only ``.service`` units can be
-enabled or disabled. Other releases may specify any systemd unit file, eg. ``cockpit.socket``
+The service names are systemd service units. You may specify any systemd unit
+file accepted by ``systemctl enable`` eg. ``cockpit.socket``::
 
     [customizations.services]
     enabled = ["sshd", "cockpit.socket", "httpd"]
     disabled = ["postfix", "telnetd"]
-
-.. warning::
-
-    The service must be installed, otherwise systemd will fail when trying to enable or disable
-    the nonexistant service.
-
-    TODO -- Confirm this is still true and if not, on which releases
 
 
 [[repos.git]]
