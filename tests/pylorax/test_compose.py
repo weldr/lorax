@@ -434,20 +434,25 @@ disabled = ["telnet"]
         self.assertEqual(firewall_cmd("firewall --enabled",
                          {"ports": ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"],
                          "enabled": [], "disabled": []}),
-                         "firewall --enabled --port=22:tcp,80:tcp,imap:tcp,53:tcp,53:udp")
+                         "firewall --enabled --port=22:tcp,53:tcp,53:udp,80:tcp,imap:tcp")
         self.assertEqual(firewall_cmd("firewall --enabled",
                          {"ports": ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"],
                          "enabled": ["ftp", "ntp", "dhcp"], "disabled": []}),
-                         "firewall --enabled --port=22:tcp,80:tcp,imap:tcp,53:tcp,53:udp --service=ftp,ntp,dhcp")
+                         "firewall --enabled --port=22:tcp,53:tcp,53:udp,80:tcp,imap:tcp --service=dhcp,ftp,ntp")
         self.assertEqual(firewall_cmd("firewall --enabled",
                          {"ports": ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"],
                          "enabled": ["ftp", "ntp", "dhcp"], "disabled": ["telnet"]}),
-                         "firewall --enabled --port=22:tcp,80:tcp,imap:tcp,53:tcp,53:udp --service=ftp,ntp,dhcp --remove-service=telnet")
+                         "firewall --enabled --port=22:tcp,53:tcp,53:udp,80:tcp,imap:tcp --service=dhcp,ftp,ntp --remove-service=telnet")
         # Make sure that --disabled overrides setting ports and services
         self.assertEqual(firewall_cmd("firewall --disabled",
                          {"ports": ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"],
                          "enabled": ["ftp", "ntp", "dhcp"], "disabled": ["telnet"]}),
                          "firewall --disabled")
+        # Make sure that ports includes any existing settings from the firewall command
+        self.assertEqual(firewall_cmd("firewall --enabled --port=8080:tcp --service=dns --remove-service=ftp",
+                         {"ports": ["80:tcp"],
+                         "enabled": ["ntp"], "disabled": ["telnet"]}),
+                         "firewall --enabled --port=8080:tcp,80:tcp --service=dns,ntp --remove-service=ftp,telnet")
 
     def test_get_services(self):
         """Test get_services function"""

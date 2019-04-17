@@ -283,6 +283,9 @@ the port:protocol format::
 
 Numeric ports, or their names from ``/etc/services`` can be used in the ``ports`` enabled/disabled lists.
 
+The blueprint settings extend any existing settings in the image templates, so if ``sshd`` is
+already enabled it will extend the list of ports with the ones listed by the blueprint.
+
 If the distribution uses ``firewalld`` you can specify services listed by ``firewall-cmd --get-services``
 in a ``customizations.firewall.services`` section::
 
@@ -290,7 +293,7 @@ in a ``customizations.firewall.services`` section::
     enabled = ["ftp", "ntp", "dhcp"]
     disabled = ["telnet"]
 
-Note that these  are different from the names in ``/etc/services``, and only ``enabled`` is supported.
+Remember that the ``firewall.services`` are different from the names in ``/etc/services``.
 
 Both are optional, if they are not used leave them out or set them to an empty list ``[]``. If you
 only want the default firewall setup this section can be omitted from the blueprint.

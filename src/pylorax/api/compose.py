@@ -297,9 +297,9 @@ def firewall_cmd(line, settings):
 
     # Do not override firewall --disabled
     if ks.handler.firewall.enabled != False and settings:
-        ks.handler.firewall.ports = settings["ports"]
-        ks.handler.firewall.services = settings["enabled"]
-        ks.handler.firewall.remove_services = settings["disabled"]
+        ks.handler.firewall.ports = sorted(set(settings["ports"] + ks.handler.firewall.ports))
+        ks.handler.firewall.services = sorted(set(settings["enabled"] + ks.handler.firewall.services))
+        ks.handler.firewall.remove_services = sorted(set(settings["disabled"] + ks.handler.firewall.remove_services))
 
     # Converting back to a string includes a comment, return just the keyboard line
     return str(ks.handler.firewall).splitlines()[-1]
