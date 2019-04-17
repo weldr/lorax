@@ -509,7 +509,7 @@ ports = ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"]
         self.assertEqual(ks.handler.firewall.remove_services, [])
 
         ks = self._blueprint_to_ks(blueprint2_data)
-        self.assertEqual(ks.handler.firewall.ports, ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"])
+        self.assertEqual(ks.handler.firewall.ports, ["22:tcp", "53:tcp", "53:udp", "80:tcp", "imap:tcp"])
         self.assertEqual(ks.handler.firewall.services, [])
         self.assertEqual(ks.handler.firewall.remove_services, [])
 
@@ -524,7 +524,7 @@ disabled = ["telnet"]
 """
         ks = self._blueprint_to_ks(blueprint_data)
         self.assertEqual(ks.handler.firewall.ports, [])
-        self.assertEqual(ks.handler.firewall.services, ["ftp", "ntp", "dhcp"])
+        self.assertEqual(ks.handler.firewall.services, ["dhcp", "ftp", "ntp"])
         self.assertEqual(ks.handler.firewall.remove_services, ["telnet"])
 
     def test_firewall(self):
@@ -540,8 +540,8 @@ enabled = ["ftp", "ntp", "dhcp"]
 disabled = ["telnet"]
 """
         ks = self._blueprint_to_ks(blueprint_data)
-        self.assertEqual(ks.handler.firewall.ports, ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"])
-        self.assertEqual(ks.handler.firewall.services, ["ftp", "ntp", "dhcp"])
+        self.assertEqual(ks.handler.firewall.ports, ["22:tcp", "53:tcp", "53:udp", "80:tcp", "imap:tcp"])
+        self.assertEqual(ks.handler.firewall.services, ["dhcp", "ftp", "ntp"])
         self.assertEqual(ks.handler.firewall.remove_services, ["telnet"])
 
     def test_services(self):
