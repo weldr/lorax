@@ -35,10 +35,10 @@ rlJournalStart
         V_DATACENTER="${V_DATACENTER:-RH_Engineering}"
         rlLogInfo "V_DATACENTER=$V_DATACENTER"
 
-        V_CLUSTER="${V_CLUSTER:-SysMgmt_vMotion}"
+        V_CLUSTER="${V_CLUSTER:-vMotion-Cluster}"
         rlLogInfo "V_CLUSTER=$V_CLUSTER"
 
-        V_NETWORK="${V_NETWORK:-CEE_VM_Network}"
+        V_NETWORK="${V_NETWORK:-vMotion-Network}"
         rlLogInfo "V_NETWORK=$V_NETWORK"
 
         V_DATASTORE="${V_DATASTORE:-iSCSI-Node2}"
@@ -103,7 +103,7 @@ __EOF__
         fi
     rlPhaseEnd
 
-    rlPhaseStartTest "Upload vmdk image in vCenter"
+    rlPhaseStartTest "Upload VMDK image in vCenter"
         rlRun -t -c "$CLI compose image $UUID"
         IMAGE="$UUID-disk.vmdk"
 
