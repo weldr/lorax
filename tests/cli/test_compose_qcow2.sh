@@ -8,6 +8,7 @@
 #####
 
 . /usr/share/beakerlib/beakerlib.sh
+. ./tests/cli/lib/lib.sh
 
 CLI="${CLI:-./src/bin/composer-cli}"
 QEMU="/usr/libexec/qemu-kvm"
@@ -73,9 +74,8 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartTest "Verify VM instance"
-        # verify we can login into that instance and root account is disabled
-        . ./tests/cli/lib/root_account.sh
-        check_root_account root localhost "-i $SSH_KEY_DIR/id_rsa -p 2222"
+        # run generic tests to verify the instance
+        verify_image root localhost "-i $SSH_KEY_DIR/id_rsa -p 2222"
     rlPhaseEnd
 
     rlPhaseStartCleanup

@@ -8,6 +8,7 @@
 #####
 
 . /usr/share/beakerlib/beakerlib.sh
+. ./tests/cli/lib/lib.sh
 
 CLI="${CLI:-./src/bin/composer-cli}"
 
@@ -140,9 +141,8 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartTest "Verify VM instance"
-        # verify we can login into that instance and root account is disabled
-        . ./tests/cli/lib/root_account.sh
-        check_root_account root $IP_ADDRESS "-i $SSH_KEY_DIR/id_rsa"
+        # run generic tests to verify the instance
+        verify_image root "$IP_ADDRESS" "-i $SSH_KEY_DIR/id_rsa"
     rlPhaseEnd
 
     rlPhaseStartCleanup
