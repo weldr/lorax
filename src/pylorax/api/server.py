@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2017  Red Hat, Inc.
+# Copyright (C) 2017-2019 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -83,4 +83,5 @@ def v0_status():
 def bad_request(error):
     return jsonify(status=False, errors=[{ "id": HTTP_ERROR, "code": error.code, "msg": error.name }]), error.code
 
-v0_api(server)
+# Register the v0 API on /api/v0/
+server.register_blueprint(v0_api, url_prefix="/api/v0/")
