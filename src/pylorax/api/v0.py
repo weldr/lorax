@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2017-2018  Red Hat, Inc.
+# Copyright (C) 2017-2019  Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -993,12 +993,14 @@ log = logging.getLogger("lorax-composer")
 
 import os
 from flask import jsonify, request, Response, send_file
+from flask import current_app as api
 import pytoml as toml
 
 from pylorax.sysutils import joinpaths
 from pylorax.api.checkparams import checkparams
 from pylorax.api.compose import start_build, compose_types
 from pylorax.api.errors import *                               # pylint: disable=wildcard-import
+from pylorax.api.flask_blueprint import BlueprintSkip
 from pylorax.api.projects import projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError, repo_to_source
 from pylorax.api.projects import get_repo_sources, delete_repo_source, source_to_repo, dnf_repo_to_file_repo
@@ -1026,7 +1028,7 @@ def take_limits(iterable, offset, limit):
     """
     return iterable[offset:][:limit]
 
-def blueprint_exists(api, branch, blueprint_name):
+def blueprint_exists(branch, blueprint_name):
     """Return True if the blueprint exists
 
     :param api: flask object
@@ -1044,1007 +1046,1008 @@ def blueprint_exists(api, branch, blueprint_name):
     except (RecipeError, RecipeFileError):
         return False
 
-def v0_api(api):
-    # Note that Sphinx will not generate documentations for any of these.
-    @api.route("/api/v0/blueprints/list")
-    def v0_blueprints_list():
-        """List the available blueprints on a branch."""
-        branch = request.args.get("branch", "master")
-        if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
+# Create the v0 routes Blueprint with skip_routes support
+v0_api = BlueprintSkip("v0_routes", __name__)
 
+@v0_api.route("/blueprints/list")
+def v0_blueprints_list():
+    """List the available blueprints on a branch."""
+    branch = request.args.get("branch", "master")
+    if VALID_API_STRING.match(branch) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
+
+    try:
+        limit = int(request.args.get("limit", "20"))
+        offset = int(request.args.get("offset", "0"))
+    except ValueError as e:
+        return jsonify(status=False, errors=[{"id": BAD_LIMIT_OR_OFFSET, "msg": str(e)}]), 400
+
+    with api.config["GITLOCK"].lock:
+        blueprints = [f[:-5] for f in list_branch_files(api.config["GITLOCK"].repo, branch)]
+        limited_blueprints = take_limits(blueprints, offset, limit)
+    return jsonify(blueprints=limited_blueprints, limit=limit, offset=offset, total=len(blueprints))
+
+@v0_api.route("/blueprints/info", defaults={'blueprint_names': ""})
+@v0_api.route("/blueprints/info/<blueprint_names>")
+@checkparams([("blueprint_names", "", "no blueprint names given")])
+def v0_blueprints_info(blueprint_names):
+    """Return the contents of the blueprint, or a list of blueprints"""
+    if VALID_API_STRING.match(blueprint_names) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+
+    branch = request.args.get("branch", "master")
+    if VALID_API_STRING.match(branch) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
+
+    out_fmt = request.args.get("format", "json")
+    if VALID_API_STRING.match(out_fmt) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in format argument"}]), 400
+
+    blueprints = []
+    changes = []
+    errors = []
+    for blueprint_name in [n.strip() for n in blueprint_names.split(",")]:
+        exceptions = []
+        # Get the workspace version (if it exists)
         try:
-            limit = int(request.args.get("limit", "20"))
-            offset = int(request.args.get("offset", "0"))
-        except ValueError as e:
-            return jsonify(status=False, errors=[{"id": BAD_LIMIT_OR_OFFSET, "msg": str(e)}]), 400
+            with api.config["GITLOCK"].lock:
+                ws_blueprint = workspace_read(api.config["GITLOCK"].repo, branch, blueprint_name)
+        except Exception as e:
+            ws_blueprint = None
+            exceptions.append(str(e))
+            log.error("(v0_blueprints_info) %s", str(e))
+
+        # Get the git version (if it exists)
+        try:
+            with api.config["GITLOCK"].lock:
+                git_blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
+        except RecipeFileError as e:
+            # Adding an exception would be redundant, skip it
+            git_blueprint = None
+            log.error("(v0_blueprints_info) %s", str(e))
+        except Exception as e:
+            git_blueprint = None
+            exceptions.append(str(e))
+            log.error("(v0_blueprints_info) %s", str(e))
+
+        if not ws_blueprint and not git_blueprint:
+            # Neither blueprint, return an error
+            errors.append({"id": UNKNOWN_BLUEPRINT, "msg": "%s: %s" % (blueprint_name, ", ".join(exceptions))})
+        elif ws_blueprint and not git_blueprint:
+            # No git blueprint, return the workspace blueprint
+            changes.append({"name":blueprint_name, "changed":True})
+            blueprints.append(ws_blueprint)
+        elif not ws_blueprint and git_blueprint:
+            # No workspace blueprint, no change, return the git blueprint
+            changes.append({"name":blueprint_name, "changed":False})
+            blueprints.append(git_blueprint)
+        else:
+            # Both exist, maybe changed, return the workspace blueprint
+            changes.append({"name":blueprint_name, "changed":ws_blueprint != git_blueprint})
+            blueprints.append(ws_blueprint)
+
+    # Sort all the results by case-insensitive blueprint name
+    changes = sorted(changes, key=lambda c: c["name"].lower())
+    blueprints = sorted(blueprints, key=lambda r: r["name"].lower())
+
+    if out_fmt == "toml":
+        if errors:
+            # If there are errors they need to be reported, use JSON and 400 for this
+            return jsonify(status=False, errors=errors), 400
+        else:
+            # With TOML output we just want to dump the raw blueprint, skipping the rest.
+            return "\n\n".join([r.toml() for r in blueprints])
+    else:
+        return jsonify(changes=changes, blueprints=blueprints, errors=errors)
+
+@v0_api.route("/blueprints/changes", defaults={'blueprint_names': ""})
+@v0_api.route("/blueprints/changes/<blueprint_names>")
+@checkparams([("blueprint_names", "", "no blueprint names given")])
+def v0_blueprints_changes(blueprint_names):
+    """Return the changes to a blueprint or list of blueprints"""
+    if VALID_API_STRING.match(blueprint_names) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+
+    branch = request.args.get("branch", "master")
+    if VALID_API_STRING.match(branch) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
+
+    try:
+        limit = int(request.args.get("limit", "20"))
+        offset = int(request.args.get("offset", "0"))
+    except ValueError as e:
+        return jsonify(status=False, errors=[{"id": BAD_LIMIT_OR_OFFSET, "msg": str(e)}]), 400
+
+    blueprints = []
+    errors = []
+    for blueprint_name in [n.strip() for n in blueprint_names.split(",")]:
+        filename = recipe_filename(blueprint_name)
+        try:
+            with api.config["GITLOCK"].lock:
+                commits = list_commits(api.config["GITLOCK"].repo, branch, filename)
+        except Exception as e:
+            errors.append({"id": BLUEPRINTS_ERROR, "msg": "%s: %s" % (blueprint_name, str(e))})
+            log.error("(v0_blueprints_changes) %s", str(e))
+        else:
+            if commits:
+                limited_commits = take_limits(commits, offset, limit)
+                blueprints.append({"name":blueprint_name, "changes":limited_commits, "total":len(commits)})
+            else:
+                # no commits means there is no blueprint in the branch
+                errors.append({"id": UNKNOWN_BLUEPRINT, "msg": "%s" % blueprint_name})
+
+    blueprints = sorted(blueprints, key=lambda r: r["name"].lower())
+
+    return jsonify(blueprints=blueprints, errors=errors, offset=offset, limit=limit)
+
+@v0_api.route("/blueprints/new", methods=["POST"])
+def v0_blueprints_new():
+    """Commit a new blueprint"""
+    branch = request.args.get("branch", "master")
+    if VALID_API_STRING.match(branch) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
+
+    try:
+        if request.headers['Content-Type'] == "text/x-toml":
+            blueprint = recipe_from_toml(request.data)
+        else:
+            blueprint = recipe_from_dict(request.get_json(cache=False))
+
+        if VALID_API_STRING.match(blueprint["name"]) is None:
+            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
         with api.config["GITLOCK"].lock:
-            blueprints = [f[:-5] for f in list_branch_files(api.config["GITLOCK"].repo, branch)]
-            limited_blueprints = take_limits(blueprints, offset, limit)
-        return jsonify(blueprints=limited_blueprints, limit=limit, offset=offset, total=len(blueprints))
+            commit_recipe(api.config["GITLOCK"].repo, branch, blueprint)
 
-    @api.route("/api/v0/blueprints/info", defaults={'blueprint_names': ""})
-    @api.route("/api/v0/blueprints/info/<blueprint_names>")
-    @checkparams([("blueprint_names", "", "no blueprint names given")])
-    def v0_blueprints_info(blueprint_names):
-        """Return the contents of the blueprint, or a list of blueprints"""
-        if VALID_API_STRING.match(blueprint_names) is None:
+            # Read the blueprint with new version and write it to the workspace
+            blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint["name"])
+            workspace_write(api.config["GITLOCK"].repo, branch, blueprint)
+    except Exception as e:
+        log.error("(v0_blueprints_new) %s", str(e))
+        return jsonify(status=False, errors=[{"id": BLUEPRINTS_ERROR, "msg": str(e)}]), 400
+    else:
+        return jsonify(status=True)
+
+@v0_api.route("/blueprints/delete", defaults={'blueprint_name': ""}, methods=["DELETE"])
+@v0_api.route("/blueprints/delete/<blueprint_name>", methods=["DELETE"])
+@checkparams([("blueprint_name", "", "no blueprint name given")])
+def v0_blueprints_delete(blueprint_name):
+    """Delete a blueprint from git"""
+    if VALID_API_STRING.match(blueprint_name) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+
+    branch = request.args.get("branch", "master")
+    if VALID_API_STRING.match(branch) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
+
+    try:
+        with api.config["GITLOCK"].lock:
+            workspace_delete(api.config["GITLOCK"].repo, branch, blueprint_name)
+            delete_recipe(api.config["GITLOCK"].repo, branch, blueprint_name)
+    except Exception as e:
+        log.error("(v0_blueprints_delete) %s", str(e))
+        return jsonify(status=False, errors=[{"id": BLUEPRINTS_ERROR, "msg": str(e)}]), 400
+    else:
+        return jsonify(status=True)
+
+@v0_api.route("/blueprints/workspace", methods=["POST"])
+def v0_blueprints_workspace():
+    """Write a blueprint to the workspace"""
+    branch = request.args.get("branch", "master")
+    if VALID_API_STRING.match(branch) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
+
+    try:
+        if request.headers['Content-Type'] == "text/x-toml":
+            blueprint = recipe_from_toml(request.data)
+        else:
+            blueprint = recipe_from_dict(request.get_json(cache=False))
+
+        if VALID_API_STRING.match(blueprint["name"]) is None:
             return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
-        branch = request.args.get("branch", "master")
-        if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
+        with api.config["GITLOCK"].lock:
+            workspace_write(api.config["GITLOCK"].repo, branch, blueprint)
+    except Exception as e:
+        log.error("(v0_blueprints_workspace) %s", str(e))
+        return jsonify(status=False, errors=[{"id": BLUEPRINTS_ERROR, "msg": str(e)}]), 400
+    else:
+        return jsonify(status=True)
 
-        out_fmt = request.args.get("format", "json")
-        if VALID_API_STRING.match(out_fmt) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in format argument"}]), 400
+@v0_api.route("/blueprints/workspace", defaults={'blueprint_name': ""}, methods=["DELETE"])
+@v0_api.route("/blueprints/workspace/<blueprint_name>", methods=["DELETE"])
+@checkparams([("blueprint_name", "", "no blueprint name given")])
+def v0_blueprints_delete_workspace(blueprint_name):
+    """Delete a blueprint from the workspace"""
+    if VALID_API_STRING.match(blueprint_name) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
-        blueprints = []
-        changes = []
-        errors = []
-        for blueprint_name in [n.strip() for n in blueprint_names.split(",")]:
-            exceptions = []
-            # Get the workspace version (if it exists)
-            try:
-                with api.config["GITLOCK"].lock:
-                    ws_blueprint = workspace_read(api.config["GITLOCK"].repo, branch, blueprint_name)
-            except Exception as e:
-                ws_blueprint = None
-                exceptions.append(str(e))
-                log.error("(v0_blueprints_info) %s", str(e))
+    branch = request.args.get("branch", "master")
+    if VALID_API_STRING.match(branch) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
 
-            # Get the git version (if it exists)
-            try:
-                with api.config["GITLOCK"].lock:
-                    git_blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
-            except RecipeFileError as e:
-                # Adding an exception would be redundant, skip it
-                git_blueprint = None
-                log.error("(v0_blueprints_info) %s", str(e))
-            except Exception as e:
-                git_blueprint = None
-                exceptions.append(str(e))
-                log.error("(v0_blueprints_info) %s", str(e))
+    try:
+        with api.config["GITLOCK"].lock:
+            workspace_delete(api.config["GITLOCK"].repo, branch, blueprint_name)
+    except Exception as e:
+        log.error("(v0_blueprints_delete_workspace) %s", str(e))
+        return jsonify(status=False, errors=[{"id": BLUEPRINTS_ERROR, "msg": str(e)}]), 400
+    else:
+        return jsonify(status=True)
 
-            if not ws_blueprint and not git_blueprint:
-                # Neither blueprint, return an error
-                errors.append({"id": UNKNOWN_BLUEPRINT, "msg": "%s: %s" % (blueprint_name, ", ".join(exceptions))})
-            elif ws_blueprint and not git_blueprint:
-                # No git blueprint, return the workspace blueprint
-                changes.append({"name":blueprint_name, "changed":True})
-                blueprints.append(ws_blueprint)
-            elif not ws_blueprint and git_blueprint:
-                # No workspace blueprint, no change, return the git blueprint
-                changes.append({"name":blueprint_name, "changed":False})
-                blueprints.append(git_blueprint)
-            else:
-                # Both exist, maybe changed, return the workspace blueprint
-                changes.append({"name":blueprint_name, "changed":ws_blueprint != git_blueprint})
-                blueprints.append(ws_blueprint)
+@v0_api.route("/blueprints/undo", defaults={'blueprint_name': "", 'commit': ""}, methods=["POST"])
+@v0_api.route("/blueprints/undo/<blueprint_name>", defaults={'commit': ""}, methods=["POST"])
+@v0_api.route("/blueprints/undo/<blueprint_name>/<commit>", methods=["POST"])
+@checkparams([("blueprint_name", "", "no blueprint name given"),
+              ("commit", "", "no commit ID given")])
+def v0_blueprints_undo(blueprint_name, commit):
+    """Undo changes to a blueprint by reverting to a previous commit."""
+    if VALID_API_STRING.match(blueprint_name) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
-        # Sort all the results by case-insensitive blueprint name
-        changes = sorted(changes, key=lambda c: c["name"].lower())
-        blueprints = sorted(blueprints, key=lambda r: r["name"].lower())
+    branch = request.args.get("branch", "master")
+    if VALID_API_STRING.match(branch) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
 
-        if out_fmt == "toml":
-            if errors:
-                # If there are errors they need to be reported, use JSON and 400 for this
-                return jsonify(status=False, errors=errors), 400
-            else:
-                # With TOML output we just want to dump the raw blueprint, skipping the rest.
-                return "\n\n".join([r.toml() for r in blueprints])
-        else:
-            return jsonify(changes=changes, blueprints=blueprints, errors=errors)
+    try:
+        with api.config["GITLOCK"].lock:
+            revert_recipe(api.config["GITLOCK"].repo, branch, blueprint_name, commit)
 
-    @api.route("/api/v0/blueprints/changes", defaults={'blueprint_names': ""})
-    @api.route("/api/v0/blueprints/changes/<blueprint_names>")
-    @checkparams([("blueprint_names", "", "no blueprint names given")])
-    def v0_blueprints_changes(blueprint_names):
-        """Return the changes to a blueprint or list of blueprints"""
-        if VALID_API_STRING.match(blueprint_names) is None:
+            # Read the new recipe and write it to the workspace
+            blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
+            workspace_write(api.config["GITLOCK"].repo, branch, blueprint)
+    except Exception as e:
+        log.error("(v0_blueprints_undo) %s", str(e))
+        return jsonify(status=False, errors=[{"id": UNKNOWN_COMMIT, "msg": str(e)}]), 400
+    else:
+        return jsonify(status=True)
+
+@v0_api.route("/blueprints/tag", defaults={'blueprint_name': ""}, methods=["POST"])
+@v0_api.route("/blueprints/tag/<blueprint_name>", methods=["POST"])
+@checkparams([("blueprint_name", "", "no blueprint name given")])
+def v0_blueprints_tag(blueprint_name):
+    """Tag a blueprint's latest blueprint commit as a 'revision'"""
+    if VALID_API_STRING.match(blueprint_name) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+
+    branch = request.args.get("branch", "master")
+    if VALID_API_STRING.match(branch) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
+
+    try:
+        with api.config["GITLOCK"].lock:
+            tag_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
+    except RecipeFileError as e:
+        log.error("(v0_blueprints_tag) %s", str(e))
+        return jsonify(status=False, errors=[{"id": UNKNOWN_BLUEPRINT, "msg": str(e)}]), 400
+    except Exception as e:
+        log.error("(v0_blueprints_tag) %s", str(e))
+        return jsonify(status=False, errors=[{"id": BLUEPRINTS_ERROR, "msg": str(e)}]), 400
+    else:
+        return jsonify(status=True)
+
+@v0_api.route("/blueprints/diff", defaults={'blueprint_name': "", 'from_commit': "", 'to_commit': ""})
+@v0_api.route("/blueprints/diff/<blueprint_name>", defaults={'from_commit': "", 'to_commit': ""})
+@v0_api.route("/blueprints/diff/<blueprint_name>/<from_commit>", defaults={'to_commit': ""})
+@v0_api.route("/blueprints/diff/<blueprint_name>/<from_commit>/<to_commit>")
+@checkparams([("blueprint_name", "", "no blueprint name given"),
+              ("from_commit", "", "no from commit ID given"),
+              ("to_commit", "", "no to commit ID given")])
+def v0_blueprints_diff(blueprint_name, from_commit, to_commit):
+    """Return the differences between two commits of a blueprint"""
+    for s in [blueprint_name, from_commit, to_commit]:
+        if VALID_API_STRING.match(s) is None:
             return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
-        branch = request.args.get("branch", "master")
-        if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
+    branch = request.args.get("branch", "master")
+    if VALID_API_STRING.match(branch) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
 
-        try:
-            limit = int(request.args.get("limit", "20"))
-            offset = int(request.args.get("offset", "0"))
-        except ValueError as e:
-            return jsonify(status=False, errors=[{"id": BAD_LIMIT_OR_OFFSET, "msg": str(e)}]), 400
+    if not blueprint_exists(branch, blueprint_name):
+        return jsonify(status=False, errors=[{"id": UNKNOWN_BLUEPRINT, "msg": "Unknown blueprint name: %s" % blueprint_name}])
 
-        blueprints = []
-        errors = []
-        for blueprint_name in [n.strip() for n in blueprint_names.split(",")]:
-            filename = recipe_filename(blueprint_name)
-            try:
-                with api.config["GITLOCK"].lock:
-                    commits = list_commits(api.config["GITLOCK"].repo, branch, filename)
-            except Exception as e:
-                errors.append({"id": BLUEPRINTS_ERROR, "msg": "%s: %s" % (blueprint_name, str(e))})
-                log.error("(v0_blueprints_changes) %s", str(e))
-            else:
-                if commits:
-                    limited_commits = take_limits(commits, offset, limit)
-                    blueprints.append({"name":blueprint_name, "changes":limited_commits, "total":len(commits)})
-                else:
-                    # no commits means there is no blueprint in the branch
-                    errors.append({"id": UNKNOWN_BLUEPRINT, "msg": "%s" % blueprint_name})
-
-        blueprints = sorted(blueprints, key=lambda r: r["name"].lower())
-
-        return jsonify(blueprints=blueprints, errors=errors, offset=offset, limit=limit)
-
-    @api.route("/api/v0/blueprints/new", methods=["POST"])
-    def v0_blueprints_new():
-        """Commit a new blueprint"""
-        branch = request.args.get("branch", "master")
-        if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
-
-        try:
-            if request.headers['Content-Type'] == "text/x-toml":
-                blueprint = recipe_from_toml(request.data)
-            else:
-                blueprint = recipe_from_dict(request.get_json(cache=False))
-
-            if VALID_API_STRING.match(blueprint["name"]) is None:
-                return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
-
+    try:
+        if from_commit == "NEWEST":
             with api.config["GITLOCK"].lock:
-                commit_recipe(api.config["GITLOCK"].repo, branch, blueprint)
-
-                # Read the blueprint with new version and write it to the workspace
-                blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint["name"])
-                workspace_write(api.config["GITLOCK"].repo, branch, blueprint)
-        except Exception as e:
-            log.error("(v0_blueprints_new) %s", str(e))
-            return jsonify(status=False, errors=[{"id": BLUEPRINTS_ERROR, "msg": str(e)}]), 400
+                old_blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
         else:
-            return jsonify(status=True)
-
-    @api.route("/api/v0/blueprints/delete", defaults={'blueprint_name': ""}, methods=["DELETE"])
-    @api.route("/api/v0/blueprints/delete/<blueprint_name>", methods=["DELETE"])
-    @checkparams([("blueprint_name", "", "no blueprint name given")])
-    def v0_blueprints_delete(blueprint_name):
-        """Delete a blueprint from git"""
-        if VALID_API_STRING.match(blueprint_name) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
-
-        branch = request.args.get("branch", "master")
-        if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
-
-        try:
             with api.config["GITLOCK"].lock:
-                workspace_delete(api.config["GITLOCK"].repo, branch, blueprint_name)
-                delete_recipe(api.config["GITLOCK"].repo, branch, blueprint_name)
-        except Exception as e:
-            log.error("(v0_blueprints_delete) %s", str(e))
-            return jsonify(status=False, errors=[{"id": BLUEPRINTS_ERROR, "msg": str(e)}]), 400
-        else:
-            return jsonify(status=True)
+                old_blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name, from_commit)
+    except Exception as e:
+        log.error("(v0_blueprints_diff) %s", str(e))
+        return jsonify(status=False, errors=[{"id": UNKNOWN_COMMIT, "msg": str(e)}]), 400
 
-    @api.route("/api/v0/blueprints/workspace", methods=["POST"])
-    def v0_blueprints_workspace():
-        """Write a blueprint to the workspace"""
-        branch = request.args.get("branch", "master")
-        if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
-
-        try:
-            if request.headers['Content-Type'] == "text/x-toml":
-                blueprint = recipe_from_toml(request.data)
-            else:
-                blueprint = recipe_from_dict(request.get_json(cache=False))
-
-            if VALID_API_STRING.match(blueprint["name"]) is None:
-                return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
-
+    try:
+        if to_commit == "WORKSPACE":
             with api.config["GITLOCK"].lock:
-                workspace_write(api.config["GITLOCK"].repo, branch, blueprint)
-        except Exception as e:
-            log.error("(v0_blueprints_workspace) %s", str(e))
-            return jsonify(status=False, errors=[{"id": BLUEPRINTS_ERROR, "msg": str(e)}]), 400
-        else:
-            return jsonify(status=True)
-
-    @api.route("/api/v0/blueprints/workspace", defaults={'blueprint_name': ""}, methods=["DELETE"])
-    @api.route("/api/v0/blueprints/workspace/<blueprint_name>", methods=["DELETE"])
-    @checkparams([("blueprint_name", "", "no blueprint name given")])
-    def v0_blueprints_delete_workspace(blueprint_name):
-        """Delete a blueprint from the workspace"""
-        if VALID_API_STRING.match(blueprint_name) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
-
-        branch = request.args.get("branch", "master")
-        if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
-
-        try:
-            with api.config["GITLOCK"].lock:
-                workspace_delete(api.config["GITLOCK"].repo, branch, blueprint_name)
-        except Exception as e:
-            log.error("(v0_blueprints_delete_workspace) %s", str(e))
-            return jsonify(status=False, errors=[{"id": BLUEPRINTS_ERROR, "msg": str(e)}]), 400
-        else:
-            return jsonify(status=True)
-
-    @api.route("/api/v0/blueprints/undo", defaults={'blueprint_name': "", 'commit': ""}, methods=["POST"])
-    @api.route("/api/v0/blueprints/undo/<blueprint_name>", defaults={'commit': ""}, methods=["POST"])
-    @api.route("/api/v0/blueprints/undo/<blueprint_name>/<commit>", methods=["POST"])
-    @checkparams([("blueprint_name", "", "no blueprint name given"),
-                  ("commit", "", "no commit ID given")])
-    def v0_blueprints_undo(blueprint_name, commit):
-        """Undo changes to a blueprint by reverting to a previous commit."""
-        if VALID_API_STRING.match(blueprint_name) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
-
-        branch = request.args.get("branch", "master")
-        if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
-
-        try:
-            with api.config["GITLOCK"].lock:
-                revert_recipe(api.config["GITLOCK"].repo, branch, blueprint_name, commit)
-
-                # Read the new recipe and write it to the workspace
-                blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
-                workspace_write(api.config["GITLOCK"].repo, branch, blueprint)
-        except Exception as e:
-            log.error("(v0_blueprints_undo) %s", str(e))
-            return jsonify(status=False, errors=[{"id": UNKNOWN_COMMIT, "msg": str(e)}]), 400
-        else:
-            return jsonify(status=True)
-
-    @api.route("/api/v0/blueprints/tag", defaults={'blueprint_name': ""}, methods=["POST"])
-    @api.route("/api/v0/blueprints/tag/<blueprint_name>", methods=["POST"])
-    @checkparams([("blueprint_name", "", "no blueprint name given")])
-    def v0_blueprints_tag(blueprint_name):
-        """Tag a blueprint's latest blueprint commit as a 'revision'"""
-        if VALID_API_STRING.match(blueprint_name) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
-
-        branch = request.args.get("branch", "master")
-        if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
-
-        try:
-            with api.config["GITLOCK"].lock:
-                tag_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
-        except RecipeFileError as e:
-            log.error("(v0_blueprints_tag) %s", str(e))
-            return jsonify(status=False, errors=[{"id": UNKNOWN_BLUEPRINT, "msg": str(e)}]), 400
-        except Exception as e:
-            log.error("(v0_blueprints_tag) %s", str(e))
-            return jsonify(status=False, errors=[{"id": BLUEPRINTS_ERROR, "msg": str(e)}]), 400
-        else:
-            return jsonify(status=True)
-
-    @api.route("/api/v0/blueprints/diff", defaults={'blueprint_name': "", 'from_commit': "", 'to_commit': ""})
-    @api.route("/api/v0/blueprints/diff/<blueprint_name>", defaults={'from_commit': "", 'to_commit': ""})
-    @api.route("/api/v0/blueprints/diff/<blueprint_name>/<from_commit>", defaults={'to_commit': ""})
-    @api.route("/api/v0/blueprints/diff/<blueprint_name>/<from_commit>/<to_commit>")
-    @checkparams([("blueprint_name", "", "no blueprint name given"),
-                  ("from_commit", "", "no from commit ID given"),
-                  ("to_commit", "", "no to commit ID given")])
-    def v0_blueprints_diff(blueprint_name, from_commit, to_commit):
-        """Return the differences between two commits of a blueprint"""
-        for s in [blueprint_name, from_commit, to_commit]:
-            if VALID_API_STRING.match(s) is None:
-                return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
-
-        branch = request.args.get("branch", "master")
-        if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
-
-        if not blueprint_exists(api, branch, blueprint_name):
-            return jsonify(status=False, errors=[{"id": UNKNOWN_BLUEPRINT, "msg": "Unknown blueprint name: %s" % blueprint_name}])
-
-        try:
-            if from_commit == "NEWEST":
-                with api.config["GITLOCK"].lock:
-                    old_blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
-            else:
-                with api.config["GITLOCK"].lock:
-                    old_blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name, from_commit)
-        except Exception as e:
-            log.error("(v0_blueprints_diff) %s", str(e))
-            return jsonify(status=False, errors=[{"id": UNKNOWN_COMMIT, "msg": str(e)}]), 400
-
-        try:
-            if to_commit == "WORKSPACE":
-                with api.config["GITLOCK"].lock:
-                    new_blueprint = workspace_read(api.config["GITLOCK"].repo, branch, blueprint_name)
-                # If there is no workspace, use the newest commit instead
-                if not new_blueprint:
-                    with api.config["GITLOCK"].lock:
-                        new_blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
-            elif to_commit == "NEWEST":
+                new_blueprint = workspace_read(api.config["GITLOCK"].repo, branch, blueprint_name)
+            # If there is no workspace, use the newest commit instead
+            if not new_blueprint:
                 with api.config["GITLOCK"].lock:
                     new_blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
-            else:
-                with api.config["GITLOCK"].lock:
-                    new_blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name, to_commit)
-        except Exception as e:
-            log.error("(v0_blueprints_diff) %s", str(e))
-            return jsonify(status=False, errors=[{"id": UNKNOWN_COMMIT, "msg": str(e)}]), 400
+        elif to_commit == "NEWEST":
+            with api.config["GITLOCK"].lock:
+                new_blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
+        else:
+            with api.config["GITLOCK"].lock:
+                new_blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name, to_commit)
+    except Exception as e:
+        log.error("(v0_blueprints_diff) %s", str(e))
+        return jsonify(status=False, errors=[{"id": UNKNOWN_COMMIT, "msg": str(e)}]), 400
 
-        diff = recipe_diff(old_blueprint, new_blueprint)
-        return jsonify(diff=diff)
+    diff = recipe_diff(old_blueprint, new_blueprint)
+    return jsonify(diff=diff)
 
-    @api.route("/api/v0/blueprints/freeze", defaults={'blueprint_names': ""})
-    @api.route("/api/v0/blueprints/freeze/<blueprint_names>")
-    @checkparams([("blueprint_names", "", "no blueprint names given")])
-    def v0_blueprints_freeze(blueprint_names):
-        """Return the blueprint with the exact modules and packages selected by depsolve"""
-        if VALID_API_STRING.match(blueprint_names) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+@v0_api.route("/blueprints/freeze", defaults={'blueprint_names': ""})
+@v0_api.route("/blueprints/freeze/<blueprint_names>")
+@checkparams([("blueprint_names", "", "no blueprint names given")])
+def v0_blueprints_freeze(blueprint_names):
+    """Return the blueprint with the exact modules and packages selected by depsolve"""
+    if VALID_API_STRING.match(blueprint_names) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
-        branch = request.args.get("branch", "master")
-        if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
+    branch = request.args.get("branch", "master")
+    if VALID_API_STRING.match(branch) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
 
-        out_fmt = request.args.get("format", "json")
-        if VALID_API_STRING.match(out_fmt) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in format argument"}]), 400
+    out_fmt = request.args.get("format", "json")
+    if VALID_API_STRING.match(out_fmt) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in format argument"}]), 400
 
-        blueprints = []
-        errors = []
-        for blueprint_name in [n.strip() for n in sorted(blueprint_names.split(","), key=lambda n: n.lower())]:
-            # get the blueprint
-            # Get the workspace version (if it exists)
-            blueprint = None
+    blueprints = []
+    errors = []
+    for blueprint_name in [n.strip() for n in sorted(blueprint_names.split(","), key=lambda n: n.lower())]:
+        # get the blueprint
+        # Get the workspace version (if it exists)
+        blueprint = None
+        try:
+            with api.config["GITLOCK"].lock:
+                blueprint = workspace_read(api.config["GITLOCK"].repo, branch, blueprint_name)
+        except Exception:
+            pass
+
+        if not blueprint:
+            # No workspace version, get the git version (if it exists)
             try:
                 with api.config["GITLOCK"].lock:
-                    blueprint = workspace_read(api.config["GITLOCK"].repo, branch, blueprint_name)
-            except Exception:
-                pass
-
-            if not blueprint:
-                # No workspace version, get the git version (if it exists)
-                try:
-                    with api.config["GITLOCK"].lock:
-                        blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
-                except RecipeFileError as e:
-                    # adding an error here would be redundant, skip it
-                    log.error("(v0_blueprints_freeze) %s", str(e))
-                except Exception as e:
-                    errors.append({"id": BLUEPRINTS_ERROR, "msg": "%s: %s" % (blueprint_name, str(e))})
-                    log.error("(v0_blueprints_freeze) %s", str(e))
-
-            # No blueprint found, skip it.
-            if not blueprint:
-                errors.append({"id": UNKNOWN_BLUEPRINT, "msg": "%s: blueprint_not_found" % blueprint_name})
-                continue
-
-            # Combine modules and packages and depsolve the list
-            # TODO include the version/glob in the depsolving
-            module_nver = blueprint.module_nver
-            package_nver = blueprint.package_nver
-            projects = sorted(set(module_nver+package_nver), key=lambda p: p[0].lower())
-            deps = []
-            try:
-                with api.config["DNFLOCK"].lock:
-                    deps = projects_depsolve(api.config["DNFLOCK"].dbo, projects, blueprint.group_names)
-            except ProjectsError as e:
+                    blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
+            except RecipeFileError as e:
+                # adding an error here would be redundant, skip it
+                log.error("(v0_blueprints_freeze) %s", str(e))
+            except Exception as e:
                 errors.append({"id": BLUEPRINTS_ERROR, "msg": "%s: %s" % (blueprint_name, str(e))})
                 log.error("(v0_blueprints_freeze) %s", str(e))
 
-            blueprints.append({"blueprint": blueprint.freeze(deps)})
+        # No blueprint found, skip it.
+        if not blueprint:
+            errors.append({"id": UNKNOWN_BLUEPRINT, "msg": "%s: blueprint_not_found" % blueprint_name})
+            continue
 
-        if out_fmt == "toml":
-            # With TOML output we just want to dump the raw blueprint, skipping the rest.
-            return "\n\n".join([e["blueprint"].toml() for e in blueprints])
-        else:
-            return jsonify(blueprints=blueprints, errors=errors)
+        # Combine modules and packages and depsolve the list
+        # TODO include the version/glob in the depsolving
+        module_nver = blueprint.module_nver
+        package_nver = blueprint.package_nver
+        projects = sorted(set(module_nver+package_nver), key=lambda p: p[0].lower())
+        deps = []
+        try:
+            with api.config["DNFLOCK"].lock:
+                deps = projects_depsolve(api.config["DNFLOCK"].dbo, projects, blueprint.group_names)
+        except ProjectsError as e:
+            errors.append({"id": BLUEPRINTS_ERROR, "msg": "%s: %s" % (blueprint_name, str(e))})
+            log.error("(v0_blueprints_freeze) %s", str(e))
 
-    @api.route("/api/v0/blueprints/depsolve", defaults={'blueprint_names': ""})
-    @api.route("/api/v0/blueprints/depsolve/<blueprint_names>")
-    @checkparams([("blueprint_names", "", "no blueprint names given")])
-    def v0_blueprints_depsolve(blueprint_names):
-        """Return the dependencies for a blueprint"""
-        if VALID_API_STRING.match(blueprint_names) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+        blueprints.append({"blueprint": blueprint.freeze(deps)})
 
-        branch = request.args.get("branch", "master")
-        if VALID_API_STRING.match(branch) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
+    if out_fmt == "toml":
+        # With TOML output we just want to dump the raw blueprint, skipping the rest.
+        return "\n\n".join([e["blueprint"].toml() for e in blueprints])
+    else:
+        return jsonify(blueprints=blueprints, errors=errors)
 
-        blueprints = []
-        errors = []
-        for blueprint_name in [n.strip() for n in sorted(blueprint_names.split(","), key=lambda n: n.lower())]:
-            # get the blueprint
-            # Get the workspace version (if it exists)
-            blueprint = None
+@v0_api.route("/blueprints/depsolve", defaults={'blueprint_names': ""})
+@v0_api.route("/blueprints/depsolve/<blueprint_names>")
+@checkparams([("blueprint_names", "", "no blueprint names given")])
+def v0_blueprints_depsolve(blueprint_names):
+    """Return the dependencies for a blueprint"""
+    if VALID_API_STRING.match(blueprint_names) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+
+    branch = request.args.get("branch", "master")
+    if VALID_API_STRING.match(branch) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
+
+    blueprints = []
+    errors = []
+    for blueprint_name in [n.strip() for n in sorted(blueprint_names.split(","), key=lambda n: n.lower())]:
+        # get the blueprint
+        # Get the workspace version (if it exists)
+        blueprint = None
+        try:
+            with api.config["GITLOCK"].lock:
+                blueprint = workspace_read(api.config["GITLOCK"].repo, branch, blueprint_name)
+        except Exception:
+            pass
+
+        if not blueprint:
+            # No workspace version, get the git version (if it exists)
             try:
                 with api.config["GITLOCK"].lock:
-                    blueprint = workspace_read(api.config["GITLOCK"].repo, branch, blueprint_name)
-            except Exception:
-                pass
-
-            if not blueprint:
-                # No workspace version, get the git version (if it exists)
-                try:
-                    with api.config["GITLOCK"].lock:
-                        blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
-                except RecipeFileError as e:
-                    # adding an error here would be redundant, skip it
-                    log.error("(v0_blueprints_depsolve) %s", str(e))
-                except Exception as e:
-                    errors.append({"id": BLUEPRINTS_ERROR, "msg": "%s: %s" % (blueprint_name, str(e))})
-                    log.error("(v0_blueprints_depsolve) %s", str(e))
-
-            # No blueprint found, skip it.
-            if not blueprint:
-                errors.append({"id": UNKNOWN_BLUEPRINT, "msg": "%s: blueprint not found" % blueprint_name})
-                continue
-
-            # Combine modules and packages and depsolve the list
-            # TODO include the version/glob in the depsolving
-            module_nver = blueprint.module_nver
-            package_nver = blueprint.package_nver
-            projects = sorted(set(module_nver+package_nver), key=lambda p: p[0].lower())
-            deps = []
-            try:
-                with api.config["DNFLOCK"].lock:
-                    deps = projects_depsolve(api.config["DNFLOCK"].dbo, projects, blueprint.group_names)
-            except ProjectsError as e:
+                    blueprint = read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
+            except RecipeFileError as e:
+                # adding an error here would be redundant, skip it
+                log.error("(v0_blueprints_depsolve) %s", str(e))
+            except Exception as e:
                 errors.append({"id": BLUEPRINTS_ERROR, "msg": "%s: %s" % (blueprint_name, str(e))})
                 log.error("(v0_blueprints_depsolve) %s", str(e))
 
-            # Get the NEVRA's of the modules and projects, add as "modules"
-            modules = []
-            for dep in deps:
-                if dep["name"] in projects:
-                    modules.append(dep)
-            modules = sorted(modules, key=lambda m: m["name"].lower())
+        # No blueprint found, skip it.
+        if not blueprint:
+            errors.append({"id": UNKNOWN_BLUEPRINT, "msg": "%s: blueprint not found" % blueprint_name})
+            continue
 
-            blueprints.append({"blueprint":blueprint, "dependencies":deps, "modules":modules})
-
-        return jsonify(blueprints=blueprints, errors=errors)
-
-    @api.route("/api/v0/projects/list")
-    def v0_projects_list():
-        """List all of the available projects/packages"""
-        try:
-            limit = int(request.args.get("limit", "20"))
-            offset = int(request.args.get("offset", "0"))
-        except ValueError as e:
-            return jsonify(status=False, errors=[{"id": BAD_LIMIT_OR_OFFSET, "msg": str(e)}]), 400
-
+        # Combine modules and packages and depsolve the list
+        # TODO include the version/glob in the depsolving
+        module_nver = blueprint.module_nver
+        package_nver = blueprint.package_nver
+        projects = sorted(set(module_nver+package_nver), key=lambda p: p[0].lower())
+        deps = []
         try:
             with api.config["DNFLOCK"].lock:
-                available = projects_list(api.config["DNFLOCK"].dbo)
+                deps = projects_depsolve(api.config["DNFLOCK"].dbo, projects, blueprint.group_names)
         except ProjectsError as e:
-            log.error("(v0_projects_list) %s", str(e))
-            return jsonify(status=False, errors=[{"id": PROJECTS_ERROR, "msg": str(e)}]), 400
+            errors.append({"id": BLUEPRINTS_ERROR, "msg": "%s: %s" % (blueprint_name, str(e))})
+            log.error("(v0_blueprints_depsolve) %s", str(e))
 
-        projects = take_limits(available, offset, limit)
-        return jsonify(projects=projects, offset=offset, limit=limit, total=len(available))
+        # Get the NEVRA's of the modules and projects, add as "modules"
+        modules = []
+        for dep in deps:
+            if dep["name"] in projects:
+                modules.append(dep)
+        modules = sorted(modules, key=lambda m: m["name"].lower())
 
-    @api.route("/api/v0/projects/info", defaults={'project_names': ""})
-    @api.route("/api/v0/projects/info/<project_names>")
-    @checkparams([("project_names", "", "no project names given")])
-    def v0_projects_info(project_names):
-        """Return detailed information about the listed projects"""
-        if VALID_API_STRING.match(project_names) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+        blueprints.append({"blueprint":blueprint, "dependencies":deps, "modules":modules})
 
-        try:
-            with api.config["DNFLOCK"].lock:
-                projects = projects_info(api.config["DNFLOCK"].dbo, project_names.split(","))
-        except ProjectsError as e:
-            log.error("(v0_projects_info) %s", str(e))
-            return jsonify(status=False, errors=[{"id": PROJECTS_ERROR, "msg": str(e)}]), 400
+    return jsonify(blueprints=blueprints, errors=errors)
 
-        if not projects:
-            msg = "one of the requested projects does not exist: %s" % project_names
-            log.error("(v0_projects_info) %s", msg)
-            return jsonify(status=False, errors=[{"id": UNKNOWN_PROJECT, "msg": msg}]), 400
+@v0_api.route("/projects/list")
+def v0_projects_list():
+    """List all of the available projects/packages"""
+    try:
+        limit = int(request.args.get("limit", "20"))
+        offset = int(request.args.get("offset", "0"))
+    except ValueError as e:
+        return jsonify(status=False, errors=[{"id": BAD_LIMIT_OR_OFFSET, "msg": str(e)}]), 400
 
-        return jsonify(projects=projects)
-
-    @api.route("/api/v0/projects/depsolve", defaults={'project_names': ""})
-    @api.route("/api/v0/projects/depsolve/<project_names>")
-    @checkparams([("project_names", "", "no project names given")])
-    def v0_projects_depsolve(project_names):
-        """Return detailed information about the listed projects"""
-        if VALID_API_STRING.match(project_names) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
-
-        try:
-            with api.config["DNFLOCK"].lock:
-                deps = projects_depsolve(api.config["DNFLOCK"].dbo, [(n, "*") for n in project_names.split(",")], [])
-        except ProjectsError as e:
-            log.error("(v0_projects_depsolve) %s", str(e))
-            return jsonify(status=False, errors=[{"id": PROJECTS_ERROR, "msg": str(e)}]), 400
-
-        if not deps:
-            msg = "one of the requested projects does not exist: %s" % project_names
-            log.error("(v0_projects_depsolve) %s", msg)
-            return jsonify(status=False, errors=[{"id": UNKNOWN_PROJECT, "msg": msg}]), 400
-
-        return jsonify(projects=deps)
-
-    @api.route("/api/v0/projects/source/list")
-    def v0_projects_source_list():
-        """Return the list of source names"""
+    try:
         with api.config["DNFLOCK"].lock:
-            repos = list(api.config["DNFLOCK"].dbo.repos.iter_enabled())
-        sources = sorted([r.id for r in repos])
-        return jsonify(sources=sources)
+            available = projects_list(api.config["DNFLOCK"].dbo)
+    except ProjectsError as e:
+        log.error("(v0_projects_list) %s", str(e))
+        return jsonify(status=False, errors=[{"id": PROJECTS_ERROR, "msg": str(e)}]), 400
 
-    @api.route("/api/v0/projects/source/info", defaults={'source_names': ""})
-    @api.route("/api/v0/projects/source/info/<source_names>")
-    @checkparams([("source_names", "", "no source names given")])
-    def v0_projects_source_info(source_names):
-        """Return detailed info about the list of sources"""
-        if VALID_API_STRING.match(source_names) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+    projects = take_limits(available, offset, limit)
+    return jsonify(projects=projects, offset=offset, limit=limit, total=len(available))
 
-        out_fmt = request.args.get("format", "json")
-        if VALID_API_STRING.match(out_fmt) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in format argument"}]), 400
+@v0_api.route("/projects/info", defaults={'project_names': ""})
+@v0_api.route("/projects/info/<project_names>")
+@checkparams([("project_names", "", "no project names given")])
+def v0_projects_info(project_names):
+    """Return detailed information about the listed projects"""
+    if VALID_API_STRING.match(project_names) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
-        # Return info on all of the sources
-        if source_names == "*":
-            with api.config["DNFLOCK"].lock:
-                source_names = ",".join(r.id for r in api.config["DNFLOCK"].dbo.repos.iter_enabled())
+    try:
+        with api.config["DNFLOCK"].lock:
+            projects = projects_info(api.config["DNFLOCK"].dbo, project_names.split(","))
+    except ProjectsError as e:
+        log.error("(v0_projects_info) %s", str(e))
+        return jsonify(status=False, errors=[{"id": PROJECTS_ERROR, "msg": str(e)}]), 400
 
-        sources = {}
-        errors = []
-        system_sources = get_repo_sources("/etc/yum.repos.d/*.repo")
-        for source in source_names.split(","):
-            with api.config["DNFLOCK"].lock:
-                repo = api.config["DNFLOCK"].dbo.repos.get(source, None)
-            if not repo:
-                errors.append({"id": UNKNOWN_SOURCE, "msg": "%s is not a valid source" % source})
-                continue
-            sources[repo.id] = repo_to_source(repo, repo.id in system_sources)
+    if not projects:
+        msg = "one of the requested projects does not exist: %s" % project_names
+        log.error("(v0_projects_info) %s", msg)
+        return jsonify(status=False, errors=[{"id": UNKNOWN_PROJECT, "msg": msg}]), 400
 
-        if out_fmt == "toml" and not errors:
-            # With TOML output we just want to dump the raw sources, skipping the errors
-            return toml.dumps(sources)
-        elif out_fmt == "toml" and errors:
-            # TOML requested, but there was an error
-            return jsonify(status=False, errors=errors), 400
-        else:
-            return jsonify(sources=sources, errors=errors)
+    return jsonify(projects=projects)
 
-    @api.route("/api/v0/projects/source/new", methods=["POST"])
-    def v0_projects_source_new():
-        """Add a new package source. Or change an existing one"""
-        if request.headers['Content-Type'] == "text/x-toml":
-            source = toml.loads(request.data)
-        else:
-            source = request.get_json(cache=False)
+@v0_api.route("/projects/depsolve", defaults={'project_names': ""})
+@v0_api.route("/projects/depsolve/<project_names>")
+@checkparams([("project_names", "", "no project names given")])
+def v0_projects_depsolve(project_names):
+    """Return detailed information about the listed projects"""
+    if VALID_API_STRING.match(project_names) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
-        system_sources = get_repo_sources("/etc/yum.repos.d/*.repo")
-        if source["name"] in system_sources:
-            return jsonify(status=False, errors=[{"id": SYSTEM_SOURCE, "msg": "%s is a system source, it cannot be changed." % source["name"]}]), 400
+    try:
+        with api.config["DNFLOCK"].lock:
+            deps = projects_depsolve(api.config["DNFLOCK"].dbo, [(n, "*") for n in project_names.split(",")], [])
+    except ProjectsError as e:
+        log.error("(v0_projects_depsolve) %s", str(e))
+        return jsonify(status=False, errors=[{"id": PROJECTS_ERROR, "msg": str(e)}]), 400
 
+    if not deps:
+        msg = "one of the requested projects does not exist: %s" % project_names
+        log.error("(v0_projects_depsolve) %s", msg)
+        return jsonify(status=False, errors=[{"id": UNKNOWN_PROJECT, "msg": msg}]), 400
+
+    return jsonify(projects=deps)
+
+@v0_api.route("/projects/source/list")
+def v0_projects_source_list():
+    """Return the list of source names"""
+    with api.config["DNFLOCK"].lock:
+        repos = list(api.config["DNFLOCK"].dbo.repos.iter_enabled())
+    sources = sorted([r.id for r in repos])
+    return jsonify(sources=sources)
+
+@v0_api.route("/projects/source/info", defaults={'source_names': ""})
+@v0_api.route("/projects/source/info/<source_names>")
+@checkparams([("source_names", "", "no source names given")])
+def v0_projects_source_info(source_names):
+    """Return detailed info about the list of sources"""
+    if VALID_API_STRING.match(source_names) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+
+    out_fmt = request.args.get("format", "json")
+    if VALID_API_STRING.match(out_fmt) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in format argument"}]), 400
+
+    # Return info on all of the sources
+    if source_names == "*":
+        with api.config["DNFLOCK"].lock:
+            source_names = ",".join(r.id for r in api.config["DNFLOCK"].dbo.repos.iter_enabled())
+
+    sources = {}
+    errors = []
+    system_sources = get_repo_sources("/etc/yum.repos.d/*.repo")
+    for source in source_names.split(","):
+        with api.config["DNFLOCK"].lock:
+            repo = api.config["DNFLOCK"].dbo.repos.get(source, None)
+        if not repo:
+            errors.append({"id": UNKNOWN_SOURCE, "msg": "%s is not a valid source" % source})
+            continue
+        sources[repo.id] = repo_to_source(repo, repo.id in system_sources)
+
+    if out_fmt == "toml" and not errors:
+        # With TOML output we just want to dump the raw sources, skipping the errors
+        return toml.dumps(sources)
+    elif out_fmt == "toml" and errors:
+        # TOML requested, but there was an error
+        return jsonify(status=False, errors=errors), 400
+    else:
+        return jsonify(sources=sources, errors=errors)
+
+@v0_api.route("/projects/source/new", methods=["POST"])
+def v0_projects_source_new():
+    """Add a new package source. Or change an existing one"""
+    if request.headers['Content-Type'] == "text/x-toml":
+        source = toml.loads(request.data)
+    else:
+        source = request.get_json(cache=False)
+
+    system_sources = get_repo_sources("/etc/yum.repos.d/*.repo")
+    if source["name"] in system_sources:
+        return jsonify(status=False, errors=[{"id": SYSTEM_SOURCE, "msg": "%s is a system source, it cannot be changed." % source["name"]}]), 400
+
+    try:
+        # Remove it from the RepoDict (NOTE that this isn't explicitly supported by the DNF API)
+        with api.config["DNFLOCK"].lock:
+            dbo = api.config["DNFLOCK"].dbo
+            # If this repo already exists, delete it and replace it with the new one
+            repos = list(r.id for r in dbo.repos.iter_enabled())
+            if source["name"] in repos:
+                del dbo.repos[source["name"]]
+
+            repo = source_to_repo(source, dbo.conf)
+            dbo.repos.add(repo)
+
+            log.info("Updating repository metadata after adding %s", source["name"])
+            dbo.fill_sack(load_system_repo=False)
+            dbo.read_comps()
+
+        # Write the new repo to disk, replacing any existing ones
+        repo_dir = api.config["COMPOSER_CFG"].get("composer", "repo_dir")
+
+        # Remove any previous sources with this name, ignore it if it isn't found
         try:
-            # Remove it from the RepoDict (NOTE that this isn't explicitly supported by the DNF API)
+            delete_repo_source(joinpaths(repo_dir, "*.repo"), source["name"])
+        except ProjectsError:
+            pass
+
+        # Make sure the source name can't contain a path traversal by taking the basename
+        source_path = joinpaths(repo_dir, os.path.basename("%s.repo" % source["name"]))
+        with open(source_path, "w") as f:
+            f.write(dnf_repo_to_file_repo(repo))
+    except Exception as e:
+        log.error("(v0_projects_source_add) adding %s failed: %s", source["name"], str(e))
+
+        # Cleanup the mess, if loading it failed we don't want to leave it in memory
+        repos = list(r.id for r in dbo.repos.iter_enabled())
+        if source["name"] in repos:
             with api.config["DNFLOCK"].lock:
                 dbo = api.config["DNFLOCK"].dbo
-                # If this repo already exists, delete it and replace it with the new one
-                repos = list(r.id for r in dbo.repos.iter_enabled())
-                if source["name"] in repos:
-                    del dbo.repos[source["name"]]
+                del dbo.repos[source["name"]]
 
-                repo = source_to_repo(source, dbo.conf)
-                dbo.repos.add(repo)
-
-                log.info("Updating repository metadata after adding %s", source["name"])
+                log.info("Updating repository metadata after adding %s failed", source["name"])
                 dbo.fill_sack(load_system_repo=False)
                 dbo.read_comps()
 
-            # Write the new repo to disk, replacing any existing ones
-            repo_dir = api.config["COMPOSER_CFG"].get("composer", "repo_dir")
+        return jsonify(status=False, errors=[{"id": PROJECTS_ERROR, "msg": str(e)}]), 400
 
-            # Remove any previous sources with this name, ignore it if it isn't found
-            try:
-                delete_repo_source(joinpaths(repo_dir, "*.repo"), source["name"])
-            except ProjectsError:
-                pass
+    return jsonify(status=True)
 
-            # Make sure the source name can't contain a path traversal by taking the basename
-            source_path = joinpaths(repo_dir, os.path.basename("%s.repo" % source["name"]))
-            with open(source_path, "w") as f:
-                f.write(dnf_repo_to_file_repo(repo))
-        except Exception as e:
-            log.error("(v0_projects_source_add) adding %s failed: %s", source["name"], str(e))
+@v0_api.route("/projects/source/delete", defaults={'source_name': ""}, methods=["DELETE"])
+@v0_api.route("/projects/source/delete/<source_name>", methods=["DELETE"])
+@checkparams([("source_name", "", "no source name given")])
+def v0_projects_source_delete(source_name):
+    """Delete the named source and return a status response"""
+    if VALID_API_STRING.match(source_name) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
-            # Cleanup the mess, if loading it failed we don't want to leave it in memory
-            repos = list(r.id for r in dbo.repos.iter_enabled())
-            if source["name"] in repos:
-                with api.config["DNFLOCK"].lock:
-                    dbo = api.config["DNFLOCK"].dbo
-                    del dbo.repos[source["name"]]
+    system_sources = get_repo_sources("/etc/yum.repos.d/*.repo")
+    if source_name in system_sources:
+        return jsonify(status=False, errors=[{"id": SYSTEM_SOURCE, "msg": "%s is a system source, it cannot be deleted." % source_name}]), 400
+    share_dir = api.config["COMPOSER_CFG"].get("composer", "repo_dir")
+    try:
+        # Remove the file entry for the source
+        delete_repo_source(joinpaths(share_dir, "*.repo"), source_name)
 
-                    log.info("Updating repository metadata after adding %s failed", source["name"])
-                    dbo.fill_sack(load_system_repo=False)
-                    dbo.read_comps()
+        # Remove it from the RepoDict (NOTE that this isn't explicitly supported by the DNF API)
+        with api.config["DNFLOCK"].lock:
+            if source_name in api.config["DNFLOCK"].dbo.repos:
+                del api.config["DNFLOCK"].dbo.repos[source_name]
+                log.info("Updating repository metadata after removing %s", source_name)
+                api.config["DNFLOCK"].dbo.fill_sack(load_system_repo=False)
+                api.config["DNFLOCK"].dbo.read_comps()
 
-            return jsonify(status=False, errors=[{"id": PROJECTS_ERROR, "msg": str(e)}]), 400
+    except ProjectsError as e:
+        log.error("(v0_projects_source_delete) %s", str(e))
+        return jsonify(status=False, errors=[{"id": UNKNOWN_SOURCE, "msg": str(e)}]), 400
 
-        return jsonify(status=True)
+    return jsonify(status=True)
 
-    @api.route("/api/v0/projects/source/delete", defaults={'source_name': ""}, methods=["DELETE"])
-    @api.route("/api/v0/projects/source/delete/<source_name>", methods=["DELETE"])
-    @checkparams([("source_name", "", "no source name given")])
-    def v0_projects_source_delete(source_name):
-        """Delete the named source and return a status response"""
-        if VALID_API_STRING.match(source_name) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+@v0_api.route("/modules/list")
+@v0_api.route("/modules/list/<module_names>")
+def v0_modules_list(module_names=None):
+    """List available modules, filtering by module_names"""
+    if module_names and VALID_API_STRING.match(module_names) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
-        system_sources = get_repo_sources("/etc/yum.repos.d/*.repo")
-        if source_name in system_sources:
-            return jsonify(status=False, errors=[{"id": SYSTEM_SOURCE, "msg": "%s is a system source, it cannot be deleted." % source_name}]), 400
-        share_dir = api.config["COMPOSER_CFG"].get("composer", "repo_dir")
-        try:
-            # Remove the file entry for the source
-            delete_repo_source(joinpaths(share_dir, "*.repo"), source_name)
+    try:
+        limit = int(request.args.get("limit", "20"))
+        offset = int(request.args.get("offset", "0"))
+    except ValueError as e:
+        return jsonify(status=False, errors=[{"id": BAD_LIMIT_OR_OFFSET, "msg": str(e)}]), 400
 
-            # Remove it from the RepoDict (NOTE that this isn't explicitly supported by the DNF API)
-            with api.config["DNFLOCK"].lock:
-                if source_name in api.config["DNFLOCK"].dbo.repos:
-                    del api.config["DNFLOCK"].dbo.repos[source_name]
-                    log.info("Updating repository metadata after removing %s", source_name)
-                    api.config["DNFLOCK"].dbo.fill_sack(load_system_repo=False)
-                    api.config["DNFLOCK"].dbo.read_comps()
+    if module_names:
+        module_names = module_names.split(",")
 
-        except ProjectsError as e:
-            log.error("(v0_projects_source_delete) %s", str(e))
-            return jsonify(status=False, errors=[{"id": UNKNOWN_SOURCE, "msg": str(e)}]), 400
+    try:
+        with api.config["DNFLOCK"].lock:
+            available = modules_list(api.config["DNFLOCK"].dbo, module_names)
+    except ProjectsError as e:
+        log.error("(v0_modules_list) %s", str(e))
+        return jsonify(status=False, errors=[{"id": MODULES_ERROR, "msg": str(e)}]), 400
 
-        return jsonify(status=True)
+    if module_names and not available:
+        msg = "one of the requested modules does not exist: %s" % module_names
+        log.error("(v0_modules_list) %s", msg)
+        return jsonify(status=False, errors=[{"id": UNKNOWN_MODULE, "msg": msg}]), 400
 
-    @api.route("/api/v0/modules/list")
-    @api.route("/api/v0/modules/list/<module_names>")
-    def v0_modules_list(module_names=None):
-        """List available modules, filtering by module_names"""
-        if module_names and VALID_API_STRING.match(module_names) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+    modules = take_limits(available, offset, limit)
+    return jsonify(modules=modules, offset=offset, limit=limit, total=len(available))
 
-        try:
-            limit = int(request.args.get("limit", "20"))
-            offset = int(request.args.get("offset", "0"))
-        except ValueError as e:
-            return jsonify(status=False, errors=[{"id": BAD_LIMIT_OR_OFFSET, "msg": str(e)}]), 400
+@v0_api.route("/modules/info", defaults={'module_names': ""})
+@v0_api.route("/modules/info/<module_names>")
+@checkparams([("module_names", "", "no module names given")])
+def v0_modules_info(module_names):
+    """Return detailed information about the listed modules"""
+    if VALID_API_STRING.match(module_names) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+    try:
+        with api.config["DNFLOCK"].lock:
+            modules = modules_info(api.config["DNFLOCK"].dbo, module_names.split(","))
+    except ProjectsError as e:
+        log.error("(v0_modules_info) %s", str(e))
+        return jsonify(status=False, errors=[{"id": MODULES_ERROR, "msg": str(e)}]), 400
 
-        if module_names:
-            module_names = module_names.split(",")
+    if not modules:
+        msg = "one of the requested modules does not exist: %s" % module_names
+        log.error("(v0_modules_info) %s", msg)
+        return jsonify(status=False, errors=[{"id": UNKNOWN_MODULE, "msg": msg}]), 400
 
-        try:
-            with api.config["DNFLOCK"].lock:
-                available = modules_list(api.config["DNFLOCK"].dbo, module_names)
-        except ProjectsError as e:
-            log.error("(v0_modules_list) %s", str(e))
-            return jsonify(status=False, errors=[{"id": MODULES_ERROR, "msg": str(e)}]), 400
+    return jsonify(modules=modules)
 
-        if module_names and not available:
-            msg = "one of the requested modules does not exist: %s" % module_names
-            log.error("(v0_modules_list) %s", msg)
-            return jsonify(status=False, errors=[{"id": UNKNOWN_MODULE, "msg": msg}]), 400
+@v0_api.route("/compose", methods=["POST"])
+def v0_compose_start():
+    """Start a compose
 
-        modules = take_limits(available, offset, limit)
-        return jsonify(modules=modules, offset=offset, limit=limit, total=len(available))
+    The body of the post should have these fields:
+      blueprint_name - The blueprint name from /blueprints/list/
+      compose_type   - The type of output to create, from /compose/types
+      branch         - Optional, defaults to master, selects the git branch to use for the blueprint.
+    """
+    # Passing ?test=1 will generate a fake FAILED compose.
+    # Passing ?test=2 will generate a fake FINISHED compose.
+    try:
+        test_mode = int(request.args.get("test", "0"))
+    except ValueError:
+        test_mode = 0
 
-    @api.route("/api/v0/modules/info", defaults={'module_names': ""})
-    @api.route("/api/v0/modules/info/<module_names>")
-    @checkparams([("module_names", "", "no module names given")])
-    def v0_modules_info(module_names):
-        """Return detailed information about the listed modules"""
-        if VALID_API_STRING.match(module_names) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
-        try:
-            with api.config["DNFLOCK"].lock:
-                modules = modules_info(api.config["DNFLOCK"].dbo, module_names.split(","))
-        except ProjectsError as e:
-            log.error("(v0_modules_info) %s", str(e))
-            return jsonify(status=False, errors=[{"id": MODULES_ERROR, "msg": str(e)}]), 400
+    compose = request.get_json(cache=False)
 
-        if not modules:
-            msg = "one of the requested modules does not exist: %s" % module_names
-            log.error("(v0_modules_info) %s", msg)
-            return jsonify(status=False, errors=[{"id": UNKNOWN_MODULE, "msg": msg}]), 400
+    errors = []
+    if not compose:
+        return jsonify(status=False, errors=[{"id": MISSING_POST, "msg": "Missing POST body"}]), 400
 
-        return jsonify(modules=modules)
+    if "blueprint_name" not in compose:
+        errors.append({"id": UNKNOWN_BLUEPRINT,"msg": "No 'blueprint_name' in the JSON request"})
+    else:
+        blueprint_name = compose["blueprint_name"]
 
-    @api.route("/api/v0/compose", methods=["POST"])
-    def v0_compose_start():
-        """Start a compose
+    if "branch" not in compose or not compose["branch"]:
+        branch = "master"
+    else:
+        branch = compose["branch"]
 
-        The body of the post should have these fields:
-          blueprint_name - The blueprint name from /blueprints/list/
-          compose_type   - The type of output to create, from /compose/types
-          branch         - Optional, defaults to master, selects the git branch to use for the blueprint.
-        """
-        # Passing ?test=1 will generate a fake FAILED compose.
-        # Passing ?test=2 will generate a fake FINISHED compose.
-        try:
-            test_mode = int(request.args.get("test", "0"))
-        except ValueError:
-            test_mode = 0
+    if "compose_type" not in compose:
+        errors.append({"id": BAD_COMPOSE_TYPE, "msg": "No 'compose_type' in the JSON request"})
+    else:
+        compose_type = compose["compose_type"]
 
-        compose = request.get_json(cache=False)
+    if VALID_API_STRING.match(blueprint_name) is None:
+        errors.append({"id": INVALID_CHARS, "msg": "Invalid characters in API path"})
 
-        errors = []
-        if not compose:
-            return jsonify(status=False, errors=[{"id": MISSING_POST, "msg": "Missing POST body"}]), 400
+    if not blueprint_exists(branch, blueprint_name):
+        errors.append({"id": UNKNOWN_BLUEPRINT, "msg": "Unknown blueprint name: %s" % blueprint_name})
 
-        if "blueprint_name" not in compose:
-            errors.append({"id": UNKNOWN_BLUEPRINT,"msg": "No 'blueprint_name' in the JSON request"})
+    if errors:
+        return jsonify(status=False, errors=errors), 400
+
+    try:
+        build_id = start_build(api.config["COMPOSER_CFG"], api.config["DNFLOCK"], api.config["GITLOCK"],
+                               branch, blueprint_name, compose_type, test_mode)
+    except Exception as e:
+        if "Invalid compose type" in str(e):
+            return jsonify(status=False, errors=[{"id": BAD_COMPOSE_TYPE, "msg": str(e)}]), 400
         else:
-            blueprint_name = compose["blueprint_name"]
+            return jsonify(status=False, errors=[{"id": BUILD_FAILED, "msg": str(e)}]), 400
 
-        if "branch" not in compose or not compose["branch"]:
-            branch = "master"
-        else:
-            branch = compose["branch"]
+    return jsonify(status=True, build_id=build_id)
 
-        if "compose_type" not in compose:
-            errors.append({"id": BAD_COMPOSE_TYPE, "msg": "No 'compose_type' in the JSON request"})
-        else:
-            compose_type = compose["compose_type"]
+@v0_api.route("/compose/types")
+def v0_compose_types():
+    """Return the list of enabled output types
 
-        if VALID_API_STRING.match(blueprint_name) is None:
-            errors.append({"id": INVALID_CHARS, "msg": "Invalid characters in API path"})
+    (only enabled types are returned)
+    """
+    share_dir = api.config["COMPOSER_CFG"].get("composer", "share_dir")
+    return jsonify(types=[{"name": k, "enabled": True} for k in compose_types(share_dir)])
 
-        if not blueprint_exists(api, branch, blueprint_name):
-            errors.append({"id": UNKNOWN_BLUEPRINT, "msg": "Unknown blueprint name: %s" % blueprint_name})
+@v0_api.route("/compose/queue")
+def v0_compose_queue():
+    """Return the status of the new and running queues"""
+    return jsonify(queue_status(api.config["COMPOSER_CFG"]))
 
-        if errors:
-            return jsonify(status=False, errors=errors), 400
+@v0_api.route("/compose/finished")
+def v0_compose_finished():
+    """Return the list of finished composes"""
+    return jsonify(finished=build_status(api.config["COMPOSER_CFG"], "FINISHED"))
 
-        try:
-            build_id = start_build(api.config["COMPOSER_CFG"], api.config["DNFLOCK"], api.config["GITLOCK"],
-                                   branch, blueprint_name, compose_type, test_mode)
-        except Exception as e:
-            if "Invalid compose type" in str(e):
-                return jsonify(status=False, errors=[{"id": BAD_COMPOSE_TYPE, "msg": str(e)}]), 400
-            else:
-                return jsonify(status=False, errors=[{"id": BUILD_FAILED, "msg": str(e)}]), 400
+@v0_api.route("/compose/failed")
+def v0_compose_failed():
+    """Return the list of failed composes"""
+    return jsonify(failed=build_status(api.config["COMPOSER_CFG"], "FAILED"))
 
-        return jsonify(status=True, build_id=build_id)
+@v0_api.route("/compose/status", defaults={'uuids': ""})
+@v0_api.route("/compose/status/<uuids>")
+@checkparams([("uuids", "", "no UUIDs given")])
+def v0_compose_status(uuids):
+    """Return the status of the listed uuids"""
+    if VALID_API_STRING.match(uuids) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
-    @api.route("/api/v0/compose/types")
-    def v0_compose_types():
-        """Return the list of enabled output types
+    blueprint = request.args.get("blueprint", None)
+    status = request.args.get("status", None)
+    compose_type = request.args.get("type", None)
 
-        (only enabled types are returned)
-        """
-        share_dir = api.config["COMPOSER_CFG"].get("composer", "share_dir")
-        return jsonify(types=[{"name": k, "enabled": True} for k in compose_types(share_dir)])
+    results = []
+    errors = []
 
-    @api.route("/api/v0/compose/queue")
-    def v0_compose_queue():
-        """Return the status of the new and running queues"""
-        return jsonify(queue_status(api.config["COMPOSER_CFG"]))
-
-    @api.route("/api/v0/compose/finished")
-    def v0_compose_finished():
-        """Return the list of finished composes"""
-        return jsonify(finished=build_status(api.config["COMPOSER_CFG"], "FINISHED"))
-
-    @api.route("/api/v0/compose/failed")
-    def v0_compose_failed():
-        """Return the list of failed composes"""
-        return jsonify(failed=build_status(api.config["COMPOSER_CFG"], "FAILED"))
-
-    @api.route("/api/v0/compose/status", defaults={'uuids': ""})
-    @api.route("/api/v0/compose/status/<uuids>")
-    @checkparams([("uuids", "", "no UUIDs given")])
-    def v0_compose_status(uuids):
-        """Return the status of the listed uuids"""
-        if VALID_API_STRING.match(uuids) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
-
-        blueprint = request.args.get("blueprint", None)
-        status = request.args.get("status", None)
-        compose_type = request.args.get("type", None)
-
-        results = []
-        errors = []
-
-        if uuids.strip() == '*':
-            queue_status_dict = queue_status(api.config["COMPOSER_CFG"])
-            queue_new = queue_status_dict["new"]
-            queue_running = queue_status_dict["run"]
-            candidates = queue_new + queue_running + build_status(api.config["COMPOSER_CFG"])
-        else:
-            candidates = []
-            for uuid in [n.strip().lower() for n in uuids.split(",")]:
-                details = uuid_status(api.config["COMPOSER_CFG"], uuid)
-                if details is None:
-                    errors.append({"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid})
-                else:
-                    candidates.append(details)
-
-        for details in candidates:
-            if blueprint is not None and details['blueprint'] != blueprint:
-                continue
-
-            if status is not None and details['queue_status'] != status:
-                continue
-
-            if compose_type is not None and details['compose_type'] != compose_type:
-                continue
-
-            results.append(details)
-
-        return jsonify(uuids=results, errors=errors)
-
-    @api.route("/api/v0/compose/cancel", defaults={'uuid': ""}, methods=["DELETE"])
-    @api.route("/api/v0/compose/cancel/<uuid>", methods=["DELETE"])
-    @checkparams([("uuid", "", "no UUID given")])
-    def v0_compose_cancel(uuid):
-        """Cancel a running compose and delete its results directory"""
-        if VALID_API_STRING.match(uuid) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
-
-        status = uuid_status(api.config["COMPOSER_CFG"], uuid)
-        if status is None:
-            return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
-
-        if status["queue_status"] not in ["WAITING", "RUNNING"]:
-            return jsonify(status=False, errors=[{"id": BUILD_IN_WRONG_STATE, "msg": "Build %s is not in WAITING or RUNNING." % uuid}])
-
-        try:
-            uuid_cancel(api.config["COMPOSER_CFG"], uuid)
-        except Exception as e:
-            return jsonify(status=False, errors=[{"id": COMPOSE_ERROR, "msg": "%s: %s" % (uuid, str(e))}]),400
-        else:
-            return jsonify(status=True, uuid=uuid)
-
-    @api.route("/api/v0/compose/delete", defaults={'uuids': ""}, methods=["DELETE"])
-    @api.route("/api/v0/compose/delete/<uuids>", methods=["DELETE"])
-    @checkparams([("uuids", "", "no UUIDs given")])
-    def v0_compose_delete(uuids):
-        """Delete the compose results for the listed uuids"""
-        if VALID_API_STRING.match(uuids) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
-
-        results = []
-        errors = []
+    if uuids.strip() == '*':
+        queue_status_dict = queue_status(api.config["COMPOSER_CFG"])
+        queue_new = queue_status_dict["new"]
+        queue_running = queue_status_dict["run"]
+        candidates = queue_new + queue_running + build_status(api.config["COMPOSER_CFG"])
+    else:
+        candidates = []
         for uuid in [n.strip().lower() for n in uuids.split(",")]:
-            status = uuid_status(api.config["COMPOSER_CFG"], uuid)
-            if status is None:
+            details = uuid_status(api.config["COMPOSER_CFG"], uuid)
+            if details is None:
                 errors.append({"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid})
-            elif status["queue_status"] not in ["FINISHED", "FAILED"]:
-                errors.append({"id": BUILD_IN_WRONG_STATE, "msg": "Build %s is not in FINISHED or FAILED." % uuid})
             else:
-                try:
-                    uuid_delete(api.config["COMPOSER_CFG"], uuid)
-                except Exception as e:
-                    errors.append({"id": COMPOSE_ERROR, "msg": "%s: %s" % (uuid, str(e))})
-                else:
-                    results.append({"uuid":uuid, "status":True})
-        return jsonify(uuids=results, errors=errors)
+                candidates.append(details)
 
-    @api.route("/api/v0/compose/info", defaults={'uuid': ""})
-    @api.route("/api/v0/compose/info/<uuid>")
-    @checkparams([("uuid", "", "no UUID given")])
-    def v0_compose_info(uuid):
-        """Return detailed info about a compose"""
-        if VALID_API_STRING.match(uuid) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+    for details in candidates:
+        if blueprint is not None and details['blueprint'] != blueprint:
+            continue
 
-        try:
-            info = uuid_info(api.config["COMPOSER_CFG"], uuid)
-        except Exception as e:
-            return jsonify(status=False, errors=[{"id": COMPOSE_ERROR, "msg": str(e)}]), 400
+        if status is not None and details['queue_status'] != status:
+            continue
 
-        if info is None:
-            return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
-        else:
-            return jsonify(**info)
+        if compose_type is not None and details['compose_type'] != compose_type:
+            continue
 
-    @api.route("/api/v0/compose/metadata", defaults={'uuid': ""})
-    @api.route("/api/v0/compose/metadata/<uuid>")
-    @checkparams([("uuid","", "no UUID given")])
-    def v0_compose_metadata(uuid):
-        """Return a tar of the metadata for the build"""
-        if VALID_API_STRING.match(uuid) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+        results.append(details)
 
+    return jsonify(uuids=results, errors=errors)
+
+@v0_api.route("/compose/cancel", defaults={'uuid': ""}, methods=["DELETE"])
+@v0_api.route("/compose/cancel/<uuid>", methods=["DELETE"])
+@checkparams([("uuid", "", "no UUID given")])
+def v0_compose_cancel(uuid):
+    """Cancel a running compose and delete its results directory"""
+    if VALID_API_STRING.match(uuid) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+
+    status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+    if status is None:
+        return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
+
+    if status["queue_status"] not in ["WAITING", "RUNNING"]:
+        return jsonify(status=False, errors=[{"id": BUILD_IN_WRONG_STATE, "msg": "Build %s is not in WAITING or RUNNING." % uuid}])
+
+    try:
+        uuid_cancel(api.config["COMPOSER_CFG"], uuid)
+    except Exception as e:
+        return jsonify(status=False, errors=[{"id": COMPOSE_ERROR, "msg": "%s: %s" % (uuid, str(e))}]),400
+    else:
+        return jsonify(status=True, uuid=uuid)
+
+@v0_api.route("/compose/delete", defaults={'uuids': ""}, methods=["DELETE"])
+@v0_api.route("/compose/delete/<uuids>", methods=["DELETE"])
+@checkparams([("uuids", "", "no UUIDs given")])
+def v0_compose_delete(uuids):
+    """Delete the compose results for the listed uuids"""
+    if VALID_API_STRING.match(uuids) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+
+    results = []
+    errors = []
+    for uuid in [n.strip().lower() for n in uuids.split(",")]:
         status = uuid_status(api.config["COMPOSER_CFG"], uuid)
         if status is None:
-            return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
-        if status["queue_status"] not in ["FINISHED", "FAILED"]:
-            return jsonify(status=False, errors=[{"id": BUILD_IN_WRONG_STATE, "msg": "Build %s not in FINISHED or FAILED state." % uuid}]), 400
-        else:
-            return Response(uuid_tar(api.config["COMPOSER_CFG"], uuid, metadata=True, image=False, logs=False),
-                            mimetype="application/x-tar",
-                            headers=[("Content-Disposition", "attachment; filename=%s-metadata.tar;" % uuid)],
-                            direct_passthrough=True)
-
-    @api.route("/api/v0/compose/results", defaults={'uuid': ""})
-    @api.route("/api/v0/compose/results/<uuid>")
-    @checkparams([("uuid","", "no UUID given")])
-    def v0_compose_results(uuid):
-        """Return a tar of the metadata and the results for the build"""
-        if VALID_API_STRING.match(uuid) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
-
-        status = uuid_status(api.config["COMPOSER_CFG"], uuid)
-        if status is None:
-            return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
+            errors.append({"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid})
         elif status["queue_status"] not in ["FINISHED", "FAILED"]:
-            return jsonify(status=False, errors=[{"id": BUILD_IN_WRONG_STATE, "msg": "Build %s not in FINISHED or FAILED state." % uuid}]), 400
+            errors.append({"id": BUILD_IN_WRONG_STATE, "msg": "Build %s is not in FINISHED or FAILED." % uuid})
         else:
-            return Response(uuid_tar(api.config["COMPOSER_CFG"], uuid, metadata=True, image=True, logs=True),
-                            mimetype="application/x-tar",
-                            headers=[("Content-Disposition", "attachment; filename=%s.tar;" % uuid)],
-                            direct_passthrough=True)
+            try:
+                uuid_delete(api.config["COMPOSER_CFG"], uuid)
+            except Exception as e:
+                errors.append({"id": COMPOSE_ERROR, "msg": "%s: %s" % (uuid, str(e))})
+            else:
+                results.append({"uuid":uuid, "status":True})
+    return jsonify(uuids=results, errors=errors)
 
-    @api.route("/api/v0/compose/logs", defaults={'uuid': ""})
-    @api.route("/api/v0/compose/logs/<uuid>")
-    @checkparams([("uuid","", "no UUID given")])
-    def v0_compose_logs(uuid):
-        """Return a tar of the metadata for the build"""
-        if VALID_API_STRING.match(uuid) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+@v0_api.route("/compose/info", defaults={'uuid': ""})
+@v0_api.route("/compose/info/<uuid>")
+@checkparams([("uuid", "", "no UUID given")])
+def v0_compose_info(uuid):
+    """Return detailed info about a compose"""
+    if VALID_API_STRING.match(uuid) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
-        status = uuid_status(api.config["COMPOSER_CFG"], uuid)
-        if status is None:
-            return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
-        elif status["queue_status"] not in ["FINISHED", "FAILED"]:
-            return jsonify(status=False, errors=[{"id": BUILD_IN_WRONG_STATE, "msg": "Build %s not in FINISHED or FAILED state." % uuid}]), 400
-        else:
-            return Response(uuid_tar(api.config["COMPOSER_CFG"], uuid, metadata=False, image=False, logs=True),
-                            mimetype="application/x-tar",
-                            headers=[("Content-Disposition", "attachment; filename=%s-logs.tar;" % uuid)],
-                            direct_passthrough=True)
+    try:
+        info = uuid_info(api.config["COMPOSER_CFG"], uuid)
+    except Exception as e:
+        return jsonify(status=False, errors=[{"id": COMPOSE_ERROR, "msg": str(e)}]), 400
 
-    @api.route("/api/v0/compose/image", defaults={'uuid': ""})
-    @api.route("/api/v0/compose/image/<uuid>")
-    @checkparams([("uuid","", "no UUID given")])
-    def v0_compose_image(uuid):
-        """Return the output image for the build"""
-        if VALID_API_STRING.match(uuid) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+    if info is None:
+        return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
+    else:
+        return jsonify(**info)
 
-        status = uuid_status(api.config["COMPOSER_CFG"], uuid)
-        if status is None:
-            return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
-        elif status["queue_status"] not in ["FINISHED", "FAILED"]:
-            return jsonify(status=False, errors=[{"id": BUILD_IN_WRONG_STATE, "msg": "Build %s not in FINISHED or FAILED state." % uuid}]), 400
-        else:
-            image_name, image_path = uuid_image(api.config["COMPOSER_CFG"], uuid)
+@v0_api.route("/compose/metadata", defaults={'uuid': ""})
+@v0_api.route("/compose/metadata/<uuid>")
+@checkparams([("uuid","", "no UUID given")])
+def v0_compose_metadata(uuid):
+    """Return a tar of the metadata for the build"""
+    if VALID_API_STRING.match(uuid) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
-            # Make sure it really exists
-            if not os.path.exists(image_path):
-                return jsonify(status=False, errors=[{"id": BUILD_MISSING_FILE, "msg": "Build %s is missing image file %s" % (uuid, image_name)}]), 400
+    status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+    if status is None:
+        return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
+    if status["queue_status"] not in ["FINISHED", "FAILED"]:
+        return jsonify(status=False, errors=[{"id": BUILD_IN_WRONG_STATE, "msg": "Build %s not in FINISHED or FAILED state." % uuid}]), 400
+    else:
+        return Response(uuid_tar(api.config["COMPOSER_CFG"], uuid, metadata=True, image=False, logs=False),
+                        mimetype="application/x-tar",
+                        headers=[("Content-Disposition", "attachment; filename=%s-metadata.tar;" % uuid)],
+                        direct_passthrough=True)
 
-            # Make the image name unique
-            image_name = uuid + "-" + image_name
-            # XXX - Will mime type guessing work for all our output?
-            return send_file(image_path, as_attachment=True, attachment_filename=image_name, add_etags=False)
+@v0_api.route("/compose/results", defaults={'uuid': ""})
+@v0_api.route("/compose/results/<uuid>")
+@checkparams([("uuid","", "no UUID given")])
+def v0_compose_results(uuid):
+    """Return a tar of the metadata and the results for the build"""
+    if VALID_API_STRING.match(uuid) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
-    @api.route("/api/v0/compose/log", defaults={'uuid': ""})
-    @api.route("/api/v0/compose/log/<uuid>")
-    @checkparams([("uuid","", "no UUID given")])
-    def v0_compose_log_tail(uuid):
-        """Return the end of the main anaconda.log, defaults to 1Mbytes"""
-        if VALID_API_STRING.match(uuid) is None:
-            return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+    status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+    if status is None:
+        return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
+    elif status["queue_status"] not in ["FINISHED", "FAILED"]:
+        return jsonify(status=False, errors=[{"id": BUILD_IN_WRONG_STATE, "msg": "Build %s not in FINISHED or FAILED state." % uuid}]), 400
+    else:
+        return Response(uuid_tar(api.config["COMPOSER_CFG"], uuid, metadata=True, image=True, logs=True),
+                        mimetype="application/x-tar",
+                        headers=[("Content-Disposition", "attachment; filename=%s.tar;" % uuid)],
+                        direct_passthrough=True)
 
-        try:
-            size = int(request.args.get("size", "1024"))
-        except ValueError as e:
-            return jsonify(status=False, errors=[{"id": COMPOSE_ERROR, "msg": str(e)}]), 400
+@v0_api.route("/compose/logs", defaults={'uuid': ""})
+@v0_api.route("/compose/logs/<uuid>")
+@checkparams([("uuid","", "no UUID given")])
+def v0_compose_logs(uuid):
+    """Return a tar of the metadata for the build"""
+    if VALID_API_STRING.match(uuid) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
-        status = uuid_status(api.config["COMPOSER_CFG"], uuid)
-        if status is None:
-            return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
-        elif status["queue_status"] == "WAITING":
-            return jsonify(status=False, errors=[{"id": BUILD_IN_WRONG_STATE, "msg": "Build %s has not started yet. No logs to view" % uuid}])
-        try:
-            return Response(uuid_log(api.config["COMPOSER_CFG"], uuid, size), direct_passthrough=True)
-        except RuntimeError as e:
-            return jsonify(status=False, errors=[{"id": COMPOSE_ERROR, "msg": str(e)}]), 400
+    status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+    if status is None:
+        return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
+    elif status["queue_status"] not in ["FINISHED", "FAILED"]:
+        return jsonify(status=False, errors=[{"id": BUILD_IN_WRONG_STATE, "msg": "Build %s not in FINISHED or FAILED state." % uuid}]), 400
+    else:
+        return Response(uuid_tar(api.config["COMPOSER_CFG"], uuid, metadata=False, image=False, logs=True),
+                        mimetype="application/x-tar",
+                        headers=[("Content-Disposition", "attachment; filename=%s-logs.tar;" % uuid)],
+                        direct_passthrough=True)
+
+@v0_api.route("/compose/image", defaults={'uuid': ""})
+@v0_api.route("/compose/image/<uuid>")
+@checkparams([("uuid","", "no UUID given")])
+def v0_compose_image(uuid):
+    """Return the output image for the build"""
+    if VALID_API_STRING.match(uuid) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+
+    status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+    if status is None:
+        return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
+    elif status["queue_status"] not in ["FINISHED", "FAILED"]:
+        return jsonify(status=False, errors=[{"id": BUILD_IN_WRONG_STATE, "msg": "Build %s not in FINISHED or FAILED state." % uuid}]), 400
+    else:
+        image_name, image_path = uuid_image(api.config["COMPOSER_CFG"], uuid)
+
+        # Make sure it really exists
+        if not os.path.exists(image_path):
+            return jsonify(status=False, errors=[{"id": BUILD_MISSING_FILE, "msg": "Build %s is missing image file %s" % (uuid, image_name)}]), 400
+
+        # Make the image name unique
+        image_name = uuid + "-" + image_name
+        # XXX - Will mime type guessing work for all our output?
+        return send_file(image_path, as_attachment=True, attachment_filename=image_name, add_etags=False)
+
+@v0_api.route("/compose/log", defaults={'uuid': ""})
+@v0_api.route("/compose/log/<uuid>")
+@checkparams([("uuid","", "no UUID given")])
+def v0_compose_log_tail(uuid):
+    """Return the end of the main anaconda.log, defaults to 1Mbytes"""
+    if VALID_API_STRING.match(uuid) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+
+    try:
+        size = int(request.args.get("size", "1024"))
+    except ValueError as e:
+        return jsonify(status=False, errors=[{"id": COMPOSE_ERROR, "msg": str(e)}]), 400
+
+    status = uuid_status(api.config["COMPOSER_CFG"], uuid)
+    if status is None:
+        return jsonify(status=False, errors=[{"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % uuid}]), 400
+    elif status["queue_status"] == "WAITING":
+        return jsonify(status=False, errors=[{"id": BUILD_IN_WRONG_STATE, "msg": "Build %s has not started yet. No logs to view" % uuid}])
+    try:
+        return Response(uuid_log(api.config["COMPOSER_CFG"], uuid, size), direct_passthrough=True)
+    except RuntimeError as e:
+        return jsonify(status=False, errors=[{"id": COMPOSE_ERROR, "msg": str(e)}]), 400
