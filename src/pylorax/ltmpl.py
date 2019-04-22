@@ -116,6 +116,7 @@ class TemplateRunner(object):
       # install a bunch of packages
       runner = LoraxTemplateRunner(inroot=rundir, outroot=rundir, dbo=dnf_obj)
       runner.run("install-packages.ltmpl")
+
     NOTES:
 
     * Parsing procedure is roughly:
