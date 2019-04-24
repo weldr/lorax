@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.29
+Version:        19.7.30
 Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
@@ -122,6 +122,30 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Wed Apr 24 2019 Brian C. Lane <bcl@redhat.com> 19.7.30-1
+- Add test for starting compose with deleted blueprint (jikortus)
+  Related: rhbz#1683442
+- lorax-composer: Return UnknownBlueprint errors when using deleted blueprints (bcl)
+  Resolves: rhbz#1683442
+- lorax-composer: Delete workspace copy when deleting blueprint (bcl)
+  Related: rhbz#1683442
+- Use existing storage account (jstodola)
+  Related: rhbz#1673012
+- Record date/time of VM creation (jstodola)
+  Related: rhbz#1673012
+- Update datastore for VMware testing (chrobert)
+  Related: rhbz#1656105
+- Fixes for locked root account test (jikortus)
+  Related: rhbz#1687595
+- Add checks for disabled root account (jikortus)
+  Related: rhbz#1687595
+- 'compose info' is 'compose details' on RHEL-7 (jikortus)
+  Related: rhbz#1687595
+- Update some grammer issues in the test Bash scripts (chrobert)
+  Related: rhbz#1656105
+- Update datastore for VMware testing (chrobert)
+  Related: rhbz#1656105
+
 * Tue Mar 19 2019 Brian C. Lane <bcl@redhat.com> 19.7.29-1
 - Allow overriding $CLI outside test scripts (atodorov)
   Related: rhbz#1687595
