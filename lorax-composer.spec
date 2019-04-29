@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.31
+Version:        19.7.32
 Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
@@ -122,6 +122,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Apr 29 2019 Brian C. Lane <bcl@redhat.com> 19.7.32-1
+- tests: Add a test for using [[customizations]] with [customizations.kernel] (bcl)
+  Related: rhbz#1688335
+- lorax-composer: Fix customizations when creating a recipe (bcl)
+  Related: rhbz#1688335
+
 * Mon Apr 29 2019 Brian C. Lane <bcl@redhat.com> 19.7.31-1
 - Fixup print function usage with StringIO (bcl)
   Related: rhbz#1688335
