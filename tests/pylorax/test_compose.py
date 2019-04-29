@@ -227,17 +227,8 @@ class CustomizationsTestCase(unittest.TestCase):
                 return True
         return False
 
-    def test_customize_ks_template(self):
-        """Test that [customizations.kernel] works correctly"""
-        blueprint_data = """name = "test-kernel"
-description = "test recipe"
-version = "0.0.1"
-
-[customizations.kernel]
-append="nosmt=force"
-"""
-        recipe = recipe_from_toml(blueprint_data)
-
+    def _checkTemplates(self, recipe):
+        """Apply the recipe to all the templates"""
         # Test against a kickstart without bootloader
         result = customize_ks_template("firewall --enabled\n", recipe)
         self.assertTrue(self._checkBootloader(result, "nosmt=force"))
@@ -258,3 +249,30 @@ append="nosmt=force"
             print("%s:\n%s\n\n" % (e, r))
 
         self.assertEqual(errors, [])
+
+    def test_customize_ks_template(self):
+        """Test that [customizations.kernel] works correctly"""
+        blueprint_data = """name = "test-kernel"
+description = "test recipe"
+version = "0.0.1"
+
+[customizations.kernel]
+append="nosmt=force"
+"""
+        recipe = recipe_from_toml(blueprint_data)
+        self._checkTemplates(recipe)
+
+    def test_customize_list(self):
+        """Test that [customizations.kernel] works correctly with [[customizations]] error"""
+        blueprint_data = """name = "test-kernel"
+description = "test recipe"
+version = "0.0.1"
+
+[[customizations]]
+hostname = "testing"
+
+[customizations.kernel]
+append="nosmt=force"
+"""
+        recipe = recipe_from_toml(blueprint_data)
+        self._checkTemplates(recipe)
