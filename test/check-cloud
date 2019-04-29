@@ -4,6 +4,9 @@ import composertest
 
 
 class TestCloud(composertest.ComposerTestCase):
+    def test_alibaba(self):
+        self.runCliTest("/tests/cli/test_compose_alibaba.sh")
+
     def test_aws(self):
         self.runCliTest("/tests/cli/test_build_and_deploy_aws.sh")
 
