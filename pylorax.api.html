@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api package &mdash; Lorax 31.1 documentation</title>
+  <title>pylorax.api package &mdash; Lorax 31.4 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                31.1
+                31.4
               </div>
             
           
@@ -324,8 +324,45 @@ Other options will be filled in by <cite>make_compose()</cite></p>
 </ul>
 </dd>
 </dl>
+<p>Apply customizations to existing template commands, or add defaults for ones that are
+missing and required.</p>
 <p>Apply customizations.kernel.append to the bootloader argument in the template.
 Add bootloader line if it is missing.</p>
+<p>Add default timezone if needed. It does NOT replace an existing timezone entry</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.firewall_cmd">
+<code class="descclassname">pylorax.api.compose.</code><code class="descname">firewall_cmd</code><span class="sig-paren">(</span><em>line</em>, <em>settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/compose.html#firewall_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.firewall_cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the firewall line with the new ports and services</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The firewall ... line</p></li>
+<li><p><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) -- A dict with the list of services and ports to enable and disable</p></li>
+</ul>
+</dd>
+</dl>
+<p>Using pykickstart to process the line is the best way to make sure it
+is parsed correctly, and re-assembled for inclusion into the final kickstart</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.get_default_services">
+<code class="descclassname">pylorax.api.compose.</code><code class="descname">get_default_services</code><span class="sig-paren">(</span><em>recipe</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/compose.html#get_default_services"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.get_default_services" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the default string for services, based on recipe
+:param recipe: The recipe</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>string with &quot;services&quot; or &quot;&quot;</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+</dl>
+<p>When no services have been selected we don't need to add anything to the kickstart
+so return an empty string. Otherwise return &quot;services&quot; which will be updated with
+the settings.</p>
 </dd></dl>
 
 <dl class="function">
@@ -355,6 +392,23 @@ even though the results are applied differently.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="pylorax.api.compose.get_firewall_settings">
+<code class="descclassname">pylorax.api.compose.</code><code class="descname">get_firewall_settings</code><span class="sig-paren">(</span><em>recipe</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/compose.html#get_firewall_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.get_firewall_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the customizations.firewall settings</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>recipe</strong> (<em>Recipe object</em>) -- The recipe</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dict of settings</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
 <dt id="pylorax.api.compose.get_kernel_append">
 <code class="descclassname">pylorax.api.compose.</code><code class="descname">get_kernel_append</code><span class="sig-paren">(</span><em>recipe</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/compose.html#get_kernel_append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.get_kernel_append" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the customizations.kernel append value</p>
@@ -369,6 +423,106 @@ even though the results are applied differently.</p>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.get_keyboard_layout">
+<code class="descclassname">pylorax.api.compose.</code><code class="descname">get_keyboard_layout</code><span class="sig-paren">(</span><em>recipe</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/compose.html#get_keyboard_layout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.get_keyboard_layout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the customizations.locale.keyboard list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>recipe</strong> (<em>Recipe object</em>) -- The recipe</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The keyboard layout string</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.get_languages">
+<code class="descclassname">pylorax.api.compose.</code><code class="descname">get_languages</code><span class="sig-paren">(</span><em>recipe</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/compose.html#get_languages"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.get_languages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the customizations.locale.languages list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>recipe</strong> (<em>Recipe object</em>) -- The recipe</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of language strings</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.get_services">
+<code class="descclassname">pylorax.api.compose.</code><code class="descname">get_services</code><span class="sig-paren">(</span><em>recipe</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/compose.html#get_services"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.get_services" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the customizations.services settings</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>recipe</strong> (<em>Recipe object</em>) -- The recipe</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dict of settings</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.get_timezone_settings">
+<code class="descclassname">pylorax.api.compose.</code><code class="descname">get_timezone_settings</code><span class="sig-paren">(</span><em>recipe</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/compose.html#get_timezone_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.get_timezone_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the customizations.timezone dict</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>recipe</strong> (<em>Recipe object</em>) -- </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>append value or empty string</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.keyboard_cmd">
+<code class="descclassname">pylorax.api.compose.</code><code class="descname">keyboard_cmd</code><span class="sig-paren">(</span><em>line</em>, <em>layout</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/compose.html#keyboard_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.keyboard_cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the keyboard line with the layout</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The keyboard ... line</p></li>
+<li><p><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The keyboard layout</p></li>
+</ul>
+</dd>
+</dl>
+<p>Using pykickstart to process the line is the best way to make sure it
+is parsed correctly, and re-assembled for inclusion into the final kickstart</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.lang_cmd">
+<code class="descclassname">pylorax.api.compose.</code><code class="descname">lang_cmd</code><span class="sig-paren">(</span><em>line</em>, <em>languages</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/compose.html#lang_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.lang_cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the lang line with the languages</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The lang ... line</p></li>
+<li><p><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) -- The list of languages</p></li>
+</ul>
+</dd>
+</dl>
+<p>Using pykickstart to process the line is the best way to make sure it
+is parsed correctly, and re-assembled for inclusion into the final kickstart</p>
 </dd></dl>
 
 <dl class="function">
@@ -396,6 +550,22 @@ even though the results are applied differently.</p>
 :returns: kickstart command arguments for url/repo command
 :rtype: str</p>
 <p>Set url to &quot;baseurl&quot; if it is a repo, leave it as &quot;url&quot; for the installation url.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.services_cmd">
+<code class="descclassname">pylorax.api.compose.</code><code class="descname">services_cmd</code><span class="sig-paren">(</span><em>line</em>, <em>settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/compose.html#services_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.services_cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the services line with additional services to enable/disable</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The services ... line</p></li>
+<li><p><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) -- A dict with the list of services to enable and disable</p></li>
+</ul>
+</dd>
+</dl>
+<p>Using pykickstart to process the line is the best way to make sure it
+is parsed correctly, and re-assembled for inclusion into the final kickstart</p>
 </dd></dl>
 
 <dl class="function">
@@ -436,6 +606,22 @@ even though the results are applied differently.</p>
 </dd>
 </dl>
 <p>Return a list of templates and errors encountered or an empty list</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.compose.timezone_cmd">
+<code class="descclassname">pylorax.api.compose.</code><code class="descname">timezone_cmd</code><span class="sig-paren">(</span><em>line</em>, <em>settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/compose.html#timezone_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.compose.timezone_cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the timezone line with the settings</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The timezone ... line</p></li>
+<li><p><strong>settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) -- A dict with timezone and/or ntpservers list</p></li>
+</ul>
+</dd>
+</dl>
+<p>Using pykickstart to process the line is the best way to make sure it
+is parsed correctly, and re-assembled for inclusion into the final kickstart</p>
 </dd></dl>
 
 <dl class="function">

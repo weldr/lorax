@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.compose &mdash; Lorax 31.1 documentation</title>
+  <title>pylorax.api.compose &mdash; Lorax 31.4 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                31.1
+                31.4
               </div>
             
           
@@ -238,7 +238,7 @@
         <span class="n">pkgs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">packageList</span><span class="p">]</span>
         <span class="n">grps</span> <span class="o">=</span> <span class="p">[</span><span class="n">grp</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">grp</span> <span class="ow">in</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">groupList</span><span class="p">]</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">_</span> <span class="o">=</span> <span class="n">projects_depsolve</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">pkgs</span><span class="p">,</span> <span class="n">grps</span><span class="p">)</span>
+            <span class="n">projects_depsolve</span><span class="p">(</span><span class="n">dbo</span><span class="p">,</span> <span class="n">pkgs</span><span class="p">,</span> <span class="n">grps</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">ProjectsError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">template_errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Error depsolving </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">compose_type</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
 
@@ -322,6 +322,240 @@
     <span class="k">return</span> <span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="s2">&quot;kernel&quot;</span><span class="p">][</span><span class="s2">&quot;append&quot;</span><span class="p">]</span></div>
 
 
+<div class="viewcode-block" id="timezone_cmd"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.timezone_cmd">[docs]</a><span class="k">def</span> <span class="nf">timezone_cmd</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Update the timezone line with the settings</span>
+
+<span class="sd">    :param line: The timezone ... line</span>
+<span class="sd">    :type line: str</span>
+<span class="sd">    :param settings: A dict with timezone and/or ntpservers list</span>
+<span class="sd">    :type settings: dict</span>
+
+<span class="sd">    Using pykickstart to process the line is the best way to make sure it</span>
+<span class="sd">    is parsed correctly, and re-assembled for inclusion into the final kickstart</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ks_version</span> <span class="o">=</span> <span class="n">makeVersion</span><span class="p">()</span>
+    <span class="n">ks</span> <span class="o">=</span> <span class="n">KickstartParser</span><span class="p">(</span><span class="n">ks_version</span><span class="p">,</span> <span class="n">errorsAreFatal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">missingIncludeIsFatal</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ks</span><span class="o">.</span><span class="n">readKickstartFromString</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;timezone&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">timezone</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;timezone&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s2">&quot;ntpservers&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">ntpservers</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;ntpservers&quot;</span><span class="p">]</span>
+
+    <span class="c1"># Converting back to a string includes a comment, return just the timezone line</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">timezone</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_timezone_settings"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.get_timezone_settings">[docs]</a><span class="k">def</span> <span class="nf">get_timezone_settings</span><span class="p">(</span><span class="n">recipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the customizations.timezone dict</span>
+
+<span class="sd">    :param recipe:</span>
+<span class="sd">    :type recipe: Recipe object</span>
+<span class="sd">    :returns: append value or empty string</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;customizations&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span> <span class="ow">or</span> \
+       <span class="s2">&quot;timezone&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+    <span class="k">return</span> <span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="s2">&quot;timezone&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="lang_cmd"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.lang_cmd">[docs]</a><span class="k">def</span> <span class="nf">lang_cmd</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">languages</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Update the lang line with the languages</span>
+
+<span class="sd">    :param line: The lang ... line</span>
+<span class="sd">    :type line: str</span>
+<span class="sd">    :param settings: The list of languages</span>
+<span class="sd">    :type settings: list</span>
+
+<span class="sd">    Using pykickstart to process the line is the best way to make sure it</span>
+<span class="sd">    is parsed correctly, and re-assembled for inclusion into the final kickstart</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ks_version</span> <span class="o">=</span> <span class="n">makeVersion</span><span class="p">()</span>
+    <span class="n">ks</span> <span class="o">=</span> <span class="n">KickstartParser</span><span class="p">(</span><span class="n">ks_version</span><span class="p">,</span> <span class="n">errorsAreFatal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">missingIncludeIsFatal</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ks</span><span class="o">.</span><span class="n">readKickstartFromString</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">languages</span><span class="p">:</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="n">languages</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">languages</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="n">addsupport</span> <span class="o">=</span> <span class="n">languages</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="c1"># Converting back to a string includes a comment, return just the lang line</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">lang</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_languages"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.get_languages">[docs]</a><span class="k">def</span> <span class="nf">get_languages</span><span class="p">(</span><span class="n">recipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the customizations.locale.languages list</span>
+
+<span class="sd">    :param recipe: The recipe</span>
+<span class="sd">    :type recipe: Recipe object</span>
+<span class="sd">    :returns: list of language strings</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;customizations&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span> <span class="ow">or</span> \
+       <span class="s2">&quot;locale&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">]</span> <span class="ow">or</span> \
+       <span class="s2">&quot;languages&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="s2">&quot;locale&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">return</span> <span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="s2">&quot;locale&quot;</span><span class="p">][</span><span class="s2">&quot;languages&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="keyboard_cmd"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.keyboard_cmd">[docs]</a><span class="k">def</span> <span class="nf">keyboard_cmd</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">layout</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Update the keyboard line with the layout</span>
+
+<span class="sd">    :param line: The keyboard ... line</span>
+<span class="sd">    :type line: str</span>
+<span class="sd">    :param settings: The keyboard layout</span>
+<span class="sd">    :type settings: str</span>
+
+<span class="sd">    Using pykickstart to process the line is the best way to make sure it</span>
+<span class="sd">    is parsed correctly, and re-assembled for inclusion into the final kickstart</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ks_version</span> <span class="o">=</span> <span class="n">makeVersion</span><span class="p">()</span>
+    <span class="n">ks</span> <span class="o">=</span> <span class="n">KickstartParser</span><span class="p">(</span><span class="n">ks_version</span><span class="p">,</span> <span class="n">errorsAreFatal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">missingIncludeIsFatal</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ks</span><span class="o">.</span><span class="n">readKickstartFromString</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">layout</span><span class="p">:</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">keyboard</span><span class="o">.</span><span class="n">keyboard</span> <span class="o">=</span> <span class="n">layout</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">keyboard</span><span class="o">.</span><span class="n">vc_keymap</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">keyboard</span><span class="o">.</span><span class="n">x_layouts</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Converting back to a string includes a comment, return just the keyboard line</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">keyboard</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_keyboard_layout"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.get_keyboard_layout">[docs]</a><span class="k">def</span> <span class="nf">get_keyboard_layout</span><span class="p">(</span><span class="n">recipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the customizations.locale.keyboard list</span>
+
+<span class="sd">    :param recipe: The recipe</span>
+<span class="sd">    :type recipe: Recipe object</span>
+<span class="sd">    :returns: The keyboard layout string</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;customizations&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span> <span class="ow">or</span> \
+       <span class="s2">&quot;locale&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">]</span> <span class="ow">or</span> \
+       <span class="s2">&quot;keyboard&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="s2">&quot;locale&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">return</span> <span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="s2">&quot;locale&quot;</span><span class="p">][</span><span class="s2">&quot;keyboard&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="firewall_cmd"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.firewall_cmd">[docs]</a><span class="k">def</span> <span class="nf">firewall_cmd</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Update the firewall line with the new ports and services</span>
+
+<span class="sd">    :param line: The firewall ... line</span>
+<span class="sd">    :type line: str</span>
+<span class="sd">    :param settings: A dict with the list of services and ports to enable and disable</span>
+<span class="sd">    :type settings: dict</span>
+
+<span class="sd">    Using pykickstart to process the line is the best way to make sure it</span>
+<span class="sd">    is parsed correctly, and re-assembled for inclusion into the final kickstart</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ks_version</span> <span class="o">=</span> <span class="n">makeVersion</span><span class="p">()</span>
+    <span class="n">ks</span> <span class="o">=</span> <span class="n">KickstartParser</span><span class="p">(</span><span class="n">ks_version</span><span class="p">,</span> <span class="n">errorsAreFatal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">missingIncludeIsFatal</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ks</span><span class="o">.</span><span class="n">readKickstartFromString</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="c1"># Do not override firewall --disabled</span>
+    <span class="k">if</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">firewall</span><span class="o">.</span><span class="n">enabled</span> <span class="o">!=</span> <span class="kc">False</span> <span class="ow">and</span> <span class="n">settings</span><span class="p">:</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">firewall</span><span class="o">.</span><span class="n">ports</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;ports&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">firewall</span><span class="o">.</span><span class="n">ports</span><span class="p">))</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">firewall</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;enabled&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">firewall</span><span class="o">.</span><span class="n">services</span><span class="p">))</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">firewall</span><span class="o">.</span><span class="n">remove_services</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;disabled&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">firewall</span><span class="o">.</span><span class="n">remove_services</span><span class="p">))</span>
+
+    <span class="c1"># Converting back to a string includes a comment, return just the keyboard line</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">firewall</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_firewall_settings"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.get_firewall_settings">[docs]</a><span class="k">def</span> <span class="nf">get_firewall_settings</span><span class="p">(</span><span class="n">recipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the customizations.firewall settings</span>
+
+<span class="sd">    :param recipe: The recipe</span>
+<span class="sd">    :type recipe: Recipe object</span>
+<span class="sd">    :returns: A dict of settings</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ports&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;disabled&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+
+    <span class="k">if</span> <span class="s2">&quot;customizations&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span> <span class="ow">or</span> \
+       <span class="s2">&quot;firewall&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">settings</span>
+
+    <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;ports&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="s2">&quot;firewall&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ports&quot;</span><span class="p">,</span> <span class="p">[])</span>
+
+    <span class="k">if</span> <span class="s2">&quot;services&quot;</span> <span class="ow">in</span> <span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="s2">&quot;firewall&quot;</span><span class="p">]:</span>
+        <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;enabled&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="s2">&quot;firewall&quot;</span><span class="p">][</span><span class="s2">&quot;services&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;enabled&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;disabled&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="s2">&quot;firewall&quot;</span><span class="p">][</span><span class="s2">&quot;services&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;disabled&quot;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="k">return</span> <span class="n">settings</span></div>
+
+
+<div class="viewcode-block" id="services_cmd"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.services_cmd">[docs]</a><span class="k">def</span> <span class="nf">services_cmd</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Update the services line with additional services to enable/disable</span>
+
+<span class="sd">    :param line: The services ... line</span>
+<span class="sd">    :type line: str</span>
+<span class="sd">    :param settings: A dict with the list of services to enable and disable</span>
+<span class="sd">    :type settings: dict</span>
+
+<span class="sd">    Using pykickstart to process the line is the best way to make sure it</span>
+<span class="sd">    is parsed correctly, and re-assembled for inclusion into the final kickstart</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Empty services and no additional settings, return an empty string</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;enabled&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;disabled&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="n">ks_version</span> <span class="o">=</span> <span class="n">makeVersion</span><span class="p">()</span>
+    <span class="n">ks</span> <span class="o">=</span> <span class="n">KickstartParser</span><span class="p">(</span><span class="n">ks_version</span><span class="p">,</span> <span class="n">errorsAreFatal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">missingIncludeIsFatal</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># Allow passing in a &#39;default&#39; so that the enable/disable may be applied to it, without</span>
+    <span class="c1"># parsing it and emitting a kickstart error message</span>
+    <span class="k">if</span> <span class="n">line</span> <span class="o">!=</span> <span class="s2">&quot;services&quot;</span><span class="p">:</span>
+        <span class="n">ks</span><span class="o">.</span><span class="n">readKickstartFromString</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="c1"># Add to any existing services, removing any duplicates</span>
+    <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">services</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;enabled&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">services</span><span class="o">.</span><span class="n">enabled</span><span class="p">))</span>
+    <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">services</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;disabled&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">services</span><span class="o">.</span><span class="n">disabled</span><span class="p">))</span>
+
+    <span class="c1"># Converting back to a string includes a comment, return just the keyboard line</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ks</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">services</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_services"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.get_services">[docs]</a><span class="k">def</span> <span class="nf">get_services</span><span class="p">(</span><span class="n">recipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the customizations.services settings</span>
+
+<span class="sd">    :param recipe: The recipe</span>
+<span class="sd">    :type recipe: Recipe object</span>
+<span class="sd">    :returns: A dict of settings</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;disabled&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+
+    <span class="k">if</span> <span class="s2">&quot;customizations&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span> <span class="ow">or</span> \
+       <span class="s2">&quot;services&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">settings</span>
+
+    <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;enabled&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="s2">&quot;services&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;enabled&quot;</span><span class="p">,</span> <span class="p">[]))</span>
+    <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;disabled&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="s2">&quot;services&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;disabled&quot;</span><span class="p">,</span> <span class="p">[]))</span>
+    <span class="k">return</span> <span class="n">settings</span></div>
+
+
+<div class="viewcode-block" id="get_default_services"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.get_default_services">[docs]</a><span class="k">def</span> <span class="nf">get_default_services</span><span class="p">(</span><span class="n">recipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the default string for services, based on recipe</span>
+<span class="sd">    :param recipe: The recipe</span>
+
+<span class="sd">    :type recipe: Recipe object</span>
+<span class="sd">    :returns: string with &quot;services&quot; or &quot;&quot;</span>
+<span class="sd">    :rtype: str</span>
+
+<span class="sd">    When no services have been selected we don&#39;t need to add anything to the kickstart</span>
+<span class="sd">    so return an empty string. Otherwise return &quot;services&quot; which will be updated with</span>
+<span class="sd">    the settings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">services</span> <span class="o">=</span> <span class="n">get_services</span><span class="p">(</span><span class="n">recipe</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">services</span><span class="p">[</span><span class="s2">&quot;enabled&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">services</span><span class="p">[</span><span class="s2">&quot;disabled&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="s2">&quot;services&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+
+
 <div class="viewcode-block" id="customize_ks_template"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.customize_ks_template">[docs]</a><span class="k">def</span> <span class="nf">customize_ks_template</span><span class="p">(</span><span class="n">ks_template</span><span class="p">,</span> <span class="n">recipe</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Customize the kickstart template and return it</span>
 
@@ -330,26 +564,72 @@
 <span class="sd">    :param recipe:</span>
 <span class="sd">    :type recipe: Recipe object</span>
 
+<span class="sd">    Apply customizations to existing template commands, or add defaults for ones that are</span>
+<span class="sd">    missing and required.</span>
+
 <span class="sd">    Apply customizations.kernel.append to the bootloader argument in the template.</span>
 <span class="sd">    Add bootloader line if it is missing.</span>
+
+<span class="sd">    Add default timezone if needed. It does NOT replace an existing timezone entry</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">kernel_append</span> <span class="o">=</span> <span class="n">get_kernel_append</span><span class="p">(</span><span class="n">recipe</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">kernel_append</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">ks_template</span>
-    <span class="n">found_bootloader</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1"># Commands to be modified [NEW-COMMAND-FUNC, NEW-VALUE, DEFAULT, REPLACE]</span>
+    <span class="c1"># The function is called with a kickstart command string and the value to replace</span>
+    <span class="c1"># The value is specific to the command, and is understood by the function</span>
+    <span class="c1"># The default is a complete kickstart command string, suitable for writing to the template</span>
+    <span class="c1"># If REPLACE is False it will not change an existing entry only add a missing one</span>
+    <span class="n">commands</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;bootloader&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">bootloader_append</span><span class="p">,</span>
+                               <span class="n">get_kernel_append</span><span class="p">(</span><span class="n">recipe</span><span class="p">),</span>
+                               <span class="s1">&#39;bootloader --location=none&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">],</span>
+                <span class="s2">&quot;timezone&quot;</span><span class="p">:</span>   <span class="p">[</span><span class="n">timezone_cmd</span><span class="p">,</span>
+                               <span class="n">get_timezone_settings</span><span class="p">(</span><span class="n">recipe</span><span class="p">),</span>
+                               <span class="s1">&#39;timezone UTC&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span>
+                <span class="s2">&quot;lang&quot;</span><span class="p">:</span>       <span class="p">[</span><span class="n">lang_cmd</span><span class="p">,</span>
+                               <span class="n">get_languages</span><span class="p">(</span><span class="n">recipe</span><span class="p">),</span>
+                               <span class="s1">&#39;lang en_US.UTF-8&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">],</span>
+                <span class="s2">&quot;keyboard&quot;</span><span class="p">:</span>   <span class="p">[</span><span class="n">keyboard_cmd</span><span class="p">,</span>
+                               <span class="n">get_keyboard_layout</span><span class="p">(</span><span class="n">recipe</span><span class="p">),</span>
+                               <span class="s1">&#39;keyboard --xlayouts us --vckeymap us&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">],</span>
+                <span class="s2">&quot;firewall&quot;</span><span class="p">:</span>   <span class="p">[</span><span class="n">firewall_cmd</span><span class="p">,</span>
+                               <span class="n">get_firewall_settings</span><span class="p">(</span><span class="n">recipe</span><span class="p">),</span>
+                               <span class="s1">&#39;firewall --enabled&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">],</span>
+                <span class="s2">&quot;services&quot;</span><span class="p">:</span>   <span class="p">[</span><span class="n">services_cmd</span><span class="p">,</span>
+                               <span class="n">get_services</span><span class="p">(</span><span class="n">recipe</span><span class="p">),</span>
+                               <span class="n">get_default_services</span><span class="p">(</span><span class="n">recipe</span><span class="p">),</span> <span class="kc">True</span><span class="p">]</span>
+               <span class="p">}</span>
+    <span class="n">found</span> <span class="o">=</span> <span class="p">{}</span>
+
     <span class="n">output</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">ks_template</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;bootloader&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">new_command</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span> <span class="o">=</span> <span class="n">commands</span><span class="p">[</span><span class="n">cmd</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">cmd</span><span class="p">):</span>
+                <span class="n">found</span><span class="p">[</span><span class="n">cmd</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">if</span> <span class="n">value</span> <span class="ow">and</span> <span class="n">replace</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Replacing </span><span class="si">%s</span><span class="s2"> with </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">new_command</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">value</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Skipping </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># No matches, write the line as-is</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
-            <span class="k">continue</span>
-        <span class="n">found_bootloader</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found bootloader line: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">bootloader_append</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">kernel_append</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">found_bootloader</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">output</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s1">&#39;bootloader --append=&quot;</span><span class="si">%s</span><span class="s1">&quot; --location=none&#39;</span> <span class="o">%</span> <span class="n">kernel_append</span> <span class="o">+</span> <span class="n">output</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span></div>
+    <span class="c1"># Write out defaults for the ones not found</span>
+    <span class="c1"># These must go FIRST because the template still needs to have the packages added</span>
+    <span class="n">defaults</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">found</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="p">(</span><span class="n">new_command</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">commands</span><span class="p">[</span><span class="n">cmd</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">and</span> <span class="n">default</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Setting </span><span class="si">%s</span><span class="s2"> to use </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">new_command</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">value</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">defaults</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">default</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Setting </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">defaults</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">defaults</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span> <span class="o">+</span> <span class="n">output</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="write_ks_root"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.compose.write_ks_root">[docs]</a><span class="k">def</span> <span class="nf">write_ks_root</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
@@ -708,9 +988,13 @@
     <span class="n">cfg_args</span><span class="p">[</span><span class="s2">&quot;volid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="n">cfg_args</span><span class="p">[</span><span class="s2">&quot;extra_boot_args&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_kernel_append</span><span class="p">(</span><span class="n">recipe</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="s2">&quot;compression&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cfg_args</span><span class="p">:</span>
+        <span class="n">cfg_args</span><span class="p">[</span><span class="s2">&quot;compression&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;xz&quot;</span>
+
+    <span class="k">if</span> <span class="s2">&quot;compress_args&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cfg_args</span><span class="p">:</span>
+        <span class="n">cfg_args</span><span class="p">[</span><span class="s2">&quot;compress_args&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
     <span class="n">cfg_args</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
-        <span class="s2">&quot;compression&quot;</span><span class="p">:</span>      <span class="s2">&quot;xz&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;compress_args&quot;</span><span class="p">:</span>    <span class="p">[],</span>
         <span class="s2">&quot;ks&quot;</span><span class="p">:</span>               <span class="p">[</span><span class="n">ks_path</span><span class="p">],</span>
         <span class="s2">&quot;logfile&quot;</span><span class="p">:</span>          <span class="n">log_dir</span><span class="p">,</span>
         <span class="s2">&quot;timeout&quot;</span><span class="p">:</span>          <span class="mi">60</span><span class="p">,</span>                     <span class="c1"># 60 minute timeout</span>
@@ -755,6 +1039,7 @@
                                  <span class="s2">&quot;make_appliance&quot;</span><span class="p">:</span>          <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_ami&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_tar&quot;</span><span class="p">:</span>                <span class="kc">True</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_tar_disk&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_pxe_live&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_ostree_live&quot;</span><span class="p">:</span>        <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_oci&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
@@ -762,9 +1047,11 @@
                                  <span class="s2">&quot;ostree&quot;</span><span class="p">:</span>                  <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;live_rootfs_keep_size&quot;</span><span class="p">:</span>   <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;live_rootfs_size&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
+                                 <span class="s2">&quot;image_size_align&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
                                  <span class="s2">&quot;image_type&quot;</span><span class="p">:</span>              <span class="kc">False</span><span class="p">,</span>          <span class="c1"># False instead of None because of TOML</span>
                                  <span class="s2">&quot;qemu_args&quot;</span><span class="p">:</span>               <span class="p">[],</span>
                                  <span class="s2">&quot;image_name&quot;</span><span class="p">:</span>              <span class="n">default_image_name</span><span class="p">(</span><span class="s2">&quot;xz&quot;</span><span class="p">,</span> <span class="s2">&quot;root.tar&quot;</span><span class="p">),</span>
+                                 <span class="s2">&quot;tar_disk_name&quot;</span><span class="p">:</span>           <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;image_only&quot;</span><span class="p">:</span>              <span class="kc">True</span><span class="p">,</span>
                                  <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;app_template&quot;</span><span class="p">:</span>            <span class="kc">None</span><span class="p">,</span>
@@ -776,6 +1063,7 @@
                                  <span class="s2">&quot;make_appliance&quot;</span><span class="p">:</span>          <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_ami&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_tar&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_tar_disk&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_pxe_live&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_ostree_live&quot;</span><span class="p">:</span>        <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_oci&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
@@ -783,9 +1071,11 @@
                                  <span class="s2">&quot;ostree&quot;</span><span class="p">:</span>                  <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;live_rootfs_keep_size&quot;</span><span class="p">:</span>   <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;live_rootfs_size&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
+                                 <span class="s2">&quot;image_size_align&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
                                  <span class="s2">&quot;image_type&quot;</span><span class="p">:</span>              <span class="kc">False</span><span class="p">,</span>          <span class="c1"># False instead of None because of TOML</span>
                                  <span class="s2">&quot;qemu_args&quot;</span><span class="p">:</span>               <span class="p">[],</span>
                                  <span class="s2">&quot;image_name&quot;</span><span class="p">:</span>              <span class="s2">&quot;live.iso&quot;</span><span class="p">,</span>
+                                 <span class="s2">&quot;tar_disk_name&quot;</span><span class="p">:</span>           <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;fs_label&quot;</span><span class="p">:</span>                <span class="s2">&quot;Anaconda&quot;</span><span class="p">,</span>     <span class="c1"># Live booting may expect this to be &#39;Anaconda&#39;</span>
                                  <span class="s2">&quot;image_only&quot;</span><span class="p">:</span>              <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
@@ -800,6 +1090,7 @@
                                  <span class="s2">&quot;make_appliance&quot;</span><span class="p">:</span>          <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_ami&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_tar&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_tar_disk&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_pxe_live&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_ostree_live&quot;</span><span class="p">:</span>        <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_oci&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
@@ -807,9 +1098,11 @@
                                  <span class="s2">&quot;ostree&quot;</span><span class="p">:</span>                  <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;live_rootfs_keep_size&quot;</span><span class="p">:</span>   <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;live_rootfs_size&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
+                                 <span class="s2">&quot;image_size_align&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
                                  <span class="s2">&quot;image_type&quot;</span><span class="p">:</span>              <span class="kc">False</span><span class="p">,</span>          <span class="c1"># False instead of None because of TOML</span>
                                  <span class="s2">&quot;qemu_args&quot;</span><span class="p">:</span>               <span class="p">[],</span>
                                  <span class="s2">&quot;image_name&quot;</span><span class="p">:</span>              <span class="s2">&quot;disk.img&quot;</span><span class="p">,</span>
+                                 <span class="s2">&quot;tar_disk_name&quot;</span><span class="p">:</span>           <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;fs_label&quot;</span><span class="p">:</span>                <span class="s2">&quot;&quot;</span><span class="p">,</span>
                                  <span class="s2">&quot;image_only&quot;</span><span class="p">:</span>              <span class="kc">True</span><span class="p">,</span>
                                  <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
@@ -822,6 +1115,7 @@
                                  <span class="s2">&quot;make_appliance&quot;</span><span class="p">:</span>          <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_ami&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_tar&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_tar_disk&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_pxe_live&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_ostree_live&quot;</span><span class="p">:</span>        <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_oci&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
@@ -829,9 +1123,11 @@
                                  <span class="s2">&quot;ostree&quot;</span><span class="p">:</span>                  <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;live_rootfs_keep_size&quot;</span><span class="p">:</span>   <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;live_rootfs_size&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
+                                 <span class="s2">&quot;image_size_align&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
                                  <span class="s2">&quot;image_type&quot;</span><span class="p">:</span>              <span class="s2">&quot;qcow2&quot;</span><span class="p">,</span>
                                  <span class="s2">&quot;qemu_args&quot;</span><span class="p">:</span>               <span class="p">[],</span>
                                  <span class="s2">&quot;image_name&quot;</span><span class="p">:</span>              <span class="s2">&quot;disk.qcow2&quot;</span><span class="p">,</span>
+                                 <span class="s2">&quot;tar_disk_name&quot;</span><span class="p">:</span>           <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;fs_label&quot;</span><span class="p">:</span>                <span class="s2">&quot;&quot;</span><span class="p">,</span>
                                  <span class="s2">&quot;image_only&quot;</span><span class="p">:</span>              <span class="kc">True</span><span class="p">,</span>
                                  <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
@@ -844,6 +1140,7 @@
                                  <span class="s2">&quot;make_appliance&quot;</span><span class="p">:</span>          <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_ami&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_tar&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_tar_disk&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_pxe_live&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_ostree_live&quot;</span><span class="p">:</span>        <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_oci&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
@@ -851,9 +1148,11 @@
                                  <span class="s2">&quot;ostree&quot;</span><span class="p">:</span>                  <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;live_rootfs_keep_size&quot;</span><span class="p">:</span>   <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;live_rootfs_size&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
+                                 <span class="s2">&quot;image_size_align&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
                                  <span class="s2">&quot;image_type&quot;</span><span class="p">:</span>              <span class="kc">False</span><span class="p">,</span>          <span class="c1"># False instead of None because of TOML</span>
                                  <span class="s2">&quot;qemu_args&quot;</span><span class="p">:</span>               <span class="p">[],</span>
                                  <span class="s2">&quot;image_name&quot;</span><span class="p">:</span>              <span class="s2">&quot;filesystem.img&quot;</span><span class="p">,</span>
+                                 <span class="s2">&quot;tar_disk_name&quot;</span><span class="p">:</span>           <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;fs_label&quot;</span><span class="p">:</span>                <span class="s2">&quot;&quot;</span><span class="p">,</span>
                                  <span class="s2">&quot;image_only&quot;</span><span class="p">:</span>              <span class="kc">True</span><span class="p">,</span>
                                  <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
@@ -866,6 +1165,7 @@
                                  <span class="s2">&quot;make_appliance&quot;</span><span class="p">:</span>          <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_ami&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_tar&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_tar_disk&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_pxe_live&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_ostree_live&quot;</span><span class="p">:</span>        <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_oci&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
@@ -873,9 +1173,11 @@
                                  <span class="s2">&quot;ostree&quot;</span><span class="p">:</span>                  <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;live_rootfs_keep_size&quot;</span><span class="p">:</span>   <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;live_rootfs_size&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
+                                 <span class="s2">&quot;image_size_align&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
                                  <span class="s2">&quot;image_type&quot;</span><span class="p">:</span>              <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;qemu_args&quot;</span><span class="p">:</span>               <span class="p">[],</span>
                                  <span class="s2">&quot;image_name&quot;</span><span class="p">:</span>              <span class="s2">&quot;disk.ami&quot;</span><span class="p">,</span>
+                                 <span class="s2">&quot;tar_disk_name&quot;</span><span class="p">:</span>           <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;fs_label&quot;</span><span class="p">:</span>                <span class="s2">&quot;&quot;</span><span class="p">,</span>
                                  <span class="s2">&quot;image_only&quot;</span><span class="p">:</span>              <span class="kc">True</span><span class="p">,</span>
                                  <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
@@ -888,6 +1190,7 @@
                                  <span class="s2">&quot;make_appliance&quot;</span><span class="p">:</span>          <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_ami&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_tar&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_tar_disk&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_pxe_live&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_ostree_live&quot;</span><span class="p">:</span>        <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_oci&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
@@ -895,9 +1198,11 @@
                                  <span class="s2">&quot;ostree&quot;</span><span class="p">:</span>                  <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;live_rootfs_keep_size&quot;</span><span class="p">:</span>   <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;live_rootfs_size&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
+                                 <span class="s2">&quot;image_size_align&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
                                  <span class="s2">&quot;image_type&quot;</span><span class="p">:</span>              <span class="s2">&quot;vpc&quot;</span><span class="p">,</span>
                                  <span class="s2">&quot;qemu_args&quot;</span><span class="p">:</span>               <span class="p">[</span><span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="s2">&quot;subformat=fixed,force_size&quot;</span><span class="p">],</span>
                                  <span class="s2">&quot;image_name&quot;</span><span class="p">:</span>              <span class="s2">&quot;disk.vhd&quot;</span><span class="p">,</span>
+                                 <span class="s2">&quot;tar_disk_name&quot;</span><span class="p">:</span>           <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;fs_label&quot;</span><span class="p">:</span>                <span class="s2">&quot;&quot;</span><span class="p">,</span>
                                  <span class="s2">&quot;image_only&quot;</span><span class="p">:</span>              <span class="kc">True</span><span class="p">,</span>
                                  <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
@@ -910,6 +1215,7 @@
                                  <span class="s2">&quot;make_appliance&quot;</span><span class="p">:</span>          <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_ami&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_tar&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_tar_disk&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_pxe_live&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_ostree_live&quot;</span><span class="p">:</span>        <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_oci&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
@@ -917,9 +1223,11 @@
                                  <span class="s2">&quot;ostree&quot;</span><span class="p">:</span>                  <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;live_rootfs_keep_size&quot;</span><span class="p">:</span>   <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;live_rootfs_size&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
+                                 <span class="s2">&quot;image_size_align&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
                                  <span class="s2">&quot;image_type&quot;</span><span class="p">:</span>              <span class="s2">&quot;vmdk&quot;</span><span class="p">,</span>
                                  <span class="s2">&quot;qemu_args&quot;</span><span class="p">:</span>               <span class="p">[],</span>
                                  <span class="s2">&quot;image_name&quot;</span><span class="p">:</span>              <span class="s2">&quot;disk.vmdk&quot;</span><span class="p">,</span>
+                                 <span class="s2">&quot;tar_disk_name&quot;</span><span class="p">:</span>           <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;fs_label&quot;</span><span class="p">:</span>                <span class="s2">&quot;&quot;</span><span class="p">,</span>
                                  <span class="s2">&quot;image_only&quot;</span><span class="p">:</span>              <span class="kc">True</span><span class="p">,</span>
                                  <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
@@ -932,6 +1240,7 @@
                                  <span class="s2">&quot;make_appliance&quot;</span><span class="p">:</span>          <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_ami&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_tar&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_tar_disk&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_pxe_live&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_ostree_live&quot;</span><span class="p">:</span>        <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_oci&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
@@ -939,9 +1248,88 @@
                                  <span class="s2">&quot;ostree&quot;</span><span class="p">:</span>                  <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;live_rootfs_keep_size&quot;</span><span class="p">:</span>   <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;live_rootfs_size&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
+                                 <span class="s2">&quot;image_size_align&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
                                  <span class="s2">&quot;image_type&quot;</span><span class="p">:</span>              <span class="s2">&quot;qcow2&quot;</span><span class="p">,</span>
                                  <span class="s2">&quot;qemu_args&quot;</span><span class="p">:</span>               <span class="p">[],</span>
                                  <span class="s2">&quot;image_name&quot;</span><span class="p">:</span>              <span class="s2">&quot;disk.qcow2&quot;</span><span class="p">,</span>
+                                 <span class="s2">&quot;tar_disk_name&quot;</span><span class="p">:</span>           <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;fs_label&quot;</span><span class="p">:</span>                <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                 <span class="s2">&quot;image_only&quot;</span><span class="p">:</span>              <span class="kc">True</span><span class="p">,</span>
+                                 <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;app_template&quot;</span><span class="p">:</span>            <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;app_file&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
+                                <span class="p">},</span>
+            <span class="s2">&quot;google&quot;</span><span class="p">:</span>           <span class="p">{</span><span class="s2">&quot;make_iso&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_disk&quot;</span><span class="p">:</span>               <span class="kc">True</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_fsimage&quot;</span><span class="p">:</span>            <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_appliance&quot;</span><span class="p">:</span>          <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_ami&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_tar&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_tar_disk&quot;</span><span class="p">:</span>           <span class="kc">True</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_pxe_live&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_ostree_live&quot;</span><span class="p">:</span>        <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_oci&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_vagrant&quot;</span><span class="p">:</span>            <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;ostree&quot;</span><span class="p">:</span>                  <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;live_rootfs_keep_size&quot;</span><span class="p">:</span>   <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;live_rootfs_size&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
+                                 <span class="s2">&quot;image_size_align&quot;</span><span class="p">:</span>        <span class="mi">1024</span><span class="p">,</span>
+                                 <span class="s2">&quot;image_type&quot;</span><span class="p">:</span>              <span class="kc">False</span><span class="p">,</span>          <span class="c1"># False instead of None because of TOML</span>
+                                 <span class="s2">&quot;qemu_args&quot;</span><span class="p">:</span>               <span class="p">[],</span>
+                                 <span class="s2">&quot;image_name&quot;</span><span class="p">:</span>              <span class="s2">&quot;disk.tar.gz&quot;</span><span class="p">,</span>
+                                 <span class="s2">&quot;tar_disk_name&quot;</span><span class="p">:</span>           <span class="s2">&quot;disk.raw&quot;</span><span class="p">,</span>
+                                 <span class="s2">&quot;compression&quot;</span><span class="p">:</span>             <span class="s2">&quot;gzip&quot;</span><span class="p">,</span>
+                                 <span class="s2">&quot;compress_args&quot;</span><span class="p">:</span>           <span class="p">[</span><span class="s2">&quot;-9&quot;</span><span class="p">],</span>
+                                 <span class="s2">&quot;fs_label&quot;</span><span class="p">:</span>                <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                 <span class="s2">&quot;image_only&quot;</span><span class="p">:</span>              <span class="kc">True</span><span class="p">,</span>
+                                 <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;app_template&quot;</span><span class="p">:</span>            <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;app_file&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
+                                <span class="p">},</span>
+            <span class="s2">&quot;hyper-v&quot;</span><span class="p">:</span>          <span class="p">{</span><span class="s2">&quot;make_iso&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_disk&quot;</span><span class="p">:</span>               <span class="kc">True</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_fsimage&quot;</span><span class="p">:</span>            <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_appliance&quot;</span><span class="p">:</span>          <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_ami&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_tar&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_tar_disk&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_pxe_live&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_ostree_live&quot;</span><span class="p">:</span>        <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_oci&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_vagrant&quot;</span><span class="p">:</span>            <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;ostree&quot;</span><span class="p">:</span>                  <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;live_rootfs_keep_size&quot;</span><span class="p">:</span>   <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;live_rootfs_size&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
+                                 <span class="s2">&quot;image_size_align&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
+                                 <span class="s2">&quot;image_type&quot;</span><span class="p">:</span>              <span class="s2">&quot;vhdx&quot;</span><span class="p">,</span>
+                                 <span class="s2">&quot;qemu_args&quot;</span><span class="p">:</span>               <span class="p">[],</span>
+                                 <span class="s2">&quot;image_name&quot;</span><span class="p">:</span>              <span class="s2">&quot;disk.vhdx&quot;</span><span class="p">,</span>
+                                 <span class="s2">&quot;tar_disk_name&quot;</span><span class="p">:</span>           <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;fs_label&quot;</span><span class="p">:</span>                <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                 <span class="s2">&quot;image_only&quot;</span><span class="p">:</span>              <span class="kc">True</span><span class="p">,</span>
+                                 <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;app_template&quot;</span><span class="p">:</span>            <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;app_file&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
+                                <span class="p">},</span>
+            <span class="s2">&quot;alibaba&quot;</span><span class="p">:</span>          <span class="p">{</span><span class="s2">&quot;make_iso&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_disk&quot;</span><span class="p">:</span>               <span class="kc">True</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_fsimage&quot;</span><span class="p">:</span>            <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_appliance&quot;</span><span class="p">:</span>          <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_ami&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_tar&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_tar_disk&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_pxe_live&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_ostree_live&quot;</span><span class="p">:</span>        <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_oci&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;make_vagrant&quot;</span><span class="p">:</span>            <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;ostree&quot;</span><span class="p">:</span>                  <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;live_rootfs_keep_size&quot;</span><span class="p">:</span>   <span class="kc">False</span><span class="p">,</span>
+                                 <span class="s2">&quot;live_rootfs_size&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
+                                 <span class="s2">&quot;image_size_align&quot;</span><span class="p">:</span>        <span class="mi">0</span><span class="p">,</span>
+                                 <span class="s2">&quot;image_type&quot;</span><span class="p">:</span>              <span class="s2">&quot;qcow2&quot;</span><span class="p">,</span>
+                                 <span class="s2">&quot;qemu_args&quot;</span><span class="p">:</span>               <span class="p">[],</span>
+                                 <span class="s2">&quot;image_name&quot;</span><span class="p">:</span>              <span class="s2">&quot;disk.qcow2&quot;</span><span class="p">,</span>
+                                 <span class="s2">&quot;tar_disk_name&quot;</span><span class="p">:</span>           <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;fs_label&quot;</span><span class="p">:</span>                <span class="s2">&quot;&quot;</span><span class="p">,</span>
                                  <span class="s2">&quot;image_only&quot;</span><span class="p">:</span>              <span class="kc">True</span><span class="p">,</span>
                                  <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
