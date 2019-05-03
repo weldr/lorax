@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        31.3
+Version:        31.4
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -240,6 +240,27 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Thu May 02 2019 Brian C. Lane <bcl@redhat.com> 31.4-1
+- tests: Update openssh-server to v8.* (bcl@redhat.com)
+- New lorax documentation - 31.4 (bcl@redhat.com)
+- Change customizations.firewall to append items instead of replace (bcl@redhat.com)
+- Update customizations.services documentation (bcl@redhat.com)
+- lorax-composer: Add services support to blueprints (bcl@redhat.com)
+- Add rpmfluff temporarily (bcl@redhat.com)
+- lorax-composer: Add firewall support to blueprints (bcl@redhat.com)
+- lorax-composer: Add locale support to blueprints (bcl@redhat.com)
+- lorax-composer: Fix customizations when creating a recipe (bcl@redhat.com)
+- Update docs for new timezone section (bcl@redhat.com)
+- lorax-composer: Add timezone support to blueprint (bcl@redhat.com)
+- Proposal for adding to the blueprint customizations (bcl@redhat.com)
+- Add test for starting compose with deleted blueprint (jikortus@redhat.com)
+- Update VMware info for VMware testing (chrobert@redhat.com)
+- tests: Cleanup on failure of in_tempdir (bcl@redhat.com)
+- Change [[modules]] to [[packages]] in tests (atodorov@redhat.com)
+- Add new test to verify compose paths exist (atodorov@redhat.com)
+- Add new sanity tests for blueprints (atodorov@redhat.com)
+- Fixes for locked root account test (jikortus@redhat.com)
+
 * Fri Apr 05 2019 Brian C. Lane <bcl@redhat.com> 31.3-1
 - Add -iso-level 3 when the install.img is > 4GiB (bcl@redhat.com)
 - Correct "recipes" use to "blueprints" in composer-cli description (kwalker@redhat.com)
