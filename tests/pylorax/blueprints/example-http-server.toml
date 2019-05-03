@@ -24,7 +24,7 @@ version = "*"
 
 [[packages]]
 name = "openssh-server"
-version = "7.*"
+version = "*"
 
 [[packages]]
 name = "rsync"
