@@ -49,6 +49,7 @@ Requires:       python3-mako
 Requires:       python3-kickstart >= 3.19
 Requires:       python3-dnf >= 3.2.0
 Requires:       python3-librepo
+Requires:       python3-pycdlib
 
 %if 0%{?fedora}
 # Fedora specific deps
