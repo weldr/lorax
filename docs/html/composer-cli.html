@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>composer-cli &mdash; Lorax 30.7 documentation</title>
+  <title>composer-cli &mdash; Lorax 30.19 documentation</title>
   
 
   
@@ -17,34 +17,36 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Product and Updates Images" href="product-images.html" />
     <link rel="prev" title="lorax-composer" href="lorax-composer.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -58,7 +60,7 @@
             
             
               <div class="version">
-                30.7
+                30.19
               </div>
             
           
@@ -214,7 +216,7 @@ group. They do not need to be root, but all of the <a class="reference external"
 <tr><td class="option-group">
 <kbd>-s, --socket</kbd></td>
 <td><p class="first">Path to the socket file to listen on</p>
-<p class="last">Default: “/run/weldr/api.socket”</p>
+<p class="last">Default: &quot;/run/weldr/api.socket&quot;</p>
 </td></tr>
 <tr><td class="option-group">
 <kbd>--log</kbd></td>
@@ -222,7 +224,7 @@ group. They do not need to be root, but all of the <a class="reference external"
 <tr><td class="option-group">
 <kbd>-a, --api</kbd></td>
 <td><p class="first">API Version to use</p>
-<p class="last">Default: “0”</p>
+<p class="last">Default: &quot;0&quot;</p>
 </td></tr>
 <tr><td class="option-group">
 <kbd>--test</kbd></td>
@@ -231,7 +233,7 @@ group. They do not need to be root, but all of the <a class="reference external"
 </td></tr>
 <tr><td class="option-group">
 <kbd>-V</kbd></td>
-<td><p class="first">show program’s version number and exit</p>
+<td><p class="first">show program's version number and exit</p>
 <p class="last">Default: False</p>
 </td></tr>
 </tbody>
@@ -250,7 +252,7 @@ group. They do not need to be root, but all of the <a class="reference external"
 <dd>Show the last SIZE kB of the compose log.</dd>
 <dt>compose cancel &lt;UUID&gt;</dt>
 <dd>Cancel a running compose and delete any intermediate results.</dd>
-<dt>compose delete &lt;UUID,…&gt;</dt>
+<dt>compose delete &lt;UUID,...&gt;</dt>
 <dd>Delete the listed compose results.</dd>
 <dt>compose info &lt;UUID&gt;</dt>
 <dd>Show detailed information on the compose.</dd>
@@ -264,27 +266,27 @@ group. They do not need to be root, but all of the <a class="reference external"
 <dd>Download the output image from the compose. Filename depends on the type.</dd>
 <dt>blueprints list</dt>
 <dd>List the names of the available blueprints.</dd>
-<dt>blueprints show &lt;BLUEPRINT,…&gt;</dt>
+<dt>blueprints show &lt;BLUEPRINT,...&gt;</dt>
 <dd>Display the blueprint in TOML format.</dd>
-<dt>blueprints changes &lt;BLUEPRINT,…&gt;</dt>
+<dt>blueprints changes &lt;BLUEPRINT,...&gt;</dt>
 <dd>Display the changes for each blueprint.</dd>
 <dt>blueprints diff &lt;BLUEPRINT&gt; &lt;FROM-COMMIT&gt; &lt;TO-COMMIT&gt;</dt>
 <dd>Display the differences between 2 versions of a blueprint.
 FROM-COMMIT can be a commit hash or NEWEST
 TO-COMMIT  can be a commit hash, NEWEST, or WORKSPACE</dd>
-<dt>blueprints save &lt;BLUEPRINT,…&gt;</dt>
+<dt>blueprints save &lt;BLUEPRINT,...&gt;</dt>
 <dd>Save the blueprint to a file, &lt;BLUEPRINT&gt;.toml</dd>
 <dt>blueprints delete &lt;BLUEPRINT&gt;</dt>
 <dd>Delete a blueprint from the server</dd>
-<dt>blueprints depsolve &lt;BLUEPRINT,…&gt;</dt>
+<dt>blueprints depsolve &lt;BLUEPRINT,...&gt;</dt>
 <dd>Display the packages needed to install the blueprint.</dd>
 <dt>blueprints push &lt;BLUEPRINT&gt;</dt>
 <dd>Push a blueprint TOML file to the server.</dd>
-<dt>blueprints freeze &lt;BLUEPRINT,…&gt;</dt>
-<dd>Display the frozen blueprint’s modules and packages.</dd>
-<dt>blueprints freeze show &lt;BLUEPRINT,…&gt;</dt>
+<dt>blueprints freeze &lt;BLUEPRINT,...&gt;</dt>
+<dd>Display the frozen blueprint's modules and packages.</dd>
+<dt>blueprints freeze show &lt;BLUEPRINT,...&gt;</dt>
 <dd>Display the frozen blueprint in TOML format.</dd>
-<dt>blueprints freeze save &lt;BLUEPRINT,…&gt;</dt>
+<dt>blueprints freeze save &lt;BLUEPRINT,...&gt;</dt>
 <dd>Save the frozen blueprint to a file, &lt;blueprint-name&gt;.frozen.toml.</dd>
 <dt>blueprints tag &lt;BLUEPRINT&gt;</dt>
 <dd>Tag the most recent blueprint commit as a release.</dd>
@@ -296,11 +298,11 @@ TO-COMMIT  can be a commit hash, NEWEST, or WORKSPACE</dd>
 <dd>List the available modules.</dd>
 <dt>projects list</dt>
 <dd>List the available projects.</dd>
-<dt>projects info &lt;PROJECT,…&gt;</dt>
+<dt>projects info &lt;PROJECT,...&gt;</dt>
 <dd>Show details about the listed projects.</dd>
 <dt>sources list</dt>
 <dd>List the available sources</dd>
-<dt>sources info &lt;SOURCE-NAME,…&gt;</dt>
+<dt>sources info &lt;SOURCE-NAME,...&gt;</dt>
 <dd>Details about the source.</dd>
 <dt>sources add &lt;SOURCE.TOML&gt;</dt>
 <dd>Add a package source to the server.</dd>
@@ -329,8 +331,8 @@ saved by viewing the changelog - <code class="docutils literal notranslate"><spa
 <span class="pre">compose</span> <span class="pre">start</span> <span class="pre">http-server</span> <span class="pre">qcow2</span></code>. It will print a UUID that you can use to
 keep track of the build. You can also cancel the build if needed.</p>
 <p>The available types of images is displayed by <code class="docutils literal notranslate"><span class="pre">composer-cli</span> <span class="pre">compose</span> <span class="pre">types</span></code>.
-Currently this consists of: ami, ext4-filesystem, live-iso, partitioned-disk,
-qcow2, tar, vhd, vmdk</p>
+Currently this consists of: alibaba, ami, ext4-filesystem, google, hyper-v,
+live-iso, openstack, partitioned-disk, qcow2, tar, vhd, vmdk</p>
 </div>
 <div class="section" id="monitor-the-build-status">
 <h2>Monitor the build status<a class="headerlink" href="#monitor-the-build-status" title="Permalink to this headline">¶</a></h2>
@@ -361,7 +363,7 @@ save the qcow2 image as <code class="docutils literal notranslate"><span class="
         <a href="product-images.html" class="btn btn-neutral float-right" title="Product and Updates Images" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="lorax-composer.html" class="btn btn-neutral" title="lorax-composer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="lorax-composer.html" class="btn btn-neutral float-left" title="lorax-composer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -387,35 +389,16 @@ save the qcow2 image as <code class="docutils literal notranslate"><span class="
   
 
 
-  
-
-    
-    
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'30.7',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>
