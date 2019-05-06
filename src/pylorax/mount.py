@@ -21,9 +21,10 @@ import logging
 log = logging.getLogger("livemedia-creator")
 
 import os
+import pycdlib
+from pycdlib.pycdlibexception import PyCdlibException
 
 from pylorax.imgutils import mount, umount
-from pylorax.executils import execWithCapture
 
 class IsoMountpoint(object):
     """
@@ -94,9 +95,9 @@ class IsoMountpoint(object):
 
         Sets self.label if one is found
         """
-        isoinfo_output = execWithCapture("isoinfo", ["-d", "-i", self.iso_path])
-        log.debug(isoinfo_output)
-        for line in isoinfo_output.splitlines():
-            if line.startswith("Volume id: "):
-                self.label = line[11:]
-                return
+        try:
+            iso = pycdlib.PyCdlib()
+            iso.open(self.iso_path)
+            self.label = iso.pvd.volume_identifier.decode("UTF-8").strip()
+        except PyCdlibException as e:
+            log.error("Problem reading label from %s: %s", self.iso_path, e)
