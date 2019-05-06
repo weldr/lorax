@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        30.18
+Version:        30.19
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -241,6 +241,59 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Mon May 06 2019 Brian C. Lane <bcl@redhat.com> 30.19-1
+- New lorax documentation - 30.19 (bcl@redhat.com)
+- Replace isoinfo with pycdlib (bcl@redhat.com)
+- Change customizations.firewall to append items instead of replace (bcl@redhat.com)
+- Update customizations.services documentation (bcl@redhat.com)
+- lorax-composer: Add services support to blueprints (bcl@redhat.com)
+- lorax-composer: Add firewall support to blueprints (bcl@redhat.com)
+- lorax-composer: Add locale support to blueprints (bcl@redhat.com)
+- lorax-composer: Fix customizations when creating a recipe (bcl@redhat.com)
+- Update docs for new timezone section (bcl@redhat.com)
+- lorax-composer: Add timezone support to blueprint (bcl@redhat.com)
+- Proposal for adding to the blueprint customizations (bcl@redhat.com)
+- Add test for starting compose with deleted blueprint (jikortus@redhat.com)
+- Update VMware info for VMware testing (chrobert@redhat.com)
+- tests: Cleanup on failure of in_tempdir (bcl@redhat.com)
+- Change [[modules]] to [[packages]] in tests (atodorov@redhat.com)
+- Add new test to verify compose paths exist (atodorov@redhat.com)
+- Add new sanity tests for blueprints (atodorov@redhat.com)
+- Fixes for locked root account test (jikortus@redhat.com)
+- Correct "recipes" use to "blueprints" in composer-cli description (kwalker@redhat.com)
+- Fix keeping files on Amazon s3 (jstodola@redhat.com)
+- Allow to keep objects in AWS (jstodola@redhat.com)
+- Fix the google cloud boot console settings (dshea@redhat.com)
+- Add a compose type for alibaba. (dshea@redhat.com)
+- Add a new compose type for Hyper-V (dshea@redhat.com)
+- Add a compose check for google cloud images. (dshea@redhat.com)
+- Add a compose type for Google Compute Engine (dshea@redhat.com)
+- Add a new output type, tar-disk. (dshea@redhat.com)
+- Support compressing single files. (dshea@redhat.com)
+- Add an option to align the image size to a multiplier. (dshea@redhat.com)
+- Add documentation references to lorax-composer service files (bcl@redhat.com)
+- Add more tests for gitrpm.py (bcl@redhat.com)
+- lorax-composer: Fix installing files from [[repos.git]] to / (bcl@redhat.com)
+- Make it easier to generate docs for the next release (bcl@redhat.com)
+- pylorax.ltmpl: Add a test for missing quotes (bcl@redhat.com)
+- Don't remove chmem and lsmem from install.img (bcl@redhat.com)
+- Add checks for disabled root account (jikortus@redhat.com)
+- Update datastore for VMware testing (chrobert@redhat.com)
+- Add tests using repos.git in blueprints (bcl@redhat.com)
+- Move git repo creation into tests/lib.py (bcl@redhat.com)
+- rpmgit: catch potential errors while running git (bcl@redhat.com)
+- tests: Add test for Recipe.freeze() function (bcl@redhat.com)
+- Add repos.git support to lorax-composer builds (bcl@redhat.com)
+- Add pylorax.api.gitrpm module and tests (bcl@redhat.com)
+- Add support for [[repos.git]] section to blueprints (bcl@redhat.com)
+- tests: Add python3-mock and python3-sphinx_rtd_theme (bcl@redhat.com)
+- Use make ci inside test-in-copy target (atodorov@redhat.com)
+- Allow overriding $CLI outside test scripts (atodorov@redhat.com)
+- New test: Build live-iso and boot with KVM (atodorov@redhat.com)
+- lorax-composer: Return UnknownBlueprint errors when using deleted blueprints (bcl@redhat.com)
+- lorax-composer: Delete workspace copy when deleting blueprint (bcl@redhat.com)
+- New test: Build qcow2 compose and test it with QEMU-KVM (atodorov@redhat.com)
+
 * Fri Apr 05 2019 Brian C. Lane <bcl@redhat.com> 30.18-1
 - lorax-composer: pass customization.kernel append to extra_boot_args (bcl@redhat.com)
 - Improve logging for template syntax errors (bcl@redhat.com)
