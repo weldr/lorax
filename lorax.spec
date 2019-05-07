@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        31.4
+Version:        31.5
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -241,6 +241,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Tue May 07 2019 Brian C. Lane <bcl@redhat.com> 31.5-1
+- Add python3-pycdlib to Dockerfile.test (bcl@redhat.com)
+- Replace isoinfo with pycdlib (bcl@redhat.com)
+- Add test for passing custom option on kernel command line (jikortus@redhat.com)
+- Use verify_image function as a helper for generic tests (jikortus@redhat.com)
+
 * Thu May 02 2019 Brian C. Lane <bcl@redhat.com> 31.4-1
 - tests: Update openssh-server to v8.* (bcl@redhat.com)
 - New lorax documentation - 31.4 (bcl@redhat.com)
