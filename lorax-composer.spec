@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.32
+Version:        19.7.33
 Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
@@ -123,6 +123,16 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Tue May 07 2019 Brian C. Lane <bcl@redhat.com> 19.7.33-1
+- Pass ssl certificate options to anaconda (lars)
+  Resolves: rhbz#1701033
+- Change [[modules]] to [[packages]] in tests (atodorov)
+  Related: rhbz#1698366
+- Add new test to verify compose paths exist (atodorov)
+  Related: rhbz#1698366
+- Add new sanity tests for blueprints (atodorov)
+  Related: rhbz#1698366
+
 * Mon Apr 29 2019 Brian C. Lane <bcl@redhat.com> 19.7.32-1
 - tests: Add a test for using [[customizations]] with [customizations.kernel] (bcl)
   Related: rhbz#1688335
