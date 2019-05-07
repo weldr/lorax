@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.imgutils &mdash; Lorax 29.21 documentation</title>
+  <title>pylorax.imgutils &mdash; Lorax 29.28 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                29.21
+                29.28
               </div>
             
           
@@ -156,7 +156,7 @@
   <h1>Source code for pylorax.imgutils</h1><div class="highlight"><pre>
 <span></span><span class="c1"># imgutils.py - utility functions/classes for building disk images</span>
 <span class="c1">#</span>
-<span class="c1"># Copyright (C) 2011-2015 Red Hat, Inc.</span>
+<span class="c1"># Copyright (C) 2011-2018 Red Hat, Inc.</span>
 <span class="c1">#</span>
 <span class="c1"># This program is free software; you can redistribute it and/or modify</span>
 <span class="c1"># it under the terms of the GNU General Public License as published by</span>
@@ -192,8 +192,8 @@
 
 <span class="c1">######## Functions for making container images (cpio, tar, squashfs) ##########</span>
 
-<div class="viewcode-block" id="compress"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.compress">[docs]</a><span class="k">def</span> <span class="nf">compress</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">rootdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;xz&quot;</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Make a compressed archive of the given rootdir.</span>
+<div class="viewcode-block" id="compress"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.compress">[docs]</a><span class="k">def</span> <span class="nf">compress</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;xz&quot;</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Make a compressed archive of the given rootdir or file.</span>
 <span class="sd">    command is a list of the archiver commands to run</span>
 <span class="sd">    compression should be &quot;xz&quot;, &quot;gzip&quot;, &quot;lzma&quot;, &quot;bzip2&quot;, or None.</span>
 <span class="sd">    compressargs will be used on the compression commandline.&#39;&#39;&#39;</span>
@@ -216,12 +216,23 @@
         <span class="n">compression</span> <span class="o">=</span> <span class="s2">&quot;pbzip2&quot;</span>
         <span class="n">compressargs</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;-p</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">())</span>
 
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;find </span><span class="si">%s</span><span class="s2"> -print0 |</span><span class="si">%s</span><span class="s2"> | </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> &gt; </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">rootdir</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">command</span><span class="p">),</span>
-                 <span class="n">compression</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">compressargs</span><span class="p">),</span> <span class="n">outfile</span><span class="p">)</span>
     <span class="n">find</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">comp</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">find</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">([</span><span class="s2">&quot;find&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;-print0&quot;</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">rootdir</span><span class="p">)</span>
-        <span class="n">archive</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">stdin</span><span class="o">=</span><span class="n">find</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">rootdir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;find </span><span class="si">%s</span><span class="s2"> -print0 |</span><span class="si">%s</span><span class="s2"> | </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> &gt; </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">command</span><span class="p">),</span>
+                    <span class="n">compression</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">compressargs</span><span class="p">),</span> <span class="n">outfile</span><span class="p">)</span>
+
+            <span class="n">find</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">([</span><span class="s2">&quot;find&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;-print0&quot;</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
+            <span class="n">archive</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">stdin</span><span class="o">=</span><span class="n">find</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;echo </span><span class="si">%s</span><span class="s2"> |</span><span class="si">%s</span><span class="s2"> | </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> &gt; </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">command</span><span class="p">),</span>
+                         <span class="n">compression</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">compressargs</span><span class="p">),</span> <span class="n">outfile</span><span class="p">)</span>
+
+            <span class="n">archive</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">stdin</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">root</span><span class="p">))</span>
+            <span class="n">archive</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\0</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">archive</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
         <span class="n">comp</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">([</span><span class="n">compression</span><span class="p">]</span> <span class="o">+</span> <span class="n">compressargs</span><span class="p">,</span>
                      <span class="n">stdin</span><span class="o">=</span><span class="n">archive</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">))</span>
         <span class="n">comp</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
@@ -232,18 +243,18 @@
         <span class="nb">list</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">(</span><span class="n">find</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">comp</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span><span class="p">)</span>
         <span class="k">return</span> <span class="mi">1</span></div>
 
-<div class="viewcode-block" id="mkcpio"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.mkcpio">[docs]</a><span class="k">def</span> <span class="nf">mkcpio</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;xz&quot;</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="mkcpio"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.mkcpio">[docs]</a><span class="k">def</span> <span class="nf">mkcpio</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;xz&quot;</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">compressargs</span> <span class="o">=</span> <span class="n">compressargs</span> <span class="ow">or</span> <span class="p">[</span><span class="s2">&quot;-9&quot;</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">compress</span><span class="p">([</span><span class="s2">&quot;cpio&quot;</span><span class="p">,</span> <span class="s2">&quot;--null&quot;</span><span class="p">,</span> <span class="s2">&quot;--quiet&quot;</span><span class="p">,</span> <span class="s2">&quot;-H&quot;</span><span class="p">,</span> <span class="s2">&quot;newc&quot;</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">],</span>
-                    <span class="n">rootdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="p">)</span></div>
+                    <span class="n">root</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="mktar"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.mktar">[docs]</a><span class="k">def</span> <span class="nf">mktar</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;xz&quot;</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">selinux</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="mktar"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.mktar">[docs]</a><span class="k">def</span> <span class="nf">mktar</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;xz&quot;</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">selinux</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="n">compressargs</span> <span class="o">=</span> <span class="n">compressargs</span> <span class="ow">or</span> <span class="p">[</span><span class="s2">&quot;-9&quot;</span><span class="p">]</span>
     <span class="n">tar_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tar&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-recursion&quot;</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">selinux</span><span class="p">:</span>
         <span class="n">tar_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;--selinux&quot;</span><span class="p">,</span> <span class="s2">&quot;--acls&quot;</span><span class="p">,</span> <span class="s2">&quot;--xattrs&quot;</span><span class="p">]</span>
     <span class="n">tar_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-cf-&quot;</span><span class="p">,</span> <span class="s2">&quot;--null&quot;</span><span class="p">,</span> <span class="s2">&quot;-T-&quot;</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">compress</span><span class="p">(</span><span class="n">tar_cmd</span><span class="p">,</span> <span class="n">rootdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">compress</span><span class="p">(</span><span class="n">tar_cmd</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="mksquashfs"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.mksquashfs">[docs]</a><span class="k">def</span> <span class="nf">mksquashfs</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Make a squashfs image containing the given rootdir.&#39;&#39;&#39;</span>
@@ -427,7 +438,7 @@
 <span class="sd">    If preserve is False, uses cp -R (useful for modeless filesystems)</span>
 <span class="sd">    raises CalledProcessError if copy fails.&#39;&#39;&#39;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;copytree </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
-    <span class="n">cp</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;cp&quot;</span><span class="p">,</span> <span class="s2">&quot;-a&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">preserve</span> <span class="k">else</span> <span class="p">[</span><span class="s2">&quot;cp&quot;</span><span class="p">,</span> <span class="s2">&quot;-R&quot;</span><span class="p">,</span> <span class="s2">&quot;-L&quot;</span><span class="p">]</span>
+    <span class="n">cp</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;cp&quot;</span><span class="p">,</span> <span class="s2">&quot;-a&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">preserve</span> <span class="k">else</span> <span class="p">[</span><span class="s2">&quot;cp&quot;</span><span class="p">,</span> <span class="s2">&quot;-R&quot;</span><span class="p">,</span> <span class="s2">&quot;-L&quot;</span><span class="p">,</span> <span class="s2">&quot;--preserve=timestamps&quot;</span><span class="p">]</span>
     <span class="n">cp</span> <span class="o">+=</span> <span class="p">[</span><span class="n">join</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">dest</span><span class="p">)]</span>
     <span class="n">runcmd</span><span class="p">(</span><span class="n">cp</span><span class="p">)</span></div>
 
@@ -512,6 +523,31 @@
     <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">tracebk</span><span class="p">):</span>
         <span class="n">umount</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mnt</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="kpartx_disk_img"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.kpartx_disk_img">[docs]</a><span class="k">def</span> <span class="nf">kpartx_disk_img</span><span class="p">(</span><span class="n">disk_img</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Attach a disk image&#39;s partitions to /dev/loopX using kpartx</span>
+
+<span class="sd">    :param disk_img: The full path to a partitioned disk image</span>
+<span class="sd">    :type disk_img: str</span>
+<span class="sd">    :returns: list of (loopXpN, size)</span>
+<span class="sd">    :rtype: list of tuples</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Example kpartx output</span>
+    <span class="c1"># kpartx -p p -v -a /tmp/diskV2DiCW.im</span>
+    <span class="c1"># add map loop2p1 (253:2): 0 3481600 linear /dev/loop2 2048</span>
+    <span class="c1"># add map loop2p2 (253:3): 0 614400 linear /dev/loop2 3483648</span>
+    <span class="n">kpartx_output</span> <span class="o">=</span> <span class="n">runcmd_output</span><span class="p">([</span><span class="s2">&quot;kpartx&quot;</span><span class="p">,</span> <span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;-a&quot;</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">])</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">kpartx_output</span><span class="p">)</span>
+
+    <span class="c1"># list of (deviceName, sizeInBytes)</span>
+    <span class="n">loop_devices</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">kpartx_output</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+        <span class="c1"># add map loop2p3 (253:4): 0 7139328 linear /dev/loop2 528384</span>
+        <span class="c1"># 3rd element is size in 512 byte blocks</span>
+        <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;add map &quot;</span><span class="p">):</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">8</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">loop_devices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span><span class="o">*</span><span class="mi">512</span><span class="p">)</span> <span class="p">)</span>
+    <span class="k">return</span> <span class="n">loop_devices</span></div>
+
 <div class="viewcode-block" id="PartitionMount"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.PartitionMount">[docs]</a><span class="k">class</span> <span class="nc">PartitionMount</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Mount a partitioned image file using kpartx &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">mount_ok</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">submount</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -543,21 +579,8 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">mount_ok</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mount_ok</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">mount_dir</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">mount_dir</span><span class="o">+</span><span class="s2">&quot;/etc/passwd&quot;</span><span class="p">)</span>
 
-        <span class="c1"># Example kpartx output</span>
-        <span class="c1"># kpartx -p p -v -a /tmp/diskV2DiCW.im</span>
-        <span class="c1"># add map loop2p1 (253:2): 0 3481600 linear /dev/loop2 2048</span>
-        <span class="c1"># add map loop2p2 (253:3): 0 614400 linear /dev/loop2 3483648</span>
-        <span class="n">kpartx_output</span> <span class="o">=</span> <span class="n">runcmd_output</span><span class="p">([</span><span class="s2">&quot;kpartx&quot;</span><span class="p">,</span> <span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;-a&quot;</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">disk_img</span><span class="p">])</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">kpartx_output</span><span class="p">)</span>
-
         <span class="c1"># list of (deviceName, sizeInBytes)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">loop_devices</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">kpartx_output</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
-            <span class="c1"># add map loop2p3 (253:4): 0 7139328 linear /dev/loop2 528384</span>
-            <span class="c1"># 3rd element is size in 512 byte blocks</span>
-            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;add map &quot;</span><span class="p">):</span>
-                <span class="n">fields</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">8</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">loop_devices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span><span class="o">*</span><span class="mi">512</span><span class="p">)</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loop_devices</span> <span class="o">=</span> <span class="n">kpartx_disk_img</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">disk_img</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Mount the device selected by mount_ok, if possible</span>
@@ -601,7 +624,7 @@
     <span class="sd">&#39;&#39;&#39;Generic filesystem image creation function.</span>
 <span class="sd">    fstype should be a filesystem type - &quot;mkfs.${fstype}&quot; must exist.</span>
 <span class="sd">    graft should be a dict: {&quot;some/path/in/image&quot;: &quot;local/file/or/dir&quot;};</span>
-<span class="sd">      if the path ends with a &#39;/&#39; it&#39;s assumed to be a directory.</span>
+<span class="sd">    if the path ends with a &#39;/&#39; it&#39;s assumed to be a directory.</span>
 <span class="sd">    Will raise CalledProcessError if something goes wrong.&#39;&#39;&#39;</span>
     <span class="n">mkfsargs</span> <span class="o">=</span> <span class="n">mkfsargs</span> <span class="ow">or</span> <span class="p">[]</span>
     <span class="n">graft</span> <span class="o">=</span> <span class="n">graft</span> <span class="ow">or</span> <span class="p">{}</span>
@@ -621,14 +644,21 @@
                 <span class="n">copytree</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="n">mnt</span><span class="p">,</span> <span class="n">preserve</span><span class="p">)</span>
             <span class="n">do_grafts</span><span class="p">(</span><span class="n">graft</span><span class="p">,</span> <span class="n">mnt</span><span class="p">,</span> <span class="n">preserve</span><span class="p">)</span>
 
+            <span class="c1"># Save information about filesystem usage</span>
+            <span class="n">execWithRedirect</span><span class="p">(</span><span class="s2">&quot;df&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">mnt</span><span class="p">])</span>
+
     <span class="c1"># Make absolutely sure that the data has been written</span>
     <span class="n">runcmd</span><span class="p">([</span><span class="s2">&quot;sync&quot;</span><span class="p">])</span></div>
 
 <span class="c1"># convenience functions with useful defaults</span>
 <div class="viewcode-block" id="mkdosimg"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.mkdosimg">[docs]</a><span class="k">def</span> <span class="nf">mkdosimg</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">mountargs</span><span class="o">=</span><span class="s2">&quot;shortname=winnt,umask=0077&quot;</span><span class="p">,</span> <span class="n">graft</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">graft</span> <span class="o">=</span> <span class="n">graft</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="n">mkfsargs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-n&quot;</span><span class="p">,</span> <span class="n">label</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s1">&#39;SOURCE_DATE_EPOCH&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+        <span class="n">mkfsargs</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-i&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;</span><span class="si">{:x}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;SOURCE_DATE_EPOCH&#39;</span><span class="p">]))])</span>
     <span class="n">mkfsimage</span><span class="p">(</span><span class="s2">&quot;msdos&quot;</span><span class="p">,</span> <span class="n">rootdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">mountargs</span><span class="o">=</span><span class="n">mountargs</span><span class="p">,</span>
-              <span class="n">mkfsargs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;-n&quot;</span><span class="p">,</span> <span class="n">label</span><span class="p">],</span> <span class="n">graft</span><span class="o">=</span><span class="n">graft</span><span class="p">)</span></div>
+              <span class="n">mkfsargs</span><span class="o">=</span><span class="n">mkfsargs</span><span class="p">,</span> <span class="n">graft</span><span class="o">=</span><span class="n">graft</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="mkext4img"><a class="viewcode-back" href="../../pylorax.html#pylorax.imgutils.mkext4img">[docs]</a><span class="k">def</span> <span class="nf">mkext4img</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">mountargs</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">graft</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">graft</span> <span class="o">=</span> <span class="n">graft</span> <span class="ow">or</span> <span class="p">{}</span>
@@ -714,7 +744,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'../../',
-              VERSION:'29.21',
+              VERSION:'29.28',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',

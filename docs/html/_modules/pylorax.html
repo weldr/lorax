@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax &mdash; Lorax 29.21 documentation</title>
+  <title>pylorax &mdash; Lorax 29.28 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                29.21
+                29.28
               </div>
             
           
@@ -340,7 +340,8 @@
             <span class="n">add_arch_templates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">add_arch_template_vars</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">verify</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">user_dracut_args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">user_dracut_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">squashfs_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_configured</span>
 
@@ -472,9 +473,16 @@
                 <span class="n">compressargs</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-Xbcj&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">arch</span><span class="o">.</span><span class="n">bcj</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;no BCJ filter for arch </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">arch</span><span class="o">.</span><span class="n">basearch</span><span class="p">)</span>
-        <span class="n">rb</span><span class="o">.</span><span class="n">create_runtime</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">installroot</span><span class="p">,</span><span class="n">runtime</span><span class="p">),</span>
-                          <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="n">compressargs</span><span class="p">,</span>
-                          <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">squashfs_only</span><span class="p">:</span>
+            <span class="c1"># Create an ext4 rootfs.img and compress it with squashfs</span>
+            <span class="n">rb</span><span class="o">.</span><span class="n">create_squashfs_runtime</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">installroot</span><span class="p">,</span><span class="n">runtime</span><span class="p">),</span>
+                <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="n">compressargs</span><span class="p">,</span>
+                <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Create an ext4 rootfs.img and compress it with squashfs</span>
+            <span class="n">rb</span><span class="o">.</span><span class="n">create_ext4_runtime</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">installroot</span><span class="p">,</span><span class="n">runtime</span><span class="p">),</span>
+                <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="n">compressargs</span><span class="p">,</span>
+                <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
         <span class="n">rb</span><span class="o">.</span><span class="n">finished</span><span class="p">()</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;preparing to build output tree and boot images&quot;</span><span class="p">)</span>
@@ -575,6 +583,8 @@
     <span class="n">f</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">logfile</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;/program.log&quot;</span>
     <span class="n">fh</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
     <span class="n">fh</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> </span><span class="si">%(levelname)s</span><span class="s2">: </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">fh</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">fmt</span><span class="p">)</span>
     <span class="n">program_log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span></div>
 
 
@@ -642,7 +652,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'../',
-              VERSION:'29.21',
+              VERSION:'29.28',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',

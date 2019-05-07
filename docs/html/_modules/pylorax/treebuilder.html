@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.treebuilder &mdash; Lorax 29.21 documentation</title>
+  <title>pylorax.treebuilder &mdash; Lorax 29.28 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                29.21
+                29.28
               </div>
             
           
@@ -371,7 +371,16 @@
             <span class="n">runcmd</span><span class="p">([</span><span class="s2">&quot;depmod&quot;</span><span class="p">,</span> <span class="s2">&quot;-a&quot;</span><span class="p">,</span> <span class="s2">&quot;-F&quot;</span><span class="p">,</span> <span class="n">ksyms</span><span class="p">,</span> <span class="s2">&quot;-b&quot;</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">kernel</span><span class="o">.</span><span class="n">version</span><span class="p">])</span>
             <span class="n">generate_module_info</span><span class="p">(</span><span class="n">moddir</span><span class="o">+</span><span class="n">kernel</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="n">moddir</span><span class="o">+</span><span class="s2">&quot;module-info&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RuntimeBuilder.create_runtime"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.create_runtime">[docs]</a>    <span class="k">def</span> <span class="nf">create_runtime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="s2">&quot;/var/tmp/squashfs.img&quot;</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;xz&quot;</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<div class="viewcode-block" id="RuntimeBuilder.create_squashfs_runtime"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.create_squashfs_runtime">[docs]</a>    <span class="k">def</span> <span class="nf">create_squashfs_runtime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="s2">&quot;/var/tmp/squashfs.img&quot;</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;xz&quot;</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a plain squashfs runtime&quot;&quot;&quot;</span>
+        <span class="n">compressargs</span> <span class="o">=</span> <span class="n">compressargs</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">outfile</span><span class="p">))</span>
+
+        <span class="c1"># squash the rootfs</span>
+        <span class="n">imgutils</span><span class="o">.</span><span class="n">mksquashfs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RuntimeBuilder.create_ext4_runtime"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.RuntimeBuilder.create_ext4_runtime">[docs]</a>    <span class="k">def</span> <span class="nf">create_ext4_runtime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="s2">&quot;/var/tmp/squashfs.img&quot;</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;xz&quot;</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a squashfs compressed ext4 runtime&quot;&quot;&quot;</span>
         <span class="c1"># make live rootfs image - must be named &quot;LiveOS/rootfs.img&quot; for dracut</span>
         <span class="n">compressargs</span> <span class="o">=</span> <span class="n">compressargs</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="n">workdir</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">outfile</span><span class="p">),</span> <span class="s2">&quot;runtime-workdir&quot;</span><span class="p">)</span>
@@ -394,7 +403,8 @@
 <div class="viewcode-block" id="TreeBuilder"><a class="viewcode-back" href="../../pylorax.html#pylorax.treebuilder.TreeBuilder">[docs]</a><span class="k">class</span> <span class="nc">TreeBuilder</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Builds the arch-specific boot images.</span>
 <span class="sd">    inroot should be the installtree root (the newly-built runtime dir)&#39;&#39;&#39;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">inroot</span><span class="p">,</span> <span class="n">outroot</span><span class="p">,</span> <span class="n">runtime</span><span class="p">,</span> <span class="n">isolabel</span><span class="p">,</span> <span class="n">domacboot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">doupgrade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">templatedir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">add_templates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">add_template_vars</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">workdir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">inroot</span><span class="p">,</span> <span class="n">outroot</span><span class="p">,</span> <span class="n">runtime</span><span class="p">,</span> <span class="n">isolabel</span><span class="p">,</span> <span class="n">domacboot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">doupgrade</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">templatedir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">add_templates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">add_template_vars</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">workdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extra_boot_args</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
 
         <span class="c1"># NOTE: if you pass an arg named &quot;runtime&quot; to a mako template it&#39;ll</span>
         <span class="c1"># clobber some mako internal variables - hence &quot;runtime_img&quot;.</span>
@@ -403,7 +413,8 @@
                                <span class="n">inroot</span><span class="o">=</span><span class="n">inroot</span><span class="p">,</span> <span class="n">outroot</span><span class="o">=</span><span class="n">outroot</span><span class="p">,</span>
                                <span class="n">basearch</span><span class="o">=</span><span class="n">arch</span><span class="o">.</span><span class="n">basearch</span><span class="p">,</span> <span class="n">libdir</span><span class="o">=</span><span class="n">arch</span><span class="o">.</span><span class="n">libdir</span><span class="p">,</span>
                                <span class="n">isolabel</span><span class="o">=</span><span class="n">isolabel</span><span class="p">,</span> <span class="n">udev</span><span class="o">=</span><span class="n">udev_escape</span><span class="p">,</span> <span class="n">domacboot</span><span class="o">=</span><span class="n">domacboot</span><span class="p">,</span> <span class="n">doupgrade</span><span class="o">=</span><span class="n">doupgrade</span><span class="p">,</span>
-                               <span class="n">workdir</span><span class="o">=</span><span class="n">workdir</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="n">string_lower</span><span class="p">)</span>
+                               <span class="n">workdir</span><span class="o">=</span><span class="n">workdir</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="n">string_lower</span><span class="p">,</span>
+                               <span class="n">extra_boot_args</span><span class="o">=</span><span class="n">extra_boot_args</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span> <span class="o">=</span> <span class="n">LoraxTemplateRunner</span><span class="p">(</span><span class="n">inroot</span><span class="p">,</span> <span class="n">outroot</span><span class="p">,</span> <span class="n">templatedir</span><span class="o">=</span><span class="n">templatedir</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_runner</span><span class="o">.</span><span class="n">defaults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vars</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_templates</span> <span class="o">=</span> <span class="n">add_templates</span> <span class="ow">or</span> <span class="p">[]</span>
@@ -590,7 +601,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'../../',
-              VERSION:'29.21',
+              VERSION:'29.28',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',

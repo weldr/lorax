@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Lorax &mdash; Lorax 29.21 documentation</title>
+  <title>Lorax &mdash; Lorax 29.28 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                29.21
+                29.28
               </div>
             
           
@@ -186,7 +186,7 @@
 </tr>
 </tbody>
 </table>
-<p>“I am the Lorax.  I speak for the trees [and images].”</p>
+<p>&quot;I am the Lorax.  I speak for the trees [and images].&quot;</p>
 <p>The <a class="reference external" href="https://github.com/rhinstaller/lorax">lorax</a> tool is used to create the
 <a class="reference external" href="https://github.com/rhinstaller/anaconda">Anaconda</a> installer boot.iso as
 well as the basic release tree, and .treeinfo metadata file. Its dependencies
@@ -210,7 +210,7 @@ repositories.</p>
              <span class="p">[</span><span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">arch</span><span class="o">-</span><span class="n">template</span><span class="o">-</span><span class="n">var</span> <span class="n">ADD_ARCH_TEMPLATE_VARS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">noverify</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">sharedir</span> <span class="n">SHAREDIR</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">enablerepo</span> <span class="p">[</span><span class="n">repo</span><span class="p">]]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">disablerepo</span> <span class="p">[</span><span class="n">repo</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">rootfs</span><span class="o">-</span><span class="n">size</span> <span class="n">ROOTFS_SIZE</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">noverifyssl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dnfplugin</span> <span class="n">DNFPLUGINS</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">noverifyssl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dnfplugin</span> <span class="n">DNFPLUGINS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">squashfs</span><span class="o">-</span><span class="n">only</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">dracut</span><span class="o">-</span><span class="n">arg</span> <span class="n">DRACUT_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span>
              <span class="n">OUTPUTDIR</span>
 </pre></div>
@@ -235,7 +235,7 @@ repositories.</p>
 <tbody valign="top">
 <tr><td class="option-group">
 <kbd>-V</kbd></td>
-<td>show program’s version number and exit</td></tr>
+<td>show program's version number and exit</td></tr>
 </tbody>
 </table>
 </div>
@@ -282,12 +282,12 @@ repositories.</p>
 <tr><td class="option-group">
 <kbd>-t, --variant</kbd></td>
 <td><p class="first">variant name</p>
-<p class="last">Default: “”</p>
+<p class="last">Default: &quot;&quot;</p>
 </td></tr>
 <tr><td class="option-group">
 <kbd>-b, --bugurl</kbd></td>
 <td><p class="first">bug reporting URL for the product</p>
-<p class="last">Default: “your distribution provided bug reporting tool”</p>
+<p class="last">Default: &quot;your distribution provided bug reporting tool&quot;</p>
 </td></tr>
 <tr><td class="option-group">
 <kbd>--isfinal</kbd></td>
@@ -295,7 +295,7 @@ repositories.</p>
 <tr><td class="option-group">
 <kbd>-c, --config</kbd></td>
 <td><p class="first">config file</p>
-<p class="last">Default: “/etc/lorax/lorax.conf”</p>
+<p class="last">Default: &quot;/etc/lorax/lorax.conf&quot;</p>
 </td></tr>
 <tr><td class="option-group">
 <kbd>--proxy</kbd></td>
@@ -335,14 +335,14 @@ repositories.</p>
 <tr><td class="option-group">
 <kbd>--tmp</kbd></td>
 <td><p class="first">Top level temporary directory</p>
-<p class="last">Default: “/var/tmp”</p>
+<p class="last">Default: &quot;/var/tmp/lorax&quot;</p>
 </td></tr>
 <tr><td class="option-group">
 <kbd>--cachedir</kbd></td>
 <td>DNF cache directory. Default is a temporary dir.</td></tr>
 <tr><td class="option-group">
 <kbd>--workdir</kbd></td>
-<td>Work directory, overrides –tmp. Default is a temporary dir under /var/tmp</td></tr>
+<td>Work directory, overrides --tmp. Default is a temporary dir under /var/tmp/lorax</td></tr>
 <tr><td class="option-group">
 <kbd>--force</kbd></td>
 <td><p class="first">Run even when the destination directory exists</p>
@@ -403,6 +403,12 @@ repositories.</p>
 <kbd>--dnfplugin</kbd></td>
 <td><p class="first">Enable a DNF plugin by name/glob, or * to enable all of them.</p>
 <p class="last">Default: []</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--squashfs-only</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Use a plain squashfs filesystem for the runtime.</p>
+<p class="last">Default: False</p>
 </td></tr>
 </tbody>
 </table>
@@ -475,7 +481,7 @@ unneeded services are disabled, some of which can interfere with the
 installation. A number of template commands are used here:</p>
 <ul class="simple">
 <li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.append" title="pylorax.ltmpl.LoraxTemplateRunner.append"><code class="xref py py-func docutils literal notranslate"><span class="pre">append</span></code></a> to add text to a file.</li>
-<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.chmod" title="pylorax.ltmpl.LoraxTemplateRunner.chmod"><code class="xref py py-func docutils literal notranslate"><span class="pre">chmod</span></code></a> changes the file’s mode.</li>
+<li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.chmod" title="pylorax.ltmpl.LoraxTemplateRunner.chmod"><code class="xref py py-func docutils literal notranslate"><span class="pre">chmod</span></code></a> changes the file's mode.</li>
 <li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.install" title="pylorax.ltmpl.LoraxTemplateRunner.install"><code class="xref py py-func docutils literal notranslate"><span class="pre">install</span></code></a> to install a file into the installroot.</li>
 <li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.mkdir" title="pylorax.ltmpl.LoraxTemplateRunner.mkdir"><code class="xref py py-func docutils literal notranslate"><span class="pre">mkdir</span></code></a> makes a new directory.</li>
 <li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.move" title="pylorax.ltmpl.LoraxTemplateRunner.move"><code class="xref py py-func docutils literal notranslate"><span class="pre">move</span></code></a> to move a file into the installroot</li>
@@ -488,14 +494,14 @@ installation. A number of template commands are used here:</p>
 </div>
 <div class="section" id="runtime-cleanup-tmpl">
 <h3>runtime-cleanup.tmpl<a class="headerlink" href="#runtime-cleanup-tmpl" title="Permalink to this headline">¶</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">runtime-cleanup.tmpl</span></code> template is used to remove files that aren’t strictly needed
+<p>The <code class="docutils literal notranslate"><span class="pre">runtime-cleanup.tmpl</span></code> template is used to remove files that aren't strictly needed
 by the installation environment. In addition to the <code class="docutils literal notranslate"><span class="pre">remove</span></code> template command it uses:</p>
 <ul class="simple">
 <li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.removepkg" title="pylorax.ltmpl.LoraxTemplateRunner.removepkg"><code class="xref py py-func docutils literal notranslate"><span class="pre">removepkg</span></code></a>
-remove all of a specific package’s contents. A package may be pulled in as a dependency, but
+remove all of a specific package's contents. A package may be pulled in as a dependency, but
 not really used. eg. sound support.</li>
 <li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.removefrom" title="pylorax.ltmpl.LoraxTemplateRunner.removefrom"><code class="xref py py-func docutils literal notranslate"><span class="pre">removefrom</span></code></a>
-Removes some files from a package. A file glob can be used, or the –allbut option to
+Removes some files from a package. A file glob can be used, or the --allbut option to
 remove everything except a select few.</li>
 <li><a class="reference internal" href="pylorax.html#pylorax.ltmpl.LoraxTemplateRunner.removekmod" title="pylorax.ltmpl.LoraxTemplateRunner.removekmod"><code class="xref py py-func docutils literal notranslate"><span class="pre">removekmod</span></code></a>
 Removes kernel modules</li>
@@ -505,7 +511,7 @@ Removes kernel modules</li>
 <h3>The squashfs filesystem<a class="headerlink" href="#the-squashfs-filesystem" title="Permalink to this headline">¶</a></h3>
 <p>After <code class="docutils literal notranslate"><span class="pre">runtime-*.tmpl</span></code> templates have finished their work lorax creates an
 empty ext4 filesystem, copies the remaining files to it, and makes a squashfs
-filesystem of it. This file is the / of the boot.iso’s installer environment
+filesystem of it. This file is the / of the boot.iso's installer environment
 and is what is in the LiveOS/squashfs.img file on the iso.</p>
 </div>
 <div class="section" id="iso-creation">
@@ -575,7 +581,7 @@ should) select the specific template directory by passing <code class="docutils 
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'./',
-              VERSION:'29.21',
+              VERSION:'29.28',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',

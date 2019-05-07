@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "LORAX-COMPOSER" "1" "Nov 29, 2018" "29.21" "Lorax"
+.TH "LORAX-COMPOSER" "1" "May 07, 2019" "29.28" "Lorax"
 .SH NAME
 lorax-composer \- Lorax Composer Documentation
 .
@@ -151,7 +151,7 @@ Default: "/run/weldr/api.socket"
 .B\-\-user
 User to use for reduced permissions
 .sp
-Default: "weldr"
+Default: "root"
 .TP
 .B\-\-group
 Group to set ownership of the socket to
@@ -277,14 +277,33 @@ For purposes of blueprints, mandatory and default packages will be installed.  T
 for selecting optional packages.
 .SS Customizations
 .sp
-The \fB[[customizations]]\fP section can be used to configure the hostname of the final image. eg.:
+The \fB[customizations]\fP section can be used to configure the hostname of the final image. eg.:
 .INDENT 0.0
 .INDENT 3.5
 .sp
 .nf
 .ft C
-[[customizations]]
+[customizations]
 hostname = "baseimage"
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+This is optional and may be left out to use the defaults.
+.SS [customizations.kernel]
+.sp
+This allows you to append arguments to the bootloader\(aqs kernel commandline. This will not have any
+effect on \fBtar\fP or \fBext4\-filesystem\fP images since they do not include a bootloader.
+.sp
+For example:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+[customizations.kernel]
+append = "nosmt=force"
 .ft P
 .fi
 .UNINDENT
@@ -305,8 +324,14 @@ key = "PUBLIC SSH KEY"
 .UNINDENT
 .UNINDENT
 .sp
-The key will be added to the user\(aqs authorized_keys file. Expected value is the content
-of ~/.ssh/id_rsa.pub.
+The key will be added to the user\(aqs authorized_keys file.
+.sp
+\fBWARNING:\fP
+.INDENT 0.0
+.INDENT 3.5
+\fBkey\fP expects the entire content of \fB~/.ssh/id_rsa.pub\fP
+.UNINDENT
+.UNINDENT
 .SS [[customizations.user]]
 .sp
 Add a user to the image, and/or set their ssh key.
@@ -332,8 +357,14 @@ gid = 1200
 .UNINDENT
 .sp
 If the password starts with \fB$6$\fP, \fB$5$\fP, or \fB$2b$\fP it will be stored as
-an encrypted password. Otherwise it will be treated as a plain text password. For
-ssh keys the expected value is the content of ~/.ssh/id_rsa.pub.
+an encrypted password. Otherwise it will be treated as a plain text password.
+.sp
+\fBWARNING:\fP
+.INDENT 0.0
+.INDENT 3.5
+\fBkey\fP expects the entire content of \fB~/.ssh/id_rsa.pub\fP
+.UNINDENT
+.UNINDENT
 .SS [[customizations.group]]
 .sp
 Add a group to the image. \fBname\fP is required and \fBgid\fP is optional:
@@ -349,6 +380,174 @@ gid = 1130
 .fi
 .UNINDENT
 .UNINDENT
+.SS [customizations.timezone]
+.sp
+Customizing the timezone and the NTP servers to use for the system:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+[customizations.timezone]
+timezone = "US/Eastern"
+ntpservers = ["0.north\-america.pool.ntp.org", "1.north\-america.pool.ntp.org"]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+The values supported by \fBtimezone\fP can be listed by running \fBtimedatectl list\-timezones\fP\&.
+.sp
+If no timezone is setup the system will default to using \fIUTC\fP\&. The ntp servers are also
+optional and will default to using the distribution defaults which are fine for most uses.
+.sp
+In some image types there are already NTP servers setup, eg. Google cloud image, and they
+cannot be overridden because they are required to boot in the selected environment. But the
+timezone will be updated to the one selected in the blueprint.
+.SS [customizations.locale]
+.sp
+Customize the locale settings for the system:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+[customizations.locale]
+languages = ["en_US.UTF\-8"]
+keyboard = "us"
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+The values supported by \fBlanguages\fP can be listed by running \fBlocalectl list\-locales\fP from
+the command line.
+.sp
+The values supported by \fBkeyboard\fP can be listed by running \fBlocalectl list\-keymaps\fP from
+the command line.
+.sp
+Multiple languages can be added. The first one becomes the
+primary, and the others are added as secondary. One or the other of \fBlanguages\fP
+or \fBkeyboard\fP must be included (or both) in the section.
+.SS [customizations.firewall]
+.sp
+By default the firewall blocks all access except for services that enable their ports explicitly,
+like \fBsshd\fP\&. This command can be used to open other ports or services. Ports are configured using
+the port:protocol format:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+[customizations.firewall]
+ports = ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+Numeric ports, or their names from \fB/etc/services\fP can be used in the \fBports\fP enabled/disabled lists.
+.sp
+The blueprint settings extend any existing settings in the image templates, so if \fBsshd\fP is
+already enabled it will extend the list of ports with the ones listed by the blueprint.
+.sp
+If the distribution uses \fBfirewalld\fP you can specify services listed by \fBfirewall\-cmd \-\-get\-services\fP
+in a \fBcustomizations.firewall.services\fP section:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+[customizations.firewall.services]
+enabled = ["ftp", "ntp", "dhcp"]
+disabled = ["telnet"]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+Remember that the \fBfirewall.services\fP are different from the names in \fB/etc/services\fP\&.
+.sp
+Both are optional, if they are not used leave them out or set them to an empty list \fB[]\fP\&. If you
+only want the default firewall setup this section can be omitted from the blueprint.
+.sp
+NOTE: The \fBGoogle\fP and \fBOpenStack\fP templates explicitly disable the firewall for their environment.
+This cannot be overridden by the blueprint.
+.SS [customizations.services]
+.sp
+This section can be used to control which services are enabled at boot time.
+Some image types already have services enabled or disabled in order for the
+image to work correctly, and cannot be overridden. eg. \fBami\fP requires
+\fBsshd\fP, \fBchronyd\fP, and \fBcloud\-init\fP\&. Without them the image will not
+boot. Blueprint services are added to, not replacing, the list already in the
+templates, if any.
+.sp
+The service names are systemd service units. You may specify any systemd unit
+file accepted by \fBsystemctl enable\fP eg. \fBcockpit.socket\fP:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+[customizations.services]
+enabled = ["sshd", "cockpit.socket", "httpd"]
+disabled = ["postfix", "telnetd"]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SS [[repos.git]]
+.sp
+The \fB[[repos.git]]\fP entries are used to add files from a \fIgit repository<https://git\-scm.com/>\fP
+repository to the created image. The repository is cloned, the specified \fBref\fP is checked out
+and an rpm is created to install the files to a \fBdestination\fP path. The rpm includes a summary
+with the details of the repository and reference used to create it. The rpm is also included in the
+image build metadata.
+.sp
+To create an rpm named \fBserver\-config\-1.0\-1.noarch.rpm\fP you would add this to your blueprint:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+[[repos.git]]
+rpmname="server\-config"
+rpmversion="1.0"
+rpmrelease="1"
+summary="Setup files for server deployment"
+repo="PATH OF GIT REPO TO CLONE"
+ref="v1.0"
+destination="/opt/server/"
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+rpmname: Name of the rpm to create, also used as the prefix name in the tar archive
+.IP \(bu 2
+rpmversion: Version of the rpm, eg. "1.0.0"
+.IP \(bu 2
+rpmrelease: Release of the rpm, eg. "1"
+.IP \(bu 2
+summary: Summary string for the rpm
+.IP \(bu 2
+repo: URL of the get repo to clone and create the archive from
+.IP \(bu 2
+ref: Git reference to check out. eg. origin/branch\-name, git tag, or git commit hash
+.IP \(bu 2
+destination: Path to install the / of the git repo at when installing the rpm
+.UNINDENT
+.sp
+An rpm will be created with the contents of the git repository referenced, with the files
+being installed under \fB/opt/server/\fP in this case.
+.sp
+\fBref\fP can be any valid git reference for use with \fBgit archive\fP\&. eg. to use the head
+of a branch set it to \fBorigin/branch\-name\fP, a tag name, or a commit hash.
+.sp
+Note that the repository is cloned in full each time a build is started, so pointing to a
+repository with a large amount of history may take a while to clone and use a significant
+amount of disk space. The clone is temporary and is removed once the rpm is created.
 .SH ADDING OUTPUT TYPES
 .sp
 \fBlivemedia\-creator\fP supports a large number of output types, and only some of
