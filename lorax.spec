@@ -88,6 +88,14 @@ It also includes livemedia-creator which is used to create bootable livemedia,
 including live isos and disk images. It can use libvirtd for the install, or
 Anaconda's image install feature.
 
+%package docs
+Summary: Lorax html documentation
+Requires: lorax = %{version}-%{release}
+
+%description docs
+Includes the full html documentation for lorax, livemedia-creator, lorax-composer and the
+pylorax library.
+
 %package lmc-virt
 Summary:  livemedia-creator libvirt dependencies
 Requires: lorax = %{version}-%{release}
@@ -192,7 +200,9 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %files
 %defattr(-,root,root,-)
 %license COPYING
-%doc AUTHORS docs/livemedia-creator.rst docs/product-images.rst
+%doc AUTHORS
+%doc docs/composer-cli.rst docs/lorax.rst docs/livemedia-creator.rst docs/product-images.rst
+%doc docs/lorax-composer.rst
 %doc docs/*ks
 %{python3_sitelib}/pylorax
 %{python3_sitelib}/*.egg-info
@@ -206,6 +216,9 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %dir %{_datadir}/lorax
 %{_mandir}/man1/*.1*
 %{_tmpfilesdir}/lorax.conf
+
+%files docs
+%doc docs/html/*
 
 %files lmc-virt
 
