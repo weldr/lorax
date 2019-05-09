@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        29.28
+Version:        29.29
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -236,6 +236,9 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu May 09 2019 Brian C. Lane <bcl@redhat.com> 29.29-1
+- Revert "Pass ssl certificate options to anaconda" (bcl@redhat.com)
+
 * Tue May 07 2019 Brian C. Lane <bcl@redhat.com> 29.28-1
 - New lorax documentation - 29.28 (bcl@redhat.com)
 - Change customizations.firewall to append items instead of replace (bcl@redhat.com)
