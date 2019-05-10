@@ -1,0 +1,14 @@
+- hosts: localhost
+  tasks:
+  - name: Make sure bucket exists
+    aws_s3:
+      bucket: "{{ aws_bucket }}"
+      mode: create
+
+  - name: Make sure vmimport role exists
+    iam_role_facts:
+      name: vmimport
+    register: role_facts
+  - fail:
+      msg: "Role vmimport doesn't exist"
+    when: role_facts.iam_roles | length < 1

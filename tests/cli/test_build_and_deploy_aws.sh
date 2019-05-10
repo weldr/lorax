@@ -33,12 +33,14 @@ rlJournalStart
         rlLogInfo "AWS_BUCKET=$AWS_BUCKET"
         rlLogInfo "AWS_REGION=$AWS_REGION"
 
-        if ! rlCheckRpm "python3-pip"; then
-            rlRun -t -c "dnf -y install python3-pip"
-            rlAssertRpm python3-pip
-        fi
+        for package in python3-pip python3-boto3; do
+            if ! rlCheckRpm "$package"; then
+                rlRun -t -c "dnf -y install $package"
+                rlAssertRpm "$package"
+            fi
+        done
 
-        rlRun -t -c "pip3 install awscli"
+        rlRun -t -c "pip3 install awscli ansible[aws]"
 
         # aws configure
         [ -d ~/.aws/ ] || mkdir ~/.aws/
@@ -64,11 +66,11 @@ aws_secret_access_key = $AWS_SECRET_ACCESS_KEY
 __EOF__
         fi
 
-        # make sure bucket exists
-        rlRun -t -c "aws s3 mb s3://$AWS_BUCKET"
+        TMP_DIR=$(mktemp -d)
+        PLAYBOOKS_DIR=$(dirname "$0")/playbooks/aws
 
-        # make sure vmimport role exists
-        rlRun -t -c "aws iam get-role --role-name vmimport"
+        # make sure bucket and vmimport role exist
+        rlRun -t -c "ansible-playbook --extra-vars 'aws_bucket=$AWS_BUCKET' $PLAYBOOKS_DIR/setup.yml"
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
@@ -96,7 +98,11 @@ __EOF__
         AMI="$UUID-disk.ami"
 
         # upload to S3
-        rlRun -t -c "aws s3 cp $AMI s3://$AWS_BUCKET"
+        rlRun -t -c "ansible localhost -m aws_s3 -a \
+                       'bucket=$AWS_BUCKET \
+                        src=$AMI \
+                        object=$AMI \
+                        mode=put'"
 
         # import image as snapshot into EC2
         cat > containers.json << __EOF__
@@ -145,37 +151,23 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartTest "Start EC2 instance"
-        # generate new ssh key and import it into EC2
+        # generate new ssh key
         KEY_NAME=composer-$UUID
         SSH_KEY_DIR=`mktemp -d /tmp/composer-ssh-keys.XXXXXX`
         rlRun -t -c "ssh-keygen -t rsa -N '' -f $SSH_KEY_DIR/id_rsa"
-        rlRun -t -c "aws ec2 import-key-pair --key-name $KEY_NAME --public-key-material file://$SSH_KEY_DIR/id_rsa.pub"
 
-        # start a new instance with selected ssh key, enable ssh
-        INSTANCE_ID=`aws ec2 run-instances --image-id $AMI_ID --instance-type t2.small --key-name $KEY_NAME \
-            --security-groups allow-ssh --instance-initiated-shutdown-behavior terminate --enable-api-termination \
-            --count 1| grep InstanceId | cut -f4 -d'"'`
+        rlRun -t -c "ansible-playbook  --extra-vars \
+                       'key_name=$KEY_NAME \
+                        ssh_key_dir=$SSH_KEY_DIR \
+                        ami_id=$AMI_ID \
+                        key_name=$KEY_NAME \
+                        tmp_dir=$TMP_DIR' \
+                     $PLAYBOOKS_DIR/instance.yml"
 
-        if [ -z "$INSTANCE_ID" ]; then
-            rlFail "INSTANCE_ID is empty!"
-        else
-            rlLogInfo "INSTANCE_ID=$INSTANCE_ID"
-        fi
+        INSTANCE_ID=$(cat $TMP_DIR/instance_id)
+        IP_ADDRESS=$(cat $TMP_DIR/public_ip)
 
-        # wait for instance to become running and had assigned a public IP
-        IP_ADDRESS=""
-        while [ -z "$IP_ADDRESS" ]; do
-            rlLogInfo "IP_ADDRESS is not assigned yet ..."
-            sleep 10
-            IP_ADDRESS=`aws ec2 describe-instances --instance-ids $INSTANCE_ID --filters=Name=instance-state-name,Values=running | grep PublicIpAddress | cut -f4 -d'"'`
-        done
-
-        rlLogInfo "Running instance IP_ADDRESS=$IP_ADDRESS"
-
-        until aws ec2 describe-instance-status --instance-ids $INSTANCE_ID --filter Name=instance-status.status,Values=ok | grep ok; do
-            rlLogInfo "Waiting for instance to initialize ..."
-            sleep 60
-        done
+        rlLogInfo "Running INSTANCE_ID=$INSTANCE_ID with IP_ADDRESS=$IP_ADDRESS"
     rlPhaseEnd
 
     rlPhaseStartTest "Verify EC2 instance"
@@ -191,13 +183,12 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartCleanup
-        rlRun -t -c "aws ec2 terminate-instances --instance-ids $INSTANCE_ID"
-        rlRun -t -c "aws ec2 delete-key-pair --key-name $KEY_NAME"
-        rlRun -t -c "aws ec2 deregister-image --image-id $AMI_ID"
-        rlRun -t -c "aws ec2 delete-snapshot --snapshot-id $SNAPSHOT_ID"
-        rlRun -t -c "aws s3 rm s3://$AWS_BUCKET/$AMI"
+        rlRun -t -c "ansible localhost -m ec2_instance -a 'state=terminated instance_ids=$INSTANCE_ID'"
+        rlRun -t -c "ansible localhost -m ec2_key -a 'state=absent name=$KEY_NAME'"
+        rlRun -t -c "ansible localhost -m ec2_ami -a 'state=absent image_id=$AMI_ID delete_snapshot=True'"
+        rlRun -t -c "ansible localhost -m aws_s3 -a 'mode=delobj bucket=$AWS_BUCKET object=$AMI'"
         rlRun -t -c "$CLI compose delete $UUID"
-        rlRun -t -c "rm -rf $AMI $SSH_KEY_DIR containers.json"
+        rlRun -t -c "rm -rf $AMI $SSH_KEY_DIR containers.json $TMP_DIR"
     rlPhaseEnd
 
 rlJournalEnd

@@ -1,0 +1,32 @@
+- hosts: localhost
+  tasks:
+  - name: Import SSH key pair
+    ec2_key:
+      name: "{{ key_name }}"
+      key_material: "{{ lookup('file', ssh_key_dir + '/id_rsa.pub') }}"
+
+  - name: Create instance
+    ec2_instance:
+      name: "{{ ami_id }}"
+      image_id: "{{ ami_id }}"
+      key_name: "{{ key_name }}"
+      instance_type: t2.small
+      security_group: allow-ssh
+      instance_initiated_shutdown_behavior: terminate
+      state: present
+    register: ec2
+
+  - name: Wait for SSH to come up
+    wait_for:
+      host: "{{ item.public_ip_address }}"
+      port: 22
+      state: started
+    with_items: "{{ ec2.instances }}"
+
+  - name: Save instance ID
+    local_action: copy content={{ item.instance_id }} dest={{ tmp_dir }}/instance_id
+    with_items: "{{ ec2.instances }}"
+
+  - name: Save public IP
+    local_action: copy content={{ item.public_ip_address }} dest={{ tmp_dir }}/public_ip
+    with_items: "{{ ec2.instances }}"
