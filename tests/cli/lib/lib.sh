@@ -31,7 +31,7 @@ check_root_account() {
         # ssh returns 255 in case of any ssh error, so it's better to grep the specific error message
         rlRun -t -c "ssh $SSH_OPTS -o PubkeyAuthentication=no root@${SSH_MACHINE} 2>&1 | grep -i 'permission denied ('" \
             0 "Can't ssh to '$SSH_MACHINE' as root using password-based auth"
-        rlRun -t -c "ssh $SSH_OPTS ${SSH_USER}@${SSH_MACHINE} \"sudo grep -E '^root:(\*LOCK\*|!):' /etc/shadow\"" \
+        rlRun -t -c "ssh $SSH_OPTS ${SSH_USER}@${SSH_MACHINE} \"sudo grep -E '^root:(\*LOCK\*|!)' /etc/shadow\"" \
             0 "root account is disabled in /etc/shadow"
         rlRun -t -c "ssh $SSH_OPTS ${SSH_USER}@${SSH_MACHINE} \"sudo grep 'USER_LOGIN.*acct=\\\"root\\\".*terminal=ssh.*res=failed' /var/log/audit/audit.log\"" \
             0 "audit.log contains entry about unsuccessful root login"
