@@ -919,25 +919,78 @@ def is_parent_diff(repo, filename, tree, parent):
     diff = Git.Diff.new_tree_to_tree(repo, parent.get_tree(), tree, diff_opts)
     return diff.get_num_deltas() > 0
 
+def find_field_value(field, value, lst):
+    """Find a field matching value in the list of dicts.
+
+    :param field: field to search for
+    :type field: str
+    :param value: value to match in the field
+    :type value: str
+    :param lst: List of dict's with field
+    :type lst: list of dict
+    :returns: First dict with matching field:value, or None
+    :rtype: dict or None
+
+    Used to return a specific entry from a list that looks like this:
+
+    [{"name": "one", "attr": "green"}, ...]
+
+    find_field_value("name", "one", lst) will return the matching dict.
+    """
+    for d in lst:
+        if d.get(field) and d.get(field) == value:
+            return d
+    return None
+
 def find_name(name, lst):
     """Find the dict matching the name in a list and return it.
 
     :param name: Name to search for
     :type name: str
     :param lst: List of dict's with "name" field
+    :type lst: list of dict
     :returns: First dict with matching name, or None
     :rtype: dict or None
-    """
-    for e in lst:
-        if e["name"] == name:
-            return e
-    return None
 
-def diff_items(title, old_items, new_items):
+    This is just a wrapper for find_field_value with field set to "name"
+    """
+    return find_field_value("name", name, lst)
+
+def find_recipe_obj(path, recipe, default=None):
+    """Find a recipe object
+
+    :param path: A list of dict field names
+    :type path: list of str
+    :param recipe: The recipe to search
+    :type recipe: Recipe
+    :param default: The value to return if it is not found
+    :type default: Any
+
+    Return the object found by applying the path to the dicts in the recipe, or
+    return the default if it doesn't exist.
+
+    eg. {"customizations": {"hostname": "foo", "users": [...]}}
+
+    find_recipe_obj(["customizations", "hostname"], recipe, "")
+    """
+    o = recipe
+    try:
+        for p in path:
+            if not o.get(p):
+                return default
+            o = o.get(p)
+    except AttributeError:
+        return default
+
+    return o
+
+def diff_lists(title, field, old_items, new_items):
     """Return the differences between two lists of dicts.
 
     :param title: Title of the entry
     :type title: str
+    :param field: Field to use as the key for comparisons
+    :type field: str
     :param old_items: List of item dicts with "name" field
     :type old_items: list(dict)
     :param new_items: List of item dicts with "name" field
@@ -946,32 +999,77 @@ def diff_items(title, old_items, new_items):
     :rtype: list(dict)
     """
     diffs = []
-    old_names = set(m["name"] for m in old_items)
-    new_names = set(m["name"] for m in new_items)
+    old_fields= set(m[field] for m in old_items)
+    new_fields= set(m[field] for m in new_items)
 
-    added_items = new_names.difference(old_names)
+    added_items = new_fields.difference(old_fields)
     added_items = sorted(added_items, key=lambda n: n.lower())
 
-    removed_items = old_names.difference(new_names)
+    removed_items = old_fields.difference(new_fields)
     removed_items = sorted(removed_items, key=lambda n: n.lower())
 
-    same_items = old_names.intersection(new_names)
+    same_items = old_fields.intersection(new_fields)
     same_items = sorted(same_items, key=lambda n: n.lower())
 
-    for name in added_items:
+    for v in added_items:
         diffs.append({"old":None,
-                      "new":{title:find_name(name, new_items)}})
+                      "new":{title:find_field_value(field, v, new_items)}})
 
-    for name in removed_items:
-        diffs.append({"old":{title:find_name(name, old_items)},
+    for v in removed_items:
+        diffs.append({"old":{title:find_field_value(field, v, old_items)},
                       "new":None})
 
-    for name in same_items:
-        old_item = find_name(name, old_items)
-        new_item = find_name(name, new_items)
+    for v in same_items:
+        old_item = find_field_value(field, v, old_items)
+        new_item = find_field_value(field, v, new_items)
         if old_item != new_item:
             diffs.append({"old":{title:old_item},
                           "new":{title:new_item}})
+
+    return diffs
+
+def customizations_diff(old_recipe, new_recipe):
+    """Diff the customizations sections from two versions of a recipe
+    """
+    diffs = []
+    old_keys = set(old_recipe.get("customizations", {}).keys())
+    new_keys = set(new_recipe.get("customizations", {}).keys())
+
+    added_keys = new_keys.difference(old_keys)
+    added_keys = sorted(added_keys, key=lambda n: n.lower())
+
+    removed_keys = old_keys.difference(new_keys)
+    removed_keys = sorted(removed_keys, key=lambda n: n.lower())
+
+    same_keys = old_keys.intersection(new_keys)
+    same_keys = sorted(same_keys, key=lambda n: n.lower())
+
+    for v in added_keys:
+        diffs.append({"old": None,
+                      "new": {"Customizations."+v: new_recipe["customizations"][v]}})
+
+    for v in removed_keys:
+        diffs.append({"old": {"Customizations."+v: old_recipe["customizations"][v]},
+                      "new": None})
+
+    for v in same_keys:
+        if new_recipe["customizations"][v] == old_recipe["customizations"][v]:
+            continue
+
+        if type(new_recipe["customizations"][v]) == type([]):
+            # Lists of dicts need to use diff_lists
+            # sshkey uses 'user', user and group use 'name'
+            if "user" in new_recipe["customizations"][v][0]:
+                field_name = "user"
+            elif "name" in new_recipe["customizations"][v][0]:
+                field_name = "name"
+            else:
+                raise RuntimeError("%s list has unrecognized key, not 'name' or 'user'" % "customizations."+v)
+
+            diffs.extend(diff_lists("Customizations."+v, field_name, old_recipe["customizations"][v], new_recipe["customizations"][v]))
+        else:
+            diffs.append({"old": {"Customizations."+v: old_recipe["customizations"][v]},
+                          "new": {"Customizations."+v: new_recipe["customizations"][v]}})
 
     return diffs
 
@@ -994,9 +1092,18 @@ def recipe_diff(old_recipe, new_recipe):
             diffs.append({"old":{element.title():old_recipe[element]},
                           "new":{element.title():new_recipe[element]}})
 
-    diffs.extend(diff_items("Module", old_recipe["modules"], new_recipe["modules"]))
-    diffs.extend(diff_items("Package", old_recipe["packages"], new_recipe["packages"]))
-    diffs.extend(diff_items("Group", old_recipe["groups"], new_recipe["groups"]))
+    # These lists always exist
+    diffs.extend(diff_lists("Module", "name", old_recipe["modules"], new_recipe["modules"]))
+    diffs.extend(diff_lists("Package", "name", old_recipe["packages"], new_recipe["packages"]))
+    diffs.extend(diff_lists("Group", "name", old_recipe["groups"], new_recipe["groups"]))
+
+    # The customizations section can contain a number of different types
+    diffs.extend(customizations_diff(old_recipe, new_recipe))
+
+    # repos contains keys that are lists (eg. [[repos.git]])
+    diffs.extend(diff_lists("Repos.git", "rpmname",
+                            find_recipe_obj(["repos", "git"], old_recipe, []),
+                            find_recipe_obj(["repos", "git"], new_recipe, [])))
 
     return diffs
 
