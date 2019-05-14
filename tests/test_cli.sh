@@ -45,6 +45,7 @@ if [ -z "$CLI" ]; then
     ./src/sbin/lorax-composer --sharedir $SHARE_DIR $BLUEPRINTS_DIR &
 else
     SHARE_DIR="/usr/share/lorax"
+    BLUEPRINTS_DIR="/var/lib/lorax/composer/blueprints"
     setup_tests $SHARE_DIR
     systemctl restart lorax-composer
 fi
