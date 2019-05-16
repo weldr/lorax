@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        31.5
+Version:        31.6
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -254,6 +254,11 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Thu May 16 2019 Brian C. Lane <bcl@redhat.com> 31.6-1
+- Add kernel to ext4-filesystem template (bcl@redhat.com)
+- Create a lorax-docs package with the html docs (bcl@redhat.com)
+- Add new documentation branches to index.rst (bcl@redhat.com)
+
 * Tue May 07 2019 Brian C. Lane <bcl@redhat.com> 31.5-1
 - Add python3-pycdlib to Dockerfile.test (bcl@redhat.com)
 - Replace isoinfo with pycdlib (bcl@redhat.com)
