@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.26
+Version:        28.14.27
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -234,6 +234,36 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu May 16 2019 Brian C. Lane <bcl@redhat.com> 28.14.27-1
+- Add kernel to ext4-filesystem template (bcl)
+  Resolves: rhbz#1709792
+- Switch the --virt-uefi method to use SecureBoot (bcl)
+  Resolves: rhbz#1691661
+- qemu wasn't restoring the terminal if it was terminated early (bcl)
+  Resolves: rhbz#1691632
+- Revert "lorax-composer: Add CDN repo checks to startup and compose start." (bcl)
+  Related: rhbz#1691969
+- Revert "lorax-composer: Check for CDN only repos" (bcl)
+  Related: rhbz#1691969
+- Add test for passing custom option on kernel command line (jikortus)
+  Related: rhbz#1687743
+- Use verify_image function as a helper for generic tests (jikortus)
+  Related: rhbz#1704172
+- Change [[modules]] to [[packages]] in tests (atodorov)
+  Related: rhbz#1698368
+- Add new test to verify compose paths exist (atodorov)
+  Related: rhbz#1698368
+- Add new sanity tests for blueprints (atodorov)
+  Related: rhbz#1698368
+- Update VMware info for VMware testing (chrobert)
+  Related: rhbz#1678937
+- Add test for starting compose with deleted blueprint (jikortus)
+  Related: rhbz#1699303
+- Fixes for locked root account test (jikortus)
+  Related: rhbz#1698473
+- Fix lorax.spec bz reference (bcl)
+  Related: rhbz#1678937
+
 * Fri Apr 05 2019 Brian C. Lane <bcl@redhat.com> 28.14.26-1
 - Only use repos with valid urls for test_server.py (bcl)
   Related: rhbz#1678937
