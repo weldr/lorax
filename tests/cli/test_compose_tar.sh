@@ -45,7 +45,7 @@ rlJournalStart
     rlPhaseStartTest "Verify tar image with systemd-nspawn"
         if [ -f /usr/bin/systemd-nspawn ]; then
             NSPAWN_DIR=`mktemp -d /var/tmp/nspawn.XXXX`
-            rlRun -t -c "tar -xJvf $IMAGE -C $NSPAWN_DIR"
+            rlRun -t -c "tar -xJf $IMAGE -C $NSPAWN_DIR"
 
             # verify we can run a container with this image
             rlRun -t -c "systemd-nspawn -D $NSPAWN_DIR cat /etc/redhat-release"
