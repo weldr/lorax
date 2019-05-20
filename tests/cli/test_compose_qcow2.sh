@@ -11,13 +11,9 @@
 . ./tests/cli/lib/lib.sh
 
 CLI="${CLI:-./src/bin/composer-cli}"
-QEMU="/usr/bin/qemu-kvm"
+QEMU="/usr/bin/qemu-system-$(uname -m)"
 
 rlJournalStart
-    rlPhaseStartSetup
-        rlAssertExists $QEMU
-    rlPhaseEnd
-
     rlPhaseStartTest "compose start"
         rlAssertEquals "SELinux operates in enforcing mode" "$(getenforce)" "Enforcing"
 
