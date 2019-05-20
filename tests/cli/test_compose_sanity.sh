@@ -29,7 +29,7 @@ rlJournalStart
 
     rlPhaseStartTest "compose image"
         if [ -n "$UUID" ]; then
-            until $CLI compose info $UUID | grep FINISHED; do
+            until $CLI compose info $UUID | grep 'FINISHED\|FAILED'; do
                 sleep 5
                 rlLogInfo "Waiting for compose to finish ..."
             done;
