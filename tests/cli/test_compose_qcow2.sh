@@ -54,7 +54,7 @@ __EOF__
 
     rlPhaseStartTest "compose finished"
         if [ -n "$UUID" ]; then
-            until $CLI compose info $UUID | grep FINISHED; do
+            until $CLI compose info $UUID | grep 'FINISHED\|FAILED'; do
                 sleep 20
                 rlLogInfo "Waiting for compose to finish ..."
             done;
