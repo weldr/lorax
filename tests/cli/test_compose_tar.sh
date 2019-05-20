@@ -15,6 +15,7 @@ CLI="${CLI:-./src/bin/composer-cli}"
 rlJournalStart
     rlPhaseStartSetup
         rlAssertExists /usr/bin/docker
+        rlRun -t -c "systemctl restart docker"
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
@@ -43,7 +44,7 @@ rlJournalStart
         rlRun -t -c "docker import $IMAGE composer/$UUID:latest"
 
         # verify we can run a container with this image
-        rlRun -t -c "docker run -it --rm --entrypoint /usr/bin/cat composer/$UUID /etc/redhat-release"
+        rlRun -t -c "docker run --rm --entrypoint /usr/bin/cat composer/$UUID /etc/redhat-release"
     rlPhaseEnd
 
     rlPhaseStartTest "Verify tar image with systemd-nspawn"
