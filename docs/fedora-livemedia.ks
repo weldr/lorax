@@ -175,6 +175,10 @@ systemctl --no-reload disable atd.service 2> /dev/null || :
 systemctl stop crond.service 2> /dev/null || :
 systemctl stop atd.service 2> /dev/null || :
 
+# turn off abrtd on a live image
+systemctl --no-reload disable abrtd.service 2> /dev/null || :
+systemctl stop abrtd.service 2> /dev/null || :
+
 # Don't sync the system clock when running live (RHBZ #1018162)
 sed -i 's/rtcsync//' /etc/chrony.conf
 
@@ -302,6 +306,14 @@ cat >> /usr/share/glib-2.0/schemas/org.gnome.software.gschema.override << FOE
 download-updates=false
 FOE
 
+# don't autostart gnome-software session service
+rm -f /etc/xdg/autostart/gnome-software-service.desktop
+
+# disable the gnome-software shell search provider
+cat >> /usr/share/gnome-shell/search-providers/org.gnome.Software-search-provider.ini << FOE
+DefaultDisabled=true
+FOE
+
 # don't run gnome-initial-setup
 mkdir ~liveuser/.config
 touch ~liveuser/.config/gnome-initial-setup-done
@@ -372,7 +384,6 @@ aajohan-comfortaa-fonts
 anaconda
 dracut-config-generic
 dracut-live
-fedora-productimg-workstation
 glibc-all-langpacks
 kernel
 # Make sure that DNF doesn't pull in debug kernel to satisfy kmod() requires
@@ -394,5 +405,9 @@ grub2-efi
 grub2-efi-*-cdboot
 grub2-efi-ia32
 efibootmgr
+
+# no longer in @core since 2018-10, but needed for livesys script
+initscripts
+chkconfig
 
 %end
