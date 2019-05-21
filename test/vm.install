@@ -2,6 +2,17 @@
 
 SRPM="$1"
 
+if ! rpm -q beakerlib && [ $(. /etc/os-release && echo $ID) = "rhel" ]; then
+  (cd /etc/yum.repos.d; curl -O -L http://download.devel.redhat.com/beakerrepos/beaker-client-RedHatEnterpriseLinux.repo)
+
+  # The beaker repository doesn't include repos for minor releases
+  VERSION=$(. /etc/os-release && echo ${VERSION_ID%.*})
+  yum install -y --releasever=$VERSION --setopt=sslverify=0 beakerlib
+
+  # prevent yum from trying to sync the cache again later (it fails without sslverify=0)
+  rm /etc/yum.repos.d/beaker-client-RedHatEnterpriseLinux.repo
+fi
+
 # Grow root partition to make room for images. This only works on Fedora right now.
 echo ", +" | sfdisk -N 2 -f /dev/vda
 partprobe
@@ -14,7 +25,7 @@ su builder -c "/usr/bin/mock --no-clean --resultdir build-results --rebuild $SRP
 
 packages=$(find build-results -name '*.rpm' -not -name '*.src.rpm')
 rpm -e --verbose $(basename -a ${packages[@]} | sed 's/-[0-9].*.rpm$//') || true
-yum install -y beakerlib $packages
+yum install -y $packages
 
 systemctl enable lorax-composer.socket
 systemctl enable docker.service
