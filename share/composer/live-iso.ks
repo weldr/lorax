@@ -169,6 +169,10 @@ systemctl --no-reload disable atd.service 2> /dev/null || :
 systemctl stop crond.service 2> /dev/null || :
 systemctl stop atd.service 2> /dev/null || :
 
+# turn off abrtd on a live image
+systemctl --no-reload disable abrtd.service 2> /dev/null || :
+systemctl stop abrtd.service 2> /dev/null || :
+
 # Don't sync the system clock when running live (RHBZ #1018162)
 sed -i 's/rtcsync//' /etc/chrony.conf
 
@@ -294,6 +298,14 @@ cat >> /usr/share/glib-2.0/schemas/org.gnome.software.gschema.override << FOE
 download-updates=false
 FOE
 
+# don't autostart gnome-software session service
+rm -f /etc/xdg/autostart/gnome-software-service.desktop
+
+# disable the gnome-software shell search provider
+cat >> /usr/share/gnome-shell/search-providers/org.gnome.Software-search-provider.ini << FOE
+DefaultDisabled=true
+FOE
+
 # don't run gnome-initial-setup
 mkdir ~liveuser/.config
 touch ~liveuser/.config/gnome-initial-setup-done
@@ -354,5 +366,9 @@ dracut-config-generic
 dracut-live
 system-logos
 selinux-policy-targeted
+
+# no longer in @core since 2018-10, but needed for livesys script
+initscripts
+chkconfig
 
 # NOTE lorax-composer will add the blueprint packages below here, including the final %end%packages
