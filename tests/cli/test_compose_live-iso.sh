@@ -11,7 +11,7 @@
 . ./tests/cli/lib/lib.sh
 
 CLI="${CLI:-./src/bin/composer-cli}"
-QEMU="/usr/bin/qemu-system-$(uname -m)"
+QEMU="qemu-system-$(uname -m) -machine accel=kvm:tcg"
 
 rlJournalStart
     rlPhaseStartTest "compose start"
