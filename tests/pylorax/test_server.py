@@ -50,7 +50,7 @@ PHPMYSQL_GLOB = {"name": "php-mysqlnd", "version":"7.*"}
 OPENSSH_GLOB = {"name":"openssh-server", "version": "8.*"}
 RSYNC_GLOB = {"name": "rsync", "version": "3.1.*"}
 SAMBA_GLOB = {"name": "samba", "version": "4.*.*"}
-TMUX_GLOB = {"name": "tmux", "version": "2.8"}
+TMUX_GLOB = {"name": "tmux", "version": "2.9a"}
 GLUSTERFS_GLOB = {"name": "glusterfs", "version": "6.*"}
 GLUSTERFSCLI_GLOB = {"name": "glusterfs-cli", "version": "6.*"}
 
@@ -552,7 +552,7 @@ class ServerTestCase(unittest.TestCase):
                              "old": {"Description": "An example GlusterFS server with samba"}},
                             {"new": {"Version": "0.3.0"},
                              "old": {"Version": "0.0.1"}},
-                            {"new": {"Package": {"version": "2.8", "name": "tmux"}},
+                            {"new": {"Package": TMUX_GLOB},
                              "old": None}]}
         self.assertEqual(data, result)
 
