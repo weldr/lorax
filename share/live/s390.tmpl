@@ -21,7 +21,7 @@ install ${configdir}/generic.ins .
 
 ## configure bootloader
 replace @INITRD_LOAD_ADDRESS@ ${INITRD_ADDRESS} generic.ins
-replace @EXTRA@ ${extra_boot_args} generic.prm
+replace @EXTRA@ '${extra_boot_args}' ${BOOTDIR}/generic.prm
 
 ## install kernel
 installkernel images-${basearch} ${kernel.path} ${KERNELDIR}/kernel.img
