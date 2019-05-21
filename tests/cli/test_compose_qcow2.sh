@@ -8,7 +8,7 @@
 #####
 
 . /usr/share/beakerlib/beakerlib.sh
-. ./tests/cli/lib/lib.sh
+. $(dirname $0)/lib/lib.sh
 
 CLI="${CLI:-./src/bin/composer-cli}"
 QEMU="qemu-system-$(uname -m) -machine accel=kvm:tcg"
