@@ -2,15 +2,19 @@
 
 SRPM="$1"
 
-if ! rpm -q beakerlib && [ $(. /etc/os-release && echo $ID) = "rhel" ]; then
-  (cd /etc/yum.repos.d; curl -O -L http://download.devel.redhat.com/beakerrepos/beaker-client-RedHatEnterpriseLinux.repo)
+if ! rpm -q beakerlib; then
+    if [ $(. /etc/os-release && echo $ID) = "rhel" ]; then
+        (cd /etc/yum.repos.d; curl -O -L http://download.devel.redhat.com/beakerrepos/beaker-client-RedHatEnterpriseLinux.repo)
 
-  # The beaker repository doesn't include repos for minor releases
-  VERSION=$(. /etc/os-release && echo ${VERSION_ID%.*})
-  yum install -y --releasever=$VERSION --setopt=sslverify=0 beakerlib
+         # The beaker repository doesn't include repos for minor releases
+         VERSION=$(. /etc/os-release && echo ${VERSION_ID%.*})
+         yum install -y --releasever=$VERSION --setopt=sslverify=0 beakerlib
 
-  # prevent yum from trying to sync the cache again later (it fails without sslverify=0)
-  rm /etc/yum.repos.d/beaker-client-RedHatEnterpriseLinux.repo
+         # prevent yum from trying to sync the cache again later (it fails without sslverify=0)
+         rm /etc/yum.repos.d/beaker-client-RedHatEnterpriseLinux.repo
+     else
+         yum install -y beakerlib
+    fi
 fi
 
 # Grow root partition to make room for images. This only works on Fedora right now.
