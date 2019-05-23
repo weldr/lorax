@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import argparse
 import os
 import subprocess
 import sys
@@ -56,4 +57,17 @@ class ComposerTestCase(unittest.TestCase):
 
 
 def main():
-    unittest.main(verbosity=2)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("tests", nargs="*", help="List of tests modules, classes, and methods")
+    args = parser.parse_args()
+
+    module = __import__("__main__")
+
+    if args.tests:
+        tests = unittest.defaultTestLoader.loadTestsFromNames(args.tests, module)
+    else:
+        tests = unittest.defaultTestLoader.loadTestsFromModule(module)
+
+    runner = unittest.TextTestRunner(verbosity=2)
+    result = runner.run(tests)
+    sys.exit(not result.wasSuccessful())
