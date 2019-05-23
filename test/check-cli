@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import composertest
+import unittest
 
 
 class TestSanity(composertest.ComposerTestCase):
@@ -24,6 +25,7 @@ class TestImages(composertest.ComposerTestCase):
     def test_qcow2(self):
         self.runCliTest("/tests/cli/test_compose_qcow2.sh")
 
+    @unittest.skip("https://github.com/weldr/lorax/issues/731")
     def test_live_iso(self):
         self.runCliTest("/tests/cli/test_compose_live-iso.sh")
 
