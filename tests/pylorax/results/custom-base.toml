@@ -12,3 +12,40 @@ hostname = "custombase"
 [[customizations.sshkey]]
 user = "root"
 key = "A SSH KEY FOR ROOT"
+
+[customizations.kernel]
+append = "nosmt=force"
+
+[[customizations.user]]
+name = "admin"
+description = "Administrator account"
+password = "$6$CHO2$3rN8eviE2t50lmVyBYihTgVRHcaecmeCk31L..."
+key = "PUBLIC SSH KEY"
+home = "/srv/widget/"
+shell = "/usr/bin/bash"
+groups = ["widget", "users", "wheel"]
+uid = 1200
+gid = 1200
+
+[[customizations.group]]
+name = "widget"
+gid = 1130
+
+[customizations.timezone]
+timezone = "US/Eastern"
+ntpservers = ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"]
+
+[customizations.locale]
+languages = ["en_US.UTF-8"]
+keyboard = "us"
+
+[customizations.firewall]
+ports = ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"]
+
+[customizations.firewall.services]
+enabled = ["ftp", "ntp", "dhcp"]
+disabled = ["telnet"]
+
+[customizations.services]
+enabled = ["sshd", "cockpit.socket", "httpd"]
+disabled = ["postfix", "telnetd"]
