@@ -13,9 +13,14 @@ set -e
 . $(dirname $0)/lib/lib.sh
 
 CLI="${CLI:-./src/bin/composer-cli}"
-QEMU="qemu-system-$(uname -m) -machine accel=kvm:tcg"
+QEMU_BIN="/usr/bin/qemu-system-$(uname -m)"
+QEMU="$QEMU_BIN -machine accel=kvm:tcg"
 
 rlJournalStart
+    rlPhaseStartSetup
+        rlAssertExists $QEMU_BIN
+    rlPhaseEnd
+
     rlPhaseStartTest "compose start"
         rlAssertEquals "SELinux operates in enforcing mode" "$(getenforce)" "Enforcing"
 
