@@ -32,7 +32,7 @@ function setup_tests {
     cat >> $blueprints_dir/example-http-server.toml << __EOF__
 
 [customizations.kernel]
-append = "custom_cmdline_arg"
+append = "custom_cmdline_arg console=ttyS0,115200n8"
 __EOF__
 }
 
