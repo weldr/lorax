@@ -187,62 +187,129 @@ def blueprints_diff(socket_path, api_version, args, show_json=False):
         return rc
 
     for diff in result["diff"]:
-        print(prettyDiffEntry(diff))
+        print(pretty_diff_entry(diff))
 
     return rc
 
-def prettyDiffEntry(diff):
+def pretty_dict(d):
+    """Return the dict as a human readable single line
+
+    :param d: key/values
+    :type d: dict
+    :returns: String of the dict's keys and values
+    :rtype: str
+
+    key="str", key="str1,str2", ...
+    """
+    result = []
+    for k in d:
+        if type(d[k]) == type(""):
+            result.append('%s="%s"' % (k, d[k]))
+        elif type(d[k]) == type([]) and type(d[k][0]) == type(""):
+            result.append('%s="%s"' % (k, ", ".join(d[k])))
+        elif type(d[k]) == type([]) and type(d[k][0]) == type({}):
+            result.append('%s="%s"' % (k, pretty_dict(d[k])))
+    return " ".join(result)
+
+def dict_names(lst):
+    """Return comma-separated list of the dict's name/user fields
+
+    :param d: key/values
+    :type d: dict
+    :returns: String of the dict's keys and values
+    :rtype: str
+
+    root, norm
+    """
+    if "user" in lst[0]:
+        field_name = "user"
+    elif "name" in lst[0]:
+        field_name = "name"
+    else:
+        # Use first fields in sorted keys
+        field_name = sorted(lst[0].keys())[0]
+
+    return ", ".join(d[field_name] for d in lst)
+
+def pretty_diff_entry(diff):
     """Generate nice diff entry string.
 
     :param diff: Difference entry dict
     :type diff: dict
     :returns: Nice string
     """
-    def change(diff):
-        if diff["old"] and diff["new"]:
-            return "Changed"
-        elif diff["new"] and not diff["old"]:
-            return "Added"
-        elif diff["old"] and not diff["new"]:
-            return "Removed"
-        else:
-            return "Unknown"
+    if diff["old"] and diff["new"]:
+        change = "Changed"
+    elif diff["new"] and not diff["old"]:
+        change = "Added"
+    elif diff["old"] and not diff["new"]:
+        change = "Removed"
+    else:
+        change = "Unknown"
 
-    def name(diff):
-        if diff["old"]:
-            return diff["old"].keys()[0]
-        elif diff["new"]:
-            return diff["new"].keys()[0]
-        else:
-            return "Unknown"
+    if diff["old"]:
+        name = list(diff["old"].keys())[0]
+    elif diff["new"]:
+        name = list(diff["new"].keys())[0]
+    else:
+        name = "Unknown"
 
     def details(diff):
-        if change(diff) == "Changed":
-            if name(diff) == "Description":
-                return '"%s" -> "%s"' % (diff["old"][name(diff)], diff["new"][name(diff)])
-            elif name(diff) == "Version":
-                return "%s -> %s" % (diff["old"][name(diff)], diff["new"][name(diff)])
-            elif name(diff) in ["Module", "Package"]:
-                return "%s %s -> %s" % (diff["old"][name(diff)]["name"], diff["old"][name(diff)]["version"],
-                                        diff["new"][name(diff)]["version"])
+        if change == "Changed":
+            if type(diff["old"][name]) == type(""):
+                if name == "Description" or " " in diff["old"][name]:
+                    return '"%s" -> "%s"' % (diff["old"][name], diff["new"][name])
+                else:
+                    return "%s -> %s" % (diff["old"][name], diff["new"][name])
+            elif name in ["Module", "Package"]:
+                return "%s %s -> %s" % (diff["old"][name]["name"], diff["old"][name]["version"],
+                                        diff["new"][name]["version"])
+            elif type(diff["old"][name]) == type([]):
+                if type(diff["old"][name][0]) == type(""):
+                    return "%s -> %s" % (" ".join(diff["old"][name]), " ".join(diff["new"][name]))
+                elif type(diff["old"][name][0]) == type({}):
+                    # Lists of dicts are too long to display in detail, just show their names
+                    return "%s -> %s" % (dict_names(diff["old"][name]), dict_names(diff["new"][name]))
+            elif type(diff["old"][name]) == type({}):
+                return "%s -> %s" % (pretty_dict(diff["old"][name]), pretty_dict(diff["new"][name]))
             else:
                 return "Unknown"
-        elif change(diff) == "Added":
-            if name(diff) in ["Module", "Package"]:
-                return "%s %s" % (diff["new"][name(diff)]["name"], diff["new"][name(diff)]["version"])
-            elif name(diff) in ["Group"]:
-                return diff["new"][name(diff)]["name"]
+        elif change == "Added":
+            if name in ["Module", "Package"]:
+                return "%s %s" % (diff["new"][name]["name"], diff["new"][name]["version"])
+            elif name in ["Group"]:
+                return diff["new"][name]["name"]
+            elif type(diff["new"][name]) == type(""):
+                return diff["new"][name]
+            elif type(diff["new"][name]) == type([]):
+                if type(diff["new"][name][0]) == type(""):
+                    return " ".join(diff["new"][name])
+                elif type(diff["new"][name][0]) == type({}):
+                    # Lists of dicts are too long to display in detail, just show their names
+                    return dict_names(diff["new"][name])
+            elif type(diff["new"][name]) == type({}):
+                return pretty_dict(diff["new"][name])
             else:
-                return " ".join([diff["new"][k] for k in diff["new"]])
-        elif change(diff) == "Removed":
-            if name(diff) in ["Module", "Package"]:
-                return "%s %s" % (diff["old"][name(diff)]["name"], diff["old"][name(diff)]["version"])
-            elif name(diff) in ["Group"]:
-                return diff["old"][name(diff)]["name"]
+                return "unknown/todo: %s" % type(diff["new"][name])
+        elif change == "Removed":
+            if name in ["Module", "Package"]:
+                return "%s %s" % (diff["old"][name]["name"], diff["old"][name]["version"])
+            elif name in ["Group"]:
+                return diff["old"][name]["name"]
+            elif type(diff["old"][name]) == type(""):
+                return diff["old"][name]
+            elif type(diff["old"][name]) == type([]):
+                if type(diff["old"][name][0]) == type(""):
+                    return " ".join(diff["old"][name])
+                elif type(diff["old"][name][0]) == type({}):
+                    # Lists of dicts are too long to display in detail, just show their names
+                    return dict_names(diff["old"][name])
+            elif type(diff["old"][name]) == type({}):
+                return pretty_dict(diff["old"][name])
             else:
-                return " ".join([diff["old"][k] for k in diff["old"]])
+                return "unknown/todo: %s" % type(diff["new"][name])
 
-    return change(diff) + " " + name(diff) + " " + details(diff)
+    return change + " " + name + " " + details(diff)
 
 def blueprints_save(socket_path, api_version, args, show_json=False):
     """Save the blueprint to a TOML file
