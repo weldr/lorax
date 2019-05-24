@@ -11,8 +11,21 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../bots/machine"))
 import testvm # pylint: disable=import-error
 
 
+def print_exception(etype, value, tb):
+    import traceback
+
+    # only include relevant lines
+    limit = 0
+    while tb and '__unittest' in tb.tb_frame.f_globals:
+        limit += 1
+        tb = tb.tb_next
+
+    traceback.print_exception(etype, value, tb, limit=limit)
+
+
 class ComposerTestCase(unittest.TestCase):
     image = testvm.DEFAULT_IMAGE
+    sit = False
 
     def setUp(self):
         network = testvm.VirtNetwork(0)
@@ -42,6 +55,18 @@ class ComposerTestCase(unittest.TestCase):
         self.assertEqual(r.returncode, 0)
 
     def tearDown(self):
+        # Peek into internal data structure, because there's no way to get the
+        # TestResult at this point. `errors` is a list of tuples (method, error)
+        errors = filter(None, [ e[1] for e in self._outcome.errors ])
+
+        if errors and self.sit:
+            for e in errors:
+                print_exception(*e)
+
+            print()
+            print(" ".join(self.ssh_command))
+            input("Press RETURN to continue...")
+
         self.machine.stop()
 
     def execute(self, command, **args):
@@ -59,15 +84,18 @@ class ComposerTestCase(unittest.TestCase):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("tests", nargs="*", help="List of tests modules, classes, and methods")
+    parser.add_argument("-s", "--sit", action="store_true", help="Halt test execution (but keep VM running) when a test fails")
     args = parser.parse_args()
 
-    module = __import__("__main__")
+    ComposerTestCase.sit = args.sit
 
+    module = __import__("__main__")
     if args.tests:
         tests = unittest.defaultTestLoader.loadTestsFromNames(args.tests, module)
     else:
         tests = unittest.defaultTestLoader.loadTestsFromModule(module)
 
-    runner = unittest.TextTestRunner(verbosity=2)
+    runner = unittest.TextTestRunner(verbosity=2, failfast=args.sit)
     result = runner.run(tests)
+
     sys.exit(not result.wasSuccessful())

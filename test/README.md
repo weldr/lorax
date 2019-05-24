@@ -42,8 +42,9 @@ After building a test image, run
 
     $ ./test/check-cli [TESTNAME]
 
-or any of the other `check-*` scripts. Right after the VM is started, these
-scripts print an `ssh` line to connect to it.
+or any of the other `check-*` scripts. To debug a test failure, pass `--sit`.
+This will keep the test machine running after the first failure and print an
+ssh line to connect to it.
 
 Run `make vm` after changing tests or lorax source to recreate the test
 machine. It is usually not necessary to reset the VM.
