@@ -81,9 +81,21 @@ class ComposerTestCase(unittest.TestCase):
         self.assertEqual(r.returncode, 0)
 
 
+def print_tests(tests):
+    for test in tests:
+        if isinstance(test, unittest.TestSuite):
+            print_tests(test)
+        elif isinstance(test, unittest.loader._FailedTest):
+            name = test.id().replace("unittest.loader._FailedTest.", "")
+            print(f"Error: '{name}' does not match a test", file=sys.stderr)
+        else:
+            print(test.id().replace("__main__.", ""))
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("tests", nargs="*", help="List of tests modules, classes, and methods")
+    parser.add_argument("-l", "--list", action="store_true", help="Print the list of tests that would be executed")
     parser.add_argument("-s", "--sit", action="store_true", help="Halt test execution (but keep VM running) when a test fails")
     args = parser.parse_args()
 
@@ -94,6 +106,10 @@ def main():
         tests = unittest.defaultTestLoader.loadTestsFromNames(args.tests, module)
     else:
         tests = unittest.defaultTestLoader.loadTestsFromModule(module)
+
+    if args.list:
+        print_tests(tests)
+        return 0
 
     runner = unittest.TextTestRunner(verbosity=2, failfast=args.sit)
     result = runner.run(tests)
