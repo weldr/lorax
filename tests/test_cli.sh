@@ -80,10 +80,10 @@ fi
 tries=0
 until curl -m 15 --unix-socket /run/weldr/api.socket http://localhost:4000/api/status | grep 'db_supported.*true'; do
     tries=$((tries + 1))
-    if [ $tries -gt 20 ]; then
+    if [ $tries -gt 50 ]; then
         exit 1
     fi
-    sleep 2
+    sleep 5
     echo "DEBUG: Waiting for backend API to become ready before testing ..."
 done;
 
