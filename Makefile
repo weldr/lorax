@@ -51,8 +51,6 @@ test:
 
 	coverage3 report -m
 	[ -f "/usr/bin/coveralls" ] && [ -n "$(COVERALLS_REPO_TOKEN)" ] && coveralls || echo
-	
-	./tests/test_cli.sh
 
 # need `losetup`, which needs Docker to be in privileged mode (--privileged)
 # but even so fails in Travis CI
