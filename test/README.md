@@ -4,7 +4,9 @@ lorax uses Cockpit's integration test framework and infrastructure. To do this,
 we're checking out Cockpit's `bots/` subdirectory. It contains links to test
 images and tools to manipulate and start virtual machines from them.
 
-Each test is run on a new instance of a virtual machine. 
+Each test is run on a new instance of a virtual machine.
+Branch/test matrix is configured in `bots/tests-scan` inside the
+[cockpit repository](https://github.com/cockpit-project/cockpit).
 
 ## Dependencies
 
