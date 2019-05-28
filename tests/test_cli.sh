@@ -53,6 +53,7 @@ if [ -z "$CLI" ]; then
     # start the lorax-composer daemon
     ./src/sbin/lorax-composer --sharedir $SHARE_DIR $BLUEPRINTS_DIR &
 else
+    export PACKAGE="composer-cli"
     SHARE_DIR="/usr/share/lorax"
     setup_tests $SHARE_DIR
     systemctl restart lorax-composer
