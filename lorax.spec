@@ -24,6 +24,10 @@ Patch0006:      0006-lorax-composer-pass-customization.kernel-append-to-e.patch
 Patch0007:      0007-Pass-ssl-certificate-options-to-anaconda.patch
 Patch0008:      0008-Revert-lorax-composer-Check-for-CDN-only-repos.patch
 Patch0009:      0009-Revert-lorax-composer-Add-CDN-repo-checks-to-startup.patch
+Patch0010:      0010-lorax-composer-Delete-workspace-copy-when-deleting-b.patch
+Patch0011:      0012-Add-kernel-to-ext4-filesystem-template.patch
+Patch0012:      0011-lorax-composer-Return-UnknownBlueprint-errors-when-u.patch
+Patch0013:      0013-Fix-path-to-generic.prm.patch
 
 
 BuildRequires:  python3-devel
