@@ -4,7 +4,7 @@
 
 Name:           lorax
 Version:        28.14.23
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Tool for creating the anaconda install images
 
 Group:          Applications/System
@@ -28,6 +28,7 @@ Patch0010:      0010-lorax-composer-Delete-workspace-copy-when-deleting-b.patch
 Patch0011:      0012-Add-kernel-to-ext4-filesystem-template.patch
 Patch0012:      0011-lorax-composer-Return-UnknownBlueprint-errors-when-u.patch
 Patch0013:      0013-Fix-path-to-generic.prm.patch
+Patch0014:      0014-tests-Make-it-easier-to-update-version-globs.patch
 
 
 BuildRequires:  python3-devel
@@ -248,6 +249,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Tue May 28 2019 Brian C. Lane <bcl@redhat.com> 28.14.23-7
+- tests: Make it easier to update version globs (bcl)
+  Related: rhbz#171282
+- Add patches to lorax.spec (bcl)
+  Related: rhbz#1712822
+
 * Tue May 28 2019 Brian C. Lane <bcl@redhat.com> 28.14.23-6
 - Fix path to generic.prm (jstodola)
   Resolves: rhbz#1712822
