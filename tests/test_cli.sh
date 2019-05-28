@@ -29,6 +29,15 @@ function teardown_tests {
     mv $1/composer/live-iso.ks.orig $1/composer/live-iso.ks
 }
 
+# cloud credentials
+if [ -f "~/.config/lorax-test-env" ]; then
+    . ~/.config/lorax-test-env
+fi
+
+if [ -f "/var/tmp/lorax-test-env" ]; then
+    . /var/tmp/lorax-test-env
+fi
+
 if [ -z "$CLI" ]; then
     export top_srcdir=`pwd`
     . ./tests/testenv.sh
