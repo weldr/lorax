@@ -77,7 +77,10 @@ class ComposerTestCase(unittest.TestCase):
         return subprocess.run(self.ssh_command + command, **args)
 
     def runCliTest(self, script):
-        r = self.execute(["CLI=/usr/bin/composer-cli", "TEST=" + self.id(), "/tests/test_cli.sh", script])
+        r = self.execute(["CLI=/usr/bin/composer-cli",
+                          "TEST=" + self.id(),
+                          "PACKAGE=composer-cli",
+                          "/tests/test_cli.sh", script])
         self.assertEqual(r.returncode, 0)
 
 
