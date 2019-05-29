@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.27
+Version:        28.14.28
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -247,6 +247,12 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Wed May 29 2019 Brian C. Lane <bcl@redhat.com> 28.14.28-1
+- Create a lorax-docs package with the html docs (bcl)
+  Resolves: rhbz#1695274
+- Fix path to generic.prm (jstodola)
+  Resolves: rhbz#1714107
+
 * Thu May 16 2019 Brian C. Lane <bcl@redhat.com> 28.14.27-1
 - Add kernel to ext4-filesystem template (bcl)
   Resolves: rhbz#1709792
