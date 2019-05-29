@@ -5,7 +5,13 @@
 make vm
 
 if [ -n "$TEST_SCENARIO" ]; then
-  test/check-cloud TestCloud.test_$TEST_SCENARIO
+  if [ "$TEST_SCENARIO" == "live-iso" ]; then
+    test/check-cli TestLiveIso
+  elif [ "$TEST_SCENARIO" == "qcow2" ]; then
+    test/check-cli TestQcow2
+  else
+    test/check-cloud TestCloud.test_$TEST_SCENARIO
+  fi
 else
-  test/check-cli
+  test/check-cli TestImages
 fi
