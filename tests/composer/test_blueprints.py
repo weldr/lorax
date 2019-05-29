@@ -39,7 +39,6 @@ diff_entries = [{'new': {'Description': 'Shiny new description'}, 'old': {'Descr
                 {"new": {"Customizations.sshkey": [{"key": "ssh-rsa AAAAB3NzaC1... norm@localhost.localdomain", "user": "norm" }]}, "old": None},
                 {"new": {"Customizations.timezone": {"ntpservers": ["ntp.nowhere.com" ], "timezone": "PST8PDT"}}, "old": None},
                 {"new": {"Customizations.user": [{"key": "ssh-rsa AAAAB3NzaC1... root@localhost.localdomain", "name": "root", "password": "fobarfobar"}]}, "old": None},
-                {"new": {"Repos.git": {"destination": "/opt/server-1/", "ref": "v1.0", "repo": "PATH OF GIT REPO TO CLONE", "rpmname": "server-config", "rpmrelease": "2", "rpmversion": "1.0", "summary": "Setup files for server deployment"}}, "old": None},
                 # Removed items (just reversed old/old from above block)
                 {"old": {"Group": {"name": "core"}}, "new": None},
                 {"old": {"Customizations.firewall": {"ports": ["8888:tcp", "22:tcp", "dns:udp", "9090:tcp"], "services": ["smtp"]}}, "new": None},
@@ -48,7 +47,6 @@ diff_entries = [{'new': {'Description': 'Shiny new description'}, 'old': {'Descr
                 {"old": {"Customizations.sshkey": [{"key": "ssh-rsa AAAAB3NzaC1... norm@localhost.localdomain", "user": "norm" }]}, "new": None},
                 {"old": {"Customizations.timezone": {"ntpservers": ["ntp.nowhere.com" ], "timezone": "PST8PDT"}}, "new": None},
                 {"old": {"Customizations.user": [{"key": "ssh-rsa AAAAB3NzaC1... root@localhost.localdomain", "name": "root", "password": "fobarfobar"}]}, "new": None},
-                {"old": {"Repos.git": {"destination": "/opt/server-1/", "ref": "v1.0", "repo": "PATH OF GIT REPO TO CLONE", "rpmname": "server-config", "rpmrelease": "2", "rpmversion": "1.0", "summary": "Setup files for server deployment"}}, "new": None},
                 # Changed items
                 {"old": {"Customizations.firewall": {"ports": ["8888:tcp", "22:tcp", "dns:udp", "9090:tcp"], "services": ["smtp"]}}, "new": {"Customizations.firewall": {"ports": ["8888:tcp", "22:tcp", "25:tcp"]}}},
                 {"old": {"Customizations.hostname": "foobar"}, "new": {"Customizations.hostname": "grues"}},
@@ -56,7 +54,6 @@ diff_entries = [{'new': {'Description': 'Shiny new description'}, 'old': {'Descr
                 {"old": {"Customizations.sshkey": [{"key": "ssh-rsa AAAAB3NzaC1... norm@localhost.localdomain", "user": "norm" }]}, "new": {"Customizations.sshkey": [{"key": "ssh-rsa ABCDEF01234... norm@localhost.localdomain", "user": "norm" }]}},
                 {"old": {"Customizations.timezone": {"ntpservers": ["ntp.nowhere.com" ], "timezone": "PST8PDT"}}, "new": {"Customizations.timezone": {"timezone": "Antarctica/Palmer"}}},
                 {"old": {"Customizations.user": [{"key": "ssh-rsa AAAAB3NzaC1... root@localhost.localdomain", "name": "root", "password": "fobarfobar"}]}, "new": {"Customizations.user": [{"key": "ssh-rsa AAAAB3NzaC1... root@localhost.localdomain", "name": "root", "password": "qweqweqwe"}]}},
-                {"old": {"Repos.git": {"destination": "/opt/server-1/", "ref": "v1.0", "repo": "PATH OF GIT REPO TO CLONE", "rpmname": "server-config", "rpmrelease": "2", "rpmversion": "1.0", "summary": "Setup files for server deployment"}}, "new": {"Repos.git": {"destination": "/opt/server-1/", "ref": "v1.0", "repo": "PATH OF GIT REPO TO CLONE", "rpmname": "server-config", "rpmrelease": "1", "rpmversion": "1.1", "summary": "Setup files for server deployment"}}}
                 ]
 
 diff_result = [
@@ -73,7 +70,6 @@ diff_result = [
     'Added Customizations.sshkey norm',
     'Added Customizations.timezone ntpservers="ntp.nowhere.com" timezone="PST8PDT"',
     'Added Customizations.user root',
-    'Added Repos.git destination="/opt/server-1/" ref="v1.0" repo="PATH OF GIT REPO TO CLONE" rpmname="server-config" rpmrelease="2" rpmversion="1.0" summary="Setup files for server deployment"',
     'Removed Group core',
     'Removed Customizations.firewall ports="8888:tcp, 22:tcp, dns:udp, 9090:tcp" services="smtp"',
     'Removed Customizations.hostname foobar',
@@ -81,24 +77,20 @@ diff_result = [
     'Removed Customizations.sshkey norm',
     'Removed Customizations.timezone ntpservers="ntp.nowhere.com" timezone="PST8PDT"',
     'Removed Customizations.user root',
-    'Removed Repos.git destination="/opt/server-1/" ref="v1.0" repo="PATH OF GIT REPO TO CLONE" rpmname="server-config" rpmrelease="2" rpmversion="1.0" summary="Setup files for server deployment"',
     'Changed Customizations.firewall ports="8888:tcp, 22:tcp, dns:udp, 9090:tcp" services="smtp" -> ports="8888:tcp, 22:tcp, 25:tcp"',
     'Changed Customizations.hostname foobar -> grues',
     'Changed Customizations.locale keyboard="US" -> keyboard="US" languages="en_US.UTF-8"',
     'Changed Customizations.sshkey norm -> norm',
     'Changed Customizations.timezone ntpservers="ntp.nowhere.com" timezone="PST8PDT" -> timezone="Antarctica/Palmer"',
     'Changed Customizations.user root -> root',
-    'Changed Repos.git destination="/opt/server-1/" ref="v1.0" repo="PATH OF GIT REPO TO CLONE" rpmname="server-config" rpmrelease="2" rpmversion="1.0" summary="Setup files for server deployment" -> destination="/opt/server-1/" ref="v1.0" repo="PATH OF GIT REPO TO CLONE" rpmname="server-config" rpmrelease="1" rpmversion="1.1" summary="Setup files for server deployment"',
     ]
 
 dict_entries = [{"ports": ["8888:tcp", "22:tcp", "dns:udp", "9090:tcp"]},
                 {"ports": ["8888:tcp", "22:tcp", "dns:udp", "9090:tcp"], "services": ["smtp"]},
-                { "destination": "/opt/server-1/", "ref": "v1.0", "repo": "PATH OF GIT REPO TO CLONE", "rpmname": "server-config", "rpmrelease": "1", "rpmversion": "1.0", "summary": "Setup files for server deployment" },
                 {"foo": ["one", "two"], "bar": {"baz": "three"}}]
 
 dict_results = ['ports="8888:tcp, 22:tcp, dns:udp, 9090:tcp"',
                 'ports="8888:tcp, 22:tcp, dns:udp, 9090:tcp" services="smtp"',
-                'destination="/opt/server-1/" ref="v1.0" repo="PATH OF GIT REPO TO CLONE" rpmname="server-config" rpmrelease="1" rpmversion="1.0" summary="Setup files for server deployment"',
                 'foo="one, two"']
 
 dict_name_entry1 = [{"name": "bart", "home": "Springfield"},
