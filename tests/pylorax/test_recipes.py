@@ -126,36 +126,6 @@ class BasicRecipeTest(unittest.TestCase):
                                                                 'password': '$6$CHO2$3rN8eviE2t50lmVyBYihTgVRHcaecmeCk31L...', 'shell': '/usr/bin/bash', 'uid': 1200}]},
                                'old': None}]
 
-        # repos.git test data and results
-        self.old_git = [{'rpmname': 'server-config-files',
-                         'rpmversion': '1.0',
-                         'rpmrelease': '1',
-                         'summary': 'Setup files for server deployment',
-                         'repo': 'https://github.com/weldr/server-config-files',
-                         'ref': 'v3.0',
-                         'destination': '/srv/config/'}]
-        self.new_git = [{'rpmname': 'bart-files',
-                         'rpmversion': '1.1',
-                         'rpmrelease': '1',
-                         'summary': 'Files needed for Bart',
-                         'repo': 'https://github.com/weldr/not-a-real-repo',
-                         'ref': 'v1.0',
-                         'destination': '/home/bart/Documents/'},
-                         {'rpmname': 'server-config-files',
-                         'rpmversion': '1.0',
-                         'rpmrelease': '1',
-                         'summary': 'Setup files for server deployment',
-                         'repo': 'https://github.com/weldr/server-config-files',
-                         'ref': 'v3.0',
-                         'destination': '/srv/config/'}]
-        self.git_result = [{'old': None,
-                            'new': {'Repos.git': {'rpmname': 'bart-files',
-                                                  'rpmversion': '1.1',
-                                                  'rpmrelease': '1',
-                                                  'summary': 'Files needed for Bart',
-                                                  'repo': 'https://github.com/weldr/not-a-real-repo',
-                                                  'ref': 'v1.0',
-                                                  'destination': '/home/bart/Documents/'}}}]
         self.maxDiff = None
 
     @classmethod
@@ -249,8 +219,6 @@ class BasicRecipeTest(unittest.TestCase):
         self.assertEqual(recipes.diff_lists("Modules", "name", self.old_modules, self.new_modules), self.modules_result)
         self.assertEqual(recipes.diff_lists("Packages", "name", self.old_packages, self.new_packages), self.packages_result)
         self.assertEqual(recipes.diff_lists("Groups", "name", self.old_groups, self.new_groups), self.groups_result)
-        self.assertEqual(recipes.diff_lists("Repos.git", "rpmname", self.old_git, self.new_git), self.git_result)
-        self.assertEqual(recipes.diff_lists("Repos.git", "rpmname", self.old_git, sorted(self.new_git, reverse=True, key=lambda o: o["rpmname"].lower())), self.git_result)
 
     def customizations_diff_test(self):
         """Test the customizations_diff function"""
@@ -526,69 +494,35 @@ class BasicRecipeTest(unittest.TestCase):
 
     def recipe_diff_test(self):
         """Test the recipe_diff function"""
-        old_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.1.1", self.old_modules, self.old_packages, [], gitrepos=self.old_git)
-        new_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.3.1", self.new_modules, self.new_packages, [], gitrepos=self.new_git)
-        result = [{'new': {'Version': '0.3.1'}, 'old': {'Version': '0.1.1'}},
-                  {'new': {'Module': {'name': 'openssh', 'version': '2.8.1'}}, 'old': None},
-                  {'new': None, 'old': {'Module': {'name': 'bash', 'version': '5.*'}}},
-                  {'new': {'Module': {'name': 'httpd', 'version': '3.8.*'}},
-                   'old': {'Module': {'name': 'httpd', 'version': '3.7.*'}}},
-                  {'new': {'Package': {'name': 'git', 'version': '2.13.*'}}, 'old': None},
-                  {'new': {'Repos.git': {'destination': '/home/bart/Documents/',
-                                         'ref': 'v1.0',
-                                         'repo': 'https://github.com/weldr/not-a-real-repo',
-                                         'rpmname': 'bart-files',
-                                         'rpmrelease': '1',
-                                         'rpmversion': '1.1',
-                                         'summary': 'Files needed for Bart'}},
-                   'old': None}]
-        self.assertEqual(recipes.recipe_diff(old_recipe, new_recipe), result)
-
-        # Empty starting recipe
-        old_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.1.1", [], self.old_packages, [], gitrepos=self.old_git)
-        new_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.3.1", self.new_modules, self.new_packages, [], gitrepos=self.new_git)
-        result = [{'new': {'Version': '0.3.1'}, 'old': {'Version': '0.1.1'}},
-                  {'new': {'Module': {'name': 'httpd', 'version': '3.8.*'}}, 'old': None},
-                  {'new': {'Module': {'name': 'openssh', 'version': '2.8.1'}}, 'old': None},
-                  {'new': {'Module': {'name': 'toml', 'version': '2.1'}}, 'old': None},
-                  {'new': {'Package': {'name': 'git', 'version': '2.13.*'}}, 'old': None},
-                  {'new': {'Repos.git': {'destination': '/home/bart/Documents/',
-                                         'ref': 'v1.0',
-                                         'repo': 'https://github.com/weldr/not-a-real-repo',
-                                         'rpmname': 'bart-files',
-                                         'rpmrelease': '1',
-                                         'rpmversion': '1.1',
-                                         'summary': 'Files needed for Bart'}},
-                   'old': None}]
-        self.assertEqual(recipes.recipe_diff(old_recipe, new_recipe), result)
-
-        # All new git repos
         old_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.1.1", self.old_modules, self.old_packages, [])
-        new_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.3.1", self.new_modules, self.new_packages, [], gitrepos=self.new_git)
+        new_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.3.1", self.new_modules, self.new_packages, [])
         result = [{'new': {'Version': '0.3.1'}, 'old': {'Version': '0.1.1'}},
                   {'new': {'Module': {'name': 'openssh', 'version': '2.8.1'}}, 'old': None},
                   {'new': None, 'old': {'Module': {'name': 'bash', 'version': '4.*'}}},
                   {'new': {'Module': {'name': 'httpd', 'version': '3.8.*'}},
                    'old': {'Module': {'name': 'httpd', 'version': '3.7.*'}}},
-                  {'new': {'Package': {'name': 'git', 'version': '2.13.*'}}, 'old': None},
-                  {'new': {'Repos.git': {'destination': '/home/bart/Documents/',
-                                         'ref': 'v1.0',
-                                         'repo': 'https://github.com/weldr/not-a-real-repo',
-                                         'rpmname': 'bart-files',
-                                         'rpmrelease': '1',
-                                         'rpmversion': '1.1',
-                                         'summary': 'Files needed for Bart'}},
-                   'old': None},
-                  {'new': {'Repos.git': {'destination': '/srv/config/',
-                                         'ref': 'v3.0',
-                                         'repo': 'https://github.com/weldr/server-config-files',
-                                         'rpmname': 'server-config-files',
-                                         'rpmrelease': '1',
-                                         'rpmversion': '1.0',
-                                         'summary': 'Setup files for server deployment'}},
-                   'old': None}]
+                  {'new': {'Package': {'name': 'git', 'version': '2.13.*'}}, 'old': None}]
+        self.assertEqual(recipes.recipe_diff(old_recipe, new_recipe), result)
 
+        # Empty starting recipe
+        old_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.1.1", [], self.old_packages, [])
+        new_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.3.1", self.new_modules, self.new_packages, [])
+        result = [{'new': {'Version': '0.3.1'}, 'old': {'Version': '0.1.1'}},
+                  {'new': {'Module': {'name': 'httpd', 'version': '3.8.*'}}, 'old': None},
+                  {'new': {'Module': {'name': 'openssh', 'version': '2.8.1'}}, 'old': None},
+                  {'new': {'Module': {'name': 'toml', 'version': '2.1'}}, 'old': None},
+                  {'new': {'Package': {'name': 'git', 'version': '2.13.*'}}, 'old': None}]
+        self.assertEqual(recipes.recipe_diff(old_recipe, new_recipe), result)
 
+        # All new git repos
+        old_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.1.1", self.old_modules, self.old_packages, [])
+        new_recipe = recipes.Recipe("test-recipe", "A recipe used for testing", "0.3.1", self.new_modules, self.new_packages, [])
+        result = [{'new': {'Version': '0.3.1'}, 'old': {'Version': '0.1.1'}},
+                  {'new': {'Module': {'name': 'openssh', 'version': '2.8.1'}}, 'old': None},
+                  {'new': None, 'old': {'Module': {'name': 'bash', 'version': '4.*'}}},
+                  {'new': {'Module': {'name': 'httpd', 'version': '3.8.*'}},
+                   'old': {'Module': {'name': 'httpd', 'version': '3.7.*'}}},
+                  {'new': {'Package': {'name': 'git', 'version': '2.13.*'}}, 'old': None}]
         self.assertEqual(recipes.recipe_diff(old_recipe, new_recipe), result)
 
 class GitRecipesTest(unittest.TestCase):
