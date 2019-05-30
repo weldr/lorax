@@ -1553,6 +1553,26 @@ class ServerTestCase(unittest.TestCase):
         self.assertTrue(len(data["errors"]) > 0)
         self.assertEqual(data["errors"][0]["id"], "UnknownBlueprint")
 
+    def test_404(self):
+        """Test that a 404 returns JSON"""
+        resp = self.server.get("/marmalade")
+        print(resp)
+        print(resp.data)
+        self.assertEqual(resp.status_code, 404)
+        self.assertEqual(json.loads(resp.data), {
+            "status": False,
+            "errors": [{ "id": "HTTPError", "code": 404, "msg": "Not Found" }]
+        })
+
+    def test_405(self):
+        """Test that a 405 returns JSON"""
+        resp = self.server.post("/api/status")
+        self.assertEqual(resp.status_code, 405)
+        self.assertEqual(json.loads(resp.data), {
+            "status": False,
+            "errors": [{ "id": "HTTPError", "code": 405, "msg": "Method Not Allowed" }]
+        })
+
 @contextmanager
 def in_tempdir(prefix='tmp'):
     """Execute a block of code with chdir in a temporary location"""

@@ -21,9 +21,11 @@ from collections import namedtuple
 from flask import Flask, jsonify, redirect, send_from_directory
 from glob import glob
 import os
+import werkzeug
 
 from pylorax import vernum
 from pylorax.api.crossdomain import crossdomain
+from pylorax.api.errors import HTTP_ERROR
 from pylorax.api.v0 import v0_api
 from pylorax.sysutils import joinpaths
 
@@ -78,5 +80,9 @@ def v0_status():
                    schema_version="0",
                    db_supported=True,
                    msgs=server.config["TEMPLATE_ERRORS"])
+
+@server.errorhandler(werkzeug.exceptions.HTTPException)
+def bad_request(error):
+    return jsonify(status=False, errors=[{ "id": HTTP_ERROR, "code": error.code, "msg": error.name }]), error.code
 
 v0_api(server)
