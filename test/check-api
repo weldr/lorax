@@ -1,0 +1,69 @@
+#!/usr/bin/python3
+
+import composertest
+import requests
+import subprocess
+
+
+class TestApi(composertest.ComposerTestCase):
+    """Test Composer HTTP API"""
+
+    def setUp(self):
+        super().setUp()
+
+        # Forward /run/weldr/api.socket to a port on the host
+        # Set ExitOnForwardFailure so that ssh blocks until the forward is set
+        # up before going to the background (-f), which it closes stdout. We
+        # wait for that by calling read() on it.
+        self.composer_port = self.network._lock(8080)
+        forwarder_command = [*self.ssh_command, "-fNT",
+                                                "-o", "ExitOnForwardFailure=yes",
+                                                "-L", f"localhost:{self.composer_port}:/run/weldr/api.socket"]
+        self.forwarder_proc = subprocess.Popen(forwarder_command, stdout=subprocess.PIPE)
+        self.forwarder_proc.stdout.read()
+
+    def tearDown(self):
+        self.forwarder_proc.terminate()
+        try:
+            self.forwarder_proc.wait(timeout=1)
+        except TimeoutError:
+            self.forwarder_proc.kill()
+        super().tearDown()
+
+    def request(self, method, path, check=True):
+        self.assertEqual(path[0], "/")
+        r = requests.request(method, f"http://localhost:{self.composer_port}{path}", timeout=30)
+        if check:
+            r.raise_for_status()
+        return r
+
+    def test_basic(self):
+        """Basic checks for the API"""
+
+        #
+        # API status without depsolve errors
+        #
+        status = self.request("GET", "/api/status").json()
+        self.assertEqual(status.keys(), { "build", "api", "db_version", "schema_version", "db_supported", "backend", "msgs" })
+        self.assertEqual(status["msgs"], [])
+
+        #
+        # HTTP errors should return json responses
+        #
+        r = self.request("GET", "/marmalade", check=False)
+        self.assertEqual(r.status_code, 404)
+        self.assertEqual(r.json(), {
+            "status": False,
+            "errors": [{ "id": "HTTPError", "code": 404, "msg": "Not Found" }]
+        })
+
+        r = self.request("POST", "/api/status", check=False)
+        self.assertEqual(r.status_code, 405)
+        self.assertEqual(r.json(), {
+            "status": False,
+            "errors": [{ "id": "HTTPError", "code": 405, "msg": "Method Not Allowed" }]
+        })
+
+
+if __name__ == '__main__':
+    composertest.main()

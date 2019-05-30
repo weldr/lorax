@@ -28,8 +28,8 @@ class ComposerTestCase(unittest.TestCase):
     sit = False
 
     def setUp(self):
-        network = testvm.VirtNetwork(0)
-        self.machine = testvm.VirtMachine(self.image, networking=network.host(), memory_mb=2048)
+        self.network = testvm.VirtNetwork(0)
+        self.machine = testvm.VirtMachine(self.image, networking=self.network.host(), memory_mb=2048)
 
         print(f"Starting virtual machine '{self.image}'")
         self.machine.start()
@@ -58,7 +58,6 @@ class ComposerTestCase(unittest.TestCase):
         # Peek into internal data structure, because there's no way to get the
         # TestResult at this point. `errors` is a list of tuples (method, error)
         errors = filter(None, [ e[1] for e in self._outcome.errors ])
-
         if errors and self.sit:
             for e in errors:
                 print_exception(*e)
