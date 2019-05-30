@@ -16,6 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# HTTP errors
+HTTP_ERROR = "HTTPError"
+
 # Returned from the API when either an invalid compose type is given, or not
 # compose type is given.
 BAD_COMPOSE_TYPE = "BadComposeType"
