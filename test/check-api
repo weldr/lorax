@@ -43,9 +43,12 @@ class TestApi(composertest.ComposerTestCase):
         #
         # API status without depsolve errors
         #
-        status = self.request("GET", "/api/status").json()
+        r = self.request("GET", "/api/status")
+        self.assertEqual(r.status_code, 200)
+        status = r.json()
         self.assertEqual(status.keys(), { "build", "api", "db_version", "schema_version", "db_supported", "backend", "msgs" })
         self.assertEqual(status["msgs"], [])
+        self.assertEqual(r.headers.keys(), { "Content-Type", "Content-Length", "Date" })
 
         #
         # HTTP errors should return json responses
