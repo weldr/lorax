@@ -4,8 +4,28 @@
 
 make vm
 
-if [ -n "$TEST_SCENARIO" ]; then
-  test/check-cloud TestCloud.test_$TEST_SCENARIO
-else
-  test/check-cli
-fi
+case "$TEST_SCENARIO" in
+  images-1)
+    test/check-cli TestImages.test_ext4_filesystem \
+                   TestImages.test_partitioned_disk \
+                   TestImages.test_tar
+     ;;
+
+  images-2)
+    test/check-cli TestImages.test_live_iso \
+                   TestImages.test_qcow2
+    ;;
+
+  aws|azure|openstack|vmware)
+    test/check-cloud TestCloud.test_$TEST_SCENARIO
+    ;;
+
+  "")
+    test/check-cli TestSanity
+    ;;
+
+  *)
+    echo "Error: unknown TEST_SCENARIO: '"$TEST_SCENARIO"'"
+    exit 1
+    ;;
+esac
