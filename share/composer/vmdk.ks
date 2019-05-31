@@ -5,7 +5,7 @@ firewall --enabled
 
 # NOTE: The root account is locked by default
 # Network information
-network  --bootproto=dhcp --onboot=on --activate
+network  --bootproto=dhcp --onboot=on --activate --device=eth0
 # System keyboard
 keyboard --xlayouts=us --vckeymap=us
 # System language
@@ -19,7 +19,7 @@ shutdown
 # System timezone
 timezone  US/Eastern
 # System bootloader configuration
-bootloader --location=mbr
+bootloader --location=mbr --append="net.ifnames=0 biosdevname=0"
 
 # Basic services
 services --enabled=sshd,chronyd,vmtoolsd
