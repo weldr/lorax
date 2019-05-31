@@ -150,7 +150,7 @@ $(VM_IMAGE): srpm bots
 		--run-command "chmod +x /var/tmp/vm.install" \
 		--run-command "cd /var/tmp; /var/tmp/vm.install $$srpm" \
 		$(TEST_OS)
-	[ -f "~/.config/lorax-test-env" ] && bots/image-customize \
+	[ -f ~/.config/lorax-test-env ] && bots/image-customize \
 		--upload ~/.config/lorax-test-env:/var/tmp/lorax-test-env \
 		$(TEST_OS) || echo
 
