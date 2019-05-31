@@ -5,7 +5,7 @@ firewall --enabled
 
 # NOTE: The root account is locked by default
 # Network information
-network  --bootproto=dhcp --onboot=on --activate
+network  --bootproto=dhcp --onboot=on --activate --device=eth0
 # NOTE: keyboard and lang can be replaced by blueprint customizations.locale settings
 # System keyboard
 keyboard --xlayouts=us --vckeymap=us
@@ -18,7 +18,7 @@ logging --level=info
 # Shutdown after installation
 shutdown
 # System bootloader configuration
-bootloader --location=mbr
+bootloader --location=mbr --append="net.ifnames=0 biosdevname=0"
 # Add platform specific partitions
 reqpart --add-boot
 
