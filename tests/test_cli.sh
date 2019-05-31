@@ -29,6 +29,22 @@ function teardown_tests {
     mv $1/composer/live-iso.ks.orig $1/composer/live-iso.ks
 }
 
+function tmp_debug_info {
+    echo -e "debug info for BZ#1705058:\nlosetup -l: \n"
+    losetup -l
+    echo -e "\nmount:\n"
+    mount
+    echo -e "\n\n"
+    echo "content of /mnt:"
+    ls -d /mnt/*
+    echo -e "\n\n"
+    if -ls -d "/mnt/sys*" &>/dev/null; then
+        echo "content of /mnt/sys*:"
+        find /mnt/sys*
+        echo -e "\n\n"
+    fi
+}
+
 if [ -z "$CLI" ]; then
     export top_srcdir=`pwd`
     . ./tests/testenv.sh
@@ -71,8 +87,10 @@ if [ -z "$*" ]; then
 else
     # Execute other cli tests which need more adjustments in the calling environment
     # or can't be executed inside Travis CI
+    tmp_debug_info
     for TEST in "$@"; do
         ./$TEST
+        tmp_debug_info
     done
 fi
 
