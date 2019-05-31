@@ -24,7 +24,6 @@ import os
 import werkzeug
 
 from pylorax import vernum
-from pylorax.api.crossdomain import crossdomain
 from pylorax.api.errors import HTTP_ERROR
 from pylorax.api.v0 import v0_api
 from pylorax.sysutils import joinpaths
@@ -54,7 +53,6 @@ def api_docs(path=None):
     return send_from_directory(docs_path, path)
 
 @server.route("/api/status")
-@crossdomain(origin="*")
 def v0_status():
     """
     `/api/v0/status`
