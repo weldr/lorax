@@ -3,8 +3,7 @@
 
 set -eu
 
-# setup
-rm -rf /var/tmp/beakerlib-*/
+export BEAKERLIB_DIR=$(mktemp -d /tmp/composer-test.XXXXXX)
 
 function setup_tests {
     local share_dir=$1
@@ -103,8 +102,11 @@ else
     systemctl start lorax-composer
 fi
 
-# look for failures
-grep RESULT_STRING /var/tmp/beakerlib-*/TestResults | grep -v PASS && exit 1
+. $BEAKERLIB_DIR/TestResults
 
-# explicit return code for Makefile
-exit 0
+if [ $TESTRESULT_RESULT_ECODE != 0 ]; then
+  echo "Test failed. Leaving log in $BEAKERLIB_DIR"
+  exit $TESTRESULT_RESULT_ECODE
+fi
+
+rm -rf $BEAKERLIB_DIR
