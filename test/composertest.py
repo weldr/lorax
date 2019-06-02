@@ -57,7 +57,8 @@ class ComposerTestCase(unittest.TestCase):
     def tearDown(self):
         # Peek into internal data structure, because there's no way to get the
         # TestResult at this point. `errors` is a list of tuples (method, error)
-        errors = filter(None, [ e[1] for e in self._outcome.errors ])
+        errors = list(e[1] for e in self._outcome.errors if e[1])
+
         if errors and self.sit:
             for e in errors:
                 print_exception(*e)
