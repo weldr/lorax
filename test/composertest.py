@@ -76,9 +76,14 @@ class ComposerTestCase(unittest.TestCase):
         return subprocess.run(self.ssh_command + command, **args)
 
     def runCliTest(self, script):
+        extra_env = []
+        if self.sit:
+            extra_env.append("COMPOSER_TEST_FAIL_FAST=1")
+
         r = self.execute(["CLI=/usr/bin/composer-cli",
                           "TEST=" + self.id(),
                           "PACKAGE=composer-cli",
+                          *extra_env,
                           "/tests/test_cli.sh", script])
         self.assertEqual(r.returncode, 0)
 

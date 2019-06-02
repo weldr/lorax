@@ -4,6 +4,7 @@
 set -e
 
 . /usr/share/beakerlib/beakerlib.sh
+. $(dirname $0)/lib/lib.sh
 
 CLI="${CLI:-./src/bin/composer-cli}"
 
