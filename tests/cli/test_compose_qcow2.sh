@@ -7,6 +7,8 @@
 #
 #####
 
+set -e
+
 . /usr/share/beakerlib/beakerlib.sh
 . $(dirname $0)/lib/lib.sh
 

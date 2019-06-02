@@ -1,6 +1,8 @@
 #!/bin/bash
 # Note: execute this file from the project root directory
 
+set -e
+
 . /usr/share/beakerlib/beakerlib.sh
 
 CLI="${CLI:-./src/bin/composer-cli}"
