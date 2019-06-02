@@ -33,3 +33,10 @@ yum install -y $packages
 
 systemctl enable lorax-composer.socket
 systemctl enable docker.service
+
+# Start lorax-composer to update the cache, so that it doesn't have to do this
+# on every test run. A single request to it is sufficient, because it doesn't
+# answer the first request until it has updated the cache.
+
+systemctl start lorax-composer.socket
+composer-cli status show

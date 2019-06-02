@@ -121,10 +121,6 @@ def get_base_object(conf):
     log.info("Using %s for module_platform_id", platform_id)
     dbc.module_platform_id = platform_id
 
-    # Make sure metadata is always current
-    dbc.metadata_expire = 0
-    dbc.metadata_expire_filter = "never"
-
     # write the dnf configuration file
     with open(dnfconf, "w") as f:
         f.write(dbc.dump())
