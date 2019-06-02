@@ -1,6 +1,8 @@
 #!/bin/bash
 # Note: execute this file from the project root directory
 
+set -eu
+
 # setup
 rm -rf /var/tmp/beakerlib-*/
 

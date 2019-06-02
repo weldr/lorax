@@ -6,6 +6,8 @@
 #
 #####
 
+set -e
+
 . /usr/share/beakerlib/beakerlib.sh
 
 CLI="${CLI:-./src/bin/composer-cli}"
