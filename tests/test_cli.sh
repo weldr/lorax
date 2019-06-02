@@ -7,20 +7,23 @@ set -eu
 rm -rf /var/tmp/beakerlib-*/
 
 function setup_tests {
+    local share_dir=$1
+    local blueprints_dir=$2
+
     # explicitly enable sshd for live-iso b/c it is disabled by default
     # due to security concerns (no root password required)
-    sed -i.orig 's/^services.*/services --disabled="network" --enabled="NetworkManager,sshd"/' $1/composer/live-iso.ks
+    sed -i.orig 's/^services.*/services --disabled="network" --enabled="NetworkManager,sshd"/' $share_dir/composer/live-iso.ks
     # explicitly enable logging in with empty passwords via ssh, because
     # the default sshd setting for PermitEmptyPasswords is 'no'
     awk -i inplace "
         /%post/ && FLAG != 2 {FLAG=1}
         /%end/ && FLAG == 1 {print \"sed -i 's/.*PermitEmptyPasswords.*/PermitEmptyPasswords yes/' /etc/ssh/sshd_config\"; FLAG=2}
         {print}" \
-        $1/composer/live-iso.ks
+        $share_dir/composer/live-iso.ks
 
     # append a section with additional option on kernel command line to example-http-server blueprint
     # which is used for building of most of the images
-    cat >> $BLUEPRINTS_DIR/example-http-server.toml << __EOF__
+    cat >> $blueprints_dir/example-http-server.toml << __EOF__
 
 [customizations.kernel]
 append = "custom_cmdline_arg"
@@ -51,13 +54,12 @@ if [ -z "$CLI" ]; then
     cp -R ./share/* $SHARE_DIR
     chmod a+rx -R $SHARE_DIR
 
-    setup_tests $SHARE_DIR
+    setup_tests $SHARE_DIR $BLUEPRINTS_DIR
     # start the lorax-composer daemon
     ./src/sbin/lorax-composer --sharedir $SHARE_DIR $BLUEPRINTS_DIR &
 else
     export PACKAGE="composer-cli"
-    SHARE_DIR="/usr/share/lorax"
-    setup_tests $SHARE_DIR
+    setup_tests /usr/share/lorax /var/lib/lorax/composer/blueprints
     systemctl restart lorax-composer
 fi
 
@@ -95,7 +97,7 @@ if [ -z "$CLI" ]; then
     teardown_tests $SHARE_DIR
 else
     systemctl stop lorax-composer
-    teardown_tests $SHARE_DIR
+    teardown_tests /usr/share/lorax
     # start lorax-composer again so we can continue with manual or other kinds
     # of testing on the same system
     systemctl start lorax-composer
