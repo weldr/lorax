@@ -136,7 +136,7 @@ __EOF__
             rlLogInfo "IP_ADDRESS is not assigned yet ..."
             sleep 30
             IP_ADDRESS=`python3 $SAMPLES/find_by_uuid.py -S -s $V_HOST -u $V_USERNAME -p $V_PASSWORD \
-                            --uuid $INSTANCE_UUID | grep 'ip address' | tr -d ' ' | cut -f2 -d:`
+                            --uuid $INSTANCE_UUID | grep 'ip address' | tr -d ' ' | cut -f2- -d:`
         done
 
         rlLogInfo "Running instance IP_ADDRESS=$IP_ADDRESS"
