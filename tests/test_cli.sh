@@ -19,6 +19,12 @@ function setup_tests {
         /%end/ && FLAG == 1 {print \"sed -i 's/.*PermitEmptyPasswords.*/PermitEmptyPasswords yes/' /etc/ssh/sshd_config\"; FLAG=2}
         {print}" $share_dir/composer/live-iso.ks)" > $share_dir/composer/live-iso.ks
 
+    # do a backup of the original blueprints directory and get rid of the git
+    # directory (otherwise all of the initial changes in blueprints would have
+    # to be done using blueprints push)
+    cp -r $blueprints_dir ${blueprints_dir}.orig
+    rm -rf $blueprints_dir/git
+
     # append a section with additional option on kernel command line to example-http-server blueprint
     # which is used for building of most of the images
     cat >> $blueprints_dir/example-http-server.toml << __EOF__
@@ -29,7 +35,12 @@ __EOF__
 }
 
 function teardown_tests {
-    mv $1/composer/live-iso.ks.orig $1/composer/live-iso.ks
+    local share_dir=$1
+    local blueprints_dir=$2
+
+    mv $share_dir/composer/live-iso.ks.orig $share_dir/composer/live-iso.ks
+    rm -rf $blueprints_dir
+    mv ${blueprints_dir}.orig $blueprints_dir
 }
 
 if [ -z "$CLI" ]; then
@@ -48,8 +59,9 @@ if [ -z "$CLI" ]; then
     ./src/sbin/lorax-composer --sharedir $SHARE_DIR $BLUEPRINTS_DIR &
 else
     export PACKAGE="composer-cli"
+    systemctl stop lorax-composer
     setup_tests /usr/share/lorax /var/lib/lorax/composer/blueprints
-    systemctl restart lorax-composer
+    systemctl start lorax-composer
 fi
 
 
@@ -85,10 +97,10 @@ if [ -z "$CLI" ]; then
     # only if running against source
     pkill -9 lorax-composer
     rm -f /run/weldr/api.socket
-    teardown_tests $SHARE_DIR
+    teardown_tests $SHARE_DIR $BLUEPRINTS_DIR
 else
     systemctl stop lorax-composer
-    teardown_tests /usr/share/lorax
+    teardown_tests /usr/share/lorax /var/lib/lorax/composer/blueprints
     # start lorax-composer again so we can continue with manual or other kinds
     # of testing on the same system
     systemctl start lorax-composer
