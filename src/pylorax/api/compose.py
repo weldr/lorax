@@ -494,7 +494,7 @@ def write_ks_root(f, user):
 
     # ssh key uses the sshkey kickstart command
     if "key" in user:
-        f.write('sshkey --user %s "%s"\n' % (user["name"], user["key"]))
+        f.write('sshkey --user %s "%s"\n' % (user["name"], user["key"].strip()))
 
     if "password" in user:
         if any(user["password"].startswith(prefix) for prefix in ["$2b$", "$6$", "$5$"]):
@@ -522,7 +522,7 @@ def write_ks_user(f, user):
     """
     # ssh key uses the sshkey kickstart command
     if "key" in user:
-        f.write('sshkey --user %s "%s"\n' % (user["name"], user["key"]))
+        f.write('sshkey --user %s "%s"\n' % (user["name"], user["key"].strip()))
 
     # Write out the user kickstart command, much of it is optional
     f.write("user --name %s" % user["name"])
@@ -606,7 +606,7 @@ def add_customizations(f, recipe):
             if "user" not in sshkey or "key" not in sshkey:
                 log.error("%s is incorrect, skipping", sshkey)
                 continue
-            f.write('sshkey --user %s "%s"\n' % (sshkey["user"], sshkey["key"]))
+            f.write('sshkey --user %s "%s"\n' % (sshkey["user"], sshkey["key"].strip()))
 
     # Creating a user also creates a group. Make a list of the names for later
     user_groups = []
