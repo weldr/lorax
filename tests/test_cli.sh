@@ -4,6 +4,7 @@
 set -eu
 
 export BEAKERLIB_DIR=$(mktemp -d /tmp/composer-test.XXXXXX)
+CLI="${CLI:-}"
 
 function setup_tests {
     local share_dir=$1
