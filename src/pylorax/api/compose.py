@@ -36,7 +36,7 @@ log = logging.getLogger("lorax-composer")
 
 import os
 from glob import glob
-from io import StringIO
+from StringIO import StringIO
 from math import ceil
 import pytoml as toml
 import shutil
@@ -448,7 +448,7 @@ def customize_ks_template(ks_template, recipe):
 
     output = StringIO()
     for line in ks_template.splitlines():
-        for cmd in commands:
+        for cmd in sorted(commands.keys()):
             (new_command, value, default, replace) = commands[cmd]
             if line.startswith(cmd):
                 found[cmd] = True
@@ -466,7 +466,7 @@ def customize_ks_template(ks_template, recipe):
     # Write out defaults for the ones not found
     # These must go FIRST because the template still needs to have the packages added
     defaults = StringIO()
-    for cmd in commands:
+    for cmd in sorted(commands.keys()):
         if cmd in found:
             continue
         (new_command, value, default, _) = commands[cmd]
