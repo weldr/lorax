@@ -804,7 +804,7 @@ ntpservers = ["1.north-america.pool.ntp.org"]
 """
         ks = self._blueprint_to_ks(blueprint_data)
         self.assertEqual(ks.handler.timezone.timezone, "US/Samoa")
-        self.assertEqual(ks.handler.timezone.ntpservers, ["1.north-america.pool.ntp.org"])
+        self.assertEqual(ks.handler.timezone.ntpservers, set(["1.north-america.pool.ntp.org"]))
 
     def test_locale_languages(self):
         blueprint_data = """name = "test-locale"
@@ -1078,4 +1078,4 @@ ntpservers = ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"]
         self.assertEqual(studentsGroup.name, "students")
 
         self.assertEqual(ks.handler.timezone.timezone, "US/Samoa")
-        self.assertEqual(ks.handler.timezone.ntpservers, ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"])
+        self.assertEqual(ks.handler.timezone.ntpservers, set(["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"]))

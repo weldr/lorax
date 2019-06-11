@@ -202,7 +202,7 @@ def pretty_dict(d):
     key="str", key="str1,str2", ...
     """
     result = []
-    for k in d:
+    for k in sorted(d.keys()):
         if type(d[k]) == type(""):
             result.append('%s="%s"' % (k, d[k]))
         elif type(d[k]) == type([]) and type(d[k][0]) == type(""):

@@ -636,7 +636,7 @@ version = "*"
         self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("bootloader")]), 1)
         self.assertTrue(self._checkBootloader(result, "none", line_limit=2))
         self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("timezone")]), 1)
-        self.assertTrue(self._checkTimezone(result, {"timezone": "UTC", "ntpservers": []}, line_limit=2))
+        self.assertTrue(self._checkTimezone(result, {"timezone": "UTC", "ntpservers": []}, line_limit=5))
         self.assertTrue("services" not in result)
 
         # Make sure that a kickstart with a bootloader, and no timezone has timezone added to the top
@@ -645,7 +645,7 @@ version = "*"
         self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("bootloader")]), 1)
         self.assertTrue(self._checkBootloader(result, "mbr"))
         self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("timezone")]), 1)
-        self.assertTrue(self._checkTimezone(result, {"timezone": "UTC", "ntpservers": []}, line_limit=1))
+        self.assertTrue(self._checkTimezone(result, {"timezone": "UTC", "ntpservers": []}, line_limit=5))
         self.assertTrue("services" not in result)
 
         # Make sure that a kickstart with a bootloader and timezone has neither added
@@ -690,13 +690,14 @@ disabled = ["postfix", "telnetd"]
 
         # Test against a kickstart without bootloader
         result = customize_ks_template("firewall --enabled\n", recipe)
+        print(result)
         self.assertTrue(self._checkBootloader(result, "nosmt=force", line_limit=2))
         self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("bootloader")]), 1)
-        self.assertTrue(self._checkTimezone(result, tz_dict, line_limit=2))
+        self.assertTrue(self._checkTimezone(result, tz_dict, line_limit=5))
         self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("timezone")]), 1)
         self.assertTrue(self._checkLang(result, ["en_CA.utf8", "en_HK.utf8"], line_limit=4))
         self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("lang")]), 1)
-        self.assertTrue(self._checkKeyboard(result, "de (dvorak)", line_limit=4))
+        self.assertTrue(self._checkKeyboard(result, "de (dvorak)", line_limit=3))
         self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("keyboard")]), 1)
         self.assertTrue(self._checkFirewall(result,
                         {"ports": ["22:tcp", "80:tcp", "imap:tcp", "53:tcp", "53:udp"],
@@ -704,13 +705,14 @@ disabled = ["postfix", "telnetd"]
         self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("firewall")]), 1)
         self.assertTrue(self._checkServices(result,
                         {"enabled": ["cockpit.socket", "httpd", "sshd"], "disabled": ["postfix", "telnetd"]},
-                        line_limit=8))
+                        line_limit=6))
         self.assertEqual(sum([1 for l in result.splitlines() if l.startswith("services")]), 1)
 
         # Test against a kickstart with a bootloader line
         result = customize_ks_template("firewall --enabled\nbootloader --location=mbr\n", recipe)
+        print(result)
         self.assertTrue(self._checkBootloader(result, "nosmt=force"))
-        self.assertTrue(self._checkTimezone(result, tz_dict, line_limit=2))
+        self.assertTrue(self._checkTimezone(result, tz_dict, line_limit=5))
 
         # Test against all of the available templates
         share_dir = "./share/"
