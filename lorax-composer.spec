@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.33
+Version:        19.7.34
 Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
@@ -123,6 +123,20 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu Jun 13 2019 Brian C. Lane <bcl@redhat.com> 19.7.34-1
+- [tests] Handle blueprints in setup_tests/teardown_tests correctly (atodorov)
+  Related: rhbz#1698366
+- tests: Set BLUEPRINTS_DIR in all cases (lars)
+  Related: rhbz#1698366
+- tests: Change the way how we remove pyOpenSSL (atodorov)
+  Related: rhbz#1715003
+- Use a less strict regex for disabled root account check (jikortus)
+  Related: rhbz#1687595
+- Add test for passing custom option on kernel command line (jikortus)
+  Related: rhbz#1688335
+- Use verify_image function as a helper for generic tests (jikortus)
+  Related: rhbz#1704209
+
 * Tue May 07 2019 Brian C. Lane <bcl@redhat.com> 19.7.33-1
 - Pass ssl certificate options to anaconda (lars)
   Resolves: rhbz#1701033
