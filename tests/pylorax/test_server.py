@@ -27,13 +27,13 @@ from threading import Lock
 import unittest
 
 from flask import json
-import pytoml as toml
 from ..lib import create_git_repo
 from pylorax.api.config import configure, make_dnf_dirs, make_queue_dirs
 from pylorax.api.errors import *                               # pylint: disable=wildcard-import
 from pylorax.api.queue import start_queue_monitor
 from pylorax.api.recipes import open_or_create_repo, commit_recipe_directory
 from pylorax.api.server import server, GitLock
+import pylorax.api.toml as toml
 from pylorax.api.dnfbase import DNFLock
 from pylorax.sysutils import joinpaths
 

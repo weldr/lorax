@@ -15,10 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import pytoml as toml
 import time
 
 from pylorax.sysutils import joinpaths
+import pylorax.api.toml as toml
 
 TS_CREATED  = "created"
 TS_STARTED  = "started"

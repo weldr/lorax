@@ -37,7 +37,6 @@ import os
 from glob import glob
 from io import StringIO
 from math import ceil
-import pytoml as toml
 import shutil
 from uuid import uuid4
 
@@ -51,6 +50,7 @@ from pylorax.api.projects import projects_depsolve, projects_depsolve_with_size,
 from pylorax.api.projects import ProjectsError
 from pylorax.api.recipes import read_recipe_and_id
 from pylorax.api.timestamp import TS_CREATED, write_timestamp
+import pylorax.api.toml as toml
 from pylorax.base import DataHolder
 from pylorax.imgutils import default_image_name
 from pylorax.ltmpl import LiveTemplateRunner

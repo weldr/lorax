@@ -54,7 +54,6 @@ log = logging.getLogger("lorax-composer")
 import os
 from flask import jsonify, request, Response, send_file
 from flask import current_app as api
-import pytoml as toml
 
 from pylorax.sysutils import joinpaths
 from pylorax.api.checkparams import checkparams
@@ -70,6 +69,7 @@ from pylorax.api.recipes import RecipeError, list_branch_files, read_recipe_comm
 from pylorax.api.recipes import recipe_from_dict, recipe_from_toml, commit_recipe, delete_recipe, revert_recipe
 from pylorax.api.recipes import tag_recipe_commit, recipe_diff, RecipeFileError
 from pylorax.api.regexes import VALID_API_STRING
+import pylorax.api.toml as toml
 from pylorax.api.workspace import workspace_read, workspace_write, workspace_delete
 
 # The API functions don't actually get called by any code here
