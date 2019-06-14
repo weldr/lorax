@@ -22,12 +22,12 @@ from gi.repository import Gio
 from gi.repository import GLib
 
 import os
-import pytoml as toml
 import semantic_version as semver
 
 from pylorax.api.projects import dep_evra
 from pylorax.base import DataHolder
 from pylorax.sysutils import joinpaths
+import pylorax.api.toml as toml
 
 
 class CommitTimeValError(Exception):

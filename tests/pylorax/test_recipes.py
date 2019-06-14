@@ -16,13 +16,13 @@
 #
 import os
 import mock
-from pytoml import TomlError
 import shutil
 import tempfile
 import unittest
 
 import pylorax.api.recipes as recipes
 from pylorax.api.compose import add_customizations, customize_ks_template
+from pylorax.api.toml import TomlError
 from pylorax.sysutils import joinpaths
 
 from pykickstart.parser import KickstartParser
@@ -721,7 +721,7 @@ version = "2.7.*"
             recipes.commit_recipe_directory(self.repo, "master", self.examples_path)
 
         # try to commit while raising TomlError
-        with mock.patch('pylorax.api.recipes.commit_recipe_file', side_effect=TomlError('TESTING', 0, 0, '__test__')):
+        with mock.patch('pylorax.api.recipes.commit_recipe_file', side_effect=TomlError('TESTING', "", 0)):
             recipes.commit_recipe_directory(self.repo, "master", self.examples_path)
 
         # verify again that the newly created file isn't present b/c we raised an exception

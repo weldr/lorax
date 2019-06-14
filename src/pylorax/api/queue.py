@@ -21,7 +21,6 @@ import os
 import grp
 from glob import glob
 import multiprocessing as mp
-import pytoml as toml
 import pwd
 import shutil
 import subprocess
@@ -32,6 +31,7 @@ from pylorax import find_templates
 from pylorax.api.compose import move_compose_results
 from pylorax.api.recipes import recipe_from_file
 from pylorax.api.timestamp import TS_CREATED, TS_STARTED, TS_FINISHED, write_timestamp, timestamp_dict
+import pylorax.api.toml as toml
 from pylorax.base import DataHolder
 from pylorax.creator import run_creator
 from pylorax.sysutils import joinpaths

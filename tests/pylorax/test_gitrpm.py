@@ -15,7 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import os
-import pytoml as toml
 import rpm
 import shutil
 import stat
@@ -25,6 +24,7 @@ import unittest
 
 from ..lib import create_git_repo
 from pylorax.api.gitrpm import GitArchiveTarball, GitRpmBuild, make_git_rpm, create_gitrpm_repo
+import pylorax.api.toml as toml
 from pylorax.sysutils import joinpaths
 
 class GitArchiveTest(unittest.TestCase):

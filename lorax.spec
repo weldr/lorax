@@ -132,14 +132,14 @@ Lorax templates for creating the boot.iso and live isos are placed in
 %package composer
 Summary: Lorax Image Composer API Server
 # For Sphinx documentation build
-BuildRequires: python3-flask python3-gobject libgit2-glib python3-pytoml python3-semantic_version
+BuildRequires: python3-flask python3-gobject libgit2-glib python3-toml python3-semantic_version
 
 Requires: lorax = %{version}-%{release}
 Requires(pre): /usr/bin/getent
 Requires(pre): /usr/sbin/groupadd
 Requires(pre): /usr/sbin/useradd
 
-Requires: python3-pytoml
+Requires: python3-toml
 Requires: python3-semantic_version
 Requires: libgit2
 Requires: libgit2-glib
