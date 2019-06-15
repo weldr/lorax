@@ -269,6 +269,118 @@ def recipe_from_toml(recipe_str):
     recipe_dict = toml.loads(recipe_str)
     return recipe_from_dict(recipe_dict)
 
+def check_required_list(lst, fields):
+    """Check a list of dicts for required fields
+
+    :param lst: A list of dicts with fields
+    :type lst: list of dict
+    :param fields: A list of field name strings
+    :type fields: list of str
+    :returns: A list of error strings
+    :rtype: list of str
+    """
+    errors = []
+    for i, m in enumerate(lst):
+        m_errs = []
+        for f in fields:
+            if f not in m:
+                m_errs.append("'%s'" % f)
+        if m_errs:
+            errors.append("%d is missing %s" % (i, ",".join(m_errs)))
+    return errors
+
+def check_recipe_dict(recipe_dict):
+    """Check a dict before using it to create a new Recipe
+
+    :param recipe_dict: A plain dict of the recipe
+    :type recipe_dict: dict
+    :returns: True if dict is ok
+    :rtype: bool
+    :raises: RecipeError
+
+    This checks a dict to make sure required fields are present,
+    that optional fields are correct, and that other optional fields
+    are of the correct format, when included.
+
+    This collects all of the errors and returns a single RecipeError with
+    a string that can be presented to users.
+    """
+    errors = []
+
+    if "name" not in recipe_dict:
+        errors.append("Missing 'name'")
+    if "description" not in recipe_dict:
+        errors.append("Missing 'description'")
+    if "version" in recipe_dict:
+        try:
+            semver.Version(recipe_dict["version"])
+        except ValueError:
+            errors.append("Invalid 'version', must use Semantic Versioning")
+
+    # Examine all the modules
+    if recipe_dict.get("modules"):
+        module_errors = check_required_list(recipe_dict["modules"], ["name", "version"])
+        if module_errors:
+            errors.append("'modules' errors:\n%s" % "\n".join(module_errors))
+
+    # Examine all the packages
+    if recipe_dict.get("packages"):
+        package_errors = check_required_list(recipe_dict["packages"], ["name", "version"])
+        if package_errors:
+            errors.append("'packages' errors:\n%s" % "\n".join(package_errors))
+
+    if recipe_dict.get("groups"):
+        groups_errors = check_required_list(recipe_dict["groups"], ["name"])
+        if groups_errors:
+            errors.append("'groups' errors:\n%s" % "\n".join(groups_errors))
+
+    if recipe_dict.get("repos") and recipe_dict.get("repos").get("git"):
+        repos_errors = check_required_list(recipe_dict.get("repos").get("git"),
+                           ["rpmname", "rpmversion", "rpmrelease", "summary", "repo", "ref", "destination"])
+        if repos_errors:
+            errors.append("'repos.git' errors:\n%s" % "\n".join(repos_errors))
+
+    # No customizations to check, exit now
+    c = recipe_dict.get("customizations")
+    if not c:
+        return errors
+
+    # Make sure to catch empty sections by testing for keywords, not just looking at .get() result.
+    if "kernel" in c and "append" not in c.get("kernel", []):
+        errors.append("'customizations.kernel': missing append field.")
+
+    if "sshkey" in c:
+        sshkey_errors = check_required_list(c.get("sshkey"), ["user", "key"])
+        if sshkey_errors:
+            errors.append("'customizations.sshkey' errors:\n%s" % "\n".join(sshkey_errors))
+
+    if "user" in c:
+        user_errors = check_required_list(c.get("user"), ["name"])
+        if user_errors:
+            errors.append("'customizations.user' errors:\n%s" % "\n".join(user_errors))
+
+    if "group" in c:
+        group_errors = check_required_list(c.get("group"), ["name"])
+        if group_errors:
+            errors.append("'customizations.group' errors:\n%s" % "\n".join(group_errors))
+
+    if "timezone" in c and not c.get("timezone"):
+        errors.append("'customizations.timezone': missing timezone or ntpservers fields.")
+
+    if "locale" in c and not c.get("locale"):
+        errors.append("'customizations.locale': missing languages or keyboard fields.")
+
+    if "firewall" in c and not c.get("firewall"):
+        errors.append("'customizations.firewall': missing ports field or services section.")
+
+    if "firewall" in c and "services" in c.get("firewall", []) and not c.get("firewall").get("services"):
+        errors.append("'customizations.firewall.services': missing enabled or disabled fields.")
+
+    if "services" in c and not c.get("services"):
+        errors.append("'customizations.services': missing enabled or disabled fields.")
+
+    return errors
+
 def recipe_from_dict(recipe_dict):
     """Create a Recipe object from a plain dict.
 
@@ -278,6 +390,11 @@ def recipe_from_dict(recipe_dict):
     :rtype: Recipe
     :raises: RecipeError
     """
+    errors = check_recipe_dict(recipe_dict)
+    if errors:
+        msg = "\n".join(errors)
+        raise RecipeError(msg)
+
     # Make RecipeModule objects from the toml
     # The TOML may not have modules or packages in it. Set them to None in this case
     try:
