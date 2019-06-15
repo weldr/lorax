@@ -29,7 +29,7 @@ from pylorax.api.compose import services_cmd, get_services, get_default_services
 from pylorax.api.compose import get_kernel_append, bootloader_append, customize_ks_template
 from pylorax.api.config import configure, make_dnf_dirs
 from pylorax.api.dnfbase import get_base_object
-from pylorax.api.recipes import recipe_from_toml
+from pylorax.api.recipes import recipe_from_toml, RecipeError
 from pylorax.sysutils import joinpaths
 
 BASE_RECIPE = """name = "test-cases"
@@ -472,8 +472,8 @@ disabled = ["postfix", "telnetd"]
         blueprint3_data = blueprint_data + disable_services
         blueprint4_data = blueprint_data + enable_services + disable_services
 
-        recipe = recipe_from_toml(blueprint_data)
-        self.assertEqual(get_services(recipe), {'enabled': [], 'disabled': []})
+        with self.assertRaises(RecipeError):
+            recipe = recipe_from_toml(blueprint_data)
 
         recipe = recipe_from_toml(blueprint2_data)
         self.assertEqual(get_services(recipe),
@@ -526,8 +526,8 @@ disabled = ["postfix", "telnetd"]
         blueprint3_data = blueprint_data + disable_services
         blueprint4_data = blueprint_data + enable_services + disable_services
 
-        recipe = recipe_from_toml(blueprint_data)
-        self.assertEqual(get_default_services(recipe), "")
+        with self.assertRaises(RecipeError):
+            recipe = recipe_from_toml(blueprint_data)
 
         recipe = recipe_from_toml(blueprint2_data)
         self.assertEqual(get_default_services(recipe), "services")
