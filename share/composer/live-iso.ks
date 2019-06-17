@@ -348,6 +348,8 @@ memtest86+
 syslinux
 -dracut-config-rescue
 selinux-policy-targeted
+# Enable networking by removing the config file that disables it
+-NetworkManager-config-server
 
 # This package is needed to boot the iso on UEFI
 shim

@@ -37,6 +37,8 @@ kernel
 -dracut-config-rescue
 selinux-policy-targeted
 grub2
+# Enable networking by removing the config file that disables it
+-NetworkManager-config-server
 
 # Make sure virt guest agents are installed
 qemu-guest-agent

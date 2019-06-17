@@ -36,6 +36,8 @@ touch /etc/machine-id
 %packages
 kernel
 -dracut-config-rescue
+# Enable networking by removing the config file that disables it
+-NetworkManager-config-server
 
 grub2
 

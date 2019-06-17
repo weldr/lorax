@@ -37,5 +37,7 @@ kernel
 -dracut-config-rescue
 selinux-policy-targeted
 grub2
+# Enable networking by removing the config file that disables it
+-NetworkManager-config-server
 
 # NOTE lorax-composer will add the blueprint packages below here, including the final %end

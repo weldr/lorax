@@ -44,6 +44,8 @@ sed -i 's/cloud-user/ec2-user/' /etc/cloud/cloud.cfg
 %packages
 kernel
 -dracut-config-rescue
+# Enable networking by removing the config file that disables it
+-NetworkManager-config-server
 
 grub2
 

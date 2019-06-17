@@ -34,5 +34,7 @@ touch /etc/machine-id
 %packages
 # Packages requires to support this output format go here
 selinux-policy-targeted
+# Enable networking by removing the config file that disables it
+-NetworkManager-config-server
 
 # NOTE lorax-composer will add the blueprint packages below here, including the final %end
