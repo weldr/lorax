@@ -1,5 +1,21 @@
 #!/usr/bin/env bash
 
+# Monkey-patch beakerlib to exit on first failure if COMPOSER_TEST_FAIL_FAST is
+# set. https://github.com/beakerlib/beakerlib/issues/42
+if [ "$COMPOSER_TEST_FAIL_FAST" == "1" ]; then
+  eval "original$(declare -f __INTERNAL_LogAndJournalFail)"
+
+  __INTERNAL_LogAndJournalFail () {
+    original__INTERNAL_LogAndJournalFail
+
+    # end test somewhat cleanly so that beakerlib logs the FAIL correctly
+    rlPhaseEnd
+    rlJournalEnd
+
+    exit 1
+  }
+fi
+
 # a generic helper function unifying the specific checks executed on a running
 # image instance
 verify_image() {
@@ -31,7 +47,7 @@ check_root_account() {
         # ssh returns 255 in case of any ssh error, so it's better to grep the specific error message
         rlRun -t -c "ssh $SSH_OPTS -o PubkeyAuthentication=no root@${SSH_MACHINE} 2>&1 | grep -i 'permission denied ('" \
             0 "Can't ssh to '$SSH_MACHINE' as root using password-based auth"
-        rlRun -t -c "ssh $SSH_OPTS ${SSH_USER}@${SSH_MACHINE} \"sudo grep -E '^root:(\*LOCK\*|!)' /etc/shadow\"" \
+        rlRun -t -c "ssh $SSH_OPTS ${SSH_USER}@${SSH_MACHINE} \"sudo grep -E '^root:(\*LOCK\*|!):' /etc/shadow\"" \
             0 "root account is disabled in /etc/shadow"
         rlRun -t -c "ssh $SSH_OPTS ${SSH_USER}@${SSH_MACHINE} \"sudo grep 'USER_LOGIN.*acct=\\\"root\\\".*terminal=ssh.*res=failed' /var/log/audit/audit.log\"" \
             0 "audit.log contains entry about unsuccessful root login"

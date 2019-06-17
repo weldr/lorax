@@ -1,5 +1,5 @@
 #!/bin/bash
-# Note: Execute this file from the project root directory
+# Note: execute this file from the project root directory
 
 #####
 #
@@ -7,8 +7,10 @@
 #
 #####
 
+set -e
+
 . /usr/share/beakerlib/beakerlib.sh
-. ./tests/cli/lib/lib.sh
+. $(dirname $0)/lib/lib.sh
 
 CLI="${CLI:-./src/bin/composer-cli}"
 
@@ -65,7 +67,7 @@ rlJournalStart
         SAMPLES="$SAMPLES/samples"
     rlPhaseEnd
 
-    rlPhaseStartTest "Compose start"
+    rlPhaseStartTest "compose start"
         rlAssertEquals "SELinux operates in enforcing mode" "$(getenforce)" "Enforcing"
         SSH_KEY_DIR=`mktemp -d /tmp/composer-ssh-keys.XXXXXX`
         rlRun -t -c "ssh-keygen -t rsa -N '' -f $SSH_KEY_DIR/id_rsa"
@@ -96,9 +98,9 @@ __EOF__
         UUID=`echo $UUID | cut -f 2 -d' '`
     rlPhaseEnd
 
-    rlPhaseStartTest "Compose finished"
+    rlPhaseStartTest "compose finished"
         if [ -n "$UUID" ]; then
-            until $CLI compose details $UUID | grep FINISHED; do
+            until $CLI compose details $UUID | grep 'FINISHED\|FAILED'; do
                 rlLogInfo "Waiting for compose to finish ..."
                 sleep 30
             done;
@@ -113,7 +115,7 @@ __EOF__
 
         python $SAMPLES/upload_file_to_datastore.py -S -s $V_HOST -u $V_USERNAME -p $V_PASSWORD \
                 -d $V_DATASTORE -l `readlink -f $IMAGE` -r $IMAGE
-        rlAssert0 "Image upload successful" $?
+        rlAssert0 "Image upload successfull" $?
     rlPhaseEnd
 
     rlPhaseStartTest "Start VM instance"
@@ -129,13 +131,13 @@ __EOF__
             rlLogInfo "INSTANCE_UUID=$INSTANCE_UUID"
         fi
 
-        # Wait for instance to become running and had assigned a public IP
+        # wait for instance to become running and had assigned a public IP
         IP_ADDRESS="None"
         while [ "$IP_ADDRESS" == "None" ]; do
             rlLogInfo "IP_ADDRESS is not assigned yet ..."
             sleep 30
             IP_ADDRESS=`python $SAMPLES/find_by_uuid.py -S -s $V_HOST -u $V_USERNAME -p $V_PASSWORD \
-                            --uuid $INSTANCE_UUID | grep 'ip address' | tr -d ' ' | cut -f2 -d:`
+                            --uuid $INSTANCE_UUID | grep 'ip address' | tr -d ' ' | cut -f2- -d:`
         done
 
         rlLogInfo "Running instance IP_ADDRESS=$IP_ADDRESS"
@@ -150,7 +152,7 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartCleanup
-        # note: VMDK disk is removed when destroying the VM
+        # note: vmdk disk is removed when destroying the VM
         python $SAMPLES/destroy_vm.py -S -s $V_HOST -u $V_USERNAME -p $V_PASSWORD --uuid $INSTANCE_UUID
         rlAssert0 "VM destroyed" $?
         rlRun -t -c "$CLI compose delete $UUID"
