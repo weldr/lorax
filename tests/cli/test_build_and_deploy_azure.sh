@@ -7,8 +7,10 @@
 #
 #####
 
+set -e
+
 . /usr/share/beakerlib/beakerlib.sh
-. ./tests/cli/lib/lib.sh
+. $(dirname $0)/lib/lib.sh
 
 CLI="${CLI:-./src/bin/composer-cli}"
 
@@ -70,7 +72,7 @@ rlJournalStart
 
     rlPhaseStartTest "compose finished"
         if [ -n "$UUID" ]; then
-            until $CLI compose details $UUID | grep FINISHED; do
+            until $CLI compose details $UUID | grep 'FINISHED\|FAILED'; do
                 rlLogInfo "Waiting for compose to finish ..."
                 sleep 30
             done;

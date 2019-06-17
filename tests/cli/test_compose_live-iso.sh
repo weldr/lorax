@@ -7,15 +7,18 @@
 #
 #####
 
+set -e
+
 . /usr/share/beakerlib/beakerlib.sh
-. ./tests/cli/lib/lib.sh
+. $(dirname $0)/lib/lib.sh
 
 CLI="${CLI:-./src/bin/composer-cli}"
-QEMU="/usr/libexec/qemu-kvm"
+QEMU_BIN="/usr/bin/qemu-system-$(uname -m)"
+QEMU="$QEMU_BIN -machine accel=kvm:tcg"
 
 rlJournalStart
     rlPhaseStartSetup
-        rlAssertExists $QEMU
+        rlAssertExists $QEMU_BIN
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
@@ -30,7 +33,7 @@ rlJournalStart
 
     rlPhaseStartTest "compose finished"
         if [ -n "$UUID" ]; then
-            until $CLI compose details $UUID | grep FINISHED; do
+            until $CLI compose details $UUID | grep 'FINISHED\|FAILED'; do
                 sleep 20
                 rlLogInfo "Waiting for compose to finish ..."
             done;
@@ -56,7 +59,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartCleanup
-        rlRun -t -c "killall -9 $(basename $QEMU)"
+        rlRun -t -c "killall -9 $(basename $QEMU_BIN)"
         rlRun -t -c "$CLI compose delete $UUID"
         rlRun -t -c "rm -rf $IMAGE"
     rlPhaseEnd

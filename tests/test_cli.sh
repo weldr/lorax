@@ -1,8 +1,10 @@
 #!/bin/bash
-# Note: Execute this file from the project root directory
+# Note: execute this file from the project root directory
 
-# setup
-rm -rf /var/tmp/beakerlib-*/
+set -eu
+
+export BEAKERLIB_DIR=$(mktemp -d /tmp/composer-test.XXXXXX)
+CLI="${CLI:-}"
 
 function setup_tests {
     local share_dir=$1
@@ -43,6 +45,15 @@ function teardown_tests {
     mv ${blueprints_dir}.orig $blueprints_dir
 }
 
+# cloud credentials
+if [ -f "~/.config/lorax-test-env" ]; then
+    . ~/.config/lorax-test-env
+fi
+
+if [ -f "/var/tmp/lorax-test-env" ]; then
+    . /var/tmp/lorax-test-env
+fi
+
 if [ -z "$CLI" ]; then
     export top_srcdir=`pwd`
     . ./tests/testenv.sh
@@ -55,7 +66,7 @@ if [ -z "$CLI" ]; then
     chmod a+rx -R $SHARE_DIR
 
     setup_tests $SHARE_DIR $BLUEPRINTS_DIR
-    # Start the lorax-composer daemon
+    # start the lorax-composer daemon
     ./src/sbin/lorax-composer --sharedir $SHARE_DIR $BLUEPRINTS_DIR &
 else
     export PACKAGE="composer-cli"
@@ -65,14 +76,14 @@ else
 fi
 
 
-# Wait for the backend to become ready
+# wait for the backend to become ready
 tries=0
 until curl -m 15 --unix-socket /run/weldr/api.socket http://localhost:4000/api/status | grep 'db_supported.*true'; do
     tries=$((tries + 1))
-    if [ $tries -gt 20 ]; then
+    if [ $tries -gt 50 ]; then
         exit 1
     fi
-    sleep 2
+    sleep 5
     echo "DEBUG: Waiting for backend API to become ready before testing ..."
 done;
 
@@ -80,14 +91,14 @@ done;
 export BEAKERLIB_JOURNAL=0
 export PATH="/usr/local/bin:$PATH"
 if [ -z "$*" ]; then
-    # Invoke cli/ tests which can be executed without special preparation
+    # invoke cli/ tests which can be executed without special preparation
     ./tests/cli/test_blueprints_sanity.sh
     ./tests/cli/test_compose_sanity.sh
 else
-    # Execute other cli tests which need more adjustments in the calling environment
+    # execute other cli tests which need more adjustments in the calling environment
     # or can't be executed inside Travis CI
     for TEST in "$@"; do
-        ./$TEST
+        $TEST
     done
 fi
 
@@ -106,8 +117,11 @@ else
     systemctl start lorax-composer
 fi
 
-# Look for failures
-grep RESULT_STRING /var/tmp/beakerlib-*/TestResults | grep -v PASS && exit 1
+. $BEAKERLIB_DIR/TestResults
 
-# Explicit return code for Makefile
-exit 0
+if [ $TESTRESULT_RESULT_ECODE != 0 ]; then
+  echo "Test failed. Leaving log in $BEAKERLIB_DIR"
+  exit $TESTRESULT_RESULT_ECODE
+fi
+
+rm -rf $BEAKERLIB_DIR
