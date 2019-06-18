@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api package &mdash; Lorax 31.4 documentation</title>
+  <title>pylorax.api package &mdash; Lorax 31.7 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                31.4
+                31.7
               </div>
             
           
@@ -774,14 +774,6 @@ with whatever options are relevant.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-pylorax.api.crossdomain">
-<span id="pylorax-api-crossdomain-module"></span><h2>pylorax.api.crossdomain module<a class="headerlink" href="#module-pylorax.api.crossdomain" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="pylorax.api.crossdomain.crossdomain">
-<code class="descclassname">pylorax.api.crossdomain.</code><code class="descname">crossdomain</code><span class="sig-paren">(</span><em>origin</em>, <em>methods=None</em>, <em>headers=None</em>, <em>max_age=21600</em>, <em>attach_to_all=True</em>, <em>automatic_options=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/crossdomain.html#crossdomain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.crossdomain.crossdomain" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</div>
 <div class="section" id="module-pylorax.api.dnfbase">
 <span id="pylorax-api-dnfbase-module"></span><h2>pylorax.api.dnfbase module<a class="headerlink" href="#module-pylorax.api.dnfbase" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
@@ -829,6 +821,52 @@ metadata.</p>
 </div>
 <div class="section" id="module-pylorax.api.errors">
 <span id="pylorax-api-errors-module"></span><h2>pylorax.api.errors module<a class="headerlink" href="#module-pylorax.api.errors" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pylorax.api.flask_blueprint">
+<span id="pylorax-api-flask-blueprint-module"></span><h2>pylorax.api.flask_blueprint module<a class="headerlink" href="#module-pylorax.api.flask_blueprint" title="Permalink to this headline">¶</a></h2>
+<p>Flask Blueprints that support skipping routes</p>
+<p>When using Blueprints for API versioning you will usually want to fall back
+to the previous version's rules for routes that have no new behavior. To do
+this we add a 'skip_rule' list to the Blueprint's options dictionary. It lists
+all of the routes that you do not want to register.</p>
+<dl>
+<dt>For example:</dt><dd><p>from pylorax.api.v0 import v0
+from pylorax.api.v1 import v1</p>
+<p>server.register_blueprint(v0, url_prefix=&quot;/api/v0/&quot;)
+server.register_blueprint(v0, url_prefix=&quot;/api/v1/&quot;, skip_rules=[&quot;/blueprints/list&quot;]
+server.register_blueprint(v1, url_prefix=&quot;/api/v1/&quot;)</p>
+</dd>
+</dl>
+<p>This will register all of v0's routes under <cite>/api/v0</cite>, and all but <cite>/blueprints/list</cite> under /api/v1,
+and then register v1's version of <cite>/blueprints/list</cite> under <cite>/api/v1</cite></p>
+<dl class="class">
+<dt id="pylorax.api.flask_blueprint.BlueprintSetupStateSkip">
+<em class="property">class </em><code class="descclassname">pylorax.api.flask_blueprint.</code><code class="descname">BlueprintSetupStateSkip</code><span class="sig-paren">(</span><em>blueprint</em>, <em>app</em>, <em>options</em>, <em>first_registration</em>, <em>skip_rules</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/flask_blueprint.html#BlueprintSetupStateSkip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.flask_blueprint.BlueprintSetupStateSkip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask.blueprints.BlueprintSetupState</span></code></p>
+<dl class="method">
+<dt id="pylorax.api.flask_blueprint.BlueprintSetupStateSkip.add_url_rule">
+<code class="descname">add_url_rule</code><span class="sig-paren">(</span><em>rule</em>, <em>endpoint=None</em>, <em>view_func=None</em>, <em>**options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/flask_blueprint.html#BlueprintSetupStateSkip.add_url_rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.flask_blueprint.BlueprintSetupStateSkip.add_url_rule" title="Permalink to this definition">¶</a></dt>
+<dd><p>A helper method to register a rule (and optionally a view function)
+to the application.  The endpoint is automatically prefixed with the
+blueprint's name.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pylorax.api.flask_blueprint.BlueprintSkip">
+<em class="property">class </em><code class="descclassname">pylorax.api.flask_blueprint.</code><code class="descname">BlueprintSkip</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/flask_blueprint.html#BlueprintSkip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.flask_blueprint.BlueprintSkip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask.blueprints.Blueprint</span></code></p>
+<dl class="method">
+<dt id="pylorax.api.flask_blueprint.BlueprintSkip.make_setup_state">
+<code class="descname">make_setup_state</code><span class="sig-paren">(</span><em>app</em>, <em>options</em>, <em>first_registration=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/flask_blueprint.html#BlueprintSkip.make_setup_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.flask_blueprint.BlueprintSkip.make_setup_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an instance of <code class="xref py py-meth docutils literal notranslate"><span class="pre">BlueprintSetupState()</span></code>
+object that is later passed to the register callback functions.
+Subclasses can override this to return a subclass of the setup state.</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-pylorax.api.gitrpm">
 <span id="pylorax-api-gitrpm-module"></span><h2>pylorax.api.gitrpm module<a class="headerlink" href="#module-pylorax.api.gitrpm" title="Permalink to this headline">¶</a></h2>
@@ -2058,6 +2096,12 @@ be tried.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="pylorax.api.recipes.customizations_diff">
+<code class="descclassname">pylorax.api.recipes.</code><code class="descname">customizations_diff</code><span class="sig-paren">(</span><em>old_recipe</em>, <em>new_recipe</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/recipes.html#customizations_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.customizations_diff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Diff the customizations sections from two versions of a recipe</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="pylorax.api.recipes.delete_file">
 <code class="descclassname">pylorax.api.recipes.</code><code class="descname">delete_file</code><span class="sig-paren">(</span><em>repo</em>, <em>branch</em>, <em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/recipes.html#delete_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.delete_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete a file from a branch.</p>
@@ -2106,13 +2150,14 @@ be tried.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="pylorax.api.recipes.diff_items">
-<code class="descclassname">pylorax.api.recipes.</code><code class="descname">diff_items</code><span class="sig-paren">(</span><em>title</em>, <em>old_items</em>, <em>new_items</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/recipes.html#diff_items"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.diff_items" title="Permalink to this definition">¶</a></dt>
+<dt id="pylorax.api.recipes.diff_lists">
+<code class="descclassname">pylorax.api.recipes.</code><code class="descname">diff_lists</code><span class="sig-paren">(</span><em>title</em>, <em>field</em>, <em>old_items</em>, <em>new_items</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/recipes.html#diff_lists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.diff_lists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the differences between two lists of dicts.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Title of the entry</p></li>
+<li><p><strong>field</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Field to use as the key for comparisons</p></li>
 <li><p><strong>old_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>)</em>) -- List of item dicts with &quot;name&quot; field</p></li>
 <li><p><strong>new_items</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>(</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>)</em>) -- List of item dicts with &quot;name&quot; field</p></li>
 </ul>
@@ -2152,6 +2197,30 @@ be a tag at all.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="pylorax.api.recipes.find_field_value">
+<code class="descclassname">pylorax.api.recipes.</code><code class="descname">find_field_value</code><span class="sig-paren">(</span><em>field</em>, <em>value</em>, <em>lst</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/recipes.html#find_field_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.find_field_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find a field matching value in the list of dicts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>field</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- field to search for</p></li>
+<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- value to match in the field</p></li>
+<li><p><strong>lst</strong> (<em>list of dict</em>) -- List of dict's with field</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>First dict with matching field:value, or None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a> or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
+</dd>
+</dl>
+<p>Used to return a specific entry from a list that looks like this:</p>
+<p>[{&quot;name&quot;: &quot;one&quot;, &quot;attr&quot;: &quot;green&quot;}, ...]</p>
+<p>find_field_value(&quot;name&quot;, &quot;one&quot;, lst) will return the matching dict.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="pylorax.api.recipes.find_name">
 <code class="descclassname">pylorax.api.recipes.</code><code class="descname">find_name</code><span class="sig-paren">(</span><em>name</em>, <em>lst</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/recipes.html#find_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.find_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the dict matching the name in a list and return it.</p>
@@ -2159,7 +2228,7 @@ be a tag at all.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Name to search for</p></li>
-<li><p><strong>lst</strong> -- List of dict's with &quot;name&quot; field</p></li>
+<li><p><strong>lst</strong> (<em>list of dict</em>) -- List of dict's with &quot;name&quot; field</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -2169,6 +2238,26 @@ be a tag at all.</p>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a> or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)">None</a></p>
 </dd>
 </dl>
+<p>This is just a wrapper for find_field_value with field set to &quot;name&quot;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.recipes.find_recipe_obj">
+<code class="descclassname">pylorax.api.recipes.</code><code class="descname">find_recipe_obj</code><span class="sig-paren">(</span><em>path</em>, <em>recipe</em>, <em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/recipes.html#find_recipe_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.recipes.find_recipe_obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find a recipe object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>list of str</em>) -- A list of dict field names</p></li>
+<li><p><strong>recipe</strong> (<a class="reference internal" href="#pylorax.api.recipes.Recipe" title="pylorax.api.recipes.Recipe"><em>Recipe</em></a>) -- The recipe to search</p></li>
+<li><p><strong>default</strong> (<em>Any</em>) -- The value to return if it is not found</p></li>
+</ul>
+</dd>
+</dl>
+<p>Return the object found by applying the path to the dicts in the recipe, or
+return the default if it doesn't exist.</p>
+<p>eg. {&quot;customizations&quot;: {&quot;hostname&quot;: &quot;foo&quot;, &quot;users&quot;: [...]}}</p>
+<p>find_recipe_obj([&quot;customizations&quot;, &quot;hostname&quot;], recipe, &quot;&quot;)</p>
 </dd></dl>
 
 <dl class="function">
@@ -2785,6 +2874,25 @@ If the commit has already been tagged it will return false.</p>
 <dd></dd></dl>
 
 </div>
+<div class="section" id="module-pylorax.api.toml">
+<span id="pylorax-api-toml-module"></span><h2>pylorax.api.toml module<a class="headerlink" href="#module-pylorax.api.toml" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="pylorax.api.toml.TomlError">
+<em class="property">exception </em><code class="descclassname">pylorax.api.toml.</code><code class="descname">TomlError</code><span class="sig-paren">(</span><em>msg</em>, <em>doc</em>, <em>pos</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/toml.html#TomlError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.toml.TomlError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">toml.decoder.TomlDecodeError</span></code></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.toml.dumps">
+<code class="descclassname">pylorax.api.toml.</code><code class="descname">dumps</code><span class="sig-paren">(</span><em>o</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/toml.html#dumps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.toml.dumps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.toml.loads">
+<code class="descclassname">pylorax.api.toml.</code><code class="descname">loads</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/toml.html#loads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.toml.loads" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
 <div class="section" id="module-pylorax.api.v0">
 <span id="pylorax-api-v0-module"></span><h2>pylorax.api.v0 module<a class="headerlink" href="#module-pylorax.api.v0" title="Permalink to this headline">¶</a></h2>
 <p>Setup v0 of the API server</p>
@@ -2816,88 +2924,44 @@ error response with it set to false and an error message included.</p>
 used then the API will use the <cite>master</cite> branch for blueprints. If you want to create
 a new branch use the <cite>new</cite> or <cite>workspace</cite> routes with ?branch=&lt;branch-name&gt; to
 store the new blueprint on the new branch.</p>
-<div class="section" id="api-v0-blueprints-list">
-<h4><cite>/api/v0/blueprints/list</cite><a class="headerlink" href="#api-v0-blueprints-list" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>List the available blueprints:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
-  <span class="s2">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="s2">&quot;blueprints&quot;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="s2">&quot;atlas&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;development&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;http-server&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;jboss&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;kubernetes&quot;</span> <span class="p">],</span>
-  <span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="mi">6</span> <span class="p">}</span>
-</pre></div>
-</div>
-</div></blockquote>
-</div>
-<div class="section" id="api-v0-blueprints-info-blueprint-names-format-json-toml">
-<h4><cite>/api/v0/blueprints/info/&lt;blueprint_names&gt;[?format=&lt;json|toml&gt;]</cite><a class="headerlink" href="#api-v0-blueprints-info-blueprint-names-format-json-toml" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>Return the JSON representation of the blueprint. This includes 3 top level
-objects.  <cite>changes</cite> which lists whether or not the workspace is different from
-the most recent commit. <cite>blueprints</cite> which lists the JSON representation of the
-blueprint, and <cite>errors</cite> which will list any errors, like non-existant blueprints.</p>
-<p>By default the response is JSON, but if <cite>?format=toml</cite> is included in the URL's
-arguments it will return the response as the blueprint's raw TOML content.
-<em>Unless</em> there is an error which will only return a 400 and a standard error
-<a href="#id1"><span class="problematic" id="id2">`Status Response`_</span></a>.</p>
-<p>If there is an error when JSON is requested the successful blueprints and the
-errors will both be returned.</p>
-<p>Example of json response:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;changes&quot;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-      <span class="s2">&quot;changed&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
-      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span>
-    <span class="p">}</span>
-  <span class="p">],</span>
-  <span class="s2">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[],</span>
-  <span class="s2">&quot;blueprints&quot;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-      <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;An example GlusterFS server with samba&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;modules&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">{</span>
-          <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.7.*&quot;</span>
-        <span class="p">},</span>
-        <span class="p">{</span>
-          <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs-cli&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.7.*&quot;</span>
-        <span class="p">}</span>
-      <span class="p">],</span>
-      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;packages&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">{</span>
-          <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;2ping&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.2.1&quot;</span>
-        <span class="p">},</span>
-        <span class="p">{</span>
-          <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;samba&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;4.2.*&quot;</span>
-        <span class="p">}</span>
-      <span class="p">],</span>
-      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.6&quot;</span>
-    <span class="p">}</span>
-  <span class="p">]</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>Error example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;changes&quot;</span><span class="p">:</span> <span class="p">[],</span>
-  <span class="s2">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;ggit-error: the path &#39;missing.toml&#39; does not exist in the given tree (-3)&quot;</span><span class="p">]</span>
-  <span class="s2">&quot;blueprints&quot;</span><span class="p">:</span> <span class="p">[]</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div></blockquote>
-</div>
-<div class="section" id="api-v0-blueprints-changes-blueprint-names-offset-0-limit-20">
-<h4><cite>/api/v0/blueprints/changes/&lt;blueprint_names&gt;[?offset=0&amp;limit=20]</cite><a class="headerlink" href="#api-v0-blueprints-changes-blueprint-names-offset-0-limit-20" title="Permalink to this headline">¶</a></h4>
+<dl class="function">
+<dt id="pylorax.api.v0.blueprint_exists">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">blueprint_exists</code><span class="sig-paren">(</span><em>branch</em>, <em>blueprint_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#blueprint_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.blueprint_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the blueprint exists</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api</strong> (<em>Flask</em>) -- flask object</p></li>
+<li><p><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Branch name</p></li>
+<li><p><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Recipe name to read</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.take_limits">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">take_limits</code><span class="sig-paren">(</span><em>iterable</em>, <em>offset</em>, <em>limit</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#take_limits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.take_limits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply offset and limit to an iterable object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>iterable</strong> (<em>iter</em>) -- The object to limit</p></li>
+<li><p><strong>offset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The number of items to skip</p></li>
+<li><p><strong>limit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The total number of items to return</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A subset of the iterable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_blueprints_changes">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_blueprints_changes</code><span class="sig-paren">(</span><em>blueprint_names</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_blueprints_changes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_blueprints_changes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the changes to a blueprint or list of blueprints</p>
+<p><strong>/api/v0/blueprints/changes/&lt;blueprint_names&gt;[?offset=0&amp;limit=20]</strong></p>
 <blockquote>
 <div><p>Return the commits to a blueprint. By default it returns the first 20 commits, this
 can be changed by passing <cite>offset</cite> and/or <cite>limit</cite>. The response will include the
@@ -2956,19 +3020,13 @@ hash can be passed to <cite>/api/v0/blueprints/diff/</cite> to retrieve the exac
 </pre></div>
 </div>
 </div></blockquote>
-</div>
-<div class="section" id="post-api-v0-blueprints-new">
-<h4>POST <cite>/api/v0/blueprints/new</cite><a class="headerlink" href="#post-api-v0-blueprints-new" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>Create a new blueprint, or update an existing blueprint. This supports both JSON and TOML
-for the blueprint format. The blueprint should be in the body of the request with the
-<cite>Content-Type</cite> header set to either <cite>application/json</cite> or <cite>text/x-toml</cite>.</p>
-<p>The response will be a status response with <cite>status</cite> set to true, or an
-error response with it set to false and an error message included.</p>
-</div></blockquote>
-</div>
-<div class="section" id="delete-api-v0-blueprints-delete-blueprint-name">
-<h4>DELETE <cite>/api/v0/blueprints/delete/&lt;blueprint_name&gt;</cite><a class="headerlink" href="#delete-api-v0-blueprints-delete-blueprint-name" title="Permalink to this headline">¶</a></h4>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_blueprints_delete">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_blueprints_delete</code><span class="sig-paren">(</span><em>blueprint_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_blueprints_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_blueprints_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a blueprint from git</p>
+<p><strong>DELETE /api/v0/blueprints/delete/&lt;blueprint_name&gt;</strong></p>
 <blockquote>
 <div><p>Delete a blueprint. The blueprint is deleted from the branch, and will no longer
 be listed by the <cite>list</cite> route. A blueprint can be undeleted using the <cite>undo</cite> route
@@ -2977,21 +3035,13 @@ blueprint.</p>
 <p>The response will be a status response with <cite>status</cite> set to true, or an
 error response with it set to false and an error message included.</p>
 </div></blockquote>
-</div>
-<div class="section" id="post-api-v0-blueprints-workspace">
-<h4>POST <cite>/api/v0/blueprints/workspace</cite><a class="headerlink" href="#post-api-v0-blueprints-workspace" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>Write a blueprint to the temporary workspace. This works exactly the same as <cite>new</cite> except
-that it does not create a commit. JSON and TOML bodies are supported.</p>
-<p>The workspace is meant to be used as a temporary blueprint storage for clients.
-It will be read by the <cite>info</cite> and <cite>diff</cite> routes if it is different from the
-most recent commit.</p>
-<p>The response will be a status response with <cite>status</cite> set to true, or an
-error response with it set to false and an error message included.</p>
-</div></blockquote>
-</div>
-<div class="section" id="delete-api-v0-blueprints-workspace-blueprint-name">
-<h4>DELETE <cite>/api/v0/blueprints/workspace/&lt;blueprint_name&gt;</cite><a class="headerlink" href="#delete-api-v0-blueprints-workspace-blueprint-name" title="Permalink to this headline">¶</a></h4>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_blueprints_delete_workspace">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_blueprints_delete_workspace</code><span class="sig-paren">(</span><em>blueprint_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_blueprints_delete_workspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_blueprints_delete_workspace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a blueprint from the workspace</p>
+<p><strong>DELETE /api/v0/blueprints/workspace/&lt;blueprint_name&gt;</strong></p>
 <blockquote>
 <div><p>Remove the temporary workspace copy of a blueprint. The <cite>info</cite> route will now
 return the most recent commit of the blueprint. Any changes that were in the
@@ -2999,116 +3049,13 @@ workspace will be lost.</p>
 <p>The response will be a status response with <cite>status</cite> set to true, or an
 error response with it set to false and an error message included.</p>
 </div></blockquote>
-</div>
-<div class="section" id="post-api-v0-blueprints-undo-blueprint-name-commit">
-<h4>POST <cite>/api/v0/blueprints/undo/&lt;blueprint_name&gt;/&lt;commit&gt;</cite><a class="headerlink" href="#post-api-v0-blueprints-undo-blueprint-name-commit" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>This will revert the blueprint to a previous commit. The commit hash from the <cite>changes</cite>
-route can be used in this request.</p>
-<p>The response will be a status response with <cite>status</cite> set to true, or an
-error response with it set to false and an error message included.</p>
-</div></blockquote>
-</div>
-<div class="section" id="post-api-v0-blueprints-tag-blueprint-name">
-<h4>POST <cite>/api/v0/blueprints/tag/&lt;blueprint_name&gt;</cite><a class="headerlink" href="#post-api-v0-blueprints-tag-blueprint-name" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>Tag a blueprint as a new release. This uses git tags with a special format.
-<cite>refs/tags/&lt;branch&gt;/&lt;filename&gt;/r&lt;revision&gt;</cite>. Only the most recent blueprint commit
-can be tagged. Revisions start at 1 and increment for each new tag
-(per-blueprint). If the commit has already been tagged it will return false.</p>
-<p>The response will be a status response with <cite>status</cite> set to true, or an
-error response with it set to false and an error message included.</p>
-</div></blockquote>
-</div>
-<div class="section" id="api-v0-blueprints-diff-blueprint-name-from-commit-to-commit">
-<h4><cite>/api/v0/blueprints/diff/&lt;blueprint_name&gt;/&lt;from_commit&gt;/&lt;to_commit&gt;</cite><a class="headerlink" href="#api-v0-blueprints-diff-blueprint-name-from-commit-to-commit" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>Return the differences between two commits, or the workspace. The commit hash
-from the <cite>changes</cite> response can be used here, or several special strings:</p>
-<ul class="simple">
-<li><p>NEWEST will select the newest git commit. This works for <cite>from_commit</cite> or <cite>to_commit</cite></p></li>
-<li><p>WORKSPACE will select the workspace copy. This can only be used in <cite>to_commit</cite></p></li>
-</ul>
-<p>eg. <cite>/api/v0/blueprints/diff/glusterfs/NEWEST/WORKSPACE</cite> will return the differences
-between the most recent git commit and the contents of the workspace.</p>
-<p>Each entry in the response's diff object contains the old blueprint value and the new one.
-If old is null and new is set, then it was added.
-If new is null and old is set, then it was removed.
-If both are set, then it was changed.</p>
-<p>The old/new entries will have the name of the blueprint field that was changed. This
-can be one of: Name, Description, Version, Module, or Package.
-The contents for these will be the old/new values for them.</p>
-<p>In the example below the version was changed and the ping package was added.</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;diff&quot;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-      <span class="s2">&quot;new&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;Version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.6&quot;</span>
-      <span class="p">},</span>
-      <span class="s2">&quot;old&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;Version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.5&quot;</span>
-      <span class="p">}</span>
-    <span class="p">},</span>
-    <span class="p">{</span>
-      <span class="s2">&quot;new&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;Package&quot;</span><span class="p">:</span> <span class="p">{</span>
-          <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ping&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.2.1&quot;</span>
-        <span class="p">}</span>
-      <span class="p">},</span>
-      <span class="s2">&quot;old&quot;</span><span class="p">:</span> <span class="n">null</span>
-    <span class="p">}</span>
-  <span class="p">]</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div></blockquote>
-</div>
-<div class="section" id="api-v0-blueprints-freeze-blueprint-names">
-<h4><cite>/api/v0/blueprints/freeze/&lt;blueprint_names&gt;</cite><a class="headerlink" href="#api-v0-blueprints-freeze-blueprint-names" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>Return a JSON representation of the blueprint with the package and module versions set
-to the exact versions chosen by depsolving the blueprint.</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[],</span>
-  <span class="s2">&quot;blueprints&quot;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-      <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;An example GlusterFS server with samba&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;modules&quot;</span><span class="p">:</span> <span class="p">[</span>
-          <span class="p">{</span>
-            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.8.4-18.4.el7.x86_64&quot;</span>
-          <span class="p">},</span>
-          <span class="p">{</span>
-            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs-cli&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.8.4-18.4.el7.x86_64&quot;</span>
-          <span class="p">}</span>
-        <span class="p">],</span>
-        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;packages&quot;</span><span class="p">:</span> <span class="p">[</span>
-          <span class="p">{</span>
-            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ping&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;2:3.2.1-2.el7.noarch&quot;</span>
-          <span class="p">},</span>
-          <span class="p">{</span>
-            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;samba&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;4.6.2-8.el7.x86_64&quot;</span>
-          <span class="p">}</span>
-        <span class="p">],</span>
-        <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.6&quot;</span>
-      <span class="p">}</span>
-    <span class="p">}</span>
-  <span class="p">]</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div></blockquote>
-</div>
-<div class="section" id="api-v0-blueprints-depsolve-blueprint-names">
-<h4><cite>/api/v0/blueprints/depsolve/&lt;blueprint_names&gt;</cite><a class="headerlink" href="#api-v0-blueprints-depsolve-blueprint-names" title="Permalink to this headline">¶</a></h4>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_blueprints_depsolve">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_blueprints_depsolve</code><span class="sig-paren">(</span><em>blueprint_names</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_blueprints_depsolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_blueprints_depsolve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the dependencies for a blueprint</p>
+<p><strong>/api/v0/blueprints/depsolve/&lt;blueprint_names&gt;</strong></p>
 <blockquote>
 <div><p>Depsolve the blueprint using yum, return the blueprint used, and the NEVRAs of the packages
 chosen to satisfy the blueprint's requirements. The response will include a list of results,
@@ -3182,368 +3129,320 @@ and packages in <cite>modules</cite>, and any error will be in <cite>errors</cit
 </pre></div>
 </div>
 </div></blockquote>
-</div>
-<div class="section" id="api-v0-projects-list-offset-0-limit-20">
-<h4><cite>/api/v0/projects/list[?offset=0&amp;limit=20]</cite><a class="headerlink" href="#api-v0-projects-list-offset-0-limit-20" title="Permalink to this headline">¶</a></h4>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_blueprints_diff">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_blueprints_diff</code><span class="sig-paren">(</span><em>blueprint_name</em>, <em>from_commit</em>, <em>to_commit</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_blueprints_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_blueprints_diff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the differences between two commits of a blueprint</p>
+<p><strong>/api/v0/blueprints/diff/&lt;blueprint_name&gt;/&lt;from_commit&gt;/&lt;to_commit&gt;</strong></p>
 <blockquote>
-<div><p>List all of the available projects. By default this returns the first 20 items,
-but this can be changed by setting the <cite>offset</cite> and <cite>limit</cite> arguments.</p>
+<div><p>Return the differences between two commits, or the workspace. The commit hash
+from the <cite>changes</cite> response can be used here, or several special strings:</p>
+<ul class="simple">
+<li><p>NEWEST will select the newest git commit. This works for <cite>from_commit</cite> or <cite>to_commit</cite></p></li>
+<li><p>WORKSPACE will select the workspace copy. This can only be used in <cite>to_commit</cite></p></li>
+</ul>
+<p>eg. <cite>/api/v0/blueprints/diff/glusterfs/NEWEST/WORKSPACE</cite> will return the differences
+between the most recent git commit and the contents of the workspace.</p>
+<p>Each entry in the response's diff object contains the old blueprint value and the new one.
+If old is null and new is set, then it was added.
+If new is null and old is set, then it was removed.
+If both are set, then it was changed.</p>
+<p>The old/new entries will have the name of the blueprint field that was changed. This
+can be one of: Name, Description, Version, Module, or Package.
+The contents for these will be the old/new values for them.</p>
+<p>In the example below the version was changed and the ping package was added.</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
-  <span class="s2">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="s2">&quot;projects&quot;</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">&quot;diff&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="p">{</span>
-      <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;0 A.D. (pronounced &quot;</span><span class="n">zero</span> <span class="n">ey</span><span class="o">-</span><span class="n">dee</span><span class="s2">&quot;) is a ...&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;homepage&quot;</span><span class="p">:</span> <span class="s2">&quot;http://play0ad.com&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;0ad&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;summary&quot;</span><span class="p">:</span> <span class="s2">&quot;Cross-Platform RTS Game of Ancient Warfare&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;upstream_vcs&quot;</span><span class="p">:</span> <span class="s2">&quot;UPSTREAM_VCS&quot;</span>
+      <span class="s2">&quot;new&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;Version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.6&quot;</span>
+      <span class="p">},</span>
+      <span class="s2">&quot;old&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;Version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.5&quot;</span>
+      <span class="p">}</span>
     <span class="p">},</span>
-    <span class="o">...</span>
-  <span class="p">],</span>
-  <span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="mi">21770</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div></blockquote>
-</div>
-<div class="section" id="api-v0-projects-info-project-names">
-<h4><cite>/api/v0/projects/info/&lt;project_names&gt;</cite><a class="headerlink" href="#api-v0-projects-info-project-names" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>Return information about the comma-separated list of projects. It includes the description
-of the package along with the list of available builds.</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;projects&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="p">{</span>
-      <span class="s2">&quot;builds&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">{</span>
-          <span class="s2">&quot;arch&quot;</span><span class="p">:</span> <span class="s2">&quot;x86_64&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;build_config_ref&quot;</span><span class="p">:</span> <span class="s2">&quot;BUILD_CONFIG_REF&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;build_env_ref&quot;</span><span class="p">:</span> <span class="s2">&quot;BUILD_ENV_REF&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;build_time&quot;</span><span class="p">:</span> <span class="s2">&quot;2017-03-01T08:39:23&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;changelog&quot;</span><span class="p">:</span> <span class="s2">&quot;- restore incremental backups correctly, files ...&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{},</span>
-          <span class="s2">&quot;release&quot;</span><span class="p">:</span> <span class="s2">&quot;32.el7&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;license&quot;</span><span class="p">:</span> <span class="s2">&quot;GPLv3+&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{},</span>
-            <span class="s2">&quot;source_ref&quot;</span><span class="p">:</span> <span class="s2">&quot;SOURCE_REF&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.26&quot;</span>
-          <span class="p">}</span>
+      <span class="s2">&quot;new&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;Package&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ping&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.2.1&quot;</span>
         <span class="p">}</span>
-      <span class="p">],</span>
-      <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;The GNU tar program saves many ...&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;homepage&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.gnu.org/software/tar/&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;tar&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;summary&quot;</span><span class="p">:</span> <span class="s2">&quot;A GNU file archiving program&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;upstream_vcs&quot;</span><span class="p">:</span> <span class="s2">&quot;UPSTREAM_VCS&quot;</span>
+      <span class="p">},</span>
+      <span class="s2">&quot;old&quot;</span><span class="p">:</span> <span class="n">null</span>
     <span class="p">}</span>
   <span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </div></blockquote>
-</div>
-<div class="section" id="api-v0-projects-depsolve-project-names">
-<h4><cite>/api/v0/projects/depsolve/&lt;project_names&gt;</cite><a class="headerlink" href="#api-v0-projects-depsolve-project-names" title="Permalink to this headline">¶</a></h4>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_blueprints_freeze">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_blueprints_freeze</code><span class="sig-paren">(</span><em>blueprint_names</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_blueprints_freeze"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_blueprints_freeze" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the blueprint with the exact modules and packages selected by depsolve</p>
+<p><strong>/api/v0/blueprints/freeze/&lt;blueprint_names&gt;</strong></p>
 <blockquote>
-<div><p>Depsolve the comma-separated list of projects and return the list of NEVRAs needed
-to satisfy the request.</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;projects&quot;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-      <span class="s2">&quot;arch&quot;</span><span class="p">:</span> <span class="s2">&quot;noarch&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;basesystem&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;release&quot;</span><span class="p">:</span> <span class="s2">&quot;7.el7&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;10.0&quot;</span>
-    <span class="p">},</span>
-    <span class="p">{</span>
-      <span class="s2">&quot;arch&quot;</span><span class="p">:</span> <span class="s2">&quot;x86_64&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;bash&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;release&quot;</span><span class="p">:</span> <span class="s2">&quot;28.el7&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;4.2.46&quot;</span>
-    <span class="p">},</span>
-    <span class="p">{</span>
-      <span class="s2">&quot;arch&quot;</span><span class="p">:</span> <span class="s2">&quot;x86_64&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;filesystem&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;release&quot;</span><span class="p">:</span> <span class="s2">&quot;21.el7&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.2&quot;</span>
-    <span class="p">},</span>
-    <span class="o">...</span>
-  <span class="p">]</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div></blockquote>
-</div>
-<div class="section" id="api-v0-projects-source-list">
-<h4><cite>/api/v0/projects/source/list</cite><a class="headerlink" href="#api-v0-projects-source-list" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>Return the list of repositories used for depsolving and installing packages.</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;sources&quot;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="s2">&quot;fedora&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;fedora-cisco-openh264&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;fedora-updates-testing&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;fedora-updates&quot;</span>
-  <span class="p">]</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div></blockquote>
-</div>
-<div class="section" id="api-v0-projects-source-info-source-names">
-<h4><cite>/api/v0/projects/source/info/&lt;source-names&gt;</cite><a class="headerlink" href="#api-v0-projects-source-info-source-names" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>Return information about the comma-separated list of source names. Or all of the
-sources if '*' is passed. Note that general globbing is not supported, only '*'.</p>
-<p>immutable system sources will have the &quot;system&quot; field set to true. User added sources
-will have it set to false. System sources cannot be changed or deleted.</p>
+<div><p>Return a JSON representation of the blueprint with the package and module versions set
+to the exact versions chosen by depsolving the blueprint.</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="s2">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[],</span>
-  <span class="s2">&quot;sources&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;fedora&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="s2">&quot;check_gpg&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
-      <span class="s2">&quot;check_ssl&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
-      <span class="s2">&quot;gpgkey_urls&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="s2">&quot;file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-x86_64&quot;</span>
-      <span class="p">],</span>
-      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;fedora&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;proxy&quot;</span><span class="p">:</span> <span class="s2">&quot;http://proxy.brianlane.com:8123&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;system&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
-      <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;yum-metalink&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://mirrors.fedoraproject.org/metalink?repo=fedora-28&amp;arch=x86_64&quot;</span>
+  <span class="s2">&quot;blueprints&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;An example GlusterFS server with samba&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;modules&quot;</span><span class="p">:</span> <span class="p">[</span>
+          <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.8.4-18.4.el7.x86_64&quot;</span>
+          <span class="p">},</span>
+          <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs-cli&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.8.4-18.4.el7.x86_64&quot;</span>
+          <span class="p">}</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;packages&quot;</span><span class="p">:</span> <span class="p">[</span>
+          <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ping&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;2:3.2.1-2.el7.noarch&quot;</span>
+          <span class="p">},</span>
+          <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;samba&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;4.6.2-8.el7.x86_64&quot;</span>
+          <span class="p">}</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.6&quot;</span>
+      <span class="p">}</span>
     <span class="p">}</span>
-  <span class="p">}</span>
+  <span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </div></blockquote>
-</div>
-<div class="section" id="post-api-v0-projects-source-new">
-<h4>POST <cite>/api/v0/projects/source/new</cite><a class="headerlink" href="#post-api-v0-projects-source-new" title="Permalink to this headline">¶</a></h4>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_blueprints_info">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_blueprints_info</code><span class="sig-paren">(</span><em>blueprint_names</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_blueprints_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_blueprints_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the contents of the blueprint, or a list of blueprints</p>
+<p><strong>/api/v0/blueprints/info/&lt;blueprint_names&gt;[?format=&lt;json|toml&gt;]</strong></p>
 <blockquote>
-<div><p>Add (or change) a source for use when depsolving blueprints and composing images.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">proxy</span></code> and <code class="docutils literal notranslate"><span class="pre">gpgkey_urls</span></code> entries are optional. All of the others are required. The supported
-types for the urls are:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">yum-baseurl</span></code> is a URL to a yum repository.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">yum-mirrorlist</span></code> is a URL for a mirrorlist.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">yum-metalink</span></code> is a URL for a metalink.</p></li>
-</ul>
-<p>If <code class="docutils literal notranslate"><span class="pre">check_ssl</span></code> is true the https certificates must be valid. If they are self-signed you can either set
-this to false, or add your Certificate Authority to the host system.</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">check_gpg</span></code> is true the GPG key must either be installed on the host system, or <code class="docutils literal notranslate"><span class="pre">gpgkey_urls</span></code>
-should point to it.</p>
-<p>You can edit an existing source (other than system sources), by doing a POST
-of the new version of the source. It will overwrite the previous one.</p>
-<p>Example:</p>
+<div><p>Return the JSON representation of the blueprint. This includes 3 top level
+objects.  <cite>changes</cite> which lists whether or not the workspace is different from
+the most recent commit. <cite>blueprints</cite> which lists the JSON representation of the
+blueprint, and <cite>errors</cite> which will list any errors, like non-existant blueprints.</p>
+<p>By default the response is JSON, but if <cite>?format=toml</cite> is included in the URL's
+arguments it will return the response as the blueprint's raw TOML content.
+<em>Unless</em> there is an error which will only return a 400 and a standard error
+<a class="reference internal" href="#status-responses">Status Responses</a>.</p>
+<p>If there is an error when JSON is requested the successful blueprints and the
+errors will both be returned.</p>
+<p>Example of json response:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;custom-source-1&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://url/path/to/repository/&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;yum-baseurl&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;check_ssl&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
-    <span class="s2">&quot;check_gpg&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
-    <span class="s2">&quot;gpgkey_urls&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="s2">&quot;https://url/path/to/gpg-key&quot;</span>
-    <span class="p">]</span>
+  <span class="s2">&quot;changes&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;changed&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="s2">&quot;blueprints&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;An example GlusterFS server with samba&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;modules&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.7.*&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs-cli&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.7.*&quot;</span>
+        <span class="p">}</span>
+      <span class="p">],</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;packages&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;2ping&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.2.1&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;samba&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;4.2.*&quot;</span>
+        <span class="p">}</span>
+      <span class="p">],</span>
+      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.6&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Error example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;changes&quot;</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="s2">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;ggit-error: the path &#39;missing.toml&#39; does not exist in the given tree (-3)&quot;</span><span class="p">]</span>
+  <span class="s2">&quot;blueprints&quot;</span><span class="p">:</span> <span class="p">[]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </div></blockquote>
-</div>
-<div class="section" id="delete-api-v0-projects-source-delete-source-name">
-<h4>DELETE <cite>/api/v0/projects/source/delete/&lt;source-name&gt;</cite><a class="headerlink" href="#delete-api-v0-projects-source-delete-source-name" title="Permalink to this headline">¶</a></h4>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_blueprints_list">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_blueprints_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_blueprints_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_blueprints_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>List the available blueprints on a branch.</p>
+<p><strong>/api/v0/blueprints/list</strong></p>
 <blockquote>
-<div><p>Delete a user added source. This will fail if a system source is passed to
-it.</p>
+<div><p>List the available blueprints:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+  <span class="s2">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s2">&quot;blueprints&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;atlas&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;development&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;http-server&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;jboss&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;kubernetes&quot;</span> <span class="p">],</span>
+  <span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="mi">6</span> <span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_blueprints_new">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_blueprints_new</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_blueprints_new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_blueprints_new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Commit a new blueprint</p>
+<p><strong>POST /api/v0/blueprints/new</strong></p>
+<blockquote>
+<div><p>Create a new blueprint, or update an existing blueprint. This supports both JSON and TOML
+for the blueprint format. The blueprint should be in the body of the request with the
+<cite>Content-Type</cite> header set to either <cite>application/json</cite> or <cite>text/x-toml</cite>.</p>
 <p>The response will be a status response with <cite>status</cite> set to true, or an
 error response with it set to false and an error message included.</p>
 </div></blockquote>
-</div>
-<div class="section" id="api-v0-modules-list-offset-0-limit-20">
-<h4><cite>/api/v0/modules/list[?offset=0&amp;limit=20]</cite><a class="headerlink" href="#api-v0-modules-list-offset-0-limit-20" title="Permalink to this headline">¶</a></h4>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_blueprints_tag">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_blueprints_tag</code><span class="sig-paren">(</span><em>blueprint_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_blueprints_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_blueprints_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tag a blueprint's latest blueprint commit as a 'revision'</p>
+<p><strong>POST /api/v0/blueprints/tag/&lt;blueprint_name&gt;</strong></p>
 <blockquote>
-<div><p>Return a list of all of the available modules. This includes the name and the
-group_type, which is always &quot;rpm&quot; for lorax-composer. By default this returns
-the first 20 items. This can be changed by setting the <cite>offset</cite> and <cite>limit</cite>
-arguments.</p>
+<div><p>Tag a blueprint as a new release. This uses git tags with a special format.
+<cite>refs/tags/&lt;branch&gt;/&lt;filename&gt;/r&lt;revision&gt;</cite>. Only the most recent blueprint commit
+can be tagged. Revisions start at 1 and increment for each new tag
+(per-blueprint). If the commit has already been tagged it will return false.</p>
+<p>The response will be a status response with <cite>status</cite> set to true, or an
+error response with it set to false and an error message included.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_blueprints_undo">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_blueprints_undo</code><span class="sig-paren">(</span><em>blueprint_name</em>, <em>commit</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_blueprints_undo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_blueprints_undo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Undo changes to a blueprint by reverting to a previous commit.</p>
+<p><strong>POST /api/v0/blueprints/undo/&lt;blueprint_name&gt;/&lt;commit&gt;</strong></p>
+<blockquote>
+<div><p>This will revert the blueprint to a previous commit. The commit hash from the <cite>changes</cite>
+route can be used in this request.</p>
+<p>The response will be a status response with <cite>status</cite> set to true, or an
+error response with it set to false and an error message included.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_blueprints_workspace">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_blueprints_workspace</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_blueprints_workspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_blueprints_workspace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a blueprint to the workspace</p>
+<p><strong>POST /api/v0/blueprints/workspace</strong></p>
+<blockquote>
+<div><p>Write a blueprint to the temporary workspace. This works exactly the same as <cite>new</cite> except
+that it does not create a commit. JSON and TOML bodies are supported.</p>
+<p>The workspace is meant to be used as a temporary blueprint storage for clients.
+It will be read by the <cite>info</cite> and <cite>diff</cite> routes if it is different from the
+most recent commit.</p>
+<p>The response will be a status response with <cite>status</cite> set to true, or an
+error response with it set to false and an error message included.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_compose_cancel">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_compose_cancel</code><span class="sig-paren">(</span><em>uuid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_compose_cancel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_compose_cancel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cancel a running compose and delete its results directory</p>
+<p><strong>DELETE /api/v0/compose/cancel/&lt;uuid&gt;</strong></p>
+<blockquote>
+<div><p>Cancel the build, if it is not finished, and delete the results. It will return a
+status of True if it is successful.</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
-  <span class="s2">&quot;modules&quot;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-      <span class="s2">&quot;group_type&quot;</span><span class="p">:</span> <span class="s2">&quot;rpm&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;0ad&quot;</span>
-    <span class="p">},</span>
-    <span class="p">{</span>
-      <span class="s2">&quot;group_type&quot;</span><span class="p">:</span> <span class="s2">&quot;rpm&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;0ad-data&quot;</span>
-    <span class="p">},</span>
-    <span class="p">{</span>
-      <span class="s2">&quot;group_type&quot;</span><span class="p">:</span> <span class="s2">&quot;rpm&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;0install&quot;</span>
-    <span class="p">},</span>
-    <span class="p">{</span>
-      <span class="s2">&quot;group_type&quot;</span><span class="p">:</span> <span class="s2">&quot;rpm&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;2048-cli&quot;</span>
-    <span class="p">},</span>
-    <span class="o">...</span>
-  <span class="p">]</span>
-  <span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="mi">21770</span>
+  <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+  <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;03397f8d-acff-4cdb-bd31-f629b7a948f5&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </div></blockquote>
-</div>
-<div class="section" id="api-v0-modules-list-module-names-offset-0-limit-20">
-<h4><cite>/api/v0/modules/list/&lt;module_names&gt;[?offset=0&amp;limit=20]</cite><a class="headerlink" href="#api-v0-modules-list-module-names-offset-0-limit-20" title="Permalink to this headline">¶</a></h4>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_compose_delete">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_compose_delete</code><span class="sig-paren">(</span><em>uuids</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_compose_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_compose_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete the compose results for the listed uuids</p>
+<p><strong>DELETE /api/v0/compose/delete/&lt;uuids&gt;</strong></p>
 <blockquote>
-<div><p>Return the list of comma-separated modules. Output is the same as <cite>/modules/list</cite></p>
+<div><p>Delete the list of comma-separated uuids from the compose results.</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
-  <span class="s2">&quot;modules&quot;</span><span class="p">:</span> <span class="p">[</span>
+  <span class="s2">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="s2">&quot;uuids&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="p">{</span>
-      <span class="s2">&quot;group_type&quot;</span><span class="p">:</span> <span class="s2">&quot;rpm&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;tar&quot;</span>
-    <span class="p">}</span>
-  <span class="p">],</span>
-  <span class="s2">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="mi">1</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div></blockquote>
-</div>
-<div class="section" id="api-v0-modules-info-module-names">
-<h4><cite>/api/v0/modules/info/&lt;module_names&gt;</cite><a class="headerlink" href="#api-v0-modules-info-module-names" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>Return the module's dependencies, and the information about the module.</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;modules&quot;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-      <span class="s2">&quot;dependencies&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">{</span>
-          <span class="s2">&quot;arch&quot;</span><span class="p">:</span> <span class="s2">&quot;noarch&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;basesystem&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;release&quot;</span><span class="p">:</span> <span class="s2">&quot;7.el7&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;10.0&quot;</span>
-        <span class="p">},</span>
-        <span class="p">{</span>
-          <span class="s2">&quot;arch&quot;</span><span class="p">:</span> <span class="s2">&quot;x86_64&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;bash&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;release&quot;</span><span class="p">:</span> <span class="s2">&quot;28.el7&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;4.2.46&quot;</span>
-        <span class="p">},</span>
-        <span class="o">...</span>
-      <span class="p">],</span>
-      <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;The GNU tar program saves ...&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;homepage&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.gnu.org/software/tar/&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;tar&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;summary&quot;</span><span class="p">:</span> <span class="s2">&quot;A GNU file archiving program&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;upstream_vcs&quot;</span><span class="p">:</span> <span class="s2">&quot;UPSTREAM_VCS&quot;</span>
+      <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+      <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;ae1bf7e3-7f16-4c9f-b36e-3726a1093fd0&quot;</span>
     <span class="p">}</span>
   <span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </div></blockquote>
-</div>
-<div class="section" id="post-api-v0-compose">
-<h4>POST <cite>/api/v0/compose</cite><a class="headerlink" href="#post-api-v0-compose" title="Permalink to this headline">¶</a></h4>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_compose_failed">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_compose_failed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_compose_failed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_compose_failed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of failed composes</p>
+<p><strong>/api/v0/compose/failed</strong></p>
 <blockquote>
-<div><p>Start a compose. The content type should be 'application/json' and the body of the POST
-should look like this</p>
+<div><p>Return the details on all of the failed composes on the system.</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;blueprint_name&quot;</span><span class="p">:</span> <span class="s2">&quot;http-server&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;compose_type&quot;</span><span class="p">:</span> <span class="s2">&quot;tar&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;branch&quot;</span><span class="p">:</span> <span class="s2">&quot;master&quot;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>Pass it the name of the blueprint, the type of output (from '/api/v0/compose/types'), and the
-blueprint branch to use. 'branch' is optional and will default to master. It will create a new
-build and add it to the queue. It returns the build uuid and a status if it succeeds</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;build_id&quot;</span><span class="p">:</span> <span class="s2">&quot;e6fa6db4-9c81-4b70-870f-a697ca405cdf&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">true</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div></blockquote>
-</div>
-<div class="section" id="api-v0-compose-types">
-<h4><cite>/api/v0/compose/types</cite><a class="headerlink" href="#api-v0-compose-types" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>Returns the list of supported output types that are valid for use with 'POST /api/v0/compose'</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;types&quot;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-      <span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
-      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;tar&quot;</span>
+  <span class="s2">&quot;failed&quot;</span><span class="p">:</span> <span class="p">[</span>
+     <span class="p">{</span>
+      <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;http-server&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;FAILED&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517523249.9301329</span><span class="p">,</span>
+      <span class="s2">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517523249.9314211</span><span class="p">,</span>
+      <span class="s2">&quot;job_finished&quot;</span><span class="p">:</span> <span class="mf">1517523255.5623411</span><span class="p">,</span>
+      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.2&quot;</span>
     <span class="p">}</span>
   <span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </div></blockquote>
-</div>
-<div class="section" id="api-v0-compose-queue">
-<h4><cite>/api/v0/compose/queue</cite><a class="headerlink" href="#api-v0-compose-queue" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>Return the status of the build queue. It includes information about the builds waiting,
-and the build that is running.</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;new&quot;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-      <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;45502a6d-06e8-48a5-a215-2b4174b3614b&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;WAITING&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517362647.4570868</span><span class="p">,</span>
-      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.6&quot;</span>
-    <span class="p">},</span>
-    <span class="p">{</span>
-      <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;6d292bd0-bec7-4825-8d7d-41ef9c3e4b73&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;kubernetes&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;WAITING&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517362659.0034983</span><span class="p">,</span>
-      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.1&quot;</span>
-    <span class="p">}</span>
-  <span class="p">],</span>
-  <span class="s2">&quot;run&quot;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-      <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;745712b2-96db-44c0-8014-fe925c35e795&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;RUNNING&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517362633.7965999</span><span class="p">,</span>
-      <span class="s2">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517362633.8001345</span><span class="p">,</span>
-      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.6&quot;</span>
-    <span class="p">}</span>
-  <span class="p">]</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div></blockquote>
-</div>
-<div class="section" id="api-v0-compose-finished">
-<h4><cite>/api/v0/compose/finished</cite><a class="headerlink" href="#api-v0-compose-finished" title="Permalink to this headline">¶</a></h4>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_compose_finished">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_compose_finished</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_compose_finished"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_compose_finished" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of finished composes</p>
+<p><strong>/api/v0/compose/finished</strong></p>
 <blockquote>
 <div><p>Return the details on all of the finished composes on the system.</p>
 <p>Example:</p>
@@ -3572,95 +3471,24 @@ and the build that is running.</p>
 </pre></div>
 </div>
 </div></blockquote>
-</div>
-<div class="section" id="api-v0-compose-failed">
-<h4><cite>/api/v0/compose/failed</cite><a class="headerlink" href="#api-v0-compose-failed" title="Permalink to this headline">¶</a></h4>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_compose_image">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_compose_image</code><span class="sig-paren">(</span><em>uuid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_compose_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_compose_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the output image for the build</p>
+<p><strong>/api/v0/compose/image/&lt;uuid&gt;</strong></p>
 <blockquote>
-<div><p>Return the details on all of the failed composes on the system.</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;failed&quot;</span><span class="p">:</span> <span class="p">[</span>
-     <span class="p">{</span>
-      <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;http-server&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;FAILED&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517523249.9301329</span><span class="p">,</span>
-      <span class="s2">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517523249.9314211</span><span class="p">,</span>
-      <span class="s2">&quot;job_finished&quot;</span><span class="p">:</span> <span class="mf">1517523255.5623411</span><span class="p">,</span>
-      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.2&quot;</span>
-    <span class="p">}</span>
-  <span class="p">]</span>
-<span class="p">}</span>
-</pre></div>
-</div>
+<div><p>Returns the output image from the build. The filename is set to the filename
+from the build with the UUID as a prefix. eg. UUID-root.tar.xz or UUID-boot.iso.</p>
 </div></blockquote>
-</div>
-<div class="section" id="api-v0-compose-status-uuids-blueprint-blueprint-name-status-compose-status-type-compose-type">
-<h4><cite>/api/v0/compose/status/&lt;uuids&gt;[?blueprint=&lt;blueprint_name&gt;&amp;status=&lt;compose_status&gt;&amp;type=&lt;compose_type&gt;]</cite><a class="headerlink" href="#api-v0-compose-status-uuids-blueprint-blueprint-name-status-compose-status-type-compose-type" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>Return the details for each of the comma-separated list of uuids. A uuid of '*' will return
-details for all composes.</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;uuids&quot;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-      <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;http-server&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;FINISHED&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517523644.2384307</span><span class="p">,</span>
-      <span class="s2">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517523644.2551234</span><span class="p">,</span>
-      <span class="s2">&quot;job_finished&quot;</span><span class="p">:</span> <span class="mf">1517523689.9864314</span><span class="p">,</span>
-      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.2&quot;</span>
-    <span class="p">},</span>
-    <span class="p">{</span>
-      <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;45502a6d-06e8-48a5-a215-2b4174b3614b&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;FINISHED&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517363442.188399</span><span class="p">,</span>
-      <span class="s2">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517363442.325324</span><span class="p">,</span>
-      <span class="s2">&quot;job_finished&quot;</span><span class="p">:</span> <span class="mf">1517363451.653621</span><span class="p">,</span>
-      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.6&quot;</span>
-    <span class="p">}</span>
-  <span class="p">]</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div></blockquote>
-</div>
-<div class="section" id="delete-api-v0-compose-cancel-uuid">
-<h4>DELETE <cite>/api/v0/compose/cancel/&lt;uuid&gt;</cite><a class="headerlink" href="#delete-api-v0-compose-cancel-uuid" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>Cancel the build, if it is not finished, and delete the results. It will return a
-status of True if it is successful.</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
-  <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;03397f8d-acff-4cdb-bd31-f629b7a948f5&quot;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div></blockquote>
-</div>
-<div class="section" id="delete-api-v0-compose-delete-uuids">
-<h4>DELETE <cite>/api/v0/compose/delete/&lt;uuids&gt;</cite><a class="headerlink" href="#delete-api-v0-compose-delete-uuids" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>Delete the list of comma-separated uuids from the compose results.</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[],</span>
-  <span class="s2">&quot;uuids&quot;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-      <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
-      <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="s2">&quot;ae1bf7e3-7f16-4c9f-b36e-3726a1093fd0&quot;</span>
-    <span class="p">}</span>
-  <span class="p">]</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div></blockquote>
-</div>
-<div class="section" id="api-v0-compose-info-uuid">
-<h4><cite>/api/v0/compose/info/&lt;uuid&gt;</cite><a class="headerlink" href="#api-v0-compose-info-uuid" title="Permalink to this headline">¶</a></h4>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_compose_info">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_compose_info</code><span class="sig-paren">(</span><em>uuid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_compose_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_compose_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return detailed info about a compose</p>
+<p><strong>/api/v0/compose/info/&lt;uuid&gt;</strong></p>
 <blockquote>
 <div><p>Get detailed information about the compose. The returned JSON string will
 contain the following information:</p>
@@ -3708,47 +3536,13 @@ contain the following information:</p>
 </pre></div>
 </div>
 </div></blockquote>
-</div>
-<div class="section" id="api-v0-compose-metadata-uuid">
-<h4><cite>/api/v0/compose/metadata/&lt;uuid&gt;</cite><a class="headerlink" href="#api-v0-compose-metadata-uuid" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>Returns a .tar of the metadata used for the build. This includes all the
-information needed to reproduce the build, including the final kickstart
-populated with repository and package NEVRA.</p>
-<p>The mime type is set to 'application/x-tar' and the filename is set to
-UUID-metadata.tar</p>
-<p>The .tar is uncompressed, but is not large.</p>
-</div></blockquote>
-</div>
-<div class="section" id="api-v0-compose-results-uuid">
-<h4><cite>/api/v0/compose/results/&lt;uuid&gt;</cite><a class="headerlink" href="#api-v0-compose-results-uuid" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>Returns a .tar of the metadata, logs, and output image of the build. This
-includes all the information needed to reproduce the build, including the
-final kickstart populated with repository and package NEVRA. The output image
-is already in compressed form so the returned tar is not compressed.</p>
-<p>The mime type is set to 'application/x-tar' and the filename is set to
-UUID.tar</p>
-</div></blockquote>
-</div>
-<div class="section" id="api-v0-compose-logs-uuid">
-<h4><cite>/api/v0/compose/logs/&lt;uuid&gt;</cite><a class="headerlink" href="#api-v0-compose-logs-uuid" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>Returns a .tar of the anaconda build logs. The tar is not compressed, but is
-not large.</p>
-<p>The mime type is set to 'application/x-tar' and the filename is set to
-UUID-logs.tar</p>
-</div></blockquote>
-</div>
-<div class="section" id="api-v0-compose-image-uuid">
-<h4><cite>/api/v0/compose/image/&lt;uuid&gt;</cite><a class="headerlink" href="#api-v0-compose-image-uuid" title="Permalink to this headline">¶</a></h4>
-<blockquote>
-<div><p>Returns the output image from the build. The filename is set to the filename
-from the build with the UUID as a prefix. eg. UUID-root.tar.xz or UUID-boot.iso.</p>
-</div></blockquote>
-</div>
-<div class="section" id="api-v0-compose-log-uuid-size-kbytes">
-<h4><cite>/api/v0/compose/log/&lt;uuid&gt;[?size=kbytes]</cite><a class="headerlink" href="#api-v0-compose-log-uuid-size-kbytes" title="Permalink to this headline">¶</a></h4>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_compose_log_tail">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_compose_log_tail</code><span class="sig-paren">(</span><em>uuid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_compose_log_tail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_compose_log_tail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the end of the main anaconda.log, defaults to 1Mbytes</p>
+<p><strong>/api/v0/compose/log/&lt;uuid&gt;[?size=kbytes]</strong></p>
 <blockquote>
 <div><p>Returns the end of the anaconda.log. The size parameter is optional and defaults to 1Mbytes
 if it is not included. The returned data is raw text from the end of the logfile, starting on
@@ -3772,45 +3566,499 @@ a line boundry.</p>
 </pre></div>
 </div>
 </div></blockquote>
-<dl class="function">
-<dt id="pylorax.api.v0.blueprint_exists">
-<code class="descclassname">pylorax.api.v0.</code><code class="descname">blueprint_exists</code><span class="sig-paren">(</span><em>api</em>, <em>branch</em>, <em>blueprint_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#blueprint_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.blueprint_exists" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if the blueprint exists</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>api</strong> (<em>Flask</em>) -- flask object</p></li>
-<li><p><strong>branch</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Branch name</p></li>
-<li><p><strong>recipe_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Recipe name to read</p></li>
-</ul>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="function">
-<dt id="pylorax.api.v0.take_limits">
-<code class="descclassname">pylorax.api.v0.</code><code class="descname">take_limits</code><span class="sig-paren">(</span><em>iterable</em>, <em>offset</em>, <em>limit</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#take_limits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.take_limits" title="Permalink to this definition">¶</a></dt>
-<dd><p>Apply offset and limit to an iterable object</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>iterable</strong> (<em>iter</em>) -- The object to limit</p></li>
-<li><p><strong>offset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The number of items to skip</p></li>
-<li><p><strong>limit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The total number of items to return</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A subset of the iterable</p>
-</dd>
-</dl>
+<dt id="pylorax.api.v0.v0_compose_logs">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_compose_logs</code><span class="sig-paren">(</span><em>uuid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_compose_logs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_compose_logs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a tar of the metadata for the build</p>
+<p><strong>/api/v0/compose/logs/&lt;uuid&gt;</strong></p>
+<blockquote>
+<div><p>Returns a .tar of the anaconda build logs. The tar is not compressed, but is
+not large.</p>
+<p>The mime type is set to 'application/x-tar' and the filename is set to
+UUID-logs.tar</p>
+</div></blockquote>
 </dd></dl>
 
 <dl class="function">
-<dt id="pylorax.api.v0.v0_api">
-<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_api</code><span class="sig-paren">(</span><em>api</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_api"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_api" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="pylorax.api.v0.v0_compose_metadata">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_compose_metadata</code><span class="sig-paren">(</span><em>uuid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_compose_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_compose_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a tar of the metadata for the build</p>
+<p><strong>/api/v0/compose/metadata/&lt;uuid&gt;</strong></p>
+<blockquote>
+<div><p>Returns a .tar of the metadata used for the build. This includes all the
+information needed to reproduce the build, including the final kickstart
+populated with repository and package NEVRA.</p>
+<p>The mime type is set to 'application/x-tar' and the filename is set to
+UUID-metadata.tar</p>
+<p>The .tar is uncompressed, but is not large.</p>
+</div></blockquote>
+</dd></dl>
 
+<dl class="function">
+<dt id="pylorax.api.v0.v0_compose_queue">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_compose_queue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_compose_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_compose_queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the status of the new and running queues</p>
+<p><strong>/api/v0/compose/queue</strong></p>
+<blockquote>
+<div><p>Return the status of the build queue. It includes information about the builds waiting,
+and the build that is running.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;new&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;45502a6d-06e8-48a5-a215-2b4174b3614b&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;WAITING&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517362647.4570868</span><span class="p">,</span>
+      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.6&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;6d292bd0-bec7-4825-8d7d-41ef9c3e4b73&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;kubernetes&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;WAITING&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517362659.0034983</span><span class="p">,</span>
+      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.1&quot;</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;run&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;745712b2-96db-44c0-8014-fe925c35e795&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;RUNNING&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517362633.7965999</span><span class="p">,</span>
+      <span class="s2">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517362633.8001345</span><span class="p">,</span>
+      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.6&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
 </div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_compose_results">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_compose_results</code><span class="sig-paren">(</span><em>uuid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_compose_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_compose_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a tar of the metadata and the results for the build</p>
+<p><strong>/api/v0/compose/results/&lt;uuid&gt;</strong></p>
+<blockquote>
+<div><p>Returns a .tar of the metadata, logs, and output image of the build. This
+includes all the information needed to reproduce the build, including the
+final kickstart populated with repository and package NEVRA. The output image
+is already in compressed form so the returned tar is not compressed.</p>
+<p>The mime type is set to 'application/x-tar' and the filename is set to
+UUID.tar</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_compose_start">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_compose_start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_compose_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_compose_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start a compose</p>
+<dl class="simple">
+<dt>The body of the post should have these fields:</dt><dd><p>blueprint_name - The blueprint name from /blueprints/list/
+compose_type   - The type of output to create, from /compose/types
+branch         - Optional, defaults to master, selects the git branch to use for the blueprint.</p>
+</dd>
+</dl>
+<p><strong>POST /api/v0/compose</strong></p>
+<blockquote>
+<div><p>Start a compose. The content type should be 'application/json' and the body of the POST
+should look like this</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;blueprint_name&quot;</span><span class="p">:</span> <span class="s2">&quot;http-server&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;compose_type&quot;</span><span class="p">:</span> <span class="s2">&quot;tar&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;branch&quot;</span><span class="p">:</span> <span class="s2">&quot;master&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Pass it the name of the blueprint, the type of output (from '/api/v0/compose/types'), and the
+blueprint branch to use. 'branch' is optional and will default to master. It will create a new
+build and add it to the queue. It returns the build uuid and a status if it succeeds</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;build_id&quot;</span><span class="p">:</span> <span class="s2">&quot;e6fa6db4-9c81-4b70-870f-a697ca405cdf&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">true</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_compose_status">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_compose_status</code><span class="sig-paren">(</span><em>uuids</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_compose_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_compose_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the status of the listed uuids</p>
+<p><strong>/api/v0/compose/status/&lt;uuids&gt;[?blueprint=&lt;blueprint_name&gt;&amp;status=&lt;compose_status&gt;&amp;type=&lt;compose_type&gt;]</strong></p>
+<blockquote>
+<div><p>Return the details for each of the comma-separated list of uuids. A uuid of '*' will return
+details for all composes.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;uuids&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;8c8435ef-d6bd-4c68-9bf1-a2ef832e6b1a&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;http-server&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;FINISHED&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517523644.2384307</span><span class="p">,</span>
+      <span class="s2">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517523644.2551234</span><span class="p">,</span>
+      <span class="s2">&quot;job_finished&quot;</span><span class="p">:</span> <span class="mf">1517523689.9864314</span><span class="p">,</span>
+      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.2&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;45502a6d-06e8-48a5-a215-2b4174b3614b&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;blueprint&quot;</span><span class="p">:</span> <span class="s2">&quot;glusterfs&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;queue_status&quot;</span><span class="p">:</span> <span class="s2">&quot;FINISHED&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;job_created&quot;</span><span class="p">:</span> <span class="mf">1517363442.188399</span><span class="p">,</span>
+      <span class="s2">&quot;job_started&quot;</span><span class="p">:</span> <span class="mf">1517363442.325324</span><span class="p">,</span>
+      <span class="s2">&quot;job_finished&quot;</span><span class="p">:</span> <span class="mf">1517363451.653621</span><span class="p">,</span>
+      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.6&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_compose_types">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_compose_types</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_compose_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_compose_types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of enabled output types</p>
+<p>(only enabled types are returned)</p>
+<p><strong>/api/v0/compose/types</strong></p>
+<blockquote>
+<div><p>Returns the list of supported output types that are valid for use with 'POST /api/v0/compose'</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;types&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;tar&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_modules_info">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_modules_info</code><span class="sig-paren">(</span><em>module_names</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_modules_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_modules_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return detailed information about the listed modules</p>
+<p><strong>/api/v0/modules/info/&lt;module_names&gt;</strong></p>
+<blockquote>
+<div><p>Return the module's dependencies, and the information about the module.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;modules&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;dependencies&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s2">&quot;arch&quot;</span><span class="p">:</span> <span class="s2">&quot;noarch&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;basesystem&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;release&quot;</span><span class="p">:</span> <span class="s2">&quot;7.el7&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;10.0&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="s2">&quot;arch&quot;</span><span class="p">:</span> <span class="s2">&quot;x86_64&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;bash&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;release&quot;</span><span class="p">:</span> <span class="s2">&quot;28.el7&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;4.2.46&quot;</span>
+        <span class="p">},</span>
+        <span class="o">...</span>
+      <span class="p">],</span>
+      <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;The GNU tar program saves ...&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;homepage&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.gnu.org/software/tar/&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;tar&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;summary&quot;</span><span class="p">:</span> <span class="s2">&quot;A GNU file archiving program&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;upstream_vcs&quot;</span><span class="p">:</span> <span class="s2">&quot;UPSTREAM_VCS&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_modules_list">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_modules_list</code><span class="sig-paren">(</span><em>module_names=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_modules_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_modules_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>List available modules, filtering by module_names</p>
+<p><strong>/api/v0/modules/list[?offset=0&amp;limit=20]</strong></p>
+<blockquote>
+<div><p>Return a list of all of the available modules. This includes the name and the
+group_type, which is always &quot;rpm&quot; for lorax-composer. By default this returns
+the first 20 items. This can be changed by setting the <cite>offset</cite> and <cite>limit</cite>
+arguments.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+  <span class="s2">&quot;modules&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;group_type&quot;</span><span class="p">:</span> <span class="s2">&quot;rpm&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;0ad&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;group_type&quot;</span><span class="p">:</span> <span class="s2">&quot;rpm&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;0ad-data&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;group_type&quot;</span><span class="p">:</span> <span class="s2">&quot;rpm&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;0install&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;group_type&quot;</span><span class="p">:</span> <span class="s2">&quot;rpm&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;2048-cli&quot;</span>
+    <span class="p">},</span>
+    <span class="o">...</span>
+  <span class="p">]</span>
+  <span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="mi">21770</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p><strong>/api/v0/modules/list/&lt;module_names&gt;[?offset=0&amp;limit=20]</strong></p>
+<blockquote>
+<div><p>Return the list of comma-separated modules. Output is the same as <cite>/modules/list</cite></p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+  <span class="s2">&quot;modules&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;group_type&quot;</span><span class="p">:</span> <span class="s2">&quot;rpm&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;tar&quot;</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_projects_depsolve">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_projects_depsolve</code><span class="sig-paren">(</span><em>project_names</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_projects_depsolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_projects_depsolve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return detailed information about the listed projects</p>
+<p><strong>/api/v0/projects/depsolve/&lt;project_names&gt;</strong></p>
+<blockquote>
+<div><p>Depsolve the comma-separated list of projects and return the list of NEVRAs needed
+to satisfy the request.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;projects&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;arch&quot;</span><span class="p">:</span> <span class="s2">&quot;noarch&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;basesystem&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;release&quot;</span><span class="p">:</span> <span class="s2">&quot;7.el7&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;10.0&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;arch&quot;</span><span class="p">:</span> <span class="s2">&quot;x86_64&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;bash&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;release&quot;</span><span class="p">:</span> <span class="s2">&quot;28.el7&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;4.2.46&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;arch&quot;</span><span class="p">:</span> <span class="s2">&quot;x86_64&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;filesystem&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;release&quot;</span><span class="p">:</span> <span class="s2">&quot;21.el7&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.2&quot;</span>
+    <span class="p">},</span>
+    <span class="o">...</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_projects_info">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_projects_info</code><span class="sig-paren">(</span><em>project_names</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_projects_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_projects_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return detailed information about the listed projects</p>
+<p><strong>/api/v0/projects/info/&lt;project_names&gt;</strong></p>
+<blockquote>
+<div><p>Return information about the comma-separated list of projects. It includes the description
+of the package along with the list of available builds.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;projects&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;builds&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s2">&quot;arch&quot;</span><span class="p">:</span> <span class="s2">&quot;x86_64&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;build_config_ref&quot;</span><span class="p">:</span> <span class="s2">&quot;BUILD_CONFIG_REF&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;build_env_ref&quot;</span><span class="p">:</span> <span class="s2">&quot;BUILD_ENV_REF&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;build_time&quot;</span><span class="p">:</span> <span class="s2">&quot;2017-03-01T08:39:23&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;changelog&quot;</span><span class="p">:</span> <span class="s2">&quot;- restore incremental backups correctly, files ...&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{},</span>
+          <span class="s2">&quot;release&quot;</span><span class="p">:</span> <span class="s2">&quot;32.el7&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;license&quot;</span><span class="p">:</span> <span class="s2">&quot;GPLv3+&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s2">&quot;source_ref&quot;</span><span class="p">:</span> <span class="s2">&quot;SOURCE_REF&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.26&quot;</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">],</span>
+      <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;The GNU tar program saves many ...&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;homepage&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.gnu.org/software/tar/&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;tar&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;summary&quot;</span><span class="p">:</span> <span class="s2">&quot;A GNU file archiving program&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;upstream_vcs&quot;</span><span class="p">:</span> <span class="s2">&quot;UPSTREAM_VCS&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_projects_list">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_projects_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_projects_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_projects_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>List all of the available projects/packages</p>
+<p><strong>/api/v0/projects/list[?offset=0&amp;limit=20]</strong></p>
+<blockquote>
+<div><p>List all of the available projects. By default this returns the first 20 items,
+but this can be changed by setting the <cite>offset</cite> and <cite>limit</cite> arguments.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+  <span class="s2">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s2">&quot;projects&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;0 A.D. (pronounced &quot;</span><span class="n">zero</span> <span class="n">ey</span><span class="o">-</span><span class="n">dee</span><span class="s2">&quot;) is a ...&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;homepage&quot;</span><span class="p">:</span> <span class="s2">&quot;http://play0ad.com&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;0ad&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;summary&quot;</span><span class="p">:</span> <span class="s2">&quot;Cross-Platform RTS Game of Ancient Warfare&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;upstream_vcs&quot;</span><span class="p">:</span> <span class="s2">&quot;UPSTREAM_VCS&quot;</span>
+    <span class="p">},</span>
+    <span class="o">...</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="mi">21770</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_projects_source_delete">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_projects_source_delete</code><span class="sig-paren">(</span><em>source_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_projects_source_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_projects_source_delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete the named source and return a status response</p>
+<p><strong>DELETE /api/v0/projects/source/delete/&lt;source-name&gt;</strong></p>
+<blockquote>
+<div><p>Delete a user added source. This will fail if a system source is passed to
+it.</p>
+<p>The response will be a status response with <cite>status</cite> set to true, or an
+error response with it set to false and an error message included.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_projects_source_info">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_projects_source_info</code><span class="sig-paren">(</span><em>source_names</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_projects_source_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_projects_source_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return detailed info about the list of sources</p>
+<p><strong>/api/v0/projects/source/info/&lt;source-names&gt;</strong></p>
+<blockquote>
+<div><p>Return information about the comma-separated list of source names. Or all of the
+sources if '*' is passed. Note that general globbing is not supported, only '*'.</p>
+<p>immutable system sources will have the &quot;system&quot; field set to true. User added sources
+will have it set to false. System sources cannot be changed or deleted.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;errors&quot;</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="s2">&quot;sources&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;fedora&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;check_gpg&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+      <span class="s2">&quot;check_ssl&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+      <span class="s2">&quot;gpgkey_urls&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-x86_64&quot;</span>
+      <span class="p">],</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;fedora&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;proxy&quot;</span><span class="p">:</span> <span class="s2">&quot;http://proxy.brianlane.com:8123&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;system&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+      <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;yum-metalink&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://mirrors.fedoraproject.org/metalink?repo=fedora-28&amp;arch=x86_64&quot;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_projects_source_list">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_projects_source_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_projects_source_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_projects_source_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of source names</p>
+<p><strong>/api/v0/projects/source/list</strong></p>
+<blockquote>
+<div><p>Return the list of repositories used for depsolving and installing packages.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;sources&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;fedora&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fedora-cisco-openh264&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fedora-updates-testing&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fedora-updates&quot;</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="pylorax.api.v0.v0_projects_source_new">
+<code class="descclassname">pylorax.api.v0.</code><code class="descname">v0_projects_source_new</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/v0.html#v0_projects_source_new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.v0.v0_projects_source_new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new package source. Or change an existing one</p>
+<p><strong>POST /api/v0/projects/source/new</strong></p>
+<blockquote>
+<div><p>Add (or change) a source for use when depsolving blueprints and composing images.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">proxy</span></code> and <code class="docutils literal notranslate"><span class="pre">gpgkey_urls</span></code> entries are optional. All of the others are required. The supported
+types for the urls are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">yum-baseurl</span></code> is a URL to a yum repository.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">yum-mirrorlist</span></code> is a URL for a mirrorlist.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">yum-metalink</span></code> is a URL for a metalink.</p></li>
+</ul>
+<p>If <code class="docutils literal notranslate"><span class="pre">check_ssl</span></code> is true the https certificates must be valid. If they are self-signed you can either set
+this to false, or add your Certificate Authority to the host system.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">check_gpg</span></code> is true the GPG key must either be installed on the host system, or <code class="docutils literal notranslate"><span class="pre">gpgkey_urls</span></code>
+should point to it.</p>
+<p>You can edit an existing source (other than system sources), by doing a POST
+of the new version of the source. It will overwrite the previous one.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;custom-source-1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://url/path/to/repository/&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;yum-baseurl&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;check_ssl&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+    <span class="s2">&quot;check_gpg&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+    <span class="s2">&quot;gpgkey_urls&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;https://url/path/to/gpg-key&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd></dl>
+
 </div>
 </div>
 <div class="section" id="module-pylorax.api.workspace">
@@ -3904,11 +4152,6 @@ a line boundry.</p>
 </div>
 <div class="section" id="module-pylorax.api">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pylorax.api" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="pylorax.api.crossdomain">
-<code class="descclassname">pylorax.api.</code><code class="descname">crossdomain</code><span class="sig-paren">(</span><em>origin</em>, <em>methods=None</em>, <em>headers=None</em>, <em>max_age=21600</em>, <em>attach_to_all=True</em>, <em>automatic_options=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylorax/api/crossdomain.html#crossdomain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylorax.api.crossdomain" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </div>
 </div>
 

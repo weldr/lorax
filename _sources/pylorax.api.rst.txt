@@ -44,14 +44,6 @@ pylorax.api.config module
     :undoc-members:
     :show-inheritance:
 
-pylorax.api.crossdomain module
-------------------------------
-
-.. automodule:: pylorax.api.crossdomain
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 pylorax.api.dnfbase module
 --------------------------
 
@@ -64,6 +56,14 @@ pylorax.api.errors module
 -------------------------
 
 .. automodule:: pylorax.api.errors
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pylorax.api.flask\_blueprint module
+-----------------------------------
+
+.. automodule:: pylorax.api.flask_blueprint
     :members:
     :undoc-members:
     :show-inheritance:
@@ -120,6 +120,14 @@ pylorax.api.timestamp module
 ----------------------------
 
 .. automodule:: pylorax.api.timestamp
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pylorax.api.toml module
+-----------------------
+
+.. automodule:: pylorax.api.toml
     :members:
     :undoc-members:
     :show-inheritance:

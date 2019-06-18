@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.server &mdash; Lorax 31.4 documentation</title>
+  <title>pylorax.api.server &mdash; Lorax 31.7 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                31.4
+                31.7
               </div>
             
           
@@ -157,7 +157,7 @@
             
   <h1>Source code for pylorax.api.server</h1><div class="highlight"><pre>
 <span></span><span class="c1">#</span>
-<span class="c1"># Copyright (C) 2017  Red Hat, Inc.</span>
+<span class="c1"># Copyright (C) 2017-2019 Red Hat, Inc.</span>
 <span class="c1">#</span>
 <span class="c1"># This program is free software; you can redistribute it and/or modify</span>
 <span class="c1"># it under the terms of the GNU General Public License as published by</span>
@@ -179,9 +179,10 @@
 <span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">send_from_directory</span>
 <span class="kn">from</span> <span class="nn">glob</span> <span class="k">import</span> <span class="n">glob</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">werkzeug</span>
 
 <span class="kn">from</span> <span class="nn">pylorax</span> <span class="k">import</span> <span class="n">vernum</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.crossdomain</span> <span class="k">import</span> <span class="n">crossdomain</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.errors</span> <span class="k">import</span> <span class="n">HTTP_ERROR</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.v0</span> <span class="k">import</span> <span class="n">v0_api</span>
 <span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span>
 
@@ -210,7 +211,6 @@
     <span class="k">return</span> <span class="n">send_from_directory</span><span class="p">(</span><span class="n">docs_path</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
 
 <span class="nd">@server</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/api/status&quot;</span><span class="p">)</span>
-<span class="nd">@crossdomain</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">v0_status</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `/api/v0/status`</span>
@@ -237,7 +237,12 @@
                    <span class="n">db_supported</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                    <span class="n">msgs</span><span class="o">=</span><span class="n">server</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;TEMPLATE_ERRORS&quot;</span><span class="p">])</span>
 
-<span class="n">v0_api</span><span class="p">(</span><span class="n">server</span><span class="p">)</span>
+<span class="nd">@server</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="n">werkzeug</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">HTTPException</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">bad_request</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[{</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">HTTP_ERROR</span><span class="p">,</span> <span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="n">error</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="n">error</span><span class="o">.</span><span class="n">name</span> <span class="p">}]),</span> <span class="n">error</span><span class="o">.</span><span class="n">code</span>
+
+<span class="c1"># Register the v0 API on /api/v0/</span>
+<span class="n">server</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">v0_api</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s2">&quot;/api/v0/&quot;</span><span class="p">)</span>
 </pre></div>
 
            </div>
