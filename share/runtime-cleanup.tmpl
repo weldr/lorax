@@ -142,7 +142,7 @@ removefrom authconfig /usr/sbin/* /usr/share/*
 removefrom bash /etc/* /usr/bin/bashbug* /usr/share/*
 removefrom bind-libs-lite /usr/${libdir}/libirs*
 removefrom bind-libs-lite /usr/${libdir}/libisccfg-export*
-removefrom bind-utils /usr/bin/dig /usr/bin/host /usr/bin/nsupdate
+removefrom bind-utils /usr/bin/dig /usr/bin/host /usr/bin/nsupdate /usr/bin/delv
 removefrom bitmap-fangsongti-fonts /usr/share/fonts/*
 removefrom ca-certificates /etc/pki/java/*
 removefrom ca-certificates /etc/pki/tls/certs/ca-bundle.trust.crt /etc/ssl/*
@@ -325,7 +325,7 @@ removefrom util-linux --allbut \
     /etc/mtab /etc/pam.d/login /etc/pam.d/remote \
     /usr/sbin/{agetty,blkid,blockdev,clock,fdisk,fsck,fstrim,hwclock,losetup} \
     /usr/sbin/{mkswap,nologin,sfdisk,swapoff,swapon,wipefs,partx,fsfreeze} \
-    /usr/bin/{logger,hexdump,flock}
+    /usr/bin/{logger,hexdump,flock,chmem,lsmem}
 removefrom volume_key-libs /usr/share/locale/*
 removefrom wget /etc/* /usr/share/locale/*
 removefrom xorg-x11-drv-intel /usr/${libdir}/libI*
