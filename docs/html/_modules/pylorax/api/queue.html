@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.queue &mdash; Lorax 31.4 documentation</title>
+  <title>pylorax.api.queue &mdash; Lorax 31.7 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                31.4
+                31.7
               </div>
             
           
@@ -179,7 +179,6 @@
 <span class="kn">import</span> <span class="nn">grp</span>
 <span class="kn">from</span> <span class="nn">glob</span> <span class="k">import</span> <span class="n">glob</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
-<span class="kn">import</span> <span class="nn">pytoml</span> <span class="k">as</span> <span class="nn">toml</span>
 <span class="kn">import</span> <span class="nn">pwd</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
@@ -190,6 +189,7 @@
 <span class="kn">from</span> <span class="nn">pylorax.api.compose</span> <span class="k">import</span> <span class="n">move_compose_results</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="k">import</span> <span class="n">recipe_from_file</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.timestamp</span> <span class="k">import</span> <span class="n">TS_CREATED</span><span class="p">,</span> <span class="n">TS_STARTED</span><span class="p">,</span> <span class="n">TS_FINISHED</span><span class="p">,</span> <span class="n">write_timestamp</span><span class="p">,</span> <span class="n">timestamp_dict</span>
+<span class="kn">import</span> <span class="nn">pylorax.api.toml</span> <span class="k">as</span> <span class="nn">toml</span>
 <span class="kn">from</span> <span class="nn">pylorax.base</span> <span class="k">import</span> <span class="n">DataHolder</span>
 <span class="kn">from</span> <span class="nn">pylorax.creator</span> <span class="k">import</span> <span class="n">run_creator</span>
 <span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span>

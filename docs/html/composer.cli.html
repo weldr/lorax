@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>composer.cli package &mdash; Lorax 31.4 documentation</title>
+  <title>composer.cli package &mdash; Lorax 31.7 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                31.4
+                31.7
               </div>
             
           
@@ -446,6 +446,24 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 </dd></dl>
 
 <dl class="function">
+<dt id="composer.cli.blueprints.dict_names">
+<code class="descclassname">composer.cli.blueprints.</code><code class="descname">dict_names</code><span class="sig-paren">(</span><em>lst</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#dict_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.dict_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return comma-separated list of the dict's name/user fields</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>d</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) -- key/values</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>String of the dict's keys and values</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+</dl>
+<p>root, norm</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="composer.cli.blueprints.prettyCommitDetails">
 <code class="descclassname">composer.cli.blueprints.</code><code class="descname">prettyCommitDetails</code><span class="sig-paren">(</span><em>change</em>, <em>indent=4</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#prettyCommitDetails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.prettyCommitDetails" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print the blueprint's change in a nice way</p>
@@ -460,8 +478,26 @@ blueprints freeze save &lt;blueprint,...&gt; Save the frozen blueprint to a file
 </dd></dl>
 
 <dl class="function">
-<dt id="composer.cli.blueprints.prettyDiffEntry">
-<code class="descclassname">composer.cli.blueprints.</code><code class="descname">prettyDiffEntry</code><span class="sig-paren">(</span><em>diff</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#prettyDiffEntry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.prettyDiffEntry" title="Permalink to this definition">¶</a></dt>
+<dt id="composer.cli.blueprints.pretty_dict">
+<code class="descclassname">composer.cli.blueprints.</code><code class="descname">pretty_dict</code><span class="sig-paren">(</span><em>d</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#pretty_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.pretty_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the dict as a human readable single line</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>d</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) -- key/values</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>String of the dict's keys and values</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</dd>
+</dl>
+<p>key=&quot;str&quot;, key=&quot;str1,str2&quot;, ...</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="composer.cli.blueprints.pretty_diff_entry">
+<code class="descclassname">composer.cli.blueprints.</code><code class="descname">pretty_diff_entry</code><span class="sig-paren">(</span><em>diff</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/composer/cli/blueprints.html#pretty_diff_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#composer.cli.blueprints.pretty_diff_entry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate nice diff entry string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

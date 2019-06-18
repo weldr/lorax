@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.mount &mdash; Lorax 31.4 documentation</title>
+  <title>pylorax.mount &mdash; Lorax 31.7 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                31.4
+                31.7
               </div>
             
           
@@ -179,9 +179,10 @@
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;livemedia-creator&quot;</span><span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pycdlib</span>
+<span class="kn">from</span> <span class="nn">pycdlib.pycdlibexception</span> <span class="k">import</span> <span class="n">PyCdlibException</span>
 
 <span class="kn">from</span> <span class="nn">pylorax.imgutils</span> <span class="k">import</span> <span class="n">mount</span><span class="p">,</span> <span class="n">umount</span>
-<span class="kn">from</span> <span class="nn">pylorax.executils</span> <span class="k">import</span> <span class="n">execWithCapture</span>
 
 <div class="viewcode-block" id="IsoMountpoint"><a class="viewcode-back" href="../../pylorax.html#pylorax.mount.IsoMountpoint">[docs]</a><span class="k">class</span> <span class="nc">IsoMountpoint</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -252,12 +253,12 @@
 
 <span class="sd">        Sets self.label if one is found</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">isoinfo_output</span> <span class="o">=</span> <span class="n">execWithCapture</span><span class="p">(</span><span class="s2">&quot;isoinfo&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;-d&quot;</span><span class="p">,</span> <span class="s2">&quot;-i&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iso_path</span><span class="p">])</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">isoinfo_output</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">isoinfo_output</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;Volume id: &quot;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">11</span><span class="p">:]</span>
-                <span class="k">return</span></div></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">iso</span> <span class="o">=</span> <span class="n">pycdlib</span><span class="o">.</span><span class="n">PyCdlib</span><span class="p">()</span>
+            <span class="n">iso</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iso_path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">iso</span><span class="o">.</span><span class="n">pvd</span><span class="o">.</span><span class="n">volume_identifier</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">PyCdlibException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Problem reading label from </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iso_path</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>
