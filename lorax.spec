@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        31.6
+Version:        31.7
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -254,6 +254,61 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Tue Jun 18 2019 Brian C. Lane <bcl@redhat.com> 31.7-1
+- New lorax documentation - 31.7 (bcl@redhat.com)
+- Update qemu arguments to work correctly with nographic (bcl@redhat.com)
+- Switch to new toml library (bcl@redhat.com)
+- composer-cli: Update diff support for customizations and repos.git (bcl@redhat.com)
+- Add support for customizations and repos.git to /blueprints/diff/ (bcl@redhat.com)
+- tests: Update custom-base with customizations (bcl@redhat.com)
+- Move the v0 API documentation into the functions (bcl@redhat.com)
+- Update the /api/v0/ route handling to use the flask_blueprints Blueprint class (bcl@redhat.com)
+- Extend Flask Blueprint class to allow skipping routes (bcl@redhat.com)
+- Remove PR template (atodorov@redhat.com)
+- Increase retry count/sleep times when waiting for lorax to start (atodorov@redhat.com)
+- Revert "remove the check for qemu-kvm" (atodorov@redhat.com)
+- Revert "remove the check for /usr/bin/docker in the setup phase" (atodorov@redhat.com)
+- [tests] Define unbound variables in test scripts (atodorov@redhat.com)
+- [tests] Handle blueprints in setup_tests/teardown_tests correctly (atodorov@redhat.com)
+- [tests] grep|cut for IP address in a more robust way (atodorov@redhat.com)
+- Remove quotes around file test in make vm (atodorov@redhat.com)
+- test: Don't wait on --sit when test succeeds (lars@karlitski.net)
+- Monkey-patch beakerlib to fail on first assert (lars@karlitski.net)
+- test_cli.sh: Return beakerlib's exit code (lars@karlitski.net)
+- Don't send CORS headers (lars@karlitski.net)
+- tests: Set BLUEPRINTS_DIR in all cases (lars@karlitski.net)
+- tests: Fail on script errors (lars@karlitski.net)
+- Add API integration test (lars@karlitski.net)
+- composer: Set up a custom HTTP error handler (lars@karlitski.net)
+- Split live-iso and qcow2 and update test scenario execution (atodorov@redhat.com)
+- Configure $PACKAGE for beakerlib reports (atodorov@redhat.com)
+- Use cloud credentials during test if they exist (atodorov@redhat.com)
+- Don't execute compose/blueprint sanity tests in Travis CI (atodorov@redhat.com)
+- test: Add --list option to test/check* scripts (lars@karlitski.net)
+- test: Add --sit argument to check-* scripts (lars@karlitski.net)
+- test: Custom main() function (lars@karlitski.net)
+- Use ansible instead of awscli (jstodola@redhat.com)
+- Fix path to generic.prm (jstodola@redhat.com)
+- Update example fedora-livemedia.ks (bcl@redhat.com)
+- Update composer live-iso template (bcl@redhat.com)
+- test: Disable test_live_iso test (lars@karlitski.net)
+- tests: Source lib.sh from the right directory (lars@karlitski.net)
+- Revert "Add rpmfluff temporarily" (bcl@redhat.com)
+- tests: Update tmux version to 2.9a (bcl@redhat.com)
+- test: Install beakerlib on non-RHEL images (martin@piware.de)
+- tests: Fail immediately when image build fails (lars@karlitski.net)
+- test: Install beakerlib wehn running on rhel (lars@karlitski.net)
+- test: Generalize fs resizing in vm.install (lars@karlitski.net)
+- tests: Re-enable kvm (lars@karlitski.net)
+- test: Fix vm.install to be idempotent (lars@karlitski.net)
+- tests: Don't depend on kvm for tar and qcow2 tests (lars@karlitski.net)
+- test_compose_tar: Work around selinux policy change (lars@karlitski.net)
+- test_compose_tar: Be less verbose (lars@karlitski.net)
+- test_compose_tar: Fix docker test (lars@karlitski.net)
+- tests: Extract images to /var/tmp, not /tmp (lars@karlitski.net)
+- Use Cockpit's test images and infrastructure (lars@karlitski.net)
+- pylint: Remove unused false positive (lars@karlitski.net)
+
 * Thu May 16 2019 Brian C. Lane <bcl@redhat.com> 31.6-1
 - Add kernel to ext4-filesystem template (bcl@redhat.com)
 - Create a lorax-docs package with the html docs (bcl@redhat.com)
