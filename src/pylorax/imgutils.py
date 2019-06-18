@@ -102,6 +102,13 @@ def mkrootfsimg(rootdir, outfile, label, size=2, sysroot=""):
         fssize = None       # Let mkext4img figure out the needed size
 
     mkext4img(rootdir, outfile, label=label, size=fssize)
+    # Reset selinux context on new rootfs
+    with LoopDev(outfile) as loopdev:
+        with Mount(loopdev) as mnt:
+            cmd = [ "setfiles", "-e", "/proc", "-e", "/sys", "-e", "/dev", "-e", "/install",
+                    "/etc/selinux/targeted/contexts/files/file_contexts", "/"]
+            root = join(mnt, sysroot.lstrip("/"))
+            runcmd(cmd, root=root)
 
 def mkdiskfsimage(diskimage, fsimage, label="Anaconda"):
     """
