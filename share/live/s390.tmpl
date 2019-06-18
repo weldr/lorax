@@ -1,4 +1,4 @@
-<%page args="kernels, runtime_img, runtime_base, basearch, outroot"/>
+<%page args="kernels, runtime_img, runtime_base, basearch, outroot, extra_boot_args"/>
 <%
 configdir="tmp/config_files/s390"
 BOOTDIR="images"
@@ -21,6 +21,7 @@ install ${configdir}/generic.ins .
 
 ## configure bootloader
 replace @INITRD_LOAD_ADDRESS@ ${INITRD_ADDRESS} generic.ins
+replace @EXTRA@ '${extra_boot_args}' ${BOOTDIR}/generic.prm
 
 ## install kernel
 installkernel images-${basearch} ${kernel.path} ${KERNELDIR}/kernel.img
@@ -34,6 +35,7 @@ treeinfo images-${basearch} initrd.addrsize ${BOOTDIR}/initrd.addrsize
 treeinfo images-${basearch} generic.prm ${BOOTDIR}/generic.prm
 treeinfo images-${basearch} genericdvd.prm ${BOOTDIR}/genericdvd.prm
 treeinfo images-${basearch} generic.ins generic.ins
+treeinfo images-${basearch} redhat.exec ${BOOTDIR}/redhat.exec
 
 # Create optional product.img and updates.img
 <% imggraft=""; images=["product", "updates"] %>
