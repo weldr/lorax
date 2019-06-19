@@ -82,7 +82,7 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartCleanup
-        rlRun -t -c "killall -9 qemu-system"
+        rlRun -t -c "killall -9 $(basename $QEMU)"
         rlRun -t -c "$CLI compose delete $UUID"
         rlRun -t -c "rm -rf $IMAGE $TMP_DIR $SSH_KEY_DIR"
     rlPhaseEnd
