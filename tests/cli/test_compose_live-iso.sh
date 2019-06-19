@@ -56,7 +56,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartCleanup
-        rlRun -t -c "killall -9 qemu-kvm"
+        rlRun -t -c "killall -9 $(basename $QEMU)"
         rlRun -t -c "$CLI compose delete $UUID"
         rlRun -t -c "rm -rf $IMAGE"
     rlPhaseEnd
