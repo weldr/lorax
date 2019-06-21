@@ -1108,3 +1108,119 @@ ntpservers = ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"]
 
         self.assertEqual(ks.handler.timezone.timezone, "US/Samoa")
         self.assertEqual(ks.handler.timezone.ntpservers, ["0.north-america.pool.ntp.org", "1.north-america.pool.ntp.org"])
+
+class RecipeDictTest(unittest.TestCase):
+    def test_check_list_case(self):
+        """Test the list case checker function"""
+        self.assertEqual(recipes.check_list_case([], []), [])
+        self.assertEqual(recipes.check_list_case(["name", "description", "version"], []), [])
+        self.assertEqual(recipes.check_list_case(["name", "description", "version"],
+                             ["name", "description", "version"]), [])
+        self.assertEqual(recipes.check_list_case(["name", "description", "version"],
+                             ["name", "Description", "VERSION"]),
+                             ["Description should be description", "VERSION should be version"])
+        self.assertEqual(recipes.check_list_case(["append"], ["appEnD"], prefix="kernel "),
+                             ["kernel appEnD should be append"])
+
+    def test_check_required_list(self):
+        """Test the required list function"""
+        self.assertEqual(recipes.check_required_list([{}], ["name", "version"]),
+                              ["1 is missing 'name', 'version'"])
+        self.assertEqual(recipes.check_required_list([{"name": "foo", "version": "1.0.0"}], ["name", "version"]),
+                              [])
+        self.assertEqual(recipes.check_required_list([{"Name": "foo", "Version": "1.0.0"}], ["name", "version"]),
+                              ['1 Name should be name', '1 Version should be version', "1 is missing 'name', 'version'"])
+
+    def test_check_recipe_dict(self):
+        """Test the recipe dict checker function"""
+        r = {}
+        self.assertEqual(recipes.check_recipe_dict(r), ["Missing 'name'", "Missing 'description'"])
+        r["name"] = "recipe name"
+        r["description"] = "recipe description"
+        r["version"] = "92ee0ad691"
+        self.assertEqual(recipes.check_recipe_dict(r), ["Invalid 'version', must use Semantic Versioning"])
+        r["version"] = "0.0.1"
+        self.assertEqual(recipes.check_recipe_dict(r), [])
+
+        r["modules"] = [{"name": "mod1"}]
+        self.assertEqual(recipes.check_recipe_dict(r), ["'modules' errors:\n1 is missing 'version'"])
+        r["modules"] = [{"name": "mod1", "version": "*"}, {"Name": "mod2", "Version": "1.0"}]
+        self.assertEqual(recipes.check_recipe_dict(r), ["'modules' errors:\n2 Name should be name\n2 Version should be version\n2 is missing 'name', 'version'"])
+        r["modules"] = [{"name": "mod1", "version": "*"}]
+        self.assertEqual(recipes.check_recipe_dict(r), [])
+
+        r["packages"] = [{"name": "pkg1"}]
+        self.assertEqual(recipes.check_recipe_dict(r), ["'packages' errors:\n1 is missing 'version'"])
+        r["packages"] = [{"name": "pkg1", "version": "*"}, {"Name": "pkg2", "Version": "1.0"}]
+        self.assertEqual(recipes.check_recipe_dict(r), ["'packages' errors:\n2 Name should be name\n2 Version should be version\n2 is missing 'name', 'version'"])
+        r["packages"] = [{"name": "pkg1", "version": "*"}]
+        self.assertEqual(recipes.check_recipe_dict(r), [])
+
+        r["groups"] = [{}]
+        self.assertEqual(recipes.check_recipe_dict(r), ["'groups' errors:\n1 is missing 'name'"])
+        r["groups"] = [{"Name": "grp1"}]
+        self.assertEqual(recipes.check_recipe_dict(r), ["'groups' errors:\n1 Name should be name\n1 is missing 'name'"])
+        r["groups"] = [{"name": "grp1"}]
+        self.assertEqual(recipes.check_recipe_dict(r), [])
+
+        r["customizations"] = {"kernel": {}}
+        self.assertEqual(recipes.check_recipe_dict(r), ["'customizations.kernel': missing append field."])
+        r["customizations"] = {"kernel": {"Append": "cmdline-arg"}}
+        self.assertEqual(recipes.check_recipe_dict(r), ['kernel Append should be append', "'customizations.kernel': missing append field."])
+        r["customizations"] = {"kernel": {"append": "cmdline-arg"}}
+        self.assertEqual(recipes.check_recipe_dict(r), [])
+
+        r["customizations"]["sshkey"] = [{"key": "KEY"}]
+        self.assertEqual(recipes.check_recipe_dict(r), ["'customizations.sshkey' errors:\n1 is missing 'user'"])
+        r["customizations"]["sshkey"] = [{"user": "username", "KEY": "KEY"}]
+        self.assertEqual(recipes.check_recipe_dict(r), ["'customizations.sshkey' errors:\n1 KEY should be key\n1 is missing 'key'"])
+        r["customizations"]["sshkey"] = [{"user": "username", "key": "KEY"}]
+        self.assertEqual(recipes.check_recipe_dict(r), [])
+
+        r["customizations"]["user"] = [{"password": "FOOBAR"}]
+        self.assertEqual(recipes.check_recipe_dict(r), ["'customizations.user' errors:\n1 is missing 'name'"])
+        r["customizations"]["user"] = [{"naMe": "admin", "key": "KEY"}]
+        self.assertEqual(recipes.check_recipe_dict(r), ["'customizations.user' errors:\n1 naMe should be name\n1 is missing 'name'"])
+        r["customizations"]["user"] = [{"name": "admin", "key": "KEY"}]
+        self.assertEqual(recipes.check_recipe_dict(r), [])
+
+        r["customizations"]["group"] = [{"id": "2001"}]
+        self.assertEqual(recipes.check_recipe_dict(r), ["'customizations.group' errors:\n1 is missing 'name'"])
+        r["customizations"]["group"] = [{"Name": "admins", "id": "2001"}]
+        self.assertEqual(recipes.check_recipe_dict(r), ["'customizations.group' errors:\n1 Name should be name\n1 is missing 'name'"])
+        r["customizations"]["group"] = [{"name": "admins", "id": "2001"}]
+        self.assertEqual(recipes.check_recipe_dict(r), [])
+
+        r["customizations"]["timezone"] = {}
+        self.assertEqual(recipes.check_recipe_dict(r), ["'customizations.timezone': missing timezone or ntpservers fields."])
+        r["customizations"]["timezone"] = {"Timezone": "PST8PDT"}
+        self.assertEqual(recipes.check_recipe_dict(r), ['timezone Timezone should be timezone'])
+        r["customizations"]["timezone"] = {"timezone": "PST8PDT"}
+        self.assertEqual(recipes.check_recipe_dict(r), [])
+
+        r["customizations"]["locale"] = {}
+        self.assertEqual(recipes.check_recipe_dict(r), ["'customizations.locale': missing languages or keyboard fields."])
+        r["customizations"]["locale"] = {"Keyboard": "dvorak"}
+        self.assertEqual(recipes.check_recipe_dict(r), ['locale Keyboard should be keyboard'])
+        r["customizations"]["locale"] = {"keyboard": "dvorak"}
+        self.assertEqual(recipes.check_recipe_dict(r), [])
+
+        r["customizations"]["firewall"] = {}
+        self.assertEqual(recipes.check_recipe_dict(r), ["'customizations.firewall': missing ports field or services section."])
+        r["customizations"]["firewall"] = {"Ports": "8080:tcp"}
+        self.assertEqual(recipes.check_recipe_dict(r), ['firewall Ports should be ports'])
+        r["customizations"]["firewall"] = {"ports": "8080:tcp"}
+        self.assertEqual(recipes.check_recipe_dict(r), [])
+
+        r["customizations"]["firewall"]["services"] = {}
+        self.assertEqual(recipes.check_recipe_dict(r), ["'customizations.firewall.services': missing enabled or disabled fields."])
+        r["customizations"]["firewall"]["services"] = {"enabled": "sshd"}
+        self.assertEqual(recipes.check_recipe_dict(r), [])
+
+        r["customizations"]["services"] = {}
+        self.assertEqual(recipes.check_recipe_dict(r), ["'customizations.services': missing enabled or disabled fields."])
+        r["customizations"]["services"] = {"DISABLED": "telnetd"}
+        self.assertEqual(recipes.check_recipe_dict(r), ['services DISABLED should be disabled'])
+        r["customizations"]["services"] = {"disabled": "telnetd"}
+        self.assertEqual(recipes.check_recipe_dict(r), [])
+
