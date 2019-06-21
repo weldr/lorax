@@ -60,7 +60,7 @@ class GitArchiveTarball:
         cmd = ["git", "clone", self._gitRepo["repo"], joinpaths(sourcesDir, "gitrepo")]
         log.debug(cmd)
         try:
-            subprocess.check_output(cmd)
+            subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
             log.error("Failed to clone %s: %s", self._gitRepo["repo"], e.output)
             raise RuntimeError("Failed to clone %s" % self._gitRepo["repo"])
@@ -77,10 +77,11 @@ class GitArchiveTarball:
             cmd = ["git", "archive", "--prefix", self._gitRepo["rpmname"] + "/", "-o", joinpaths(sourcesDir, self.sourceName), self._gitRepo["ref"]]
             log.debug(cmd)
             try:
-                subprocess.check_output(cmd)
+                subprocess.check_output(cmd, stderr=subprocess.STDOUT)
             except subprocess.CalledProcessError as e:
                 log.error("Failed to archive %s: %s", self._gitRepo["repo"], e.output)
-                raise RuntimeError("Failed to clone %s" % self._gitRepo["repo"])
+                raise RuntimeError('Failed to archive %s from ref "%s"' % (self._gitRepo["repo"],
+                                                                           self._gitRepo["ref"]))
         finally:
             # Cleanup even if there was an error
             os.chdir(oldcwd)
@@ -213,7 +214,7 @@ def create_gitrpm_repo(results_dir, recipe):
     cmd = ["createrepo_c", gitrepo]
     log.debug(cmd)
     try:
-        subprocess.check_output(cmd)
+        subprocess.check_output(cmd, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
         log.error("Failed to create repo at %s: %s", gitrepo, e.output)
         raise RuntimeError("Failed to create repo at %s" % gitrepo)
