@@ -2006,13 +2006,15 @@ def v0_compose_image(uuid):
 @v0_api.route("/compose/log/<uuid>")
 @checkparams([("uuid","", "no UUID given")])
 def v0_compose_log_tail(uuid):
-    """Return the end of the main anaconda.log, defaults to 1Mbytes
+    """Return the tail of the most currently relevant log
 
-    **/api/v0/compose/log/<uuid>[?size=kbytes]**
+    **/api/v0/compose/log/<uuid>[?size=KiB]**
 
-      Returns the end of the anaconda.log. The size parameter is optional and defaults to 1Mbytes
-      if it is not included. The returned data is raw text from the end of the logfile, starting on
-      a line boundry.
+      Returns the end of either the anaconda log, the packaging log, or the
+      composer logs, depending on the progress of the compose. The size
+      parameter is optional and defaults to 1 MiB if it is not included.  The
+      returned data is raw text from the end of the log file, starting on a
+      line boundary.
 
       Example::
 
