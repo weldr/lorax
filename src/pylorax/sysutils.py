@@ -130,3 +130,16 @@ def flatconfig(filename):
     config = UnquotingConfigParser()
     config.read_string(conftext)
     return config['main']
+
+def read_tail(path, size):
+    """Read up to `size` kibibytes from the end of a file"""
+    with open(path, "r") as f:
+        f.seek(0, 2)
+        end = f.tell()
+        if end < 1024 * size:
+            f.seek(0, 0)
+        else:
+            f.seek(end - (1024 * size))
+        # Find the start of the next line and return the rest
+        f.readline()
+        return f.read()

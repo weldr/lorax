@@ -16,6 +16,8 @@
 """ Functions to monitor compose queue and run anaconda"""
 import logging
 log = logging.getLogger("pylorax")
+program_log = logging.getLogger("program")
+dnf_log = logging.getLogger("dnf")
 
 import os
 import grp
@@ -34,7 +36,7 @@ from pylorax.api.timestamp import TS_CREATED, TS_STARTED, TS_FINISHED, write_tim
 import pylorax.api.toml as toml
 from pylorax.base import DataHolder
 from pylorax.creator import run_creator
-from pylorax.sysutils import joinpaths
+from pylorax.sysutils import joinpaths, read_tail
 
 def check_queues(cfg):
     """Check to make sure the new and run queue symlinks are correct
@@ -136,6 +138,23 @@ def monitor(cfg):
                 # The symlink may vanish if uuid_cancel() has been called
                 continue
 
+            # The anaconda logs are also copied into ./anaconda/ in this directory
+            os.makedirs(joinpaths(dst, "logs"), exist_ok=True)
+
+            def open_handler(loggers, file_name):
+                handler = logging.FileHandler(joinpaths(dst, "logs", file_name))
+                handler.setLevel(logging.DEBUG)
+                handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s: %(message)s"))
+                for logger in loggers:
+                    logger.addHandler(handler)
+                return (handler, loggers)
+
+            loggers = (((log, program_log, dnf_log), "combined.log"),
+                       ((log,), "composer.log"),
+                       ((program_log,), "program.log"),
+                       ((dnf_log,), "dnf.log"))
+            handlers = [open_handler(loggers, file_name) for loggers, file_name in loggers]
+
             log.info("Starting new compose: %s", dst)
             open(joinpaths(dst, "STATUS"), "w").write("RUNNING\n")
 
@@ -152,6 +171,11 @@ def monitor(cfg):
 #                log.error("Error running compose: %s", e)
                 open(joinpaths(dst, "STATUS"), "w").write("FAILED\n")
                 write_timestamp(dst, TS_FINISHED)
+            finally:
+                for handler, loggers in handlers:
+                    for logger in loggers:
+                        logger.removeHandler(handler)
+                    handler.close()
 
             os.unlink(dst)
 
@@ -178,11 +202,6 @@ def make_compose(cfg, results_dir):
     ks_path = joinpaths(results_dir, "final-kickstart.ks")
     if not os.path.exists(ks_path):
         raise RuntimeError("Missing kickstart file at %s" % ks_path)
-
-    # The anaconda logs are copied into ./anaconda/ in this directory
-    log_dir = joinpaths(results_dir, "logs/")
-    if not os.path.exists(log_dir):
-        os.makedirs(log_dir)
 
     # Load the compose configuration
     cfg_path = joinpaths(results_dir, "config.toml")
@@ -631,20 +650,23 @@ def get_image_name(uuid_dir):
     return (image_name, joinpaths(uuid_dir, image_name))
 
 def uuid_log(cfg, uuid, size=1024):
-    """Return `size` kbytes from the end of the anaconda.log
+    """Return `size` KiB from the end of the most currently relevant log for a
+    given compose
 
     :param cfg: Configuration settings
     :type cfg: ComposerConfig
     :param uuid: The UUID of the build
     :type uuid: str
-    :param size: Number of kbytes to read. Default is 1024
+    :param size: Number of KiB to read. Default is 1024
     :type size: int
-    :returns: Up to `size` kbytes from the end of the log
+    :returns: Up to `size` KiB from the end of the log
     :rtype: str
     :raises: RuntimeError if there was a problem (eg. no log file available)
 
-    This function tries to return lines from the end of the log, it will
-    attempt to start on a line boundry, and may return less than `size` kbytes.
+    This function will return the end of either the anaconda log, the packaging
+    log, or the combined composer logs, depending on the progress of the
+    compose. It tries to return lines from the end of the log, it will attempt
+    to start on a line boundary, and it may return less than `size` kbytes.
     """
     uuid_dir = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid)
     if not os.path.exists(uuid_dir):
@@ -656,20 +678,29 @@ def uuid_log(cfg, uuid, size=1024):
     if status is None:
         raise RuntimeError("Status is missing for %s" % uuid)
 
-    if status["queue_status"] == "RUNNING":
-        log_path = "/tmp/anaconda.log"
-    else:
-        log_path = joinpaths(uuid_dir, "logs", "anaconda", "anaconda.log")
-    if not os.path.exists(log_path):
-        raise RuntimeError("No anaconda.log available.")
-
-    with open(log_path, "r") as f:
-        f.seek(0, 2)
-        end = f.tell()
-        if end < 1024 * size:
-            f.seek(0, 0)
-        else:
-            f.seek(end - (1024 * size))
-        # Find the start of the next line and return the rest
-        f.readline()
-        return f.read()
+    def get_log_path():
+        # Try to return the most relevant log at any given time during the
+        # compose. If the compose is not running, return the composer log.
+        anaconda_log = "/tmp/anaconda.log"
+        packaging_log = "/tmp/packaging.log"
+        combined_log = joinpaths(uuid_dir, "logs", "combined.log")
+        if status["queue_status"] != "RUNNING" or not os.path.isfile(anaconda_log):
+            return combined_log
+        if not os.path.isfile(packaging_log):
+            return anaconda_log
+        try:
+            anaconda_mtime = os.stat(anaconda_log).st_mtime
+            packaging_mtime = os.stat(packaging_log).st_mtime
+            # If the packaging log exists and its last message is at least 15
+            # seconds newer than the anaconda log, return the packaging log.
+            if packaging_mtime > anaconda_mtime + 15:
+                return packaging_log
+            return anaconda_log
+        except OSError:
+            # Return the combined log if anaconda_log or packaging_log disappear
+            return combined_log
+    try:
+        tail = read_tail(get_log_path(), size)
+    except OSError as e:
+        raise RuntimeError("No log available.") from e
+    return tail
