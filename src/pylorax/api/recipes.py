@@ -282,11 +282,30 @@ def check_required_list(lst, fields):
     errors = []
     for i, m in enumerate(lst):
         m_errs = []
+        errors.extend(check_list_case(fields, m.keys(), prefix="%d " % (i+1)))
         for f in fields:
             if f not in m:
                 m_errs.append("'%s'" % f)
         if m_errs:
-            errors.append("%d is missing %s" % (i, ",".join(m_errs)))
+            errors.append("%d is missing %s" % (i+1, ", ".join(m_errs)))
+    return errors
+
+def check_list_case(expected_keys, recipe_keys, prefix=""):
+    """Check the case of the recipe keys
+
+    :param expected_keys: A list of expected key strings
+    :type expected_keys: list of str
+    :param recipe_keys: A list of the recipe's key strings
+    :type recipe_keys: list of str
+    :returns: list of errors
+    :rtype: list of str
+    """
+    errors = []
+    for k in recipe_keys:
+        if k in expected_keys:
+            continue
+        if k.lower() in expected_keys:
+            errors.append(prefix + "%s should be %s" % (k, k.lower()))
     return errors
 
 def check_recipe_dict(recipe_dict):
@@ -306,6 +325,10 @@ def check_recipe_dict(recipe_dict):
     a string that can be presented to users.
     """
     errors = []
+
+    # Check for wrong case of top level keys
+    top_keys = ["name", "description", "version", "modules", "packages", "groups", "repos", "customizations"]
+    errors.extend(check_list_case(recipe_dict.keys(), top_keys))
 
     if "name" not in recipe_dict:
         errors.append("Missing 'name'")
@@ -346,8 +369,10 @@ def check_recipe_dict(recipe_dict):
         return errors
 
     # Make sure to catch empty sections by testing for keywords, not just looking at .get() result.
-    if "kernel" in c and "append" not in c.get("kernel", []):
-        errors.append("'customizations.kernel': missing append field.")
+    if "kernel" in c:
+        errors.extend(check_list_case(["append"], c["kernel"].keys(), prefix="kernel "))
+        if "append" not in c.get("kernel", []):
+            errors.append("'customizations.kernel': missing append field.")
 
     if "sshkey" in c:
         sshkey_errors = check_required_list(c.get("sshkey"), ["user", "key"])
@@ -364,20 +389,30 @@ def check_recipe_dict(recipe_dict):
         if group_errors:
             errors.append("'customizations.group' errors:\n%s" % "\n".join(group_errors))
 
-    if "timezone" in c and not c.get("timezone"):
-        errors.append("'customizations.timezone': missing timezone or ntpservers fields.")
+    if "timezone" in c:
+        errors.extend(check_list_case(["timezone", "ntpservers"], c["timezone"].keys(), prefix="timezone "))
+        if not c.get("timezone"):
+            errors.append("'customizations.timezone': missing timezone or ntpservers fields.")
 
-    if "locale" in c and not c.get("locale"):
-        errors.append("'customizations.locale': missing languages or keyboard fields.")
+    if "locale" in c:
+        errors.extend(check_list_case(["languages", "keyboard"], c["locale"].keys(), prefix="locale "))
+        if not c.get("locale"):
+            errors.append("'customizations.locale': missing languages or keyboard fields.")
 
-    if "firewall" in c and not c.get("firewall"):
-        errors.append("'customizations.firewall': missing ports field or services section.")
+    if "firewall" in c:
+        errors.extend(check_list_case(["ports"], c["firewall"].keys(), prefix="firewall "))
+        if not c.get("firewall"):
+            errors.append("'customizations.firewall': missing ports field or services section.")
 
-    if "firewall" in c and "services" in c.get("firewall", []) and not c.get("firewall").get("services"):
-        errors.append("'customizations.firewall.services': missing enabled or disabled fields.")
+        if "services" in c.get("firewall", []):
+            errors.extend(check_list_case(["enabled", "disabled"], c["firewall"]["services"].keys(), prefix="firewall.services "))
+            if not c.get("firewall").get("services"):
+                errors.append("'customizations.firewall.services': missing enabled or disabled fields.")
 
-    if "services" in c and not c.get("services"):
-        errors.append("'customizations.services': missing enabled or disabled fields.")
+    if "services" in c:
+        errors.extend(check_list_case(["enabled", "disabled"], c["services"].keys(), prefix="services "))
+        if not c.get("services"):
+            errors.append("'customizations.services': missing enabled or disabled fields.")
 
     return errors
 
