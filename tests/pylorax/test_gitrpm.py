@@ -149,10 +149,10 @@ class GitRpmTest(unittest.TestCase):
         hdr = ts.hdrFromFdno(fd)
         os.close(fd)
 
-        self.assertEqual(hdr[rpm.RPMTAG_NAME].decode("UTF-8"), repo["rpmname"])
-        self.assertEqual(hdr[rpm.RPMTAG_VERSION].decode("UTF-8"), repo["rpmversion"])
-        self.assertEqual(hdr[rpm.RPMTAG_RELEASE].decode("UTF-8"), repo["rpmrelease"])
-        self.assertEqual(hdr[rpm.RPMTAG_URL].decode("UTF-8"), repo["repo"])
+        self.assertEqual(hdr[rpm.RPMTAG_NAME], repo["rpmname"])
+        self.assertEqual(hdr[rpm.RPMTAG_VERSION], repo["rpmversion"])
+        self.assertEqual(hdr[rpm.RPMTAG_RELEASE], repo["rpmrelease"])
+        self.assertEqual(hdr[rpm.RPMTAG_URL], repo["repo"])
 
         files = sorted(f.name for f in rpm.files(hdr) if stat.S_ISREG(f.mode))
         self.assertEqual(files, [os.path.join(repo["destination"], f) for f in self.test_results[test_name]])
