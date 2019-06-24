@@ -29,4 +29,5 @@ def loads(s):
         raise TomlError(e.msg, e.doc, e.pos)
 
 def dumps(o):
-    return toml.dumps(o, encoder=toml.TomlEncoder(dict))
+    # strip the result, because `toml.dumps` adds a lot of newlines
+    return toml.dumps(o, encoder=toml.TomlEncoder(dict)).strip()
