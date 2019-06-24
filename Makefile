@@ -4,6 +4,7 @@ PREFIX ?= /usr
 mandir ?= $(PREFIX)/share/man
 DOCKER ?= docker
 DOCS_VERSION ?= next
+RUN_TESTS ?= ci
 
 PKGNAME = lorax
 VERSION = $(shell awk '/Version:/ { print $$2 }' $(PKGNAME).spec)
@@ -73,6 +74,9 @@ test_openstack:
 test_vmware:
 	sudo -E ./tests/test_cli.sh tests/cli/test_build_and_deploy_vmware.sh
 
+test_cli:
+	sudo -E ./tests/test_cli.sh
+
 clean_cloud_envs:
 	# clean beakerlib logs from previous executions
 	sudo rm -rf /var/tmp/beakerlib-*/
@@ -122,13 +126,16 @@ local:
 
 test-in-copy:
 	rsync -aP --exclude=.git /lorax-ro/ /lorax/
-	make -C /lorax/ ci
+	make -C /lorax/ $(RUN_TESTS)
 	cp /lorax/.coverage /test-results/
 
 test-in-docker:
 	sudo $(DOCKER) build -t welder/lorax-tests:$(IMAGE_RELEASE) -f Dockerfile.test .
 	@mkdir -p `pwd`/.test-results
-	sudo $(DOCKER) run --rm -it -v `pwd`/.test-results/:/test-results -v `pwd`:/lorax-ro:ro --security-opt label=disable welder/lorax-tests:$(IMAGE_RELEASE) make test-in-copy
+	sudo $(DOCKER) run --rm -it -v `pwd`/.test-results/:/test-results \
+		-v `pwd`:/lorax-ro:ro --security-opt label=disable \
+		--env RUN_TESTS="$(RUN_TESTS)" \
+		welder/lorax-tests:$(IMAGE_RELEASE) make test-in-copy
 
 docs-in-docker:
 	sudo $(DOCKER) run -it --rm -v `pwd`:/lorax-ro:ro \
