@@ -14,7 +14,7 @@ How to build it:
 To run the tests you need the following dependencies installed:
 
     $ yum install python3-nose python3-pytest-mock python3-pocketlint \
-		python3-mock
+		python3-mock python3-magic
 
 Run the basic linting tests like this:
 
