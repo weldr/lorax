@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           lorax-composer
-Version:        19.7.34
+Version:        19.7.35
 Release:        1%{?dist}
 Summary:        Lorax Image Composer API Server
 
@@ -123,6 +123,20 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Mon Jun 24 2019 Brian C. Lane <bcl@redhat.com> 19.7.35-1
+- test_compose_tar: Fix docker test (lars)
+  Related: rhbz#1720224
+- tests: kill the qemu process name used to start it (bcl)
+  Related: rhbz#1710877
+- Update local copy of lorax to current rhel7-branch (bcl)
+  Related: rhbz#1668520
+  Related: rhbz#1715116
+  Related: rhbz#1689314
+- Update the lorax templates to match what lorax provides (bcl)
+  Related: rhbz#1689314
+- Enable networking in lorax-composer templates (bcl)
+  Resolves: rhbz#1710877
+
 * Thu Jun 13 2019 Brian C. Lane <bcl@redhat.com> 19.7.34-1
 - [tests] Handle blueprints in setup_tests/teardown_tests correctly (atodorov)
   Related: rhbz#1698366
