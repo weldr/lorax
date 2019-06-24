@@ -111,9 +111,10 @@ class GitArchiveTest(unittest.TestCase):
             ref="v1.1.0"
             destination="/srv/testing-rpm/"
         """ % ("/tmp/no-repo-here/"))
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(RuntimeError) as e:
             archive = GitArchiveTarball(git_repo["repos"]["git"][0])
             self._check_tar(archive, "git-rpm-test/", None)
+        self.assertIn("Failed to clone", str(e.exception))
 
     def git_fail_ref_test(self):
         """Test creating an archive from a bad ref"""
@@ -127,9 +128,10 @@ class GitArchiveTest(unittest.TestCase):
             ref="0297617d7b8baa263a69ae7dc901bbbcefd0eaa4"
             destination="/srv/testing-rpm/"
         """ % (self.repodir))
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(RuntimeError) as e:
             archive = GitArchiveTarball(git_repo["repos"]["git"][0])
             self._check_tar(archive, "git-rpm-test/", None)
+        self.assertIn("Failed to archive", str(e.exception))
 
 
 class GitRpmTest(unittest.TestCase):
