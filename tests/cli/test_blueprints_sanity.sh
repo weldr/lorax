@@ -36,7 +36,6 @@ description = "Start building tests with beakerlib."
 version = "0.0.1"
 modules = []
 groups = []
-
 [[packages]]
 name = "beakerlib"
 version = "*"
