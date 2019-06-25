@@ -7,8 +7,10 @@
 #
 #####
 
+set -e
+
 . /usr/share/beakerlib/beakerlib.sh
-. ./tests/cli/lib/lib.sh
+. $(dirname $0)/lib/lib.sh
 
 CLI="${CLI:-./src/bin/composer-cli}"
 QEMU="/usr/libexec/qemu-kvm"
@@ -58,7 +60,7 @@ __EOF__
 
     rlPhaseStartTest "compose finished"
         if [ -n "$UUID" ]; then
-            until $CLI compose info $UUID | grep FINISHED; do
+            until $CLI compose info $UUID | grep 'FINISHED\|FAILED'; do
                 sleep 20
                 rlLogInfo "Waiting for compose to finish ..."
             done;
@@ -71,7 +73,7 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartTest "Start VM instance"
-        rlRun -t -c "$QEMU -m 2048 -boot c -hda $IMAGE -nographic \
+        rlRun -t -c "$QEMU -m 2048 -boot c -hda $IMAGE -nographic -monitor none \
                            -net user,id=nic0,hostfwd=tcp::2222-:22 -net nic &"
         sleep 60
     rlPhaseEnd

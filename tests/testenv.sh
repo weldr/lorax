@@ -1,5 +1,9 @@
 #!/bin/sh
 
+top_srcdir="${top_srcdir:-}"
+top_buildir="${top_builddir:-}"
+PYTHONPATH="${PYTHONPATH:-}"
+
 if [ -z "$top_srcdir" ]; then
     echo "*** top_srcdir must be set"
     exit 1

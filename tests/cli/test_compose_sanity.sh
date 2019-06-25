@@ -1,7 +1,10 @@
 #!/bin/bash
 # Note: execute this file from the project root directory
 
+set -e
+
 . /usr/share/beakerlib/beakerlib.sh
+. $(dirname $0)/lib/lib.sh
 
 CLI="${CLI:-./src/bin/composer-cli}"
 
@@ -29,7 +32,7 @@ rlJournalStart
 
     rlPhaseStartTest "compose image"
         if [ -n "$UUID" ]; then
-            until $CLI compose info $UUID | grep FINISHED; do
+            until $CLI compose info $UUID | grep 'FINISHED\|FAILED'; do
                 sleep 5
                 rlLogInfo "Waiting for compose to finish ..."
             done;
