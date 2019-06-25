@@ -7,8 +7,10 @@
 #
 #####
 
+set -e
+
 . /usr/share/beakerlib/beakerlib.sh
-. ./tests/cli/lib/lib.sh
+. $(dirname $0)/lib/lib.sh
 
 CLI="${CLI:-./src/bin/composer-cli}"
 
@@ -97,7 +99,7 @@ __EOF__
 
     rlPhaseStartTest "compose finished"
         if [ -n "$UUID" ]; then
-            until $CLI compose info $UUID | grep FINISHED; do
+            until $CLI compose info $UUID | grep 'FINISHED\|FAILED'; do
                 rlLogInfo "Waiting for compose to finish ..."
                 sleep 30
             done;
@@ -134,7 +136,7 @@ __EOF__
             rlLogInfo "IP_ADDRESS is not assigned yet ..."
             sleep 30
             IP_ADDRESS=`python3 $SAMPLES/find_by_uuid.py -S -s $V_HOST -u $V_USERNAME -p $V_PASSWORD \
-                            --uuid $INSTANCE_UUID | grep 'ip address' | tr -d ' ' | cut -f2 -d:`
+                            --uuid $INSTANCE_UUID | grep 'ip address' | tr -d ' ' | cut -f2- -d:`
         done
 
         rlLogInfo "Running instance IP_ADDRESS=$IP_ADDRESS"

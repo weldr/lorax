@@ -9,6 +9,12 @@ TAG = lorax-$(VERSION)-$(RELEASE)
 
 IMAGE_RELEASE = rhel8-latest
 
+ifeq ($(TEST_OS),)
+TEST_OS = rhel-8-1
+endif
+export TEST_OS
+VM_IMAGE=$(CURDIR)/test/images/$(TEST_OS)
+
 default: all
 
 src/composer/version.py: lorax.spec
@@ -42,8 +48,6 @@ test:
 
 	coverage3 report -m
 	[ -f "/usr/bin/coveralls" ] && [ -n "$(COVERALLS_REPO_TOKEN)" ] && coveralls || echo
-	
-	./tests/test_cli.sh
 
 # need `losetup`, which needs Docker to be in privileged mode (--privileged)
 # but even so fails in Travis CI
@@ -78,11 +82,17 @@ docs:
 
 archive:
 	@git archive --format=tar --prefix=$(PKGNAME)-$(VERSION)/ $(TAG) > $(PKGNAME)-$(VERSION).tar
-	@gzip $(PKGNAME)-$(VERSION).tar
+	@gzip -f $(PKGNAME)-$(VERSION).tar
 	@echo "The archive is in $(PKGNAME)-$(VERSION).tar.gz"
 
 dist: tag archive
 	scp $(PKGNAME)-$(VERSION).tar.gz fedorahosted.org:lorax
+
+srpm: archive $(PKGNAME).spec
+	rpmbuild -bs \
+	  --define "_sourcedir $(CURDIR)" \
+	  --define "_srcrpmdir $(CURDIR)" \
+	  lorax.spec
 
 local:
 	@rm -rf $(PKGNAME)-$(VERSION).tar.gz
@@ -107,8 +117,38 @@ docs-in-docker:
 
 ci: check test
 
+$(VM_IMAGE): TAG=HEAD
+$(VM_IMAGE): srpm bots
+	srpm=$(shell rpm --qf '%{Name}-%{Version}-%{Release}.src.rpm\n' -q --specfile lorax.spec | head -n1) ; \
+	bots/image-customize -v \
+		--resize 20G \
+		--upload $$srpm:/var/tmp \
+		--upload $(CURDIR)/test/vm.install:/var/tmp/vm.install \
+		--upload $(realpath tests):/ \
+		--run-command "chmod +x /var/tmp/vm.install" \
+		--run-command "cd /var/tmp; /var/tmp/vm.install $$srpm" \
+		$(TEST_OS)
+	[ -f ~/.config/lorax-test-env ] && bots/image-customize \
+		--upload ~/.config/lorax-test-env:/var/tmp/lorax-test-env \
+		$(TEST_OS) || echo
+
+
+# convenience target for the above
+vm: $(VM_IMAGE)
+	echo $(VM_IMAGE)
+
+vm-reset:
+	rm -f $(VM_IMAGE) $(VM_IMAGE).qcow2
+
+# checkout Cockpit's bots/ directory for standard test VM images and API to launch them
+# must be from cockpit's master, as only that has current and existing images; but testvm.py API is stable
+bots:
+	git fetch --depth=1 https://github.com/cockpit-project/cockpit.git
+	git checkout --force FETCH_HEAD -- bots/
+	git reset bots
+
 .PHONY: ci_after_success
 ci_after_success:
 # nothing to do here, but Jenkins expects this to be present, otherwise fails
 
-.PHONY: docs
+.PHONY: docs check test srpm vm vm-reset

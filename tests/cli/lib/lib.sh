@@ -1,5 +1,21 @@
 #!/usr/bin/env bash
 
+# Monkey-patch beakerlib to exit on first failure if COMPOSER_TEST_FAIL_FAST is
+# set. https://github.com/beakerlib/beakerlib/issues/42
+if [ "$COMPOSER_TEST_FAIL_FAST" == "1" ]; then
+  eval "original$(declare -f __INTERNAL_LogAndJournalFail)"
+
+  __INTERNAL_LogAndJournalFail () {
+    original__INTERNAL_LogAndJournalFail
+
+    # end test somewhat cleanly so that beakerlib logs the FAIL correctly
+    rlPhaseEnd
+    rlJournalEnd
+
+    exit 1
+  }
+fi
+
 # a generic helper function unifying the specific checks executed on a running
 # image instance
 verify_image() {
