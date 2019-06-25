@@ -1,8 +1,10 @@
 #!/bin/bash
 # Note: execute this file from the project root directory
 
-# setup
-rm -rf /var/tmp/beakerlib-*/
+set -eu
+
+export BEAKERLIB_DIR=$(mktemp -d /tmp/composer-test.XXXXXX)
+CLI="${CLI:-}"
 
 function setup_tests {
     local share_dir=$1
@@ -30,7 +32,7 @@ function setup_tests {
     cat >> $blueprints_dir/example-http-server.toml << __EOF__
 
 [customizations.kernel]
-append = "custom_cmdline_arg"
+append = "custom_cmdline_arg console=ttyS0,115200n8"
 __EOF__
 }
 
@@ -42,6 +44,15 @@ function teardown_tests {
     rm -rf $blueprints_dir
     mv ${blueprints_dir}.orig $blueprints_dir
 }
+
+# cloud credentials
+if [ -f "~/.config/lorax-test-env" ]; then
+    . ~/.config/lorax-test-env
+fi
+
+if [ -f "/var/tmp/lorax-test-env" ]; then
+    . /var/tmp/lorax-test-env
+fi
 
 if [ -z "$CLI" ]; then
     export top_srcdir=`pwd`
@@ -69,10 +80,10 @@ fi
 tries=0
 until curl -m 15 --unix-socket /run/weldr/api.socket http://localhost:4000/api/status | grep 'db_supported.*true'; do
     tries=$((tries + 1))
-    if [ $tries -gt 20 ]; then
+    if [ $tries -gt 50 ]; then
         exit 1
     fi
-    sleep 2
+    sleep 5
     echo "DEBUG: Waiting for backend API to become ready before testing ..."
 done;
 
@@ -87,7 +98,7 @@ else
     # execute other cli tests which need more adjustments in the calling environment
     # or can't be executed inside Travis CI
     for TEST in "$@"; do
-        ./$TEST
+        $TEST
     done
 fi
 
@@ -106,8 +117,11 @@ else
     systemctl start lorax-composer
 fi
 
-# look for failures
-grep RESULT_STRING /var/tmp/beakerlib-*/TestResults | grep -v PASS && exit 1
+. $BEAKERLIB_DIR/TestResults
 
-# explicit return code for Makefile
-exit 0
+if [ $TESTRESULT_RESULT_ECODE != 0 ]; then
+  echo "Test failed. Leaving log in $BEAKERLIB_DIR"
+  exit $TESTRESULT_RESULT_ECODE
+fi
+
+rm -rf $BEAKERLIB_DIR

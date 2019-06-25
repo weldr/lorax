@@ -7,8 +7,10 @@
 #
 #####
 
+set -e
+
 . /usr/share/beakerlib/beakerlib.sh
-. ./tests/cli/lib/lib.sh
+. $(dirname $0)/lib/lib.sh
 
 CLI="${CLI:-./src/bin/composer-cli}"
 QEMU="/usr/libexec/qemu-kvm"
@@ -30,7 +32,7 @@ rlJournalStart
 
     rlPhaseStartTest "compose finished"
         if [ -n "$UUID" ]; then
-            until $CLI compose info $UUID | grep FINISHED; do
+            until $CLI compose info $UUID | grep 'FINISHED\|FAILED'; do
                 sleep 20
                 rlLogInfo "Waiting for compose to finish ..."
             done;
@@ -43,7 +45,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Start VM instance"
-        rlRun -t -c "$QEMU -m 2048 -boot c -cdrom $IMAGE -nographic \
+        rlRun -t -c "$QEMU -m 2048 -boot d -cdrom $IMAGE -nographic -monitor none \
                            -net user,id=nic0,hostfwd=tcp::2222-:22 -net nic &"
         # 60 seconds timeout at boot menu screen
         # then media check + boot ~ 30 seconds

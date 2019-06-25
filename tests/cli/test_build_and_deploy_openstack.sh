@@ -7,8 +7,10 @@
 #
 #####
 
+set -e
+
 . /usr/share/beakerlib/beakerlib.sh
-. ./tests/cli/lib/lib.sh
+. $(dirname $0)/lib/lib.sh
 
 CLI="${CLI:-./src/bin/composer-cli}"
 
@@ -27,8 +29,8 @@ rlJournalStart
             rlLogInfo "OS_USERNAME=$OS_USERNAME"
         fi
 
-        export OS_TENANT_NAME="${OS_TENANT_NAME:-$OS_USERNAME}"
-        rlLogInfo "OS_TENANT_NAME=$OS_TENANT_NAME"
+        export OS_PROJECT_NAME="${OS_PROJECT_NAME:-$OS_USERNAME}"
+        rlLogInfo "OS_PROJECT_NAME=$OS_PROJECT_NAME"
 
         if [ -z "$OS_PASSWORD" ]; then
             rlFail "OS_PASSWORD is empty!"
@@ -76,7 +78,7 @@ __EOF__
 
     rlPhaseStartTest "compose finished"
         if [ -n "$UUID" ]; then
-            until $CLI compose info $UUID | grep FINISHED; do
+            until $CLI compose info $UUID | grep 'FINISHED\|FAILED'; do
                 rlLogInfo "Waiting for compose to finish ..."
                 sleep 30
             done;
