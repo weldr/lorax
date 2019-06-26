@@ -59,6 +59,7 @@ test_images:
 	sudo -E ./tests/test_cli.sh tests/cli/test_compose_ext4-filesystem.sh  \
 				    tests/cli/test_compose_partitioned-disk.sh \
 				    tests/cli/test_compose_tar.sh              \
+				    tests/cli/test_compose_tar_kickstart.sh    \
 				    tests/cli/test_compose_qcow2.sh            \
 				    tests/cli/test_compose_live-iso.sh
 
