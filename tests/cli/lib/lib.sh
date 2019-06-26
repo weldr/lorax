@@ -16,14 +16,14 @@ if [ "$COMPOSER_TEST_FAIL_FAST" == "1" ]; then
   }
 fi
 
-export QEMU_BIN="/usr/bin/qemu-system-$(uname -m)"
+export QEMU_BIN="/usr/libexec/qemu-kvm"
 export QEMU="$QEMU_BIN -machine accel=kvm:tcg"
 export SSH_PORT=2222
 
 boot_image() {
     QEMU_BOOT=$1
     TIMEOUT=$2
-    rlRun -t -c "$QEMU -m 2048 $QEMU_BOOT -nographic -monitor none \
+    rlRun -t -c "$QEMU -m 2048 $QEMU_BOOT -nographic \
                  -net user,id=nic0,hostfwd=tcp::$SSH_PORT-:22 -net nic &"
     # wait for ssh to become ready (yes, http is the wrong protocol, but it returns the header)
     tries=0
