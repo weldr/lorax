@@ -25,9 +25,6 @@ class TestImages(composertest.ComposerTestCase):
     def test_partitioned_disk(self):
         self.runCliTest("/tests/cli/test_compose_partitioned-disk.sh")
 
-    def test_tar(self):
-        self.runCliTest("/tests/cli/test_compose_tar.sh")
-
 
 class TestQcow2(composertest.ComposerTestCase):
     def test_qcow2(self):
@@ -37,6 +34,14 @@ class TestQcow2(composertest.ComposerTestCase):
 class TestLiveIso(composertest.ComposerTestCase):
     def test_live_iso(self):
         self.runCliTest("/tests/cli/test_compose_live-iso.sh")
+
+
+class TestTar(composertest.ComposerTestCase):
+    def test_tar(self):
+        self.runCliTest("/tests/cli/test_compose_tar.sh")
+
+    def test_tar_kickstart(self):
+        self.runCliTest("/tests/cli/test_compose_tar_kickstart.sh")
 
 
 if __name__ == '__main__':
