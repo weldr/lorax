@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.recipes &mdash; Lorax 28.14.25 documentation</title>
+  <title>pylorax.api.recipes &mdash; Lorax 28.14.30 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                28.14.25
+                28.14.30
               </div>
             
           
@@ -204,7 +204,7 @@
 <span class="sd">    and adds a .filename property to return the recipe&#39;s filename,</span>
 <span class="sd">    and a .toml() function to return the recipe as a TOML string.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">modules</span><span class="p">,</span> <span class="n">packages</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">customizations</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">modules</span><span class="p">,</span> <span class="n">packages</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">customizations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gitrepos</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># Check that version is empty or semver compatible</span>
         <span class="k">if</span> <span class="n">version</span><span class="p">:</span>
             <span class="n">semver</span><span class="o">.</span><span class="n">Version</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
@@ -216,17 +216,28 @@
             <span class="n">packages</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">packages</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
         <span class="k">if</span> <span class="n">groups</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">groups</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">g</span><span class="p">:</span> <span class="n">g</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+
+        <span class="c1"># Only support [[repos.git]] for now</span>
+        <span class="k">if</span> <span class="n">gitrepos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">repos</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;git&quot;</span><span class="p">:</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">gitrepos</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">g</span><span class="p">:</span> <span class="n">g</span><span class="p">[</span><span class="s2">&quot;repo&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">repos</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="nb">dict</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
                             <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
                             <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span>
                             <span class="n">modules</span><span class="o">=</span><span class="n">modules</span><span class="p">,</span>
                             <span class="n">packages</span><span class="o">=</span><span class="n">packages</span><span class="p">,</span>
                             <span class="n">groups</span><span class="o">=</span><span class="n">groups</span><span class="p">,</span>
-                            <span class="n">customizations</span><span class="o">=</span><span class="n">customizations</span><span class="p">)</span>
+                            <span class="n">customizations</span><span class="o">=</span><span class="n">customizations</span><span class="p">,</span>
+                            <span class="n">repos</span><span class="o">=</span><span class="n">repos</span><span class="p">)</span>
 
         <span class="c1"># We don&#39;t want customizations=None to show up in the TOML so remove it</span>
         <span class="k">if</span> <span class="n">customizations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Don&#39;t include empty repos or repos.git</span>
+        <span class="k">if</span> <span class="n">repos</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">repos</span><span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">]:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;repos&quot;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">package_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -325,9 +336,13 @@
             <span class="n">customizations</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">customizations</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="s2">&quot;repos&quot;</span> <span class="ow">in</span> <span class="bp">self</span> <span class="ow">and</span> <span class="s2">&quot;git&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;repos&quot;</span><span class="p">]:</span>
+            <span class="n">gitrepos</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;repos&quot;</span><span class="p">][</span><span class="s2">&quot;git&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">gitrepos</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">return</span> <span class="n">Recipe</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">],</span>
-                      <span class="n">new_modules</span><span class="p">,</span> <span class="n">new_packages</span><span class="p">,</span> <span class="n">new_groups</span><span class="p">,</span> <span class="n">customizations</span><span class="p">)</span></div></div>
+                      <span class="n">new_modules</span><span class="p">,</span> <span class="n">new_packages</span><span class="p">,</span> <span class="n">new_groups</span><span class="p">,</span> <span class="n">customizations</span><span class="p">,</span> <span class="n">gitrepos</span><span class="p">)</span></div></div>
 
 <div class="viewcode-block" id="RecipeModule"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.RecipeModule">[docs]</a><span class="k">class</span> <span class="nc">RecipeModule</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
@@ -339,6 +354,54 @@
 <div class="viewcode-block" id="RecipeGroup"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.RecipeGroup">[docs]</a><span class="k">class</span> <span class="nc">RecipeGroup</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="nb">dict</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NewRecipeGit"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.NewRecipeGit">[docs]</a><span class="k">def</span> <span class="nf">NewRecipeGit</span><span class="p">(</span><span class="n">toml_dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a RecipeGit object from fields in a TOML dict</span>
+
+<span class="sd">    :param rpmname: Name of the rpm to create, also used as the prefix name in the tar archive</span>
+<span class="sd">    :type rpmname: str</span>
+<span class="sd">    :param rpmversion: Version of the rpm, eg. &quot;1.0.0&quot;</span>
+<span class="sd">    :type rpmversion: str</span>
+<span class="sd">    :param rpmrelease: Release of the rpm, eg. &quot;1&quot;</span>
+<span class="sd">    :type rpmrelease: str</span>
+<span class="sd">    :param summary: Summary string for the rpm</span>
+<span class="sd">    :type summary: str</span>
+<span class="sd">    :param repo: URL of the get repo to clone and create the archive from</span>
+<span class="sd">    :type repo: str</span>
+<span class="sd">    :param ref: Git reference to check out. eg. origin/branch-name, git tag, or git commit hash</span>
+<span class="sd">    :type ref: str</span>
+<span class="sd">    :param destination: Path to install the / of the git repo at when installing the rpm</span>
+<span class="sd">    :type destination: str</span>
+<span class="sd">    :returns: A populated RecipeGit object</span>
+<span class="sd">    :rtype: RecipeGit</span>
+
+<span class="sd">    The TOML should look like this::</span>
+
+<span class="sd">        [[repos.git]]</span>
+<span class="sd">        rpmname=&quot;server-config&quot;</span>
+<span class="sd">        rpmversion=&quot;1.0&quot;</span>
+<span class="sd">        rpmrelease=&quot;1&quot;</span>
+<span class="sd">        summary=&quot;Setup files for server deployment&quot;</span>
+<span class="sd">        repo=&quot;PATH OF GIT REPO TO CLONE&quot;</span>
+<span class="sd">        ref=&quot;v1.0&quot;</span>
+<span class="sd">        destination=&quot;/opt/server/&quot;</span>
+
+<span class="sd">    Note that the repo path supports anything that git supports, file://, https://, http://</span>
+
+<span class="sd">    Currently there is no support for authentication</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">RecipeGit</span><span class="p">(</span><span class="n">toml_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;rpmname&quot;</span><span class="p">),</span>
+                     <span class="n">toml_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;rpmversion&quot;</span><span class="p">),</span>
+                     <span class="n">toml_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;rpmrelease&quot;</span><span class="p">),</span>
+                     <span class="n">toml_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+                     <span class="n">toml_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;repo&quot;</span><span class="p">),</span>
+                     <span class="n">toml_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ref&quot;</span><span class="p">),</span>
+                     <span class="n">toml_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;destination&quot;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="RecipeGit"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.RecipeGit">[docs]</a><span class="k">class</span> <span class="nc">RecipeGit</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rpmname</span><span class="p">,</span> <span class="n">rpmversion</span><span class="p">,</span> <span class="n">rpmrelease</span><span class="p">,</span> <span class="n">summary</span><span class="p">,</span> <span class="n">repo</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+        <span class="nb">dict</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rpmname</span><span class="o">=</span><span class="n">rpmname</span><span class="p">,</span> <span class="n">rpmversion</span><span class="o">=</span><span class="n">rpmversion</span><span class="p">,</span> <span class="n">rpmrelease</span><span class="o">=</span><span class="n">rpmrelease</span><span class="p">,</span>
+                      <span class="n">summary</span><span class="o">=</span><span class="n">summary</span><span class="p">,</span> <span class="n">repo</span><span class="o">=</span><span class="n">repo</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="n">destination</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="recipe_from_file"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.recipe_from_file">[docs]</a><span class="k">def</span> <span class="nf">recipe_from_file</span><span class="p">(</span><span class="n">recipe_path</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return a recipe file as a Recipe object</span>
@@ -387,14 +450,24 @@
             <span class="n">groups</span> <span class="o">=</span> <span class="p">[</span><span class="n">RecipeGroup</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">recipe_dict</span><span class="p">[</span><span class="s2">&quot;groups&quot;</span><span class="p">]]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">groups</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">recipe_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;repos&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">recipe_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;repos&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;git&quot;</span><span class="p">):</span>
+            <span class="n">gitrepos</span> <span class="o">=</span> <span class="p">[</span><span class="n">NewRecipeGit</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">recipe_dict</span><span class="p">[</span><span class="s2">&quot;repos&quot;</span><span class="p">][</span><span class="s2">&quot;git&quot;</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">gitrepos</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">recipe_dict</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
         <span class="n">description</span> <span class="o">=</span> <span class="n">recipe_dict</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span>
         <span class="n">version</span> <span class="o">=</span> <span class="n">recipe_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;version&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">customizations</span> <span class="o">=</span> <span class="n">recipe_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;customizations&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># [customizations] was incorrectly documented at first, so we have to support using it</span>
+        <span class="c1"># as [[customizations]] by grabbing the first element.</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">customizations</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">customizations</span> <span class="o">=</span> <span class="n">customizations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
     <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">RecipeError</span><span class="p">(</span><span class="s2">&quot;There was a problem parsing the recipe: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
 
-    <span class="k">return</span> <span class="n">Recipe</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">modules</span><span class="p">,</span> <span class="n">packages</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">customizations</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">Recipe</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">modules</span><span class="p">,</span> <span class="n">packages</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">customizations</span><span class="p">,</span> <span class="n">gitrepos</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="gfile"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.gfile">[docs]</a><span class="k">def</span> <span class="nf">gfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Convert a string path to GFile for use with Git&quot;&quot;&quot;</span>
@@ -1003,25 +1076,78 @@
     <span class="n">diff</span> <span class="o">=</span> <span class="n">Git</span><span class="o">.</span><span class="n">Diff</span><span class="o">.</span><span class="n">new_tree_to_tree</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">parent</span><span class="o">.</span><span class="n">get_tree</span><span class="p">(),</span> <span class="n">tree</span><span class="p">,</span> <span class="n">diff_opts</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">diff</span><span class="o">.</span><span class="n">get_num_deltas</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
 
+<div class="viewcode-block" id="find_field_value"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.find_field_value">[docs]</a><span class="k">def</span> <span class="nf">find_field_value</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">lst</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find a field matching value in the list of dicts.</span>
+
+<span class="sd">    :param field: field to search for</span>
+<span class="sd">    :type field: str</span>
+<span class="sd">    :param value: value to match in the field</span>
+<span class="sd">    :type value: str</span>
+<span class="sd">    :param lst: List of dict&#39;s with field</span>
+<span class="sd">    :type lst: list of dict</span>
+<span class="sd">    :returns: First dict with matching field:value, or None</span>
+<span class="sd">    :rtype: dict or None</span>
+
+<span class="sd">    Used to return a specific entry from a list that looks like this:</span>
+
+<span class="sd">    [{&quot;name&quot;: &quot;one&quot;, &quot;attr&quot;: &quot;green&quot;}, ...]</span>
+
+<span class="sd">    find_field_value(&quot;name&quot;, &quot;one&quot;, lst) will return the matching dict.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="ow">and</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="o">==</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">d</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
 <div class="viewcode-block" id="find_name"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.find_name">[docs]</a><span class="k">def</span> <span class="nf">find_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">lst</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Find the dict matching the name in a list and return it.</span>
 
 <span class="sd">    :param name: Name to search for</span>
 <span class="sd">    :type name: str</span>
 <span class="sd">    :param lst: List of dict&#39;s with &quot;name&quot; field</span>
+<span class="sd">    :type lst: list of dict</span>
 <span class="sd">    :returns: First dict with matching name, or None</span>
 <span class="sd">    :rtype: dict or None</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">e</span>
-    <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="diff_items"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.diff_items">[docs]</a><span class="k">def</span> <span class="nf">diff_items</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">old_items</span><span class="p">,</span> <span class="n">new_items</span><span class="p">):</span>
+<span class="sd">    This is just a wrapper for find_field_value with field set to &quot;name&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">find_field_value</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">lst</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="find_recipe_obj"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.find_recipe_obj">[docs]</a><span class="k">def</span> <span class="nf">find_recipe_obj</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">recipe</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find a recipe object</span>
+
+<span class="sd">    :param path: A list of dict field names</span>
+<span class="sd">    :type path: list of str</span>
+<span class="sd">    :param recipe: The recipe to search</span>
+<span class="sd">    :type recipe: Recipe</span>
+<span class="sd">    :param default: The value to return if it is not found</span>
+<span class="sd">    :type default: Any</span>
+
+<span class="sd">    Return the object found by applying the path to the dicts in the recipe, or</span>
+<span class="sd">    return the default if it doesn&#39;t exist.</span>
+
+<span class="sd">    eg. {&quot;customizations&quot;: {&quot;hostname&quot;: &quot;foo&quot;, &quot;users&quot;: [...]}}</span>
+
+<span class="sd">    find_recipe_obj([&quot;customizations&quot;, &quot;hostname&quot;], recipe, &quot;&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">o</span> <span class="o">=</span> <span class="n">recipe</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">o</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">default</span>
+            <span class="n">o</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">default</span>
+
+    <span class="k">return</span> <span class="n">o</span></div>
+
+<div class="viewcode-block" id="diff_lists"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.diff_lists">[docs]</a><span class="k">def</span> <span class="nf">diff_lists</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">old_items</span><span class="p">,</span> <span class="n">new_items</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return the differences between two lists of dicts.</span>
 
 <span class="sd">    :param title: Title of the entry</span>
 <span class="sd">    :type title: str</span>
+<span class="sd">    :param field: Field to use as the key for comparisons</span>
+<span class="sd">    :type field: str</span>
 <span class="sd">    :param old_items: List of item dicts with &quot;name&quot; field</span>
 <span class="sd">    :type old_items: list(dict)</span>
 <span class="sd">    :param new_items: List of item dicts with &quot;name&quot; field</span>
@@ -1030,32 +1156,77 @@
 <span class="sd">    :rtype: list(dict)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">diffs</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">old_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">old_items</span><span class="p">)</span>
-    <span class="n">new_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">new_items</span><span class="p">)</span>
+    <span class="n">old_fields</span><span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">old_items</span><span class="p">)</span>
+    <span class="n">new_fields</span><span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">new_items</span><span class="p">)</span>
 
-    <span class="n">added_items</span> <span class="o">=</span> <span class="n">new_names</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">old_names</span><span class="p">)</span>
+    <span class="n">added_items</span> <span class="o">=</span> <span class="n">new_fields</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">old_fields</span><span class="p">)</span>
     <span class="n">added_items</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">added_items</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
 
-    <span class="n">removed_items</span> <span class="o">=</span> <span class="n">old_names</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">new_names</span><span class="p">)</span>
+    <span class="n">removed_items</span> <span class="o">=</span> <span class="n">old_fields</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">new_fields</span><span class="p">)</span>
     <span class="n">removed_items</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">removed_items</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
 
-    <span class="n">same_items</span> <span class="o">=</span> <span class="n">old_names</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">new_names</span><span class="p">)</span>
+    <span class="n">same_items</span> <span class="o">=</span> <span class="n">old_fields</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">new_fields</span><span class="p">)</span>
     <span class="n">same_items</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">same_items</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
 
-    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">added_items</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">added_items</span><span class="p">:</span>
         <span class="n">diffs</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;old&quot;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span>
-                      <span class="s2">&quot;new&quot;</span><span class="p">:{</span><span class="n">title</span><span class="p">:</span><span class="n">find_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">new_items</span><span class="p">)}})</span>
+                      <span class="s2">&quot;new&quot;</span><span class="p">:{</span><span class="n">title</span><span class="p">:</span><span class="n">find_field_value</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">new_items</span><span class="p">)}})</span>
 
-    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">removed_items</span><span class="p">:</span>
-        <span class="n">diffs</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;old&quot;</span><span class="p">:{</span><span class="n">title</span><span class="p">:</span><span class="n">find_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">old_items</span><span class="p">)},</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">removed_items</span><span class="p">:</span>
+        <span class="n">diffs</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;old&quot;</span><span class="p">:{</span><span class="n">title</span><span class="p">:</span><span class="n">find_field_value</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">old_items</span><span class="p">)},</span>
                       <span class="s2">&quot;new&quot;</span><span class="p">:</span><span class="kc">None</span><span class="p">})</span>
 
-    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">same_items</span><span class="p">:</span>
-        <span class="n">old_item</span> <span class="o">=</span> <span class="n">find_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">old_items</span><span class="p">)</span>
-        <span class="n">new_item</span> <span class="o">=</span> <span class="n">find_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">new_items</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">same_items</span><span class="p">:</span>
+        <span class="n">old_item</span> <span class="o">=</span> <span class="n">find_field_value</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">old_items</span><span class="p">)</span>
+        <span class="n">new_item</span> <span class="o">=</span> <span class="n">find_field_value</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">new_items</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">old_item</span> <span class="o">!=</span> <span class="n">new_item</span><span class="p">:</span>
             <span class="n">diffs</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;old&quot;</span><span class="p">:{</span><span class="n">title</span><span class="p">:</span><span class="n">old_item</span><span class="p">},</span>
                           <span class="s2">&quot;new&quot;</span><span class="p">:{</span><span class="n">title</span><span class="p">:</span><span class="n">new_item</span><span class="p">}})</span>
+
+    <span class="k">return</span> <span class="n">diffs</span></div>
+
+<div class="viewcode-block" id="customizations_diff"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.recipes.customizations_diff">[docs]</a><span class="k">def</span> <span class="nf">customizations_diff</span><span class="p">(</span><span class="n">old_recipe</span><span class="p">,</span> <span class="n">new_recipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Diff the customizations sections from two versions of a recipe</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">diffs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">old_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">old_recipe</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;customizations&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">new_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">new_recipe</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;customizations&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="n">added_keys</span> <span class="o">=</span> <span class="n">new_keys</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">old_keys</span><span class="p">)</span>
+    <span class="n">added_keys</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">added_keys</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+
+    <span class="n">removed_keys</span> <span class="o">=</span> <span class="n">old_keys</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">new_keys</span><span class="p">)</span>
+    <span class="n">removed_keys</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">removed_keys</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+
+    <span class="n">same_keys</span> <span class="o">=</span> <span class="n">old_keys</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">new_keys</span><span class="p">)</span>
+    <span class="n">same_keys</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">same_keys</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">added_keys</span><span class="p">:</span>
+        <span class="n">diffs</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;old&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                      <span class="s2">&quot;new&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Customizations.&quot;</span><span class="o">+</span><span class="n">v</span><span class="p">:</span> <span class="n">new_recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="n">v</span><span class="p">]}})</span>
+
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">removed_keys</span><span class="p">:</span>
+        <span class="n">diffs</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;old&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Customizations.&quot;</span><span class="o">+</span><span class="n">v</span><span class="p">:</span> <span class="n">old_recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="n">v</span><span class="p">]},</span>
+                      <span class="s2">&quot;new&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span>
+
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">same_keys</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">new_recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="n">v</span><span class="p">]</span> <span class="o">==</span> <span class="n">old_recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="n">v</span><span class="p">]:</span>
+            <span class="k">continue</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">new_recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="n">v</span><span class="p">])</span> <span class="o">==</span> <span class="nb">type</span><span class="p">([]):</span>
+            <span class="c1"># Lists of dicts need to use diff_lists</span>
+            <span class="c1"># sshkey uses &#39;user&#39;, user and group use &#39;name&#39;</span>
+            <span class="k">if</span> <span class="s2">&quot;user&quot;</span> <span class="ow">in</span> <span class="n">new_recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">field_name</span> <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
+            <span class="k">elif</span> <span class="s2">&quot;name&quot;</span> <span class="ow">in</span> <span class="n">new_recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">field_name</span> <span class="o">=</span> <span class="s2">&quot;name&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> list has unrecognized key, not &#39;name&#39; or &#39;user&#39;&quot;</span> <span class="o">%</span> <span class="s2">&quot;customizations.&quot;</span><span class="o">+</span><span class="n">v</span><span class="p">)</span>
+
+            <span class="n">diffs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">diff_lists</span><span class="p">(</span><span class="s2">&quot;Customizations.&quot;</span><span class="o">+</span><span class="n">v</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">old_recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="n">v</span><span class="p">],</span> <span class="n">new_recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="n">v</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">diffs</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;old&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Customizations.&quot;</span><span class="o">+</span><span class="n">v</span><span class="p">:</span> <span class="n">old_recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="n">v</span><span class="p">]},</span>
+                          <span class="s2">&quot;new&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Customizations.&quot;</span><span class="o">+</span><span class="n">v</span><span class="p">:</span> <span class="n">new_recipe</span><span class="p">[</span><span class="s2">&quot;customizations&quot;</span><span class="p">][</span><span class="n">v</span><span class="p">]}})</span>
 
     <span class="k">return</span> <span class="n">diffs</span></div>
 
@@ -1078,9 +1249,18 @@
             <span class="n">diffs</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;old&quot;</span><span class="p">:{</span><span class="n">element</span><span class="o">.</span><span class="n">title</span><span class="p">():</span><span class="n">old_recipe</span><span class="p">[</span><span class="n">element</span><span class="p">]},</span>
                           <span class="s2">&quot;new&quot;</span><span class="p">:{</span><span class="n">element</span><span class="o">.</span><span class="n">title</span><span class="p">():</span><span class="n">new_recipe</span><span class="p">[</span><span class="n">element</span><span class="p">]}})</span>
 
-    <span class="n">diffs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">diff_items</span><span class="p">(</span><span class="s2">&quot;Module&quot;</span><span class="p">,</span> <span class="n">old_recipe</span><span class="p">[</span><span class="s2">&quot;modules&quot;</span><span class="p">],</span> <span class="n">new_recipe</span><span class="p">[</span><span class="s2">&quot;modules&quot;</span><span class="p">]))</span>
-    <span class="n">diffs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">diff_items</span><span class="p">(</span><span class="s2">&quot;Package&quot;</span><span class="p">,</span> <span class="n">old_recipe</span><span class="p">[</span><span class="s2">&quot;packages&quot;</span><span class="p">],</span> <span class="n">new_recipe</span><span class="p">[</span><span class="s2">&quot;packages&quot;</span><span class="p">]))</span>
-    <span class="n">diffs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">diff_items</span><span class="p">(</span><span class="s2">&quot;Group&quot;</span><span class="p">,</span> <span class="n">old_recipe</span><span class="p">[</span><span class="s2">&quot;groups&quot;</span><span class="p">],</span> <span class="n">new_recipe</span><span class="p">[</span><span class="s2">&quot;groups&quot;</span><span class="p">]))</span>
+    <span class="c1"># These lists always exist</span>
+    <span class="n">diffs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">diff_lists</span><span class="p">(</span><span class="s2">&quot;Module&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">old_recipe</span><span class="p">[</span><span class="s2">&quot;modules&quot;</span><span class="p">],</span> <span class="n">new_recipe</span><span class="p">[</span><span class="s2">&quot;modules&quot;</span><span class="p">]))</span>
+    <span class="n">diffs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">diff_lists</span><span class="p">(</span><span class="s2">&quot;Package&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">old_recipe</span><span class="p">[</span><span class="s2">&quot;packages&quot;</span><span class="p">],</span> <span class="n">new_recipe</span><span class="p">[</span><span class="s2">&quot;packages&quot;</span><span class="p">]))</span>
+    <span class="n">diffs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">diff_lists</span><span class="p">(</span><span class="s2">&quot;Group&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">old_recipe</span><span class="p">[</span><span class="s2">&quot;groups&quot;</span><span class="p">],</span> <span class="n">new_recipe</span><span class="p">[</span><span class="s2">&quot;groups&quot;</span><span class="p">]))</span>
+
+    <span class="c1"># The customizations section can contain a number of different types</span>
+    <span class="n">diffs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">customizations_diff</span><span class="p">(</span><span class="n">old_recipe</span><span class="p">,</span> <span class="n">new_recipe</span><span class="p">))</span>
+
+    <span class="c1"># repos contains keys that are lists (eg. [[repos.git]])</span>
+    <span class="n">diffs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">diff_lists</span><span class="p">(</span><span class="s2">&quot;Repos.git&quot;</span><span class="p">,</span> <span class="s2">&quot;rpmname&quot;</span><span class="p">,</span>
+                            <span class="n">find_recipe_obj</span><span class="p">([</span><span class="s2">&quot;repos&quot;</span><span class="p">,</span> <span class="s2">&quot;git&quot;</span><span class="p">],</span> <span class="n">old_recipe</span><span class="p">,</span> <span class="p">[]),</span>
+                            <span class="n">find_recipe_obj</span><span class="p">([</span><span class="s2">&quot;repos&quot;</span><span class="p">,</span> <span class="s2">&quot;git&quot;</span><span class="p">],</span> <span class="n">new_recipe</span><span class="p">,</span> <span class="p">[])))</span>
 
     <span class="k">return</span> <span class="n">diffs</span></div>
 
@@ -1135,7 +1315,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'28.14.25',
+            VERSION:'28.14.30',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>lorax-composer &mdash; Lorax 28.14.25 documentation</title>
+  <title>lorax-composer &mdash; Lorax 28.14.30 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                28.14.25
+                28.14.30
               </div>
             
           
@@ -109,8 +109,13 @@
 <li class="toctree-l4"><a class="reference internal" href="#customizations-sshkey">[[customizations.sshkey]]</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#customizations-user">[[customizations.user]]</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#customizations-group">[[customizations.group]]</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#customizations-timezone">[customizations.timezone]</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#customizations-locale">[customizations.locale]</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#customizations-firewall">[customizations.firewall]</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#customizations-services">[customizations.services]</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#repos-git">[[repos.git]]</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#adding-output-types">Adding Output Types</a><ul>
@@ -421,11 +426,12 @@ for selecting optional packages.</p>
 </div>
 <div class="section" id="customizations">
 <h3>Customizations<a class="headerlink" href="#customizations" title="Permalink to this headline">¶</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">[[customizations]]</span></code> section can be used to configure the hostname of the final image. eg.:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="n">customizations</span><span class="p">]]</span>
+<p>The <code class="docutils literal notranslate"><span class="pre">[customizations]</span></code> section can be used to configure the hostname of the final image. eg.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">customizations</span><span class="p">]</span>
 <span class="n">hostname</span> <span class="o">=</span> <span class="s2">&quot;baseimage&quot;</span>
 </pre></div>
 </div>
+<p>This is optional and may be left out to use the defaults.</p>
 <div class="section" id="customizations-kernel">
 <h4>[customizations.kernel]<a class="headerlink" href="#customizations-kernel" title="Permalink to this headline">¶</a></h4>
 <p>This allows you to append arguments to the bootloader’s kernel commandline. This will not have any
@@ -474,6 +480,113 @@ an encrypted password. Otherwise it will be treated as a plain text password.</p
 </pre></div>
 </div>
 </div>
+<div class="section" id="customizations-timezone">
+<h4>[customizations.timezone]<a class="headerlink" href="#customizations-timezone" title="Permalink to this headline">¶</a></h4>
+<p>Customizing the timezone and the NTP servers to use for the system:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">customizations</span><span class="o">.</span><span class="n">timezone</span><span class="p">]</span>
+<span class="n">timezone</span> <span class="o">=</span> <span class="s2">&quot;US/Eastern&quot;</span>
+<span class="n">ntpservers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;0.north-america.pool.ntp.org&quot;</span><span class="p">,</span> <span class="s2">&quot;1.north-america.pool.ntp.org&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The values supported by <code class="docutils literal notranslate"><span class="pre">timezone</span></code> can be listed by running <code class="docutils literal notranslate"><span class="pre">timedatectl</span> <span class="pre">list-timezones</span></code>.</p>
+<p>If no timezone is setup the system will default to using <cite>UTC</cite>. The ntp servers are also
+optional and will default to using the distribution defaults which are fine for most uses.</p>
+<p>In some image types there are already NTP servers setup, eg. Google cloud image, and they
+cannot be overridden because they are required to boot in the selected environment. But the
+timezone will be updated to the one selected in the blueprint.</p>
+</div>
+<div class="section" id="customizations-locale">
+<h4>[customizations.locale]<a class="headerlink" href="#customizations-locale" title="Permalink to this headline">¶</a></h4>
+<p>Customize the locale settings for the system:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">customizations</span><span class="o">.</span><span class="n">locale</span><span class="p">]</span>
+<span class="n">languages</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;en_US.UTF-8&quot;</span><span class="p">]</span>
+<span class="n">keyboard</span> <span class="o">=</span> <span class="s2">&quot;us&quot;</span>
+</pre></div>
+</div>
+<p>The values supported by <code class="docutils literal notranslate"><span class="pre">languages</span></code> can be listed by running <code class="docutils literal notranslate"><span class="pre">localectl</span> <span class="pre">list-locales</span></code> from
+the command line.</p>
+<p>The values supported by <code class="docutils literal notranslate"><span class="pre">keyboard</span></code> can be listed by running <code class="docutils literal notranslate"><span class="pre">localectl</span> <span class="pre">list-keymaps</span></code> from
+the command line.</p>
+<p>Multiple languages can be added. The first one becomes the
+primary, and the others are added as secondary. One or the other of <code class="docutils literal notranslate"><span class="pre">languages</span></code>
+or <code class="docutils literal notranslate"><span class="pre">keyboard</span></code> must be included (or both) in the section.</p>
+</div>
+<div class="section" id="customizations-firewall">
+<h4>[customizations.firewall]<a class="headerlink" href="#customizations-firewall" title="Permalink to this headline">¶</a></h4>
+<p>By default the firewall blocks all access except for services that enable their ports explicitly,
+like <code class="docutils literal notranslate"><span class="pre">sshd</span></code>. This command can be used to open other ports or services. Ports are configured using
+the port:protocol format:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">customizations</span><span class="o">.</span><span class="n">firewall</span><span class="p">]</span>
+<span class="n">ports</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;22:tcp&quot;</span><span class="p">,</span> <span class="s2">&quot;80:tcp&quot;</span><span class="p">,</span> <span class="s2">&quot;imap:tcp&quot;</span><span class="p">,</span> <span class="s2">&quot;53:tcp&quot;</span><span class="p">,</span> <span class="s2">&quot;53:udp&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Numeric ports, or their names from <code class="docutils literal notranslate"><span class="pre">/etc/services</span></code> can be used in the <code class="docutils literal notranslate"><span class="pre">ports</span></code> enabled/disabled lists.</p>
+<p>The blueprint settings extend any existing settings in the image templates, so if <code class="docutils literal notranslate"><span class="pre">sshd</span></code> is
+already enabled it will extend the list of ports with the ones listed by the blueprint.</p>
+<p>If the distribution uses <code class="docutils literal notranslate"><span class="pre">firewalld</span></code> you can specify services listed by <code class="docutils literal notranslate"><span class="pre">firewall-cmd</span> <span class="pre">--get-services</span></code>
+in a <code class="docutils literal notranslate"><span class="pre">customizations.firewall.services</span></code> section:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">customizations</span><span class="o">.</span><span class="n">firewall</span><span class="o">.</span><span class="n">services</span><span class="p">]</span>
+<span class="n">enabled</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ftp&quot;</span><span class="p">,</span> <span class="s2">&quot;ntp&quot;</span><span class="p">,</span> <span class="s2">&quot;dhcp&quot;</span><span class="p">]</span>
+<span class="n">disabled</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;telnet&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Remember that the <code class="docutils literal notranslate"><span class="pre">firewall.services</span></code> are different from the names in <code class="docutils literal notranslate"><span class="pre">/etc/services</span></code>.</p>
+<p>Both are optional, if they are not used leave them out or set them to an empty list <code class="docutils literal notranslate"><span class="pre">[]</span></code>. If you
+only want the default firewall setup this section can be omitted from the blueprint.</p>
+<p>NOTE: The <code class="docutils literal notranslate"><span class="pre">Google</span></code> and <code class="docutils literal notranslate"><span class="pre">OpenStack</span></code> templates explicitly disable the firewall for their environment.
+This cannot be overridden by the blueprint.</p>
+</div>
+<div class="section" id="customizations-services">
+<h4>[customizations.services]<a class="headerlink" href="#customizations-services" title="Permalink to this headline">¶</a></h4>
+<p>This section can be used to control which services are enabled at boot time.
+Some image types already have services enabled or disabled in order for the
+image to work correctly, and cannot be overridden. eg. <code class="docutils literal notranslate"><span class="pre">ami</span></code> requires
+<code class="docutils literal notranslate"><span class="pre">sshd</span></code>, <code class="docutils literal notranslate"><span class="pre">chronyd</span></code>, and <code class="docutils literal notranslate"><span class="pre">cloud-init</span></code>. Without them the image will not
+boot. Blueprint services are added to, not replacing, the list already in the
+templates, if any.</p>
+<p>The service names are systemd service units. You may specify any systemd unit
+file accepted by <code class="docutils literal notranslate"><span class="pre">systemctl</span> <span class="pre">enable</span></code> eg. <code class="docutils literal notranslate"><span class="pre">cockpit.socket</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">customizations</span><span class="o">.</span><span class="n">services</span><span class="p">]</span>
+<span class="n">enabled</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sshd&quot;</span><span class="p">,</span> <span class="s2">&quot;cockpit.socket&quot;</span><span class="p">,</span> <span class="s2">&quot;httpd&quot;</span><span class="p">]</span>
+<span class="n">disabled</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;postfix&quot;</span><span class="p">,</span> <span class="s2">&quot;telnetd&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="repos-git">
+<h3>[[repos.git]]<a class="headerlink" href="#repos-git" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">[[repos.git]]</span></code> entries are used to add files from a <cite>git repository&lt;https://git-scm.com/&gt;</cite>
+repository to the created image. The repository is cloned, the specified <code class="docutils literal notranslate"><span class="pre">ref</span></code> is checked out
+and an rpm is created to install the files to a <code class="docutils literal notranslate"><span class="pre">destination</span></code> path. The rpm includes a summary
+with the details of the repository and reference used to create it. The rpm is also included in the
+image build metadata.</p>
+<p>To create an rpm named <code class="docutils literal notranslate"><span class="pre">server-config-1.0-1.noarch.rpm</span></code> you would add this to your blueprint:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="n">repos</span><span class="o">.</span><span class="n">git</span><span class="p">]]</span>
+<span class="n">rpmname</span><span class="o">=</span><span class="s2">&quot;server-config&quot;</span>
+<span class="n">rpmversion</span><span class="o">=</span><span class="s2">&quot;1.0&quot;</span>
+<span class="n">rpmrelease</span><span class="o">=</span><span class="s2">&quot;1&quot;</span>
+<span class="n">summary</span><span class="o">=</span><span class="s2">&quot;Setup files for server deployment&quot;</span>
+<span class="n">repo</span><span class="o">=</span><span class="s2">&quot;PATH OF GIT REPO TO CLONE&quot;</span>
+<span class="n">ref</span><span class="o">=</span><span class="s2">&quot;v1.0&quot;</span>
+<span class="n">destination</span><span class="o">=</span><span class="s2">&quot;/opt/server/&quot;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>rpmname: Name of the rpm to create, also used as the prefix name in the tar archive</li>
+<li>rpmversion: Version of the rpm, eg. “1.0.0”</li>
+<li>rpmrelease: Release of the rpm, eg. “1”</li>
+<li>summary: Summary string for the rpm</li>
+<li>repo: URL of the get repo to clone and create the archive from</li>
+<li>ref: Git reference to check out. eg. origin/branch-name, git tag, or git commit hash</li>
+<li>destination: Path to install the / of the git repo at when installing the rpm</li>
+</ul>
+<p>An rpm will be created with the contents of the git repository referenced, with the files
+being installed under <code class="docutils literal notranslate"><span class="pre">/opt/server/</span></code> in this case.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ref</span></code> can be any valid git reference for use with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">archive</span></code>. eg. to use the head
+of a branch set it to <code class="docutils literal notranslate"><span class="pre">origin/branch-name</span></code>, a tag name, or a commit hash.</p>
+<p>Note that the repository is cloned in full each time a build is started, so pointing to a
+repository with a large amount of history may take a while to clone and use a significant
+amount of disk space. The clone is temporary and is removed once the rpm is created.</p>
 </div>
 </div>
 <div class="section" id="adding-output-types">
@@ -483,12 +596,12 @@ these are currently available via <code class="docutils literal notranslate"><sp
 lorax-composer a kickstart file needs to be added to <code class="docutils literal notranslate"><span class="pre">./share/composer/</span></code>. The
 name of the kickstart is what will be used by the <code class="docutils literal notranslate"><span class="pre">/compose/types</span></code> route, and the
 <code class="docutils literal notranslate"><span class="pre">compose_type</span></code> field of the POST to start a compose. It also needs to have
-code added to the <code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.compose_args()</span></code> function. The
+code added to the <a class="reference internal" href="pylorax.api.html#pylorax.api.compose.compose_args" title="pylorax.api.compose.compose_args"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.compose_args()</span></code></a> function. The
 <code class="docutils literal notranslate"><span class="pre">_MAP</span></code> entry in this function defines what lorax-composer will pass to
 <a class="reference internal" href="pylorax.html#pylorax.installer.novirt_install" title="pylorax.installer.novirt_install"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.installer.novirt_install()</span></code></a> when it runs the compose.  When the
 compose is finished the output files need to be copied out of the build
 directory (<code class="docutils literal notranslate"><span class="pre">/var/lib/lorax/composer/results/&lt;UUID&gt;/compose/</span></code>),
-<code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.move_compose_results()</span></code> handles this for each type.
+<a class="reference internal" href="pylorax.api.html#pylorax.api.compose.move_compose_results" title="pylorax.api.compose.move_compose_results"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.move_compose_results()</span></code></a> handles this for each type.
 You should move them instead of copying to save space.</p>
 <p>If the new output type does not have support in livemedia-creator it should be
 added there first. This will make the output available to the widest number of
@@ -500,8 +613,8 @@ via the <code class="docutils literal notranslate"><span class="pre">--make-disk
 needs 3 things:</p>
 <ul class="simple">
 <li>A <code class="docutils literal notranslate"><span class="pre">partitioned-disk.ks</span></code> file in <code class="docutils literal notranslate"><span class="pre">./share/composer/</span></code></li>
-<li>A new entry in the _MAP in <code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.compose_args()</span></code></li>
-<li>Add a bit of code to <code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.move_compose_results()</span></code> to move the disk image from
+<li>A new entry in the _MAP in <a class="reference internal" href="pylorax.api.html#pylorax.api.compose.compose_args" title="pylorax.api.compose.compose_args"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.compose_args()</span></code></a></li>
+<li>Add a bit of code to <a class="reference internal" href="pylorax.api.html#pylorax.api.compose.move_compose_results" title="pylorax.api.compose.move_compose_results"><code class="xref py py-func docutils literal notranslate"><span class="pre">pylorax.api.compose.move_compose_results()</span></code></a> to move the disk image from
 the compose directory to the results directory.</li>
 </ul>
 <p>The <code class="docutils literal notranslate"><span class="pre">partitioned-disk.ks</span></code> is pretty similar to the example minimal kickstart
@@ -643,7 +756,7 @@ sources from <code class="docutils literal notranslate"><span class="pre">/etc/y
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'28.14.25',
+            VERSION:'28.14.30',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

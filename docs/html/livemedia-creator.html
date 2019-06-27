@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>livemedia-creator &mdash; Lorax 28.14.25 documentation</title>
+  <title>livemedia-creator &mdash; Lorax 28.14.30 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                28.14.25
+                28.14.30
               </div>
             
           
@@ -223,7 +223,7 @@ you have the anaconda-tui package installed.</p>
 <h2>livemedia-creator cmdline arguments<a class="headerlink" href="#livemedia-creator-cmdline-arguments" title="Permalink to this headline">¶</a></h2>
 <p>Create Live Install Media</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
-                         <span class="p">(</span><span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">iso</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">disk</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">fsimage</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">appliance</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">ami</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">tar</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">pxe</span><span class="o">-</span><span class="n">live</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">ostree</span><span class="o">-</span><span class="n">live</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">oci</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">vagrant</span><span class="p">)</span>
+                         <span class="p">(</span><span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">iso</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">disk</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">fsimage</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">appliance</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">ami</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">tar</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">tar</span><span class="o">-</span><span class="n">disk</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">pxe</span><span class="o">-</span><span class="n">live</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">ostree</span><span class="o">-</span><span class="n">live</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">oci</span> <span class="o">|</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">vagrant</span><span class="p">)</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">iso</span> <span class="n">ISO</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">iso</span><span class="o">-</span><span class="n">only</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">iso</span><span class="o">-</span><span class="n">name</span> <span class="n">ISO_NAME</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">ks</span> <span class="n">KS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="n">only</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">virt</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span> <span class="n">PROXY</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">anaconda</span><span class="o">-</span><span class="n">arg</span> <span class="n">ANACONDA_ARGS</span><span class="p">]</span>
@@ -234,9 +234,11 @@ you have the anaconda-tui package installed.</p>
                          <span class="p">[</span><span class="o">--</span><span class="n">extra</span><span class="o">-</span><span class="n">boot</span><span class="o">-</span><span class="n">args</span> <span class="n">EXTRA_BOOT_ARGS</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">disk</span><span class="o">-</span><span class="n">image</span> <span class="n">DISK_IMAGE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">keep</span><span class="o">-</span><span class="n">image</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">fs</span><span class="o">-</span><span class="n">image</span> <span class="n">FS_IMAGE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="n">name</span> <span class="n">IMAGE_NAME</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">fs</span><span class="o">-</span><span class="n">label</span> <span class="n">FS_LABEL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="nb">type</span> <span class="n">IMAGE_TYPE</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">qemu</span><span class="o">-</span><span class="n">arg</span> <span class="n">QEMU_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">qcow2</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">qcow2</span><span class="o">-</span><span class="n">arg</span> <span class="n">QEMU_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="n">COMPRESSION</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">tar</span><span class="o">-</span><span class="n">disk</span><span class="o">-</span><span class="n">name</span> <span class="n">TAR_DISK_NAME</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">fs</span><span class="o">-</span><span class="n">label</span> <span class="n">FS_LABEL</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="n">size</span><span class="o">-</span><span class="n">align</span> <span class="n">IMAGE_SIZE_ALIGN</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">image</span><span class="o">-</span><span class="nb">type</span> <span class="n">IMAGE_TYPE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">qemu</span><span class="o">-</span><span class="n">arg</span> <span class="n">QEMU_ARGS</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">qcow2</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">qcow2</span><span class="o">-</span><span class="n">arg</span> <span class="n">QEMU_ARGS</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="n">COMPRESSION</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">compress</span><span class="o">-</span><span class="n">arg</span> <span class="n">COMPRESS_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">app</span><span class="o">-</span><span class="n">name</span> <span class="n">APP_NAME</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">app</span><span class="o">-</span><span class="n">template</span> <span class="n">APP_TEMPLATE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">app</span><span class="o">-</span><span class="n">file</span> <span class="n">APP_FILE</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">ram</span> <span class="n">MEMORY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">vcpus</span> <span class="n">VCPUS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">vnc</span> <span class="n">VNC</span><span class="p">]</span>
@@ -288,6 +290,12 @@ you have the anaconda-tui package installed.</p>
 <tr><td class="option-group">
 <kbd>--make-tar</kbd></td>
 <td><p class="first">Build a tar of the root filesystem</p>
+<p class="last">Default: False</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--make-tar-disk</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Build a tar of a partitioned disk image</p>
 <p class="last">Default: False</p>
 </td></tr>
 <tr><td class="option-group" colspan="2">
@@ -428,10 +436,20 @@ you have the anaconda-tui package installed.</p>
 <tr><td class="option-group">
 <kbd>--image-name</kbd></td>
 <td>Name of output file to create. Used for tar, fs and disk image. Default is a random name.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--tar-disk-name</kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Name of the archive member for make-tar-disk.</td></tr>
 <tr><td class="option-group">
 <kbd>--fs-label</kbd></td>
 <td><p class="first">Label to set on fsimage, default is ‘Anaconda’</p>
 <p class="last">Default: “Anaconda”</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--image-size-align</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Create a disk image with a size that is a multiple of this value in MiB.</p>
+<p class="last">Default: 0</p>
 </td></tr>
 <tr><td class="option-group">
 <kbd>--image-type</kbd></td>
@@ -1053,16 +1071,9 @@ use of partitioned disk images and qcow2.</p>
 <h2>Creating UEFI disk images with virt<a class="headerlink" href="#creating-uefi-disk-images-with-virt" title="Permalink to this headline">¶</a></h2>
 <p>Partitioned disk images can only be created for the same platform as the host system (BIOS or
 UEFI). You can use virt to create BIOS images on UEFI systems, and it is also possible
-to create UEFI images on BIOS systems using OVMF. You first need to setup your system with
-the OVMF firmware. The details can be <a class="reference external" href="http://www.linux-kvm.org/page/OVMF">found here linux-kvm OVMF page</a>
-but it amounts to:</p>
-<ol class="arabic simple">
-<li>Download the firmware.repo from <a class="reference external" href="https://www.kraxel.org/repos/">Gerd Hoffmann</a> and install it
-in /etc/yum.repos.d/</li>
-<li>Install the edk2.git-ovmf-x64 package</li>
-<li>Copy /usr/share/edk2.git/ovmf-x64/OVMF_CODE-pure-efi.fd to /usr/share/OVMF/OVMF_CODE.fd</li>
-<li>Copy /usr/share/edk2.git/ovmf-x64/OVMF_VARS-pure-efi.fd to /usr/share/OVMF/OVMF_VARS.fd</li>
-</ol>
+to create UEFI images on BIOS systems using OVMF firmware and qemu.</p>
+<p>Install the lorax-lmc-virt package, this will install qemu and the OVMF
+firmware files.</p>
 <p>Now you can run livemedia-creator with <code class="docutils literal notranslate"><span class="pre">--virt-uefi</span></code> to boot and install using UEFI:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">livemedia</span><span class="o">-</span><span class="n">creator</span> <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">disk</span> <span class="o">--</span><span class="n">virt</span><span class="o">-</span><span class="n">uefi</span> <span class="o">--</span><span class="n">iso</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">boot</span><span class="o">.</span><span class="n">iso</span> \
 <span class="o">--</span><span class="n">ks</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">rhel</span><span class="o">-</span><span class="n">minimal</span><span class="o">.</span><span class="n">ks</span>
@@ -1072,12 +1083,10 @@ in /etc/yum.repos.d/</li>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">part</span> <span class="o">/</span><span class="n">boot</span><span class="o">/</span><span class="n">efi</span> <span class="o">--</span><span class="n">fstype</span><span class="o">=</span><span class="s2">&quot;efi&quot;</span> <span class="o">--</span><span class="n">size</span><span class="o">=</span><span class="mi">500</span>
 </pre></div>
 </div>
+<p>Or use <code class="docutils literal notranslate"><span class="pre">reqpart</span></code> in the kickstart and Anaconda will create the required partitions.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">When using the resulting image with the current version of OVMF (edk2.git-ovmf-x64-0-20151103.b1295.ge5cffca)
-it will not boot automatically because there is a problem with the fallback path.
-You can boot it by entering the UEFI shell and running EFI/redhat/shim.efi and
-then using efibootmgr to setup the correct boot entry.</p>
+<p class="last">The –virt-uefi method is currently only supported on the x86_64 architecture.</p>
 </div>
 </div>
 <div class="section" id="debugging-problems">
@@ -1159,7 +1168,7 @@ report bugs against the lorax component.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'28.14.25',
+            VERSION:'28.14.30',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

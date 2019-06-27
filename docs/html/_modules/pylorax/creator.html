@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.creator &mdash; Lorax 28.14.25 documentation</title>
+  <title>pylorax.creator &mdash; Lorax 28.14.30 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                28.14.25
+                28.14.30
               </div>
             
           
@@ -624,6 +624,9 @@
                 <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Adding 1024M for reqpart --addboot&quot;</span><span class="p">)</span>
                 <span class="n">disk_size</span> <span class="o">+=</span> <span class="mi">1024</span>
 
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">image_size_align</span><span class="p">:</span>
+        <span class="n">disk_size</span> <span class="o">+=</span> <span class="n">opts</span><span class="o">.</span><span class="n">image_size_align</span> <span class="o">-</span> <span class="p">(</span><span class="n">disk_size</span> <span class="o">%</span> <span class="n">opts</span><span class="o">.</span><span class="n">image_size_align</span><span class="p">)</span>
+
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using disk size of </span><span class="si">%s</span><span class="s2">MiB&quot;</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">disk_size</span></div>
 
@@ -641,28 +644,49 @@
 
 <span class="sd">    Use qemu+boot.iso or anaconda to install to a disk image.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">image_name</span><span class="p">:</span>
+
+    <span class="c1"># For make_tar_disk, opts.image_name is the name of the final tarball.</span>
+    <span class="c1"># Use opts.tar_disk_name as the name of the disk image</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_tar_disk</span><span class="p">:</span>
+        <span class="n">disk_img</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">result_dir</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">tar_disk_name</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">opts</span><span class="o">.</span><span class="n">image_name</span><span class="p">:</span>
         <span class="n">disk_img</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">result_dir</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">image_name</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">disk_img</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mktemp</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;lmc-disk-&quot;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.img&quot;</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">result_dir</span><span class="p">)</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;disk_img = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">)</span>
     <span class="n">disk_size</span> <span class="o">=</span> <span class="n">calculate_disk_size</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">)</span>
+
+    <span class="c1"># For make_tar_disk, pass a second path parameter for the final tarball</span>
+    <span class="c1"># not the final output file.</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_tar_disk</span><span class="p">:</span>
+        <span class="n">tar_img</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">result_dir</span><span class="p">,</span> <span class="n">opts</span><span class="o">.</span><span class="n">image_name</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tar_img</span> <span class="o">=</span> <span class="kc">None</span>
+
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">no_virt</span><span class="p">:</span>
-            <span class="n">novirt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="n">cancel_func</span><span class="p">)</span>
+            <span class="n">novirt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="n">cancel_func</span><span class="p">,</span> <span class="n">tar_img</span><span class="o">=</span><span class="n">tar_img</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">install_log</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">logfile</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;/virt-install.log&quot;</span>
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;install_log = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">install_log</span><span class="p">)</span>
 
-            <span class="n">virt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">install_log</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="n">cancel_func</span><span class="p">)</span>
+            <span class="n">virt_install</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">install_log</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">disk_size</span><span class="p">,</span> <span class="n">cancel_func</span><span class="o">=</span><span class="n">cancel_func</span><span class="p">,</span> <span class="n">tar_img</span><span class="o">=</span><span class="n">tar_img</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">InstallError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Install failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">keep_image</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">disk_img</span><span class="p">):</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Removing bad disk image&quot;</span><span class="p">)</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">disk_img</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">keep_image</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">disk_img</span><span class="p">):</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Removing bad disk image&quot;</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">disk_img</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">tar_img</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">tar_img</span><span class="p">):</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Removing bad tar file&quot;</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">tar_img</span><span class="p">)</span>
         <span class="k">raise</span>
 
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Disk Image install successful&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">make_tar_disk</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">tar_img</span>
+
     <span class="k">return</span> <span class="n">disk_img</span></div>
 
 
@@ -942,7 +966,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'28.14.25',
+            VERSION:'28.14.30',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
