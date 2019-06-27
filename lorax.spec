@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        28.14.29
+Version:        28.14.30
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -251,6 +251,36 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_sysconfdir}/bash_completion.d/composer-cli
 
 %changelog
+* Thu Jun 27 2019 Brian C. Lane <bcl@redhat.com> 28.14.30-1
+- New lorax documentation - 28.14.30 (bcl)
+  Related: rhbz#1709594
+- Assert that RuntimeErrors have correct messages (egoode)
+  Related: rhbz#1709594
+- More descriptive error for a bad ref in repos.git (egoode)
+  Related: rhbz#1709594
+- Add more tests for gitrpm.py (bcl)
+  Related: rhbz#1709594
+- lorax-composer: Fix installing files from [[repos.git]] to / (bcl)
+  Related: rhbz#1709594
+- Add tests using repos.git in blueprints (bcl)
+  Related: rhbz#1709594
+- Move git repo creation into tests/lib.py (bcl)
+  Related: rhbz#1709594
+- rpmgit: catch potential errors while running git (bcl)
+  Related: rhbz#1709594
+- tests: Add test for Recipe.freeze() function (bcl)
+  Related: rhbz#1709594
+- Add repos.git support to lorax-composer builds (bcl)
+  Related: rhbz#1709594
+- Add pylorax.api.gitrpm module and tests (bcl)
+  Related: rhbz#1709594
+- Add support for [[repos.git]] section to blueprints (bcl)
+  Resolves: rhbz#1709594
+- [tests] Handle blueprints in setup_tests/teardown_tests correctly (atodorov)
+  Related: rhbz#1714298
+- tests: Set BLUEPRINTS_DIR in all cases (lars)
+  Related: rhbz#1714298
+
 * Mon Jun 10 2019 Brian C. Lane <bcl@redhat.com> 28.14.29-1
 - tests: Update openssh-server to version * (bcl)
   Related: rhbz#1678937
