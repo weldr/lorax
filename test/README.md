@@ -58,3 +58,20 @@ To get the latest images you need to update it manually (in order not to poll
 GitHub every time):
 
     $ make -B bots
+
+## GitHub integration
+
+Tests are automatically triggered for every pull request. To disable tests for
+a pull request, add the `no-test` label when opening it.
+
+To interact with GitHub from scripts in `bots/`, generate [a
+token](https://github.com/settings/tokens) with at least *repo:status*,
+*public_repo*, and *read:org* permissions, and put it into
+`~/.config/github-token`.
+
+You can retry a failed test with:
+
+    $ bots/tests-trigger --repo weldr/lorax <PR> <test>
+
+If no test is given, all failed tests will be retried. Pass `--allow` to
+trigger tests on a pull request by an outside contributor.
