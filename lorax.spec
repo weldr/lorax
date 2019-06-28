@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        31.7
+Version:        31.8
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -254,6 +254,22 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Fri Jun 28 2019 Brian C. Lane <bcl@redhat.com> 31.8-1
+- Also search for pxeboot kernel and initrd pairs (hadess@hadess.net)
+- Assert that RuntimeErrors have correct messages (egoode@redhat.com)
+- More descriptive error for a bad ref in repos.git (egoode@redhat.com)
+- Remove unused shell script (atodorov@redhat.com)
+- test: Output results for cockpit's log.html (lars@karlitski.net)
+- Do not generate journal.xml from beakerlib (atodorov@redhat.com)
+- tests: Add RUN_TESTS to Makefile so you can pass in targets (bcl@redhat.com)
+- tests: Add tests for recipe checking functions (bcl@redhat.com)
+- lorax-composer: Add basic case check to check_recipe_dict (bcl@redhat.com)
+- lorax-composer: Add basic recipe checker function (bcl@redhat.com)
+- Revert "test: Disable test_live_iso test" (lars@karlitski.net)
+- test: Fix test_blueprint_sanity (lars@karlitski.net)
+- tests: rpm now returns str, drop decode() call (bcl@redhat.com)
+- tests: Drop libgit2 install from koji (bcl@redhat.com)
+
 * Tue Jun 18 2019 Brian C. Lane <bcl@redhat.com> 31.7-1
 - New lorax documentation - 31.7 (bcl@redhat.com)
 - Update qemu arguments to work correctly with nographic (bcl@redhat.com)
