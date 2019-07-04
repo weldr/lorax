@@ -132,4 +132,8 @@ def main():
     runner = unittest.TextTestRunner(verbosity=2, failfast=args.sit)
     result = runner.run(tests)
 
+    if tests.countTestCases() != result.testsRun:
+        print("Error: unexpected number of tests were run", file=sys.stderr)
+        sys.exit(1)
+
     sys.exit(not result.wasSuccessful())
