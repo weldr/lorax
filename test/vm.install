@@ -2,6 +2,18 @@
 
 SRPM="$1"
 
+LATEST_REPO="/etc/yum.repos.d/rhel7-rel-eng-latest.repo"
+if [ ! -f "$LATEST_REPO" ]; then
+    cat > $LATEST_REPO << __EOF__
+[rhel7-rel-eng-latest]
+gpgcheck=0
+enabled=1
+skip_if_unavailable=0
+name=rhel7-rel-eng-latest
+baseurl=http://download-node-02.eng.bos.redhat.com/rhel-7/rel-eng/latest-RHEL-7/compose/Server/\$basearch/os/
+__EOF__
+fi
+
 if ! rpm -q beakerlib; then
     if [ $(. /etc/os-release && echo $ID) = "rhel" ]; then
         (cd /etc/yum.repos.d; curl -O -L http://download.devel.redhat.com/beakerrepos/beaker-client-RedHatEnterpriseLinux.repo)
