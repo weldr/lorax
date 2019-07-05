@@ -29,6 +29,22 @@ if ! rpm -q beakerlib; then
     fi
 fi
 
+if rpm -q python2-cryptography; then
+    yum remove -y python2-cryptography
+fi
+
+if rpm -q pyparsing; then
+    yum remove -y pyparsing
+fi
+
+if ! rpm -q git; then
+    yum install -y git
+fi
+
+if ! rpm -q qemu-system-x86; then
+     yum install -y qemu-system-x86
+fi
+
 # Grow root partition to make room for images. This only works on Fedora right now.
 parted --script /dev/vda resizepart 2 100%
 partprobe
