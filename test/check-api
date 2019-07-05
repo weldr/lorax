@@ -3,6 +3,7 @@
 import composertest
 import requests
 import subprocess
+import json
 
 
 class TestApi(composertest.ComposerTestCase):
@@ -30,9 +31,9 @@ class TestApi(composertest.ComposerTestCase):
             self.forwarder_proc.kill()
         super().tearDown()
 
-    def request(self, method, path, check=True):
+    def request(self, method, path, json=None, check=True):
         self.assertEqual(path[0], "/")
-        r = requests.request(method, f"http://localhost:{self.composer_port}{path}", timeout=30)
+        r = requests.request(method, f"http://localhost:{self.composer_port}{path}", json=json, timeout=30)
         if check:
             r.raise_for_status()
         return r
@@ -65,6 +66,24 @@ class TestApi(composertest.ComposerTestCase):
         self.assertEqual(r.json(), {
             "status": False,
             "errors": [{ "id": "HTTPError", "code": 405, "msg": "Method Not Allowed" }]
+        })
+
+        #
+        # API create blueprint with InvalidChars
+        #
+        invalid_blueprint = {
+            "name": "Name,With,Commas",
+            "description": "",
+            "version": "0.0.1",
+            "modules": [],
+            "groups": []
+        }
+
+        r = self.request("POST", "/api/v0/blueprints/new", json=invalid_blueprint, check=False)
+        self.assertEqual(r.status_code, 400)
+        self.assertEqual(r.json(), {
+            "status": False,
+            "errors": [{ "id": "InvalidChars", "code": 400, "msg": "Invalid characters in API path" }]
         })
 
 
