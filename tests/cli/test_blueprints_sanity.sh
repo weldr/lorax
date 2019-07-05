@@ -48,7 +48,7 @@ __EOF__
 
     rlPhaseStartTest "blueprints show"
         $CLI blueprints show beakerlib > shown-beakerlib.toml
-        rlRun -t -c "./tests/cli/lib/toml-compare beakerlib.toml shown-beakerlib.toml"
+        rlRun -t -c "$(dirname $0)/lib/toml-compare beakerlib.toml shown-beakerlib.toml"
     rlPhaseEnd
 
     rlPhaseStartTest "SemVer .patch version is incremented automatically"
