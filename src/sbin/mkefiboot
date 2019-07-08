@@ -152,6 +152,7 @@ def main():
         print("Warning: --icon is only useful for Apple EFI images")
     if opt.diskname and not opt.imgtype == "apple":
         print("Warning: --diskname is only useful for Apple EFI images")
+    log.debug(opt)
     # do the thing!
     if opt.imgtype == "apple":
         mkmacboot(opt.bootdir, opt.outfile, opt.label, opt.icon, opt.product,
