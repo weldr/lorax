@@ -404,6 +404,9 @@ def dnf_repo_to_file_repo(repo):
     if repo.gpgkey:
         repo_str += "gpgkey = %s\n" % ",".join(repo.gpgkey)
 
+    if repo.skip_if_unavailable:
+        repo_str += "skip_if_unavailable=1\n"
+
     return repo_str
 
 def repo_to_source(repo, system_source):

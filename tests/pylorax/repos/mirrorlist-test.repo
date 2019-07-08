@@ -3,3 +3,4 @@ name = A fake repo with a mirrorlist
 mirrorlist = https://fake-repo.mirrorlist
 sslverify = True
 gpgcheck = True
+skip_if_unavailable=1
