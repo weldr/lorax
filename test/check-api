@@ -3,8 +3,6 @@
 import composertest
 import requests
 import subprocess
-import json
-
 
 class TestApi(composertest.ComposerTestCase):
     """Test Composer HTTP API"""
@@ -78,12 +76,11 @@ class TestApi(composertest.ComposerTestCase):
             "modules": [],
             "groups": []
         }
-
         r = self.request("POST", "/api/v0/blueprints/new", json=invalid_blueprint, check=False)
         self.assertEqual(r.status_code, 400)
         self.assertEqual(r.json(), {
             "status": False,
-            "errors": [{ "id": "InvalidChars", "code": 400, "msg": "Invalid characters in API path" }]
+            "errors": [{ "id": "InvalidChars", "msg": "Invalid characters in API path" }]
         })
 
 
