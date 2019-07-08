@@ -113,6 +113,7 @@ def main():
         parser.error("config file %s doesn't exist." % opts.config)
 
     setup_logging(opts)
+    log.debug(opts)
 
     log_selinux_state()
 
