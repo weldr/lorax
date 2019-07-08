@@ -187,6 +187,9 @@ def main():
     if opts.sharedir:
         lorax.conf.set("lorax", "sharedir", opts.sharedir)
 
+    with open(lorax.conf.get("lorax", "logdir") + '/lorax.conf', 'w') as f:
+        lorax.conf.write(f)
+
     lorax.run(dnfbase, opts.product, opts.version, opts.release,
               opts.variant, opts.bugurl, opts.isfinal,
               workdir=tempdir, outputdir=opts.outputdir, buildarch=opts.buildarch,
