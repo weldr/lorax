@@ -401,7 +401,7 @@ def v0_blueprints_new():
             blueprint = recipe_from_toml(request.data)
         else:
             blueprint = recipe_from_dict(request.get_json(cache=False))
-        
+
         if VALID_BLUEPRINT_NAME.match(blueprint["name"]) is None:
             return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
 
