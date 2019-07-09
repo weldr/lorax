@@ -363,6 +363,9 @@ removepkg cdparanoia-libs opus libtheora libvisual flac-libs gsm avahi-glib avah
 ## metacity requires libvorbis and libvorbisfile, but enc/dec are no longer needed
 removefrom libvorbis --allbut /usr/${libdir}/libvorbisfile.* /usr/${libdir}/libvorbis.*
 
+## Remove build-id links, they are used with debuginfo
+remove /usr/lib/.build-id
+
 ## make the image more reproducible
 
 ## make machine-id empty but present to avoid systemd populating /etc with
