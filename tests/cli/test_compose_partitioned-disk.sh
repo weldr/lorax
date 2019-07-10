@@ -32,6 +32,7 @@ rlJournalStart
                 sleep 10
                 rlLogInfo "Waiting for compose to finish ..."
             done;
+            check_compose_status "$UUID"
         else
             rlFail "Compose UUID is empty!"
         fi
