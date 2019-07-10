@@ -36,6 +36,7 @@ rlJournalStart
                 sleep 5
                 rlLogInfo "Waiting for compose to finish ..."
             done;
+            check_compose_status "$UUID"
 
             rlRun -t -c "$CLI compose image $UUID"
             rlAssertExists "$UUID-root.tar.xz"

@@ -65,6 +65,7 @@ __EOF__
                 sleep 20
                 rlLogInfo "Waiting for compose to finish ..."
             done;
+            check_compose_status "$UUID"
         else
             rlFail "Compose UUID is empty!"
         fi
