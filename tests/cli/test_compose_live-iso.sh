@@ -55,7 +55,7 @@ rlJournalStart
 
     rlPhaseStartTest "Verify VM instance"
         # run generic tests to verify the instance
-        ROOT_ACCOUNT_LOCKED=0 verify_image root localhost "-p 2222"
+        ROOT_ACCOUNT_LOCKED=0 verify_image liveuser localhost "-p 2222"
     rlPhaseEnd
 
     rlPhaseStartCleanup
