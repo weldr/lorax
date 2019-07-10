@@ -64,3 +64,12 @@ check_kernel_cmdline() {
     rlRun -t -c "ssh $SSH_OPTS ${SSH_USER}@${SSH_MACHINE} 'grep custom_cmdline_arg /proc/cmdline'" 0 \
         "System booted from the image contains specified parameter on kernel command line"
 }
+
+# Fail if the compose failed, only call after checking for FINISHED|FAILED
+check_compose_status() {
+    UUID="$1"
+    if "$CLI" compose info "$UUID" | grep FAILED; then
+        rlFail "compose $UUID FAILED"
+        return 1
+    fi
+}
