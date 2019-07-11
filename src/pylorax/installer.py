@@ -191,8 +191,11 @@ class QEMUInstall(object):
             qemu_cmd += ["-machine", "accel=kvm"]
 
         if boot_uefi:
-            qemu_cmd += ["-machine", "q35,smm=on"]
-            qemu_cmd += ["-global", "driver=cfi.pflash01,property=secure,value=on"]
+            if target_arch == x86_64:
+                qemu_cmd += ["-machine", "q35,smm=on"]
+                qemu_cmd += ["-global", "driver=cfi.pflash01,property=secure,value=on"]
+            else:
+                raise InstallError("UEFI support not available for %s (yet?)" % target_arch)
 
         # Copy the initrd from the iso, create a cpio archive of the kickstart files
         # and append it to the temporary initrd.
