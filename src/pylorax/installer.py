@@ -147,6 +147,12 @@ class QEMUInstall(object):
                         "arm": [ "arm" ],
                         "aarch64": [ "aarch64", "arm" ],
                         "ppc64le": [ "ppc64le" ]}
+    QEMU_DEFAULT_MACHINE = {"x86_64":  "q35",
+                            "i386":    "q35",
+                            "arm":     "virt",
+                            "aarch64": "virt",
+                            "ppc64le": "pseries"
+                           }
 
     def __init__(self, opts, iso, ks_paths, disk_img, img_size=2048,
                  kernel_args=None, memory=1024, vcpus=None, vnc=None, arch=None,
@@ -175,6 +181,7 @@ class QEMUInstall(object):
         :param str ovmf_path: Path to the OVMF firmware
         """
         target_arch = arch or os.uname().machine
+        has_machine = False
         # Lookup qemu-system- for arch if passed, or try to guess using host arch
         qemu_cmd = [self.QEMU_CMDS.get(target_arch, "qemu-system-"+os.uname().machine)]
         if not os.path.exists("/usr/bin/"+qemu_cmd[0]):
@@ -189,13 +196,18 @@ class QEMUInstall(object):
             if os.uname().machine not in self.COMPATIBLE_ARCHS[target_arch]:
                 raise InstallError("KVM support not available to run %s on %s" % (target_arch, os.uname().machine))
             qemu_cmd += ["-machine", "accel=kvm"]
+            has_machine = True
 
         if boot_uefi:
             if target_arch == x86_64:
                 qemu_cmd += ["-machine", "q35,smm=on"]
                 qemu_cmd += ["-global", "driver=cfi.pflash01,property=secure,value=on"]
+                has_machine = True
             else:
                 raise InstallError("UEFI support not available for %s (yet?)" % target_arch)
+
+        if not has_machine:
+            qemu_cmd += ["-machine", self.QEMU_DEFAULT_MACHINE[target_arch]]
 
         # Copy the initrd from the iso, create a cpio archive of the kickstart files
         # and append it to the temporary initrd.
