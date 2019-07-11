@@ -1,7 +1,7 @@
 #
 # sysutils.py
 #
-# Copyright (C) 2009-2015 Red Hat, Inc.
+# Copyright (C) 2009-2019 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -133,13 +133,28 @@ def flatconfig(filename):
 
 def read_tail(path, size):
     """Read up to `size` kibibytes from the end of a file"""
-    with open(path, "r") as f:
-        f.seek(0, 2)
-        end = f.tell()
-        if end < 1024 * size:
-            f.seek(0, 0)
-        else:
-            f.seek(end - (1024 * size))
-        # Find the start of the next line and return the rest
-        f.readline()
-        return f.read()
+
+    # NOTE: In py3 text files are unicode, not bytes so we have to open it as bytes
+    with open(path, "rb") as f:
+        return _read_file_end(f, size)
+
+def _read_file_end(f, size):
+    """Read the end of a file
+
+    This skips to the next line to avoid starting in the middle of a unicode character.
+    And returns "" in the case of a UnicodeDecodeError
+    """
+    f.seek(0, 2)
+    end = f.tell()
+    if end < 1024 * size:
+        f.seek(0, 0)
+    else:
+        f.seek(end - (1024 * size))
+    data = f.read()
+    try:
+        # Find the first newline in the block
+        newline = min(1+data.find(b'\n'), len(data))
+        text = data[newline:].decode("UTF-8")
+    except UnicodeDecodeError:
+        return ""
+    return text
