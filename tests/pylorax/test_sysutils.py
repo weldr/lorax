@@ -14,11 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import io
 import unittest
 import tempfile
 import os
 
 from pylorax.sysutils import joinpaths, touch, replace, chown_, chmod_, remove, linktree
+from pylorax.sysutils import _read_file_end
 
 class SysUtilsTest(unittest.TestCase):
     def joinpaths_test(self):
@@ -72,3 +74,73 @@ class SysUtilsTest(unittest.TestCase):
             linktree(os.path.join(tdname, "one"), os.path.join(tdname, "copy"))
 
             self.assertTrue(os.path.exists(os.path.join(tdname, "copy", "two", "three", "lorax-link-test-file")))
+
+    def _generate_lines(self, unicode=False):
+        # helper to generate several KiB of lines of text
+        bio = io.BytesIO()
+        for i in range(0,1024):
+            if not unicode:
+                bio.write(b"Here is another line to test. It is line #%d\n" % i)
+            else:
+                bio.write(b"Here is \xc3\xa0n\xc3\xb2ther line t\xc3\xb2 test. It is line #%d\n" % i)
+        bio.seek(0)
+        return bio
+
+    def read_file_end_test(self):
+        """Test reading from the end of a file"""
+        self.maxDiff = None
+
+        # file of just lines
+        f = self._generate_lines()
+
+        # Grab the end of the 'file' to compare with, starting at the next line (hard-coded)
+        f.seek(-987, 2)
+        result = f.read().decode("utf-8")
+        f.seek(0)
+        self.assertEqual(_read_file_end(f, 1), result)
+
+        # file of lines with no final \n, chop off the trailing \n
+        f.seek(-1,2)
+        f.truncate()
+        f.seek(0)
+        self.assertEqual(_read_file_end(f, 1), result[:-1])
+
+        # short file, truncate it at 1023 characters
+        f.seek(1023)
+        f.truncate()
+        # Grab the end of the file, starting at the next line (hard-coded)
+        f.seek(44)
+        result = f.read().decode("utf-8")
+        f.seek(0)
+        self.assertEqual(_read_file_end(f, 1), result)
+
+        # short file with no line endings
+        f.seek(43)
+        f.truncate()
+        # Grab the whole file
+        f.seek(0)
+        result = f.read().decode("utf-8")
+        f.seek(0)
+        self.assertEqual(_read_file_end(f, 1), result)
+
+        # file with unicode in it
+        f = self._generate_lines(unicode=True)
+
+        # Grab the end of the 'file' to compare with, starting at the next line (hard-coded)
+        f.seek(-1000, 2)
+        result = f.read().decode("utf-8")
+        f.seek(0)
+        self.assertEqual(_read_file_end(f, 1), result)
+
+        # file with unicode right on block boundary, so that a decode of it would fail if it didn't
+        # move to the next line.
+        f.seek(-1000, 2)
+        result = f.read().decode("utf-8")
+        f.seek(-1025, 2)
+        f.write(b"\xc3\xb2")
+        f.seek(0)
+        self.assertEqual(_read_file_end(f, 1), result)
+
+        # Test for UnicodeDecodeError returning an empty string
+        f = io.BytesIO(b"\xff\xff\xffHere is a string with invalid unicode in it.")
+        self.assertEqual(_read_file_end(f, 1), "")
