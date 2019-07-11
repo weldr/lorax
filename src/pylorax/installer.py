@@ -142,6 +142,11 @@ class QEMUInstall(object):
                  "aarch64": "qemu-system-aarch64",
                  "ppc64le": "qemu-system-ppc64"
                 }
+    COMPATIBLE_ARCHS = {"x86_64": [ "x86_64", "i386" ],
+                        "i386": [ "i386" ],
+                        "arm": [ "arm" ],
+                        "aarch64": [ "aarch64", "arm" ],
+                        "ppc64le": [ "ppc64le" ]}
 
     def __init__(self, opts, iso, ks_paths, disk_img, img_size=2048,
                  kernel_args=None, memory=1024, vcpus=None, vnc=None, arch=None,
@@ -169,8 +174,9 @@ class QEMUInstall(object):
         :param bool boot_uefi: Use OVMF to boot the VM in UEFI mode
         :param str ovmf_path: Path to the OVMF firmware
         """
+        target_arch = arch or os.uname().machine
         # Lookup qemu-system- for arch if passed, or try to guess using host arch
-        qemu_cmd = [self.QEMU_CMDS.get(arch or os.uname().machine, "qemu-system-"+os.uname().machine)]
+        qemu_cmd = [self.QEMU_CMDS.get(target_arch, "qemu-system-"+os.uname().machine)]
         if not os.path.exists("/usr/bin/"+qemu_cmd[0]):
             raise InstallError("%s does not exist, cannot run qemu" % qemu_cmd[0])
 
@@ -180,6 +186,8 @@ class QEMUInstall(object):
             qemu_cmd += ["-smp", str(vcpus)]
 
         if not opts.no_kvm and os.path.exists("/dev/kvm"):
+            if os.uname().machine not in self.COMPATIBLE_ARCHS[target_arch]:
+                raise InstallError("KVM support not available to run %s on %s" % (target_arch, os.uname().machine))
             qemu_cmd += ["-machine", "accel=kvm"]
 
         if boot_uefi:
