@@ -20,6 +20,12 @@ import toml
 class TomlError(toml.TomlDecodeError):
     pass
 
+def load(f):
+    try:
+        return toml.load(f)
+    except toml.TomlDecodeError as e:
+        raise TomlError(e.msg, e.doc, e.pos)
+
 def loads(s):
     if isinstance(s, bytes):
         s = s.decode('utf-8')
