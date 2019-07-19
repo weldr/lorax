@@ -46,11 +46,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Start VM instance"
-        rlRun -t -c "$QEMU -m 2048 -boot d -cdrom $IMAGE -nographic -monitor none \
-                           -net user,id=nic0,hostfwd=tcp::$SSH_PORT-:22 -net nic &"
-        # 60 seconds timeout at boot menu screen
-        # then media check + boot ~ 30 seconds
-        sleep 120
+        boot_image "-boot d -cdrom $IMAGE" 120
     rlPhaseEnd
 
     rlPhaseStartTest "Verify VM instance"

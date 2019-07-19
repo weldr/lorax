@@ -38,18 +38,7 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "Boot the boot.iso"
-        rlRun -t -c "$QEMU -m 2048 -cdrom $IMAGE -nographic -monitor none \
-                           -net user,id=nic0,hostfwd=tcp::$SSH_PORT-:22 -net nic &"
-        # wait for ssh to become ready (yes, http is the wrong protocol, but it returns the header)
-        tries=0
-        until curl -m 15 "http://localhost:$SSH_PORT/" | grep 'OpenSSH'; do
-            tries=$((tries + 1))
-            if [ $tries -gt 60 ]; then
-                exit 1
-            fi
-            sleep 1
-            echo "DEBUG: Waiting for ssh become ready before testing ..."
-        done;
+        boot_image "-boot d -cdrom $IMAGE" 60
     rlPhaseEnd
 
     rlPhaseStartTest "Verify VM instance"
