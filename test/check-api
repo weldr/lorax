@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 
 import composertest
+import cockpittest
+
 import requests
 import subprocess
 
@@ -85,4 +87,4 @@ class TestApi(composertest.ComposerTestCase):
 
 
 if __name__ == '__main__':
-    composertest.main()
+    cockpittest.main()

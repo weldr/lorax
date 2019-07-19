@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import composertest
+import cockpittest
 
 
 class TestCloud(composertest.ComposerTestCase):
@@ -18,4 +19,4 @@ class TestCloud(composertest.ComposerTestCase):
 
 
 if __name__ == '__main__':
-    composertest.main()
+    cockpittest.main()
