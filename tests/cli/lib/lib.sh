@@ -1,27 +1,15 @@
 #!/usr/bin/env bash
+# lorax-composer test functions
 
-# Monkey-patch beakerlib to exit on first failure if COMPOSER_TEST_FAIL_FAST is
-# set. https://github.com/beakerlib/beakerlib/issues/42
-if [ "$COMPOSER_TEST_FAIL_FAST" == "1" ]; then
-  eval "original$(declare -f __INTERNAL_LogAndJournalFail)"
-
-  __INTERNAL_LogAndJournalFail () {
-    original__INTERNAL_LogAndJournalFail
-
-    # end test somewhat cleanly so that beakerlib logs the FAIL correctly
-    rlPhaseEnd
-    rlJournalEnd
-
-    exit 1
-  }
-fi
+# Import the common settings
+. "$(dirname $0)/../lib/lib.sh"
 
 # a generic helper function unifying the specific checks executed on a running
 # image instance
 verify_image() {
     SSH_USER="$1"
     SSH_MACHINE="$2"
-    SSH_OPTS="-o StrictHostKeyChecking=no $3"
+    SSH_OPTS+=" $3"
     rlLogInfo "verify_image: SSH_OPTS:'$SSH_OPTS' SSH_USER:'$SSH_USER' SSH_MACHINE: '$SSH_MACHINE'"
     check_root_account "$@"
     check_kernel_cmdline "$@"

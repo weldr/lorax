@@ -10,11 +10,9 @@
 set -e
 
 . /usr/share/beakerlib/beakerlib.sh
-. $(dirname $0)/lib/lib.sh
+. "$(dirname $0)/lib/lib.sh"
 
 CLI="${CLI:-./src/bin/composer-cli}"
-QEMU_BIN="/usr/bin/qemu-system-$(uname -m)"
-QEMU="$QEMU_BIN -machine accel=kvm:tcg"
 
 rlJournalStart
     rlPhaseStartSetup
@@ -76,13 +74,13 @@ __EOF__
 
     rlPhaseStartTest "Start VM instance"
         rlRun -t -c "$QEMU -m 2048 -boot c -hda $IMAGE -nographic -monitor none \
-                           -net user,id=nic0,hostfwd=tcp::2222-:22 -net nic &"
+                           -net user,id=nic0,hostfwd=tcp::$SSH_PORT-:22 -net nic &"
         sleep 60
     rlPhaseEnd
 
     rlPhaseStartTest "Verify VM instance"
         # run generic tests to verify the instance
-        verify_image root localhost "-i $SSH_KEY_DIR/id_rsa -p 2222"
+        verify_image root localhost "-i $SSH_KEY_DIR/id_rsa -p $SSH_PORT"
     rlPhaseEnd
 
     rlPhaseStartCleanup

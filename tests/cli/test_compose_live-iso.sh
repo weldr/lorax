@@ -10,11 +10,10 @@
 set -e
 
 . /usr/share/beakerlib/beakerlib.sh
-. $(dirname $0)/lib/lib.sh
+. "$(dirname $0)/../lib/lib.sh"
+. "$(dirname $0)/lib/lib.sh"
 
 CLI="${CLI:-./src/bin/composer-cli}"
-QEMU_BIN="/usr/bin/qemu-system-$(uname -m)"
-QEMU="$QEMU_BIN -machine accel=kvm:tcg"
 
 rlJournalStart
     rlPhaseStartSetup
@@ -48,7 +47,7 @@ rlJournalStart
 
     rlPhaseStartTest "Start VM instance"
         rlRun -t -c "$QEMU -m 2048 -boot d -cdrom $IMAGE -nographic -monitor none \
-                           -net user,id=nic0,hostfwd=tcp::2222-:22 -net nic &"
+                           -net user,id=nic0,hostfwd=tcp::$SSH_PORT-:22 -net nic &"
         # 60 seconds timeout at boot menu screen
         # then media check + boot ~ 30 seconds
         sleep 120
@@ -56,7 +55,7 @@ rlJournalStart
 
     rlPhaseStartTest "Verify VM instance"
         # run generic tests to verify the instance, log in a liveuser with no password
-        ROOT_ACCOUNT_LOCKED=0 verify_image liveuser localhost "-p 2222"
+        ROOT_ACCOUNT_LOCKED=0 verify_image liveuser localhost "-p $SSH_PORT"
     rlPhaseEnd
 
     rlPhaseStartCleanup
