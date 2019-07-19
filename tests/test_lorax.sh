@@ -44,10 +44,19 @@ setup_tests "$SHARE_DIR"
 
 export BEAKERLIB_JOURNAL=0
 
-# Run all the lorax tests
-for t in ./tests/lorax/run*sh; do
-    $t
-done
+if [ -z "$*" ]; then
+    # Run all the lorax tests
+    for t in ./tests/lorax/test_*sh; do
+        $t
+    done
+else
+    # execute other tests which need more adjustments in the calling environment
+    # or can't be executed inside Travis CI
+    for TEST in "$@"; do
+        $TEST
+    done
+fi
+
 
 teardown_tests "$SHARE_DIR"
 

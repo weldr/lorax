@@ -9,6 +9,8 @@ if [ -n "$TEST_SCENARIO" ]; then
     test/check-cli TestLiveIso
   elif [ "$TEST_SCENARIO" == "qcow2" ]; then
     test/check-cli TestQcow2
+  elif [ "$TEST_SCENARIO" == "lorax" ]; then
+    test/check-lorax
   else
     test/check-cloud TestCloud.test_$TEST_SCENARIO
   fi

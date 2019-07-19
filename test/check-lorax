@@ -1,0 +1,17 @@
+#!/usr/bin/python3
+
+import loraxtest
+import cockpittest
+
+
+class TestLorax(loraxtest.LoraxTestCase):
+    """
+        This is the "entry-point" to the test suite when
+        executed in Cockpit CI.
+    """
+    def test_lorax_bootiso(self):
+        self.runLoraxTest("/tests/lorax/test_lorax_bootiso.sh")
+
+
+if __name__ == '__main__':
+    cockpittest.main()
