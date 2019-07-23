@@ -16,6 +16,28 @@ if [ "$COMPOSER_TEST_FAIL_FAST" == "1" ]; then
   }
 fi
 
+export QEMU_BIN="/usr/bin/qemu-system-$(uname -m)"
+export QEMU="$QEMU_BIN -machine accel=kvm:tcg"
+export SSH_PORT=2222
+
+boot_image() {
+    QEMU_BOOT=$1
+    TIMEOUT=$2
+    rlRun -t -c "$QEMU -m 2048 $QEMU_BOOT -nographic -monitor none \
+                 -net user,id=nic0,hostfwd=tcp::$SSH_PORT-:22 -net nic &"
+    # wait for ssh to become ready (yes, http is the wrong protocol, but it returns the header)
+    tries=0
+    until curl -sS -m 15 "http://localhost:$SSH_PORT/" | grep 'OpenSSH'; do
+        tries=$((tries + 1))
+        if [ $tries -gt $TIMEOUT ]; then
+            exit 1
+        fi
+        sleep 1
+        echo "DEBUG: Waiting for ssh become ready before testing ..."
+    done;
+}
+
+
 # a generic helper function unifying the specific checks executed on a running
 # image instance
 verify_image() {
