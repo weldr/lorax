@@ -125,7 +125,14 @@ runcmd chroot ${root} /usr/bin/mknod -m 666 /dev/random c 1 8
 runcmd chroot ${root} /usr/bin/mknod -m 666 /dev/urandom c 1 9
 runcmd chroot ${root} /usr/bin/rpm -qa --pipe "sort | tee /root/lorax-packages.log"
 
-## TODO: we could run prelink here if we wanted?
+## Run prelink if installed on host
+<%
+if os.path.isfile('/usr/sbin/prelink'):
+    run_prelink = '/usr/sbin/prelink --conserve-memory --no-update-cache --ld-library-path=${root}/usr/lib:${root}/usr/lib64 ${root}'
+else:
+    run_prelink = 'echo prelink not installed'
+%>
+runcmd ${run_prelink}
 
 ## fix fonconfig cache containing timestamps
 runcmd chroot ${root} /usr/bin/find /usr/share/fonts /usr/share/X11/fonts -newermt "@${SOURCE_DATE_EPOCH}" -exec \
