@@ -13,8 +13,6 @@ set -e
 . $(dirname $0)/lib/lib.sh
 
 CLI="${CLI:-./src/bin/composer-cli}"
-QEMU_BIN="/usr/libexec/qemu-kvm"
-QEMU="$QEMU_BIN -machine accel=kvm:tcg"
 
 rlJournalStart
     rlPhaseStartSetup
@@ -60,16 +58,12 @@ __EOF__
     rlPhaseEnd
 
     rlPhaseStartTest "Start VM instance"
-        rlRun -t -c "$QEMU -m 2048 -boot c -cdrom $IMAGE -nographic \
-                           -net user,id=nic0,hostfwd=tcp::2222-:22 -net nic &"
-        # 60 seconds timeout at boot menu screen
-        # then media check + boot ~ 30 seconds
-        sleep 120
+        boot_image "-boot d -cdrom $IMAGE" 120
     rlPhaseEnd
 
     rlPhaseStartTest "Verify VM instance"
         # run generic tests to verify the instance
-        ROOT_ACCOUNT_LOCKED=0 verify_image root localhost "-p 2222"
+        ROOT_ACCOUNT_LOCKED=0 verify_image liveuser localhost "-p $SSH_PORT"
     rlPhaseEnd
 
     rlPhaseStartCleanup
