@@ -17,13 +17,5 @@ class ComposerTestCase(cockpittest.TestCase):
 
 
     def runCliTest(self, script):
-        extra_env = []
-        if self.sit:
-            extra_env.append("COMPOSER_TEST_FAIL_FAST=1")
-
-        r = self.execute(["CLI=/usr/bin/composer-cli",
-                          "TEST=" + self.id(),
-                          "PACKAGE=composer-cli",
-                          *extra_env,
-                          "/tests/test_cli.sh", script])
+        r = self.runTest("/usr/bin/composer-cli", "composer-cli", "/tests/test_cli.sh", script)
         self.assertEqual(r.returncode, 0)

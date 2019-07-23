@@ -67,6 +67,16 @@ class TestCase(unittest.TestCase):
         """
         return subprocess.run(self.ssh_command + command, **args)
 
+    def runTest(self, cli, package, runner, script):
+        """Run the test script"""
+        extra_env = ["CLI=" + cli,
+                     "TEST=" + self.id(),
+                     "PACKAGE=" + package]
+        if self.sit:
+            extra_env.append("COMPOSER_TEST_FAIL_FAST=1")
+
+        return self.execute([*extra_env, runner, script])
+
 
 class TestResult(unittest.TestResult):
     def name(self, test):
