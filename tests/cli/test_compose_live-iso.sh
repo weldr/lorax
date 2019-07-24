@@ -22,6 +22,9 @@ rlJournalStart
     rlPhaseStartTest "compose start"
         rlAssertEquals "SELinux operates in enforcing mode" "$(getenforce)" "Enforcing"
 
+        rlRun -t -c "lsmod"
+        rlRun -t -c "ls -l /dev/kvm"
+
         # NOTE: live-iso.ks explicitly disables sshd but test_cli.sh enables it
         UUID=`$CLI compose start example-http-server live-iso`
         rlAssertEquals "exit code should be zero" $? 0

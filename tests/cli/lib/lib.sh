@@ -16,7 +16,7 @@ if [ "$COMPOSER_TEST_FAIL_FAST" == "1" ]; then
   }
 fi
 
-export QEMU="/usr/libexec/qemu-kvm"
+export QEMU="/usr/libexec/qemu-kvm -machine accel=kvm"
 export SSH_PORT=2222
 
 boot_image() {
