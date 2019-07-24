@@ -29,7 +29,8 @@ fi
 boot_image() {
     QEMU_BOOT=$1
     TIMEOUT=$2
-    rlRun -t -c "$QEMU -m 2048 $QEMU_BOOT -nographic -monitor none \
+    # This runs inside a VM, use as little resources as possible
+    rlRun -t -c "$QEMU -m 1024 -cpu host $QEMU_BOOT -nographic -monitor none \
                        -net user,id=nic0,hostfwd=tcp::$SSH_PORT-:22 -net nic &"
     # wait for ssh to become ready (yes, http is the wrong protocol, but it returns the header)
     tries=0
