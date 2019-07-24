@@ -29,7 +29,7 @@ class ComposerTestCase(unittest.TestCase):
 
     def setUp(self):
         self.network = testvm.VirtNetwork(0)
-        self.machine = testvm.VirtMachine(self.image, networking=self.network.host(), memory_mb=2048)
+        self.machine = testvm.VirtMachine(self.image, networking=self.network.host(), memory_mb=4096)
 
         print(f"Starting virtual machine '{self.image}'")
         self.machine.start()
