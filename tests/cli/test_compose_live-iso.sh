@@ -20,31 +20,8 @@ rlJournalStart
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
-        rlAssertEquals "SELinux operates in enforcing mode" "$(getenforce)" "Enforcing"
-
-        rlRun -t -c "lsmod"
-        rlRun -t -c "ls -l /dev/kvm"
-
-        # NOTE: live-iso.ks explicitly disables sshd but test_cli.sh enables it
-        UUID=`$CLI compose start example-http-server live-iso`
-        rlAssertEquals "exit code should be zero" $? 0
-
-        UUID=`echo $UUID | cut -f 2 -d' '`
-    rlPhaseEnd
-
-    rlPhaseStartTest "compose finished"
-        if [ -n "$UUID" ]; then
-            until $CLI compose info $UUID | grep 'FINISHED\|FAILED'; do
-                sleep 20
-                rlLogInfo "Waiting for compose to finish ..."
-            done;
-            check_compose_status "$UUID"
-        else
-            rlFail "Compose UUID is empty!"
-        fi
-
-        rlRun -t -c "$CLI compose image $UUID"
-        IMAGE="$UUID-live.iso"
+        rlRun -t -c "curl -O http://mirror2.hs-esslingen.de/fedora/linux/releases/30/Server/x86_64/iso/Fedora-Server-netinst-x86_64-30-1.2.iso"
+        IMAGE=$(realpath "Fedora-Server-netinst-x86_64-30-1.2.iso")
     rlPhaseEnd
 
     rlPhaseStartTest "Start VM instance"
@@ -53,12 +30,13 @@ rlJournalStart
 
     rlPhaseStartTest "Verify VM instance"
         # run generic tests to verify the instance
-        ROOT_ACCOUNT_LOCKED=0 verify_image liveuser localhost "-p $SSH_PORT"
+        # ROOT_ACCOUNT_LOCKED=0 verify_image liveuser localhost "-p $SSH_PORT"
+        sleep 30
     rlPhaseEnd
 
     rlPhaseStartCleanup
         rlRun -t -c "killall -9 qemu-kvm"
-        rlRun -t -c "$CLI compose delete $UUID"
+        # rlRun -t -c "$CLI compose delete $UUID"
         rlRun -t -c "rm -rf $IMAGE"
     rlPhaseEnd
 
