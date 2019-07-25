@@ -202,9 +202,15 @@ def make_runtime(opts, mount_dir, work_dir, size=None):
 
     rb = RuntimeBuilder(product, arch, fake_dbo)
     compression, compressargs = squashfs_args(opts)
-    log.info("Creating runtime")
-    rb.create_ext4_runtime(joinpaths(work_dir, RUNTIME), size=size,
-                      compression=compression, compressargs=compressargs)
+
+    if opts.squashfs_only:
+        log.info("Creating a squashfs only runtime")
+        rb.create_squashfs_runtime(joinpaths(work_dir, RUNTIME), size=size,
+                                   compression=compression, compressargs=compressargs)
+    else:
+        log.info("Creating a squashfs+ext4 runtime")
+        rb.create_ext4_runtime(joinpaths(work_dir, RUNTIME), size=size,
+                          compression=compression, compressargs=compressargs)
 
 
 def rebuild_initrds_for_live(opts, sys_root_dir, results_dir):
@@ -418,25 +424,41 @@ def make_squashfs(opts, disk_img, work_dir):
     out any deleted blocks to make it compress better. If this fails for any reason
     it will return False and log the error.
     """
-    # Make sure free blocks are actually zeroed so it will compress
-    rc = execWithRedirect("/usr/sbin/fsck.ext4", ["-y", "-f", "-E", "discard", disk_img])
-    if rc != 0:
-        log.error("Problem zeroing free blocks of %s", disk_img)
-        return False
-
-    liveos_dir = joinpaths(work_dir, "runtime/LiveOS")
-    os.makedirs(liveos_dir)
     os.makedirs(os.path.dirname(joinpaths(work_dir, RUNTIME)))
+    if opts.squashfs_only:
+        log.info("Creating a squashfs only runtime")
+        liveos_dir = joinpaths(work_dir, "runtime")
+        os.makedirs(liveos_dir)
+        with Mount(disk_img, opts="loop", mnt=liveos_dir):
+            compression, compressargs = squashfs_args(opts)
+            rc = mksquashfs(liveos_dir, joinpaths(work_dir, RUNTIME), compression, compressargs)
+    else:
+        log.info("Creating a squashfs+ext4 runtime")
+        # Make sure free blocks are actually zeroed so it will compress
+        rc = execWithRedirect("/usr/sbin/fsck.ext4", ["-y", "-f", "-E", "discard", disk_img])
+        if rc != 0:
+            log.error("Problem zeroing free blocks of %s", disk_img)
+            return False
 
-    rc = execWithRedirect("/bin/ln", [disk_img, joinpaths(liveos_dir, "rootfs.img")])
-    if rc != 0:
-        shutil.copy2(disk_img, joinpaths(liveos_dir, "rootfs.img"))
+        liveos_dir = joinpaths(work_dir, "runtime/LiveOS")
+        os.makedirs(liveos_dir)
 
-    compression, compressargs = squashfs_args(opts)
-    mksquashfs(joinpaths(work_dir, "runtime"),
-               joinpaths(work_dir, RUNTIME), compression, compressargs)
+        # Try to hardlink the rootfs file first, fall back top copying it
+        rc = execWithRedirect("/bin/ln", [disk_img, joinpaths(liveos_dir, "rootfs.img")])
+        if rc != 0:
+            shutil.copy2(disk_img, joinpaths(liveos_dir, "rootfs.img"))
+
+        compression, compressargs = squashfs_args(opts)
+        rc = mksquashfs(joinpaths(work_dir, "runtime"), joinpaths(work_dir, RUNTIME), compression, compressargs)
+
+    # Cleanup the runtime directory
     remove(joinpaths(work_dir, "runtime"))
-    return True
+
+    if rc:
+        log.error("Problem running mksquashfs: rc=%d", rc)
+        return False
+    else:
+        return True
 
 def calculate_disk_size(opts, ks):
     """ Calculate the disk size from the kickstart

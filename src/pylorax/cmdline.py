@@ -303,6 +303,8 @@ def lmc_parser(dracut_default=""):
     parser.add_argument("--releasever", default="29",
                         help="substituted for @VERSION@ in bootloader config files")
     parser.add_argument("--volid", default=None, help="volume id")
+    parser.add_argument("--squashfs-only", action="store_true", default=False,
+                        help="Use a plain squashfs filesystem for the runtime.")
     parser.add_argument("--squashfs_args",
                         help="additional squashfs args")
     parser.add_argument("--timeout", default=None, type=int,
