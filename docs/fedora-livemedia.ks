@@ -382,6 +382,7 @@ EOF
 gnome-terminal
 aajohan-comfortaa-fonts
 anaconda
+anaconda-live
 dracut-config-generic
 dracut-live
 glibc-all-langpacks
