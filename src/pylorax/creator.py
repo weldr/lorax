@@ -196,10 +196,6 @@ def make_runtime(opts, mount_dir, work_dir, size=None):
     product = DataHolder(name=opts.project, version=opts.releasever, release="",
                             variant="", bugurl="", isfinal=False)
 
-    # This is a mounted image partition, cannot hardlink to it, so just use it
-    # symlink mount_dir/images to work_dir/images so we don't run out of space
-    os.makedirs(joinpaths(work_dir, "images"))
-
     rb = RuntimeBuilder(product, arch, fake_dbo)
     compression, compressargs = squashfs_args(opts)
 
@@ -341,8 +337,10 @@ def make_livecd(opts, mount_dir, work_dir):
     # Link /images to work_dir/images to make the templates happy
     if os.path.islink(joinpaths(mount_dir, "images")):
         os.unlink(joinpaths(mount_dir, "images"))
-    execWithRedirect("/bin/ln", ["-s", joinpaths(work_dir, "images"),
-                                 joinpaths(mount_dir, "images")])
+    rc = execWithRedirect("/bin/ln", ["-s", joinpaths(work_dir, "images"),
+                                     joinpaths(mount_dir, "images")])
+    if rc:
+        raise RuntimeError("Failed to symlink images from mount_dir to work_dir")
 
     # The templates expect the config files to be in /tmp/config_files
     # I think these should be release specific, not from lorax, but for now
@@ -406,59 +404,6 @@ def mount_boot_part_over_root(img_mount):
             log.debug("Looking for boot partition error: %s", e)
     remove(tmp_mount_dir)
     return sysroot_boot_dir
-
-def make_squashfs(opts, disk_img, work_dir):
-    """
-    Create a squashfs image of an unpartitioned filesystem disk image
-
-    :param str disk_img: Path to the unpartitioned filesystem disk image
-    :param str work_dir: Output compressed image to work_dir+images/install.img
-    :param str compression: Compression type to use
-    :returns: True if squashfs creation was successful. False if there was an error.
-    :rtype: bool
-
-    Take disk_img and put it into LiveOS/rootfs.img and squashfs this
-    tree into work_dir+images/install.img
-
-    fsck.ext4 is run on the disk image to make sure there are no errors and to zero
-    out any deleted blocks to make it compress better. If this fails for any reason
-    it will return False and log the error.
-    """
-    os.makedirs(os.path.dirname(joinpaths(work_dir, RUNTIME)))
-    if opts.squashfs_only:
-        log.info("Creating a squashfs only runtime")
-        liveos_dir = joinpaths(work_dir, "runtime")
-        os.makedirs(liveos_dir)
-        with Mount(disk_img, opts="loop", mnt=liveos_dir):
-            compression, compressargs = squashfs_args(opts)
-            rc = mksquashfs(liveos_dir, joinpaths(work_dir, RUNTIME), compression, compressargs)
-    else:
-        log.info("Creating a squashfs+ext4 runtime")
-        # Make sure free blocks are actually zeroed so it will compress
-        rc = execWithRedirect("/usr/sbin/fsck.ext4", ["-y", "-f", "-E", "discard", disk_img])
-        if rc != 0:
-            log.error("Problem zeroing free blocks of %s", disk_img)
-            return False
-
-        liveos_dir = joinpaths(work_dir, "runtime/LiveOS")
-        os.makedirs(liveos_dir)
-
-        # Try to hardlink the rootfs file first, fall back top copying it
-        rc = execWithRedirect("/bin/ln", [disk_img, joinpaths(liveos_dir, "rootfs.img")])
-        if rc != 0:
-            shutil.copy2(disk_img, joinpaths(liveos_dir, "rootfs.img"))
-
-        compression, compressargs = squashfs_args(opts)
-        rc = mksquashfs(joinpaths(work_dir, "runtime"), joinpaths(work_dir, RUNTIME), compression, compressargs)
-
-    # Cleanup the runtime directory
-    remove(joinpaths(work_dir, "runtime"))
-
-    if rc:
-        log.error("Problem running mksquashfs: rc=%d", rc)
-        return False
-    else:
-        return True
 
 def calculate_disk_size(opts, ks):
     """ Calculate the disk size from the kickstart
@@ -736,15 +681,13 @@ def run_creator(opts, cancel_func=None):
         if (opts.fs_image or opts.no_virt) and not opts.disk_image:
             # Create iso from a filesystem image
             disk_img = opts.fs_image or disk_img
-
-            if not make_squashfs(opts, disk_img, work_dir):
-                log.error("squashfs.img creation failed")
-                raise RuntimeError("squashfs.img creation failed")
-
-            if cancel_func and cancel_func():
-                raise RuntimeError("ISO creation canceled")
-
             with Mount(disk_img, opts="loop") as mount_dir:
+                # TODO check rc
+                make_runtime(opts, mount_dir, work_dir, calculate_disk_size(opts, ks)/1024.0)
+
+                if cancel_func and cancel_func():
+                    raise RuntimeError("ISO creation canceled")
+
                 result_dir = make_livecd(opts, mount_dir, work_dir)
         else:
             # Create iso from a partitioned disk image
