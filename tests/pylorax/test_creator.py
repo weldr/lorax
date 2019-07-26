@@ -26,12 +26,19 @@ from pykickstart.version import makeVersion
 from ..lib import get_file_magic
 from pylorax import find_templates
 from pylorax.base import DataHolder
-from pylorax.creator import FakeDNF, create_pxe_config, make_appliance, make_squashfs, squashfs_args
+from pylorax.creator import FakeDNF, create_pxe_config, make_appliance, make_runtime, squashfs_args
 from pylorax.creator import calculate_disk_size
 from pylorax.creator import get_arch, find_ostree_root, check_kickstart
-from pylorax.executils import runcmd
-from pylorax.imgutils import mksparse
+from pylorax.executils import runcmd_output
 from pylorax.sysutils import joinpaths
+
+
+def mkFakeBoot(root_dir):
+    """Create a fake kernel and initrd"""
+    os.makedirs(joinpaths(root_dir, "boot"))
+    open(joinpaths(root_dir, "boot", "vmlinuz-4.18.13-200.fc28.x86_64"), "w").write("I AM A FAKE KERNEL")
+    open(joinpaths(root_dir, "boot", "initramfs-4.18.13-200.fc28.x86_64.img"), "w").write("I AM A FAKE INITRD")
+
 
 class CreatorTest(unittest.TestCase):
     def fakednf_test(self):
@@ -109,15 +116,15 @@ class CreatorTest(unittest.TestCase):
             self.assertTrue("initramfs-4.18.13-200.fc28.x86_64.img" in pxe_config)
             self.assertTrue("/live-rootfs.squashfs.img ostree=/mnt/sysimage/" in pxe_config)
 
-    def make_squashfs_test(self):
-        """Test making a squashfs image"""
+    def make_runtime_squashfs_test(self):
+        """Test making a runtime squashfs only image"""
         with tempfile.TemporaryDirectory(prefix="lorax.test.") as work_dir:
-            with tempfile.NamedTemporaryFile(prefix="lorax.test.disk.") as disk_img:
-                # Make a small ext4 disk image
-                mksparse(disk_img.name, 42 * 1024**2)
-                runcmd(["mkfs.ext4", "-L", "Anaconda", "-b", "4096", "-m", "0", disk_img.name])
-                opts = DataHolder(compression="xz", arch="x86_64")
-                make_squashfs(opts, disk_img.name, work_dir)
+            with tempfile.TemporaryDirectory(prefix="lorax.test.root.") as mount_dir:
+                # Make a fake kernel and initrd
+                mkFakeBoot(mount_dir)
+                opts = DataHolder(project="Fedora", releasever="devel", compression="xz", arch="x86_64",
+                                  squashfs_only=True)
+                make_runtime(opts, mount_dir, work_dir)
 
                 # Make sure it made an install.img
                 self.assertTrue(os.path.exists(joinpaths(work_dir, "images/install.img")))
@@ -126,13 +133,40 @@ class CreatorTest(unittest.TestCase):
                 file_details = get_file_magic(joinpaths(work_dir, "images/install.img"))
                 self.assertTrue("Squashfs" in file_details)
 
+                # Make sure the fake kernel is in there
+                cmd = ["unsquashfs", "-n", "-l", joinpaths(work_dir, "images/install.img")]
+                results = runcmd_output(cmd)
+                self.assertTrue("vmlinuz-" in results)
+
+
+    @unittest.skipUnless(os.geteuid() == 0 and not os.path.exists("/.in-container"), "requires root privileges, and no containers")
+    def make_runtime_squashfs_ext4_test(self):
+        """Test making a runtime squashfs+ext4 only image"""
+        with tempfile.TemporaryDirectory(prefix="lorax.test.") as work_dir:
+            with tempfile.TemporaryDirectory(prefix="lorax.test.root.") as mount_dir:
+                # Make a fake kernel and initrd
+                mkFakeBoot(mount_dir)
+                opts = DataHolder(project="Fedora", releasever="devel", compression="xz", arch="x86_64",
+                                  squashfs_only=False)
+                make_runtime(opts, mount_dir, work_dir)
+
+                # Make sure it made an install.img
+                self.assertTrue(os.path.exists(joinpaths(work_dir, "images/install.img")))
+
+                # Make sure it looks like a squashfs filesystem
+                file_details = get_file_magic(joinpaths(work_dir, "images/install.img"))
+                self.assertTrue("Squashfs" in file_details)
+
+                # Make sure there is a rootfs.img inside the squashfs
+                cmd = ["unsquashfs", "-n", "-l", joinpaths(work_dir, "images/install.img")]
+                results = runcmd_output(cmd)
+                self.assertTrue("rootfs.img" in results)
+
     def get_arch_test(self):
         """Test getting the arch of the installed kernel"""
         with tempfile.TemporaryDirectory(prefix="lorax.test.") as work_dir:
             # Make a fake kernel and initrd
-            os.makedirs(joinpaths(work_dir, "boot"))
-            open(joinpaths(work_dir, "boot", "vmlinuz-4.18.13-200.fc28.x86_64"), "w").write("I AM A FAKE KERNEL")
-            open(joinpaths(work_dir, "boot", "initramfs-4.18.13-200.fc28.x86_64.img"), "w").write("I AM A FAKE INITRD")
+            mkFakeBoot(work_dir)
             arch = get_arch(work_dir)
             self.assertTrue(arch == "x86_64")
 
