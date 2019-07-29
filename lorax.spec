@@ -3,7 +3,7 @@
 %define debug_package %{nil}
 
 Name:           lorax
-Version:        31.8
+Version:        31.9
 Release:        1%{?dist}
 Summary:        Tool for creating the anaconda install images
 
@@ -254,6 +254,32 @@ getent passwd weldr >/dev/null 2>&1 || useradd -r -g weldr -d / -s /sbin/nologin
 %{_mandir}/man1/composer-cli.1*
 
 %changelog
+* Mon Jul 29 2019 Brian C. Lane <bcl@redhat.com> 31.9-1
+- New lorax documentation - 31.9 (bcl@redhat.com)
+- Remove .build-id from install media (riehecky@fnal.gov)
+- lorax-composer: Add squashfs_only False to all image types (bcl@redhat.com)
+- tests: Update test_creator.py (bcl@redhat.com)
+- docs: Add anaconda-live to fedora-livemedia.ks example (bcl@redhat.com)
+- livemedia-creator: Use make_runtime for all runtime creation (bcl@redhat.com)
+- livemedia-creator: Add support for a squashfs only runtime image (bcl@redhat.com)
+- Update rst formatting. Refs #815 (atodorov@redhat.com)
+- don't skip Xorg packages on s390x to allow local GUI installation under KVM (dan@danny.cz)
+- Use binary mode to tail the file (bcl@redhat.com)
+- Return most relevant log file from /compose/log (egoode@redhat.com)
+- Use passwd --status for locked root account check (jikortus@redhat.com)
+- tests: Use liveuser account for live-iso boot check (bcl@redhat.com)
+- Mention python3-magic in HACKING.md (egoode@redhat.com)
+- tests: Add check to make sure the compose actually finished (bcl@redhat.com)
+- test: check the number of tests that ran (atodorov@redhat.com)
+- lorax: Add debug log of command line options (riehecky@fnal.gov)
+- lorax: provide runtime lorax config in debug log (riehecky@fnal.gov)
+- Remove whitespace in v0_blueprints_new (jacobdkozol@gmail.com)
+- Add test for VALID_BLUEPRINT_NAME check (jacobdkozol@gmail.com)
+- Add seperate validation for blueprint names (jacobdkozol@gmail.com)
+- Leave lscpu in the image for additional debugging (riehecky@fnal.gov)
+- tests: set skip_if_unavailable in test repos (lars@karlitski.net)
+- test/README.md: Add section explaining GitHub integration (lars@karlitski.net)
+
 * Fri Jun 28 2019 Brian C. Lane <bcl@redhat.com> 31.8-1
 - Also search for pxeboot kernel and initrd pairs (hadess@hadess.net)
 - Assert that RuntimeErrors have correct messages (egoode@redhat.com)
