@@ -14,7 +14,7 @@ set -e
 
 CLI="${CLI:-./src/bin/composer-cli}"
 QEMU_BIN="/usr/libexec/qemu-kvm"
-QEMU="$QEMU_BIN -machine accel=kvm:tcg"
+QEMU="$QEMU_BIN -machine accel=tcg"
 
 rlJournalStart
     rlPhaseStartSetup
