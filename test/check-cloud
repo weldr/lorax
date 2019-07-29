@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import unittest
 import composertest
 
 
@@ -7,6 +8,7 @@ class TestCloud(composertest.ComposerTestCase):
     def test_aws(self):
         self.runCliTest("/tests/cli/test_build_and_deploy_aws.sh")
 
+    @unittest.skip('Problem with credentials')
     def test_azure(self):
         self.runCliTest("/tests/cli/test_build_and_deploy_azure.sh")
 
