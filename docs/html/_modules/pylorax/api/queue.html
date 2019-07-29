@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.queue &mdash; Lorax 31.7 documentation</title>
+  <title>pylorax.api.queue &mdash; Lorax 31.9 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                31.7
+                31.9
               </div>
             
           
@@ -174,6 +174,8 @@
 <span class="sd">&quot;&quot;&quot; Functions to monitor compose queue and run anaconda&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;pylorax&quot;</span><span class="p">)</span>
+<span class="n">program_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;program&quot;</span><span class="p">)</span>
+<span class="n">dnf_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;dnf&quot;</span><span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">grp</span>
@@ -192,7 +194,7 @@
 <span class="kn">import</span> <span class="nn">pylorax.api.toml</span> <span class="k">as</span> <span class="nn">toml</span>
 <span class="kn">from</span> <span class="nn">pylorax.base</span> <span class="k">import</span> <span class="n">DataHolder</span>
 <span class="kn">from</span> <span class="nn">pylorax.creator</span> <span class="k">import</span> <span class="n">run_creator</span>
-<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span>
+<span class="kn">from</span> <span class="nn">pylorax.sysutils</span> <span class="k">import</span> <span class="n">joinpaths</span><span class="p">,</span> <span class="n">read_tail</span>
 
 <div class="viewcode-block" id="check_queues"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.check_queues">[docs]</a><span class="k">def</span> <span class="nf">check_queues</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Check to make sure the new and run queue symlinks are correct</span>
@@ -294,6 +296,23 @@
                 <span class="c1"># The symlink may vanish if uuid_cancel() has been called</span>
                 <span class="k">continue</span>
 
+            <span class="c1"># The anaconda logs are also copied into ./anaconda/ in this directory</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="s2">&quot;logs&quot;</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="k">def</span> <span class="nf">open_handler</span><span class="p">(</span><span class="n">loggers</span><span class="p">,</span> <span class="n">file_name</span><span class="p">):</span>
+                <span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="s2">&quot;logs&quot;</span><span class="p">,</span> <span class="n">file_name</span><span class="p">))</span>
+                <span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+                <span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> </span><span class="si">%(levelname)s</span><span class="s2">: </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">logger</span> <span class="ow">in</span> <span class="n">loggers</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">loggers</span><span class="p">)</span>
+
+            <span class="n">loggers</span> <span class="o">=</span> <span class="p">(((</span><span class="n">log</span><span class="p">,</span> <span class="n">program_log</span><span class="p">,</span> <span class="n">dnf_log</span><span class="p">),</span> <span class="s2">&quot;combined.log&quot;</span><span class="p">),</span>
+                       <span class="p">((</span><span class="n">log</span><span class="p">,),</span> <span class="s2">&quot;composer.log&quot;</span><span class="p">),</span>
+                       <span class="p">((</span><span class="n">program_log</span><span class="p">,),</span> <span class="s2">&quot;program.log&quot;</span><span class="p">),</span>
+                       <span class="p">((</span><span class="n">dnf_log</span><span class="p">,),</span> <span class="s2">&quot;dnf.log&quot;</span><span class="p">))</span>
+            <span class="n">handlers</span> <span class="o">=</span> <span class="p">[</span><span class="n">open_handler</span><span class="p">(</span><span class="n">loggers</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span> <span class="k">for</span> <span class="n">loggers</span><span class="p">,</span> <span class="n">file_name</span> <span class="ow">in</span> <span class="n">loggers</span><span class="p">]</span>
+
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting new compose: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
             <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="s2">&quot;STATUS&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;RUNNING</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -310,6 +329,11 @@
 <span class="c1">#                log.error(&quot;Error running compose: %s&quot;, e)</span>
                 <span class="nb">open</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="s2">&quot;STATUS&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;FAILED</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">write_timestamp</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">TS_FINISHED</span><span class="p">)</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">handler</span><span class="p">,</span> <span class="n">loggers</span> <span class="ow">in</span> <span class="n">handlers</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">logger</span> <span class="ow">in</span> <span class="n">loggers</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">removeHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+                    <span class="n">handler</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
             <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span></div>
 
@@ -336,11 +360,6 @@
     <span class="n">ks_path</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="s2">&quot;final-kickstart.ks&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">ks_path</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Missing kickstart file at </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">ks_path</span><span class="p">)</span>
-
-    <span class="c1"># The anaconda logs are copied into ./anaconda/ in this directory</span>
-    <span class="n">log_dir</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="s2">&quot;logs/&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">log_dir</span><span class="p">):</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">log_dir</span><span class="p">)</span>
 
     <span class="c1"># Load the compose configuration</span>
     <span class="n">cfg_path</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="s2">&quot;config.toml&quot;</span><span class="p">)</span>
@@ -789,20 +808,23 @@
     <span class="k">return</span> <span class="p">(</span><span class="n">image_name</span><span class="p">,</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">uuid_dir</span><span class="p">,</span> <span class="n">image_name</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="uuid_log"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.queue.uuid_log">[docs]</a><span class="k">def</span> <span class="nf">uuid_log</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1024</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return `size` kbytes from the end of the anaconda.log</span>
+    <span class="sd">&quot;&quot;&quot;Return `size` KiB from the end of the most currently relevant log for a</span>
+<span class="sd">    given compose</span>
 
 <span class="sd">    :param cfg: Configuration settings</span>
 <span class="sd">    :type cfg: ComposerConfig</span>
 <span class="sd">    :param uuid: The UUID of the build</span>
 <span class="sd">    :type uuid: str</span>
-<span class="sd">    :param size: Number of kbytes to read. Default is 1024</span>
+<span class="sd">    :param size: Number of KiB to read. Default is 1024</span>
 <span class="sd">    :type size: int</span>
-<span class="sd">    :returns: Up to `size` kbytes from the end of the log</span>
+<span class="sd">    :returns: Up to `size` KiB from the end of the log</span>
 <span class="sd">    :rtype: str</span>
 <span class="sd">    :raises: RuntimeError if there was a problem (eg. no log file available)</span>
 
-<span class="sd">    This function tries to return lines from the end of the log, it will</span>
-<span class="sd">    attempt to start on a line boundry, and may return less than `size` kbytes.</span>
+<span class="sd">    This function will return the end of either the anaconda log, the packaging</span>
+<span class="sd">    log, or the combined composer logs, depending on the progress of the</span>
+<span class="sd">    compose. It tries to return lines from the end of the log, it will attempt</span>
+<span class="sd">    to start on a line boundary, and it may return less than `size` kbytes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">uuid_dir</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;lib_dir&quot;</span><span class="p">),</span> <span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">uuid_dir</span><span class="p">):</span>
@@ -814,23 +836,32 @@
     <span class="k">if</span> <span class="n">status</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Status is missing for </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">status</span><span class="p">[</span><span class="s2">&quot;queue_status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;RUNNING&quot;</span><span class="p">:</span>
-        <span class="n">log_path</span> <span class="o">=</span> <span class="s2">&quot;/tmp/anaconda.log&quot;</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">log_path</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">uuid_dir</span><span class="p">,</span> <span class="s2">&quot;logs&quot;</span><span class="p">,</span> <span class="s2">&quot;anaconda&quot;</span><span class="p">,</span> <span class="s2">&quot;anaconda.log&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">log_path</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No anaconda.log available.&quot;</span><span class="p">)</span>
-
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">log_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="n">end</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">end</span> <span class="o">&lt;</span> <span class="mi">1024</span> <span class="o">*</span> <span class="n">size</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">*</span> <span class="n">size</span><span class="p">))</span>
-        <span class="c1"># Find the start of the next line and return the rest</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div>
+    <span class="k">def</span> <span class="nf">get_log_path</span><span class="p">():</span>
+        <span class="c1"># Try to return the most relevant log at any given time during the</span>
+        <span class="c1"># compose. If the compose is not running, return the composer log.</span>
+        <span class="n">anaconda_log</span> <span class="o">=</span> <span class="s2">&quot;/tmp/anaconda.log&quot;</span>
+        <span class="n">packaging_log</span> <span class="o">=</span> <span class="s2">&quot;/tmp/packaging.log&quot;</span>
+        <span class="n">combined_log</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">uuid_dir</span><span class="p">,</span> <span class="s2">&quot;logs&quot;</span><span class="p">,</span> <span class="s2">&quot;combined.log&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span><span class="p">[</span><span class="s2">&quot;queue_status&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;RUNNING&quot;</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">anaconda_log</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">combined_log</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">packaging_log</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">anaconda_log</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">anaconda_mtime</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">anaconda_log</span><span class="p">)</span><span class="o">.</span><span class="n">st_mtime</span>
+            <span class="n">packaging_mtime</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">packaging_log</span><span class="p">)</span><span class="o">.</span><span class="n">st_mtime</span>
+            <span class="c1"># If the packaging log exists and its last message is at least 15</span>
+            <span class="c1"># seconds newer than the anaconda log, return the packaging log.</span>
+            <span class="k">if</span> <span class="n">packaging_mtime</span> <span class="o">&gt;</span> <span class="n">anaconda_mtime</span> <span class="o">+</span> <span class="mi">15</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">packaging_log</span>
+            <span class="k">return</span> <span class="n">anaconda_log</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="c1"># Return the combined log if anaconda_log or packaging_log disappear</span>
+            <span class="k">return</span> <span class="n">combined_log</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">tail</span> <span class="o">=</span> <span class="n">read_tail</span><span class="p">(</span><span class="n">get_log_path</span><span class="p">(),</span> <span class="n">size</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No log available.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+    <span class="k">return</span> <span class="n">tail</span></div>
 </pre></div>
 
            </div>

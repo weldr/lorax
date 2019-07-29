@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.v0 &mdash; Lorax 31.7 documentation</title>
+  <title>pylorax.api.v0 &mdash; Lorax 31.9 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                31.7
+                31.9
               </div>
             
           
@@ -226,7 +226,7 @@
 <span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="k">import</span> <span class="n">RecipeError</span><span class="p">,</span> <span class="n">list_branch_files</span><span class="p">,</span> <span class="n">read_recipe_commit</span><span class="p">,</span> <span class="n">recipe_filename</span><span class="p">,</span> <span class="n">list_commits</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="k">import</span> <span class="n">recipe_from_dict</span><span class="p">,</span> <span class="n">recipe_from_toml</span><span class="p">,</span> <span class="n">commit_recipe</span><span class="p">,</span> <span class="n">delete_recipe</span><span class="p">,</span> <span class="n">revert_recipe</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.recipes</span> <span class="k">import</span> <span class="n">tag_recipe_commit</span><span class="p">,</span> <span class="n">recipe_diff</span><span class="p">,</span> <span class="n">RecipeFileError</span>
-<span class="kn">from</span> <span class="nn">pylorax.api.regexes</span> <span class="k">import</span> <span class="n">VALID_API_STRING</span>
+<span class="kn">from</span> <span class="nn">pylorax.api.regexes</span> <span class="k">import</span> <span class="n">VALID_API_STRING</span><span class="p">,</span> <span class="n">VALID_BLUEPRINT_NAME</span>
 <span class="kn">import</span> <span class="nn">pylorax.api.toml</span> <span class="k">as</span> <span class="nn">toml</span>
 <span class="kn">from</span> <span class="nn">pylorax.api.workspace</span> <span class="k">import</span> <span class="n">workspace_read</span><span class="p">,</span> <span class="n">workspace_write</span><span class="p">,</span> <span class="n">workspace_delete</span>
 
@@ -369,7 +369,7 @@
 <span class="sd">            &quot;blueprints&quot;: []</span>
 <span class="sd">          }</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">VALID_API_STRING</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">blueprint_names</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">VALID_BLUEPRINT_NAME</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">blueprint_name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">blueprint_name</span> <span class="ow">in</span> <span class="n">blueprint_names</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)):</span>
         <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">INVALID_CHARS</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid characters in API path&quot;</span><span class="p">}]),</span> <span class="mi">400</span>
 
     <span class="n">branch</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;branch&quot;</span><span class="p">,</span> <span class="s2">&quot;master&quot;</span><span class="p">)</span>
@@ -502,7 +502,7 @@
 <span class="sd">            ]</span>
 <span class="sd">          }</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">VALID_API_STRING</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">blueprint_names</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">VALID_BLUEPRINT_NAME</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">blueprint_name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">blueprint_name</span> <span class="ow">in</span> <span class="n">blueprint_names</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)):</span>
         <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">INVALID_CHARS</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid characters in API path&quot;</span><span class="p">}]),</span> <span class="mi">400</span>
 
     <span class="n">branch</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;branch&quot;</span><span class="p">,</span> <span class="s2">&quot;master&quot;</span><span class="p">)</span>
@@ -560,7 +560,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">blueprint</span> <span class="o">=</span> <span class="n">recipe_from_dict</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 
-        <span class="k">if</span> <span class="n">VALID_API_STRING</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">blueprint</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">VALID_BLUEPRINT_NAME</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">blueprint</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">INVALID_CHARS</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid characters in API path&quot;</span><span class="p">}]),</span> <span class="mi">400</span>
 
         <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
@@ -591,7 +591,7 @@
 <span class="sd">      The response will be a status response with `status` set to true, or an</span>
 <span class="sd">      error response with it set to false and an error message included.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">VALID_API_STRING</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">blueprint_name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">VALID_BLUEPRINT_NAME</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">blueprint_name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">INVALID_CHARS</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid characters in API path&quot;</span><span class="p">}]),</span> <span class="mi">400</span>
 
     <span class="n">branch</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;branch&quot;</span><span class="p">,</span> <span class="s2">&quot;master&quot;</span><span class="p">)</span>
@@ -634,7 +634,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">blueprint</span> <span class="o">=</span> <span class="n">recipe_from_dict</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 
-        <span class="k">if</span> <span class="n">VALID_API_STRING</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">blueprint</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">VALID_BLUEPRINT_NAME</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">blueprint</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">INVALID_CHARS</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid characters in API path&quot;</span><span class="p">}]),</span> <span class="mi">400</span>
 
         <span class="k">with</span> <span class="n">api</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;GITLOCK&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
@@ -660,7 +660,7 @@
 <span class="sd">      The response will be a status response with `status` set to true, or an</span>
 <span class="sd">      error response with it set to false and an error message included.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">VALID_API_STRING</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">blueprint_name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">VALID_BLUEPRINT_NAME</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">blueprint_name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">INVALID_CHARS</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid characters in API path&quot;</span><span class="p">}]),</span> <span class="mi">400</span>
 
     <span class="n">branch</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;branch&quot;</span><span class="p">,</span> <span class="s2">&quot;master&quot;</span><span class="p">)</span>
@@ -692,7 +692,7 @@
 <span class="sd">      The response will be a status response with `status` set to true, or an</span>
 <span class="sd">      error response with it set to false and an error message included.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">VALID_API_STRING</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">blueprint_name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">VALID_BLUEPRINT_NAME</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">blueprint_name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">INVALID_CHARS</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid characters in API path&quot;</span><span class="p">}]),</span> <span class="mi">400</span>
 
     <span class="n">branch</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;branch&quot;</span><span class="p">,</span> <span class="s2">&quot;master&quot;</span><span class="p">)</span>
@@ -728,7 +728,7 @@
 <span class="sd">      The response will be a status response with `status` set to true, or an</span>
 <span class="sd">      error response with it set to false and an error message included.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">VALID_API_STRING</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">blueprint_name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">VALID_BLUEPRINT_NAME</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">blueprint_name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">INVALID_CHARS</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid characters in API path&quot;</span><span class="p">}]),</span> <span class="mi">400</span>
 
     <span class="n">branch</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;branch&quot;</span><span class="p">,</span> <span class="s2">&quot;master&quot;</span><span class="p">)</span>
@@ -892,7 +892,7 @@
 <span class="sd">            ]</span>
 <span class="sd">          }</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">VALID_API_STRING</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">blueprint_names</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">VALID_BLUEPRINT_NAME</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">blueprint_name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">blueprint_name</span> <span class="ow">in</span> <span class="n">blueprint_names</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)):</span>
         <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">INVALID_CHARS</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid characters in API path&quot;</span><span class="p">}]),</span> <span class="mi">400</span>
 
     <span class="n">branch</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;branch&quot;</span><span class="p">,</span> <span class="s2">&quot;master&quot;</span><span class="p">)</span>
@@ -1033,7 +1033,7 @@
 <span class="sd">            ]</span>
 <span class="sd">          }</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">VALID_API_STRING</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">blueprint_names</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">VALID_BLUEPRINT_NAME</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">blueprint_name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">blueprint_name</span> <span class="ow">in</span> <span class="n">blueprint_names</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)):</span>
         <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">INVALID_CHARS</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid characters in API path&quot;</span><span class="p">}]),</span> <span class="mi">400</span>
 
     <span class="n">branch</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;branch&quot;</span><span class="p">,</span> <span class="s2">&quot;master&quot;</span><span class="p">)</span>
@@ -1678,7 +1678,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">compose_type</span> <span class="o">=</span> <span class="n">compose</span><span class="p">[</span><span class="s2">&quot;compose_type&quot;</span><span class="p">]</span>
 
-    <span class="k">if</span> <span class="n">VALID_API_STRING</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">blueprint_name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">VALID_BLUEPRINT_NAME</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">blueprint_name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">INVALID_CHARS</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid characters in API path&quot;</span><span class="p">})</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">blueprint_exists</span><span class="p">(</span><span class="n">branch</span><span class="p">,</span> <span class="n">blueprint_name</span><span class="p">):</span>
@@ -2164,13 +2164,15 @@
 <span class="nd">@v0_api</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/compose/log/&lt;uuid&gt;&quot;</span><span class="p">)</span>
 <span class="nd">@checkparams</span><span class="p">([(</span><span class="s2">&quot;uuid&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;no UUID given&quot;</span><span class="p">)])</span>
 <span class="k">def</span> <span class="nf">v0_compose_log_tail</span><span class="p">(</span><span class="n">uuid</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return the end of the main anaconda.log, defaults to 1Mbytes</span>
+    <span class="sd">&quot;&quot;&quot;Return the tail of the most currently relevant log</span>
 
-<span class="sd">    **/api/v0/compose/log/&lt;uuid&gt;[?size=kbytes]**</span>
+<span class="sd">    **/api/v0/compose/log/&lt;uuid&gt;[?size=KiB]**</span>
 
-<span class="sd">      Returns the end of the anaconda.log. The size parameter is optional and defaults to 1Mbytes</span>
-<span class="sd">      if it is not included. The returned data is raw text from the end of the logfile, starting on</span>
-<span class="sd">      a line boundry.</span>
+<span class="sd">      Returns the end of either the anaconda log, the packaging log, or the</span>
+<span class="sd">      composer logs, depending on the progress of the compose. The size</span>
+<span class="sd">      parameter is optional and defaults to 1 MiB if it is not included.  The</span>
+<span class="sd">      returned data is raw text from the end of the log file, starting on a</span>
+<span class="sd">      line boundary.</span>
 
 <span class="sd">      Example::</span>
 

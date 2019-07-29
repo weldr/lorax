@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.creator &mdash; Lorax 31.7 documentation</title>
+  <title>pylorax.creator &mdash; Lorax 31.9 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                31.7
+                31.9
               </div>
             
           
@@ -354,15 +354,17 @@
     <span class="n">product</span> <span class="o">=</span> <span class="n">DataHolder</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">project</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">releasever</span><span class="p">,</span> <span class="n">release</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
                             <span class="n">variant</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">bugurl</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">isfinal</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="c1"># This is a mounted image partition, cannot hardlink to it, so just use it</span>
-    <span class="c1"># symlink mount_dir/images to work_dir/images so we don&#39;t run out of space</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">work_dir</span><span class="p">,</span> <span class="s2">&quot;images&quot;</span><span class="p">))</span>
-
     <span class="n">rb</span> <span class="o">=</span> <span class="n">RuntimeBuilder</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">fake_dbo</span><span class="p">)</span>
     <span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span> <span class="o">=</span> <span class="n">squashfs_args</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
-    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating runtime&quot;</span><span class="p">)</span>
-    <span class="n">rb</span><span class="o">.</span><span class="n">create_ext4_runtime</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">work_dir</span><span class="p">,</span> <span class="n">RUNTIME</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
-                      <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="n">compressargs</span><span class="p">)</span></div>
+
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">squashfs_only</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating a squashfs only runtime&quot;</span><span class="p">)</span>
+        <span class="n">rb</span><span class="o">.</span><span class="n">create_squashfs_runtime</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">work_dir</span><span class="p">,</span> <span class="n">RUNTIME</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+                                   <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="n">compressargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating a squashfs+ext4 runtime&quot;</span><span class="p">)</span>
+        <span class="n">rb</span><span class="o">.</span><span class="n">create_ext4_runtime</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">work_dir</span><span class="p">,</span> <span class="n">RUNTIME</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+                          <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="o">=</span><span class="n">compressargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="rebuild_initrds_for_live"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.rebuild_initrds_for_live">[docs]</a><span class="k">def</span> <span class="nf">rebuild_initrds_for_live</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">sys_root_dir</span><span class="p">,</span> <span class="n">results_dir</span><span class="p">):</span>
@@ -493,8 +495,10 @@
     <span class="c1"># Link /images to work_dir/images to make the templates happy</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">mount_dir</span><span class="p">,</span> <span class="s2">&quot;images&quot;</span><span class="p">)):</span>
         <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">mount_dir</span><span class="p">,</span> <span class="s2">&quot;images&quot;</span><span class="p">))</span>
-    <span class="n">execWithRedirect</span><span class="p">(</span><span class="s2">&quot;/bin/ln&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">work_dir</span><span class="p">,</span> <span class="s2">&quot;images&quot;</span><span class="p">),</span>
-                                 <span class="n">joinpaths</span><span class="p">(</span><span class="n">mount_dir</span><span class="p">,</span> <span class="s2">&quot;images&quot;</span><span class="p">)])</span>
+    <span class="n">rc</span> <span class="o">=</span> <span class="n">execWithRedirect</span><span class="p">(</span><span class="s2">&quot;/bin/ln&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">work_dir</span><span class="p">,</span> <span class="s2">&quot;images&quot;</span><span class="p">),</span>
+                                     <span class="n">joinpaths</span><span class="p">(</span><span class="n">mount_dir</span><span class="p">,</span> <span class="s2">&quot;images&quot;</span><span class="p">)])</span>
+    <span class="k">if</span> <span class="n">rc</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Failed to symlink images from mount_dir to work_dir&quot;</span><span class="p">)</span>
 
     <span class="c1"># The templates expect the config files to be in /tmp/config_files</span>
     <span class="c1"># I think these should be release specific, not from lorax, but for now</span>
@@ -558,43 +562,6 @@
             <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Looking for boot partition error: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
     <span class="n">remove</span><span class="p">(</span><span class="n">tmp_mount_dir</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">sysroot_boot_dir</span></div>
-
-<div class="viewcode-block" id="make_squashfs"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.make_squashfs">[docs]</a><span class="k">def</span> <span class="nf">make_squashfs</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">work_dir</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Create a squashfs image of an unpartitioned filesystem disk image</span>
-
-<span class="sd">    :param str disk_img: Path to the unpartitioned filesystem disk image</span>
-<span class="sd">    :param str work_dir: Output compressed image to work_dir+images/install.img</span>
-<span class="sd">    :param str compression: Compression type to use</span>
-<span class="sd">    :returns: True if squashfs creation was successful. False if there was an error.</span>
-<span class="sd">    :rtype: bool</span>
-
-<span class="sd">    Take disk_img and put it into LiveOS/rootfs.img and squashfs this</span>
-<span class="sd">    tree into work_dir+images/install.img</span>
-
-<span class="sd">    fsck.ext4 is run on the disk image to make sure there are no errors and to zero</span>
-<span class="sd">    out any deleted blocks to make it compress better. If this fails for any reason</span>
-<span class="sd">    it will return False and log the error.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Make sure free blocks are actually zeroed so it will compress</span>
-    <span class="n">rc</span> <span class="o">=</span> <span class="n">execWithRedirect</span><span class="p">(</span><span class="s2">&quot;/usr/sbin/fsck.ext4&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;-y&quot;</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="s2">&quot;-E&quot;</span><span class="p">,</span> <span class="s2">&quot;discard&quot;</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">])</span>
-    <span class="k">if</span> <span class="n">rc</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Problem zeroing free blocks of </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">False</span>
-
-    <span class="n">liveos_dir</span> <span class="o">=</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">work_dir</span><span class="p">,</span> <span class="s2">&quot;runtime/LiveOS&quot;</span><span class="p">)</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">liveos_dir</span><span class="p">)</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">work_dir</span><span class="p">,</span> <span class="n">RUNTIME</span><span class="p">)))</span>
-
-    <span class="n">rc</span> <span class="o">=</span> <span class="n">execWithRedirect</span><span class="p">(</span><span class="s2">&quot;/bin/ln&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">disk_img</span><span class="p">,</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">liveos_dir</span><span class="p">,</span> <span class="s2">&quot;rootfs.img&quot;</span><span class="p">)])</span>
-    <span class="k">if</span> <span class="n">rc</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">disk_img</span><span class="p">,</span> <span class="n">joinpaths</span><span class="p">(</span><span class="n">liveos_dir</span><span class="p">,</span> <span class="s2">&quot;rootfs.img&quot;</span><span class="p">))</span>
-
-    <span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span> <span class="o">=</span> <span class="n">squashfs_args</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
-    <span class="n">mksquashfs</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">work_dir</span><span class="p">,</span> <span class="s2">&quot;runtime&quot;</span><span class="p">),</span>
-               <span class="n">joinpaths</span><span class="p">(</span><span class="n">work_dir</span><span class="p">,</span> <span class="n">RUNTIME</span><span class="p">),</span> <span class="n">compression</span><span class="p">,</span> <span class="n">compressargs</span><span class="p">)</span>
-    <span class="n">remove</span><span class="p">(</span><span class="n">joinpaths</span><span class="p">(</span><span class="n">work_dir</span><span class="p">,</span> <span class="s2">&quot;runtime&quot;</span><span class="p">))</span>
-    <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="calculate_disk_size"><a class="viewcode-back" href="../../pylorax.html#pylorax.creator.calculate_disk_size">[docs]</a><span class="k">def</span> <span class="nf">calculate_disk_size</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Calculate the disk size from the kickstart</span>
@@ -872,15 +839,13 @@
         <span class="k">if</span> <span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">fs_image</span> <span class="ow">or</span> <span class="n">opts</span><span class="o">.</span><span class="n">no_virt</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">opts</span><span class="o">.</span><span class="n">disk_image</span><span class="p">:</span>
             <span class="c1"># Create iso from a filesystem image</span>
             <span class="n">disk_img</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">fs_image</span> <span class="ow">or</span> <span class="n">disk_img</span>
-
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">make_squashfs</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">disk_img</span><span class="p">,</span> <span class="n">work_dir</span><span class="p">):</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;squashfs.img creation failed&quot;</span><span class="p">)</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;squashfs.img creation failed&quot;</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">cancel_func</span> <span class="ow">and</span> <span class="n">cancel_func</span><span class="p">():</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;ISO creation canceled&quot;</span><span class="p">)</span>
-
             <span class="k">with</span> <span class="n">Mount</span><span class="p">(</span><span class="n">disk_img</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="s2">&quot;loop&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mount_dir</span><span class="p">:</span>
+                <span class="c1"># TODO check rc</span>
+                <span class="n">make_runtime</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">mount_dir</span><span class="p">,</span> <span class="n">work_dir</span><span class="p">,</span> <span class="n">calculate_disk_size</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">ks</span><span class="p">)</span><span class="o">/</span><span class="mf">1024.0</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">cancel_func</span> <span class="ow">and</span> <span class="n">cancel_func</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;ISO creation canceled&quot;</span><span class="p">)</span>
+
                 <span class="n">result_dir</span> <span class="o">=</span> <span class="n">make_livecd</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">mount_dir</span><span class="p">,</span> <span class="n">work_dir</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Create iso from a partitioned disk image</span>

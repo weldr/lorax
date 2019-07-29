@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>livemedia-creator &mdash; Lorax 31.7 documentation</title>
+  <title>livemedia-creator &mdash; Lorax 31.9 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                31.7
+                31.9
               </div>
             
           
@@ -254,8 +254,9 @@ you have the anaconda-tui package installed.</p>
                          <span class="p">[</span><span class="o">--</span><span class="n">vagrant</span><span class="o">-</span><span class="n">metadata</span> <span class="n">VAGRANT_METADATA</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">vagrantfile</span> <span class="n">VAGRANTFILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">title</span> <span class="n">TITLE</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">project</span> <span class="n">PROJECT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">releasever</span> <span class="n">RELEASEVER</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">volid</span> <span class="n">VOLID</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">squashfs_args</span> <span class="n">SQUASHFS_ARGS</span><span class="p">]</span>
-                         <span class="p">[</span><span class="o">--</span><span class="n">timeout</span> <span class="n">TIMEOUT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">volid</span> <span class="n">VOLID</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">squashfs</span><span class="o">-</span><span class="n">only</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">squashfs_args</span> <span class="n">SQUASHFS_ARGS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span> <span class="n">TIMEOUT</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="section" id="Named Arguments">
@@ -376,6 +377,10 @@ you have the anaconda-tui package installed.</p>
 </dd>
 <dt><kbd>--volid</kbd></dt>
 <dd><p>volume id</p>
+</dd>
+<dt><kbd>--squashfs-only</kbd></dt>
+<dd><p>Use a plain squashfs filesystem for the runtime.</p>
+<p>Default: False</p>
 </dd>
 <dt><kbd>--squashfs_args</kbd></dt>
 <dd><p>additional squashfs args</p>

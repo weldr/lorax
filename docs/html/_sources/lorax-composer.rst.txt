@@ -336,7 +336,7 @@ file accepted by ``systemctl enable`` eg. ``cockpit.socket``::
 [[repos.git]]
 ~~~~~~~~~~~~~
 
-The ``[[repos.git]]`` entries are used to add files from a `git repository<https://git-scm.com/>`
+The ``[[repos.git]]`` entries are used to add files from a `git repository <https://git-scm.com/>`_
 repository to the created image. The repository is cloned, the specified ``ref`` is checked out
 and an rpm is created to install the files to a ``destination`` path. The rpm includes a summary
 with the details of the repository and reference used to create it. The rpm is also included in the

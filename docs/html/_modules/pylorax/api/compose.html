@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.compose &mdash; Lorax 31.7 documentation</title>
+  <title>pylorax.api.compose &mdash; Lorax 31.9 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                31.7
+                31.9
               </div>
             
           
@@ -1056,6 +1056,7 @@
                                  <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;app_template&quot;</span><span class="p">:</span>            <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;app_file&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;squashfs_only&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                 <span class="p">},</span>
             <span class="s2">&quot;live-iso&quot;</span><span class="p">:</span>         <span class="p">{</span><span class="s2">&quot;make_iso&quot;</span><span class="p">:</span>                <span class="kc">True</span><span class="p">,</span>
                                  <span class="s2">&quot;make_disk&quot;</span><span class="p">:</span>               <span class="kc">False</span><span class="p">,</span>
@@ -1083,6 +1084,7 @@
                                  <span class="s2">&quot;app_file&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;iso_only&quot;</span><span class="p">:</span>                <span class="kc">True</span><span class="p">,</span>
                                  <span class="s2">&quot;iso_name&quot;</span><span class="p">:</span>                <span class="s2">&quot;live.iso&quot;</span><span class="p">,</span>
+                                 <span class="s2">&quot;squashfs_only&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                 <span class="p">},</span>
             <span class="s2">&quot;partitioned-disk&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;make_iso&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_disk&quot;</span><span class="p">:</span>               <span class="kc">True</span><span class="p">,</span>
@@ -1108,6 +1110,7 @@
                                  <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;app_template&quot;</span><span class="p">:</span>            <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;app_file&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;squashfs_only&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                 <span class="p">},</span>
             <span class="s2">&quot;qcow2&quot;</span><span class="p">:</span>            <span class="p">{</span><span class="s2">&quot;make_iso&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_disk&quot;</span><span class="p">:</span>               <span class="kc">True</span><span class="p">,</span>
@@ -1133,6 +1136,7 @@
                                  <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;app_template&quot;</span><span class="p">:</span>            <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;app_file&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;squashfs_only&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                 <span class="p">},</span>
             <span class="s2">&quot;ext4-filesystem&quot;</span><span class="p">:</span>  <span class="p">{</span><span class="s2">&quot;make_iso&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_disk&quot;</span><span class="p">:</span>               <span class="kc">False</span><span class="p">,</span>
@@ -1158,6 +1162,7 @@
                                  <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;app_template&quot;</span><span class="p">:</span>            <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;app_file&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;squashfs_only&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                 <span class="p">},</span>
             <span class="s2">&quot;ami&quot;</span><span class="p">:</span>              <span class="p">{</span><span class="s2">&quot;make_iso&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_disk&quot;</span><span class="p">:</span>               <span class="kc">True</span><span class="p">,</span>
@@ -1183,6 +1188,7 @@
                                  <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;app_template&quot;</span><span class="p">:</span>            <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;app_file&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;squashfs_only&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                 <span class="p">},</span>
             <span class="s2">&quot;vhd&quot;</span><span class="p">:</span>              <span class="p">{</span><span class="s2">&quot;make_iso&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_disk&quot;</span><span class="p">:</span>               <span class="kc">True</span><span class="p">,</span>
@@ -1208,6 +1214,7 @@
                                  <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;app_template&quot;</span><span class="p">:</span>            <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;app_file&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;squashfs_only&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                 <span class="p">},</span>
             <span class="s2">&quot;vmdk&quot;</span><span class="p">:</span>             <span class="p">{</span><span class="s2">&quot;make_iso&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_disk&quot;</span><span class="p">:</span>               <span class="kc">True</span><span class="p">,</span>
@@ -1233,6 +1240,7 @@
                                  <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;app_template&quot;</span><span class="p">:</span>            <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;app_file&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;squashfs_only&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                 <span class="p">},</span>
             <span class="s2">&quot;openstack&quot;</span><span class="p">:</span>        <span class="p">{</span><span class="s2">&quot;make_iso&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_disk&quot;</span><span class="p">:</span>               <span class="kc">True</span><span class="p">,</span>
@@ -1258,6 +1266,7 @@
                                  <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;app_template&quot;</span><span class="p">:</span>            <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;app_file&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;squashfs_only&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                 <span class="p">},</span>
             <span class="s2">&quot;google&quot;</span><span class="p">:</span>           <span class="p">{</span><span class="s2">&quot;make_iso&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_disk&quot;</span><span class="p">:</span>               <span class="kc">True</span><span class="p">,</span>
@@ -1285,6 +1294,7 @@
                                  <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;app_template&quot;</span><span class="p">:</span>            <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;app_file&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;squashfs_only&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                 <span class="p">},</span>
             <span class="s2">&quot;hyper-v&quot;</span><span class="p">:</span>          <span class="p">{</span><span class="s2">&quot;make_iso&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_disk&quot;</span><span class="p">:</span>               <span class="kc">True</span><span class="p">,</span>
@@ -1310,6 +1320,7 @@
                                  <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;app_template&quot;</span><span class="p">:</span>            <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;app_file&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;squashfs_only&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                 <span class="p">},</span>
             <span class="s2">&quot;alibaba&quot;</span><span class="p">:</span>          <span class="p">{</span><span class="s2">&quot;make_iso&quot;</span><span class="p">:</span>                <span class="kc">False</span><span class="p">,</span>
                                  <span class="s2">&quot;make_disk&quot;</span><span class="p">:</span>               <span class="kc">True</span><span class="p">,</span>
@@ -1335,6 +1346,7 @@
                                  <span class="s2">&quot;app_name&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;app_template&quot;</span><span class="p">:</span>            <span class="kc">None</span><span class="p">,</span>
                                  <span class="s2">&quot;app_file&quot;</span><span class="p">:</span>                <span class="kc">None</span><span class="p">,</span>
+                                 <span class="s2">&quot;squashfs_only&quot;</span><span class="p">:</span>           <span class="kc">False</span><span class="p">,</span>
                                 <span class="p">},</span>
             <span class="p">}</span>
     <span class="k">return</span> <span class="n">_MAP</span><span class="p">[</span><span class="n">compose_type</span><span class="p">]</span></div>

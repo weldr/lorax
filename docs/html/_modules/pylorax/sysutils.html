@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.sysutils &mdash; Lorax 31.7 documentation</title>
+  <title>pylorax.sysutils &mdash; Lorax 31.9 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                31.7
+                31.9
               </div>
             
           
@@ -159,7 +159,7 @@
 <span></span><span class="c1">#</span>
 <span class="c1"># sysutils.py</span>
 <span class="c1">#</span>
-<span class="c1"># Copyright (C) 2009-2015 Red Hat, Inc.</span>
+<span class="c1"># Copyright (C) 2009-2019 Red Hat, Inc.</span>
 <span class="c1">#</span>
 <span class="c1"># This program is free software; you can redistribute it and/or modify</span>
 <span class="c1"># it under the terms of the GNU General Public License as published by</span>
@@ -288,6 +288,34 @@
     <span class="n">config</span> <span class="o">=</span> <span class="n">UnquotingConfigParser</span><span class="p">()</span>
     <span class="n">config</span><span class="o">.</span><span class="n">read_string</span><span class="p">(</span><span class="n">conftext</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">read_tail</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read up to `size` kibibytes from the end of a file&quot;&quot;&quot;</span>
+
+    <span class="c1"># NOTE: In py3 text files are unicode, not bytes so we have to open it as bytes</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_read_file_end</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_read_file_end</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read the end of a file</span>
+
+<span class="sd">    This skips to the next line to avoid starting in the middle of a unicode character.</span>
+<span class="sd">    And returns &quot;&quot; in the case of a UnicodeDecodeError</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">end</span> <span class="o">&lt;</span> <span class="mi">1024</span> <span class="o">*</span> <span class="n">size</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">*</span> <span class="n">size</span><span class="p">))</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Find the first newline in the block</span>
+        <span class="n">newline</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">data</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">newline</span><span class="p">:]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">UnicodeDecodeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">text</span>
 </pre></div>
 
            </div>
