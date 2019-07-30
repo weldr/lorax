@@ -45,6 +45,9 @@ BUILD_MISSING_FILE = "BuildMissingFile"
 # Returned from the API for all other errors from a /compose/* route.
 COMPOSE_ERROR = "ComposeError"
 
+# Returned from the API for all errors from a /upload/* route.
+UPLOAD_ERROR = "UploadError"
+
 # Returned from the API when invalid characters are used in a route path or in
 # some identifier.
 INVALID_CHARS = "InvalidChars"

@@ -1,0 +1,17 @@
+- hosts: localhost
+  connection: local
+  tasks:
+  - stat:
+      path: "{{ image_path }}"
+    register: image_stat
+  - set_fact:
+      image_id: "{{ image_name }}-{{ image_stat['stat']['checksum'] }}.vmdk"
+  - name: Upload image to vSphere
+    vsphere_copy:
+      login: "{{ username }}"
+      password: "{{ password }}"
+      host: "{{ host }}"
+      datacenter: "{{ datacenter }}"
+      datastore: "{{ datastore }}"
+      src: "{{ image_path }}"
+      path: "{{ folder }}/{{ image_id }}"
