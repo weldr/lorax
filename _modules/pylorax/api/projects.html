@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.projects &mdash; Lorax 31.7 documentation</title>
+  <title>pylorax.api.projects &mdash; Lorax 31.9 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                31.7
+                31.9
               </div>
             
           
@@ -561,6 +561,9 @@
     <span class="n">repo_str</span> <span class="o">+=</span> <span class="s2">&quot;gpgcheck = </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">repo</span><span class="o">.</span><span class="n">gpgcheck</span>
     <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">gpgkey</span><span class="p">:</span>
         <span class="n">repo_str</span> <span class="o">+=</span> <span class="s2">&quot;gpgkey = </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">repo</span><span class="o">.</span><span class="n">gpgkey</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">repo</span><span class="o">.</span><span class="n">skip_if_unavailable</span><span class="p">:</span>
+        <span class="n">repo_str</span> <span class="o">+=</span> <span class="s2">&quot;skip_if_unavailable=1</span><span class="se">\n</span><span class="s2">&quot;</span>
 
     <span class="k">return</span> <span class="n">repo_str</span></div>
 

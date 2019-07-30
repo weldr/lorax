@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pylorax.api.toml &mdash; Lorax 31.7 documentation</title>
+  <title>pylorax.api.toml &mdash; Lorax 31.9 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                31.7
+                31.9
               </div>
             
           
@@ -187,7 +187,8 @@
         <span class="k">raise</span> <span class="n">TomlError</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">msg</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">doc</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="dumps"><a class="viewcode-back" href="../../../pylorax.api.html#pylorax.api.toml.dumps">[docs]</a><span class="k">def</span> <span class="nf">dumps</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">toml</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">encoder</span><span class="o">=</span><span class="n">toml</span><span class="o">.</span><span class="n">TomlEncoder</span><span class="p">(</span><span class="nb">dict</span><span class="p">))</span></div>
+    <span class="c1"># strip the result, because `toml.dumps` adds a lot of newlines</span>
+    <span class="k">return</span> <span class="n">toml</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">encoder</span><span class="o">=</span><span class="n">toml</span><span class="o">.</span><span class="n">TomlEncoder</span><span class="p">(</span><span class="nb">dict</span><span class="p">))</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
 </pre></div>
 
            </div>
