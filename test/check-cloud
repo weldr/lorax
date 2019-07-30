@@ -1,12 +1,16 @@
 #!/usr/bin/python3
 
+import unittest
+
 import composertest
 
 
 class TestCloud(composertest.ComposerTestCase):
+    @unittest.skip('Disabled b/c of RequestTimeTooSkewed issue')
     def test_aws(self):
         self.runCliTest("/tests/cli/test_build_and_deploy_aws.sh")
 
+    @unittest.skip('Disabled b/c problem with credentials')
     def test_azure(self):
         self.runCliTest("/tests/cli/test_build_and_deploy_azure.sh")
 
