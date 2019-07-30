@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+import unittest
+
 import composertest
 
 
@@ -29,11 +31,13 @@ class TestImages(composertest.ComposerTestCase):
         self.runCliTest("/tests/cli/test_compose_tar.sh")
 
 
+@unittest.skip('Disabled due to issues with nested KVM')
 class TestQcow2(composertest.ComposerTestCase):
     def test_qcow2(self):
         self.runCliTest("/tests/cli/test_compose_qcow2.sh")
 
 
+@unittest.skip('Disabled due to issues with nested KVM')
 class TestLiveIso(composertest.ComposerTestCase):
     def test_live_iso(self):
         self.runCliTest("/tests/cli/test_compose_live-iso.sh")
