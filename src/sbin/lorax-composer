@@ -23,6 +23,7 @@ program_log = logging.getLogger("program")
 pylorax_log = logging.getLogger("pylorax")
 server_log = logging.getLogger("server")
 dnf_log = logging.getLogger("dnf")
+lifted_log = logging.getLogger("lifted")
 
 import grp
 import os
@@ -43,12 +44,15 @@ from pylorax.api.queue import start_queue_monitor
 from pylorax.api.recipes import open_or_create_repo, commit_recipe_directory
 from pylorax.api.server import server, GitLock
 
+from lifted.queue import start_upload_monitor
+
 VERSION = "{0}-{1}".format(os.path.basename(sys.argv[0]), vernum)
 
 def setup_logging(logfile):
     # Setup logging to console and to logfile
     log.setLevel(logging.DEBUG)
     pylorax_log.setLevel(logging.DEBUG)
+    lifted_log.setLevel(logging.DEBUG)
 
     sh = logging.StreamHandler()
     sh.setLevel(logging.INFO)
@@ -56,6 +60,7 @@ def setup_logging(logfile):
     sh.setFormatter(fmt)
     log.addHandler(sh)
     pylorax_log.addHandler(sh)
+    lifted_log.addHandler(sh)
 
     fh = logging.FileHandler(filename=logfile)
     fh.setLevel(logging.DEBUG)
@@ -63,6 +68,7 @@ def setup_logging(logfile):
     fh.setFormatter(fmt)
     log.addHandler(fh)
     pylorax_log.addHandler(fh)
+    lifted_log.addHandler(fh)
 
     # External program output log
     program_log.setLevel(logging.DEBUG)
@@ -243,6 +249,8 @@ if __name__ == '__main__':
         listener.listen(socket.SOMAXCONN)
 
     start_queue_monitor(server.config["COMPOSER_CFG"], uid, gid)
+
+    start_upload_monitor(server.config["COMPOSER_CFG"]["upload"])
 
     # Change user and group on the main process.  Note that this still happens even if
     # --user and --group were passed in, but changing to the same user should be fine.

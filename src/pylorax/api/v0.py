@@ -58,7 +58,7 @@ from flask import current_app as api
 from pylorax.sysutils import joinpaths
 from pylorax.api.checkparams import checkparams
 from pylorax.api.compose import start_build, compose_types
-from pylorax.api.errors import *                               # pylint: disable=wildcard-import
+from pylorax.api.errors import *                               # pylint: disable=wildcard-import,unused-wildcard-import
 from pylorax.api.flask_blueprint import BlueprintSkip
 from pylorax.api.projects import projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError, repo_to_source

@@ -1,0 +1,4 @@
+- hosts: localhost
+  connection: local
+  tasks:
+  - pause: seconds=30

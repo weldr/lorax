@@ -38,6 +38,8 @@ from pylorax.base import DataHolder
 from pylorax.creator import run_creator
 from pylorax.sysutils import joinpaths, read_tail
 
+from lifted.queue import create_upload, get_uploads, ready_upload, delete_upload
+
 def check_queues(cfg):
     """Check to make sure the new and run queue symlinks are correct
 
@@ -93,7 +95,7 @@ def start_queue_monitor(cfg, uid, gid):
     lib_dir = cfg.get("composer", "lib_dir")
     share_dir = cfg.get("composer", "share_dir")
     tmp = cfg.get("composer", "tmp")
-    monitor_cfg = DataHolder(composer_dir=lib_dir, share_dir=share_dir, uid=uid, gid=gid, tmp=tmp)
+    monitor_cfg = DataHolder(cfg=cfg, composer_dir=lib_dir, share_dir=share_dir, uid=uid, gid=gid, tmp=tmp)
     p = mp.Process(target=monitor, args=(monitor_cfg,))
     p.daemon = True
     p.start()
@@ -163,6 +165,11 @@ def monitor(cfg):
                 log.info("Finished building %s, results are in %s", dst, os.path.realpath(dst))
                 open(joinpaths(dst, "STATUS"), "w").write("FINISHED\n")
                 write_timestamp(dst, TS_FINISHED)
+
+                upload_cfg = cfg.cfg["upload"]
+                for upload in get_uploads(upload_cfg, uuid_get_uploads(cfg.cfg, uuids[0])):
+                    log.info("Readying upload %s", upload.uuid)
+                    uuid_ready_upload(cfg.cfg, uuids[0], upload.uuid)
             except Exception:
                 import traceback
                 log.error("traceback: %s", traceback.format_exc())
@@ -298,7 +305,7 @@ def get_compose_type(results_dir):
         raise RuntimeError("Cannot find ks template for build %s" % os.path.basename(results_dir))
     return t[0]
 
-def compose_detail(results_dir):
+def compose_detail(cfg, results_dir):
     """Return details about the build.
 
     :param results_dir: The directory containing the metadata and results for the build
@@ -338,6 +345,9 @@ def compose_detail(results_dir):
 
     times = timestamp_dict(results_dir)
 
+    upload_uuids = uuid_get_uploads(cfg, build_id)
+    summaries = [upload.summary() for upload in get_uploads(cfg["upload"], upload_uuids)]
+
     return {"id":           build_id,
             "queue_status": status,
             "job_created":  times.get(TS_CREATED),
@@ -346,7 +356,8 @@ def compose_detail(results_dir):
             "compose_type": compose_type,
             "blueprint":    blueprint["name"],
             "version":      blueprint["version"],
-            "image_size":   image_size
+            "image_size":   image_size,
+            "uploads":      summaries,
             }
 
 def queue_status(cfg):
@@ -367,7 +378,7 @@ def queue_status(cfg):
     new_details = []
     for n in new_queue:
         try:
-            d = compose_detail(n)
+            d = compose_detail(cfg, n)
         except IOError:
             continue
         new_details.append(d)
@@ -375,7 +386,7 @@ def queue_status(cfg):
     run_details = []
     for r in run_queue:
         try:
-            d = compose_detail(r)
+            d = compose_detail(cfg, r)
         except IOError:
             continue
         run_details.append(d)
@@ -399,7 +410,7 @@ def uuid_status(cfg, uuid):
     """
     uuid_dir = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid)
     try:
-        return compose_detail(uuid_dir)
+        return compose_detail(cfg, uuid_dir)
     except IOError:
         return None
 
@@ -430,10 +441,55 @@ def build_status(cfg, status_filter=None):
         try:
             status = open(joinpaths(build, "STATUS"), "r").read().strip()
             if status in status_filter:
-                results.append(compose_detail(build))
+                results.append(compose_detail(cfg, build))
         except IOError:
             pass
     return results
+
+def _upload_list_path(cfg, uuid):
+    results_dir = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid)
+    if not os.path.isdir(results_dir):
+        raise RuntimeError(f'"{uuid}" is not a valid build uuid!')
+    return joinpaths(results_dir, "UPLOADS")
+
+def uuid_schedule_upload(cfg, uuid, provider_name, image_name, settings):
+    status = uuid_status(cfg, uuid)
+    if status is None:
+        raise RuntimeError(f'"{uuid}" is not a valid build uuid!')
+
+    upload = create_upload(cfg["upload"], provider_name, image_name, settings)
+    uuid_add_upload(cfg, uuid, upload.uuid)
+    return upload.uuid
+
+def uuid_get_uploads(cfg, uuid):
+    try:
+        with open(_upload_list_path(cfg, uuid)) as uploads_file:
+            return frozenset(uploads_file.read().split())
+    except FileNotFoundError:
+        return frozenset()
+
+def uuid_add_upload(cfg, uuid, upload_uuid):
+    if upload_uuid not in uuid_get_uploads(cfg, uuid):
+        with open(_upload_list_path(cfg, uuid), "a") as uploads_file:
+            print(upload_uuid, file=uploads_file)
+        status = uuid_status(cfg, uuid)
+        if status and status["queue_status"] == "FINISHED":
+            uuid_ready_upload(cfg, uuid, upload_uuid)
+
+def uuid_remove_upload(cfg, uuid, upload_uuid):
+    uploads = uuid_get_uploads(cfg, uuid) - frozenset((upload_uuid,))
+    with open(_upload_list_path(cfg, uuid), "w") as uploads_file:
+        for upload in uploads:
+            print(upload, file=uploads_file)
+
+def uuid_ready_upload(cfg, uuid, upload_uuid):
+    status = uuid_status(cfg, uuid)
+    if not status:
+        raise RuntimeError(f"{uuid} is not a valid build id!")
+    if status["queue_status"] != "FINISHED":
+        raise RuntimeError(f"Build {uuid} is not finished!")
+    _, image_path = uuid_image(cfg, uuid)
+    ready_upload(cfg["upload"], upload_uuid, image_path)
 
 def uuid_cancel(cfg, uuid):
     """Cancel a build and delete its results
@@ -510,6 +566,10 @@ def uuid_delete(cfg, uuid):
     uuid_dir = joinpaths(cfg.get("composer", "lib_dir"), "results", uuid)
     if not uuid_dir or len(uuid_dir) < 10:
         raise RuntimeError("Directory length is too short: %s" % uuid_dir)
+
+    for upload in get_uploads(cfg["upload"], uuid_get_uploads(cfg, uuid)):
+        delete_upload(cfg["upload"], upload.uuid)
+
     shutil.rmtree(uuid_dir)
     return True
 
@@ -554,12 +614,15 @@ def uuid_info(cfg, uuid):
         raise RuntimeError("Missing deps.toml for %s" % uuid)
     deps_dict = toml.loads(open(deps_path, "r").read())
 
-    details = compose_detail(uuid_dir)
+    details = compose_detail(cfg, uuid_dir)
 
     commit_path = joinpaths(uuid_dir, "COMMIT")
     if not os.path.exists(commit_path):
         raise RuntimeError("Missing commit hash for %s" % uuid)
     commit_id = open(commit_path, "r").read().strip()
+
+    upload_uuids = uuid_get_uploads(cfg, uuid)
+    summaries = [upload.summary() for upload in get_uploads(cfg["upload"], upload_uuids)]
 
     return {"id":           uuid,
             "config":       cfg_dict,
@@ -568,7 +631,8 @@ def uuid_info(cfg, uuid):
             "deps":         deps_dict,
             "compose_type": details["compose_type"],
             "queue_status": details["queue_status"],
-            "image_size":   details["image_size"]
+            "image_size":   details["image_size"],
+            "uploads":      summaries,
     }
 
 def uuid_tar(cfg, uuid, metadata=False, image=False, logs=False):

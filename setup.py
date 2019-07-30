@@ -47,7 +47,7 @@ setup(name="lorax",
       url="http://www.github.com/weldr/lorax/",
       download_url="http://www.github.com/weldr/lorax/releases/",
       license="GPLv2+",
-      packages=["pylorax", "pylorax.api", "composer", "composer.cli"],
+      packages=["pylorax", "pylorax.api", "composer", "composer.cli", "lifted"],
       package_dir={"" : "src"},
       data_files=data_files
       )
