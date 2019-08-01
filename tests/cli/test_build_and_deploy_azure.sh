@@ -13,6 +13,7 @@ set -e
 . $(dirname $0)/lib/lib.sh
 
 CLI="${CLI:-./src/bin/composer-cli}"
+VENV=`mktemp -d /tmp/venv.XXX`
 
 
 rlJournalStart
@@ -55,8 +56,9 @@ rlJournalStart
             rlAssertRpm python2-pip
         fi
 
-        rlRun -t -c "rpm -e --nodeps pyOpenSSL"
-        rlRun -t -c "yum -y remove python*-requests python*-dateutil"
+        rlAssertRpm python-virtualenv
+        rlRun -t -c "virtualenv $VENV"
+        source $VENV/bin/activate
 
         rlRun -t -c "pip install --upgrade pip setuptools"
         rlRun -t -c "pip install ansible[azure] futures"
@@ -155,7 +157,7 @@ __EOF__
         rlRun -t -c "ansible localhost -m azure_rm_image -a 'resource_group=$AZURE_RESOURCE_GROUP name=$OS_IMAGE_NAME state=absent'"
         rlRun -t -c "ansible localhost -m azure_rm_storageblob -a 'resource_group=$AZURE_RESOURCE_GROUP storage_account_name=$AZURE_STORAGE_ACCOUNT container=$AZURE_STORAGE_CONTAINER blob=$IMAGE state=absent'"
         rlRun -t -c "$CLI compose delete $UUID"
-        rlRun -t -c "rm -rf $IMAGE $SSH_KEY_DIR $TMP_DIR"
+        rlRun -t -c "rm -rf $IMAGE $SSH_KEY_DIR $TMP_DIR $VENV"
     rlPhaseEnd
 
 rlJournalEnd

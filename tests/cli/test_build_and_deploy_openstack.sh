@@ -44,10 +44,8 @@ rlJournalStart
             rlAssertRpm python2-pip
         fi
 
-        rlRun -t -c "yum -y install python-virtualenv"
         rlAssertRpm python-virtualenv
         rlRun -t -c "virtualenv $VENV"
-
         source $VENV/bin/activate
 
         rlRun -t -c "pip install --upgrade pip setuptools"

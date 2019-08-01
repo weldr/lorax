@@ -13,6 +13,7 @@ set -e
 . $(dirname $0)/lib/lib.sh
 
 CLI="${CLI:-./src/bin/composer-cli}"
+VENV=`mktemp -d /tmp/venv.XXX`
 
 
 rlJournalStart
@@ -54,6 +55,10 @@ rlJournalStart
             rlRun -t -c "yum -y install python2-pip"
             rlAssertRpm python2-pip
         fi
+
+        rlAssertRpm python-virtualenv
+        rlRun -t -c "virtualenv $VENV"
+        source $VENV/bin/activate
 
         rlRun -t -c "pip install --upgrade pip setuptools"
         rlRun -t -c "pip install pyvmomi"
@@ -156,7 +161,7 @@ __EOF__
         python $SAMPLES/destroy_vm.py -S -s $V_HOST -u $V_USERNAME -p $V_PASSWORD --uuid $INSTANCE_UUID
         rlAssert0 "VM destroyed" $?
         rlRun -t -c "$CLI compose delete $UUID"
-        rlRun -t -c "rm -rf $IMAGE $TMP_DIR $SSH_KEY_DIR"
+        rlRun -t -c "rm -rf $IMAGE $TMP_DIR $SSH_KEY_DIR $VENV"
     rlPhaseEnd
 
 rlJournalEnd
