@@ -13,7 +13,7 @@ set -e
 . $(dirname $0)/lib/lib.sh
 
 CLI="${CLI:-./src/bin/composer-cli}"
-QEMU_BIN="/usr/bin/qemu-system-$(uname -m)"
+QEMU_BIN="/usr/libexec/qemu-kvm"
 QEMU="$QEMU_BIN -machine accel=kvm:tcg"
 
 rlJournalStart
