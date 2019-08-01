@@ -56,11 +56,17 @@ class CreatorTest(unittest.TestCase):
         }
 
         for arch in test_arches:
-            opts = DataHolder(compression=None, arch=arch)
+            opts = DataHolder(compression=None, compress_args=[], arch=arch)
             self.assertEqual(squashfs_args(opts), test_arches[arch], (opts, squashfs_args(opts)))
 
-        opts = DataHolder(compression="lzma", arch="x86_64")
+        opts = DataHolder(compression="lzma", compress_args=[], arch="x86_64")
         self.assertEqual(squashfs_args(opts), ("lzma", []), (opts, squashfs_args(opts)))
+
+        opts = DataHolder(compression="xz", compress_args=["-X32767"], arch="x86_64")
+        self.assertEqual(squashfs_args(opts), ("xz", ["-X32767"]), (opts, squashfs_args(opts)))
+
+        opts = DataHolder(compression="xz", compress_args=["-X32767", "-Xbcj x86"], arch="x86_64")
+        self.assertEqual(squashfs_args(opts), ("xz", ["-X32767", "-Xbcj", "x86"]), (opts, squashfs_args(opts)))
 
     def make_appliance_test(self):
         """Test creating the appliance description XML file"""
@@ -122,8 +128,8 @@ class CreatorTest(unittest.TestCase):
             with tempfile.TemporaryDirectory(prefix="lorax.test.root.") as mount_dir:
                 # Make a fake kernel and initrd
                 mkFakeBoot(mount_dir)
-                opts = DataHolder(project="Fedora", releasever="devel", compression="xz", arch="x86_64",
-                                  squashfs_only=True)
+                opts = DataHolder(project="Fedora", releasever="devel", compression="xz", compress_args=[],
+                                  arch="x86_64", squashfs_only=True)
                 make_runtime(opts, mount_dir, work_dir)
 
                 # Make sure it made an install.img
@@ -146,8 +152,8 @@ class CreatorTest(unittest.TestCase):
             with tempfile.TemporaryDirectory(prefix="lorax.test.root.") as mount_dir:
                 # Make a fake kernel and initrd
                 mkFakeBoot(mount_dir)
-                opts = DataHolder(project="Fedora", releasever="devel", compression="xz", arch="x86_64",
-                                  squashfs_only=False)
+                opts = DataHolder(project="Fedora", releasever="devel", compression="xz", compress_args=[],
+                                  arch="x86_64", squashfs_only=False)
                 make_runtime(opts, mount_dir, work_dir)
 
                 # Make sure it made an install.img

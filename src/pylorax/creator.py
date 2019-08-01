@@ -120,8 +120,13 @@ def squashfs_args(opts):
     """
     compression = opts.compression or "xz"
     arch = ArchData(opts.arch or os.uname().machine)
-    if compression == "xz" and arch.bcj:
+    if compression == "xz" and arch.bcj and not opts.compress_args:
+        # default to bcj when using xz
         compressargs = ["-Xbcj", arch.bcj]
+    elif opts.compress_args:
+        compressargs = []
+        for arg in opts.compress_args:
+            compressargs += arg.split(" ", 1)
     else:
         compressargs = []
     return (compression, compressargs)
