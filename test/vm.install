@@ -29,6 +29,27 @@ if ! rpm -q beakerlib; then
     fi
 fi
 
+EPEL_REPO="/etc/yum.repos.d/epel7.repo"
+if [ ! -f "$EPEL_REPO" ]; then
+    cat > $EPEL_REPO << __EOF__
+[epel7]
+name=epel7
+failovermethod=priority
+enabled=1
+skip_if_unavailable=0
+mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=\$basearch
+gpgcheck=0
+__EOF__
+fi
+
+# EPEL packages used in tests
+if ! rpm -q python2-pip; then
+    yum -y install python2-pip
+fi
+
+# don't build images with EPEL enabled
+rm -f $EPEL_REPO
+
 if rpm -q python2-cryptography; then
     yum remove -y python2-cryptography
 fi

@@ -39,8 +39,12 @@ rlJournalStart
             rlLogInfo "OS_PASSWORD is configured"
         fi
 
-        rlRun -t -c "yum -y install python2-pip python-virtualenv"
-        rlAssertRpm python2-pip
+        if ! rlCheckRpm "python2-pip"; then
+            rlRun -t -c "yum -y install python2-pip"
+            rlAssertRpm python2-pip
+        fi
+
+        rlRun -t -c "yum -y install python-virtualenv"
         rlAssertRpm python-virtualenv
         rlRun -t -c "virtualenv $VENV"
 
