@@ -47,6 +47,10 @@ if ! rpm -q python2-pip; then
     yum -y install python2-pip
 fi
 
+if ! rpm -q python-virtualenv; then
+    yum -y install python-virtualenv
+fi
+
 # don't build images with EPEL enabled
 rm -f $EPEL_REPO
 

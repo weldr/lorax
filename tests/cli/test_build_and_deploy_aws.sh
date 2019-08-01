@@ -13,6 +13,7 @@ set -e
 . $(dirname $0)/lib/lib.sh
 
 CLI="${CLI:-./src/bin/composer-cli}"
+VENV=`mktemp -d /tmp/venv.XXX`
 
 
 rlJournalStart
@@ -39,6 +40,10 @@ rlJournalStart
             rlRun -t -c "yum -y install python2-pip"
             rlAssertRpm python2-pip
         fi
+
+        rlAssertRpm python-virtualenv
+        rlRun -t -c "virtualenv $VENV"
+        source $VENV/bin/activate
 
         rlRun -t -c "pip install --upgrade pip setuptools"
         rlRun -t -c "pip install awscli"
@@ -200,7 +205,7 @@ __EOF__
         rlRun -t -c "aws ec2 delete-snapshot --snapshot-id $SNAPSHOT_ID"
         rlRun -t -c "aws s3 rm s3://$AWS_BUCKET/$AMI"
         rlRun -t -c "$CLI compose delete $UUID"
-        rlRun -t -c "rm -rf $AMI $SSH_KEY_DIR containers.json"
+        rlRun -t -c "rm -rf $AMI $SSH_KEY_DIR containers.json $VENV"
     rlPhaseEnd
 
 rlJournalEnd
