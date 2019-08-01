@@ -46,7 +46,9 @@ verify_image() {
     SSH_OPTS="-o StrictHostKeyChecking=no -o BatchMode=yes $3"
     rlLogInfo "verify_image: SSH_OPTS:'$SSH_OPTS' SSH_USER:'$SSH_USER' SSH_MACHINE: '$SSH_MACHINE'"
     check_root_account "$@"
-    check_kernel_cmdline "$@"
+    if [ "$CHECK_CMDLINE" != 0 ]; then
+        check_kernel_cmdline "$@"
+    fi
 }
 
 check_root_account() {
