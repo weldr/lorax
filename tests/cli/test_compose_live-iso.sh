@@ -19,6 +19,20 @@ QEMU="$QEMU_BIN -machine accel=kvm:tcg"
 rlJournalStart
     rlPhaseStartSetup
         rlAssertExists $QEMU_BIN
+
+        OPTIONAL_REPO="/etc/yum.repos.d/rhel7-rel-eng-optional.repo"
+
+        if [ ! -f "$OPTIONAL_REPO" ]; then
+        cat > $OPTIONAL_REPO << __EOF__
+[rhel7-rel-eng-optional]
+gpgcheck=0
+enabled=1
+skip_if_unavailable=0
+name=rhel7-rel-eng-optional
+baseurl=http://download-node-02.eng.bos.redhat.com/rhel-7/rel-eng/latest-RHEL-7/compose/Server-optional/\$basearch/os/
+__EOF__
+        fi
+
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
@@ -61,7 +75,7 @@ rlJournalStart
     rlPhaseStartCleanup
         rlRun -t -c "killall -9 $(basename $QEMU_BIN)"
         rlRun -t -c "$CLI compose delete $UUID"
-        rlRun -t -c "rm -rf $IMAGE"
+        rlRun -t -c "rm -rf $IMAGE $OPTIONAL_REPO"
     rlPhaseEnd
 
 rlJournalEnd
