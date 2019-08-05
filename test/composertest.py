@@ -1,11 +1,10 @@
 #!/usr/bin/python3
 
-from __future__ import print_function
-
 import argparse
 import os
 import subprocess
 import sys
+import traceback
 import unittest
 
 # import Cockpit's machinery for test VMs and its browser test API
@@ -14,8 +13,6 @@ import testvm # pylint: disable=import-error
 
 
 def print_exception(etype, value, tb):
-    import traceback
-
     # only include relevant lines
     limit = 0
     while tb and '__unittest' in tb.tb_frame.f_globals:
@@ -29,22 +26,11 @@ class ComposerTestCase(unittest.TestCase):
     image = testvm.DEFAULT_IMAGE
     sit = False
 
-    def __init__(self, methodName='runTest'):
-        super(ComposerTestCase, self).__init__(methodName=methodName)
-        # by default run() does this and defaultTestResult()
-        # always creates new object which is local for the .run() method
-        self.ci_result = self.defaultTestResult()
-
-    def run(self, result=None):
-        # so we override run() and use an object attribute which we can
-        # reference later in tearDown() and extract the errors from
-        super(ComposerTestCase, self).run(result=self.ci_result)
-
     def setUp(self):
         self.network = testvm.VirtNetwork(0)
         self.machine = testvm.VirtMachine(self.image, networking=self.network.host(), memory_mb=2048)
 
-        print("Starting virtual machine '%s'" % self.image)
+        print("Starting virtual machine '{}'".format(self.image))
         self.machine.start()
         self.machine.wait_boot()
 
@@ -64,12 +50,13 @@ class ComposerTestCase(unittest.TestCase):
                                 "--silent",
                                 "--unix-socket", "/run/weldr/api.socket",
                                 "http://localhost/api/status"]
-        r = subprocess.call(self.ssh_command + curl_command, stdout=open(os.devnull, 'w'))
+        r = subprocess.run(self.ssh_command + curl_command, stdout=subprocess.DEVNULL)
         self.assertEqual(r.returncode, 0)
 
     def tearDown(self):
-        # `errors` is a list of tuples (method, error)
-        errors = list(e[1] for e in self.ci_result.errors if e[1])
+        # Peek into internal data structure, because there's no way to get the
+        # TestResult at this point. `errors` is a list of tuples (method, error)
+        errors = list(e[1] for e in self._outcome.errors if e[1])
 
         if errors and self.sit:
             for e in errors:
@@ -81,31 +68,98 @@ class ComposerTestCase(unittest.TestCase):
 
         self.machine.stop()
 
-    def execute(self, command):
-        """Execute a command on the test machine."""
-        return subprocess.call(self.ssh_command + command)
+    def execute(self, command, **args):
+        """Execute a command on the test machine.
+
+        **args and return value are the same as those for subprocess.run().
+        """
+        return subprocess.run(self.ssh_command + command, **args)
 
     def runCliTest(self, script):
-        execute_params = ["CLI=/usr/bin/composer-cli",
+        extra_env = []
+        if self.sit:
+            extra_env.append("COMPOSER_TEST_FAIL_FAST=1")
+
+        r = self.execute(["CLI=/usr/bin/composer-cli",
                           "TEST=" + self.id(),
                           "PACKAGE=composer-cli",
-                          "/tests/test_cli.sh", script]
-        if self.sit:
-            execute_params.insert(0, "COMPOSER_TEST_FAIL_FAST=1")
-
-        r = self.execute(execute_params)
+                          *extra_env,
+                          "/tests/test_cli.sh", script])
         self.assertEqual(r.returncode, 0)
+
+
+class ComposerTestResult(unittest.TestResult):
+    def name(self, test):
+        name = test.id().replace("__main__.", "")
+        if test.shortDescription():
+            name += ": " + test.shortDescription()
+        return name
+
+    def startTest(self, test):
+        super().startTest(test)
+
+        print("# ----------------------------------------------------------------------")
+        print("# ", self.name(test))
+        print("", flush=True)
+
+    def stopTest(self, test):
+        print(flush=True)
+
+    def addSuccess(self, test):
+        super().addSuccess(test)
+        print("ok {} {}".format(self.testsRun, self.name(test)))
+
+    def addError(self, test, err):
+        super().addError(test, err)
+        traceback.print_exception(*err, file=sys.stdout)
+        print("not ok {} {}".format(self.testsRun, self.name(test)))
+
+    def addFailure(self, test, err):
+        super().addError(test, err)
+        traceback.print_exception(*err, file=sys.stdout)
+        print("not ok {} {}".format(self.testsRun, self.name(test)))
+
+    def addSkip(self, test, reason):
+        super().addSkip(test, reason)
+        print("ok {} {} # SKIP {}".format(self.testsRun, self.name(test), reason))
+
+    def addExpectedFailure(self, test, err):
+        super().addExpectedFailure(test, err)
+        print("ok {} {}".format(self.testsRun, self.name(test)))
+
+    def addUnexpectedSuccess(self, test):
+        super().addUnexpectedSuccess(test)
+        print("not ok {} {}".format(self.testsRun, self.name(test)))
+
+
+class ComposerTestRunner(object):
+    """A test runner that (in combination with ComposerTestResult) outputs
+    results in a way that cockpit's log.html can read and format them.
+    """
+
+    def __init__(self, failfast=False):
+        self.failfast = failfast
+
+    def run(self, testable):
+        result = ComposerTestResult()
+        result.failfast = self.failfast
+        result.startTestRun()
+        count = testable.countTestCases()
+        print("1.." + str(count))
+        try:
+            testable(result)
+        finally:
+            result.stopTestRun()
+        return result
 
 
 def print_tests(tests):
     for test in tests:
         if isinstance(test, unittest.TestSuite):
             print_tests(test)
-        # I don't know how this is used when running the tests
-        # (maybe not used from what it looks like) so not sure how to refactor it
-        # elif isinstance(test, unittest.loader._FailedTest):
-        #    name = test.id().replace("unittest.loader._FailedTest.", "")
-        #    print("Error: '%s' does not match a test" % name, file=sys.stderr)
+        elif isinstance(test, unittest.loader._FailedTest):
+            name = test.id().replace("unittest.loader._FailedTest.", "")
+            print("Error: '{}' does not match a test".format(name), file=sys.stderr)
         else:
             print(test.id().replace("__main__.", ""))
 
@@ -129,7 +183,7 @@ def main():
         print_tests(tests)
         return 0
 
-    runner = unittest.TextTestRunner(verbosity=2, failfast=args.sit)
+    runner = ComposerTestRunner(failfast=args.sit)
     result = runner.run(tests)
 
     if tests.countTestCases() != result.testsRun:
