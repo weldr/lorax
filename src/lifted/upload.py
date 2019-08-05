@@ -26,39 +26,41 @@ from uuid import uuid4
 
 from ansible_runner.interface import run as ansible_run
 
-LOG = logging.getLogger("lifted")
-
-
-class UploadStatus(Enum):
-    """Uploads start as WAITING, become READY when they get an image_path,
-    then RUNNING, then FINISHED, FAILED, or CANCELLED."""
-
-    WAITING = "WAITING"
-    READY = "READY"
-    RUNNING = "RUNNING"
-    FINISHED = "FINISHED"
-    FAILED = "FAILED"
-    CANCELLED = "CANCELLED"
+log = logging.getLogger("lifted")
 
 
 class Upload:
     """Represents an upload of an image to a cloud provider. Instances of this
-    class are pickled and stored upload queue directory, which is
+    class are serialized and stored upload queue directory, which is
     /var/lib/lorax/upload/queue/ by default"""
 
     def __init__(
-        self, image_name, provider_name, playbook_path, settings, status_callback=None
+        self,
+        image_name=None,
+        provider_name=None,
+        playbook_path=None,
+        settings=None,
+        status_callback=None,
+        uuid=None,
+        creation_time=None,
+        upload_log=None,
+        image_path=None,
+        upload_pid=None,
+        status=None,
     ):
         self.settings = settings
         self.image_name = image_name
         self.provider_name = provider_name
         self.playbook_path = playbook_path
-        self.uuid = str(uuid4())
-        self.creation_time = datetime.now().timestamp()
-        self.upload_log = ""
-        self.image_path = None
-        self.upload_pid = None
-        self.set_status(UploadStatus.WAITING, status_callback)
+        self.uuid = uuid or str(uuid4())
+        self.creation_time = creation_time or datetime.now().timestamp()
+        self.upload_log = upload_log or ""
+        self.image_path = image_path
+        self.upload_pid = upload_pid
+        if status:
+            self.status = status
+        else:
+            self.set_status("WAITING", status_callback)
 
     def _log(self, message, callback=None):
         """Logs something to the upload log
@@ -66,10 +68,13 @@ class Upload:
         :param message: the object to log
         :type message: object
         """
-        LOG.info(str(message))
+        log.info(str(message))
         self.upload_log += f"{message}\n"
         if callback:
             callback(self)
+
+    def serialize(self):
+        return self.__dict__
 
     def summary(self):
         """Return a dict with useful information about the upload
@@ -80,7 +85,7 @@ class Upload:
 
         return {
             "uuid": self.uuid,
-            "status": self.status.value,
+            "status": self.status,
             "provider_name": self.provider_name,
             "image_name": self.image_name,
             "image_path": self.image_path,
@@ -92,7 +97,7 @@ class Upload:
         """Sets the status of the upload with an optional callback
 
         :param status: the new status
-        :type status: UploadStatus
+        :type status: str
         :param status_callback: a function of the form callback(self)
         :type status_callback: function
         """
@@ -109,8 +114,8 @@ class Upload:
         :type status_callback: function
         """
         self.image_path = image_path
-        if self.status is UploadStatus.WAITING:
-            self.set_status(UploadStatus.READY, status_callback)
+        if self.status == "WAITING":
+            self.set_status("READY", status_callback)
 
     def reset(self, status_callback):
         """Reset the upload so it can be attempted again
@@ -119,12 +124,12 @@ class Upload:
         :type status_callback: function
         """
         if self.is_cancellable():
-            raise RuntimeError(f"Can't reset, status is {self.status.value}!")
+            raise RuntimeError(f"Can't reset, status is {self.status}!")
         if not self.image_path:
             raise RuntimeError(f"Can't reset, no image supplied yet!")
         # self.error = None
         self._log("Resetting...")
-        self.set_status(UploadStatus.READY, status_callback)
+        self.set_status("READY", status_callback)
 
     def is_cancellable(self):
         """Is the upload in a cancellable state?
@@ -132,11 +137,7 @@ class Upload:
         :returns: whether the upload is cancellable
         :rtype: bool
         """
-        return self.status in (
-            UploadStatus.WAITING,
-            UploadStatus.READY,
-            UploadStatus.RUNNING,
-        )
+        return self.status in ("WAITING", "READY", "RUNNING")
 
     def cancel(self, status_callback=None):
         """Cancel the upload. Sends a SIGINT to self.upload_pid.
@@ -145,10 +146,13 @@ class Upload:
         :type status_callback: function
         """
         if not self.is_cancellable():
-            raise RuntimeError(f"Can't cancel, status is already {self.status.value}!")
+            raise RuntimeError(f"Can't cancel, status is already {self.status}!")
         if self.upload_pid:
             os.kill(self.upload_pid, signal.SIGINT)
-        self.set_status(UploadStatus.CANCELLED, status_callback)
+        self.set_status("CANCELLED", status_callback)
+
+    def verify_settings(self, status_callback=None):
+        """"""
 
     def execute(self, status_callback=None):
         """Execute the upload. Meant to be called from a dedicated process so
@@ -158,10 +162,10 @@ class Upload:
         :param status_callback: a function of the form callback(self)
         :type status_callback: function
         """
-        if self.status is not UploadStatus.READY:
+        if self.status != "READY":
             raise RuntimeError("This upload is not ready!")
         self.upload_pid = current_process().pid
-        self.set_status(UploadStatus.RUNNING, status_callback)
+        self.set_status("RUNNING", status_callback)
 
         logger = partial(self._log, callback=status_callback)
 
@@ -172,9 +176,8 @@ class Upload:
                 "image_name": self.image_name,
                 "image_path": self.image_path,
             },
-            event_handler=logger,
-        )
+            event_handler=logger,)
         if runner.status == "successful":
-            self.set_status(UploadStatus.FINISHED, status_callback)
+            self.set_status("FINISHED", status_callback)
         else:
-            self.set_status(UploadStatus.FAILED, status_callback)
+            self.set_status("FAILED", status_callback)

@@ -31,17 +31,18 @@ from multiprocessing.dummy import Process
 
 from operator import attrgetter
 import os
-import pickle
 import stat
 import time
 
-from lifted.upload import Upload, UploadStatus
+import toml
+
+from lifted.upload import Upload
 from lifted.providers import resolve_playbook_path, validate_settings
 
 # the maximum number of simultaneous uploads
 SIMULTANEOUS_UPLOADS = 1
 
-LOG = logging.getLogger("lifted")
+log = logging.getLogger("lifted")
 multiprocessing.log_to_stderr().setLevel(logging.INFO)
 
 
@@ -55,7 +56,7 @@ def _get_queue_path(ucfg):
 
 
 def _get_upload_path(ucfg, uuid, write=False):
-    path = os.path.join(_get_queue_path(ucfg), uuid)
+    path = os.path.join(_get_queue_path(ucfg), f"{uuid}.toml")
     if write and not os.path.exists(path):
         open(path, "a").close()
     if os.path.exists(path):
@@ -68,12 +69,12 @@ def _get_upload_path(ucfg, uuid, write=False):
 
 def _list_upload_uuids(ucfg):
     paths = glob(os.path.join(_get_queue_path(ucfg), "*"))
-    return [os.path.basename(path) for path in paths]
+    return [os.path.splitext(os.path.basename(path))[0] for path in paths]
 
 
 def _write_upload(ucfg, upload):
-    with open(_get_upload_path(ucfg, upload.uuid, write=True), "wb") as upload_file:
-        pickle.dump(upload, upload_file, protocol=pickle.HIGHEST_PROTOCOL)
+    with open(_get_upload_path(ucfg, upload.uuid, write=True), "w") as upload_file:
+        toml.dump(upload.serialize(), upload_file)
 
 
 def _write_callback(ucfg):
@@ -91,22 +92,21 @@ def get_upload(ucfg, uuid, ignore_missing=False, ignore_corrupt=False):
     specified upload is missing, instead just return None
     :type ignore_missing: bool
     :param ignore_corrupt: if True, don't raise a RuntimeError when the
+    specified upload could not be deserialized, instead just return None
     :type ignore_corrupt: bool
-    specified upload could not be unpickled, instead just return None
     :returns: the upload object or None
     :rtype: Upload or None
     :raises: RuntimeError
     """
     try:
-        with open(os.path.join(_get_queue_path(ucfg), uuid), "rb") as pickle_file:
-            return pickle.load(pickle_file)
+        with open(_get_upload_path(ucfg, uuid), "r") as upload_file:
+            return Upload(**toml.load(upload_file))
     except FileNotFoundError as error:
         if not ignore_missing:
             raise RuntimeError(f"Could not find upload {uuid}!") from error
-    except pickle.UnpicklingError as error:
+    except toml.TomlDecodeError as error:
         if not ignore_corrupt:
             raise RuntimeError(f"Could not parse upload {uuid}!") from error
-    return None
 
 
 def get_uploads(ucfg, uuids):
@@ -117,7 +117,7 @@ def get_uploads(ucfg, uuids):
     :type ucfg: object
     :param uuids: list of upload UUIDs to get
     :type uuids: list of str
-    :returns: a list of the uploads that were successfully unpickled
+    :returns: a list of the uploads that were successfully deserialized
     :rtype: list of Upload
     """
     uploads = (
@@ -240,11 +240,11 @@ def start_upload_monitor(ucfg):
 
 
 def _monitor(ucfg):
-    LOG.info("Started upload monitor.")
+    log.info("Started upload monitor.")
     for upload in get_all_uploads(ucfg):
         # Set abandoned uploads to FAILED
-        if upload.status is UploadStatus.RUNNING:
-            upload.set_status(UploadStatus.FAILED, _write_callback(ucfg))
+        if upload.status == "RUNNING":
+            upload.set_status("FAILED", _write_callback(ucfg))
     pool = Pool(processes=SIMULTANEOUS_UPLOADS)
     pool_uuids = set()
 
@@ -256,9 +256,9 @@ def _monitor(ucfg):
         # them in the pool
         all_uploads = get_all_uploads(ucfg)
         for upload in sorted(all_uploads, key=attrgetter("creation_time")):
-            ready = upload.status is UploadStatus.READY
+            ready = upload.status == "READY"
             if ready and upload.uuid not in pool_uuids:
-                LOG.info("Starting upload %s...", upload.uuid)
+                log.info("Starting upload %s...", upload.uuid)
                 pool_uuids.add(upload.uuid)
                 callback = remover(upload.uuid)
                 pool.apply_async(

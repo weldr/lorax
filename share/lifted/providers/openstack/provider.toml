@@ -1,42 +1,45 @@
-name = "OpenStack"
+display = "OpenStack"
 
-[settings-info]
-	[settings-info.auth_url]
-	display = "Authentication URL"
-	type = "string"
-	placeholder = ""
-	regex = ''
+supported_types = [
+	"qcow2",
+]
 
-	[settings-info.username]
-	display = "Username"
-	type = "string"
-	placeholder = ""
-	regex = ''
+[settings-info.auth_url]
+display = "Authentication URL"
+type = "string"
+placeholder = ""
+regex = ''
 
-	[settings-info.password]
-	display = "Password"
-	type = "string"
-	placeholder = ""
-	regex = ''
+[settings-info.username]
+display = "Username"
+type = "string"
+placeholder = ""
+regex = ''
 
-	[settings-info.project_name]
-	display = "Project name"
-	type = "string"
-	placeholder = ""
-	regex = ''
+[settings-info.password]
+display = "Password"
+type = "string"
+placeholder = ""
+regex = ''
 
-	[settings-info.user_domain_name]
-	display = "User domain name"
-	type = "string"
-	placeholder = ""
-	regex = ''
+[settings-info.project_name]
+display = "Project name"
+type = "string"
+placeholder = ""
+regex = ''
 
-	[settings-info.project_domain_name]
-	display = "Project domain name"
-	type = "string"
-	placeholder = ""
-	regex = ''
+[settings-info.user_domain_name]
+display = "User domain name"
+type = "string"
+placeholder = ""
+regex = ''
 
-	[settings-info.is_public]
-	display = "Allow public access"
-	type = "boolean"
+[settings-info.project_domain_name]
+display = "Project domain name"
+type = "string"
+placeholder = ""
+regex = ''
+
+[settings-info.is_public]
+display = "Allow public access"
+type = "boolean"

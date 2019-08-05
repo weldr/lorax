@@ -25,14 +25,14 @@ import toml
 
 def resolve_provider(ucfg, provider_name):
     """Get information about the specified provider as defined in that
-    provider's `provider.toml`, including the provider's display name and
-    settings.
+    provider's `provider.toml`, including the provider's display name, expected
+    settings, and saved profiles.
 
-    At a minimum, each setting has a display name (that likely
-    differs from its snake_case name), a type, and a saved value. Currently,
-    there are two types of settings: string and boolean. String settings can
-    optionally have a "placeholder" value for use on the front end and a
-    "regex" for making sure that a value follows an expected pattern.
+    At a minimum, each setting has a display name (that likely differs from its
+    snake_case name) and a type. Currently, there are two types of settings:
+    string and boolean. String settings can optionally have a "placeholder"
+    value for use on the front end and a "regex" for making sure that a value
+    follows an expected pattern.
 
     :param ucfg: upload config
     :type ucfg: object
@@ -48,9 +48,14 @@ def resolve_provider(ucfg, provider_name):
             provider = toml.load(provider_file)
     except OSError as error:
         raise RuntimeError(f'Couldn\'t find provider "{provider_name}"!') from error
-    saved_settings = load_settings(ucfg, provider_name)
-    for setting, info in provider["settings-info"].items():
-        info["saved"] = saved_settings[setting] if setting in saved_settings else ""
+
+    provider["settings"] = {}
+    profile_paths = glob(os.path.join(ucfg["settings_dir"], provider_name, "*"))
+    for profile_path in profile_paths:
+        profile = os.path.splitext(os.path.basename(profile_path))[0]
+        with open(profile_path) as profile_file:
+            provider["settings"][profile] = toml.load(profile_file)
+
     return provider
 
 
@@ -81,23 +86,6 @@ def list_providers(ucfg):
     """
     paths = glob(os.path.join(ucfg["providers_dir"], "*"))
     return [os.path.basename(path) for path in paths]
-
-
-def _get_settings_path(ucfg, provider_name, write=False):
-    directory = ucfg["settings_dir"]
-
-    # create the upload_queue directory if it doesn't exist
-    os.makedirs(directory, exist_ok=True)
-
-    path = os.path.join(directory, f"{provider_name}.toml")
-    if write and not os.path.isfile(path):
-        open(path, "a").close()
-    if os.path.exists(path):
-        # make sure settings files aren't readable by others, as they will contain
-        # sensitive credentials
-        current = stat.S_IMODE(os.lstat(path).st_mode)
-        os.chmod(path, current & ~stat.S_IROTH)
-    return path
 
 
 def validate_settings(ucfg, provider_name, settings, image_name=None):
@@ -133,36 +121,37 @@ def validate_settings(ucfg, provider_name, settings, image_name=None):
                 raise ValueError(f'Value "{value}" is invalid for setting "{key}"!')
 
 
-def load_settings(ucfg, provider_name):
-    """Load saved settings for a provider
-
-    :param ucfg: upload config
-    :type ucfg: object
-    :param provider_name: the name of the cloud provider, e.g. "azure"
-    :type provider_name: str
-    :returns: the saved settings for that provider, or {} if no settings are
-    saved
-    :rtype: dict
-    """
-    path = _get_settings_path(ucfg, provider_name, write=False)
-    if os.path.isfile(path):
-        with open(path) as settings_file:
-            return toml.load(settings_file)
-    return {}
-
-
-def save_settings(ucfg, provider_name, settings):
+def save_settings(ucfg, provider_name, profile, settings):
     """Save (and overwrite) settings for a given provider
 
     :param ucfg: upload config
     :type ucfg: object
     :param provider_name: the name of the cloud provider, e.g. "azure"
     :type provider_name: str
+    :param profile: the name of the profile to save
+    :type profile: str != ""
     :param settings: settings to save for that provider
     :type settings: dict
-    :raises: ValueError when passed invalid settings
+    :raises: ValueError when passed invalid settings or an invalid profile name
     """
+    if not profile:
+        raise ValueError("Profile name cannot be empty!")
     validate_settings(ucfg, provider_name, settings, image_name=None)
-    settings_path = _get_settings_path(ucfg, provider_name, write=True)
-    with open(settings_path, "w") as settings_file:
+
+    directory = os.path.join(ucfg["settings_dir"], provider_name)
+
+    # create the settings directory if it doesn't exist
+    os.makedirs(directory, exist_ok=True)
+
+    path = os.path.join(directory, f"{profile}.toml")
+    # touch the TOML file if it doesn't exist
+    if not os.path.isfile(path):
+        open(path, "a").close()
+
+    # make sure settings files aren't readable by others, as they will contain
+    # sensitive credentials
+    current = stat.S_IMODE(os.lstat(path).st_mode)
+    os.chmod(path, current & ~stat.S_IROTH)
+
+    with open(path, "w") as settings_file:
         toml.dump(settings, settings_file)

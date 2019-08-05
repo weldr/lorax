@@ -2161,25 +2161,26 @@ def v0_upload_providers():
 @v0_api.route("/upload/provider/info/<provider_name>")
 @checkparams([("provider_name", "", "no provider given")])
 def v0_provider_info(provider_name):
-    """Return information about a provider, including its display name and
-    settings. Refer to the `resolve_provider` function."""
+    """Return information about a provider, including its display name,
+    expected settings, and saved profiles. Refer to the `resolve_provider`
+    function."""
     try:
         provider = resolve_provider(api.config["COMPOSER_CFG"]["upload"], provider_name)
     except RuntimeError as error:
         return jsonify(status=False, errors=[{"id": UPLOAD_ERROR, "msg": str(error)}])
     return jsonify(status=True, provider=provider)
 
-@v0_api.route("/upload/provider/update", defaults={"provider_name": ""}, methods=["POST"])
-@v0_api.route("/upload/provider/update/<provider_name>", methods=["POST"])
-@checkparams([("provider_name", "", "no provider given")])
-def v0_provider_update(provider_name):
+@v0_api.route("/upload/provider/save", defaults={"provider_name": ""}, methods=["POST"])
+@v0_api.route("/upload/provider/save/<provider_name>/<profile>", methods=["POST"])
+@checkparams([("provider_name", "", "no provider given"), ("profile", "", "no profile given")])
+def v0_provider_save(provider_name, profile):
     """Update a provider's saved settings"""
     parsed = request.get_json(cache=False)
     if parsed is None:
         return jsonify(status=False, errors=[{"id": MISSING_POST, "msg": "Missing POST body"}]), 400
 
     try:
-        save_settings(api.config["COMPOSER_CFG"]["upload"], provider_name, parsed)
+        save_settings(api.config["COMPOSER_CFG"]["upload"], provider_name, profile, parsed)
     except (RuntimeError, ValueError) as error:
         return jsonify(status=False, errors=[{"id": UPLOAD_ERROR, "msg": str(error)}])
     return jsonify(status=True)

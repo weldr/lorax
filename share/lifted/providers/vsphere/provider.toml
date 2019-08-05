@@ -1,39 +1,42 @@
-name = "vSphere"
+display = "vSphere"
 
-[settings]
-	[settings-info.datacenter]
-	display = "Datacenter"
-	type = "string"
-	placeholder = ""
-	regex = ''
+supported_types = [
+	"vmdk",
+]
 
-	[settings-info.datastore]
-	display = "Datastore"
-	type = "string"
-	placeholder = ""
-	regex = ''
+[settings-info.datacenter]
+display = "Datacenter"
+type = "string"
+placeholder = ""
+regex = ''
 
-	[settings-info.host]
-	display = "Host"
-	type = "string"
-	placeholder = ""
-	regex = ''
+[settings-info.datastore]
+display = "Datastore"
+type = "string"
+placeholder = ""
+regex = ''
 
-	[settings-info.folder]
-	display = "Folder"
-	type = "string"
-	placeholder = ""
-	regex = ''
+[settings-info.host]
+display = "Host"
+type = "string"
+placeholder = ""
+regex = ''
 
-	[settings-info.username]
-	display = "Username"
-	type = "string"
-	placeholder = ""
-	regex = ''
+[settings-info.folder]
+display = "Folder"
+type = "string"
+placeholder = ""
+regex = ''
 
-	[settings-info.password]
-	display = "Password"
-	type = "string"
-	placeholder = ""
-	regex = ''
+[settings-info.username]
+display = "Username"
+type = "string"
+placeholder = ""
+regex = ''
+
+[settings-info.password]
+display = "Password"
+type = "string"
+placeholder = ""
+regex = ''
 

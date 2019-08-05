@@ -1,50 +1,53 @@
 display = "Azure"
 
-[settings-info]
-	[settings-info.resource_group]
-	display = "Resource group"
-	type = "string"
-	placeholder = ""
-	regex = ''
+supported_types = [
+	"vhd",
+]
 
-	[settings-info.storage_account_name]
-	display = "Storage account name"
-	type = "string"
-	placeholder = ""
-	regex = ''
+[settings-info.resource_group]
+display = "Resource group"
+type = "string"
+placeholder = ""
+regex = ''
 
-	[settings-info.storage_container]
-	display = "Storage container"
-	type = "string"
-	placeholder = ""
-	regex = ''
+[settings-info.storage_account_name]
+display = "Storage account name"
+type = "string"
+placeholder = ""
+regex = ''
 
-	[settings-info.subscription_id]
-	display = "Subscription ID"
-	type = "string"
-	placeholder = ""
-	regex = ''
+[settings-info.storage_container]
+display = "Storage container"
+type = "string"
+placeholder = ""
+regex = ''
 
-	[settings-info.client_id]
-	display = "Client ID"
-	type = "string"
-	placeholder = ""
-	regex = ''
+[settings-info.subscription_id]
+display = "Subscription ID"
+type = "string"
+placeholder = ""
+regex = ''
 
-	[settings-info.secret]
-	display = "Secret"
-	type = "string"
-	placeholder = ""
-	regex = ''
+[settings-info.client_id]
+display = "Client ID"
+type = "string"
+placeholder = ""
+regex = ''
 
-	[settings-info.tenant]
-	display = "Tenant"
-	type = "string"
-	placeholder = ""
-	regex = ''
+[settings-info.secret]
+display = "Secret"
+type = "string"
+placeholder = ""
+regex = ''
 
-	[settings-info.location]
-	display = "Location"
-	type = "string"
-	placeholder = ""
-	regex = ''
+[settings-info.tenant]
+display = "Tenant"
+type = "string"
+placeholder = ""
+regex = ''
+
+[settings-info.location]
+display = "Location"
+type = "string"
+placeholder = ""
+regex = ''
