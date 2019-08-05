@@ -33,6 +33,10 @@ class LoraxLintConfig(PocketLintConfig):
                               ]
 
     @property
+    def ignoreNames(self):
+        return { 'test' }
+
+    @property
     def pylintPlugins(self):
         retval = super(LoraxLintConfig, self).pylintPlugins
         # Not using threads so we can skip this
