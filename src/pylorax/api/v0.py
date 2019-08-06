@@ -65,46 +65,16 @@ from pylorax.api.projects import modules_list, modules_info, ProjectsError, repo
 from pylorax.api.projects import get_repo_sources, delete_repo_source, source_to_repo, dnf_repo_to_file_repo
 from pylorax.api.queue import queue_status, build_status, uuid_delete, uuid_status, uuid_info
 from pylorax.api.queue import uuid_tar, uuid_image, uuid_cancel, uuid_log
-from pylorax.api.recipes import RecipeError, list_branch_files, read_recipe_commit, recipe_filename, list_commits
+from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
 from pylorax.api.recipes import recipe_from_dict, recipe_from_toml, commit_recipe, delete_recipe, revert_recipe
 from pylorax.api.recipes import tag_recipe_commit, recipe_diff, RecipeFileError
 from pylorax.api.regexes import VALID_API_STRING, VALID_BLUEPRINT_NAME
 import pylorax.api.toml as toml
+from pylorax.api.utils import take_limits, blueprint_exists
 from pylorax.api.workspace import workspace_read, workspace_write, workspace_delete
 
 # The API functions don't actually get called by any code here
 # pylint: disable=unused-variable
-
-def take_limits(iterable, offset, limit):
-    """ Apply offset and limit to an iterable object
-
-    :param iterable: The object to limit
-    :type iterable: iter
-    :param offset: The number of items to skip
-    :type offset: int
-    :param limit: The total number of items to return
-    :type limit: int
-    :returns: A subset of the iterable
-    """
-    return iterable[offset:][:limit]
-
-def blueprint_exists(branch, blueprint_name):
-    """Return True if the blueprint exists
-
-    :param api: flask object
-    :type api: Flask
-    :param branch: Branch name
-    :type branch: str
-    :param recipe_name: Recipe name to read
-    :type recipe_name: str
-    """
-    try:
-        with api.config["GITLOCK"].lock:
-            read_recipe_commit(api.config["GITLOCK"].repo, branch, blueprint_name)
-
-        return True
-    except (RecipeError, RecipeFileError):
-        return False
 
 # Create the v0 routes Blueprint with skip_routes support
 v0_api = BlueprintSkip("v0_routes", __name__)
@@ -653,7 +623,7 @@ def v0_blueprints_diff(blueprint_name, from_commit, to_commit):
     if VALID_API_STRING.match(branch) is None:
         return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in branch argument"}]), 400
 
-    if not blueprint_exists(branch, blueprint_name):
+    if not blueprint_exists(api, branch, blueprint_name):
         return jsonify(status=False, errors=[{"id": UNKNOWN_BLUEPRINT, "msg": "Unknown blueprint name: %s" % blueprint_name}])
 
     try:
@@ -1523,7 +1493,7 @@ def v0_compose_start():
     if VALID_BLUEPRINT_NAME.match(blueprint_name) is None:
         errors.append({"id": INVALID_CHARS, "msg": "Invalid characters in API path"})
 
-    if not blueprint_exists(branch, blueprint_name):
+    if not blueprint_exists(api, branch, blueprint_name):
         errors.append({"id": UNKNOWN_BLUEPRINT, "msg": "Unknown blueprint name: %s" % blueprint_name})
 
     if errors:
