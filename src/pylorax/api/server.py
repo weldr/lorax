@@ -26,6 +26,7 @@ import werkzeug
 from pylorax import vernum
 from pylorax.api.errors import HTTP_ERROR
 from pylorax.api.v0 import v0_api
+from pylorax.api.v1 import v1_api
 from pylorax.sysutils import joinpaths
 
 GitLock = namedtuple("GitLock", ["repo", "lock", "dir"])
@@ -53,9 +54,9 @@ def api_docs(path=None):
     return send_from_directory(docs_path, path)
 
 @server.route("/api/status")
-def v0_status():
+def api_status():
     """
-    `/api/v0/status`
+    `/api/status`
     ^^^^^^^^^^^^^^^^
     Return the status of the API Server::
 
@@ -85,3 +86,6 @@ def bad_request(error):
 
 # Register the v0 API on /api/v0/
 server.register_blueprint(v0_api, url_prefix="/api/v0/")
+
+# Register the v1 API on /api/v1/
+server.register_blueprint(v1_api, url_prefix="/api/v1/")
