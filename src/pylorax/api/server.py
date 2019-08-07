@@ -74,7 +74,7 @@ def api_status():
     """
     return jsonify(backend="lorax-composer",
                    build=vernum,
-                   api="0",
+                   api="1",
                    db_version="0",
                    schema_version="0",
                    db_supported=True,
@@ -88,4 +88,7 @@ def bad_request(error):
 server.register_blueprint(v0_api, url_prefix="/api/v0/")
 
 # Register the v1 API on /api/v1/
+# Use v0 routes by default
+server.register_blueprint(v0_api, url_prefix="/api/v1/",
+                          skip_rules=["/projects/source/info/<source_names>", "/projects/source/new"])
 server.register_blueprint(v1_api, url_prefix="/api/v1/")

@@ -653,12 +653,27 @@ class ServerTestCase(unittest.TestCase):
 
     def test_projects_source_00_info(self):
         """Test /api/v0/projects/source/info"""
-        resp = self.server.get("/api/v0/projects/source/info/single-repo")
+        resp = self.server.get("/api/v0/projects/source/info/lorax-3")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         print(data["sources"])
         sources = data["sources"]
-        self.assertTrue("single-repo" in sources)
+        self.assertTrue("lorax-3" in sources)
+        self.assertTrue("id" not in sources["lorax-3"])
+        self.assertTrue("name" in sources["lorax-3"])
+        self.assertEqual(sources["lorax-3"]["name"], "lorax-3")
+
+    def test_projects_source_01_info(self):
+        """Test /api/v1/projects/source/info"""
+        resp = self.server.get("/api/v1/projects/source/info/lorax-3")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        sources = data["sources"]
+        self.assertTrue("lorax-3" in sources)
+        self.assertTrue("id" in sources["lorax-3"])
+        self.assertEqual(sources["lorax-3"]["id"], "lorax-3")
+        self.assertTrue("name" in sources["lorax-3"])
+        self.assertEqual(sources["lorax-3"]["name"], "Lorax test repo 3")
 
     def test_projects_source_00_new_json(self):
         """Test /api/v0/projects/source/new with a new json source"""
@@ -677,6 +692,38 @@ class ServerTestCase(unittest.TestCase):
         sources = data["sources"]
         self.assertTrue("new-repo-1" in sources)
 
+    def test_projects_source_01_new_json(self):
+        """Test /api/v1/projects/source/new with a new json source"""
+        json_source = open("./tests/pylorax/source/test-repo-v1.json").read()
+        self.assertTrue(len(json_source) > 0)
+        resp = self.server.post("/api/v1/projects/source/new",
+                                data=json_source,
+                                content_type="application/json")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+        # Was it added, and was is it correct?
+        resp = self.server.get("/api/v1/projects/source/info/new-repo-1-v1")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        sources = data["sources"]
+        self.assertTrue("new-repo-1-v1" in sources)
+        self.assertTrue("id" in sources["new-repo-1-v1"])
+        self.assertEqual(sources["new-repo-1-v1"]["id"], "new-repo-1-v1")
+        self.assertTrue("name" in sources["new-repo-1-v1"])
+        self.assertEqual(sources["new-repo-1-v1"]["name"], "API v1 json new repo")
+
+    def test_projects_source_02_new_json(self):
+        """Test /api/v1/projects/source/new with a new json source missing id field"""
+        json_source = open("./tests/pylorax/source/test-repo.json").read()
+        self.assertTrue(len(json_source) > 0)
+        resp = self.server.post("/api/v1/projects/source/new",
+                                data=json_source,
+                                content_type="application/json")
+        self.assertEqual(resp.status_code, 400)
+        data = json.loads(resp.data)
+        self.assertEqual(data["status"], False)
+
     def test_projects_source_00_new_toml(self):
         """Test /api/v0/projects/source/new with a new toml source"""
         toml_source = open("./tests/pylorax/source/test-repo.toml").read()
@@ -693,6 +740,38 @@ class ServerTestCase(unittest.TestCase):
         self.assertNotEqual(data, None)
         sources = data["sources"]
         self.assertTrue("new-repo-2" in sources)
+
+    def test_projects_source_01_new_toml(self):
+        """Test /api/v1/projects/source/new with a new toml source"""
+        toml_source = open("./tests/pylorax/source/test-repo-v1.toml").read()
+        self.assertTrue(len(toml_source) > 0)
+        resp = self.server.post("/api/v1/projects/source/new",
+                                data=toml_source,
+                                content_type="text/x-toml")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+        # Was it added, and was is it correct?
+        resp = self.server.get("/api/v1/projects/source/info/new-repo-2-v1")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        sources = data["sources"]
+        self.assertTrue("new-repo-2-v1" in sources)
+        self.assertTrue("id" in sources["new-repo-2-v1"])
+        self.assertEqual(sources["new-repo-2-v1"]["id"], "new-repo-2-v1")
+        self.assertTrue("name" in sources["new-repo-2-v1"])
+        self.assertEqual(sources["new-repo-2-v1"]["name"], "API v1 toml new repo")
+
+    def test_projects_source_02_new_toml(self):
+        """Test /api/v1/projects/source/new with a new toml source w/o id field"""
+        toml_source = open("./tests/pylorax/source/test-repo.toml").read()
+        self.assertTrue(len(toml_source) > 0)
+        resp = self.server.post("/api/v1/projects/source/new",
+                                data=toml_source,
+                                content_type="text/x-toml")
+        self.assertEqual(resp.status_code, 400)
+        data = json.loads(resp.data)
+        self.assertEqual(data["status"], False)
 
     def test_projects_source_00_replace(self):
         """Test /api/v0/projects/source/new with a replacement source"""
@@ -1424,8 +1503,13 @@ class ServerTestCase(unittest.TestCase):
         self.assertInputError(resp)
 
     def test_projects_source_info_input(self):
-        """Test the projects/source/info input character checking"""
+        """Test the /api/v0/projects/source/info input character checking"""
         resp = self.server.get("/api/v0/projects/source/info/" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+    def test_projects_source_info_v1_input(self):
+        """Test the /api/v1/projects/source/info input character checking"""
+        resp = self.server.get("/api/v1/projects/source/info/" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
     def test_projects_source_delete_input(self):

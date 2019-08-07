@@ -1144,7 +1144,7 @@ def v0_projects_source_info(source_names):
         if not repo:
             errors.append({"id": UNKNOWN_SOURCE, "msg": "%s is not a valid source" % source})
             continue
-        sources[repo.id] = repo_to_source(repo, repo.id in system_sources)
+        sources[repo.id] = repo_to_source(repo, repo.id in system_sources, api=0)
 
     if out_fmt == "toml" and not errors:
         # With TOML output we just want to dump the raw sources, skipping the errors

@@ -409,13 +409,15 @@ def dnf_repo_to_file_repo(repo):
 
     return repo_str
 
-def repo_to_source(repo, system_source):
+def repo_to_source(repo, system_source, api=1):
     """Return a Weldr Source dict created from the DNF Repository
 
     :param repo: DNF Repository
     :type repo: dnf.RepoDict
     :param system_source: True if this source is an immutable system source
     :type system_source: bool
+    :param api: Select which api version of the dict to return (default 1)
+    :type api: int
     :returns: A dict with Weldr Source fields filled in
     :rtype: dict
 
@@ -427,15 +429,23 @@ def repo_to_source(repo, system_source):
           "gpgkey_url": [
             "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-x86_64"
           ],
-          "name": "fedora",
+          "id": "fedora",
+          "name": "Fedora $releasever - $basearch",
           "proxy": "http://proxy.brianlane.com:8123",
           "system": true
           "type": "yum-metalink",
           "url": "https://mirrors.fedoraproject.org/metalink?repo=fedora-28&arch=x86_64"
         }
 
+    The ``name`` field has changed in v1 of the API.
+    In v0 of the API ``name`` is the repo.id, in v1 it is the repo.name and a new field,
+    ``id`` has been added for the repo.id
+
     """
-    source = {"name": repo.id, "system": system_source}
+    if api==0:
+        source = {"name": repo.id, "system": system_source}
+    else:
+        source = {"id": repo.id, "name": repo.name, "system": system_source}
     if repo.baseurl:
         source["url"] = repo.baseurl[0]
         source["type"] = "yum-baseurl"
@@ -472,6 +482,8 @@ def source_to_repo(source, dnf_conf):
 
     :param source: A Weldr source dict
     :type source: dict
+    :param dnf_conf: The dnf Config object
+    :type dnf_conf: dnf.conf
     :returns: A dnf Repo object
     :rtype: dnf.Repo
 
@@ -483,15 +495,24 @@ def source_to_repo(source, dnf_conf):
           "gpgkey_urls": [
             "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-x86_64"
           ],
-          "name": "fedora",
+          "id": "fedora",
+          "name": "Fedora $releasever - $basearch",
           "proxy": "http://proxy.brianlane.com:8123",
           "system": True
           "type": "yum-metalink",
           "url": "https://mirrors.fedoraproject.org/metalink?repo=fedora-28&arch=x86_64"
         }
 
+    If the ``id`` field is included it is used for the repo id, otherwise ``name`` is used.
+    v0 of the API only used ``name``, v1 added the distinction between ``id`` and ``name``.
     """
-    repo = dnf.repo.Repo(source["name"], dnf_conf)
+    if "id" in source:
+        # This is an API v1 source definition
+        repo = dnf.repo.Repo(source["id"], dnf_conf)
+        if "name" in source:
+            repo.name = source["name"]
+    else:
+        repo = dnf.repo.Repo(source["name"], dnf_conf)
     # This will allow errors to be raised so we can catch them
     # without this they are logged, but the repo is silently disabled
     repo.skip_if_unavailable = False
@@ -551,11 +572,13 @@ def get_repo_sources(source_glob):
         sources.extend(get_source_ids(f))
     return sources
 
-def delete_repo_source(source_glob, source_name):
+def delete_repo_source(source_glob, source_id):
     """Delete a source from a repo file
 
     :param source_glob: A glob of the repo sources to search
     :type source_glob: str
+    :param source_id: The repo id to delete
+    :type source_id: str
     :returns: None
     :raises: ProjectsError if there was a problem
 
@@ -563,16 +586,16 @@ def delete_repo_source(source_glob, source_name):
     If it is the last one in the file, delete the file.
 
     WARNING: This will delete ANY source, the caller needs to ensure that a system
-    source_name isn't passed to it.
+    source_id isn't passed to it.
     """
     found = False
     for f in glob(source_glob):
         try:
             cfg = ConfigParser()
             cfg.read(f)
-            if source_name in cfg.sections():
+            if source_id in cfg.sections():
                 found = True
-                cfg.remove_section(source_name)
+                cfg.remove_section(source_id)
                 # If there are other sections, rewrite the file without the deleted one
                 if len(cfg.sections()) > 0:
                     with open(f, "w") as cfg_file:
@@ -581,6 +604,6 @@ def delete_repo_source(source_glob, source_name):
                     # No sections left, just delete the file
                     os.unlink(f)
         except Exception as e:
-            raise ProjectsError("Problem deleting repo source %s: %s" % (source_name, str(e)))
+            raise ProjectsError("Problem deleting repo source %s: %s" % (source_id, str(e)))
     if not found:
-        raise ProjectsError("source %s not found" % source_name)
+        raise ProjectsError("source %s not found" % source_id)
