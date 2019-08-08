@@ -663,12 +663,102 @@ class ServerTestCase(unittest.TestCase):
         self.assertTrue("name" in sources["lorax-3"])
         self.assertEqual(sources["lorax-3"]["name"], "lorax-3")
 
+    def test_projects_source_00_info_comma(self):
+        """Test /api/v0/projects/source/info/lorax-3,lorax-2"""
+        resp = self.server.get("/api/v0/projects/source/info/lorax-3,lorax-2")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        print(data["sources"])
+        sources = data["sources"]
+        self.assertEqual(len(sources), 2)
+        self.assertTrue("lorax-3" in sources)
+        self.assertTrue("id" not in sources["lorax-3"])
+        self.assertTrue("name" in sources["lorax-3"])
+        self.assertEqual(sources["lorax-3"]["name"], "lorax-3")
+
+        self.assertTrue("lorax-2" in sources)
+        self.assertTrue("id" not in sources["lorax-2"])
+        self.assertTrue("name" in sources["lorax-2"])
+        self.assertEqual(sources["lorax-2"]["name"], "lorax-2")
+
+    def test_projects_source_00_info_toml(self):
+        """Test /api/v0/projects/source/info TOML output"""
+        resp = self.server.get("/api/v0/projects/source/info/lorax-3?format=toml")
+        data = toml.loads(resp.data)
+        self.assertNotEqual(data, None)
+        print(data)
+        sources = data
+        self.assertTrue("lorax-3" in sources)
+        self.assertTrue("id" not in sources["lorax-3"])
+        self.assertTrue("name" in sources["lorax-3"])
+        self.assertEqual(sources["lorax-3"]["name"], "lorax-3")
+
+    def test_projects_source_00_info_wild(self):
+        """Test /api/v0/projects/source/info/* wildcard"""
+        resp = self.server.get("/api/v0/projects/source/info/*")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        print(data["sources"])
+        sources = data["sources"]
+        self.assertTrue(len(sources) > 1)
+        self.assertTrue("lorax-3" in sources)
+        self.assertTrue("id" not in sources["lorax-3"])
+        self.assertTrue("name" in sources["lorax-3"])
+        self.assertEqual(sources["lorax-3"]["name"], "lorax-3")
+
     def test_projects_source_01_info(self):
         """Test /api/v1/projects/source/info"""
         resp = self.server.get("/api/v1/projects/source/info/lorax-3")
         data = json.loads(resp.data)
         self.assertNotEqual(data, None)
         sources = data["sources"]
+        self.assertTrue("lorax-3" in sources)
+        self.assertTrue("id" in sources["lorax-3"])
+        self.assertEqual(sources["lorax-3"]["id"], "lorax-3")
+        self.assertTrue("name" in sources["lorax-3"])
+        self.assertEqual(sources["lorax-3"]["name"], "Lorax test repo 3")
+
+    def test_projects_source_01_info_comma(self):
+        """Test /api/v1/projects/source/info/lorax-3,lorax-2"""
+        resp = self.server.get("/api/v1/projects/source/info/lorax-3,lorax-2")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        print(data["sources"])
+        sources = data["sources"]
+        self.assertEqual(len(sources), 2)
+        self.assertTrue("lorax-3" in sources)
+        self.assertTrue("id" in sources["lorax-3"])
+        self.assertEqual(sources["lorax-3"]["id"], "lorax-3")
+        self.assertTrue("name" in sources["lorax-3"])
+        self.assertEqual(sources["lorax-3"]["name"], "Lorax test repo 3")
+
+        self.assertTrue("lorax-2" in sources)
+        self.assertTrue("id" in sources["lorax-2"])
+        self.assertEqual(sources["lorax-2"]["id"], "lorax-2")
+        self.assertTrue("name" in sources["lorax-2"])
+        self.assertEqual(sources["lorax-2"]["name"], "Lorax test repo 2")
+
+    def test_projects_source_01_info_toml(self):
+        """Test /api/v1/projects/source/info TOML output"""
+        resp = self.server.get("/api/v1/projects/source/info/lorax-3?format=toml")
+        data = toml.loads(resp.data)
+        self.assertNotEqual(data, None)
+        print(data)
+        sources = data
+        self.assertTrue("lorax-3" in sources)
+        self.assertTrue("id" in sources["lorax-3"])
+        self.assertEqual(sources["lorax-3"]["id"], "lorax-3")
+        self.assertTrue("name" in sources["lorax-3"])
+        self.assertEqual(sources["lorax-3"]["name"], "Lorax test repo 3")
+
+    def test_projects_source_01_info_wild(self):
+        """Test /api/v1/projects/source/info/* wildcard"""
+        resp = self.server.get("/api/v1/projects/source/info/*")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        print(data["sources"])
+        sources = data["sources"]
+        self.assertTrue(len(sources) > 1)
         self.assertTrue("lorax-3" in sources)
         self.assertTrue("id" in sources["lorax-3"])
         self.assertEqual(sources["lorax-3"]["id"], "lorax-3")
@@ -793,11 +883,70 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(repo["check_ssl"], False)
         self.assertTrue("gpgkey_urls" not in repo)
 
+    def test_projects_source_00_replace_system(self):
+        """Test /api/v0/projects/source/new with a replacement system source"""
+        if self.rawhide:
+            toml_source = open("./tests/pylorax/source/replace-rawhide.toml").read()
+        else:
+            toml_source = open("./tests/pylorax/source/replace-fedora.toml").read()
+        self.assertTrue(len(toml_source) > 0)
+        resp = self.server.post("/api/v0/projects/source/new",
+                                data=toml_source,
+                                content_type="text/x-toml")
+        self.assertEqual(resp.status_code, 400)
+        data = json.loads(resp.data)
+        self.assertEqual(data["status"], False)
+
+    def test_projects_source_01_replace(self):
+        """Test /api/v1/projects/source/new with a replacement source"""
+        toml_source = open("./tests/pylorax/source/replace-repo.toml").read()
+        self.assertTrue(len(toml_source) > 0)
+        resp = self.server.post("/api/v1/projects/source/new",
+                                data=toml_source,
+                                content_type="text/x-toml")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+        # Check to see if it was really changed
+        resp = self.server.get("/api/v1/projects/source/info/single-repo")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        sources = data["sources"]
+        self.assertTrue("single-repo" in sources)
+        repo = sources["single-repo"]
+        self.assertEqual(repo["check_ssl"], False)
+        self.assertTrue("gpgkey_urls" not in repo)
+
+    def test_projects_source_01_replace_system(self):
+        """Test /api/v1/projects/source/new with a replacement system source"""
+        if self.rawhide:
+            toml_source = open("./tests/pylorax/source/replace-rawhide.toml").read()
+        else:
+            toml_source = open("./tests/pylorax/source/replace-fedora.toml").read()
+        self.assertTrue(len(toml_source) > 0)
+        resp = self.server.post("/api/v1/projects/source/new",
+                                data=toml_source,
+                                content_type="text/x-toml")
+        self.assertEqual(resp.status_code, 400)
+        data = json.loads(resp.data)
+        self.assertEqual(data["status"], False)
+
     def test_projects_source_00_bad_url(self):
         """Test /api/v0/projects/source/new with a new source that has an invalid url"""
         toml_source = open("./tests/pylorax/source/bad-repo.toml").read()
         self.assertTrue(len(toml_source) > 0)
         resp = self.server.post("/api/v0/projects/source/new",
+                                data=toml_source,
+                                content_type="text/x-toml")
+        self.assertEqual(resp.status_code, 400)
+        data = json.loads(resp.data)
+        self.assertEqual(data["status"], False)
+
+    def test_projects_source_01_bad_url(self):
+        """Test /api/v1/projects/source/new with a new source that has an invalid url"""
+        toml_source = open("./tests/pylorax/source/bad-repo.toml").read()
+        self.assertTrue(len(toml_source) > 0)
+        resp = self.server.post("/api/v1/projects/source/new",
                                 data=toml_source,
                                 content_type="text/x-toml")
         self.assertEqual(resp.status_code, 400)
@@ -1507,10 +1656,58 @@ class ServerTestCase(unittest.TestCase):
         resp = self.server.get("/api/v0/projects/source/info/" + UTF8_TEST_STRING)
         self.assertInputError(resp)
 
+        # Test failure for bad format characters
+        resp = self.server.get("/api/v0/projects/source/info/lorax-3?format=" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+    def test_projects_source_info_unknown(self):
+        """Test the /api/v0/projects/source/info unknown source"""
+        resp = self.server.get("/api/v0/projects/source/info/notasource")
+        data = json.loads(resp.data)
+        print(data)
+        self.assertNotEqual(data, None)
+        self.assertTrue(len(data["errors"]) > 0)
+        self.assertTrue("is not a valid source" in data["errors"][0]["msg"])
+
+    def test_projects_source_info_unknown_toml(self):
+        """Test the /api/v0/projects/source/info unknown source TOML output"""
+        resp = self.server.get("/api/v0/projects/source/info/notasource?format=toml")
+        data = json.loads(resp.data)
+        print(data)
+        self.assertNotEqual(data, None)
+        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(data["status"], False)
+        self.assertTrue(len(data["errors"]) > 0)
+        self.assertTrue("is not a valid source" in data["errors"][0]["msg"])
+
     def test_projects_source_info_v1_input(self):
         """Test the /api/v1/projects/source/info input character checking"""
         resp = self.server.get("/api/v1/projects/source/info/" + UTF8_TEST_STRING)
         self.assertInputError(resp)
+
+        # Test failure for bad format characters
+        resp = self.server.get("/api/v1/projects/source/info/lorax-3?format=" + UTF8_TEST_STRING)
+        self.assertInputError(resp)
+
+    def test_projects_source_info_v1_unknown(self):
+        """Test the /api/v1/projects/source/info unknown source"""
+        resp = self.server.get("/api/v1/projects/source/info/notasource")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        print(data)
+        self.assertTrue(len(data["errors"]) > 0)
+        self.assertTrue("is not a valid source" in data["errors"][0]["msg"])
+
+    def test_projects_source_info_v1_unknown_toml(self):
+        """Test the /api/v1/projects/source/info unknown source TOML output"""
+        resp = self.server.get("/api/v1/projects/source/info/notasource?format=toml")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        print(data)
+        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(data["status"], False)
+        self.assertTrue(len(data["errors"]) > 0)
+        self.assertTrue("is not a valid source" in data["errors"][0]["msg"])
 
     def test_projects_source_delete_input(self):
         """Test the projects/source/delete input character checking"""

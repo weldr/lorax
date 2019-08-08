@@ -1,5 +1,5 @@
-name = "single-repo"
-id = "single-repo"
+name = "fedora"
+id = "fedora"
 url = "file:///tmp/lorax-empty-repo/"
 type = "yum-baseurl"
 check_ssl = false

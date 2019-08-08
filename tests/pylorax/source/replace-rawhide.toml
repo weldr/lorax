@@ -1,5 +1,5 @@
-name = "single-repo"
-id = "single-repo"
+name = "rawhide"
+id = "rawhide"
 url = "file:///tmp/lorax-empty-repo/"
 type = "yum-baseurl"
 check_ssl = false
