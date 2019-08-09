@@ -31,8 +31,8 @@ log = logging.getLogger("lifted")
 
 class Upload:
     """Represents an upload of an image to a cloud provider. Instances of this
-    class are serialized and stored upload queue directory, which is
-    /var/lib/lorax/upload/queue/ by default"""
+    class are serialized as TOML and stored in the upload queue directory,
+    which is /var/lib/lorax/upload/queue/ by default"""
 
     def __init__(
         self,
@@ -156,9 +156,6 @@ class Upload:
             os.kill(self.upload_pid, signal.SIGINT)
         self.set_status("CANCELLED", status_callback)
 
-    def verify_settings(self, status_callback=None):
-        """"""
-
     def execute(self, status_callback=None):
         """Execute the upload. Meant to be called from a dedicated process so
         that the upload can be cancelled by sending a SIGINT to
@@ -172,7 +169,7 @@ class Upload:
         self.upload_pid = current_process().pid
         self.set_status("RUNNING", status_callback)
 
-        logger = partial(self._log, callback=status_callback)
+        logger = lambda e: self._log(e["stdout"], status_callback)
 
         runner = ansible_run(
             playbook=self.playbook_path,
