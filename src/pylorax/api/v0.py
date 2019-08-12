@@ -64,7 +64,7 @@ from pylorax.api.projects import projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError, repo_to_source
 from pylorax.api.projects import get_repo_sources, delete_repo_source, source_to_repo, dnf_repo_to_file_repo
 from pylorax.api.queue import queue_status, build_status, uuid_delete, uuid_status, uuid_info
-from pylorax.api.queue import uuid_tar, uuid_image, uuid_cancel, uuid_log, uuid_schedule_upload, uuid_remove_upload, get_type_provider
+from pylorax.api.queue import uuid_tar, uuid_image, uuid_cancel, uuid_log, uuid_schedule_upload, uuid_remove_upload
 from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
 from pylorax.api.recipes import recipe_from_dict, recipe_from_toml, commit_recipe, delete_recipe, revert_recipe
 from pylorax.api.recipes import tag_recipe_commit, recipe_diff, RecipeFileError
@@ -74,7 +74,7 @@ from pylorax.api.utils import take_limits, blueprint_exists
 from pylorax.api.workspace import workspace_read, workspace_write, workspace_delete
 
 from lifted.queue import get_upload, reset_upload, cancel_upload, delete_upload
-from lifted.providers import list_providers, resolve_provider, validate_settings, save_settings
+from lifted.providers import list_providers, resolve_provider, load_profiles, validate_settings, save_settings
 
 # The API functions don't actually get called by any code here
 # pylint: disable=unused-variable
@@ -1503,12 +1503,15 @@ def v0_compose_start():
         try:
             image_name = compose["upload"]["image_name"]
             settings = compose["upload"]["settings"]
+            provider_name = compose["upload"]["provider"]
         except KeyError as e:
-            errors.append({"id": UPLOAD_ERROR, "msg": str(e)})
-        provider_name = get_type_provider(compose_type)
+            errors.append({"id": UPLOAD_ERROR, "msg": f'Missing parameter {str(e)}!'})
         try:
+            provider = resolve_provider(api.config["COMPOSER_CFG"]["upload"], provider_name)
+            if "supported_types" in provider and compose_type not in provider["supported_types"]:
+                raise RuntimeError(f'Type "{compose_type}" is not supported by provider "{provider_name}"!')
             validate_settings(api.config["COMPOSER_CFG"]["upload"], provider_name, settings, image_name)
-        except ValueError as e:
+        except Exception as e:
             errors.append({"id": UPLOAD_ERROR, "msg": str(e)})
 
     if errors:
@@ -1527,6 +1530,7 @@ def v0_compose_start():
         upload_uuid = uuid_schedule_upload(
             api.config["COMPOSER_CFG"],
             build_id,
+            provider_name,
             image_name,
             settings
         )
@@ -2056,16 +2060,26 @@ def v0_compose_uploads_schedule(compose_uuid):
     parsed = request.get_json(cache=False)
     if not parsed:
         return jsonify(status=False, errors=[{"id": MISSING_POST, "msg": "Missing POST body"}]), 400
+
     try:
         image_name = parsed["image_name"]
         settings = parsed["settings"]
+        provider_name = parsed["provider"]
     except KeyError as e:
+        return jsonify(status=False, errors=[{"id": UPLOAD_ERROR, "msg": f'Missing parameter {str(e)}!'}]), 400
+    try:
+        compose_type = uuid_status(api.config["COMPOSER_CFG"], compose_uuid)["compose_type"]
+        provider = resolve_provider(api.config["COMPOSER_CFG"]["upload"], provider_name)
+        if "supported_types" in provider and compose_type not in provider["supported_types"]:
+            raise RuntimeError(f'Type "{compose_type}" is not supported by provider "{provider_name}"!')
+    except Exception as e:
         return jsonify(status=False, errors=[{"id": UPLOAD_ERROR, "msg": str(e)}]), 400
 
     try:
         upload_uuid = uuid_schedule_upload(
             api.config["COMPOSER_CFG"],
             compose_uuid,
+            provider_name,
             image_name,
             settings
         )
@@ -2154,33 +2168,37 @@ def v0_upload_cancel(uuid):
 
 @v0_api.route("/upload/providers")
 def v0_upload_providers():
-    """Return the list of available upload providers"""
-    return jsonify(providers=list_providers(api.config["COMPOSER_CFG"]["upload"]))
+    """Return the information about all upload providers, including their
+    display names, expected settings, and saved profiles. Refer to the
+    `resolve_provider` function."""
 
-@v0_api.route("/upload/provider/info", defaults={"provider_name": ""})
-@v0_api.route("/upload/provider/info/<provider_name>")
-@checkparams([("provider_name", "", "no provider given")])
-def v0_provider_info(provider_name):
-    """Return information about a provider, including its display name,
-    expected settings, and saved profiles. Refer to the `resolve_provider`
-    function."""
-    try:
-        provider = resolve_provider(api.config["COMPOSER_CFG"]["upload"], provider_name)
-    except RuntimeError as error:
-        return jsonify(status=False, errors=[{"id": UPLOAD_ERROR, "msg": str(error)}])
-    return jsonify(status=True, provider=provider)
+    ucfg = api.config["COMPOSER_CFG"]["upload"]
 
-@v0_api.route("/upload/provider/save", defaults={"provider_name": ""}, methods=["POST"])
-@v0_api.route("/upload/provider/save/<provider_name>/<profile>", methods=["POST"])
-@checkparams([("provider_name", "", "no provider given"), ("profile", "", "no profile given")])
-def v0_provider_save(provider_name, profile):
+    provider_names = list_providers(ucfg)
+
+    def get_provider_info(provider_name):
+        provider = resolve_provider(ucfg, provider_name)
+        provider["profiles"] = load_profiles(ucfg, provider_name)
+        return provider
+
+    return jsonify(status=True, providers={provider_name: get_provider_info(provider_name) for provider_name in provider_names})
+
+@v0_api.route("/upload/providers/save", methods=["POST"])
+def v0_providers_save():
     """Update a provider's saved settings"""
     parsed = request.get_json(cache=False)
+
     if parsed is None:
         return jsonify(status=False, errors=[{"id": MISSING_POST, "msg": "Missing POST body"}]), 400
 
     try:
-        save_settings(api.config["COMPOSER_CFG"]["upload"], provider_name, profile, parsed)
-    except (RuntimeError, ValueError) as error:
-        return jsonify(status=False, errors=[{"id": UPLOAD_ERROR, "msg": str(error)}])
+        provider_name = parsed["provider"]
+        profile = parsed["profile"]
+        settings = parsed["settings"]
+    except KeyError as e:
+        return jsonify(status=False, errors=[{"id": UPLOAD_ERROR, "msg": f'Missing parameter {str(e)}!'}]), 400
+    try:
+        save_settings(api.config["COMPOSER_CFG"]["upload"], provider_name, profile, settings)
+    except Exception as e:
+        return jsonify(status=False, errors=[{"id": UPLOAD_ERROR, "msg": str(e)}])
     return jsonify(status=True)

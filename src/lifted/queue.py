@@ -34,7 +34,7 @@ import os
 import stat
 import time
 
-import toml
+import pylorax.api.toml as toml
 
 from lifted.upload import Upload
 from lifted.providers import resolve_playbook_path, validate_settings
@@ -74,7 +74,7 @@ def _list_upload_uuids(ucfg):
 
 def _write_upload(ucfg, upload):
     with open(_get_upload_path(ucfg, upload.uuid, write=True), "w") as upload_file:
-        toml.dump(upload.serialize(), upload_file)
+        toml.dump(upload.serializable(), upload_file)
 
 
 def _write_callback(ucfg):
@@ -104,7 +104,7 @@ def get_upload(ucfg, uuid, ignore_missing=False, ignore_corrupt=False):
     except FileNotFoundError as error:
         if not ignore_missing:
             raise RuntimeError(f"Could not find upload {uuid}!") from error
-    except toml.TomlDecodeError as error:
+    except toml.TomlError as error:
         if not ignore_corrupt:
             raise RuntimeError(f"Could not parse upload {uuid}!") from error
 
@@ -156,11 +156,11 @@ def create_upload(ucfg, provider_name, image_name, settings):
     """
     validate_settings(ucfg, provider_name, settings, image_name)
     return Upload(
-        image_name,
-        provider_name,
-        resolve_playbook_path(ucfg, provider_name),
-        settings,
-        _write_callback(ucfg),
+        provider_name=provider_name,
+        playbook_path=resolve_playbook_path(ucfg, provider_name),
+        image_name=image_name,
+        settings=settings,
+        status_callback=_write_callback(ucfg),
     )
 
 

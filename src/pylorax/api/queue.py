@@ -452,18 +452,10 @@ def _upload_list_path(cfg, uuid):
         raise RuntimeError(f'"{uuid}" is not a valid build uuid!')
     return joinpaths(results_dir, "UPLOADS")
 
-def get_type_provider(compose_type):
-    return {
-        "qcow2": "openstack",
-        "vhd": "azure",
-        "vmdk": "vsphere",
-    }[compose_type]
-
-def uuid_schedule_upload(cfg, uuid, image_name, settings):
+def uuid_schedule_upload(cfg, uuid, provider_name, image_name, settings):
     status = uuid_status(cfg, uuid)
     if status is None:
         raise RuntimeError(f'"{uuid}" is not a valid build uuid!')
-    provider_name = get_type_provider(status["compose_type"])
 
     upload = create_upload(cfg["upload"], provider_name, image_name, settings)
     uuid_add_upload(cfg, uuid, upload.uuid)

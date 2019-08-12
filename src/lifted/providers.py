@@ -20,13 +20,13 @@ import os
 import re
 import stat
 
-import toml
+import pylorax.api.toml as toml
 
 
 def resolve_provider(ucfg, provider_name):
     """Get information about the specified provider as defined in that
-    provider's `provider.toml`, including the provider's display name, expected
-    settings, and saved profiles.
+    provider's `provider.toml`, including the provider's display name and expected
+    settings.
 
     At a minimum, each setting has a display name (that likely differs from its
     snake_case name) and a type. Currently, there are two types of settings:
@@ -49,14 +49,29 @@ def resolve_provider(ucfg, provider_name):
     except OSError as error:
         raise RuntimeError(f'Couldn\'t find provider "{provider_name}"!') from error
 
-    provider["settings"] = {}
-    profile_paths = glob(os.path.join(ucfg["settings_dir"], provider_name, "*"))
-    for profile_path in profile_paths:
-        profile = os.path.splitext(os.path.basename(profile_path))[0]
-        with open(profile_path) as profile_file:
-            provider["settings"][profile] = toml.load(profile_file)
-
     return provider
+
+
+def load_profiles(ucfg, provider_name):
+    """Return all settings profiles associated with a provider
+
+    :param ucfg: upload config
+    :type ucfg: object
+    :param provider_name: name a provider to find profiles for
+    :type provider_name: str
+    :returns: a dict of settings dicts, keyed by profile name
+    :rtype: dict
+    """
+
+    def load_path(path):
+        with open(path) as file:
+            return toml.load(file)
+
+    def get_name(path):
+        return os.path.splitext(os.path.basename(path))[0]
+
+    paths = glob(os.path.join(ucfg["settings_dir"], provider_name, "*"))
+    return {get_name(path): load_path(path) for path in paths}
 
 
 def resolve_playbook_path(ucfg, provider_name):

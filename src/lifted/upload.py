@@ -36,27 +36,27 @@ class Upload:
 
     def __init__(
         self,
-        image_name=None,
+        uuid=None,
         provider_name=None,
         playbook_path=None,
+        image_name=None,
         settings=None,
-        status_callback=None,
-        uuid=None,
         creation_time=None,
         upload_log=None,
-        image_path=None,
         upload_pid=None,
+        image_path=None,
+        status_callback=None,
         status=None,
     ):
-        self.settings = settings
-        self.image_name = image_name
+        self.uuid = uuid or str(uuid4())
         self.provider_name = provider_name
         self.playbook_path = playbook_path
-        self.uuid = uuid or str(uuid4())
+        self.image_name = image_name
+        self.settings = settings
         self.creation_time = creation_time or datetime.now().timestamp()
         self.upload_log = upload_log or ""
-        self.image_path = image_path
         self.upload_pid = upload_pid
+        self.image_path = image_path
         if status:
             self.status = status
         else:
@@ -73,7 +73,12 @@ class Upload:
         if callback:
             callback(self)
 
-    def serialize(self):
+    def serializable(self):
+        """Returns a representation of the object as a dict for serialization
+
+        :returns: the object's __dict__
+        :rtype: dict
+        """
         return self.__dict__
 
     def summary(self):
@@ -176,7 +181,8 @@ class Upload:
                 "image_name": self.image_name,
                 "image_path": self.image_path,
             },
-            event_handler=logger,)
+            event_handler=logger,
+        )
         if runner.status == "successful":
             self.set_status("FINISHED", status_callback)
         else:
