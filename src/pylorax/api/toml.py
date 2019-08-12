@@ -31,3 +31,12 @@ def loads(s):
 def dumps(o):
     # strip the result, because `toml.dumps` adds a lot of newlines
     return toml.dumps(o, encoder=toml.TomlEncoder(dict)).strip()
+
+def load(file):
+    try:
+        return toml.load(file)
+    except toml.TomlDecodeError as e:
+        raise TomlError(e.msg, e.doc, e.pos)
+
+def dump(o, file):
+    return toml.dump(o, file)
