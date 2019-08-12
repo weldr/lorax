@@ -63,10 +63,12 @@ class Upload:
             self.set_status("WAITING", status_callback)
 
     def _log(self, message, callback=None):
-        """Logs something to the upload log
+        """Logs something to the upload log with an optional callback
 
         :param message: the object to log
         :type message: object
+        :param callback: a function of the form callback(self)
+        :type callback: function
         """
         log.info(str(message))
         self.upload_log += f"{message}\n"

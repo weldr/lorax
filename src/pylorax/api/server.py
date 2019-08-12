@@ -89,6 +89,10 @@ server.register_blueprint(v0_api, url_prefix="/api/v0/")
 
 # Register the v1 API on /api/v1/
 # Use v0 routes by default
-server.register_blueprint(v0_api, url_prefix="/api/v1/",
-                          skip_rules=["/projects/source/info/<source_names>", "/projects/source/new"])
+skip_rules = [
+    "/compose",
+    "/projects/source/info/<source_names>",
+    "/projects/source/new",
+]
+server.register_blueprint(v0_api, url_prefix="/api/v1/", skip_rules=skip_rules)
 server.register_blueprint(v1_api, url_prefix="/api/v1/")

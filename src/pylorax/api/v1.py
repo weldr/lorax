@@ -24,15 +24,36 @@ import os
 from flask import jsonify, request
 from flask import current_app as api
 
+from lifted.queue import get_upload, reset_upload, cancel_upload, delete_upload
+from lifted.providers import list_providers, resolve_provider, load_profiles, validate_settings, save_settings
 from pylorax.api.checkparams import checkparams
-from pylorax.api.errors import INVALID_CHARS, PROJECTS_ERROR, SYSTEM_SOURCE, UNKNOWN_SOURCE
+from pylorax.api.compose import start_build
+from pylorax.api.errors import (
+    BAD_COMPOSE_TYPE,
+    BUILD_FAILED,
+    INVALID_CHARS,
+    MISSING_POST,
+    PROJECTS_ERROR,
+    SYSTEM_SOURCE,
+    UNKNOWN_BLUEPRINT,
+    UNKNOWN_SOURCE,
+    UNKNOWN_UUID,
+    UPLOAD_ERROR,
+)
 from pylorax.api.flask_blueprint import BlueprintSkip
 from pylorax.api.projects import delete_repo_source, dnf_repo_to_file_repo, get_repo_sources, repo_to_source
 from pylorax.api.projects import source_to_repo
 from pylorax.api.projects import ProjectsError
-from pylorax.api.regexes import VALID_API_STRING
+from pylorax.api.queue import (
+    uuid_status,
+    uuid_schedule_upload,
+    uuid_remove_upload,
+)
+from pylorax.api.regexes import VALID_API_STRING, VALID_BLUEPRINT_NAME
 import pylorax.api.toml as toml
+from pylorax.api.utils import blueprint_exists
 from pylorax.sysutils import joinpaths
+
 
 # Create the v1 routes Blueprint with skip_routes support
 v1_api = BlueprintSkip("v1_routes", __name__)
@@ -210,4 +231,459 @@ def v1_projects_source_new():
 
     return jsonify(status=True)
 
+@v1_api.route("/compose", methods=["POST"])
+def v1_compose_start():
+    """Start a compose
 
+    The body of the post should have these fields:
+      blueprint_name - The blueprint name from /blueprints/list/
+      compose_type   - The type of output to create, from /compose/types
+      branch         - Optional, defaults to master, selects the git branch to use for the blueprint.
+
+    **POST /api/v0/compose**
+
+      Start a compose. The content type should be 'application/json' and the body of the POST
+      should look like this. The "upload" object is optional.
+
+      Example::
+
+          {
+            "blueprint_name": "http-server",
+            "compose_type": "tar",
+            "branch": "master",
+            "upload": {
+              "image_name": "My Image",
+              "provider": "azure",
+              "settings": {
+                "resource_group": "SOMEBODY",
+                "storage_account_name": "ONCE",
+                "storage_container": "TOLD",
+                "location": "ME",
+                "subscription_id": "THE",
+                "client_id": "WORLD",
+                "secret": "IS",
+                "tenant": "GONNA"
+              }
+            }
+          }
+
+      Pass it the name of the blueprint, the type of output (from
+      '/api/v0/compose/types'), and the blueprint branch to use. 'branch' is
+      optional and will default to master. It will create a new build and add
+      it to the queue. It returns the build uuid and a status if it succeeds.
+      If an "upload" is given, it will schedule an upload to run when the build
+      finishes.
+
+      Example::
+
+          {
+            "build_id": "e6fa6db4-9c81-4b70-870f-a697ca405cdf",
+            "status": true
+          }
+    """
+    # Passing ?test=1 will generate a fake FAILED compose.
+    # Passing ?test=2 will generate a fake FINISHED compose.
+    try:
+        test_mode = int(request.args.get("test", "0"))
+    except ValueError:
+        test_mode = 0
+
+    compose = request.get_json(cache=False)
+
+    errors = []
+    if not compose:
+        return jsonify(status=False, errors=[{"id": MISSING_POST, "msg": "Missing POST body"}]), 400
+
+    if "blueprint_name" not in compose:
+        errors.append({"id": UNKNOWN_BLUEPRINT, "msg": "No 'blueprint_name' in the JSON request"})
+    else:
+        blueprint_name = compose["blueprint_name"]
+
+    if "branch" not in compose or not compose["branch"]:
+        branch = "master"
+    else:
+        branch = compose["branch"]
+
+    if "compose_type" not in compose:
+        errors.append({"id": BAD_COMPOSE_TYPE, "msg": "No 'compose_type' in the JSON request"})
+    else:
+        compose_type = compose["compose_type"]
+
+    if VALID_BLUEPRINT_NAME.match(blueprint_name) is None:
+        errors.append({"id": INVALID_CHARS, "msg": "Invalid characters in API path"})
+
+    if not blueprint_exists(api, branch, blueprint_name):
+        errors.append({"id": UNKNOWN_BLUEPRINT, "msg": "Unknown blueprint name: %s" % blueprint_name})
+
+    if "upload" in compose:
+        try:
+            image_name = compose["upload"]["image_name"]
+            provider_name = compose["upload"]["provider"]
+            settings = compose["upload"]["settings"]
+        except KeyError as e:
+            errors.append({"id": UPLOAD_ERROR, "msg": f'Missing parameter {str(e)}!'})
+        try:
+            provider = resolve_provider(api.config["COMPOSER_CFG"]["upload"], provider_name)
+            if "supported_types" in provider and compose_type not in provider["supported_types"]:
+                raise RuntimeError(f'Type "{compose_type}" is not supported by provider "{provider_name}"!')
+            validate_settings(api.config["COMPOSER_CFG"]["upload"], provider_name, settings, image_name)
+        except Exception as e:
+            errors.append({"id": UPLOAD_ERROR, "msg": str(e)})
+
+    if errors:
+        return jsonify(status=False, errors=errors), 400
+
+    try:
+        build_id = start_build(api.config["COMPOSER_CFG"], api.config["DNFLOCK"], api.config["GITLOCK"],
+                               branch, blueprint_name, compose_type, test_mode)
+    except Exception as e:
+        if "Invalid compose type" in str(e):
+            return jsonify(status=False, errors=[{"id": BAD_COMPOSE_TYPE, "msg": str(e)}]), 400
+        else:
+            return jsonify(status=False, errors=[{"id": BUILD_FAILED, "msg": str(e)}]), 400
+
+    if "upload" in compose:
+        upload_uuid = uuid_schedule_upload(
+            api.config["COMPOSER_CFG"],
+            build_id,
+            provider_name,
+            image_name,
+            settings
+        )
+
+    return jsonify(status=True, build_id=build_id)
+
+@v1_api.route("/compose/uploads/schedule", defaults={'compose_uuid': ""}, methods=["POST"])
+@v1_api.route("/compose/uploads/schedule/<compose_uuid>", methods=["POST"])
+@checkparams([("compose_uuid", "", "no compose UUID given")])
+def v1_compose_uploads_schedule(compose_uuid):
+    """Schedule an upload of a compose to a given cloud provider
+
+    **POST /api/v1/uploads/schedule/<compose_uuid>**
+
+      Example request::
+
+          {
+            "image_name": "My Image",
+            "provider": "azure",
+            "settings": {
+              "resource_group": "SOMEBODY",
+              "storage_account_name": "ONCE",
+              "storage_container": "TOLD",
+              "location": "ME",
+              "subscription_id": "THE",
+              "client_id": "WORLD",
+              "secret": "IS",
+              "tenant": "GONNA"
+            }
+          }
+
+      Example response::
+
+          {
+            "status": true,
+            "upload_uuid": "572eb0d0-5348-4600-9666-14526ba628bb"
+          }
+    """
+    if VALID_API_STRING.match(compose_uuid) is None:
+        error = {"id": INVALID_CHARS, "msg": "Invalid characters in API path"}
+        return jsonify(status=False, errors=[error]), 400
+
+    parsed = request.get_json(cache=False)
+    if not parsed:
+        return jsonify(status=False, errors=[{"id": MISSING_POST, "msg": "Missing POST body"}]), 400
+
+    try:
+        image_name = parsed["image_name"]
+        provider_name = parsed["provider"]
+        settings = parsed["settings"]
+    except KeyError as e:
+        error = {"id": UPLOAD_ERROR, "msg": f'Missing parameter {str(e)}!'}
+        return jsonify(status=False, errors=[error]), 400
+    try:
+        compose_type = uuid_status(api.config["COMPOSER_CFG"], compose_uuid)["compose_type"]
+        provider = resolve_provider(api.config["COMPOSER_CFG"]["upload"], provider_name)
+        if "supported_types" in provider and compose_type not in provider["supported_types"]:
+            raise RuntimeError(
+                f'Type "{compose_type}" is not supported by provider "{provider_name}"!'
+            )
+    except Exception as e:
+        return jsonify(status=False, errors=[{"id": UPLOAD_ERROR, "msg": str(e)}]), 400
+
+    try:
+        upload_uuid = uuid_schedule_upload(
+            api.config["COMPOSER_CFG"],
+            compose_uuid,
+            provider_name,
+            image_name,
+            settings
+        )
+    except RuntimeError as e:
+        return jsonify(status=False, errors=[{"id": UPLOAD_ERROR, "msg": str(e)}]), 400
+    return jsonify(status=True, upload_uuid=upload_uuid)
+
+@v1_api.route("/compose/uploads/delete", defaults={"compose_uuid": "", "upload_uuid": ""}, methods=["DELETE"])
+@v1_api.route("/compose/uploads/delete/<compose_uuid>/<upload_uuid>", methods=["DELETE"])
+@checkparams([("compose_uuid", "", "no compose UUID given"), ("upload_uuid", "", "no upload UUID given")])
+def v1_compose_uploads_delete(compose_uuid, upload_uuid):
+    """Delete an upload and disassociate it from its compose
+
+    **DELETE /api/v1/uploads/delete/<compose_uuid>/<upload_uuid>**
+
+      Example response::
+
+          {
+            "status": true,
+            "upload_uuid": "572eb0d0-5348-4600-9666-14526ba628bb"
+          }
+    """
+    if None in (VALID_API_STRING.match(compose_uuid), VALID_API_STRING.match(upload_uuid)):
+        error = {"id": INVALID_CHARS, "msg": "Invalid characters in API path"}
+        return jsonify(status=False, errors=[error]), 400
+
+    if not uuid_status(api.config["COMPOSER_CFG"], compose_uuid):
+        error = {"id": UNKNOWN_UUID, "msg": "%s is not a valid build uuid" % compose_uuid}
+        return jsonify(status=False, errors=[error]), 400
+    uuid_remove_upload(api.config["COMPOSER_CFG"], compose_uuid, upload_uuid)
+    try:
+        delete_upload(api.config["COMPOSER_CFG"]["upload"], upload_uuid)
+    except RuntimeError as error:
+        return jsonify(status=False, errors=[{"id": UPLOAD_ERROR, "msg": str(error)}])
+    return jsonify(status=True, upload_uuid=upload_uuid)
+
+@v1_api.route("/upload/info", defaults={"uuid": ""})
+@v1_api.route("/upload/info/<uuid>")
+@checkparams([("uuid", "", "no UUID given")])
+def v1_upload_info(uuid):
+    """Returns information about a given upload
+
+    **GET /api/v1/upload/info/<uuid>**
+
+      Example response::
+
+          {
+            "status": true,
+            "upload": {
+              "creation_time": 1565620940.069004,
+              "image_name": "My Image",
+              "image_path": "/var/lib/lorax/composer/results/b6218e8f-0fa2-48ec-9394-f5c2918544c4/disk.vhd",
+              "provider_name": "azure",
+              "settings": {
+                "resource_group": "SOMEBODY",
+                "storage_account_name": "ONCE",
+                "storage_container": "TOLD",
+                "location": "ME",
+                "subscription_id": "THE",
+                "client_id": "WORLD",
+                "secret": "IS",
+                "tenant": "GONNA"
+              },
+              "status": "FAILED",
+              "uuid": "b637c411-9d9d-4279-b067-6c8d38e3b211"
+            }
+          }
+    """
+    if VALID_API_STRING.match(uuid) is None:
+        return jsonify(status=False, errors=[{"id": INVALID_CHARS, "msg": "Invalid characters in API path"}]), 400
+
+    try:
+        upload = get_upload(api.config["COMPOSER_CFG"]["upload"], uuid).summary()
+    except RuntimeError as error:
+        return jsonify(status=False, errors=[{"id": UPLOAD_ERROR, "msg": str(error)}])
+    return jsonify(status=True, upload=upload)
+
+@v1_api.route("/upload/log", defaults={"uuid": ""})
+@v1_api.route("/upload/log/<uuid>")
+@checkparams([("uuid", "", "no UUID given")])
+def v1_upload_log(uuid):
+    """Returns an upload's log
+
+    **GET /api/v1/upload/log/<uuid>**
+
+      Example response::
+
+          {
+            "status": true,
+            "log": "\n __________________\r\n< PLAY [localhost] >..."
+          }
+    """
+    if VALID_API_STRING.match(uuid) is None:
+        error = {"id": INVALID_CHARS, "msg": "Invalid characters in API path"}
+        return jsonify(status=False, errors=[error]), 400
+
+    try:
+        upload = get_upload(api.config["COMPOSER_CFG"]["upload"], uuid)
+    except RuntimeError as error:
+        return jsonify(status=False, errors=[{"id": UPLOAD_ERROR, "msg": str(error)}])
+    return jsonify(status=True, log=upload.upload_log)
+
+@v1_api.route("/upload/reset", defaults={"uuid": ""}, methods=["POST"])
+@v1_api.route("/upload/reset/<uuid>", methods=["POST"])
+@checkparams([("uuid", "", "no UUID given")])
+def v1_upload_reset(uuid):
+    """Reset an upload so it can be attempted again
+
+    **POST /api/v1/upload/reset/<uuid>**
+
+      Optionally pass in a new image name and/or new settings.
+
+      Example request::
+
+          {
+            "image_name": "My renamed image",
+            "settings": {
+              "resource_group": "ROLL",
+              "storage_account_name": "ME",
+              "storage_container": "I",
+              "location": "AIN'T",
+              "subscription_id": "THE",
+              "client_id": "SHARPEST",
+              "secret": "TOOL",
+              "tenant": "IN"
+            }
+          }
+
+      Example response::
+
+          {
+            "status": true,
+            "uuid": "c75d5d62-9d26-42fc-a8ef-18bb14679fc7"
+          }
+    """
+    if VALID_API_STRING.match(uuid) is None:
+        error = {"id": INVALID_CHARS, "msg": "Invalid characters in API path"}
+        return jsonify(status=False, errors=[error]), 400
+
+    parsed = request.get_json(cache=False)
+    image_name = parsed.get("image_name") if parsed else None
+    settings = parsed.get("settings") if parsed else None
+
+    try:
+        reset_upload(api.config["COMPOSER_CFG"]["upload"], uuid, image_name, settings)
+    except RuntimeError as error:
+        return jsonify(status=False, errors=[{"id": UPLOAD_ERROR, "msg": str(error)}])
+    return jsonify(status=True, uuid=uuid)
+
+@v1_api.route("/upload/cancel", defaults={"uuid": ""}, methods=["DELETE"])
+@v1_api.route("/upload/cancel/<uuid>", methods=["DELETE"])
+@checkparams([("uuid", "", "no UUID given")])
+def v1_upload_cancel(uuid):
+    """Cancel an upload that is either queued or in progress
+
+    **DELETE /api/v1/uploads/delete/<compose_uuid>/<upload_uuid>**
+
+      Example response::
+
+          {
+            "status": true,
+            "uuid": "037a3d56-b421-43e9-9935-c98350c89996"
+          }
+    """
+    if VALID_API_STRING.match(uuid) is None:
+        error = {"id": INVALID_CHARS, "msg": "Invalid characters in API path"}
+        return jsonify(status=False, errors=[error]), 400
+
+    try:
+        cancel_upload(api.config["COMPOSER_CFG"]["upload"], uuid)
+    except RuntimeError as error:
+        return jsonify(status=False, errors=[{"id": UPLOAD_ERROR, "msg": str(error)}])
+    return jsonify(status=True, uuid=uuid)
+
+@v1_api.route("/upload/providers")
+def v1_upload_providers():
+    """Return the information about all upload providers, including their
+    display names, expected settings, and saved profiles. Refer to the
+    `resolve_provider` function.
+
+    **GET /api/v1/upload/providers**
+
+      Example response::
+
+          {
+            "providers": {
+              "azure": {
+                "display": "Azure",
+                "profiles": {
+                  "default": {
+                    "client_id": "example",
+                    ...
+                  }
+                },
+                "settings-info": {
+                  "client_id": {
+                    "display": "Client ID",
+                    "placeholder": "",
+                    "regex": "",
+                    "type": "string"
+                  },
+                  ...
+                },
+                "supported_types": ["vhd"]
+              },
+              ...
+            }
+          }
+    """
+
+    ucfg = api.config["COMPOSER_CFG"]["upload"]
+
+    provider_names = list_providers(ucfg)
+
+    def get_provider_info(provider_name):
+        provider = resolve_provider(ucfg, provider_name)
+        provider["profiles"] = load_profiles(ucfg, provider_name)
+        return provider
+
+    providers = {provider_name: get_provider_info(provider_name)
+                 for provider_name in provider_names}
+    return jsonify(status=True, providers=providers)
+
+@v1_api.route("/upload/providers/save", methods=["POST"])
+def v1_providers_save():
+    """Save provider settings as a profile for later use
+
+    **POST /api/v1/upload/providers/save**
+
+      Example request::
+
+          {
+            "provider": "azure",
+            "profile": "my-profile",
+            "settings": {
+              "resource_group": "SOMEBODY",
+              "storage_account_name": "ONCE",
+              "storage_container": "TOLD",
+              "location": "ME",
+              "subscription_id": "THE",
+              "client_id": "WORLD",
+              "secret": "IS",
+              "tenant": "GONNA"
+            }
+          }
+
+      Saving to an existing profile will overwrite it.
+
+      Example response::
+
+          {
+            "status": true
+          }
+    """
+    parsed = request.get_json(cache=False)
+
+    if parsed is None:
+        return jsonify(status=False, errors=[{"id": MISSING_POST, "msg": "Missing POST body"}]), 400
+
+    try:
+        provider_name = parsed["provider"]
+        profile = parsed["profile"]
+        settings = parsed["settings"]
+    except KeyError as e:
+        error = {"id": UPLOAD_ERROR, "msg": f'Missing parameter {str(e)}!'}
+        return jsonify(status=False, errors=[error]), 400
+    try:
+        save_settings(api.config["COMPOSER_CFG"]["upload"], provider_name, profile, settings)
+    except Exception as e:
+        error = {"id": UPLOAD_ERROR, "msg": str(e)}
+        return jsonify(status=False, errors=[error])
+    return jsonify(status=True)
