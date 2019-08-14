@@ -19,7 +19,6 @@
 """
 import logging
 log = logging.getLogger("lorax-composer")
-import os
 
 from flask import jsonify, request
 from flask import current_app as api
@@ -27,12 +26,9 @@ from flask import current_app as api
 from pylorax.api.checkparams import checkparams
 from pylorax.api.errors import INVALID_CHARS, PROJECTS_ERROR, SYSTEM_SOURCE, UNKNOWN_SOURCE
 from pylorax.api.flask_blueprint import BlueprintSkip
-from pylorax.api.projects import delete_repo_source, dnf_repo_to_file_repo, get_repo_sources, repo_to_source
-from pylorax.api.projects import source_to_repo
-from pylorax.api.projects import ProjectsError
+from pylorax.api.projects import get_repo_sources, new_repo_source, repo_to_source
 from pylorax.api.regexes import VALID_API_STRING
 import pylorax.api.toml as toml
-from pylorax.sysutils import joinpaths
 
 # Create the v1 routes Blueprint with skip_routes support
 v1_api = BlueprintSkip("v1_routes", __name__)
@@ -153,9 +149,7 @@ def v1_projects_source_new():
     else:
         source = request.get_json(cache=False)
 
-    # XXX TODO
     # Check for id in source, return error if not
-    # Add test for that
     if "id" not in source:
         return jsonify(status=False, errors=[{"id": UNKNOWN_SOURCE, "msg": "'id' field is missing from API v1 request."}]), 400
 
@@ -166,48 +160,9 @@ def v1_projects_source_new():
     try:
         # Remove it from the RepoDict (NOTE that this isn't explicitly supported by the DNF API)
         with api.config["DNFLOCK"].lock:
-            dbo = api.config["DNFLOCK"].dbo
-            # If this repo already exists, delete it and replace it with the new one
-            repos = list(r.id for r in dbo.repos.iter_enabled())
-            if source["id"] in repos:
-                del dbo.repos[source["id"]]
-
-            repo = source_to_repo(source, dbo.conf)
-            dbo.repos.add(repo)
-
-            log.info("Updating repository metadata after adding %s", source["id"])
-            dbo.fill_sack(load_system_repo=False)
-            dbo.read_comps()
-
-        # Write the new repo to disk, replacing any existing ones
-        repo_dir = api.config["COMPOSER_CFG"].get("composer", "repo_dir")
-
-        # Remove any previous sources with this id, ignore it if it isn't found
-        try:
-            delete_repo_source(joinpaths(repo_dir, "*.repo"), source["id"])
-        except ProjectsError:
-            pass
-
-        # Make sure the source id can't contain a path traversal by taking the basename
-        source_path = joinpaths(repo_dir, os.path.basename("%s.repo" % source["id"]))
-        with open(source_path, "w") as f:
-            f.write(dnf_repo_to_file_repo(repo))
+            repo_dir = api.config["COMPOSER_CFG"].get("composer", "repo_dir")
+            new_repo_source(api.config["DNFLOCK"].dbo, source["id"], source, repo_dir)
     except Exception as e:
-        log.error("(v0_projects_source_add) adding %s failed: %s", source["id"], str(e))
-
-        # Cleanup the mess, if loading it failed we don't want to leave it in memory
-        repos = list(r.id for r in dbo.repos.iter_enabled())
-        if source["id"] in repos:
-            with api.config["DNFLOCK"].lock:
-                dbo = api.config["DNFLOCK"].dbo
-                del dbo.repos[source["id"]]
-
-                log.info("Updating repository metadata after adding %s failed", source["id"])
-                dbo.fill_sack(load_system_repo=False)
-                dbo.read_comps()
-
         return jsonify(status=False, errors=[{"id": PROJECTS_ERROR, "msg": str(e)}]), 400
 
     return jsonify(status=True)
-
-

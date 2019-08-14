@@ -18,6 +18,7 @@
 import os
 from configparser import ConfigParser, NoOptionError
 from contextlib import contextmanager
+import dnf
 from glob import glob
 from rpmfluff import SimpleRpmBuild, expectedArch
 import shutil
@@ -127,10 +128,14 @@ class ServerTestCase(unittest.TestCase):
         if os.path.exists("/etc/yum.repos.d/fedora-rawhide.repo"):
             self.rawhide = True
 
+        # Need the substitution values to create the directories before we can create the dnf.Base for real
+        dbo = dnf.Base()
+        repo_dirs = ["/tmp/lorax-empty-repo-%s-%s" % (dbo.conf.substitutions["releasever"], dbo.conf.substitutions["basearch"]),
+                     "/tmp/lorax-empty-repo-v1-%s-%s" % (dbo.conf.substitutions["releasever"], dbo.conf.substitutions["basearch"])]
         # dnf repo baseurl has to point to an absolute directory, so we use /tmp/lorax-empty-repo/ in the files
         # and create an empty repository. We now remove duplicate repo entries so we need a number of them.
-        for d in ["/tmp/lorax-empty-repo/", "/tmp/lorax-other-empty-repo/", "/tmp/lorax-empty-repo-1/",
-                  "/tmp/lorax-empty-repo-2/", "/tmp/lorax-empty-repo-3/", "/tmp/lorax-empty-repo-4/"]:
+        for d in repo_dirs + ["/tmp/lorax-empty-repo/", "/tmp/lorax-other-empty-repo/", "/tmp/lorax-empty-repo-1/",
+                              "/tmp/lorax-empty-repo-2/", "/tmp/lorax-empty-repo-3/", "/tmp/lorax-empty-repo-4/"]:
             os.makedirs(d)
             rc = os.system("createrepo_c %s" % d)
             if rc != 0:
@@ -138,6 +143,13 @@ class ServerTestCase(unittest.TestCase):
                 raise RuntimeError("Problem running createrepo_c, is it installed")
 
         server.config["DNFLOCK"] = DNFLock(server.config["COMPOSER_CFG"])
+
+        # Grab the substitution values for later
+        with server.config["DNFLOCK"].lock:
+            self.substitutions = server.config["DNFLOCK"].dbo.conf.substitutions
+
+        if "releasever" not in self.substitutions or "basearch" not in self.substitutions:
+            raise RuntimeError("DNF is missing the releasever and basearch substitutions")
 
         # Include a message in /api/status output
         server.config["TEMPLATE_ERRORS"] = ["Test message"]
@@ -831,6 +843,29 @@ class ServerTestCase(unittest.TestCase):
         sources = data["sources"]
         self.assertTrue("new-repo-2" in sources)
 
+    def test_projects_source_00_new_toml_vars(self):
+        """Test /api/v0/projects/source/new with a new toml source using vars"""
+        toml_source = open("./tests/pylorax/source/test-repo-vars.toml").read()
+        self.assertTrue(len(toml_source) > 0)
+        resp = self.server.post("/api/v0/projects/source/new",
+                                data=toml_source,
+                                content_type="text/x-toml")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+        # Was it added, and was is it correct?
+        resp = self.server.get("/api/v1/projects/source/info/new-repo-2-vars")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        sources = data["sources"]
+        print(sources)
+        self.assertTrue("new-repo-2-vars" in sources)
+
+        self.assertTrue(self.substitutions["releasever"] in sources["new-repo-2-vars"]["url"])
+        self.assertTrue(self.substitutions["basearch"] in sources["new-repo-2-vars"]["url"])
+        self.assertTrue(self.substitutions["releasever"] in sources["new-repo-2-vars"]["gpgkey_urls"][0])
+        self.assertTrue(self.substitutions["basearch"] in sources["new-repo-2-vars"]["gpgkey_urls"][0])
+
     def test_projects_source_01_new_toml(self):
         """Test /api/v1/projects/source/new with a new toml source"""
         toml_source = open("./tests/pylorax/source/test-repo-v1.toml").read()
@@ -851,6 +886,27 @@ class ServerTestCase(unittest.TestCase):
         self.assertEqual(sources["new-repo-2-v1"]["id"], "new-repo-2-v1")
         self.assertTrue("name" in sources["new-repo-2-v1"])
         self.assertEqual(sources["new-repo-2-v1"]["name"], "API v1 toml new repo")
+
+    def test_projects_source_01_new_toml_vars(self):
+        """Test /api/v1/projects/source/new with a new toml source using vars"""
+        toml_source = open("./tests/pylorax/source/test-repo-v1-vars.toml").read()
+        self.assertTrue(len(toml_source) > 0)
+        resp = self.server.post("/api/v1/projects/source/new",
+                                data=toml_source,
+                                content_type="text/x-toml")
+        data = json.loads(resp.data)
+        self.assertEqual(data, {"status":True})
+
+        # Was it added, and was is it correct?
+        resp = self.server.get("/api/v1/projects/source/info/new-repo-2-v1-vars")
+        data = json.loads(resp.data)
+        self.assertNotEqual(data, None)
+        sources = data["sources"]
+        self.assertTrue("new-repo-2-v1-vars" in sources)
+        self.assertTrue(self.substitutions["releasever"] in sources["new-repo-2-v1-vars"]["url"])
+        self.assertTrue(self.substitutions["basearch"] in sources["new-repo-2-v1-vars"]["url"])
+        self.assertTrue(self.substitutions["releasever"] in sources["new-repo-2-v1-vars"]["gpgkey_urls"][0])
+        self.assertTrue(self.substitutions["basearch"] in sources["new-repo-2-v1-vars"]["gpgkey_urls"][0])
 
     def test_projects_source_02_new_toml(self):
         """Test /api/v1/projects/source/new with a new toml source w/o id field"""

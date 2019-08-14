@@ -28,7 +28,7 @@ from pylorax.api.projects import api_time, api_changelog, pkg_to_project, pkg_to
 from pylorax.api.projects import proj_to_module, projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError, dep_evra, dep_nevra
 from pylorax.api.projects import repo_to_source, get_repo_sources, delete_repo_source, source_to_repo
-from pylorax.api.projects import dnf_repo_to_file_repo
+from pylorax.api.projects import source_to_repodict, dnf_repo_to_file_repo
 from pylorax.api.dnfbase import get_base_object
 
 class Package(object):
@@ -202,7 +202,6 @@ class ProjectsTest(unittest.TestCase):
         self.assertTrue("ctags" in names)               # default package
         self.assertFalse("cmake" in names)              # optional package
 
-
 class ConfigureTest(unittest.TestCase):
     @classmethod
     def setUpClass(self):
@@ -341,6 +340,25 @@ def singlerepo_v1():
     d["name"] = "One repo in the file"
     return d
 
+def singlerepo_vars_v0():
+    return {
+        "check_gpg": True,
+        "check_ssl": True,
+        "gpgkey_urls": [
+            "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch"
+        ],
+        "name": "single-repo",
+        "system": False,
+        "type": "yum-baseurl",
+        "url": "file:///tmp/lorax-empty-repo-$releasever-$basearch/"
+    }
+
+def singlerepo_vars_v1():
+    d = singlerepo_v0()
+    d["id"] = "single-repo"
+    d["name"] = "One repo in the file"
+    return d
+
 class SourceTest(unittest.TestCase):
     @classmethod
     def setUpClass(self):
@@ -443,50 +461,100 @@ class SourceTest(unittest.TestCase):
         repo = source_to_repo(fakerepo_baseurl_v0(), self.dbo.conf)
         self.assertEqual(repo.baseurl[0], fakerepo_baseurl_v0()["url"])
 
+    def test_source_to_repodict_baseurl(self):
+        """Test creating a repodict with a baseurl API v0"""
+        repo = source_to_repodict(fakerepo_baseurl_v0())
+        self.assertEqual(repo[1][0], fakerepo_baseurl_v0()["url"])
+
     def test_source_to_repo_baseurl_v1(self):
         """Test creating a dnf.Repo with a baseurl API v1"""
         repo = source_to_repo(fakerepo_baseurl_v1(), self.dbo.conf)
         self.assertEqual(repo.baseurl[0], fakerepo_baseurl_v1()["url"])
+
+    def test_source_to_repodict_baseurl_v1(self):
+        """Test creating a repodict with a baseurl API v1"""
+        repo = source_to_repodict(fakerepo_baseurl_v1())
+        self.assertEqual(repo[1][0], fakerepo_baseurl_v1()["url"])
 
     def test_source_to_repo_metalink(self):
         """Test creating a dnf.Repo with a metalink API v0"""
         repo = source_to_repo(fakerepo_metalink_v0(), self.dbo.conf)
         self.assertEqual(repo.metalink, fakerepo_metalink_v0()["url"])
 
+    def test_source_to_repodict_metalink(self):
+        """Test creating a repodict with a metalink API v0"""
+        repo = source_to_repodict(fakerepo_metalink_v0())
+        self.assertEqual(repo[2]["metalink"], fakerepo_metalink_v0()["url"])
+
     def test_source_to_repo_metalink_v1(self):
         """Test creating a dnf.Repo with a metalink API v1"""
         repo = source_to_repo(fakerepo_metalink_v1(), self.dbo.conf)
         self.assertEqual(repo.metalink, fakerepo_metalink_v1()["url"])
+
+    def test_source_to_repodict_metalink_v1(self):
+        """Test creating a repodict with a metalink API v1"""
+        repo = source_to_repodict(fakerepo_metalink_v1())
+        self.assertEqual(repo[2]["metalink"], fakerepo_metalink_v1()["url"])
 
     def test_source_to_repo_mirrorlist(self):
         """Test creating a dnf.Repo with a mirrorlist API v0"""
         repo = source_to_repo(fakerepo_mirrorlist_v0(), self.dbo.conf)
         self.assertEqual(repo.mirrorlist, fakerepo_mirrorlist_v0()["url"])
 
+    def test_source_to_repodict_mirrorlist(self):
+        """Test creating a repodict with a mirrorlist API v0"""
+        repo = source_to_repodict(fakerepo_mirrorlist_v0())
+        self.assertEqual(repo[2]["mirrorlist"], fakerepo_mirrorlist_v0()["url"])
+
     def test_source_to_repo_mirrorlist_v1(self):
         """Test creating a dnf.Repo with a mirrorlist"""
         repo = source_to_repo(fakerepo_mirrorlist_v1(), self.dbo.conf)
         self.assertEqual(repo.mirrorlist, fakerepo_mirrorlist_v1()["url"])
+
+    def test_source_to_repodict_mirrorlist_v1(self):
+        """Test creating a repodict with a mirrorlist"""
+        repo = source_to_repodict(fakerepo_mirrorlist_v1())
+        self.assertEqual(repo[2]["mirrorlist"], fakerepo_mirrorlist_v1()["url"])
 
     def test_source_to_repo_proxy(self):
         """Test creating a dnf.Repo with a proxy API v0"""
         repo = source_to_repo(fakerepo_proxy_v0(), self.dbo.conf)
         self.assertEqual(repo.proxy, fakerepo_proxy_v0()["proxy"])
 
+    def test_source_to_repodict_proxy(self):
+        """Test creating a repodict with a proxy API v0"""
+        repo = source_to_repodict(fakerepo_proxy_v0())
+        self.assertEqual(repo[2]["proxy"], fakerepo_proxy_v0()["proxy"])
+
     def test_source_to_repo_proxy_v1(self):
         """Test creating a dnf.Repo with a proxy API v1"""
         repo = source_to_repo(fakerepo_proxy_v1(), self.dbo.conf)
         self.assertEqual(repo.proxy, fakerepo_proxy_v1()["proxy"])
+
+    def test_source_to_repodict_proxy_v1(self):
+        """Test creating a repodict with a proxy API v1"""
+        repo = source_to_repodict(fakerepo_proxy_v1())
+        self.assertEqual(repo[2]["proxy"], fakerepo_proxy_v1()["proxy"])
 
     def test_source_to_repo_gpgkey(self):
         """Test creating a dnf.Repo with a proxy API v0"""
         repo = source_to_repo(fakerepo_gpgkey_v0(), self.dbo.conf)
         self.assertEqual(repo.gpgkey[0], fakerepo_gpgkey_v0()["gpgkey_urls"][0])
 
+    def test_source_to_repodict_gpgkey(self):
+        """Test creating a repodict with a proxy API v0"""
+        repo = source_to_repodict(fakerepo_gpgkey_v0())
+        self.assertEqual(repo[2]["gpgkey"][0], fakerepo_gpgkey_v0()["gpgkey_urls"][0])
+
     def test_source_to_repo_gpgkey_v1(self):
         """Test creating a dnf.Repo with a proxy API v1"""
         repo = source_to_repo(fakerepo_gpgkey_v1(), self.dbo.conf)
         self.assertEqual(repo.gpgkey[0], fakerepo_gpgkey_v1()["gpgkey_urls"][0])
+
+    def test_source_to_repodict_gpgkey_v1(self):
+        """Test creating a repodict with a proxy API v1"""
+        repo = source_to_repodict(fakerepo_gpgkey_v1())
+        self.assertEqual(repo[2]["gpgkey"][0], fakerepo_gpgkey_v1()["gpgkey_urls"][0])
 
     def test_drtfr_baseurl(self):
         """Test creating a dnf .repo file from a baseurl Repo object"""

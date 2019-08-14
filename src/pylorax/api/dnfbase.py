@@ -104,6 +104,11 @@ def get_base_object(conf):
     if conf.has_option("dnf", "sslverify") and not conf.getboolean("dnf", "sslverify"):
         dbc.sslverify = False
 
+    # If the system repos are enabled read the dnf vars from /etc/dnf/vars/
+    if not conf.has_option("repos", "use_system_repos") or conf.getboolean("repos", "use_system_repos"):
+        dbc.substitutions.update_from_etc("/")
+        log.info("dnf vars: %s", dbc.substitutions)
+
     _releasever = conf.get_default("composer", "releasever", None)
     if not _releasever:
         # Use the releasever of the host system

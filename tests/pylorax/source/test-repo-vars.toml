@@ -1,0 +1,6 @@
+name = "new-repo-2-vars"
+url = "file:///tmp/lorax-empty-repo-$releasever-$basearch/"
+type = "yum-baseurl"
+check_ssl = true
+check_gpg = true
+gpgkey_urls = ["file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch"]

@@ -62,7 +62,7 @@ from pylorax.api.errors import *                               # pylint: disable
 from pylorax.api.flask_blueprint import BlueprintSkip
 from pylorax.api.projects import projects_list, projects_info, projects_depsolve
 from pylorax.api.projects import modules_list, modules_info, ProjectsError, repo_to_source
-from pylorax.api.projects import get_repo_sources, delete_repo_source, source_to_repo, dnf_repo_to_file_repo
+from pylorax.api.projects import get_repo_sources, delete_repo_source, new_repo_source
 from pylorax.api.queue import queue_status, build_status, uuid_delete, uuid_status, uuid_info
 from pylorax.api.queue import uuid_tar, uuid_image, uuid_cancel, uuid_log
 from pylorax.api.recipes import list_branch_files, read_recipe_commit, recipe_filename, list_commits
@@ -1206,46 +1206,9 @@ def v0_projects_source_new():
     try:
         # Remove it from the RepoDict (NOTE that this isn't explicitly supported by the DNF API)
         with api.config["DNFLOCK"].lock:
-            dbo = api.config["DNFLOCK"].dbo
-            # If this repo already exists, delete it and replace it with the new one
-            repos = list(r.id for r in dbo.repos.iter_enabled())
-            if source["name"] in repos:
-                del dbo.repos[source["name"]]
-
-            repo = source_to_repo(source, dbo.conf)
-            dbo.repos.add(repo)
-
-            log.info("Updating repository metadata after adding %s", source["name"])
-            dbo.fill_sack(load_system_repo=False)
-            dbo.read_comps()
-
-        # Write the new repo to disk, replacing any existing ones
-        repo_dir = api.config["COMPOSER_CFG"].get("composer", "repo_dir")
-
-        # Remove any previous sources with this name, ignore it if it isn't found
-        try:
-            delete_repo_source(joinpaths(repo_dir, "*.repo"), source["name"])
-        except ProjectsError:
-            pass
-
-        # Make sure the source name can't contain a path traversal by taking the basename
-        source_path = joinpaths(repo_dir, os.path.basename("%s.repo" % source["name"]))
-        with open(source_path, "w") as f:
-            f.write(dnf_repo_to_file_repo(repo))
+            repo_dir = api.config["COMPOSER_CFG"].get("composer", "repo_dir")
+            new_repo_source(api.config["DNFLOCK"].dbo, source["name"], source, repo_dir)
     except Exception as e:
-        log.error("(v0_projects_source_add) adding %s failed: %s", source["name"], str(e))
-
-        # Cleanup the mess, if loading it failed we don't want to leave it in memory
-        repos = list(r.id for r in dbo.repos.iter_enabled())
-        if source["name"] in repos:
-            with api.config["DNFLOCK"].lock:
-                dbo = api.config["DNFLOCK"].dbo
-                del dbo.repos[source["name"]]
-
-                log.info("Updating repository metadata after adding %s failed", source["name"])
-                dbo.fill_sack(load_system_repo=False)
-                dbo.read_comps()
-
         return jsonify(status=False, errors=[{"id": PROJECTS_ERROR, "msg": str(e)}]), 400
 
     return jsonify(status=True)

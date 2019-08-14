@@ -24,6 +24,7 @@ import os
 import time
 
 from pylorax.api.bisect import insort_left
+from pylorax.sysutils import joinpaths
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
@@ -477,6 +478,58 @@ def repo_to_source(repo, system_source, api=1):
 
     return source
 
+def source_to_repodict(source):
+    """Return a tuple suitable for use with dnf.add_new_repo
+
+    :param source: A Weldr source dict
+    :type source: dict
+    :returns: A tuple of dnf.Repo attributes
+    :rtype: (str, list, dict)
+
+    Return a tuple with (id, baseurl|(), kwargs) that can be used
+    with dnf.repos.add_new_repo
+    """
+    kwargs = {}
+    if "id" in source:
+        # This is an API v1 source definition
+        repoid = source["id"]
+        if "name" in source:
+            kwargs["name"] = source["name"]
+    else:
+        repoid = source["name"]
+
+    # This will allow errors to be raised so we can catch them
+    # without this they are logged, but the repo is silently disabled
+    kwargs["skip_if_unavailable"] = False
+
+    if source["type"] == "yum-baseurl":
+        baseurl = [source["url"]]
+    elif source["type"] == "yum-metalink":
+        kwargs["metalink"] = source["url"]
+        baseurl = ()
+    elif source["type"] == "yum-mirrorlist":
+        kwargs["mirrorlist"] = source["url"]
+        baseurl = ()
+
+    if "proxy" in source:
+        kwargs["proxy"] = source["proxy"]
+
+    if source["check_ssl"]:
+        kwargs["sslverify"] = True
+    else:
+        kwargs["sslverify"] = False
+
+    if source["check_gpg"]:
+        kwargs["gpgcheck"] = True
+    else:
+        kwargs["gpgcheck"] = False
+
+    if "gpgkey_urls" in source:
+        kwargs["gpgkey"] = tuple(source["gpgkey_urls"])
+
+    return (repoid, baseurl, kwargs)
+
+
 def source_to_repo(source, dnf_conf):
     """Return a dnf Repo object created from a source dict
 
@@ -506,39 +559,14 @@ def source_to_repo(source, dnf_conf):
     If the ``id`` field is included it is used for the repo id, otherwise ``name`` is used.
     v0 of the API only used ``name``, v1 added the distinction between ``id`` and ``name``.
     """
-    if "id" in source:
-        # This is an API v1 source definition
-        repo = dnf.repo.Repo(source["id"], dnf_conf)
-        if "name" in source:
-            repo.name = source["name"]
-    else:
-        repo = dnf.repo.Repo(source["name"], dnf_conf)
-    # This will allow errors to be raised so we can catch them
-    # without this they are logged, but the repo is silently disabled
-    repo.skip_if_unavailable = False
+    repoid, baseurl, kwargs = source_to_repodict(source)
+    repo = dnf.repo.Repo(repoid, dnf_conf)
+    if baseurl:
+        repo.baseurl = baseurl
 
-    if source["type"] == "yum-baseurl":
-        repo.baseurl = source["url"]
-    elif source["type"] == "yum-metalink":
-        repo.metalink = source["url"]
-    elif source["type"] == "yum-mirrorlist":
-        repo.mirrorlist = source["url"]
-
-    if "proxy" in source:
-        repo.proxy = source["proxy"]
-
-    if source["check_ssl"]:
-        repo.sslverify = True
-    else:
-        repo.sslverify = False
-
-    if source["check_gpg"]:
-        repo.gpgcheck = True
-    else:
-        repo.gpgcheck = False
-
-    if "gpgkey_urls" in source:
-        repo.gpgkey = tuple(source["gpgkey_urls"])
+    # Apply the rest of the kwargs to the Repo object
+    for k, v in kwargs.items():
+        setattr(repo, k, v)
 
     repo.enable()
 
@@ -607,3 +635,63 @@ def delete_repo_source(source_glob, source_id):
             raise ProjectsError("Problem deleting repo source %s: %s" % (source_id, str(e)))
     if not found:
         raise ProjectsError("source %s not found" % source_id)
+
+def new_repo_source(dbo, repoid, source, repo_dir):
+    """Add a new repo source from a Weldr source dict
+
+    :param dbo: dnf base object
+    :type dbo: dnf.Base
+    :param id: The repo id (API v0 uses the name, v1 uses the id)
+    :type id: str
+    :param source: A Weldr source dict
+    :type source: dict
+    :returns: None
+    :raises: ...
+
+    Make sure access to the dbo has been locked before calling this.
+    The `id` parameter will the the 'name' field for API v0, and the 'id' field for API v1
+
+    DNF variables will be substituted at load time, and on restart.
+    """
+    try:
+        # Remove it from the RepoDict (NOTE that this isn't explicitly supported by the DNF API)
+        # If this repo already exists, delete it and replace it with the new one
+        repos = list(r.id for r in dbo.repos.iter_enabled())
+        if repoid in repos:
+            del dbo.repos[repoid]
+
+        # Add the repo and substitute any dnf variables
+        _, baseurl, kwargs = source_to_repodict(source)
+        log.debug("repoid=%s, baseurl=%s, kwargs=%s", repoid, baseurl, kwargs)
+        r = dbo.repos.add_new_repo(repoid, dbo.conf, baseurl, **kwargs)
+        r.enable()
+
+        log.info("Updating repository metadata after adding %s", repoid)
+        dbo.fill_sack(load_system_repo=False)
+        dbo.read_comps()
+
+        # Remove any previous sources with this id, ignore it if it isn't found
+        try:
+            delete_repo_source(joinpaths(repo_dir, "*.repo"), repoid)
+        except ProjectsError:
+            pass
+
+        # Make sure the source id can't contain a path traversal by taking the basename
+        source_path = joinpaths(repo_dir, os.path.basename("%s.repo" % repoid))
+        # Write the un-substituted version of the repo to disk
+        with open(source_path, "w") as f:
+            repo = source_to_repo(source, dbo.conf)
+            f.write(dnf_repo_to_file_repo(repo))
+    except Exception as e:
+        log.error("(new_repo_source) adding %s failed: %s", repoid, str(e))
+
+        # Cleanup the mess, if loading it failed we don't want to leave it in memory
+        repos = list(r.id for r in dbo.repos.iter_enabled())
+        if repoid in repos:
+            del dbo.repos[repoid]
+
+            log.info("Updating repository metadata after adding %s failed", repoid)
+            dbo.fill_sack(load_system_repo=False)
+            dbo.read_comps()
+
+        raise
