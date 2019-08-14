@@ -372,7 +372,6 @@ aajohan-comfortaa-fonts
 anaconda
 dracut-config-generic
 dracut-live
-fedora-productimg-workstation
 glibc-all-langpacks
 kernel
 # Make sure that DNF doesn't pull in debug kernel to satisfy kmod() requires
