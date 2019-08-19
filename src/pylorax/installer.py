@@ -30,7 +30,7 @@ import tempfile
 from pylorax.executils import execWithRedirect, execReadlines
 from pylorax.imgutils import PartitionMount, mksparse, mkext4img, loop_detach
 from pylorax.imgutils import get_loop_name, dm_detach, mount, umount
-from pylorax.imgutils import mkqemu_img, mktar, mkcpio, mkfsimage_from_disk
+from pylorax.imgutils import mkqemu_img, mktar, mkfsimage_from_disk
 from pylorax.monitor import LogMonitor
 from pylorax.mount import IsoMountpoint
 from pylorax.sysutils import joinpaths
@@ -97,39 +97,27 @@ def find_free_port(start=5900, end=5999, host="127.0.0.1"):
 
     return -1
 
-def append_initrd(initrd, files):
-    """ Append files to an initrd.
+def make_ks_disk(files, label="KS_DISK_IMG"):
+    """ Create a disk image with kickstart (and other) files
 
-    :param str initrd: Path to initrd
     :param list files: list of file paths to add
-    :returns: Path to a new initrd
+    :param str label: label to give the disk image
+    :returns: Path to a new ext4 disk image
     :rtype: str
 
-    The files are added to the initrd by creating a cpio image
-    of the files (stored at /) and writing the cpio to the end of a
-    copy of the initrd.
+    The files are added to the root of the ext4 disk image. The label
+    is set to `label` and the disk can be referenced in the kernel
+    cmdline args like::
 
-    The initrd is not changed, a copy is made before appending the
-    cpio archive.
+        inst.ks=hd:LABEL=KS_DISK_IMG:/minimal.ks
+
     """
-    qemu_initrd = tempfile.mktemp(prefix="lmc-initrd-", suffix=".img")
-    shutil.copy2(initrd, qemu_initrd)
-    ks_dir = tempfile.mkdtemp(prefix="lmc-ksdir-")
-    for ks in files:
-        shutil.copy2(ks, ks_dir)
-    ks_initrd = tempfile.mktemp(prefix="lmc-ks-", suffix=".img")
-    mkcpio(ks_dir, ks_initrd)
-    shutil.rmtree(ks_dir)
-    with open(qemu_initrd, "ab") as initrd_fp:
-        with open(ks_initrd, "rb") as ks_fp:
-            while True:
-                data = ks_fp.read(1024**2)
-                if not data:
-                    break
-                initrd_fp.write(data)
-    os.unlink(ks_initrd)
-
-    return qemu_initrd
+    with tempfile.TemporaryDirectory(prefix="lmc-ksdir-") as tmpdir:
+        for f in files:
+            shutil.copy2(f, tmpdir)
+        ks_disk = tempfile.mktemp(prefix="lmc-ksdisk-", suffix=".img")
+        mkext4img(tmpdir, ks_disk, label=label)
+    return ks_disk
 
 class QEMUInstall(object):
     """
@@ -186,17 +174,14 @@ class QEMUInstall(object):
             qemu_cmd += ["-machine", "q35,smm=on"]
             qemu_cmd += ["-global", "driver=cfi.pflash01,property=secure,value=on"]
 
-        # Copy the initrd from the iso, create a cpio archive of the kickstart files
-        # and append it to the temporary initrd.
-        qemu_initrd = append_initrd(iso.initrd, ks_paths)
         qemu_cmd += ["-kernel", iso.kernel]
-        qemu_cmd += ["-initrd", qemu_initrd]
+        qemu_cmd += ["-initrd", iso.initrd]
 
         # Add the disk and cdrom
         if not os.path.isfile(disk_img):
             mksparse(disk_img, img_size * 1024**2)
-        drive_args = "file=%s" % disk_img
-        drive_args += ",cache=unsafe,discard=unmap"
+        drive_args = "file=%s,cache=unsafe,discard=unmap" % disk_img
+
         if image_type:
             drive_args += ",format=%s" % image_type
         else:
@@ -206,9 +191,13 @@ class QEMUInstall(object):
         drive_args = "file=%s,media=cdrom,readonly=on" % iso.iso_path
         qemu_cmd += ["-drive", drive_args]
 
+        # Create a disk image for the kickstart file
+        ks_disk = make_ks_disk(ks_paths, "KS_DISK_IMG")
+        qemu_cmd += ["-drive", "file=%s,cache=unsafe,discard=unmap,format=file" % ks_disk]
+
         # Setup the cmdline args
         # ======================
-        cmdline_args = "ks=file:/%s" % os.path.basename(ks_paths[0])
+        cmdline_args = "inst.ks=hd:LABEL=KS_DISK_IMG:/%s" % os.path.basename(ks_paths[0])
         cmdline_args += " inst.stage2=hd:LABEL=%s" % udev_escape(iso.label)
         if opts.proxy:
             cmdline_args += " inst.proxy=%s" % opts.proxy
@@ -265,7 +254,7 @@ class QEMUInstall(object):
             log.error("Running qemu failed: %s", str(e))
             raise InstallError("QEMUInstall failed")
         finally:
-            os.unlink(qemu_initrd)
+            os.unlink(ks_disk)
             if boot_uefi and ovmf_path:
                 os.unlink(ovmf_vars)
 
