@@ -162,7 +162,6 @@ __EOF__
                        'key_name=$KEY_NAME \
                         ssh_key_dir=$SSH_KEY_DIR \
                         ami_id=$AMI_ID \
-                        key_name=$KEY_NAME \
                         tmp_dir=$TMP_DIR' \
                      $PLAYBOOKS_DIR/instance.yml"
 
