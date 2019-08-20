@@ -59,6 +59,7 @@ if [ -z "$CLI" ]; then
     . ./tests/testenv.sh
 
     BLUEPRINTS_DIR=`mktemp -d '/tmp/composer-blueprints.XXXXX'`
+    export BLUEPRINTS_DIR
     cp ./tests/pylorax/blueprints/*.toml $BLUEPRINTS_DIR
 
     SHARE_DIR=`mktemp -d '/tmp/composer-share.XXXXX'`
@@ -70,6 +71,7 @@ if [ -z "$CLI" ]; then
     ./src/sbin/lorax-composer --sharedir $SHARE_DIR $BLUEPRINTS_DIR &
 else
     export PACKAGE="composer-cli"
+    export BLUEPRINTS_DIR="/var/lib/lorax/composer/blueprints"
     systemctl stop lorax-composer
     setup_tests /usr/share/lorax /var/lib/lorax/composer/blueprints
     systemctl start lorax-composer
